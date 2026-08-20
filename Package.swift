@@ -47,5 +47,6 @@ let package = Package(
             .product(name: "Yams", package: "Yams"),
         ]),
         .testTarget(name: "GrantivaAPITests", dependencies: ["GrantivaAPI"]),
+        .testTarget(name: "GrantivaCLITests", dependencies: ["GrantivaCLI"]),
     ]
 )
