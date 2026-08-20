@@ -11,6 +11,7 @@ public struct GrantivaCommand: AsyncParsableCommand {
             BuildCommand.self,
             RunCommand.self,
             RecordCommand.self,
+            SimulatorCommand.self,
             HierarchyCommand.self,
             CICommand.self,
             DiffCommand.self,

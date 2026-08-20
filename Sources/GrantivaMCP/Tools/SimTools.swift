@@ -38,6 +38,31 @@ enum SimTools {
             ]),
             annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
         ),
+        Tool(
+            name: "grantiva_sim_ensure",
+            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness.",
+            inputSchema: .object([
+                "type": .string("object"),
+                "properties": .object([
+                    "name": .object(["type": .string("string")]),
+                    "device_type": .object(["type": .string("string")]),
+                    "runtime": .object(["type": .string("string"), "description": .string("Runtime name, version, identifier, or 'latest'")]),
+                    "boot": .object(["type": .string("boolean")]),
+                ]),
+                "required": .array([.string("name"), .string("device_type"), .string("runtime")]),
+            ]),
+            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
+        ),
+        Tool(
+            name: "grantiva_sim_delete",
+            description: "Explicitly delete one simulator by its exact name or UDID.",
+            inputSchema: .object([
+                "type": .string("object"),
+                "properties": .object(["name": .object(["type": .string("string")])]),
+                "required": .array([.string("name")]),
+            ]),
+            annotations: .init(readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false)
+        ),
     ]
 
     // MARK: - Handlers
@@ -91,5 +116,20 @@ enum SimTools {
                 ),
             ]
         )
+    }
+
+    static func ensure(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
+        guard let name = arguments["name"]?.stringValue, let deviceType = arguments["device_type"]?.stringValue, let runtime = arguments["runtime"]?.stringValue else {
+            throw GrantivaError.invalidArgument("name, device_type, and runtime are required")
+        }
+        let result = try await simManager.ensure(name: name, deviceType: deviceType, runtime: runtime, boot: arguments["boot"]?.boolValue ?? false)
+        return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
+    }
+
+    static func delete(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
+        guard let name = arguments["name"]?.stringValue else { throw GrantivaError.invalidArgument("name is required") }
+        let device = try await simManager.delete(name: name)
+        let data = try JSONSerialization.data(withJSONObject: ["deleted": true, "name": device.name, "udid": device.udid], options: [.sortedKeys])
+        return CallTool.Result(content: [.text(text: String(decoding: data, as: UTF8.self), annotations: nil, _meta: nil)])
     }
 }

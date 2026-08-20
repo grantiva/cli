@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.0 — 2026-08-20
+
+### Added
+- `grantiva simulator ensure` and `grantiva simulator delete`, with matching `grantiva_sim_ensure` and `grantiva_sim_delete` MCP operations. Named provisioning is idempotent, rejects incompatible or ambiguous names, waits for boot readiness, and reports point/pixel display geometry.
+
 ## v1.5.5 — 2026-08-20
 
 ### Added

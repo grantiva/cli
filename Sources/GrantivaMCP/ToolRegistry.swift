@@ -79,6 +79,10 @@ struct ToolRegistry: Sendable {
             result = try await SimTools.list(simManager: simulatorManager, arguments: arguments)
         case "grantiva_sim_boot":
             result = try await SimTools.boot(simManager: simulatorManager, arguments: arguments)
+        case "grantiva_sim_ensure":
+            result = try await SimTools.ensure(simManager: simulatorManager, arguments: arguments)
+        case "grantiva_sim_delete":
+            result = try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
 
         // Context
         case "grantiva_context":

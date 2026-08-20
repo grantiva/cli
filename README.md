@@ -255,6 +255,8 @@ grantiva ci run             Run full CI pipeline (build -> capture -> diff -> up
 grantiva diff capture       Capture screenshots for all configured screens
 grantiva diff compare       Diff captures against baselines
 grantiva diff approve       Promote captures to baselines
+grantiva simulator ensure   Create or reuse an exact named simulator
+grantiva simulator delete   Explicitly delete a named simulator
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
