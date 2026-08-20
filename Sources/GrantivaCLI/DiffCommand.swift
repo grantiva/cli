@@ -87,7 +87,7 @@ struct DiffCommand: AsyncParsableCommand {
                         workspace: resolved.workspace,
                         project: resolved.project,
                         destination: destination,
-                        buildSettings: resolved.buildSettings
+                        buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
                     )
 
                     guard buildResult.success else {
@@ -246,7 +246,7 @@ struct DiffCommand: AsyncParsableCommand {
                             workspace: resolved.workspace,
                             project: resolved.project,
                             destination: destination,
-                            buildSettings: resolved.buildSettings
+                            buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
                         )
 
                         guard buildResult.success else {

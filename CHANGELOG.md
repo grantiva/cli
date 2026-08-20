@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.5 — 2026-08-20
+
+### Added
+- `--derived-data-path <path>` isolates Xcode products and intermediates for `build build`, `build install`, `run`, `ci run`, and visual-diff build workflows.
+
+### Fixed
+- Product-path discovery now uses the same build settings as the preceding build, ensuring Grantiva installs the `.app` from the requested DerivedData directory.
+- A command-line DerivedData path overrides a conflicting `-derivedDataPath` in `grantiva.yml` while preserving all other `build_settings`.
+
 ## v1.5.4 — 2026-08-20
 
 ### Added

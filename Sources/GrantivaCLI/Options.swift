@@ -14,11 +14,38 @@ struct BuildOptions: ParsableArguments {
     @Flag(name: .long, help: "Skip building and installing — assume the app is already on the simulator.")
     var noBuild: Bool = false
 
+    @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
+    var derivedDataPath: String?
+
     /// True when the xcodebuild step should be skipped.
     var shouldSkipBuild: Bool { noBuild || appFile != nil }
 
     /// True when the install/launch step should be skipped (app already on sim).
     var shouldSkipInstall: Bool { noBuild }
+
+    /// Merges command-line build options with project configuration. An
+    /// explicit CLI DerivedData path takes precedence over build_settings.
+    func xcodeBuildSettings(merging configured: [String]) -> [String] {
+        guard let derivedDataPath else { return configured }
+
+        var settings: [String] = []
+        var index = 0
+        while index < configured.count {
+            let setting = configured[index]
+            if setting == "-derivedDataPath" {
+                index += min(2, configured.count - index)
+                continue
+            }
+            if setting.hasPrefix("-derivedDataPath=") {
+                index += 1
+                continue
+            }
+            settings.append(setting)
+            index += 1
+        }
+        settings += ["-derivedDataPath", derivedDataPath]
+        return settings
+    }
 
     /// Resolves the product path for the app binary.
     /// - When `--app-file` is set: resolves the binary (extracting IPA if needed), validates it.

@@ -183,6 +183,7 @@ install_result="$(grantiva build install \
   --scheme "My App" \
   --simulator "$UDID" \
   --bundle-id com.example.myapp \
+  --derived-data-path "/private/tmp/grantiva-$UDID/Derived Data" \
   --no-launch \
   --json)"
 
@@ -198,6 +199,10 @@ grantiva run \
 
 The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
 `dataContainerPath`, and the selected simulator's `name` and `udid`.
+`--derived-data-path` isolates Xcode products and intermediates for the run and
+supports absolute or relative paths, including paths containing spaces. It is
+available on every Grantiva command that builds the app and overrides a
+`-derivedDataPath` value in `build_settings` when both are supplied.
 `--no-build` assumes the app is already installed; the flow launches it with
 `launchApp` after fixture preparation.
 

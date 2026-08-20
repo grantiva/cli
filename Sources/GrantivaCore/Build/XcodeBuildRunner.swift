@@ -27,7 +27,8 @@ public struct XcodeBuildRunner: Sendable {
             let duration = Date().timeIntervalSince(start)
             let warnings = output.components(separatedBy: "\n").filter { $0.contains("warning:") }
             let productPath = try? await resolveProductPath(
-                scheme: scheme, workspace: workspace, project: project, destination: destination
+                scheme: scheme, workspace: workspace, project: project,
+                destination: destination, buildSettings: buildSettings
             )
             return BuildResult(
                 success: true, scheme: scheme, destination: destination,
@@ -109,7 +110,8 @@ public struct XcodeBuildRunner: Sendable {
     }
 
     public func resolveProductPath(
-        scheme: String, workspace: String?, project: String?, destination: String
+        scheme: String, workspace: String?, project: String?, destination: String,
+        buildSettings: [String] = []
     ) async throws -> String {
         var args = ["xcodebuild", "-scheme", scheme]
         if let workspace {
@@ -118,6 +120,7 @@ public struct XcodeBuildRunner: Sendable {
             args += ["-project", project]
         }
         args += ["-destination", "\(destination)", "-showBuildSettings"]
+        args += buildSettings
         let command = args.map { $0.contains(" ") ? "\"\($0)\"" : $0 }.joined(separator: " ")
         let output = try await shell(command)
 
