@@ -76,7 +76,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
 struct InstallCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "install",
-        abstract: "Build, install, and launch the app on a simulator."
+        abstract: "Build and install the app on a simulator, then optionally launch it."
     )
 
     @OptionGroup var options: GlobalOptions
@@ -90,6 +90,9 @@ struct InstallCommand: AsyncParsableCommand {
 
     @Option(name: .long, help: "Bundle identifier")
     var bundleId: String?
+
+    @Flag(name: .long, help: "Install the app without launching it.")
+    var noLaunch: Bool = false
 
     func run() async throws {
         let config = try? GrantivaConfig.load()
@@ -161,27 +164,67 @@ struct InstallCommand: AsyncParsableCommand {
             )
         }
 
+        let runner = XcodeBuildRunner()
+
         if let productPath {
             if !options.json {
                 print("[grantiva] Installing \(bid)...")
             }
-            try await XcodeBuildRunner().install(bundleId: bid, productPath: productPath, udid: device.udid)
+            try await runner.install(bundleId: bid, productPath: productPath, udid: device.udid)
         }
 
-        if !options.json {
-            print("[grantiva] Launching \(bid)...")
+        let dataContainerPath = options.json
+            ? try await runner.dataContainerPath(bundleId: bid, udid: device.udid)
+            : nil
+
+        let status = try await completeInstall {
+            if !options.json {
+                print("[grantiva] Launching \(bid)...")
+            }
+            try await runner.launch(bundleId: bid, udid: device.udid)
         }
-        try await XcodeBuildRunner().launch(bundleId: bid, udid: device.udid)
 
         if options.json {
-            print(try JSONOutput.string([
-                "status": "launched",
-                "bundle_id": bid,
-                "simulator": device.name,
-                "udid": device.udid,
-            ]))
+            let result = InstallResult(
+                status: status,
+                scheme: resolved.scheme,
+                bundleId: bid,
+                simulator: .init(name: device.name, udid: device.udid),
+                appPath: productPath,
+                dataContainerPath: dataContainerPath
+            )
+            print(try JSONOutput.string(result))
+        } else if noLaunch {
+            print("[grantiva] Done — \(bid) installed on \(device.name) (not launched)")
         } else {
             print("[grantiva] Done — \(bid) running on \(device.name)")
         }
     }
+
+    func completeInstall(
+        launch: () async throws -> Void
+    ) async throws -> InstallResult.Status {
+        guard !noLaunch else { return .installed }
+        try await launch()
+        return .launched
+    }
+}
+
+struct InstallResult: Codable, Equatable {
+    enum Status: String, Codable {
+        case installed
+        case launched
+    }
+
+    struct Simulator: Codable, Equatable {
+        let name: String
+        let udid: String
+    }
+
+    let status: Status
+    let scheme: String?
+    let bundleId: String
+    let simulator: Simulator
+    let appPath: String?
+    let dataContainerPath: String?
 }

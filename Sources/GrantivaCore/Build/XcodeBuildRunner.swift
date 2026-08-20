@@ -57,6 +57,11 @@ public struct XcodeBuildRunner: Sendable {
         _ = try await shell("xcrun simctl launch \(udid) \(bundleId)")
     }
 
+    public func dataContainerPath(bundleId: String, udid: String) async throws -> String {
+        try await shell("xcrun simctl get_app_container \(udid) \(bundleId) data")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     public func terminate(bundleId: String, udid: String) async throws {
         _ = try await shell("xcrun simctl terminate \(udid) \(bundleId)")
     }
