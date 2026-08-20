@@ -49,8 +49,7 @@ struct RecordCommand: AsyncParsableCommand {
         recorder.standardError = stderr
         try recorder.run()
         try await Task.sleep(for: .seconds(duration))
-        if recorder.isRunning { recorder.terminate() }
-        recorder.waitUntilExit()
+        RecorderLifecycle.stop(recorder)
 
         guard FileManager.default.fileExists(atPath: output) else {
             let message = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
@@ -120,6 +119,18 @@ struct RecordCommand: AsyncParsableCommand {
                 path: path.path
             )
         }
+    }
+}
+
+/// Stops simctl recordVideo using the same interrupt semantics as Control-C.
+///
+/// simctl writes to a staging movie while recording and finalizes/renames it
+/// when it receives SIGINT. SIGTERM can leave the requested output empty while
+/// the staging file remains behind, especially for short captures.
+enum RecorderLifecycle {
+    static func stop(_ process: Process) {
+        if process.isRunning { process.interrupt() }
+        process.waitUntilExit()
     }
 }
 
