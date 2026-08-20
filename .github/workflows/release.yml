@@ -15,8 +15,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify tag matches CLI version
+        run: |
+          VERSION=$(sed -n 's/public let grantivaVersion = "\([^"]*\)"/\1/p' Sources/GrantivaCore/Version.swift)
+          test "$VERSION" = "${{ github.ref_name }}" || {
+            echo "Tag ${{ github.ref_name }} does not match grantivaVersion $VERSION"
+            exit 1
+          }
+
       - name: Build universal binary
-        run: swift build -c release --arch arm64 --arch x86_64 || true
+        run: swift build -c release --arch arm64 --arch x86_64
 
       - name: Verify and package binary
         run: |
