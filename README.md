@@ -49,12 +49,13 @@ grantiva ci run
 
 1. **Boot** — boots the configured simulator
 2. **Build** — builds the app with `xcodebuild` (or skip with `--app-file` / `--no-build`)
-3. **Launch** — installs and launches the app
-4. **Navigate** — taps and swipes to each screen defined in `grantiva.yml`
-5. **Capture** — screenshots each screen via GrantivaAgent
-6. **Diff** — compares against baselines (pixel + CIE76 perceptual color distance)
-7. **Upload** — sends results to [Grantiva](https://grantiva.io)
-8. **Check Run** — posts a GitHub Check Run with before/after diffs
+3. **Install** — installs the app on the selected simulator
+4. **Launch** — the flow controls first launch via `launchApp`
+5. **Navigate** — taps and swipes to each screen defined in `grantiva.yml`
+6. **Capture** — screenshots each screen via GrantivaAgent
+7. **Diff** — compares against baselines (pixel + CIE76 perceptual color distance)
+8. **Upload** — sends results to [Grantiva](https://grantiva.io)
+9. **Check Run** — posts a GitHub Check Run with before/after diffs
 
 All UI automation runs through **GrantivaAgent** — a WebDriverAgent embedded in the CLI. No Accessibility permission needed, no Appium server, no Maestro install. Works headless on CI out of the box.
 
@@ -172,6 +173,34 @@ grantiva ci run --no-build
 
 When `--app-file` is provided, `scheme` is not required in `grantiva.yml` — the bundle ID is derived from the binary's `Info.plist`. The binary is validated to be a simulator build before install.
 
+### Prepare fixtures before first launch
+
+Use `grantiva build install --no-launch` when a test harness needs to seed the
+installed app's data container or defaults before the application starts:
+
+```bash
+install_result="$(grantiva build install \
+  --scheme "My App" \
+  --simulator "$UDID" \
+  --bundle-id com.example.myapp \
+  --no-launch \
+  --json)"
+
+data_container="$(jq -r '.dataContainerPath' <<<"$install_result")"
+# Seed files or defaults beneath "$data_container" here.
+
+grantiva run \
+  --no-build \
+  --flow .grantiva/flows/seeded-state.yaml \
+  --simulator "$UDID" \
+  --bundle-id com.example.myapp
+```
+
+The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
+`dataContainerPath`, and the selected simulator's `name` and `udid`.
+`--no-build` assumes the app is already installed; the flow launches it with
+`launchApp` after fixture preparation.
+
 This enables split build/test workflows in CI:
 
 ```yaml
@@ -216,7 +245,7 @@ Results upload to the [Grantiva](https://grantiva.io) dashboard and post as GitH
 grantiva run                Run Maestro flows against a simulator (supports --keep-alive, --logs, --flow)
 grantiva hierarchy          Dump the live UI hierarchy of a keep-alive session
 grantiva build              Build the app via xcodebuild for a simulator
-grantiva install            Build, install, and launch the app
+grantiva build install      Build and install the app; use --no-launch to stop before launch
 grantiva ci run             Run full CI pipeline (build -> capture -> diff -> upload)
 grantiva diff capture       Capture screenshots for all configured screens
 grantiva diff compare       Diff captures against baselines

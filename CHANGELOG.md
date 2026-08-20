@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.5.4 — 2026-08-20
+
+### Added
+- `grantiva build install --no-launch` builds and installs an app without launching it, enabling deterministic fixture and defaults seeding before first launch.
+- `grantiva build install --json` now reports the scheme, bundle ID, app path, simulator name and UDID, and installed data-container path.
+
+### Changed
+- The existing `grantiva build install` behavior remains launch-by-default when `--no-launch` is omitted.
+
 ## v1.2.0 — 2026-04-22
 
 ### Added
