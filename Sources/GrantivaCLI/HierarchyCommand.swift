@@ -33,6 +33,9 @@ struct HierarchyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Simulator UDID to target (default: newest keep-alive session)")
     var udid: String?
 
+    @Option(name: .long, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
+    var timeout: Double = 60
+
     @Option(name: .long, help: "Output format: xml or json")
     var format: OutputFormat = .xml
 
@@ -52,7 +55,10 @@ struct HierarchyCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
         }
 
-        let request = URLRequest(url: url, timeoutInterval: 10)
+        guard timeout > 0 else {
+            throw GrantivaError.invalidArgument("--timeout must be greater than zero")
+        }
+        let request = URLRequest(url: url, timeoutInterval: timeout)
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let http = response as? HTTPURLResponse else {

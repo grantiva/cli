@@ -116,8 +116,14 @@ struct DiffCommand: AsyncParsableCommand {
                     print("Capturing \(resolved.screens.count) screen(s)...")
                 }
             } else {
-                // --no-build: just use the currently booted simulator
-                device = try await simulatorManager.bootedDevice()
+                // --no-build still honors an explicit target. This matters on
+                // hosts where an iPad is already booted while the evidence
+                // command asks for an iPhone by name/UDID.
+                device = if let simulator {
+                    try await simulatorManager.boot(nameOrUDID: simulator)
+                } else {
+                    try await simulatorManager.bootedDevice()
+                }
             }
 
             guard let bid = resolved.bundleId else {
