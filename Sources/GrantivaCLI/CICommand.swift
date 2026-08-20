@@ -136,7 +136,7 @@ struct CICommand: AsyncParsableCommand {
                         workspace: resolved.workspace,
                         project: resolved.project,
                         destination: destination,
-                        buildSettings: resolved.buildSettings
+                        buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
                     )
                     rlog("Build finished: success=\(buildResult.success) duration=\(String(format: "%.1fs", buildResult.duration))")
 

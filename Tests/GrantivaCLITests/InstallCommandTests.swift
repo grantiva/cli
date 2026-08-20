@@ -32,6 +32,47 @@ final class InstallCommandTests: XCTestCase {
         XCTAssertTrue(command.noLaunch)
     }
 
+    func testDerivedDataPathParsesWithSpaces() throws {
+        let path = "/private/tmp/Grantiva Runs/Tien Len DerivedData"
+        let command = try InstallCommand.parse(["--derived-data-path", path])
+
+        XCTAssertEqual(command.buildOptions.derivedDataPath, path)
+        XCTAssertEqual(
+            command.buildOptions.xcodeBuildSettings(merging: ["CODE_SIGNING_ALLOWED=NO"]),
+            ["CODE_SIGNING_ALLOWED=NO", "-derivedDataPath", path]
+        )
+    }
+
+    func testDerivedDataPathOverridesConfiguredPair() throws {
+        let command = try InstallCommand.parse([
+            "--derived-data-path", "/tmp/run-local-derived-data",
+        ])
+
+        XCTAssertEqual(
+            command.buildOptions.xcodeBuildSettings(merging: [
+                "-derivedDataPath", "/tmp/configured-derived-data",
+                "CODE_SIGNING_ALLOWED=NO",
+            ]),
+            [
+                "CODE_SIGNING_ALLOWED=NO",
+                "-derivedDataPath", "/tmp/run-local-derived-data",
+            ]
+        )
+    }
+
+    func testDerivedDataPathOverridesConfiguredEqualsForm() throws {
+        let command = try InstallCommand.parse([
+            "--derived-data-path", "/tmp/run-local-derived-data",
+        ])
+
+        XCTAssertEqual(
+            command.buildOptions.xcodeBuildSettings(merging: [
+                "-derivedDataPath=/tmp/configured-derived-data",
+            ]),
+            ["-derivedDataPath", "/tmp/run-local-derived-data"]
+        )
+    }
+
     func testInstallResultJSONContainsFixturePreparationFields() throws {
         let result = InstallResult(
             status: .installed,

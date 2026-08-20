@@ -28,7 +28,7 @@ No environment variables or external services are needed to build. Dependencies
 (swift-argument-parser, swift-log, Yams, modelcontextprotocol/swift-sdk) are
 resolved from `Package.resolved`.
 
-**Verified:** `swift build` completes clean; `./.build/debug/grantiva --version` → `1.5.4`.
+**Verified:** `swift build` completes clean; `./.build/debug/grantiva --version` → `1.5.5`.
 
 ## Test
 

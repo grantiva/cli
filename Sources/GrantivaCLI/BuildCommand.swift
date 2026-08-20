@@ -56,7 +56,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             workspace: resolved.workspace,
             project: resolved.project,
             destination: destination,
-            buildSettings: resolved.buildSettings
+            buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
         )
 
         if options.json {
@@ -141,7 +141,7 @@ struct InstallCommand: AsyncParsableCommand {
                 workspace: resolved.workspace,
                 project: resolved.project,
                 destination: destination,
-                buildSettings: resolved.buildSettings
+                buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
             )
 
             if !options.json {
