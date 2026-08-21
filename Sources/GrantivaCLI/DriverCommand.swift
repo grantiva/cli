@@ -118,6 +118,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let simName = simulator ?? config?.simulator ?? "iPhone 16"
         let simManager = SimulatorManager.live
         let device = try await simManager.boot(nameOrUDID: simName)
+        let simulatorLease = try SimulatorLease.acquire(udid: device.udid)
+        defer { simulatorLease.release() }
 
         if !options.json {
             print("Starting runner...")
@@ -540,4 +542,3 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
         }
     }
 }
-

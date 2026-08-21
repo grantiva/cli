@@ -24,6 +24,12 @@ public enum RunnerSession {
         keepAlive: Bool = false,
         snapshot: String = "failure"
     ) async throws -> [ScreenCapture] {
+        // A runner invocation owns WDA on its target simulator until the
+        // subprocess exits. Refuse overlapping ownership on the same UDID so a
+        // concurrent invocation cannot replace or tear down this session.
+        let simulatorLease = try SimulatorLease.acquire(udid: udid)
+        defer { simulatorLease.release() }
+
         // Ensure runner is extracted
         try await runner.ensureAvailable()
 
@@ -234,6 +240,9 @@ public enum RunnerSession {
         timeoutSeconds: UInt64 = 600
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
+
+        let simulatorLease = try SimulatorLease.acquire(udid: udid)
+        defer { simulatorLease.release() }
 
         // Resolve relative paths against the working directory where the CLI was invoked,
         // not the runner binary's temp directory.
