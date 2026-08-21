@@ -1,8 +1,36 @@
 import Foundation
+import CoreMedia
 import XCTest
 @testable import GrantivaCLI
 
 final class RecordCommandTests: XCTestCase {
+    func testFrameTimestampNormalizationSortsAndDeduplicatesRequests() throws {
+        XCTAssertEqual(
+            try RecordCommand.normalizedFrameMilliseconds(from: "600, 0,150,600,300"),
+            [0, 150, 300, 600]
+        )
+    }
+
+    func testFrameTimestampNormalizationRejectsNegativeTimestamp() {
+        XCTAssertThrowsError(try RecordCommand.normalizedFrameMilliseconds(from: "0,-1")) { error in
+            XCTAssertEqual(error.localizedDescription, "Invalid argument: --frames-at must contain non-negative integer milliseconds")
+        }
+    }
+
+    func testFrameRequestValidationRejectsTimestampPastRecordingDuration() {
+        XCTAssertThrowsError(
+            try RecordCommand.validateFrameRequests(
+                [0, 150, 300],
+                against: CMTime(value: 299, timescale: 1_000)
+            )
+        ) { error in
+            XCTAssertEqual(
+                error.localizedDescription,
+                "Grantiva recording ended at 299ms before requested frame 300ms exited with code 1"
+            )
+        }
+    }
+
     func testWaitForStartRecognizesSimulatorStagingMovie() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         let recording = directory.appendingPathComponent("capture.mov")

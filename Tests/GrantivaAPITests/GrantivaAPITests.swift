@@ -77,6 +77,14 @@ final class GrantivaAPITests: XCTestCase {
         XCTAssertTrue(url.absoluteString.contains("550e8400"))
     }
 
+    func testRunCompleteEndpoint() {
+        let endpoint = RunEndpoints.complete(project: "owner/repo", runId: "550e8400-e29b-41d4-a716-446655440000")
+        XCTAssertEqual(endpoint.method, .patch)
+        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        XCTAssertTrue(url.absoluteString.contains("owner%2Frepo"))
+        XCTAssertTrue(url.absoluteString.contains("550e8400"))
+    }
+
     // MARK: - Model Serialization
 
     func testPromoteBaselinesRequestEncoding() throws {

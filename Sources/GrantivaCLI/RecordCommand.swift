@@ -88,14 +88,7 @@ struct RecordCommand: AsyncParsableCommand {
     }
 
     private func parseTimestamps() throws -> [Int] {
-        guard let framesAt, !framesAt.isEmpty else { return [] }
-        let values = try framesAt.split(separator: ",").map { part -> Int in
-            guard let value = Int(part.trimmingCharacters(in: .whitespaces)), value >= 0 else {
-                throw GrantivaError.invalidArgument("--frames-at must contain non-negative integer milliseconds")
-            }
-            return value
-        }
-        return Array(Set(values)).sorted()
+        try Self.normalizedFrameMilliseconds(from: framesAt)
     }
 
     private func extractFrames(
@@ -109,14 +102,7 @@ struct RecordCommand: AsyncParsableCommand {
         guard duration.isNumeric else {
             throw GrantivaError.commandFailed("Grantiva recording has no readable duration", 1)
         }
-        let longestRequested = CMTime(value: CMTimeValue(requestedMilliseconds.last!), timescale: 1_000)
-        guard CMTimeCompare(duration, longestRequested) >= 0 else {
-            let recordedMilliseconds = Int((CMTimeGetSeconds(duration) * 1_000).rounded(.down))
-            throw GrantivaError.commandFailed(
-                "Grantiva recording ended at \(recordedMilliseconds)ms before requested frame \(requestedMilliseconds.last!)ms",
-                1
-            )
-        }
+        try Self.validateFrameRequests(requestedMilliseconds, against: duration)
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         generator.requestedTimeToleranceBefore = .zero
@@ -125,10 +111,11 @@ struct RecordCommand: AsyncParsableCommand {
             .appendingPathComponent(video.deletingPathExtension().lastPathComponent + "-frames")
         try FileManager.default.createDirectory(at: frameDirectory, withIntermediateDirectories: true)
 
-        let frames = try requestedMilliseconds.map { requested in
+        var frames: [RecordFrame] = []
+        frames.reserveCapacity(requestedMilliseconds.count)
+        for requested in requestedMilliseconds {
             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
-            var actualTime = CMTime.zero
-            let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+            let (image, actualTime) = try await generator.image(at: requestedTime)
             let path = frameDirectory.appendingPathComponent(String(format: "%06dms.png", requested))
             guard let destination = CGImageDestinationCreateWithURL(path as CFURL, UTType.png.identifier as CFString, 1, nil) else {
                 throw GrantivaError.commandFailed("Could not create PNG at \(path.path)", 1)
@@ -137,17 +124,40 @@ struct RecordCommand: AsyncParsableCommand {
             guard CGImageDestinationFinalize(destination) else {
                 throw GrantivaError.commandFailed("Could not write PNG at \(path.path)", 1)
             }
-            return RecordFrame(
+            frames.append(RecordFrame(
                 requestedMilliseconds: requested,
                 actualMilliseconds: Int((CMTimeGetSeconds(actualTime) * 1_000).rounded()),
                 path: path.path
-            )
+            ))
         }
         try ScreenshotNormalizer.normalize(
             captures: frames.map { .init(screenName: "\($0.requestedMilliseconds)ms", path: $0.path, sizeBytes: 0) },
             expectedPixels: expectedPixels
         )
         return frames
+    }
+
+    static func normalizedFrameMilliseconds(from framesAt: String?) throws -> [Int] {
+        guard let framesAt, !framesAt.isEmpty else { return [] }
+        let values = try framesAt.split(separator: ",").map { part -> Int in
+            guard let value = Int(part.trimmingCharacters(in: .whitespaces)), value >= 0 else {
+                throw GrantivaError.invalidArgument("--frames-at must contain non-negative integer milliseconds")
+            }
+            return value
+        }
+        return Array(Set(values)).sorted()
+    }
+
+    static func validateFrameRequests(_ requestedMilliseconds: [Int], against duration: CMTime) throws {
+        guard let lastRequested = requestedMilliseconds.last else { return }
+        let longestRequested = CMTime(value: CMTimeValue(lastRequested), timescale: 1_000)
+        guard CMTimeCompare(duration, longestRequested) >= 0 else {
+            let recordedMilliseconds = Int((CMTimeGetSeconds(duration) * 1_000).rounded(.down))
+            throw GrantivaError.commandFailed(
+                "Grantiva recording ended at \(recordedMilliseconds)ms before requested frame \(lastRequested)ms",
+                1
+            )
+        }
     }
 }
 

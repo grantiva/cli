@@ -382,7 +382,7 @@ struct CICommand: AsyncParsableCommand {
                     duration: duration,
                     screens: []
                 )
-                try? await client.completeRun(project, runId, failUpload)
+                _ = try? await client.completeRun(project, runId, failUpload)
                 throw error
             }
         }
