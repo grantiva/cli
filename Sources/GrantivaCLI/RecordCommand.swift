@@ -48,9 +48,10 @@ struct RecordCommand: AsyncParsableCommand {
         let stderr = Pipe()
         recorder.standardError = stderr
         try recorder.run()
-        try await RecorderLifecycle.waitForStart(of: outputURL)
-        try await Task.sleep(for: .seconds(duration))
-        RecorderLifecycle.stop(recorder)
+        try await RecorderLifecycle.withCleanup(for: recorder) {
+            try await RecorderLifecycle.waitForStart(of: outputURL)
+            try await Task.sleep(for: .seconds(duration))
+        }
 
         guard FileManager.default.fileExists(atPath: output) else {
             let message = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
@@ -156,15 +157,24 @@ struct RecordCommand: AsyncParsableCommand {
 /// when it receives SIGINT. SIGTERM can leave the requested output empty while
 /// the staging file remains behind, especially for short captures.
 enum RecorderLifecycle {
-    static func waitForStart(of recordingURL: URL) async throws {
+    static func withCleanup<T>(for process: Process, operation: () async throws -> T) async rethrows -> T {
+        defer { stop(process) }
+        return try await operation()
+    }
+
+    static func waitForStart(
+        of recordingURL: URL,
+        attempts: Int = 100,
+        pollInterval: Duration = .milliseconds(100)
+    ) async throws {
         let directory = recordingURL.deletingLastPathComponent()
         let stagingPrefix = recordingURL.lastPathComponent + ".sb-"
-        for _ in 0..<100 {
+        for _ in 0..<attempts {
             let entries = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
             if entries.contains(where: { $0.lastPathComponent.hasPrefix(stagingPrefix) }) {
                 return
             }
-            try await Task.sleep(for: .milliseconds(100))
+            try await Task.sleep(for: pollInterval)
         }
         throw GrantivaError.commandFailed("Timed out waiting for simulator recording to start", 1)
     }
