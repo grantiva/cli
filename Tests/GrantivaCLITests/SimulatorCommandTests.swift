@@ -23,6 +23,17 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertTrue(command.options.json)
     }
 
+    func testSessionsSupportsJSON() throws {
+        let command = try SimulatorCommand.Sessions.parse(["--json"])
+        XCTAssertTrue(command.options.json)
+    }
+
+    func testTeardownRequiresSessionIdentifier() throws {
+        let command = try SimulatorCommand.Teardown.parse(["--session-id", "APP-652", "--json"])
+        XCTAssertEqual(command.sessionId, "APP-652")
+        XCTAssertTrue(command.options.json)
+    }
+
     func testProvisionReportContainsExactDisplayGeometry() throws {
         let report = SimulatorProvisionResult(
             name: "APP-302 iPhone 393x852", udid: "EXACT-UDID", deviceType: "iPhone 15 Pro",

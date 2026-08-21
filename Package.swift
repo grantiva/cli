@@ -21,6 +21,7 @@ let package = Package(
             dependencies: [
                 "GrantivaCore", "GrantivaAPI", "GrantivaMCP",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
+                .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .target(
