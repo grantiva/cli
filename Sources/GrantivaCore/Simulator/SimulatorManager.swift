@@ -27,8 +27,20 @@ public struct SimulatorManager: Sendable, Decodable {
     public func boot(nameOrUDID: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: nameOrUDID)
         if !device.isBooted {
-            _ = try await shell("xcrun simctl boot \(device.udid)")
-            _ = try await shell("xcrun simctl bootstatus \(device.udid) -b")
+            let capacity = SimulatorCapacity.live
+            _ = try await capacity.reserve(device: device, devices: { try await listDevices() }) { sessions, elapsed in
+                guard Int(elapsed) % 10 == 0 else { return }
+                let owners = sessions.map { "\($0.name) [\($0.sessionId)]" }.joined(separator: ", ")
+                GrantivaLog.logger.info("Waiting for simulator capacity (\(sessions.count)/\(capacity.maximum)): \(owners)")
+            }
+            do {
+                _ = try await shell("xcrun simctl boot \(device.udid)")
+                _ = try await shell("xcrun simctl bootstatus \(device.udid) -b")
+                try capacity.activate(udid: device.udid)
+            } catch {
+                try? capacity.releaseReservation(udid: device.udid)
+                throw error
+            }
         }
         return try await exactDevice(nameOrUDID: device.udid)
     }
@@ -76,10 +88,7 @@ public struct SimulatorManager: Sendable, Decodable {
             created = true
         }
         if shouldBoot {
-            if !(try await exactDevice(nameOrUDID: udid)).isBooted {
-                _ = try await shell("xcrun simctl boot \(shellQuoted(udid))")
-            }
-            _ = try await shell("xcrun simctl bootstatus \(shellQuoted(udid)) -b")
+            _ = try await boot(nameOrUDID: udid)
         }
         let device = try await exactDevice(nameOrUDID: udid)
         let geometry = shouldBoot ? try await displayGeometry(udid: udid) : nil
@@ -94,7 +103,25 @@ public struct SimulatorManager: Sendable, Decodable {
     public func delete(name: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: name)
         _ = try await shell("xcrun simctl delete \(shellQuoted(device.udid))")
+        try SimulatorCapacity.live.remove(udid: device.udid)
         return device
+    }
+
+    public func managedSessions() async throws -> [ManagedSimulatorSession] {
+        try SimulatorCapacity.live.sessions(devices: try await listDevices())
+    }
+
+    public func teardown(sessionId: String) async throws -> [ManagedSimulatorSession] {
+        let capacity = SimulatorCapacity.live
+        let devices = try await listDevices()
+        let records = try capacity.sessions(sessionId: sessionId, devices: devices)
+        for record in records {
+            if devices.first(where: { $0.udid == record.udid })?.isBooted == true {
+                _ = try await shell("xcrun simctl shutdown \(shellQuoted(record.udid))")
+            }
+            try capacity.remove(udid: record.udid)
+        }
+        return records
     }
 
     private func simulatorCatalog() async throws -> SimctlCatalog {
