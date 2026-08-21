@@ -102,7 +102,7 @@ public struct SimulatorManager: Sendable, Decodable {
         return try JSONDecoder().decode(SimctlCatalog.self, from: data)
     }
 
-    private func displayGeometry(udid: String) async throws -> (points: [Int], pixels: [Int], scale: Double) {
+    public func displayGeometry(udid: String) async throws -> SimulatorDisplayGeometry {
         func value(_ key: String) async throws -> Double {
             guard let number = Double(try await shell("xcrun simctl getenv \(shellQuoted(udid)) \(key)")) else { throw GrantivaError.invalidArgument("Could not read simulator display metric \(key)") }
             return number
@@ -113,11 +113,11 @@ public struct SimulatorManager: Sendable, Decodable {
         return Self.geometry(pixelWidth: pixelWidth, pixelHeight: pixelHeight, scale: scale)
     }
 
-    static func geometry(pixelWidth: Double, pixelHeight: Double, scale: Double) -> (points: [Int], pixels: [Int], scale: Double) {
-        (
-            [Int((pixelWidth / scale).rounded()), Int((pixelHeight / scale).rounded())],
-            [Int(pixelWidth.rounded()), Int(pixelHeight.rounded())],
-            scale
+    static func geometry(pixelWidth: Double, pixelHeight: Double, scale: Double) -> SimulatorDisplayGeometry {
+        SimulatorDisplayGeometry(
+            points: [Int((pixelWidth / scale).rounded()), Int((pixelHeight / scale).rounded())],
+            pixels: [Int(pixelWidth.rounded()), Int(pixelHeight.rounded())],
+            scale: scale
         )
     }
 }

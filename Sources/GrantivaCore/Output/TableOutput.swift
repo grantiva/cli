@@ -49,6 +49,10 @@ public struct TableFormatter: Sendable {
         var lines: [String] = []
         lines.append("Captured \(result.screens.count) screen\(result.screens.count == 1 ? "" : "s") in \(String(format: "%.1f", result.duration))s")
         lines.append("  Directory: \(result.directory)")
+        if let simulator = result.simulator {
+            lines.append("  Simulator: \(simulator.name) (\(simulator.udid))")
+            lines.append("  Display: \(simulator.pointDimensions.width)x\(simulator.pointDimensions.height) points, \(simulator.pixelDimensions.width)x\(simulator.pixelDimensions.height) pixels @\(simulator.displayScale)x")
+        }
         for screen in result.screens {
             let kb = String(format: "%.1f", Double(screen.sizeBytes) / 1024.0)
             lines.append("  • \(screen.screenName) (\(kb) KB)")

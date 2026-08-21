@@ -130,6 +130,9 @@ struct DiffCommand: AsyncParsableCommand {
                 throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
             }
 
+            let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
+            let target = CaptureSimulatorTarget(name: device.name, udid: device.udid, geometry: geometry)
+
             if !options.json {
                 print("Capturing \(resolved.screens.count) screen(s)...")
             }
@@ -140,6 +143,7 @@ struct DiffCommand: AsyncParsableCommand {
                 udid: device.udid,
                 outputDir: outputDir
             )
+            try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: target.pixelDimensions)
 
             // Print step-by-step results
             if !options.json {
@@ -159,7 +163,8 @@ struct DiffCommand: AsyncParsableCommand {
             let result = CaptureResult(
                 screens: captures,
                 directory: outputDir,
-                duration: Date().timeIntervalSince(start)
+                duration: Date().timeIntervalSince(start),
+                simulator: target
             )
 
             if options.json {

@@ -20,6 +20,18 @@ public struct SimulatorDevice: Sendable, Codable, Equatable {
     }
 }
 
+public struct SimulatorDisplayGeometry: Sendable, Codable, Equatable {
+    public let points: [Int]
+    public let pixels: [Int]
+    public let scale: Double
+
+    public init(points: [Int], pixels: [Int], scale: Double) {
+        self.points = points
+        self.pixels = pixels
+        self.scale = scale
+    }
+}
+
 public struct SimulatorProvisionResult: Sendable, Codable, Equatable {
     public struct Dimensions: Sendable, Codable, Equatable {
         public let width: Int

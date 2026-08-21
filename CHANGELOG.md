@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.2 — 2026-08-20
+
+### Fixed
+- `diff capture` now repairs the runner's exact one-column trailing crop when the captured height matches the selected simulator target. Capture output reports the selected simulator and its point/pixel dimensions.
+
 ## v1.6.1 — 2026-08-20
 
 ### Fixed

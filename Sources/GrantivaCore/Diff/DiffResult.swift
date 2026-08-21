@@ -51,11 +51,36 @@ public struct CaptureResult: Sendable, Codable {
     public let screens: [ScreenCapture]
     public let directory: String
     public let duration: Double
+    public let simulator: CaptureSimulatorTarget?
 
-    public init(screens: [ScreenCapture], directory: String, duration: Double) {
+    public init(screens: [ScreenCapture], directory: String, duration: Double, simulator: CaptureSimulatorTarget? = nil) {
         self.screens = screens
         self.directory = directory
         self.duration = duration
+        self.simulator = simulator
+    }
+}
+
+public struct CaptureSimulatorTarget: Sendable, Codable, Equatable {
+    public let name: String
+    public let udid: String
+    public let pointDimensions: SimulatorProvisionResult.Dimensions
+    public let pixelDimensions: SimulatorProvisionResult.Dimensions
+    public let displayScale: Double
+
+    public init(name: String, udid: String, geometry: SimulatorDisplayGeometry) {
+        self.name = name
+        self.udid = udid
+        self.pointDimensions = .init(width: geometry.points[0], height: geometry.points[1])
+        self.pixelDimensions = .init(width: geometry.pixels[0], height: geometry.pixels[1])
+        self.displayScale = geometry.scale
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case name, udid
+        case pointDimensions = "point_dimensions"
+        case pixelDimensions = "pixel_dimensions"
+        case displayScale = "display_scale"
     }
 }
 
