@@ -48,6 +48,7 @@ struct RecordCommand: AsyncParsableCommand {
         let stderr = Pipe()
         recorder.standardError = stderr
         try recorder.run()
+        try await RecorderLifecycle.waitForStart(of: outputURL)
         try await Task.sleep(for: .seconds(duration))
         RecorderLifecycle.stop(recorder)
 
@@ -57,7 +58,13 @@ struct RecordCommand: AsyncParsableCommand {
         }
 
         let requested = try parseTimestamps()
-        let frames = try extractFrames(from: outputURL, requestedMilliseconds: requested)
+        let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
+        let target = CaptureSimulatorTarget(name: device.name, udid: device.udid, geometry: geometry)
+        let frames = try await extractFrames(
+            from: outputURL,
+            requestedMilliseconds: requested,
+            expectedPixels: target.pixelDimensions
+        )
         let report = RecordReport(
             simulator: device.name,
             udid: device.udid,
@@ -90,9 +97,25 @@ struct RecordCommand: AsyncParsableCommand {
         return Array(Set(values)).sorted()
     }
 
-    private func extractFrames(from video: URL, requestedMilliseconds: [Int]) throws -> [RecordFrame] {
+    private func extractFrames(
+        from video: URL,
+        requestedMilliseconds: [Int],
+        expectedPixels: SimulatorProvisionResult.Dimensions
+    ) async throws -> [RecordFrame] {
         guard !requestedMilliseconds.isEmpty else { return [] }
         let asset = AVURLAsset(url: video)
+        let duration = try await asset.load(.duration)
+        guard duration.isNumeric else {
+            throw GrantivaError.commandFailed("Grantiva recording has no readable duration", 1)
+        }
+        let longestRequested = CMTime(value: CMTimeValue(requestedMilliseconds.last!), timescale: 1_000)
+        guard CMTimeCompare(duration, longestRequested) >= 0 else {
+            let recordedMilliseconds = Int((CMTimeGetSeconds(duration) * 1_000).rounded(.down))
+            throw GrantivaError.commandFailed(
+                "Grantiva recording ended at \(recordedMilliseconds)ms before requested frame \(requestedMilliseconds.last!)ms",
+                1
+            )
+        }
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         generator.requestedTimeToleranceBefore = .zero
@@ -101,7 +124,7 @@ struct RecordCommand: AsyncParsableCommand {
             .appendingPathComponent(video.deletingPathExtension().lastPathComponent + "-frames")
         try FileManager.default.createDirectory(at: frameDirectory, withIntermediateDirectories: true)
 
-        return try requestedMilliseconds.map { requested in
+        let frames = try requestedMilliseconds.map { requested in
             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
             var actualTime = CMTime.zero
             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
@@ -115,10 +138,15 @@ struct RecordCommand: AsyncParsableCommand {
             }
             return RecordFrame(
                 requestedMilliseconds: requested,
-                actualMilliseconds: Int((Double(actualTime.value) / Double(actualTime.timescale) * 1_000).rounded()),
+                actualMilliseconds: Int((CMTimeGetSeconds(actualTime) * 1_000).rounded()),
                 path: path.path
             )
         }
+        try ScreenshotNormalizer.normalize(
+            captures: frames.map { .init(screenName: "\($0.requestedMilliseconds)ms", path: $0.path, sizeBytes: 0) },
+            expectedPixels: expectedPixels
+        )
+        return frames
     }
 }
 
@@ -128,6 +156,19 @@ struct RecordCommand: AsyncParsableCommand {
 /// when it receives SIGINT. SIGTERM can leave the requested output empty while
 /// the staging file remains behind, especially for short captures.
 enum RecorderLifecycle {
+    static func waitForStart(of recordingURL: URL) async throws {
+        let directory = recordingURL.deletingLastPathComponent()
+        let stagingPrefix = recordingURL.lastPathComponent + ".sb-"
+        for _ in 0..<100 {
+            let entries = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: [.fileSizeKey])) ?? []
+            if entries.contains(where: { $0.lastPathComponent.hasPrefix(stagingPrefix) }) {
+                return
+            }
+            try await Task.sleep(for: .milliseconds(100))
+        }
+        throw GrantivaError.commandFailed("Timed out waiting for simulator recording to start", 1)
+    }
+
     static func stop(_ process: Process) {
         if process.isRunning { process.interrupt() }
         process.waitUntilExit()
