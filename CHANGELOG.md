@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.6.1 — 2026-08-20
+
+### Fixed
+- Simulator display environment width and height are now interpreted as pixels and divided by display scale when reporting point dimensions.
+
 ## v1.6.0 — 2026-08-20
 
 ### Added

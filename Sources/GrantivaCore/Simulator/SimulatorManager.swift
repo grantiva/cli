@@ -107,10 +107,18 @@ public struct SimulatorManager: Sendable, Decodable {
             guard let number = Double(try await shell("xcrun simctl getenv \(shellQuoted(udid)) \(key)")) else { throw GrantivaError.invalidArgument("Could not read simulator display metric \(key)") }
             return number
         }
-        let width = try await value("SIMULATOR_MAINSCREEN_WIDTH")
-        let height = try await value("SIMULATOR_MAINSCREEN_HEIGHT")
+        let pixelWidth = try await value("SIMULATOR_MAINSCREEN_WIDTH")
+        let pixelHeight = try await value("SIMULATOR_MAINSCREEN_HEIGHT")
         let scale = try await value("SIMULATOR_MAINSCREEN_SCALE")
-        return ([Int(width.rounded()), Int(height.rounded())], [Int((width * scale).rounded()), Int((height * scale).rounded())], scale)
+        return Self.geometry(pixelWidth: pixelWidth, pixelHeight: pixelHeight, scale: scale)
+    }
+
+    static func geometry(pixelWidth: Double, pixelHeight: Double, scale: Double) -> (points: [Int], pixels: [Int], scale: Double) {
+        (
+            [Int((pixelWidth / scale).rounded()), Int((pixelHeight / scale).rounded())],
+            [Int(pixelWidth.rounded()), Int(pixelHeight.rounded())],
+            scale
+        )
     }
 }
 
