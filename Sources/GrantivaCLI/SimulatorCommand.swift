@@ -2,7 +2,11 @@ import ArgumentParser
 import GrantivaCore
 
 struct SimulatorCommand: AsyncParsableCommand {
-    static let configuration = CommandConfiguration(commandName: "simulator", abstract: "Provision and remove exact, named simulators.", subcommands: [Ensure.self, Delete.self])
+    static let configuration = CommandConfiguration(
+        commandName: "simulator",
+        abstract: "Provision, inspect, and tear down managed simulators.",
+        subcommands: [Ensure.self, Delete.self, Sessions.self, Teardown.self]
+    )
 
     struct Ensure: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
@@ -24,6 +28,43 @@ struct SimulatorCommand: AsyncParsableCommand {
             let device = try await SimulatorManager.live.delete(name: name)
             let result = DeleteResult(name: device.name, udid: device.udid, deleted: true)
             if options.json { print(try JSONOutput.string(result)) } else { print("Deleted \(device.name) (\(device.udid))") }
+        }
+    }
+
+    struct Sessions: AsyncParsableCommand {
+        @OptionGroup var options: GlobalOptions
+
+        func run() async throws {
+            let sessions = try await SimulatorManager.live.managedSessions()
+            if options.json {
+                print(try JSONOutput.string(sessions))
+            } else if sessions.isEmpty {
+                print("No Grantiva-managed simulator sessions.")
+            } else {
+                print("Grantiva-managed simulator sessions (\(sessions.count)/\(SimulatorCapacity.live.maximum)):")
+                for session in sessions {
+                    print("  \(session.name) (\(session.udid)) — \(session.sessionId) [\(session.state.rawValue)]")
+                }
+            }
+        }
+    }
+
+    struct Teardown: AsyncParsableCommand {
+        @OptionGroup var options: GlobalOptions
+        @Option(name: .long, help: "Ticket/session identifier to shut down and release")
+        var sessionId: String
+
+        func run() async throws {
+            let sessions = try await SimulatorManager.live.teardown(sessionId: sessionId)
+            if options.json {
+                print(try JSONOutput.string(sessions))
+            } else if sessions.isEmpty {
+                print("No active Grantiva-managed simulators for session \(sessionId).")
+            } else {
+                for session in sessions {
+                    print("Shut down \(session.name) (\(session.udid)) and released session \(session.sessionId).")
+                }
+            }
         }
     }
 }

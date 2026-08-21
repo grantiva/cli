@@ -302,6 +302,6 @@ struct RunCommand: AsyncParsableCommand {
 
     private func log(_ message: String) {
         guard !options.json else { return }
-        FileHandle.standardError.write(Data("[grantiva] \(message)\n".utf8))
+        GrantivaLog.logger.info("\(message)")
     }
 }

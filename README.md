@@ -258,6 +258,8 @@ grantiva diff compare       Diff captures against baselines
 grantiva diff approve       Promote captures to baselines
 grantiva simulator ensure   Create or reuse an exact named simulator
 grantiva simulator delete   Explicitly delete a named simulator
+grantiva simulator sessions List Grantiva-managed simulator capacity slots
+grantiva simulator teardown Shut down every simulator owned by a ticket/session
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
@@ -271,6 +273,23 @@ grantiva init               Generate grantiva.yml
 ```
 
 All commands support `--json` for structured output.
+
+Grantiva admits at most four Grantiva-booted simulators at once. A fifth boot
+waits for up to ten minutes and reports the sessions occupying capacity. Set
+`GRANTIVA_SESSION_ID` to a ticket identifier so separate CLI commands share one
+durable owner, and release it when the ticket completes:
+
+```bash
+export GRANTIVA_SESSION_ID=APP-652
+grantiva simulator ensure --name "APP-652 iPhone" --device-type "iPhone 17 Pro" --runtime latest --boot
+# build, install, and run as needed
+grantiva simulator teardown --session-id APP-652
+```
+
+Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
+`GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
+toward the limit; manually booted Xcode simulators are never shut down by
+Grantiva teardown.
 
 ## Local Workflow
 

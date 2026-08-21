@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.6.4 — 2026-08-21
+
+### Added
+- Host-wide admission control limits Grantiva-managed booted simulators to four by default and queues additional boots with a configurable timeout.
+- `grantiva simulator sessions` reports active capacity owners, and `grantiva simulator teardown --session-id` shuts down only simulators owned by that ticket/session.
+- `GRANTIVA_SESSION_ID`, `GRANTIVA_MAX_SIMULATORS`, and `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` configure durable ticket ownership and host capacity.
+
+### Changed
+- Grantiva diagnostics now use Swift Logging while structured command results remain on stdout.
+
 ## v1.6.2 — 2026-08-20
 
 ### Fixed

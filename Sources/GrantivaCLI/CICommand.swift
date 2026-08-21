@@ -38,7 +38,7 @@ struct CICommand: AsyncParsableCommand {
         func log(_ message: String, client: RangeClient? = nil, project: String? = nil, runId: String? = nil) {
             guard !options.json else { return }
             let line = "[grantiva] \(message)"
-            FileHandle.standardError.write(Data("\(line)\n".utf8))
+            GrantivaLog.logger.info("\(message)")
 
             // Fire-and-forget log append to backend
             if let client, let project, let runId {
