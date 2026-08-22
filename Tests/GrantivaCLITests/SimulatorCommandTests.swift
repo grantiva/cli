@@ -49,4 +49,22 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertEqual(object["created"] as? Bool, true)
         XCTAssertEqual(object["udid"] as? String, "EXACT-UDID")
     }
+    func testCleanupSupportsJSON() throws {
+        let command = try SimulatorCommand.Cleanup.parse(["--json"])
+        XCTAssertTrue(command.options.json)
+    }
+
+    func testTeardownOutcomeEncodesDeletedFlag() throws {
+        let outcome = SimulatorTeardownOutcome(
+            session: ManagedSimulatorSession(
+                udid: "EXACT-UDID", name: "TienLen Flow APP-652", sessionId: "APP-652",
+                ownerPID: 1, acquiredAt: Date(), state: .active
+            ),
+            deleted: true
+        )
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
+        XCTAssertEqual(object["deleted"] as? Bool, true)
+        XCTAssertEqual((object["session"] as? [String: Any])?["sessionId"] as? String, "APP-652")
+    }
+
 }

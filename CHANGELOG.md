@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.6.5 — 2026-08-22
+
+### Added
+- Grantiva records every simulator it creates in a durable provenance ledger, and the new `grantiva simulator cleanup` deletes created simulators that are shut down and no longer part of an active managed session.
+
+### Changed
+- `grantiva simulator teardown --session-id` now deletes Grantiva-created simulators outright and only shuts down pre-existing devices the session booted. JSON output reports a `deleted` flag per session.
+
+### Fixed
+- Concurrent `grantiva simulator ensure` runs for the same new name no longer race into creating duplicate same-name simulators; the look-up/create pair is serialized across processes.
+
 ## v1.6.4 — 2026-08-21
 
 ### Added

@@ -5,7 +5,7 @@ struct SimulatorCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "simulator",
         abstract: "Provision, inspect, and tear down managed simulators.",
-        subcommands: [Ensure.self, Delete.self, Sessions.self, Teardown.self]
+        subcommands: [Ensure.self, Delete.self, Sessions.self, Teardown.self, Cleanup.self]
     )
 
     struct Ensure: AsyncParsableCommand {
@@ -55,14 +55,36 @@ struct SimulatorCommand: AsyncParsableCommand {
         var sessionId: String
 
         func run() async throws {
-            let sessions = try await SimulatorManager.live.teardown(sessionId: sessionId)
+            let outcomes = try await SimulatorManager.live.teardown(sessionId: sessionId)
             if options.json {
-                print(try JSONOutput.string(sessions))
-            } else if sessions.isEmpty {
+                print(try JSONOutput.string(outcomes))
+            } else if outcomes.isEmpty {
                 print("No active Grantiva-managed simulators for session \(sessionId).")
             } else {
-                for session in sessions {
-                    print("Shut down \(session.name) (\(session.udid)) and released session \(session.sessionId).")
+                for outcome in outcomes {
+                    let session = outcome.session
+                    let action = outcome.deleted ? "Deleted Grantiva-created" : "Shut down"
+                    print("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
+                }
+            }
+        }
+    }
+
+    struct Cleanup: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            abstract: "Delete Grantiva-created simulators that are shut down and not part of an active session."
+        )
+        @OptionGroup var options: GlobalOptions
+
+        func run() async throws {
+            let removed = try await SimulatorManager.live.cleanup()
+            if options.json {
+                print(try JSONOutput.string(removed))
+            } else if removed.isEmpty {
+                print("No orphaned Grantiva-created simulators to delete.")
+            } else {
+                for record in removed {
+                    print("Deleted \(record.name) (\(record.udid)).")
                 }
             }
         }
