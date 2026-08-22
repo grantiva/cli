@@ -10,6 +10,15 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
     public let ownerPID: Int32
     public let acquiredAt: Date
     public var state: State
+
+    public init(udid: String, name: String, sessionId: String, ownerPID: Int32, acquiredAt: Date, state: State) {
+        self.udid = udid
+        self.name = name
+        self.sessionId = sessionId
+        self.ownerPID = ownerPID
+        self.acquiredAt = acquiredAt
+        self.state = state
+    }
 }
 
 /// Host-wide admission control for simulators booted by Grantiva.
