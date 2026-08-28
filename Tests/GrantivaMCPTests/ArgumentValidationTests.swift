@@ -71,29 +71,19 @@ final class ArgumentValidationTests: XCTestCase {
             ["name": .string("A"), "device_type": .string("iPhone 16"), "runtime": .int(18)],
         ]
         for arguments in incompleteArgumentSets {
-            do {
-                _ = try await SimTools.ensure(simManager: simManager, arguments: arguments)
-                XCTFail("Expected ensure to reject \(arguments.keys.sorted())")
-            } catch let error as GrantivaError {
-                guard case .invalidArgument(let message) = error else {
-                    return XCTFail("Expected invalidArgument, got \(error)")
-                }
-                XCTAssertTrue(message.contains("name, device_type, and runtime are required"), message)
-            }
+            let result = try await SimTools.ensure(simManager: simManager, arguments: arguments)
+            XCTAssertEqual(result.isError, true, "Expected ensure to reject \(arguments.keys.sorted())")
+            let message = try textContent(of: result)
+            XCTAssertTrue(message.contains("'name', 'device_type', and 'runtime' are required"), message)
         }
     }
 
     func testSimDeleteRequiresAName() async throws {
         for arguments in [[:], ["name": Value.int(3)]] as [[String: Value]] {
-            do {
-                _ = try await SimTools.delete(simManager: simManager, arguments: arguments)
-                XCTFail("Expected delete to reject \(arguments)")
-            } catch let error as GrantivaError {
-                guard case .invalidArgument(let message) = error else {
-                    return XCTFail("Expected invalidArgument, got \(error)")
-                }
-                XCTAssertTrue(message.contains("name is required"), message)
-            }
+            let result = try await SimTools.delete(simManager: simManager, arguments: arguments)
+            XCTAssertEqual(result.isError, true, "Expected delete to reject \(arguments)")
+            let message = try textContent(of: result)
+            XCTAssertTrue(message.contains("'name' is required"), message)
         }
     }
 }

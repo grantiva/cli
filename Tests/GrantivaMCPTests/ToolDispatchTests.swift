@@ -117,16 +117,12 @@ final class ToolDispatchTests: XCTestCase {
         XCTAssertNil(result.isError)
     }
 
-    func testSimDeleteValidationErrorPropagatesAsAThrownError() async throws {
-        // Unlike the UI tools, the sim tools throw rather than returning isError.
-        do {
-            _ = try await call("grantiva_sim_delete")
-            XCTFail("Expected grantiva_sim_delete to throw without a name")
-        } catch let error as GrantivaError {
-            guard case .invalidArgument = error else {
-                return XCTFail("Expected invalidArgument, got \(error)")
-            }
-        }
+    func testSimDeleteValidationErrorIsReturnedAsAToolError() async throws {
+        // The sim tools used to throw, which surfaces to the client as a JSON-RPC protocol
+        // error an agent cannot act on. They now return isError like every other tool, so
+        // the model sees a readable, correctable failure.
+        let result = try await call("grantiva_sim_delete")
+        XCTAssertEqual(result.isError, true)
     }
 
     // MARK: - Resources

@@ -96,9 +96,12 @@ final class ToolRegistrationTests: XCTestCase {
     // MARK: - Annotations
 
     func testReadOnlyToolsAreAnnotatedReadOnly() {
+        // grantiva_screenshot and grantiva_vrt_compare are deliberately absent: both
+        // write to disk (screenshot in `format: "file"` mode; vrt_compare emits
+        // <screen>_diff.png), so neither may claim readOnlyHint.
         let readOnly = [
-            "grantiva_screenshot", "grantiva_a11y_tree", "grantiva_a11y_check",
-            "grantiva_sim_list", "grantiva_context", "grantiva_vrt_compare",
+            "grantiva_a11y_tree", "grantiva_a11y_check",
+            "grantiva_sim_list", "grantiva_context",
         ]
         let byName = Dictionary(uniqueKeysWithValues: allTools().map { ($0.name, $0) })
         for name in readOnly {
@@ -119,10 +122,12 @@ final class ToolRegistrationTests: XCTestCase {
         XCTAssertEqual(destructive, ["grantiva_sim_delete"])
     }
 
-    func testNoToolClaimsOpenWorldAccess() {
-        // Every Grantiva tool acts on the local machine only.
-        for tool in allTools() {
-            XCTAssertNotEqual(tool.annotations.openWorldHint, true, "\(tool.name) claims open-world access")
-        }
+    func testOnlyRemoteBaselineToolsClaimOpenWorldAccess() {
+        // Most tools act on the local machine only. The exceptions are vrt_compare and
+        // vrt_approve: DiffCommand.resolveBaselineStore() returns a remote RangeClient-backed
+        // store when credentials resolve, so both read and write baselines over the network.
+        let expectedOpenWorld = ["grantiva_vrt_approve", "grantiva_vrt_compare"]
+        let actual = allTools().filter { $0.annotations.openWorldHint == true }.map(\.name).sorted()
+        XCTAssertEqual(actual, expectedOpenWorld)
     }
 }
