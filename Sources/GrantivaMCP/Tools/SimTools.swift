@@ -120,14 +120,24 @@ enum SimTools {
 
     static func ensure(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let name = arguments["name"]?.stringValue, let deviceType = arguments["device_type"]?.stringValue, let runtime = arguments["runtime"]?.stringValue else {
-            throw GrantivaError.invalidArgument("name, device_type, and runtime are required")
+            // Invalid model input is a tool error the model can read and correct,
+            // not a JSON-RPC protocol error that reads as a transport failure.
+            return CallTool.Result(
+                content: [.text(text: "Error: 'name', 'device_type', and 'runtime' are required.", annotations: nil, _meta: nil)],
+                isError: true
+            )
         }
         let result = try await simManager.ensure(name: name, deviceType: deviceType, runtime: runtime, boot: arguments["boot"]?.boolValue ?? false)
         return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
     }
 
     static func delete(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
-        guard let name = arguments["name"]?.stringValue else { throw GrantivaError.invalidArgument("name is required") }
+        guard let name = arguments["name"]?.stringValue else {
+            return CallTool.Result(
+                content: [.text(text: "Error: 'name' is required.", annotations: nil, _meta: nil)],
+                isError: true
+            )
+        }
         let device = try await simManager.delete(name: name)
         let data = try JSONSerialization.data(withJSONObject: ["deleted": true, "name": device.name, "udid": device.udid], options: [.sortedKeys])
         return CallTool.Result(content: [.text(text: String(decoding: data, as: UTF8.self), annotations: nil, _meta: nil)])
