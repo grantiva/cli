@@ -22,7 +22,10 @@ enum UITools {
                     ]),
                 ]),
             ]),
-            annotations: .init(readOnlyHint: true, openWorldHint: false)
+            // Not read-only: format "file" writes .grantiva/mcp-screenshot.png into
+            // the working directory. The base64 default reads only, but annotations
+            // describe the tool, not one invocation, so the hint takes the safe value.
+            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
         ),
         Tool(
             name: "grantiva_tap",

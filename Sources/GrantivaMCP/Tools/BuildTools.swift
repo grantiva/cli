@@ -61,7 +61,9 @@ enum BuildTools {
                     ]),
                 ]),
             ]),
-            annotations: .init(readOnlyHint: true, openWorldHint: false)
+            // Not read-only: `xcodebuild test` boots a simulator, writes build
+            // products into DerivedData, and installs/runs the test bundle.
+            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false)
         ),
     ]
 

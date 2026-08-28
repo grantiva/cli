@@ -49,5 +49,9 @@ let package = Package(
         ]),
         .testTarget(name: "GrantivaAPITests", dependencies: ["GrantivaAPI"]),
         .testTarget(name: "GrantivaCLITests", dependencies: ["GrantivaCLI"]),
+        .testTarget(name: "GrantivaMCPTests", dependencies: [
+            "GrantivaMCP",
+            .product(name: "MCP", package: "swift-sdk"),
+        ]),
     ]
 )

@@ -32,7 +32,10 @@ enum VRTTools {
                 "type": .string("object"),
                 "properties": .object([:]),
             ]),
-            annotations: .init(readOnlyHint: true, openWorldHint: false)
+            // Not read-only: `grantiva diff compare` creates .grantiva/captures/diffs
+            // and writes a *_diff.png for every screen that fails. Open world: when the
+            // user is authenticated, baselines are loaded from the remote Range API.
+            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true)
         ),
         Tool(
             name: "grantiva_vrt_approve",
@@ -47,7 +50,9 @@ enum VRTTools {
                     ]),
                 ]),
             ]),
-            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
+            // Open world: promoting baselines writes them to the remote Range API
+            // when the user is authenticated.
+            annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true)
         ),
     ]
 
