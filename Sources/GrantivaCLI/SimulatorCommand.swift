@@ -1,4 +1,5 @@
 import ArgumentParser
+import Foundation
 import GrantivaCore
 
 struct SimulatorCommand: AsyncParsableCommand {
@@ -30,8 +31,34 @@ struct SimulatorCommand: AsyncParsableCommand {
             let result = try await SimulatorManager.live.ensure(
                 name: name, deviceType: deviceType, runtime: runtime, boot: boot
             )
-            if options.json { print(try JSONOutput.string(result)) }
-            else { print("\(result.created ? "Created" : "Reused") \(result.name) (\(result.udid)) — \(result.state)") }
+            if options.json {
+                print(try JSONOutput.string(result))
+                return
+            }
+            let rendered = Self.render(result)
+            FileHandle.standardError.write(Data(rendered.stderr.utf8))
+            print(rendered.stdout)
+        }
+
+        /// stdout is the UDID and nothing else, so it can be captured directly:
+        ///
+        ///     udid=$(grantiva simulator ensure --name "iPhone 17")
+        ///
+        /// That substitution is the whole reason this command exists — it
+        /// replaces a `simctl list -j` + `create` + `bootstatus` shell
+        /// function whose output was a UDID. A prose line on stdout would have
+        /// been captured verbatim, so callers got "Created iPhone 17 (…) —
+        /// Booted" where they expected an identifier, and the failure surfaced
+        /// later as an unusable --device argument.
+        ///
+        /// The human-readable context still exists; it goes to stderr, where a
+        /// terminal shows it and a command substitution ignores it.
+        static func render(_ result: SimulatorProvisionResult) -> (stdout: String, stderr: String) {
+            let verb = result.created ? "Created" : "Reused"
+            return (
+                stdout: result.udid,
+                stderr: "\(verb) \(result.name) (\(result.udid)) — \(result.state)\n"
+            )
         }
     }
 
