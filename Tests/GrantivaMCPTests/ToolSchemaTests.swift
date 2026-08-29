@@ -14,7 +14,7 @@ final class ToolSchemaTests: XCTestCase {
         "grantiva_swipe": ["direction"],
         "grantiva_type": ["text"],
         "grantiva_script": ["steps"],
-        "grantiva_sim_ensure": ["name", "device_type", "runtime"],
+        "grantiva_sim_ensure": ["name"],
         "grantiva_sim_delete": ["name"],
     ]
 

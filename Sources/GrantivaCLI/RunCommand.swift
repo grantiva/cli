@@ -53,12 +53,23 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Bump this for long multi-flow suites.")
     var timeout: Int = 600
 
+    @Option(name: .long, help: "Write this file once every flow has finished, containing the terminal status. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
+    var readyFile: String?
+
+    @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp environment.")
+    var env: [String] = []
+
     var simulatorManager: SimulatorManager = .live
     var runnerManager: RunnerManager = .live
 
     func run() async throws {
         let config = try? GrantivaConfig.load()
-        let captureDir = ".grantiva/captures"
+        let launchEnvironment = try FlowEnvironment.parse(env)
+        // With --report-dir the report directory is the run's artifact home, so
+        // screenshots go there and nothing is written to ./.grantiva.
+        let captureDir = reportDir.map { dir in
+            (dir.hasPrefix("/") ? dir : FileManager.default.currentDirectoryPath + "/" + dir) + "/captures"
+        } ?? ".grantiva/captures"
 
         // Resolve app binary first (if --app-file provided)
         let resolvedBinary = try buildOptions.resolveAppBinary()
@@ -198,7 +209,9 @@ struct RunCommand: AsyncParsableCommand {
                     outputDir: captureDir,
                     appFile: productPath,
                     keepAlive: keepAlive,
-                    snapshot: snapshot.rawValue
+                    snapshot: snapshot.rawValue,
+                    environment: launchEnvironment,
+                    readyFile: readyFile
                 )
                 captures.append(contentsOf: screenCaptures)
             }
@@ -216,7 +229,9 @@ struct RunCommand: AsyncParsableCommand {
                     snapshot: snapshot.rawValue,
                     failFast: !continueOnFailure,
                     reportDir: reportDir,
-                    timeoutSeconds: UInt64(max(timeout, 30))
+                    timeoutSeconds: UInt64(max(timeout, 30)),
+                    environment: launchEnvironment,
+                    readyFile: readyFile
                 )
                 captures.append(contentsOf: flowCaptures)
             }
@@ -230,6 +245,14 @@ struct RunCommand: AsyncParsableCommand {
             _ = try? await shell("xcrun simctl io \(device.udid) screenshot \(failurePath)")
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
+            }
+            // A waiter blocked on --ready-file must be released even when the
+            // run failed before the runner could report anything.
+            if let readyFile, !fm.fileExists(atPath: readyFile) {
+                try? ReadyFile.write(
+                    RunReadyState(status: "failed", flows: [], reportDir: reportDir),
+                    to: readyFile
+                )
             }
             throw error
         }

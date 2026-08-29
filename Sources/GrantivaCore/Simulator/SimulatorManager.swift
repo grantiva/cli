@@ -55,21 +55,52 @@ public struct SimulatorManager: Sendable, Decodable {
         return device
     }
 
-    public func ensure(name: String, deviceType: String, runtime requestedRuntime: String, boot shouldBoot: Bool) async throws -> SimulatorProvisionResult {
+    /// Creates or reuses a simulator named `name`.
+    ///
+    /// `deviceType` and `runtime` are optional: the device type is inferred from
+    /// the name (so `--name "iPhone 17"` is enough), and the runtime defaults to
+    /// the newest installed one. When neither is given the call is purely
+    /// idempotent — an existing device with that name is reused as-is rather
+    /// than rejected for not matching an inferred configuration.
+    public func ensure(
+        name: String,
+        deviceType: String? = nil,
+        runtime requestedRuntime: String? = nil,
+        boot shouldBoot: Bool
+    ) async throws -> SimulatorProvisionResult {
         let catalog = try await simulatorCatalog()
-        guard let type = catalog.deviceTypes.first(where: { $0.name == deviceType || $0.identifier == deviceType }) else {
-            throw GrantivaError.invalidArgument("Simulator device type not found: \"\(deviceType)\"")
+        let strictConfiguration = deviceType != nil || requestedRuntime != nil
+        let type: SimctlCatalog.DeviceType
+        if let deviceType {
+            guard let match = catalog.deviceTypes.first(where: {
+                $0.name.caseInsensitiveCompare(deviceType) == .orderedSame || $0.identifier == deviceType
+            }) else {
+                throw GrantivaError.invalidArgument("Simulator device type not found: \"\(deviceType)\"")
+            }
+            type = match
+        } else {
+            guard let inferred = Self.inferDeviceType(fromName: name, in: catalog.deviceTypes.map { ($0.name, $0.identifier) }) else {
+                throw GrantivaError.invalidArgument(
+                    "Could not infer a device type from the name \"\(name)\". "
+                        + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
+                )
+            }
+            guard let match = catalog.deviceTypes.first(where: { $0.identifier == inferred.identifier }) else {
+                throw GrantivaError.invalidArgument("Simulator device type not found: \"\(inferred.name)\"")
+            }
+            type = match
         }
         let availableRuntimes = catalog.runtimes.filter { $0.isAvailable && $0.identifier.contains("iOS") }
         let runtime: SimctlCatalog.Runtime
-        if requestedRuntime.lowercased() == "latest" {
+        if (requestedRuntime ?? "latest").lowercased() == "latest" {
             guard let latest = availableRuntimes.max(by: { versionIsLess($0.version, $1.version) }) else {
                 throw GrantivaError.invalidArgument("No available iOS simulator runtime is installed")
             }
             runtime = latest
         } else {
-            guard let match = availableRuntimes.first(where: { $0.identifier == requestedRuntime || $0.name == requestedRuntime || $0.version == requestedRuntime }) else {
-                throw GrantivaError.invalidArgument("Simulator runtime not found or unavailable: \"\(requestedRuntime)\"")
+            let wanted = requestedRuntime ?? "latest"
+            guard let match = availableRuntimes.first(where: { $0.identifier == wanted || $0.name == wanted || $0.version == wanted }) else {
+                throw GrantivaError.invalidArgument("Simulator runtime not found or unavailable: \"\(wanted)\"")
             }
             runtime = match
         }
@@ -81,6 +112,10 @@ public struct SimulatorManager: Sendable, Decodable {
             let named = try await listDevices().filter { $0.name == name }
             if named.count > 1 { throw GrantivaError.invalidArgument("Multiple simulators are named \"\(name)\"; delete duplicates or use a unique name") }
             if let existing = named.first {
+                // Only enforce the configuration the caller actually asked for.
+                // `ensure --name "iPhone 17"` must reuse whatever already
+                // carries that name instead of failing on an inferred runtime.
+                guard strictConfiguration else { return (false, existing.udid) }
                 guard existing.deviceTypeIdentifier == type.identifier && existing.runtime == runtime.shortName else {
                     throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(type.name), \(runtime.name)")
                 }
@@ -139,6 +174,29 @@ public struct SimulatorManager: Sendable, Decodable {
         return outcomes
     }
 
+    /// Ends whatever session owns `udid`. Used by
+    /// `teardown --udid` when the caller knows the device but not the ticket.
+    public func teardown(udid: String) async throws -> [SimulatorTeardownOutcome] {
+        let capacity = SimulatorCapacity.live
+        let provenance = SimulatorProvenance.live
+        let devices = try await listDevices()
+        let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
+        var outcomes: [SimulatorTeardownOutcome] = []
+        for record in records {
+            if devices.first(where: { $0.udid == record.udid })?.isBooted == true {
+                _ = try await shell("xcrun simctl shutdown \(shellQuoted(record.udid))")
+            }
+            let created = try provenance.contains(udid: record.udid)
+            if created {
+                _ = try await shell("xcrun simctl delete \(shellQuoted(record.udid))")
+                try provenance.remove(udid: record.udid)
+            }
+            try capacity.remove(udid: record.udid)
+            outcomes.append(SimulatorTeardownOutcome(session: record, deleted: created))
+        }
+        return outcomes
+    }
+
     /// Deletes every Grantiva-created simulator that is shut down and no
     /// longer part of an active managed session. Ledger entries for devices
     /// that no longer exist are pruned. Never touches user-created devices.
@@ -158,6 +216,20 @@ public struct SimulatorManager: Sendable, Decodable {
             removed.append(record)
         }
         return removed
+    }
+
+    /// Picks the device type a simulator name refers to: the longest catalog
+    /// device-type name contained in `name`, matched case-insensitively. The
+    /// longest match wins so "BLE iPhone 17 Pro" resolves to "iPhone 17 Pro"
+    /// rather than "iPhone 17".
+    static func inferDeviceType(
+        fromName name: String,
+        in deviceTypes: [(name: String, identifier: String)]
+    ) -> (name: String, identifier: String)? {
+        let haystack = name.lowercased()
+        return deviceTypes
+            .filter { haystack.contains($0.name.lowercased()) }
+            .max { $0.name.count < $1.name.count }
     }
 
     private func simulatorCatalog() async throws -> SimctlCatalog {

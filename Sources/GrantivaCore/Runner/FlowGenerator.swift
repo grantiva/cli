@@ -5,7 +5,8 @@ public enum FlowGenerator {
     /// Generate a single Maestro YAML flow that navigates all screens and takes screenshots.
     public static func generate(
         screens: [GrantivaConfig.Screen],
-        bundleId: String
+        bundleId: String,
+        environment: [String: String] = [:]
     ) -> String {
         var lines: [String] = []
 
@@ -13,8 +14,18 @@ public enum FlowGenerator {
         lines.append("appId: \(bundleId)")
         lines.append("---")
 
-        // launchApp creates the WDA session — required before any interaction
-        lines.append("- launchApp")
+        // launchApp creates the WDA session — required before any interaction.
+        // `--env` values ride the runner's existing launchApp `environment:`
+        // field rather than a second mechanism.
+        if environment.isEmpty {
+            lines.append("- launchApp")
+        } else {
+            lines.append("- launchApp:")
+            lines.append("    environment:")
+            for key in environment.keys.sorted() {
+                lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+            }
+        }
 
         for screen in screens {
             switch screen.path {
@@ -58,9 +69,10 @@ public enum FlowGenerator {
     /// Write a flow to a temporary file, returning the path.
     public static func writeTemp(
         screens: [GrantivaConfig.Screen],
-        bundleId: String
+        bundleId: String,
+        environment: [String: String] = [:]
     ) throws -> String {
-        let yaml = generate(screens: screens, bundleId: bundleId)
+        let yaml = generate(screens: screens, bundleId: bundleId, environment: environment)
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-flows")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)

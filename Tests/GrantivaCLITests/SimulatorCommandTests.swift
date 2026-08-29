@@ -28,10 +28,57 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertTrue(command.options.json)
     }
 
-    func testTeardownRequiresSessionIdentifier() throws {
+    func testTeardownAcceptsASessionIdentifier() throws {
         let command = try SimulatorCommand.Teardown.parse(["--session-id", "APP-652", "--json"])
         XCTAssertEqual(command.sessionId, "APP-652")
+        XCTAssertNil(command.udid)
+        XCTAssertFalse(command.force)
         XCTAssertTrue(command.options.json)
+        XCTAssertNoThrow(try command.validate())
+    }
+
+    func testTeardownReclaimsBySimulatorUDID() throws {
+        // The case `--session-id` cannot serve: a stranded run whose session
+        // ledger is empty but whose simulator is still owned.
+        let command = try SimulatorCommand.Teardown.parse([
+            "--udid", "A1B2C3D4-1111-2222-3333-444455556666", "--force", "--json",
+        ])
+        XCTAssertEqual(command.udid, "A1B2C3D4-1111-2222-3333-444455556666")
+        XCTAssertTrue(command.force)
+        XCTAssertNil(command.sessionId)
+        XCTAssertNoThrow(try command.validate())
+    }
+
+    func testTeardownRejectsBothSelectorsTogether() {
+        XCTAssertThrowsError(
+            try SimulatorCommand.Teardown.parse(["--session-id", "APP-652", "--udid", "SIM-1"])
+        ) { error in
+            XCTAssertTrue(String(describing: error).contains("mutually exclusive"), String(describing: error))
+        }
+    }
+
+    func testTeardownRequiresOneSelector() {
+        XCTAssertThrowsError(try SimulatorCommand.Teardown.parse([])) { error in
+            XCTAssertTrue(
+                String(describing: error).contains("--session-id <id> or --udid <UDID>"),
+                String(describing: error)
+            )
+        }
+    }
+
+    func testEnsureNeedsOnlyAName() throws {
+        let command = try SimulatorCommand.Ensure.parse(["--name", "iPhone 17"])
+        XCTAssertEqual(command.name, "iPhone 17")
+        XCTAssertNil(command.deviceType)
+        XCTAssertNil(command.runtime)
+        // Booting is the point of `ensure`; the shell function it replaces
+        // created, booted, and waited for bootstatus.
+        XCTAssertTrue(command.boot)
+    }
+
+    func testEnsureCanSkipBooting() throws {
+        let command = try SimulatorCommand.Ensure.parse(["--name", "iPhone 17", "--no-boot"])
+        XCTAssertFalse(command.boot)
     }
 
     func testProvisionReportContainsExactDisplayGeometry() throws {

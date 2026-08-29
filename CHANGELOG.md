@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `grantiva simulator teardown --udid <UDID> --force` reclaims a simulator by live process inspection instead of the session ledger. It kills the `grantiva-runner`, WebDriverAgent `xcodebuild test-without-building`, and `simctl diagnose` processes holding that device, breaks the simulator lease, and clears any stale capacity record — the case `--session-id` could never serve, because a stranded run leaves `sessions.json` empty while the device is still owned. `--session-id` and `--udid` are mutually exclusive.
+- `grantiva run --ready-file <path>` writes a single file, atomically, once every flow has reached a terminal state, with the run's terminal status inside it. A waiter can be `while [ ! -f "$f" ]; do sleep 0.2; done` instead of polling the incrementally rewritten `report.json`. Useful with `--keep-alive`, where the session deliberately outlives the flows.
+- `grantiva run --env KEY=VALUE` (repeatable) sets environment variables for the app under test, forwarded through the flow's existing `launchApp` `environment:` field. A malformed pair is rejected with a clear error.
+- The simulator lease now records who owns it — grantiva's pid, the runner's pid, and whether the run is `--keep-alive`. "Simulator … is already owned by another Grantiva run" now names that process and the command that frees it.
+
+### Changed
+- `grantiva simulator ensure` needs only `--name`. The device type is inferred from the name (`--name "iPhone 17"`), the runtime defaults to the newest installed one, and the simulator is booted by default (`--no-boot` opts out). `--device-type` and `--runtime` remain as optional overrides; when neither is given, an existing simulator with that name is reused as-is. The `grantiva_sim_ensure` MCP tool requires only `name` for the same reason.
+- grantiva-runner is spawned into its own process group, and SIGINT/SIGTERM are forwarded to that whole group. Interrupting a run — including `kill -INT` against a backgrounded `--keep-alive` run, which a shell starts with SIGINT ignored and which therefore used to be uninterruptible — now reaps grantiva-runner, WebDriverAgent, and any `simctl diagnose` it started, then releases the lease.
+- With `--report-dir`, failure screenshots and trace artifacts are written under that directory only; nothing is written to `./.grantiva/captures`.
+- Flow failures are reported against the path the user passed, not the temporary staged copy grantiva hands the runner.
+
 ## v1.6.5 — 2026-08-22
 
 ### Added
