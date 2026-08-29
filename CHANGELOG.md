@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- **`--ready-file` was unusable as documented.** The prescribed waiter — `while [ ! -f "$f" ]; do sleep 0.2; done` — was broken from both ends. A file left by a previous run was never cleared, so the waiter returned instantly and read the *previous* run's verdict: CI proceeding on a stale `passed` against a run that never started. And a failure before the runner started (no project, bad scheme, build failure, no simulator) wrote no file at all, so the same loop — which has no timeout — wedged the job until CI's global limit. The file is now deleted at startup, before any project, build, or simulator work, so its existence always means *this* run reached a terminal state; and a terminal status is written on every exit path, with a setup failure recording `failed`. An unwritable or non-file `--ready-file` path is now rejected at startup rather than at the end of a long suite, when the verdict has nowhere to go.
+- **`grantiva simulator teardown --udid "" --force` reported success.** This is the unset-shell-variable case: `--udid "$UDID"` with `UDID` unset. An empty string is non-nil, so it satisfied the "pass one of `--session-id`/`--udid`" check, matched no process, released no lease, and exited 0 printing `No processes were holding .` — the script concluded it had reclaimed the device and the real failure surfaced much later. `--udid` is now checked for the 8-4-4-4-12 hex form simctl issues (`--udid not-a-udid-at-all` was equally accepted before), and a blank `--session-id` is rejected the same way. Validation is shape-only and deliberately does not require the device to still exist: reclaiming an already-deleted simulator — killing what it stranded, breaking its lease — is what `--force` is for.
+- **`grantiva doctor` always exited 0, and reported a broken toolchain as passing.** There was no exit-code path at all, so `grantiva doctor || exit 1` as a CI preflight could never fire; a failing required check now exits non-zero, in both output modes. Optional checks (no booted simulator, no `grantiva.yml`, not authenticated) stay advisory and do not affect the exit code. The Xcode check also echoed `$DEVELOPER_DIR` back without verifying it — `DEVELOPER_DIR=/nonexistent grantiva doctor` printed `✓ Xcode /nonexistent` — and the version check passed on empty output. Both now fail, with a fix line.
+- **`grantiva doctor` wrote ANSI escapes into redirected output.** `grantiva doctor > log.txt` produced a file full of raw SGR sequences. Colour is now emitted only when stdout is a terminal, and `NO_COLOR` suppresses it.
+
+### Changed
+- `grantiva simulator teardown --force --json` now reports `reclaimed`, distinguishing a teardown that killed a stranded runner or broke a lease from one that found the device already free. Both remain exit 0.
+
 ## v1.7.2 — 2026-08-29
 
 ### Fixed

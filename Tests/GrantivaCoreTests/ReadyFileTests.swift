@@ -57,6 +57,56 @@ final class ReadyFileTests: XCTestCase {
         XCTAssertFalse(signal.hasWritten)
     }
 
+    // MARK: - startup preparation
+
+    // The documented waiter is `while [ ! -f "$f" ]`. A file left by a previous
+    // run makes that return instantly and read the previous run's verdict, so
+    // startup has to clear it before any project, build, or simulator work.
+    func testPrepareClearsAFileLeftByAPreviousRun() throws {
+        let path = scratch.appendingPathComponent("ready.json").path
+        try ReadyFile.write(RunReadyState(status: "passed", flows: []), to: path)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: path))
+
+        try ReadyFile.prepare(at: path)
+
+        XCTAssertFalse(
+            FileManager.default.fileExists(atPath: path),
+            "a stale ready file must be gone once the run has started"
+        )
+    }
+
+    // Nothing may be left behind that a waiter could mistake for the verdict —
+    // including a zero-byte probe from the writability check.
+    func testPrepareLeavesTheDirectoryEmpty() throws {
+        let path = scratch.appendingPathComponent("ready.json").path
+        try ReadyFile.prepare(at: path)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: scratch.path), [])
+    }
+
+    func testPrepareCreatesAMissingParentDirectory() throws {
+        let path = scratch.appendingPathComponent("nested/deeper/ready.json").path
+        try ReadyFile.prepare(at: path)
+        try ReadyFile.write(RunReadyState(status: "passed", flows: []), to: path)
+        XCTAssertEqual(try ReadyFile.read(path).status, "passed")
+    }
+
+    // Deleting at startup means an unwritable path must fail now, not after a
+    // ten-minute suite whose verdict then has nowhere to go.
+    func testPrepareRejectsAnUnwritablePath() throws {
+        let directory = scratch.appendingPathComponent("readonly")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: directory.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: directory.path) }
+
+        XCTAssertThrowsError(try ReadyFile.prepare(at: directory.appendingPathComponent("ready.json").path))
+    }
+
+    // `--ready-file .` would otherwise be a recursive delete of the directory.
+    func testPrepareRefusesADirectory() throws {
+        XCTAssertThrowsError(try ReadyFile.prepare(at: scratch.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: scratch.path))
+    }
+
     // MARK: - report.json completion detection
 
     private func index(_ json: String) throws -> RunnerReportIndex {

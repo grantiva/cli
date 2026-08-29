@@ -17,5 +17,12 @@ struct DoctorCommand: AsyncParsableCommand {
         } else {
             print(DoctorFormatter().format(checks))
         }
+
+        // `grantiva doctor || exit 1` is the intended CI preflight, and it could
+        // never fire: every path exited 0. A failing required check exits
+        // non-zero now, in both output modes.
+        if DoctorRunner.hasFailures(checks) {
+            throw ExitCode.failure
+        }
     }
 }

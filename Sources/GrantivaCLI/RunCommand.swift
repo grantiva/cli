@@ -53,7 +53,7 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Bump this for long multi-flow suites.")
     var timeout: Int = 600
 
-    @Option(name: .long, help: "Write this file once every flow has finished, containing the terminal status. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
+    @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
     var readyFile: String?
 
     @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp environment.")
@@ -62,7 +62,43 @@ struct RunCommand: AsyncParsableCommand {
     var simulatorManager: SimulatorManager = .live
     var runnerManager: RunnerManager = .live
 
+    /// `--ready-file` is documented as `while [ ! -f "$f" ]; do sleep 0.2; done`,
+    /// which only works if the file is absent until this run finishes and
+    /// present once it has. Two things have to be true for that, and neither
+    /// belongs inside the runner call:
+    ///
+    /// - a file left by a previous run is cleared before any project, build, or
+    ///   simulator work, so the waiter cannot read a stale verdict; and
+    /// - a terminal status is written on *every* exit path, including the setup
+    ///   failures (missing project, bad scheme, build failure, no simulator)
+    ///   that never reach the runner and used to leave the waiter hanging until
+    ///   CI's global timeout.
     func run() async throws {
+        if let readyFile {
+            try ReadyFile.prepare(at: readyFile)
+        }
+        do {
+            try await execute()
+        } catch {
+            // `execute` writes the real verdict when the runner produced one;
+            // the file existing here means that already happened and must not
+            // be overwritten with this coarser status. Startup deleted the
+            // file, so absence means the run failed before any verdict — a
+            // setup failure. `failed` and not a new value like `error` because
+            // waiters test against the documented vocabulary
+            // (passed | failed | interrupted); a fifth status would read as
+            // "not failed" to every `[ "$s" = failed ]` in the wild.
+            if let readyFile, !FileManager.default.fileExists(atPath: readyFile) {
+                try? ReadyFile.write(
+                    RunReadyState(status: "failed", flows: [], reportDir: reportDir),
+                    to: readyFile
+                )
+            }
+            throw error
+        }
+    }
+
+    private func execute() async throws {
         let config = try? GrantivaConfig.load()
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
@@ -246,14 +282,8 @@ struct RunCommand: AsyncParsableCommand {
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
             }
-            // A waiter blocked on --ready-file must be released even when the
-            // run failed before the runner could report anything.
-            if let readyFile, !fm.fileExists(atPath: readyFile) {
-                try? ReadyFile.write(
-                    RunReadyState(status: "failed", flows: [], reportDir: reportDir),
-                    to: readyFile
-                )
-            }
+            // The --ready-file waiter is released by `run`, which covers this
+            // path and every setup failure that never reaches the runner.
             throw error
         }
 
