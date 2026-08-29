@@ -34,10 +34,60 @@ public struct RunReadyState: Codable, Sendable, Equatable {
 /// drives another, but until now the only completion signal was `report.json`,
 /// which the runner rewrites incrementally (hence its `updateSeq`) — so the
 /// file existing says nothing about whether the flows finished. The ready file
-/// appears exactly once, after every flow reaches a terminal state, so a waiter
-/// can be `while [ ! -f "$f" ]; do sleep 0.2; done` and then read the verdict
-/// out of the file instead of re-implementing report polling.
+/// is cleared at startup (see `prepare`) and appears exactly once, when the run
+/// reaches a terminal state — including a setup failure that never reached the
+/// runner — so a waiter can be `while [ ! -f "$f" ]; do sleep 0.2; done` and
+/// then read the verdict out of the file instead of re-implementing report
+/// polling.
 public enum ReadyFile {
+    /// Clears any file left by a previous run and proves the path is writable.
+    ///
+    /// Must be called before any project/build/simulator work. The documented
+    /// waiter is `while [ ! -f "$f" ]`, so a file left behind by an earlier run
+    /// makes the waiter return instantly and read that run's verdict — a stale
+    /// `passed` for a run that never started. Once this has run, the file
+    /// existing always means *this* run reached a terminal state.
+    ///
+    /// The writability probe is deliberate: deleting at startup means a bad
+    /// path must fail loudly now rather than after a ten-minute suite, with the
+    /// verdict then undeliverable. It uses a temp sibling rather than the target
+    /// itself so a waiter never sees a zero-byte `ready` file.
+    public static func prepare(at path: String) throws {
+        let url = URL(fileURLWithPath: path)
+        let fileManager = FileManager.default
+
+        var isDirectory: ObjCBool = false
+        if fileManager.fileExists(atPath: path, isDirectory: &isDirectory) {
+            guard !isDirectory.boolValue else {
+                throw GrantivaError.invalidArgument("--ready-file \(path) is a directory, not a file.")
+            }
+            do {
+                try fileManager.removeItem(at: url)
+            } catch {
+                throw GrantivaError.invalidArgument(
+                    "--ready-file \(path) exists and could not be removed: \(error.localizedDescription)"
+                )
+            }
+        }
+
+        let directory = url.deletingLastPathComponent()
+        if !directory.path.isEmpty, !fileManager.fileExists(atPath: directory.path) {
+            do {
+                try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+            } catch {
+                throw GrantivaError.invalidArgument(
+                    "--ready-file directory \(directory.path) could not be created: \(error.localizedDescription)"
+                )
+            }
+        }
+
+        let probe = directory.appendingPathComponent(".\(url.lastPathComponent).\(UUID().uuidString).probe")
+        guard fileManager.createFile(atPath: probe.path, contents: Data()) else {
+            throw GrantivaError.invalidArgument("--ready-file \(path) is not writable.")
+        }
+        try? fileManager.removeItem(at: probe)
+    }
+
     /// Writes `state` to `path` atomically (temp file in the same directory,
     /// then rename) so a reader never observes a partial file.
     public static func write(_ state: RunReadyState, to path: String) throws {

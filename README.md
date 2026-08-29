@@ -72,13 +72,15 @@ grantiva hierarchy > state.xml
 ```
 
 - **`--keep-alive`** — Holds the GrantivaAgent session open after flows complete. The app stays frozen in whatever state the flow left it. Ctrl-C (or `kill -INT` on a backgrounded run) releases it, reaping grantiva-runner, WebDriverAgent, and any diagnostics they started.
-- **`--ready-file <path>`** — Writes that file once, atomically, when every flow has finished. With `--keep-alive` the session deliberately outlives the flows, so process exit is not a completion signal and `report.json` is rewritten incrementally; wait on this file instead:
+- **`--ready-file <path>`** — Writes that file once, atomically, when the run reaches a terminal state. With `--keep-alive` the session deliberately outlives the flows, so process exit is not a completion signal and `report.json` is rewritten incrementally; wait on this file instead:
 
   ```bash
   grantiva run --flow flows/advertise.yaml --keep-alive --ready-file /tmp/advertise.ready &
   while [ ! -f /tmp/advertise.ready ]; do sleep 0.2; done
   jq -r .status /tmp/advertise.ready   # passed | failed | interrupted
   ```
+
+  Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` environment, so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON.
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
@@ -272,7 +274,7 @@ grantiva simulator teardown End a session, or reclaim one simulator with --udid 
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
-grantiva doctor             Check environment and dependencies
+grantiva doctor             Check environment and dependencies (non-zero exit if a required check fails)
 grantiva runner install     Extract the embedded GrantivaAgent runner
 grantiva runner version     Show the embedded runner version
 grantiva runner start       Start an interactive GrantivaAgent session
