@@ -50,3 +50,63 @@ grantiva simulator cleanup
 # Spot leaks from non-compliant scripts (should stay near zero)
 xcrun simctl list devices | grep -c "TienLen Flow"
 ```
+
+## Runner ownership and interrupted runs (2026-08-28)
+
+A separate lifecycle gap, reported from a two-simulator concurrent E2E setup:
+cancelling a `grantiva run --keep-alive` left `grantiva-runner`, WebDriverAgent's
+`xcodebuild test-without-building`, and a `simctl diagnose` alive and still
+owning the simulator, while `grantiva simulator sessions` reported nothing.
+
+### Root cause
+
+Two independent things, neither of them the capacity ledger:
+
+1. **The interrupt never arrived.** grantiva installed no signal handler. A shell
+   running a script starts asynchronous commands (`grantiva run … &`) with SIGINT
+   and SIGQUIT set to `SIG_IGN`, and children inherit that disposition — so
+   `kill -INT` against a backgrounded keep-alive run did nothing at all. grantiva
+   kept running and kept holding the simulator lease, which is what produced
+   "Simulator … is already owned by another Grantiva run" on the next run.
+2. **Nothing reaped the descendants.** Even when grantiva did die, the runner and
+   everything it had started (WebDriverAgent, `simctl diagnose`) shared grantiva's
+   process group and were never signalled as a unit.
+
+The two ledgers legitimately disagree, and that is by design: `sessions.json`
+records **boot capacity** — simulators grantiva booted — while the lease file
+under `~/.grantiva/runner/locks/<udid>.lock` records **runner ownership**. A run
+against an already-booted simulator has a lease and no session record. What was
+missing was a way to see and act on the lease.
+
+An earlier theory — that the lease descriptor leaked into the runner because it
+was opened without `O_CLOEXEC` — was tested and **disproved**: both
+`Foundation.Process` and grantiva's spawn path use `POSIX_SPAWN_CLOEXEC_DEFAULT`,
+so the descriptor never reaches a child and the lock is released when grantiva
+exits. `O_CLOEXEC` was added anyway as defence in depth.
+
+### What is fixed
+
+- **The lease names its owner.** grantiva's pid, the runner's pid, and whether the
+  run is `--keep-alive` are written into the lock file when the claim is made and
+  cleared when it is released, including on signal. The "already owned" error
+  quotes them and names the command that frees the device.
+- **The runner gets its own process group,** and SIGINT/SIGTERM are forwarded to
+  the whole group, so one interrupt takes down grantiva-runner, WebDriverAgent,
+  and any diagnostics with it. The handler is installed only on paths that spawn
+  a runner, and replaces an inherited `SIG_IGN` so a backgrounded run can be
+  interrupted at all.
+- **`grantiva simulator teardown --udid <UDID> --force`** reclaims a device by
+  live process inspection when the ledger has nothing to act on: it kills the
+  runner / WebDriverAgent / `simctl diagnose` processes carrying that UDID,
+  breaks the lease, and clears any stale capacity record. It replaces a
+  hand-written `pkill` trap.
+
+### Verifying health later
+
+```sh
+# Who owns a simulator right now
+cat ~/.grantiva/runner/locks/<udid>.lock
+
+# Reclaim it regardless of what the ledger says
+grantiva simulator teardown --udid <UDID> --force
+```

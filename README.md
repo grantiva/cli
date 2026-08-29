@@ -71,12 +71,21 @@ grantiva run --flow flows/onboarding.yaml --keep-alive --logs
 grantiva hierarchy > state.xml
 ```
 
-- **`--keep-alive`** — Holds the GrantivaAgent session open after flows complete. The app stays frozen in whatever state the flow left it. Ctrl-C to release.
+- **`--keep-alive`** — Holds the GrantivaAgent session open after flows complete. The app stays frozen in whatever state the flow left it. Ctrl-C (or `kill -INT` on a backgrounded run) releases it, reaping grantiva-runner, WebDriverAgent, and any diagnostics they started.
+- **`--ready-file <path>`** — Writes that file once, atomically, when every flow has finished. With `--keep-alive` the session deliberately outlives the flows, so process exit is not a completion signal and `report.json` is rewritten incrementally; wait on this file instead:
+
+  ```bash
+  grantiva run --flow flows/advertise.yaml --keep-alive --ready-file /tmp/advertise.ready &
+  while [ ! -f /tmp/advertise.ready ]; do sleep 0.2; done
+  jq -r .status /tmp/advertise.ready   # passed | failed | interrupted
+  ```
+- **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` environment, so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON.
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
 - **`--logs`** — Streams simulator app logs (`xcrun simctl spawn log stream`) prefixed with `[log]` interleaved with the flow output. Auto-scopes the predicate to your app's bundle ID.
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter for narrowing to specific subsystems, categories, or processes.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
+- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory. Nothing is written to `./.grantiva/captures` when it is given.
 
 ## Configuration
 
@@ -256,10 +265,10 @@ grantiva ci run             Run full CI pipeline (build -> capture -> diff -> up
 grantiva diff capture       Capture screenshots for all configured screens
 grantiva diff compare       Diff captures against baselines
 grantiva diff approve       Promote captures to baselines
-grantiva simulator ensure   Create or reuse an exact named simulator
+grantiva simulator ensure   Create or reuse a named simulator and boot it (--name is enough)
 grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
-grantiva simulator teardown Shut down every simulator owned by a ticket/session
+grantiva simulator teardown End a session, or reclaim one simulator with --udid <UDID> --force
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
@@ -281,10 +290,29 @@ durable owner, and release it when the ticket completes:
 
 ```bash
 export GRANTIVA_SESSION_ID=APP-652
-grantiva simulator ensure --name "APP-652 iPhone" --device-type "iPhone 17 Pro" --runtime latest --boot
+grantiva simulator ensure --name "APP-652 iPhone 17 Pro"
 # build, install, and run as needed
 grantiva simulator teardown --session-id APP-652
 ```
+
+`ensure` needs only `--name`: it reads the device type out of the name, picks the
+newest installed runtime, reuses an existing simulator with that name, and boots
+it. Pass `--device-type` / `--runtime` to pin them exactly, and `--no-boot` to
+create without booting. `--json` reports the UDID and display geometry.
+
+### Reclaiming a simulator
+
+A run that was killed outright — rather than interrupted — can leave
+grantiva-runner, WebDriverAgent's `xcodebuild`, or a `simctl diagnose` still
+owning a simulator, with nothing in the session ledger to tear down. Reclaim it
+by UDID:
+
+```bash
+grantiva simulator teardown --udid "$UDID" --force
+```
+
+This kills whatever is holding that simulator, releases the lease, and clears any
+stale capacity record. `--session-id` and `--udid` are mutually exclusive.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
