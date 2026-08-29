@@ -285,6 +285,28 @@ grantiva init               Generate grantiva.yml
 
 All commands support `--json` for structured output.
 
+### stdout is the result, stderr is the commentary
+
+Everything a caller captures or parses — a `--json` payload, the `ensure` UDID,
+a result table, a dumped hierarchy — goes to **stdout**, undecorated. Progress
+narration, warnings, and errors go to **stderr**. So both of these work, and
+neither sees the other's output:
+
+```bash
+udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
+grantiva doctor --json | jq '.[] | select(.status == "fail")'
+```
+
+Two flags adjust the stderr side only; neither changes stdout:
+
+- **`--verbose`** — adds debug-level detail, with timestamps and labels, including every subprocess Grantiva runs and its exit status.
+- **`--quiet`** — silences progress narration. Warnings and errors still print,
+  and the command's result on stdout is untouched, so
+  `grantiva doctor --json --quiet | jq` is still valid JSON.
+
+`--json` already suppresses narration on its own: asking for a machine-readable
+result does not ask for a running commentary.
+
 Grantiva admits at most four Grantiva-booted simulators at once. A fifth boot
 waits for up to ten minutes and reports the sessions occupying capacity. Set
 `GRANTIVA_SESSION_ID` to a ticket identifier so separate CLI commands share one

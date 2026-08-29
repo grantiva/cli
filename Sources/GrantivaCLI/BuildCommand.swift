@@ -47,9 +47,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
         let device = try await SimulatorManager.live.boot(nameOrUDID: resolved.simulator)
         let destination = "platform=iOS Simulator,id=\(device.udid)"
 
-        if !options.json {
-            print("[grantiva] Building \(buildScheme) for \(device.name)...")
-        }
+        options.note("[grantiva] Building \(buildScheme) for \(device.name)...")
 
         let result = try await XcodeBuildRunner().build(
             scheme: buildScheme,
@@ -60,9 +58,9 @@ struct BuildOnlyCommand: AsyncParsableCommand {
         )
 
         if options.json {
-            print(try JSONOutput.string(result))
+            Output.line(try JSONOutput.string(result))
         } else {
-            print(TableFormatter().formatBuild(result))
+            Output.line(TableFormatter().formatBuild(result))
         }
 
         if !result.success {
@@ -117,13 +115,9 @@ struct InstallCommand: AsyncParsableCommand {
         var productPath: String?
 
         if buildOptions.shouldSkipInstall {
-            if !options.json {
-                print("[grantiva] Skipping build and install (--no-build)")
-            }
+            options.note("[grantiva] Skipping build and install (--no-build)")
         } else if let resolvedBinary {
-            if !options.json {
-                print("[grantiva] Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
-            }
+            options.note("[grantiva] Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
             productPath = resolvedBinary.appPath
         } else {
             guard let buildScheme = resolved.scheme else {
@@ -132,9 +126,7 @@ struct InstallCommand: AsyncParsableCommand {
                 )
             }
 
-            if !options.json {
-                print("[grantiva] Building \(buildScheme) for \(device.name)...")
-            }
+            options.note("[grantiva] Building \(buildScheme) for \(device.name)...")
 
             let result = try await XcodeBuildRunner().build(
                 scheme: buildScheme,
@@ -145,12 +137,12 @@ struct InstallCommand: AsyncParsableCommand {
             )
 
             if !options.json {
-                print(TableFormatter().formatBuild(result))
+                Output.line(TableFormatter().formatBuild(result))
             }
 
             guard result.success else {
                 if options.json {
-                    print(try JSONOutput.string(result))
+                    Output.line(try JSONOutput.string(result))
                 }
                 throw ExitCode.failure
             }
@@ -167,9 +159,7 @@ struct InstallCommand: AsyncParsableCommand {
         let runner = XcodeBuildRunner()
 
         if let productPath {
-            if !options.json {
-                print("[grantiva] Installing \(bid)...")
-            }
+            options.note("[grantiva] Installing \(bid)...")
             try await runner.install(bundleId: bid, productPath: productPath, udid: device.udid)
         }
 
@@ -178,9 +168,7 @@ struct InstallCommand: AsyncParsableCommand {
             : nil
 
         let status = try await completeInstall {
-            if !options.json {
-                print("[grantiva] Launching \(bid)...")
-            }
+            options.note("[grantiva] Launching \(bid)...")
             try await runner.launch(bundleId: bid, udid: device.udid)
         }
 
@@ -193,11 +181,11 @@ struct InstallCommand: AsyncParsableCommand {
                 appPath: productPath,
                 dataContainerPath: dataContainerPath
             )
-            print(try JSONOutput.string(result))
+            Output.line(try JSONOutput.string(result))
         } else if noLaunch {
-            print("[grantiva] Done — \(bid) installed on \(device.name) (not launched)")
+            Output.line("[grantiva] Done — \(bid) installed on \(device.name) (not launched)")
         } else {
-            print("[grantiva] Done — \(bid) running on \(device.name)")
+            Output.line("[grantiva] Done — \(bid) running on \(device.name)")
         }
     }
 

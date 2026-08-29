@@ -29,22 +29,20 @@ struct RunnerInstallCommand: AsyncParsableCommand {
     @OptionGroup var options: GlobalOptions
 
     func run() async throws {
-        if !options.json {
-            print("Extracting runner...")
-        }
+        options.note("Extracting runner...")
 
         let manager = RunnerManager.live
         try await manager.ensureAvailable()
 
         if options.json {
-            print(try JSONOutput.string([
+            Output.line(try JSONOutput.string([
                 "status": "installed",
                 "path": manager.runnerPath(),
                 "version": RunnerManager.runnerVersion,
             ]))
         } else {
-            print("Runner installed at \(manager.runnerPath())")
-            print("Version: \(RunnerManager.runnerVersion)")
+            Output.line("Runner installed at \(manager.runnerPath())")
+            Output.line("Version: \(RunnerManager.runnerVersion)")
         }
     }
 }
@@ -62,9 +60,9 @@ struct RunnerVersionCommand: AsyncParsableCommand {
 
     func run() async throws {
         if options.json {
-            print(try JSONOutput.string(["version": RunnerManager.runnerVersion]))
+            Output.line(try JSONOutput.string(["version": RunnerManager.runnerVersion]))
         } else {
-            print("grantiva-runner \(RunnerManager.runnerVersion)")
+            Output.line("grantiva-runner \(RunnerManager.runnerVersion)")
         }
     }
 }
@@ -93,15 +91,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // Check for existing session
         if let existing = try? RunnerSessionInfo.load(), existing.isAlive {
             if options.json {
-                print(try JSONOutput.string([
+                Output.line(try JSONOutput.string([
                     "status": "already_running",
                     "port": "\(existing.wdaPort)",
                     "pid": "\(existing.pid)",
                     "bundle_id": existing.bundleId,
                 ]))
             } else {
-                print("Runner already running (pid \(existing.pid), WDA port \(existing.wdaPort))")
-                print("Use 'grantiva runner stop' to stop it first.")
+                Output.line("Runner already running (pid \(existing.pid), WDA port \(existing.wdaPort))")
+                Output.line("Use 'grantiva runner stop' to stop it first.")
             }
             return
         }
@@ -121,11 +119,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let simulatorLease = try SimulatorLease.acquire(udid: device.udid)
         defer { simulatorLease.release() }
 
-        if !options.json {
-            print("Starting runner...")
-            print("  Bundle ID: \(resolvedBundleId)")
-            print("  Simulator: \(device.name) (\(device.udid))")
-        }
+        options.note("Starting runner...")
+        options.note("  Bundle ID: \(resolvedBundleId)")
+        options.note("  Simulator: \(device.name) (\(device.udid))")
 
         // Ensure runner binary is available
         let runner = RunnerManager.live
@@ -230,7 +226,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         try session.write()
 
         if options.json {
-            print(try JSONOutput.string([
+            Output.line(try JSONOutput.string([
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(runnerPid)",
@@ -239,14 +235,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "log": logPath,
             ]))
         } else {
-            print("Runner started (detached)")
-            print("  WDA port: \(port)")
-            print("  PID:      \(runnerPid)")
-            print("  Log:      \(logPath)")
-            print("  Session:  \(RunnerSessionInfo.path)")
-            print("")
-            print("Tail the log with: tail -f \(logPath)")
-            print("Use 'grantiva runner stop' to stop the session.")
+            Output.line("Runner started (detached)")
+            Output.line("  WDA port: \(port)")
+            Output.line("  PID:      \(runnerPid)")
+            Output.line("  Log:      \(logPath)")
+            Output.line("  Session:  \(RunnerSessionInfo.path)")
+            Output.line("")
+            Output.line("Tail the log with: tail -f \(logPath)")
+            Output.line("Use 'grantiva runner stop' to stop the session.")
         }
     }
 
@@ -314,7 +310,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         try session.write()
 
         if options.json {
-            print(try JSONOutput.string([
+            Output.line(try JSONOutput.string([
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(process.processIdentifier)",
@@ -322,13 +318,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "udid": device.udid,
             ]))
         } else {
-            print("Runner started")
-            print("  WDA port: \(port)")
-            print("  PID:      \(process.processIdentifier)")
-            print("  Session:  \(RunnerSessionInfo.path)")
-            print("")
-            print("Use 'grantiva runner dump-hierarchy' to inspect the view hierarchy.")
-            print("Use 'grantiva runner stop' to stop the session.")
+            Output.line("Runner started")
+            Output.line("  WDA port: \(port)")
+            Output.line("  PID:      \(process.processIdentifier)")
+            Output.line("  Session:  \(RunnerSessionInfo.path)")
+            Output.line("")
+            Output.line("Use 'grantiva runner dump-hierarchy' to inspect the view hierarchy.")
+            Output.line("Use 'grantiva runner stop' to stop the session.")
         }
     }
 
@@ -383,9 +379,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
     func run() async throws {
         guard let session = try? RunnerSessionInfo.load() else {
             if options.json {
-                print(try JSONOutput.string(["status": "not_running"]))
+                Output.line(try JSONOutput.string(["status": "not_running"]))
             } else {
-                print("No active session found.")
+                Output.line("No active session found.")
             }
             return
         }
@@ -403,9 +399,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
         RunnerSessionInfo.remove()
 
         if options.json {
-            print(try JSONOutput.string(["status": "stopped", "pid": "\(session.pid)"]))
+            Output.line(try JSONOutput.string(["status": "stopped", "pid": "\(session.pid)"]))
         } else {
-            print("Runner stopped (pid \(session.pid))")
+            Output.line("Runner stopped (pid \(session.pid))")
         }
     }
 }
@@ -487,14 +483,14 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
 
         switch format.lowercased() {
         case "xml":
-            print(xmlSource)
+            Output.line(xmlSource)
 
         case "json":
             // Parse XML to JSON
             let parser = WDAHierarchyXMLParser(xml: xmlSource)
             let tree = parser.parse()
             let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
-            print(String(data: jsonData, encoding: .utf8) ?? "{}")
+            Output.line(String(data: jsonData, encoding: .utf8) ?? "{}")
 
         case "tree":
             // Parse XML and pretty-print as tree
@@ -533,7 +529,7 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             desc += " (disabled)"
         }
 
-        print(desc)
+        Output.line(desc)
 
         if let children = element["children"] as? [[String: Any]] {
             for child in children {

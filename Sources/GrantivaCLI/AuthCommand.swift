@@ -75,11 +75,11 @@ struct AuthCommand: AsyncParsableCommand {
                     baseURL: baseURL,
                     apiKeyPrefix: meResponse.apiKeyPrefix
                 )
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print("Authenticated as \(meResponse.email)")
-                print("API key: \(meResponse.apiKeyPrefix)...")
-                print("Credentials saved to ~/.grantiva/auth.json")
+                Output.line("Authenticated as \(meResponse.email)")
+                Output.line("API key: \(meResponse.apiKeyPrefix)...")
+                Output.line("Credentials saved to ~/.grantiva/auth.json")
             }
         }
 
@@ -109,11 +109,9 @@ struct AuthCommand: AsyncParsableCommand {
             try process.run()
             process.waitUntilExit()
 
-            if !options.json {
-                print("Opening browser to sign in...")
-                print("If the browser doesn't open, visit: \(loginURL)")
-                print("Waiting for authentication...")
-            }
+            options.note("Opening browser to sign in...")
+            options.note("If the browser doesn't open, visit: \(loginURL)")
+            options.note("Waiting for authentication...")
 
             // 3. Poll for completion
             let pollURL = URL(string: "\(baseURL)/api/v1/auth/cli/sessions/\(session.sessionId)")!
@@ -156,24 +154,21 @@ struct AuthCommand: AsyncParsableCommand {
                             baseURL: baseURL,
                             apiKeyPrefix: prefix
                         )
-                        print(try JSONOutput.string(result))
+                        Output.line(try JSONOutput.string(result))
                     } else {
-                        print("Authenticated as \(email)")
-                        print("API key: \(prefix)...")
-                        print("Credentials saved to ~/.grantiva/auth.json")
+                        Output.line("Authenticated as \(email)")
+                        Output.line("API key: \(prefix)...")
+                        Output.line("Credentials saved to ~/.grantiva/auth.json")
                     }
                     return
                 }
             }
 
             // Timeout
-            if options.json {
-                throw GrantivaError.networkError("Authentication timed out", 0)
-            } else {
-                print("Authentication timed out after 5 minutes.")
-                print("You can also authenticate directly: grantiva auth login --api-key <key>")
-                throw GrantivaError.networkError("Authentication timed out", 0)
-            }
+            // The thrown error carries the failure; this is only the hint that
+            // goes with it, so it is a diagnostic and not part of any result.
+            options.note("You can also authenticate directly: grantiva auth login --api-key <key>")
+            throw GrantivaError.networkError("Authentication timed out after 5 minutes", 0)
         }
     }
 
@@ -204,11 +199,11 @@ struct AuthCommand: AsyncParsableCommand {
                         baseURL: baseURL,
                         apiKeyPrefix: prefix
                     )
-                    print(try JSONOutput.string(result))
+                    Output.line(try JSONOutput.string(result))
                 } else {
-                    print("Authenticated via environment variable")
-                    print("  Base URL: \(baseURL)")
-                    print("  API key:  \(prefix)...")
+                    Output.line("Authenticated via environment variable")
+                    Output.line("  Base URL: \(baseURL)")
+                    Output.line("  API key:  \(prefix)...")
                 }
                 return
             }
@@ -224,14 +219,14 @@ struct AuthCommand: AsyncParsableCommand {
                         baseURL: credentials.baseURL,
                         apiKeyPrefix: prefix
                     )
-                    print(try JSONOutput.string(result))
+                    Output.line(try JSONOutput.string(result))
                 } else {
-                    print("Authenticated via ~/.grantiva/auth.json")
+                    Output.line("Authenticated via ~/.grantiva/auth.json")
                     if let email = credentials.email {
-                        print("  Email:    \(email)")
+                        Output.line("  Email:    \(email)")
                     }
-                    print("  Base URL: \(credentials.baseURL)")
-                    print("  API key:  \(prefix)...")
+                    Output.line("  Base URL: \(credentials.baseURL)")
+                    Output.line("  API key:  \(prefix)...")
                 }
                 return
             }
@@ -244,9 +239,9 @@ struct AuthCommand: AsyncParsableCommand {
                     baseURL: nil,
                     apiKeyPrefix: nil
                 )
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print("Not authenticated. Run: grantiva auth login")
+                Output.line("Not authenticated. Run: grantiva auth login")
             }
         }
     }
@@ -268,9 +263,9 @@ struct AuthCommand: AsyncParsableCommand {
 
             if options.json {
                 let result = LogoutResult(success: true, message: "Credentials removed")
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print("Logged out. Credentials removed from ~/.grantiva/auth.json")
+                Output.line("Logged out. Credentials removed from ~/.grantiva/auth.json")
             }
         }
     }

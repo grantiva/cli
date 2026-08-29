@@ -66,9 +66,7 @@ struct DiffCommand: AsyncParsableCommand {
 
                 if let resolvedBinary {
                     // Pre-built binary provided via --app-file
-                    if !options.json {
-                        print("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
-                    }
+                    options.note("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
                     productPath = resolvedBinary.appPath
                 } else {
                     // Build from source
@@ -78,9 +76,7 @@ struct DiffCommand: AsyncParsableCommand {
                         )
                     }
 
-                    if !options.json {
-                        print("Building \(buildScheme)...")
-                    }
+                    options.note("Building \(buildScheme)...")
 
                     let buildResult = try await XcodeBuildRunner().build(
                         scheme: buildScheme,
@@ -92,9 +88,9 @@ struct DiffCommand: AsyncParsableCommand {
 
                     guard buildResult.success else {
                         if options.json {
-                            print(try JSONOutput.string(buildResult))
+                            Output.line(try JSONOutput.string(buildResult))
                         } else {
-                            print(TableFormatter().formatBuild(buildResult))
+                            Output.line(TableFormatter().formatBuild(buildResult))
                         }
                         throw ExitCode.failure
                     }
@@ -112,9 +108,7 @@ struct DiffCommand: AsyncParsableCommand {
                     try await Task.sleep(for: .seconds(2))
                 }
 
-                if !options.json {
-                    print("Capturing \(resolved.screens.count) screen(s)...")
-                }
+                options.note("Capturing \(resolved.screens.count) screen(s)...")
             } else {
                 // --no-build still honors an explicit target. This matters on
                 // hosts where an iPad is already booted while the evidence
@@ -133,9 +127,7 @@ struct DiffCommand: AsyncParsableCommand {
             let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
             let target = CaptureSimulatorTarget(name: device.name, udid: device.udid, geometry: geometry)
 
-            if !options.json {
-                print("Capturing \(resolved.screens.count) screen(s)...")
-            }
+            options.note("Capturing \(resolved.screens.count) screen(s)...")
 
             let captures = try await RunnerSession.run(
                 screens: resolved.screens,
@@ -148,16 +140,16 @@ struct DiffCommand: AsyncParsableCommand {
             // Print step-by-step results
             if !options.json {
                 for capture in captures {
-                    print("\n  \(capture.screenName)")
+                    Output.line("\n  \(capture.screenName)")
                     for step in capture.steps {
                         let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
-                        print("    \(icon) \(step.action)")
+                        Output.line("    \(icon) \(step.action)")
                         if let msg = step.message {
-                            print("      \(msg)")
+                            Output.line("      \(msg)")
                         }
                     }
                 }
-                print("")
+                Output.line("")
             }
 
             let result = CaptureResult(
@@ -168,9 +160,9 @@ struct DiffCommand: AsyncParsableCommand {
             )
 
             if options.json {
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print(TableFormatter().formatCapture(result))
+                Output.line(TableFormatter().formatCapture(result))
             }
         }
     }
@@ -231,9 +223,7 @@ struct DiffCommand: AsyncParsableCommand {
                     var productPath: String?
 
                     if let resolvedBinary {
-                        if !options.json {
-                            print("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
-                        }
+                        options.note("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
                         productPath = resolvedBinary.appPath
                     } else {
                         guard let buildScheme = resolved.scheme else {
@@ -242,9 +232,7 @@ struct DiffCommand: AsyncParsableCommand {
                             )
                         }
 
-                        if !options.json {
-                            print("Building \(buildScheme)...")
-                        }
+                        options.note("Building \(buildScheme)...")
 
                         let buildResult = try await XcodeBuildRunner().build(
                             scheme: buildScheme,
@@ -256,9 +244,9 @@ struct DiffCommand: AsyncParsableCommand {
 
                         guard buildResult.success else {
                             if options.json {
-                                print(try JSONOutput.string(buildResult))
+                                Output.line(try JSONOutput.string(buildResult))
                             } else {
-                                print(TableFormatter().formatBuild(buildResult))
+                                Output.line(TableFormatter().formatBuild(buildResult))
                             }
                             throw ExitCode.failure
                         }
@@ -280,9 +268,7 @@ struct DiffCommand: AsyncParsableCommand {
                     throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
                 }
 
-                if !options.json {
-                    print("Capturing \(resolved.screens.count) screen(s)...")
-                }
+                options.note("Capturing \(resolved.screens.count) screen(s)...")
 
                 let captures = try await RunnerSession.run(
                     screens: resolved.screens,
@@ -294,16 +280,16 @@ struct DiffCommand: AsyncParsableCommand {
                 // Print step-by-step results
                 if !options.json {
                     for capture in captures {
-                        print("\n  \(capture.screenName)")
+                        Output.line("\n  \(capture.screenName)")
                         for step in capture.steps {
                             let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
-                            print("    \(icon) \(step.action)")
+                            Output.line("    \(icon) \(step.action)")
                             if let msg = step.message {
-                                print("      \(msg)")
+                                Output.line("      \(msg)")
                             }
                         }
                     }
-                    print("")
+                    Output.line("")
                 }
             }
 
@@ -401,9 +387,9 @@ struct DiffCommand: AsyncParsableCommand {
             )
 
             if options.json {
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print(TableFormatter().formatCompare(result))
+                Output.line(TableFormatter().formatCompare(result))
             }
 
             if !allPassed {
@@ -466,9 +452,9 @@ struct DiffCommand: AsyncParsableCommand {
             )
 
             if options.json {
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
             } else {
-                print(TableFormatter().formatApprove(result))
+                Output.line(TableFormatter().formatApprove(result))
             }
         }
     }

@@ -74,10 +74,10 @@ struct HierarchyCommand: AsyncParsableCommand {
 
         // WDA wraps /source in {"value": "<xml>"}. Unwrap for cleanliness.
         if format == .xml, let wrapped = unwrapWDASource(data) {
-            print(wrapped)
+            Output.line(wrapped)
         } else {
-            FileHandle.standardOutput.write(data)
-            print("")
+            Output.write(data)
+            Output.line("")
         }
     }
 

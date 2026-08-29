@@ -9,7 +9,14 @@
 - **`grantiva doctor` wrote ANSI escapes into redirected output.** `grantiva doctor > log.txt` produced a file full of raw SGR sequences. Colour is now emitted only when stdout is a terminal, and `NO_COLOR` suppresses it.
 
 ### Changed
+- **Diagnostics and program output are now on separate streams throughout the CLI.** Every command used to write both through `print`, so progress narration, warnings, and results all landed on stdout together — the arrangement that produced the 1.7.2 `simulator ensure` bug, where `udid=$(grantiva simulator ensure …)` captured a sentence instead of an identifier. The split is now structural rather than per-command: results go to stdout via a dedicated emitter, and everything else goes through Swift Logging to stderr. `grantiva doctor --json | jq` and `$(grantiva simulator ensure …)` see only the result; a terminal still shows the narration.
+- Log lines are rendered for a terminal rather than for a log store. At the default level a diagnostic is the bare message, exactly as it read before — no timestamp, level, or label. Warnings are prefixed `Warning:` and errors `Error:`; timestamps, labels, and metadata appear only under `--verbose`.
+- The "Waiting for simulator capacity" line is now logged as a warning rather than as narration, so it reads `Warning: Waiting for simulator capacity (4/4): …`. It is the only explanation for a stall that runs to `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` — ten minutes by default, and `--quiet` would otherwise have made a host at its simulator limit indistinguishable from a hang.
 - `grantiva simulator teardown --force --json` now reports `reclaimed`, distinguishing a teardown that killed a stranded runner or broke a lease from one that found the device already free. Both remain exit 0.
+
+### Added
+- **`--verbose`** raises diagnostics to debug level, with timestamps, the logger label, and metadata. Every subprocess Grantiva runs is logged there — `$ xcrun simctl list devices --json` and its exit status — which is the first thing anyone asks for when simctl or xcodebuild misbehaves.
+- **`--quiet`** silences progress narration on stderr; warnings and errors still print. Neither flag touches stdout, so `grantiva doctor --json --quiet | jq` is still valid JSON.
 
 ## v1.7.2 — 2026-08-29
 

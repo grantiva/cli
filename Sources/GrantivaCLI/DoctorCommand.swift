@@ -13,9 +13,9 @@ struct DoctorCommand: AsyncParsableCommand {
         let checks = await DoctorRunner().runAllChecks()
 
         if options.json {
-            print(try JSONOutput.string(checks))
+            Output.line(try JSONOutput.string(checks))
         } else {
-            print(DoctorFormatter().format(checks))
+            Output.line(DoctorFormatter().format(checks))
         }
 
         // `grantiva doctor || exit 1` is the intended CI preflight, and it could
