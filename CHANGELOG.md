@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.2 — 2026-08-29
+
+### Fixed
+- **`grantiva simulator ensure` printed prose where a UDID was expected.** stdout carried `Created iPhone 17 (UDID) — Booted`, so `udid=$(grantiva simulator ensure --name "iPhone 17")` captured a sentence rather than an identifier — and the failure surfaced later, as an unusable `--device` argument. Being captured that way is the reason the command exists: it replaces a `simctl list -j` + `create` + `bootstatus` shell function whose output was a UDID. stdout is now the UDID alone; the human-readable line moved to stderr, where a terminal shows it and a command substitution ignores it. `--json` is unchanged.
+
 ## v1.7.1 — 2026-08-29
 
 ### Added
