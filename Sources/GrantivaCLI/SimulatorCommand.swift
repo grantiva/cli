@@ -114,27 +114,42 @@ struct SimulatorCommand: AsyncParsableCommand {
             default:
                 break
             }
+            // `--udid "$UDID"` with UDID unset arrives here as "", which is
+            // non-nil and so satisfied the check above, then matched no
+            // process, released no lease, and exited 0 — reporting a
+            // reclaimed device to a script that had named none.
+            do {
+                if let udid { _ = try SimulatorUDID.validate(udid) }
+                if let sessionId { _ = try SimulatorUDID.validateSessionID(sessionId) }
+            } catch let error as GrantivaError {
+                throw ValidationError(error.errorDescription ?? String(describing: error))
+            }
         }
+
+        /// The validated targets. `validate()` has already rejected blank and
+        /// malformed values by the time these are read.
+        private var target: String? { udid?.trimmingCharacters(in: .whitespacesAndNewlines) }
+        private var session: String? { sessionId?.trimmingCharacters(in: .whitespacesAndNewlines) }
 
         func run() async throws {
             if force {
                 try await runForce()
                 return
             }
-            if let udid {
-                let result = try await SimulatorManager.live.teardown(udid: udid)
-                try report(outcomes: result, subject: udid)
+            if let target {
+                let result = try await SimulatorManager.live.teardown(udid: target)
+                try report(outcomes: result, subject: target)
                 return
             }
-            let outcomes = try await SimulatorManager.live.teardown(sessionId: sessionId ?? "")
-            try report(outcomes: outcomes, subject: sessionId ?? "")
+            let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
+            try report(outcomes: outcomes, subject: session ?? "")
         }
 
         private func runForce() async throws {
             var udids: [String] = []
-            if let udid {
-                udids = [udid]
-            } else if let sessionId {
+            if let target {
+                udids = [target]
+            } else if let sessionId = session {
                 udids = try await SimulatorManager.live.managedSessions()
                     .filter { $0.sessionId == sessionId }
                     .map(\.udid)

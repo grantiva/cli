@@ -100,6 +100,34 @@ final class SimulatorCommandTests: XCTestCase {
         }
     }
 
+    // `grantiva simulator teardown --udid "$UDID" --force` with UDID unset
+    // reaches the CLI as `--udid ""`. An empty string is non-nil, so it
+    // satisfied the "pass one selector" check, matched no process, released no
+    // lease, and exited 0 printing "No processes were holding ." — the script
+    // concluded it had reclaimed the device.
+    func testTeardownRejectsAnEmptyUDIDRatherThanReportingSuccess() {
+        XCTAssertThrowsError(try SimulatorCommand.Teardown.parse(["--udid", "", "--force"])) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("--udid is empty"), message)
+        }
+    }
+
+    func testTeardownRejectsAMalformedUDID() {
+        XCTAssertThrowsError(
+            try SimulatorCommand.Teardown.parse(["--udid", "not-a-udid-at-all", "--force"])
+        ) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("is not a simulator UDID"), message)
+        }
+    }
+
+    func testTeardownRejectsAnEmptySessionIdentifier() {
+        XCTAssertThrowsError(try SimulatorCommand.Teardown.parse(["--session-id", ""])) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("--session-id is empty"), message)
+        }
+    }
+
     func testEnsureNeedsOnlyAName() throws {
         let command = try SimulatorCommand.Ensure.parse(["--name", "iPhone 17"])
         XCTAssertEqual(command.name, "iPhone 17")

@@ -31,12 +31,19 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     public var processes: [ReapedProcess]
     public var leaseReleased: Bool
     public var capacityRecordsCleared: Int
+    /// Whether this teardown actually took something back. A `--force` run that
+    /// found nothing is a success — the device was already free — but it is not
+    /// the same event as one that killed a stranded runner, and a script that
+    /// expected to reclaim a busy device has no other way to tell them apart
+    /// (the exit code is 0 either way, deliberately).
+    public var reclaimed: Bool
 
     public init(udid: String, processes: [ReapedProcess], leaseReleased: Bool, capacityRecordsCleared: Int) {
         self.udid = udid
         self.processes = processes
         self.leaseReleased = leaseReleased
         self.capacityRecordsCleared = capacityRecordsCleared
+        self.reclaimed = !processes.isEmpty || leaseReleased || capacityRecordsCleared > 0
     }
 }
 

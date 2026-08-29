@@ -85,7 +85,33 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertEqual(result.udid, udid)
 
         // The whole point: the simulator can be claimed again afterwards.
-        let reclaimed = try SimulatorLease.acquire(udid: udid, directory: directory)
-        reclaimed.release()
+        let claim = try SimulatorLease.acquire(udid: udid, directory: directory)
+        claim.release()
+
+        XCTAssertTrue(result.reclaimed, "breaking a held lease is real work")
+    }
+
+    // A `--force` teardown that found nothing is a success — the device was
+    // already free — but it is not the same event as one that killed a stranded
+    // runner, and the exit code is 0 either way. The JSON has to say which.
+    func testAForceTeardownThatFoundNothingSaysSoInJSON() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-reaper-tests-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            snapshot: { "" }
+        )
+        XCTAssertTrue(result.processes.isEmpty)
+        XCTAssertFalse(result.leaseReleased)
+        XCTAssertFalse(result.reclaimed)
+
+        let object = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any]
+        )
+        XCTAssertEqual(object["reclaimed"] as? Bool, false)
     }
 }
