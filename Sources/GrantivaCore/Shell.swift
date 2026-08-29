@@ -12,6 +12,11 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     process.standardOutput = pipe
     process.standardError = errorPipe
 
+    // Every subprocess Grantiva runs, at debug level: this is what `--verbose`
+    // is for. When simctl or xcodebuild misbehaves, the exact invocation is the
+    // first thing anyone asks for.
+    GrantivaLog.logger.debug("$ \(command)")
+
     try process.run()
 
     // Read data BEFORE waitUntilExit to avoid pipe buffer deadlock
@@ -19,6 +24,7 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     let errData = errorPipe.fileHandleForReading.readDataToEndOfFile()
 
     process.waitUntilExit()
+    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
 
     let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 

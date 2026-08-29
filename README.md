@@ -299,7 +299,7 @@ grantiva doctor --json | jq '.[] | select(.status == "fail")'
 
 Two flags adjust the stderr side only; neither changes stdout:
 
-- **`--verbose`** — adds debug-level detail, with timestamps and labels.
+- **`--verbose`** — adds debug-level detail, with timestamps and labels, including every subprocess Grantiva runs and its exit status.
 - **`--quiet`** — silences progress narration. Warnings and errors still print,
   and the command's result on stdout is untouched, so
   `grantiva doctor --json --quiet | jq` is still valid JSON.

@@ -71,6 +71,18 @@ final class OutputStreamContractTests: XCTestCase {
         XCTAssertEqual(verbose.stdout, normal.stdout)
     }
 
+    func testVerboseAddsDebugDetailOnStderrOnly() throws {
+        // `doctor` shells out to xcode-select and xcodebuild, and every
+        // subprocess is logged at debug level.
+        let normal = try grantiva(["doctor"])
+        let verbose = try grantiva(["doctor", "--verbose"])
+
+        XCTAssertFalse(normal.stderr.contains("[debug]"), normal.stderr)
+        XCTAssertTrue(verbose.stderr.contains("[debug] "), verbose.stderr)
+        XCTAssertTrue(verbose.stderr.contains("$ xcode-select -p"), verbose.stderr)
+        XCTAssertFalse(verbose.stdout.contains("[debug]"), verbose.stdout)
+    }
+
     func testVerbosityFlagsAreAcceptedByCommandsWithoutJSON() throws {
         // `init` has no --json to hang the flags off, so it carries
         // VerbosityOptions directly. Parsing must still accept them.

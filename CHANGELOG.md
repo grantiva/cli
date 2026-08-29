@@ -14,7 +14,7 @@
 - `grantiva simulator teardown --force --json` now reports `reclaimed`, distinguishing a teardown that killed a stranded runner or broke a lease from one that found the device already free. Both remain exit 0.
 
 ### Added
-- **`--verbose`** raises diagnostics to debug level, with timestamps, the logger label, and metadata.
+- **`--verbose`** raises diagnostics to debug level, with timestamps, the logger label, and metadata. Every subprocess Grantiva runs is logged there — `$ xcrun simctl list devices --json` and its exit status — which is the first thing anyone asks for when simctl or xcodebuild misbehaves.
 - **`--quiet`** silences progress narration on stderr; warnings and errors still print. Neither flag touches stdout, so `grantiva doctor --json --quiet | jq` is still valid JSON.
 
 ## v1.7.2 — 2026-08-29
