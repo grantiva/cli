@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.7.1 — 2026-08-29
+
+### Added
+- **A prebuilt GrantivaAgent build for iOS 27 simulators.** The embedded caches covered iOS 26.2 and 26.4 only, so a first run against an iOS 27 simulator rebuilt WebDriverAgent from scratch — several minutes, and repeated on every fresh CI machine. iOS 27.0 is now cached alongside them. Bundles grantiva-runner 1.1.18-grantiva.7 (same runner code as grantiva.6; the version differs so upgrading clients re-extract and pick up the new cache).
+
 ## v1.7.0 — 2026-08-29
 
 ### Fixed in packaging
