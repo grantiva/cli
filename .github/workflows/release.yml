@@ -15,6 +15,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check the tag matches the compiled-in version
+        run: |
+          # The git tag carries a v prefix by convention; the version the binary
+          # reports must not (SemVer 2.0.0 sanctions the prefix for VCS tags
+          # only). Verify they agree before anything is published — a mismatch
+          # would ship a GitHub release and a Homebrew formula claiming a
+          # version `grantiva --version` does not report.
+          TAG="${{ github.ref_name }}"
+          SEMVER="${TAG#v}"
+          DECLARED=$(sed -n 's/.*grantivaVersion = "\(.*\)".*/\1/p' Sources/GrantivaCore/Version.swift)
+          if [ -z "$DECLARED" ]; then
+            echo "Could not read grantivaVersion from Sources/GrantivaCore/Version.swift" >&2
+            exit 1
+          fi
+          if [ "$SEMVER" != "$DECLARED" ]; then
+            echo "Tag $TAG implies version $SEMVER, but Version.swift declares $DECLARED." >&2
+            echo "Bump Version.swift to match the tag, or tag the version the binary reports." >&2
+            exit 1
+          fi
+          echo "tag $TAG / version $SEMVER — matches Version.swift"
+
       - name: Build universal binary
         run: swift build -c release --arch arm64 --arch x86_64 || true
 
@@ -38,7 +59,15 @@ jobs:
       - name: Update Homebrew formula
         run: |
           SHA=$(shasum -a 256 "grantiva-${{ github.ref_name }}-macos.tar.gz" | awk '{print $1}')
-          VERSION="${{ github.ref_name }}"
+
+          # TAG keeps the v prefix: it names the git tag and the release asset.
+          # SEMVER drops it, because Homebrew's `version` field is a version
+          # string, and SemVer 2.0.0 does not permit a leading v there — the
+          # prefix is only sanctioned for VCS tags. Without this the formula
+          # published `version "v1.6.5"` while `grantiva --version` printed
+          # `1.6.5`.
+          TAG="${{ github.ref_name }}"
+          SEMVER="${TAG#v}"
 
           git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/grantiva/homebrew-tap.git /tmp/homebrew-tap
           cd /tmp/homebrew-tap
@@ -47,9 +76,9 @@ jobs:
           class Grantiva < Formula
             desc "The CLI for iOS developers — visual regression testing, feature flags, and more"
             homepage "https://grantiva.io"
-            url "https://github.com/grantiva/cli/releases/download/${VERSION}/grantiva-${VERSION}-macos.tar.gz"
+            url "https://github.com/grantiva/cli/releases/download/${TAG}/grantiva-${TAG}-macos.tar.gz"
             sha256 "${SHA}"
-            version "${VERSION}"
+            version "${SEMVER}"
             license "MIT"
 
             depends_on :macos

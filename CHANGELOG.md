@@ -2,6 +2,9 @@
 
 ## v1.7.0 — 2026-08-29
 
+### Fixed in packaging
+- **The Homebrew formula declared a non-SemVer version.** The release workflow copied the git tag verbatim into the formula's `version` field, publishing `version "v1.6.5"` while `grantiva --version` printed `1.6.5`. SemVer 2.0.0 sanctions the `v` prefix for version-control tags only, not for version strings. The tag and the release asset keep the prefix; the formula's `version` no longer has it. The release now also refuses to publish when the tag disagrees with the version compiled into the binary.
+
 Bundles grantiva-runner 1.1.18-grantiva.6, which fixes three bugs that made flows **pass while asserting nothing**. If you have flows using `launchApp` `arguments:`, a `visible:` selector with both `id:` and `text:`, or a `text:` match that could collide with a longer label, re-read them: they may have been green for the wrong reason.
 
 ### Fixed in the bundled runner
