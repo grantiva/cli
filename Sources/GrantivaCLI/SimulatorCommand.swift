@@ -32,12 +32,14 @@ struct SimulatorCommand: AsyncParsableCommand {
                 name: name, deviceType: deviceType, runtime: runtime, boot: boot
             )
             if options.json {
-                print(try JSONOutput.string(result))
+                Output.line(try JSONOutput.string(result))
                 return
             }
             let rendered = Self.render(result)
-            FileHandle.standardError.write(Data(rendered.stderr.utf8))
-            print(rendered.stdout)
+            // The context line is a diagnostic: it goes to the log, which
+            // writes stderr. The UDID is the result, and goes to stdout.
+            GrantivaLog.logger.info("\(rendered.stderr)")
+            Output.line(rendered.stdout)
         }
 
         /// stdout is the UDID and nothing else, so it can be captured directly:
@@ -51,13 +53,15 @@ struct SimulatorCommand: AsyncParsableCommand {
         /// Booted" where they expected an identifier, and the failure surfaced
         /// later as an unusable --device argument.
         ///
-        /// The human-readable context still exists; it goes to stderr, where a
-        /// terminal shows it and a command substitution ignores it.
+        /// The human-readable context still exists; it is logged, and the log
+        /// writes stderr, where a terminal shows it and a command substitution
+        /// ignores it. It carries no trailing newline because the log handler
+        /// terminates its own lines.
         static func render(_ result: SimulatorProvisionResult) -> (stdout: String, stderr: String) {
             let verb = result.created ? "Created" : "Reused"
             return (
                 stdout: result.udid,
-                stderr: "\(verb) \(result.name) (\(result.udid)) — \(result.state)\n"
+                stderr: "\(verb) \(result.name) (\(result.udid)) — \(result.state)"
             )
         }
     }
@@ -68,7 +72,7 @@ struct SimulatorCommand: AsyncParsableCommand {
         func run() async throws {
             let device = try await SimulatorManager.live.delete(name: name)
             let result = DeleteResult(name: device.name, udid: device.udid, deleted: true)
-            if options.json { print(try JSONOutput.string(result)) } else { print("Deleted \(device.name) (\(device.udid))") }
+            if options.json { Output.line(try JSONOutput.string(result)) } else { Output.line("Deleted \(device.name) (\(device.udid))") }
         }
     }
 
@@ -78,13 +82,13 @@ struct SimulatorCommand: AsyncParsableCommand {
         func run() async throws {
             let sessions = try await SimulatorManager.live.managedSessions()
             if options.json {
-                print(try JSONOutput.string(sessions))
+                Output.line(try JSONOutput.string(sessions))
             } else if sessions.isEmpty {
-                print("No Grantiva-managed simulator sessions.")
+                Output.line("No Grantiva-managed simulator sessions.")
             } else {
-                print("Grantiva-managed simulator sessions (\(sessions.count)/\(SimulatorCapacity.live.maximum)):")
+                Output.line("Grantiva-managed simulator sessions (\(sessions.count)/\(SimulatorCapacity.live.maximum)):")
                 for session in sessions {
-                    print("  \(session.name) (\(session.udid)) — \(session.sessionId) [\(session.state.rawValue)]")
+                    Output.line("  \(session.name) (\(session.udid)) — \(session.sessionId) [\(session.state.rawValue)]")
                 }
             }
         }
@@ -166,31 +170,31 @@ struct SimulatorCommand: AsyncParsableCommand {
             }
 
             if options.json {
-                print(try JSONOutput.string(results))
+                Output.line(try JSONOutput.string(results))
                 return
             }
             for result in results {
                 if result.processes.isEmpty {
-                    print("No processes were holding \(result.udid).")
+                    Output.line("No processes were holding \(result.udid).")
                 } else {
                     for process in result.processes {
-                        print("Killed \(process.kind.rawValue) pid \(process.pid) holding \(result.udid).")
+                        Output.line("Killed \(process.kind.rawValue) pid \(process.pid) holding \(result.udid).")
                     }
                 }
                 if result.leaseReleased {
-                    print("Released the simulator lease for \(result.udid).")
+                    Output.line("Released the simulator lease for \(result.udid).")
                 }
                 if result.capacityRecordsCleared > 0 {
-                    print("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
+                    Output.line("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
                 }
             }
         }
 
         private func report(outcomes: [SimulatorTeardownOutcome], subject: String) throws {
             if options.json {
-                print(try JSONOutput.string(outcomes))
+                Output.line(try JSONOutput.string(outcomes))
             } else if outcomes.isEmpty {
-                print(
+                Output.line(
                     "No active Grantiva-managed simulators for \(subject). "
                         + "If a simulator is still owned, reclaim it with `grantiva simulator teardown --udid <UDID> --force`."
                 )
@@ -198,7 +202,7 @@ struct SimulatorCommand: AsyncParsableCommand {
                 for outcome in outcomes {
                     let session = outcome.session
                     let action = outcome.deleted ? "Deleted Grantiva-created" : "Shut down"
-                    print("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
+                    Output.line("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
                 }
             }
         }
@@ -213,12 +217,12 @@ struct SimulatorCommand: AsyncParsableCommand {
         func run() async throws {
             let removed = try await SimulatorManager.live.cleanup()
             if options.json {
-                print(try JSONOutput.string(removed))
+                Output.line(try JSONOutput.string(removed))
             } else if removed.isEmpty {
-                print("No orphaned Grantiva-created simulators to delete.")
+                Output.line("No orphaned Grantiva-created simulators to delete.")
             } else {
                 for record in removed {
-                    print("Deleted \(record.name) (\(record.udid)).")
+                    Output.line("Deleted \(record.name) (\(record.udid)).")
                 }
             }
         }

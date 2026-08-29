@@ -171,7 +171,7 @@ struct RunCommand: AsyncParsableCommand {
                 log("Streaming simulator logs\(predicate.map { " (predicate: \($0))" } ?? "")")
                 logStreamer = streamer
             } catch {
-                log("Warning: failed to start log stream: \(error)")
+                GrantivaLog.logger.warning("failed to start log stream: \(error)")
                 logStreamer = nil
             }
         } else {
@@ -207,9 +207,9 @@ struct RunCommand: AsyncParsableCommand {
 
             guard buildResult.success else {
                 if options.json {
-                    print(try JSONOutput.string(buildResult))
+                    Output.line(try JSONOutput.string(buildResult))
                 } else {
-                    print(TableFormatter().formatBuild(buildResult))
+                    Output.line(TableFormatter().formatBuild(buildResult))
                 }
                 throw ExitCode.failure
             }
@@ -291,24 +291,24 @@ struct RunCommand: AsyncParsableCommand {
         var allPassed = true
         if !options.json {
             for capture in captures {
-                print("\n  \(capture.screenName)")
+                Output.line("\n  \(capture.screenName)")
                 for step in capture.steps {
                     let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
-                    print("    \(icon) \(step.action)")
+                    Output.line("    \(icon) \(step.action)")
                     if let msg = step.message {
-                        print("      \(msg)")
+                        Output.line("      \(msg)")
                     }
                     if step.status != .passed {
                         allPassed = false
                     }
                 }
             }
-            print("")
+            Output.line("")
             let total = captures.count
             let passed = captures.filter { $0.steps.allSatisfy { $0.status == .passed } }.count
-            print("  Screens: \(total) total, \(passed) passed, \(total - passed) failed")
-            print("  Screenshots: \(captureDir)/")
-            print("")
+            Output.line("  Screens: \(total) total, \(passed) passed, \(total - passed) failed")
+            Output.line("  Screenshots: \(captureDir)/")
+            Output.line("")
         } else {
             struct RunResult: Codable, Sendable {
                 let screens: [ScreenResult]
@@ -345,7 +345,7 @@ struct RunCommand: AsyncParsableCommand {
                 },
                 allPassed: allPassed
             )
-            print(try JSONOutput.string(result))
+            Output.line(try JSONOutput.string(result))
         }
 
         if !allPassed {
@@ -353,8 +353,9 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// Progress narration for a human. Goes to stderr via the log; the run's
+    /// results go to stdout via `Output`.
     private func log(_ message: String) {
-        guard !options.json else { return }
-        GrantivaLog.logger.info("\(message)")
+        options.note(message)
     }
 }

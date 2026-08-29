@@ -77,12 +77,12 @@ struct RecordCommand: AsyncParsableCommand {
         try JSONEncoder.pretty.encode(report).write(to: reportURL)
 
         if options.json {
-            print(try JSONOutput.string(report))
+            Output.line(try JSONOutput.string(report))
         } else {
-            print("Recording: \(output)")
-            print("Frame report: \(reportURL.path)")
+            Output.line("Recording: \(output)")
+            Output.line("Frame report: \(reportURL.path)")
             for frame in frames {
-                print("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
+                Output.line("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
             }
         }
     }

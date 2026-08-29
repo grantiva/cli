@@ -38,7 +38,7 @@ struct CICommand: AsyncParsableCommand {
         func log(_ message: String, client: RangeClient? = nil, project: String? = nil, runId: String? = nil) {
             guard !options.json else { return }
             let line = "[grantiva] \(message)"
-            GrantivaLog.logger.info("\(message)")
+            options.note(message)
 
             // Fire-and-forget log append to backend
             if let client, let project, let runId {
@@ -142,9 +142,9 @@ struct CICommand: AsyncParsableCommand {
 
                     guard buildResult.success else {
                         if options.json {
-                            print(try JSONOutput.string(buildResult))
+                            Output.line(try JSONOutput.string(buildResult))
                         } else {
-                            print(TableFormatter().formatBuild(buildResult))
+                            Output.line(TableFormatter().formatBuild(buildResult))
                         }
                         throw ExitCode.failure
                     }
@@ -352,20 +352,20 @@ struct CICommand: AsyncParsableCommand {
                 )
 
                 if options.json {
-                    print(try JSONOutput.string(result))
+                    Output.line(try JSONOutput.string(result))
                 } else {
-                    print("")
-                    print("  Run:      \(result.runId)")
-                    print("  Status:   \(result.status)")
-                    print("  Branch:   \(result.branch)")
+                    Output.line("")
+                    Output.line("  Run:      \(result.runId)")
+                    Output.line("  Status:   \(result.status)")
+                    Output.line("  Branch:   \(result.branch)")
                     if let sha = result.commitSha {
-                        print("  Commit:   \(String(sha.prefix(8)))")
+                        Output.line("  Commit:   \(String(sha.prefix(8)))")
                     }
-                    print("  Trigger:  \(result.trigger)")
-                    print("  Screens:  \(result.screenCount) total, \(result.passedCount) passed, \(result.failedCount) failed, \(result.newCount) new")
-                    print("  Duration: \(String(format: "%.1fs", result.duration))")
-                    print("  URL:      \(result.url)")
-                    print("")
+                    Output.line("  Trigger:  \(result.trigger)")
+                    Output.line("  Screens:  \(result.screenCount) total, \(result.passedCount) passed, \(result.failedCount) failed, \(result.newCount) new")
+                    Output.line("  Duration: \(String(format: "%.1fs", result.duration))")
+                    Output.line("  URL:      \(result.url)")
+                    Output.line("")
                 }
 
                 if !allPassed {

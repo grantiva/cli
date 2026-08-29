@@ -1,11 +1,14 @@
 import ArgumentParser
 import Foundation
+import GrantivaCore
 
 struct InitCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "init",
         abstract: "Generate grantiva.yml in the current directory."
     )
+
+    @OptionGroup var verbosity: VerbosityOptions
 
     @Option(name: .long, help: "Scheme name")
     var scheme: String?
@@ -20,7 +23,7 @@ struct InitCommand: AsyncParsableCommand {
         // Generate grantiva.yml
         let configPath = "\(cwd)/grantiva.yml"
         if fm.fileExists(atPath: configPath) {
-            print("grantiva.yml already exists — skipping")
+            GrantivaLog.logger.info("grantiva.yml already exists — skipping")
         } else {
             let schemeName = scheme ?? detectScheme() ?? "MyApp"
             let bundleLine = bundleId.map { "bundle_id: \($0)" } ?? "# bundle_id: com.example.myapp"
@@ -46,7 +49,7 @@ struct InitCommand: AsyncParsableCommand {
             #     - small_tap_target
             """
             try yaml.write(toFile: configPath, atomically: true, encoding: .utf8)
-            print("Created grantiva.yml")
+            GrantivaLog.logger.info("Created grantiva.yml")
         }
 
     }
