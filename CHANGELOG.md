@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v1.8.0 — 2026-08-29
 
 ### Fixed
 - **`--ready-file` was unusable as documented.** The prescribed waiter — `while [ ! -f "$f" ]; do sleep 0.2; done` — was broken from both ends. A file left by a previous run was never cleared, so the waiter returned instantly and read the *previous* run's verdict: CI proceeding on a stale `passed` against a run that never started. And a failure before the runner started (no project, bad scheme, build failure, no simulator) wrote no file at all, so the same loop — which has no timeout — wedged the job until CI's global limit. The file is now deleted at startup, before any project, build, or simulator work, so its existence always means *this* run reached a terminal state; and a terminal status is written on every exit path, with a setup failure recording `failed`. An unwritable or non-file `--ready-file` path is now rejected at startup rather than at the end of a long suite, when the verdict has nowhere to go.
