@@ -1,6 +1,17 @@
 # Changelog
 
-## Unreleased
+## v1.7.0 — 2026-08-29
+
+Bundles grantiva-runner 1.1.18-grantiva.6, which fixes three bugs that made flows **pass while asserting nothing**. If you have flows using `launchApp` `arguments:`, a `visible:` selector with both `id:` and `text:`, or a `text:` match that could collide with a longer label, re-read them: they may have been green for the wrong reason.
+
+### Fixed in the bundled runner
+- **Launch-argument keys got an extra leading dash.** `arguments: { "--auto-advertise": true }` reached the app as `---auto-advertise`, so the flag was never seen and the flow passed anyway. A key that already starts with `-` is now passed through verbatim. The list form (`arguments: ["--auto-advertise"]`) is accepted too.
+- **`visible:` combined `id:` and `text:` with OR, not AND.** A selector naming both matched an element satisfying *either*, so a bogus `id:` alongside a matching `text:` passed. The WDA fast path now ANDs them, matching what the page-source path always did.
+- **`text:` matching is case-insensitive and unanchored**, so `text: "Advertising"` matched the label "Not advertising". The default is unchanged — every existing flow keeps working — but `exact: true` on a selector now matches the full string, case-sensitively.
+- **Intermittent "Failed to create session for app"** right after a previous session was killed. The WDA session request now retries with a status probe and backoff, rejects a response carrying no session id, and reports the underlying cause.
+- **An element below the fold reported "Element not found".** The failure now distinguishes a selector that matched nothing from one that matched an off-screen element, and points at `scrollUntilVisible`.
+- Skipped flows were never written to the report index and stayed `pending` in `report.json` forever.
+- The run summary table printed twice on a single-device run.
 
 ### Added
 - `grantiva simulator teardown --udid <UDID> --force` reclaims a simulator by live process inspection instead of the session ledger. It kills the `grantiva-runner`, WebDriverAgent `xcodebuild test-without-building`, and `simctl diagnose` processes holding that device, breaks the simulator lease, and clears any stale capacity record — the case `--session-id` could never serve, because a stranded run leaves `sessions.json` empty while the device is still owned. `--session-id` and `--udid` are mutually exclusive.
