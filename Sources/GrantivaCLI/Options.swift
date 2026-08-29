@@ -2,9 +2,37 @@ import ArgumentParser
 import Foundation
 import GrantivaCore
 
+/// Diagnostic verbosity. Split out of `GlobalOptions` so `grantiva init`, which
+/// has no `--json` to offer, can still take `--verbose` / `--quiet`.
+///
+/// Both flags are declared here for `--help` and for parsing; the level itself
+/// is resolved from the argument vector by `LogVerbosity`, because logging has
+/// to be bootstrapped before any command is parsed.
+struct VerbosityOptions: ParsableArguments {
+    @Flag(name: .long, help: "Print diagnostic detail (timestamps, labels, metadata) to stderr.")
+    var verbose = false
+
+    @Flag(name: .long, help: "Silence progress diagnostics on stderr; warnings and errors still print. Program output on stdout is unaffected.")
+    var quiet = false
+}
+
 struct GlobalOptions: ParsableArguments {
     @Flag(name: .long, help: "Output as JSON")
     var json = false
+
+    @OptionGroup var verbosity: VerbosityOptions
+
+    /// Progress narration for a human watching the command work. Goes to
+    /// stderr, never stdout.
+    ///
+    /// Suppressed under `--json`, which is unchanged from before the split: a
+    /// caller asking for a machine-readable result has not asked for a running
+    /// commentary. Warnings and errors are not routed through here and are
+    /// never suppressed.
+    func note(_ message: @autoclosure () -> String) {
+        guard !json else { return }
+        GrantivaLog.logger.info("\(message())")
+    }
 }
 
 struct BuildOptions: ParsableArguments {
