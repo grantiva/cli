@@ -123,3 +123,37 @@ final class CLILogHandlerTests: XCTestCase {
         var lines: [String] { lock.lock(); defer { lock.unlock() }; return storage }
     }
 }
+
+/// `--quiet` drops everything below `.warning`. Any diagnostic that is the sole
+/// explanation for a long silence therefore has to sit at `.warning` or above,
+/// or the flag turns a legible wait into an apparent hang.
+final class QuietSurvivesLongWaitsTests: XCTestCase {
+    func testCapacityWaitIsLoggedAboveTheQuietThreshold() {
+        let sessions = [
+            ManagedSimulatorSession(
+                udid: "EXACT-UDID", name: "APP-652 iPhone 17", sessionId: "APP-652",
+                ownerPID: 1, acquiredAt: Date(), state: .active
+            )
+        ]
+        let wait = SimulatorManager.capacityWait(sessions: sessions, maximum: 4)
+
+        XCTAssertEqual(wait.message, "Waiting for simulator capacity (1/4): APP-652 iPhone 17 [APP-652]")
+
+        // The stall this explains runs to GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS
+        // \u{2014} ten minutes by default \u{2014} and the caller cannot free a device
+        // or raise the cap without being told which sessions hold them.
+        let quiet = LogVerbosity.level(for: ["grantiva", "run", "--quiet"])
+        XCTAssertGreaterThanOrEqual(
+            wait.level, quiet,
+            "--quiet would silence the only explanation for a ten-minute wait"
+        )
+        XCTAssertEqual(wait.level, .warning)
+    }
+
+    func testTheQuietThresholdIsWhatThatTestAssumes() {
+        // Guards the test above against being satisfied by a lowered threshold.
+        XCTAssertEqual(LogVerbosity.level(for: ["--quiet"]), .warning)
+        XCTAssertGreaterThan(Logger.Level.warning, Logger.Level.notice)
+        XCTAssertGreaterThan(Logger.Level.notice, Logger.Level.info)
+    }
+}

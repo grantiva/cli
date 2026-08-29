@@ -1,4 +1,5 @@
 import Foundation
+import Logging
 
 public struct SimulatorManager: Sendable, Decodable {
     public static let live = SimulatorManager()
@@ -24,14 +25,31 @@ public struct SimulatorManager: Sendable, Decodable {
         try await bootedDevice().udid
     }
 
+    /// The line emitted while a boot waits for host capacity, and the level it
+    /// must go out at.
+    ///
+    /// `.warning`, not `.info`: this is the only explanation for a stall that
+    /// runs to `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` — ten minutes by
+    /// default — before failing. `--quiet` drops everything below `.warning`,
+    /// and a silenced wait is indistinguishable from a hang. A host already at
+    /// its simulator limit is an abnormal condition: the caller has to free a
+    /// device or raise the cap, and can do neither without being told.
+    static func capacityWait(
+        sessions: [ManagedSimulatorSession],
+        maximum: Int
+    ) -> (level: Logger.Level, message: String) {
+        let owners = sessions.map { "\($0.name) [\($0.sessionId)]" }.joined(separator: ", ")
+        return (.warning, "Waiting for simulator capacity (\(sessions.count)/\(maximum)): \(owners)")
+    }
+
     public func boot(nameOrUDID: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: nameOrUDID)
         if !device.isBooted {
             let capacity = SimulatorCapacity.live
             _ = try await capacity.reserve(device: device, devices: { try await listDevices() }) { sessions, elapsed in
                 guard Int(elapsed) % 10 == 0 else { return }
-                let owners = sessions.map { "\($0.name) [\($0.sessionId)]" }.joined(separator: ", ")
-                GrantivaLog.logger.info("Waiting for simulator capacity (\(sessions.count)/\(capacity.maximum)): \(owners)")
+                let wait = Self.capacityWait(sessions: sessions, maximum: capacity.maximum)
+                GrantivaLog.logger.log(level: wait.level, "\(wait.message)")
             }
             do {
                 _ = try await shell("xcrun simctl boot \(device.udid)")
