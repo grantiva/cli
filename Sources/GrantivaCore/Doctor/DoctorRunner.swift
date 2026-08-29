@@ -23,30 +23,49 @@ public struct DoctorRunner: Sendable {
         return checks
     }
 
+    /// Whether the environment is broken enough that a caller should stop.
+    ///
+    /// `grantiva doctor || exit 1` is the intended CI preflight. Only `.error`
+    /// counts: the optional checks (no booted simulator, no `grantiva.yml`, not
+    /// authenticated) report `.warning` and are advisory, so they must not
+    /// change the exit code.
+    public static func hasFailures(_ checks: [DoctorCheck]) -> Bool {
+        checks.contains { $0.status == .error }
+    }
+
+    /// `xcode-select -p` echoes `$DEVELOPER_DIR` back without checking it, so it
+    /// succeeds and prints a path that does not exist. Reporting that as a
+    /// passing toolchain is worse than reporting nothing: it is exactly the
+    /// broken-CI-image case doctor exists to catch.
     func checkXcode() async -> DoctorCheck {
-        do {
-            let path = try await shell("xcode-select -p")
-            return DoctorCheck(name: "Xcode", status: .ok, message: path, fix: nil)
-        } catch {
+        let missing = DoctorCheck(
+            name: "Xcode", status: .error,
+            message: "Xcode not found",
+            fix: "Install Xcode from the App Store and run: xcode-select --install"
+        )
+        guard let path = try? await shell("xcode-select -p"), !path.isEmpty else { return missing }
+        guard FileManager.default.fileExists(atPath: path) else {
             return DoctorCheck(
                 name: "Xcode", status: .error,
-                message: "Xcode not found",
-                fix: "Install Xcode from the App Store and run: xcode-select --install"
+                message: "\(path) does not exist",
+                fix: "Point at an installed Xcode: sudo xcode-select -s /Applications/Xcode.app (or unset DEVELOPER_DIR)"
             )
         }
+        return DoctorCheck(name: "Xcode", status: .ok, message: path, fix: nil)
     }
 
     func checkXcodeVersion() async -> DoctorCheck {
-        do {
-            let version = try await shell("xcodebuild -version | head -1")
-            return DoctorCheck(name: "Xcode Version", status: .ok, message: version, fix: nil)
-        } catch {
-            return DoctorCheck(
-                name: "Xcode Version", status: .error,
-                message: "Could not determine Xcode version",
-                fix: "Ensure Xcode is properly installed"
-            )
-        }
+        let unknown = DoctorCheck(
+            name: "Xcode Version", status: .error,
+            message: "Could not determine Xcode version",
+            fix: "Ensure Xcode is properly installed"
+        )
+        // `head -1` of no output is an empty string and a zero exit status, so
+        // success alone said nothing about whether a version was obtained.
+        guard let version = try? await shell("xcodebuild -version | head -1"),
+              !version.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        else { return unknown }
+        return DoctorCheck(name: "Xcode Version", status: .ok, message: version, fix: nil)
     }
 
     func checkBootedSimulator() async -> DoctorCheck {

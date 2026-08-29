@@ -1,7 +1,24 @@
 import Foundation
 
 public struct DoctorFormatter: Sendable {
-    public init() {}
+    private let color: Bool
+
+    /// `color: nil` decides from the environment: escapes are emitted only when
+    /// stdout is a terminal and `NO_COLOR` is unset. Redirected output —
+    /// `grantiva doctor > log.txt`, a CI log, a pipe into grep — was carrying
+    /// raw SGR sequences that no one was going to render.
+    public init(color: Bool? = nil) {
+        self.color = color ?? Self.terminalSupportsColor()
+    }
+
+    static func terminalSupportsColor() -> Bool {
+        if ProcessInfo.processInfo.environment["NO_COLOR"] != nil { return false }
+        return isatty(STDOUT_FILENO) == 1
+    }
+
+    private func paint(_ text: String, _ code: String) -> String {
+        color ? "\u{001B}[\(code)m\(text)\u{001B}[0m" : text
+    }
 
     public func format(_ checks: [DoctorCheck]) -> String {
         var lines: [String] = []
@@ -25,21 +42,21 @@ public struct DoctorFormatter: Sendable {
             for check in sectionChecks {
                 let icon: String
                 switch check.status {
-                case .ok:      icon = "\u{001B}[32m✓\u{001B}[0m"
-                case .warning: icon = "\u{001B}[33m●\u{001B}[0m"
-                case .error:   icon = "\u{001B}[31m✗\u{001B}[0m"
+                case .ok:      icon = paint("✓", "32")
+                case .warning: icon = paint("●", "33")
+                case .error:   icon = paint("✗", "31")
                 }
                 let padded = check.name.padding(toLength: maxName, withPad: " ", startingAt: 0)
                 let msg: String
                 switch check.status {
                 case .ok:      msg = check.message
-                case .warning: msg = "\u{001B}[33m\(check.message)\u{001B}[0m"
-                case .error:   msg = "\u{001B}[31m\(check.message)\u{001B}[0m"
+                case .warning: msg = paint(check.message, "33")
+                case .error:   msg = paint(check.message, "31")
                 }
                 lines.append("    \(icon) \(padded)  \(msg)")
                 if let fix = check.fix {
                     let padding = String(repeating: " ", count: maxName + 6)
-                    lines.append("    \(padding)\u{001B}[2m\(fix)\u{001B}[0m")
+                    lines.append("    \(padding)\(paint(fix, "2"))")
                 }
             }
         }
@@ -52,9 +69,9 @@ public struct DoctorFormatter: Sendable {
         lines.append("  " + String(repeating: "─", count: 50))
 
         var summary: [String] = []
-        if ok > 0 { summary.append("\u{001B}[32m\(ok) passed\u{001B}[0m") }
-        if warnings > 0 { summary.append("\u{001B}[33m\(warnings) optional\u{001B}[0m") }
-        if errors > 0 { summary.append("\u{001B}[31m\(errors) failed\u{001B}[0m") }
+        if ok > 0 { summary.append(paint("\(ok) passed", "32")) }
+        if warnings > 0 { summary.append(paint("\(warnings) optional", "33")) }
+        if errors > 0 { summary.append(paint("\(errors) failed", "31")) }
         lines.append("  \(summary.joined(separator: " · "))")
         lines.append("")
 
