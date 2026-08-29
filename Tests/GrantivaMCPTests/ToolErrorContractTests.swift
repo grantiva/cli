@@ -31,12 +31,14 @@ final class ToolErrorContractTests: XCTestCase {
         assertToolError(result, contains: "required")
     }
 
-    func testSimEnsureMissingRuntimeReturnsToolError() async throws {
+    func testSimEnsureMissingNameReturnsToolError() async throws {
+        // Only `name` is required now: the device type is inferred from it and
+        // the runtime defaults to the newest installed one.
         let result = try await SimTools.ensure(
             simManager: simManager,
-            arguments: ["name": .string("APP-302 iPhone"), "device_type": .string("iPhone 16")]
+            arguments: ["device_type": .string("iPhone 16"), "runtime": .string("latest")]
         )
-        assertToolError(result, contains: "runtime")
+        assertToolError(result, contains: "'name' is required")
     }
 
     func testSimEnsureWrongArgumentTypeReturnsToolError() async throws {

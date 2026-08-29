@@ -22,11 +22,14 @@ public enum RunnerSession {
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
         keepAlive: Bool = false,
-        snapshot: String = "failure"
+        snapshot: String = "failure",
+        environment: [String: String] = [:],
+        readyFile: String? = nil
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
+        let readySignal = ReadyFileSignal(path: readyFile)
         let simulatorLease = try SimulatorLease.acquire(udid: udid)
         defer { simulatorLease.release() }
 
@@ -37,7 +40,9 @@ public enum RunnerSession {
         let runnerDir = runner.runnerDir()
 
         // Generate Maestro flow YAML
-        let flowPath = try FlowGenerator.writeTemp(screens: screens, bundleId: bundleId)
+        let flowPath = try FlowGenerator.writeTemp(
+            screens: screens, bundleId: bundleId, environment: environment
+        )
         defer { try? FileManager.default.removeItem(atPath: flowPath) }
 
         // Create a temp directory for runner reports
@@ -87,53 +92,42 @@ public enum RunnerSession {
         }
         args += [flowPath]
 
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: runnerBin)
-        process.arguments = Array(args.dropFirst()) // drop the binary path
-        process.currentDirectoryURL = URL(fileURLWithPath: runnerDir)
-
-        // Stream stdout to stderr so CI sees runner progress in real time
-        // Capture stderr separately for error reporting
-        process.standardOutput = FileHandle.standardError
-        let stderrPipe = Pipe()
-        process.standardError = stderrPipe
-
-        try process.run()
-
-        // Read stderr in background to avoid pipe buffer deadlock
-        let stderrTask = Task<Data, Never> {
-            stderrPipe.fileHandleForReading.readDataToEndOfFile()
-        }
-
         // Timeout: kill the runner if it takes longer than 5 minutes
         // Keep-alive sessions block waiting for SIGINT; a normal 5-minute cap
         // would kill them prematurely. Use an effectively-infinite timeout then.
         let timeoutSeconds: UInt64 = keepAlive ? 60 * 60 * 24 : 300
-        let pid = process.processIdentifier
-        let timeoutTask = Task {
-            try await Task.sleep(nanoseconds: timeoutSeconds * 1_000_000_000)
-            if process.isRunning {
-                kill(pid, SIGTERM)
-            }
-        }
 
-        process.waitUntilExit()
-        timeoutTask.cancel()
+        // stdout is relayed to stderr so CI sees runner progress in real time;
+        // stderr is captured for error reporting.
+        let outcome = await RunnerExecution.run(RunnerExecution.Request(
+            executable: runnerBin,
+            arguments: Array(args.dropFirst()), // drop the binary path
+            workingDirectory: runnerDir,
+            lease: simulatorLease,
+            keepAlive: keepAlive,
+            timeoutSeconds: timeoutSeconds,
+            pathMap: [:],
+            reportDir: reportDir,
+            expectedFlows: 1,
+            readyFile: readySignal
+        ))
 
-        let stderrData = await stderrTask.value
-        let stderr = String(data: stderrData, encoding: .utf8) ?? ""
-
-        guard process.terminationStatus == 0 else {
-            let output = stderr
-            let timedOut = process.terminationStatus == 15 // SIGTERM
-            let reason = timedOut
+        guard outcome.terminationStatus == 0 else {
+            let reason = outcome.timedOut
                 ? "Runner timed out after \(timeoutSeconds)s"
-                : "Runner failed (exit \(process.terminationStatus))"
+                : "Runner failed (exit \(outcome.terminationStatus))"
+            readySignal.write(RunReadyState(status: "failed", flows: [], reportDir: reportDir))
             throw GrantivaError.commandFailed(
-                "\(reason):\n\(output.suffix(2000))",
-                process.terminationStatus
+                "\(reason):\n\(outcome.stderr.suffix(2000))",
+                outcome.terminationStatus
             )
         }
+
+        readySignal.write(RunReadyState(
+            status: "passed",
+            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+            reportDir: reportDir
+        ))
 
         // Collect screenshots from report output
         let fm = FileManager.default
@@ -237,10 +231,13 @@ public enum RunnerSession {
         snapshot: String = "failure",
         failFast: Bool = true,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 600
+        timeoutSeconds: UInt64 = 600,
+        environment: [String: String] = [:],
+        readyFile: String? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
+        let readySignal = ReadyFileSignal(path: readyFile)
         let simulatorLease = try SimulatorLease.acquire(udid: udid)
         defer { simulatorLease.release() }
 
@@ -265,13 +262,26 @@ public enum RunnerSession {
         defer { try? FileManager.default.removeItem(atPath: tempFlowDir) }
 
         var tempFlowPaths: [String] = []
-        for absoluteFlowPath in absoluteFlowPaths {
+        // Maps every staged copy back to the path the user actually passed, so
+        // runner output and error messages never name a /var/folders temp file.
+        var stagedPathMap: [String: String] = [:]
+        for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
-            let injectedContent = injectAppId(originalContent, bundleId: bundleId)
+            var injectedContent = injectAppId(originalContent, bundleId: bundleId)
+            if !environment.isEmpty {
+                let result = FlowEnvironment.inject(injectedContent, environment: environment)
+                injectedContent = result.yaml
+                if !result.injected {
+                    FileHandle.standardError.write(Data(
+                        "[grantiva] --env had no effect on \(flowPaths[index]): the flow has no launchApp step.\n".utf8
+                    ))
+                }
+            }
             let originalFilename = URL(fileURLWithPath: absoluteFlowPath).lastPathComponent
             let tempFlowPath = "\(tempFlowDir)/\(originalFilename)"
             try injectedContent.write(toFile: tempFlowPath, atomically: true, encoding: .utf8)
             tempFlowPaths.append(tempFlowPath)
+            stagedPathMap[tempFlowPath] = flowPaths[index]
         }
 
         // If the caller passed --report-dir, write reports straight to it and
@@ -337,51 +347,49 @@ public enum RunnerSession {
         }
         args += tempFlowPaths
 
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: runnerBin)
-        process.arguments = Array(args.dropFirst())
-        process.currentDirectoryURL = URL(fileURLWithPath: runnerDir)
-        process.standardOutput = FileHandle.standardError
-        let stderrPipe = Pipe()
-        process.standardError = stderrPipe
-
-        try process.run()
-
-        let stderrTask = Task<Data, Never> {
-            stderrPipe.fileHandleForReading.readDataToEndOfFile()
-        }
-
         // Keep-alive sessions block waiting for SIGINT; a normal cap would
         // kill them prematurely. Use an effectively-infinite timeout then.
         let effectiveTimeout: UInt64 = keepAlive ? 60 * 60 * 24 : timeoutSeconds
-        let pid = process.processIdentifier
-        let killed = KilledFlag()
-        let timeoutTask = Task {
-            try await Task.sleep(nanoseconds: effectiveTimeout * 1_000_000_000)
-            if process.isRunning {
-                killed.set()
-                kill(pid, SIGTERM)
-            }
-        }
-        process.waitUntilExit()
-        timeoutTask.cancel()
 
-        let stderrData = await stderrTask.value
-        let stderr = String(data: stderrData, encoding: .utf8) ?? ""
+        let outcome = await RunnerExecution.run(RunnerExecution.Request(
+            executable: runnerBin,
+            arguments: Array(args.dropFirst()),
+            workingDirectory: runnerDir,
+            lease: simulatorLease,
+            keepAlive: keepAlive,
+            timeoutSeconds: effectiveTimeout,
+            pathMap: stagedPathMap,
+            reportDir: reportDir,
+            expectedFlows: flowPaths.count,
+            readyFile: readySignal
+        ))
 
-        guard process.terminationStatus == 0 else {
-            let grantivaTimedOut = killed.isSet
+        let pathRewriter = OutputRewriter(replacements: stagedPathMap)
+        let stderr = pathRewriter.rewrite(outcome.stderr)
+
+        guard outcome.terminationStatus == 0 else {
             let reason: String
-            if grantivaTimedOut {
+            if outcome.timedOut {
                 reason = "grantiva killed the runner after \(effectiveTimeout)s (--timeout <seconds> to raise the cap). The runner's last output above shows how far it got."
             } else {
-                reason = "Runner failed (exit \(process.terminationStatus))"
+                reason = "Runner failed (exit \(outcome.terminationStatus))"
             }
+            readySignal.write(RunReadyState(
+                status: "failed",
+                flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+                reportDir: reportDir
+            ))
             throw GrantivaError.commandFailed(
                 "\(reason):\n\(stderr.suffix(2000))",
-                process.terminationStatus
+                outcome.terminationStatus
             )
         }
+
+        readySignal.write(RunReadyState(
+            status: "passed",
+            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+            reportDir: reportDir
+        ))
 
         // Collect screenshots from runner output
         let fm = FileManager.default

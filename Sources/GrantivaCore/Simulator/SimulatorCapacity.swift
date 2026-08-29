@@ -129,8 +129,16 @@ public struct SimulatorCapacity: Sendable {
         }
     }
 
-    public func remove(udid: String) throws {
-        try withRegistryLock { records in records.removeAll { $0.udid == udid } }
+    /// Removes every record for `udid`, returning how many were dropped. Unlike
+    /// `sessions(devices:)` this never prunes other records, so it is safe to
+    /// call when the device list is unavailable.
+    @discardableResult
+    public func remove(udid: String) throws -> Int {
+        try withRegistryLock { records in
+            let before = records.count
+            records.removeAll { $0.udid == udid }
+            return before - records.count
+        }
     }
 
     public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {

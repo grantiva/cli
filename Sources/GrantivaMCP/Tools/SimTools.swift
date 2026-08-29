@@ -40,7 +40,7 @@ enum SimTools {
         ),
         Tool(
             name: "grantiva_sim_ensure",
-            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness.",
+            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness. Only 'name' is required: the device type is inferred from the name and the runtime defaults to the newest installed one.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -49,7 +49,7 @@ enum SimTools {
                     "runtime": .object(["type": .string("string"), "description": .string("Runtime name, version, identifier, or 'latest'")]),
                     "boot": .object(["type": .string("boolean")]),
                 ]),
-                "required": .array([.string("name"), .string("device_type"), .string("runtime")]),
+                "required": .array([.string("name")]),
             ]),
             annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
         ),
@@ -119,15 +119,20 @@ enum SimTools {
     }
 
     static func ensure(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
-        guard let name = arguments["name"]?.stringValue, let deviceType = arguments["device_type"]?.stringValue, let runtime = arguments["runtime"]?.stringValue else {
+        guard let name = arguments["name"]?.stringValue else {
             // Invalid model input is a tool error the model can read and correct,
             // not a JSON-RPC protocol error that reads as a transport failure.
             return CallTool.Result(
-                content: [.text(text: "Error: 'name', 'device_type', and 'runtime' are required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: 'name' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
-        let result = try await simManager.ensure(name: name, deviceType: deviceType, runtime: runtime, boot: arguments["boot"]?.boolValue ?? false)
+        let result = try await simManager.ensure(
+            name: name,
+            deviceType: arguments["device_type"]?.stringValue,
+            runtime: arguments["runtime"]?.stringValue,
+            boot: arguments["boot"]?.boolValue ?? false
+        )
         return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
     }
 

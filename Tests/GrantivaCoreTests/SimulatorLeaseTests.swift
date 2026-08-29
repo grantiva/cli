@@ -44,4 +44,74 @@ final class SimulatorLeaseTests: XCTestCase {
         let second = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
         second.release()
     }
+
+    // MARK: - Ownership record
+
+    func testLeaseDescriptorIsCloseOnExec() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+
+        // Without FD_CLOEXEC the descriptor would survive into every spawned
+        // child, and the flock with it — a lease outliving the process that
+        // took it is exactly the state that makes the next run unrunnable.
+        XCTAssertTrue(lease.descriptorIsCloseOnExec)
+    }
+
+    func testClaimNamesTheOwningProcessAndRunner() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+
+        let claim = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+        XCTAssertEqual(claim.pid, getpid())
+        XCTAssertEqual(claim.udid, "SIM-1")
+        XCTAssertNil(claim.runnerPID)
+
+        lease.recordRunner(pid: 4242, keepAlive: true)
+        let updated = try XCTUnwrap(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+        XCTAssertEqual(updated.runnerPID, 4242)
+        XCTAssertTrue(updated.keepAlive)
+    }
+
+    func testReleaseClearsTheClaim() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        XCTAssertNotNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+        lease.release()
+        XCTAssertNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
+        XCTAssertFalse(SimulatorLease.isHeld(udid: "SIM-1", directory: leaseDirectory))
+    }
+
+    func testHeldLeaseIsReportedAsHeld() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        XCTAssertTrue(SimulatorLease.isHeld(udid: "SIM-1", directory: leaseDirectory))
+        XCTAssertFalse(SimulatorLease.isHeld(udid: "SIM-2", directory: leaseDirectory))
+    }
+
+    func testForceReleaseReclaimsAHeldLease() throws {
+        let stuck = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        XCTAssertThrowsError(try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory))
+
+        // What `teardown --udid <UDID> --force` does after reaping the holders.
+        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-1", directory: leaseDirectory))
+
+        let reclaimed = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        reclaimed.release()
+        stuck.release()
+    }
+
+    func testOwnershipErrorNamesTheHolderAndTheWayOut() throws {
+        let first = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        first.recordRunner(pid: 99, keepAlive: true)
+        defer { first.release() }
+
+        XCTAssertThrowsError(
+            try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        ) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("already owned"), message)
+            XCTAssertTrue(message.contains("pid \(getpid())"), message)
+            XCTAssertTrue(message.contains("grantiva-runner pid 99"), message)
+            XCTAssertTrue(message.contains("teardown --udid SIM-1 --force"), message)
+        }
+    }
 }

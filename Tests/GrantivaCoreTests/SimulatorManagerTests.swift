@@ -22,4 +22,35 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertEqual((object["pixel_dimensions"] as? [String: Int])?["width"], 1179)
         XCTAssertEqual((object["pixel_dimensions"] as? [String: Int])?["height"], 2556)
     }
+
+    // MARK: - Device type inference
+
+    private let catalog: [(name: String, identifier: String)] = [
+        ("iPhone 16", "com.apple.CoreSimulator.SimDeviceType.iPhone-16"),
+        ("iPhone 17", "com.apple.CoreSimulator.SimDeviceType.iPhone-17"),
+        ("iPhone 17 Pro", "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"),
+        ("iPad Pro 11-inch (M4)", "com.apple.CoreSimulator.SimDeviceType.iPad-Pro-11-inch-M4"),
+    ]
+
+    func testInfersTheDeviceTypeFromASimulatorName() {
+        // `grantiva simulator ensure --name "iPhone 17"` must work on its own.
+        let inferred = SimulatorManager.inferDeviceType(fromName: "iPhone 17", in: catalog)
+        XCTAssertEqual(inferred?.identifier, "com.apple.CoreSimulator.SimDeviceType.iPhone-17")
+    }
+
+    func testTheLongestMatchingDeviceTypeWins() {
+        let inferred = SimulatorManager.inferDeviceType(fromName: "BLE iPhone 17 Pro", in: catalog)
+        XCTAssertEqual(inferred?.name, "iPhone 17 Pro")
+    }
+
+    func testInferenceIsCaseInsensitive() {
+        XCTAssertEqual(
+            SimulatorManager.inferDeviceType(fromName: "app-925 iphone 16", in: catalog)?.name,
+            "iPhone 16"
+        )
+    }
+
+    func testInferenceFailsWhenTheNameNamesNoDevice() {
+        XCTAssertNil(SimulatorManager.inferDeviceType(fromName: "APP-652 device", in: catalog))
+    }
 }

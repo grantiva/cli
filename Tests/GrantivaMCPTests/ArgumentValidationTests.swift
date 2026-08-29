@@ -62,19 +62,19 @@ final class ArgumentValidationTests: XCTestCase {
 
     // MARK: - Simulator tools
 
-    func testSimEnsureRequiresNameDeviceTypeAndRuntime() async throws {
+    func testSimEnsureRequiresOnlyAName() async throws {
+        // device_type and runtime are optional: the device type is inferred from
+        // the name and the runtime defaults to the newest installed one.
         let incompleteArgumentSets: [[String: Value]] = [
             [:],
-            ["name": .string("A")],
-            ["name": .string("A"), "device_type": .string("iPhone 16")],
             ["device_type": .string("iPhone 16"), "runtime": .string("latest")],
-            ["name": .string("A"), "device_type": .string("iPhone 16"), "runtime": .int(18)],
+            ["name": .int(3)],
         ]
         for arguments in incompleteArgumentSets {
             let result = try await SimTools.ensure(simManager: simManager, arguments: arguments)
             XCTAssertEqual(result.isError, true, "Expected ensure to reject \(arguments.keys.sorted())")
             let message = try textContent(of: result)
-            XCTAssertTrue(message.contains("'name', 'device_type', and 'runtime' are required"), message)
+            XCTAssertTrue(message.contains("'name' is required"), message)
         }
     }
 
