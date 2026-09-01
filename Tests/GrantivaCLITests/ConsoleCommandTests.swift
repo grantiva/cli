@@ -299,6 +299,29 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertEqual(message, "flag not found: dark_mode")
     }
 
+    func testMap429SurfacesTheServerRetryMessage() {
+        let body = #"{"error":"Rate limit exceeded. Retry after 42 seconds.","code":"rate_limited","requestId":"req-1"}"#
+        let mapped = ConsoleSupport.map(
+            GrantivaError.networkError(body, 429),
+            scope: "flags:write"
+        )
+        guard case GrantivaError.permissionDenied(let message) = mapped else {
+            return XCTFail("expected permissionDenied, got \(mapped)")
+        }
+        XCTAssertEqual(message, "Rate limit exceeded. Retry after 42 seconds.")
+    }
+
+    func testMap429FallsBackWhenBodyIsNotJSON() {
+        let mapped = ConsoleSupport.map(
+            GrantivaError.networkError("Too Many Requests", 429),
+            scope: "flags:read"
+        )
+        guard case GrantivaError.permissionDenied(let message) = mapped else {
+            return XCTFail("expected permissionDenied, got \(mapped)")
+        }
+        XCTAssertEqual(message, "Rate limit exceeded. Wait a moment and retry.")
+    }
+
     func testMapPassesOtherErrorsThrough() {
         let original = GrantivaError.networkError("boom", 500)
         let mapped = ConsoleSupport.map(original, scope: "flags:read")

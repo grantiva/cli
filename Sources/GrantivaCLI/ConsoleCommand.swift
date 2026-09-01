@@ -40,7 +40,8 @@ enum ConsoleSupport {
     }
 
     /// Maps raw HTTP failures onto messages a person can act on:
-    /// 403 names the missing scope, 404 names the flag key.
+    /// 403 names the missing scope, 404 names the flag key, 429 surfaces the
+    /// server's retry guidance instead of a raw JSON blob.
     static func map(_ error: Error, scope: String, flagKey: String? = nil) -> Error {
         guard case GrantivaError.networkError(let body, let status) = error else {
             return error
@@ -56,9 +57,28 @@ enum ConsoleSupport {
                 return GrantivaError.notFound("flag not found: \(flagKey)")
             }
             return GrantivaError.notFound("not found: \(body.isEmpty ? "resource does not exist" : body)")
+        case 429:
+            // The backend's rate limiter returns
+            // {"error":"Rate limit exceeded. Retry after N seconds.","code":"rate_limited",...}
+            // — surface the human-readable message, not the JSON envelope.
+            let message = rateLimitMessage(fromBody: body)
+                ?? "Rate limit exceeded. Wait a moment and retry."
+            return GrantivaError.permissionDenied(message)
         default:
             return error
         }
+    }
+
+    /// Extracts the `error` message from a 429 JSON body, if present.
+    static func rateLimitMessage(fromBody body: String) -> String? {
+        guard let data = body.data(using: .utf8),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let message = object["error"] as? String,
+              !message.isEmpty
+        else {
+            return nil
+        }
+        return message
     }
 
     /// Resolves a flag reference to its UUID. The org endpoints accept a
