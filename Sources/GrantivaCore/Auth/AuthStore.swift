@@ -65,6 +65,8 @@ extension AuthStore {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let data = try encoder.encode(credentials)
             try data.write(to: URL(fileURLWithPath: authPath))
+            // The file holds a plaintext API key — owner read/write only.
+            try fm.setAttributes([.posixPermissions: 0o600], ofItemAtPath: authPath)
         },
         delete: {
             let fm = FileManager.default

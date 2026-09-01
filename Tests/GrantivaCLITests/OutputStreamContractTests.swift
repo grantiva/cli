@@ -92,6 +92,69 @@ final class OutputStreamContractTests: XCTestCase {
         XCTAssertTrue(run.stdout.contains("--quiet"), run.stdout)
     }
 
+    // MARK: - console commands
+
+    // Every `console` subcommand talks to the network to produce its result,
+    // so the full JSON-on-stdout contract is held by
+    // `testNoDirectPrintingRemainsInSources` (results flow through `Output`
+    // only). What can be pinned against the real binary without a backend:
+    // the parse-level contract — every subcommand exists, exposes --json and
+    // the verbosity flags — and the non-TTY refusal of destructive verbs,
+    // which fires before any request is made.
+
+    func testConsoleSubcommandsParseAndExposeGlobalFlags() throws {
+        for arguments in [
+            ["console", "flags", "list"],
+            ["console", "flags", "get"],
+            ["console", "flags", "create"],
+            ["console", "flags", "update"],
+            ["console", "flags", "on"],
+            ["console", "flags", "off"],
+            ["console", "flags", "delete"],
+            ["console", "flags", "rules", "list"],
+            ["console", "flags", "rules", "add"],
+            ["console", "flags", "rules", "update"],
+            ["console", "flags", "rules", "delete"],
+            ["console", "flags", "rules", "reorder"],
+            ["console", "flags", "overrides", "list"],
+            ["console", "flags", "overrides", "add"],
+            ["console", "flags", "overrides", "delete"],
+            ["console", "flags", "eval"],
+            ["console", "flags", "history"],
+            ["console", "flags", "watch"],
+            ["console", "envs", "list"],
+            ["console", "envs", "create"],
+            ["console", "envs", "update"],
+            ["console", "envs", "delete"],
+            ["console", "envs", "reorder"],
+        ] {
+            let run = try grantiva(arguments + ["--help"])
+            XCTAssertEqual(run.status, 0, "\(arguments): \(run.stderr)")
+            XCTAssertTrue(run.stdout.contains("--json"), "\(arguments) help lacks --json:\n\(run.stdout)")
+            XCTAssertTrue(run.stdout.contains("--verbose"), "\(arguments) help lacks --verbose:\n\(run.stdout)")
+        }
+    }
+
+    func testConsoleFlagsAliasResolves() throws {
+        let run = try grantiva(["console", "featureflags", "--help"])
+        XCTAssertEqual(run.status, 0, run.stderr)
+        XCTAssertTrue(run.stdout.contains("Manage feature flags"), run.stdout)
+    }
+
+    func testConsoleDestructiveVerbsRefuseWithoutYesWhenStdinIsNotATTY() throws {
+        for arguments in [
+            ["console", "flags", "delete", "some_flag"],
+            ["console", "flags", "rules", "delete", "some_flag", "rule-1"],
+            ["console", "flags", "overrides", "delete", "some_flag", "ovr-1"],
+            ["console", "envs", "delete", "staging"],
+        ] {
+            let run = try grantiva(arguments)
+            XCTAssertNotEqual(run.status, 0, "\(arguments) should refuse without --yes")
+            XCTAssertTrue(run.stderr.contains("--yes"), "\(arguments) stderr:\n\(run.stderr)")
+            XCTAssertEqual(run.stdout, "", "\(arguments) put refusal text on stdout:\n\(run.stdout)")
+        }
+    }
+
     // MARK: - The invariant behind all of it
 
     func testNoDirectPrintingRemainsInSources() throws {
@@ -148,6 +211,9 @@ final class OutputStreamContractTests: XCTestCase {
         let err = Pipe()
         process.standardOutput = out
         process.standardError = err
+        // Deterministic stdin: a pipe, never the test runner's descriptor, so
+        // isatty(stdin) is reliably false and prompts cannot block the child.
+        process.standardInput = Pipe()
         try process.run()
 
         // Read before waiting: a full pipe buffer would deadlock the child.

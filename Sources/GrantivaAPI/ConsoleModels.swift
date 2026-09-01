@@ -1,0 +1,650 @@
+import Foundation
+
+// MARK: - Console Wire Formats
+//
+// Two wire conventions coexist here, both dictated by the backend:
+//
+// - The org console endpoints (`/api/v1/org/flags`, `/api/v1/org/flag-environments`)
+//   speak snake_case, per the Phase 1 contract (§7a of the console parity plan).
+// - The pre-existing SDK endpoints (`/api/v1/flags/:flagId/rules`,
+//   `/api/v1/flags/:flagId/evaluate`) speak Vapor's default camelCase and are
+//   consumed as-is.
+//
+// Models below carry explicit CodingKeys wherever the wire key differs from
+// the property name, so the convention each type follows is visible at the
+// declaration.
+
+// MARK: - Flags (org endpoints, snake_case)
+
+public struct OrgFlag: Codable, Sendable {
+    public let id: String
+    public let flagKey: String
+    public let name: String
+    public let description: String?
+    public let appId: String?
+    public let valueType: String
+    public let isActive: Bool
+    /// Environment slug → raw default value ("true", "42", a JSON blob, …).
+    public let environmentValues: [String: String]?
+    public let ruleCount: Int?
+    public let updatedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case flagKey = "flag_key"
+        case name
+        case description
+        case appId = "app_id"
+        case valueType = "value_type"
+        case isActive = "is_active"
+        case environmentValues = "environment_values"
+        case ruleCount = "rule_count"
+        case updatedAt = "updated_at"
+    }
+
+    public init(
+        id: String, flagKey: String, name: String, description: String? = nil,
+        appId: String? = nil, valueType: String, isActive: Bool,
+        environmentValues: [String: String]? = nil, ruleCount: Int? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.flagKey = flagKey
+        self.name = name
+        self.description = description
+        self.appId = appId
+        self.valueType = valueType
+        self.isActive = isActive
+        self.environmentValues = environmentValues
+        self.ruleCount = ruleCount
+        self.updatedAt = updatedAt
+    }
+}
+
+public struct OrgFlagListResponse: Codable, Sendable {
+    public let flags: [OrgFlag]
+
+    public init(flags: [OrgFlag]) {
+        self.flags = flags
+    }
+}
+
+/// Detail response: the flag's fields plus rule and override summaries.
+/// Also the response shape of create/update/toggle (which may omit the
+/// summaries — both arrays are optional).
+public struct OrgFlagDetail: Codable, Sendable {
+    public let id: String
+    public let flagKey: String
+    public let name: String
+    public let description: String?
+    public let appId: String?
+    public let valueType: String
+    public let isActive: Bool
+    public let environmentValues: [String: String]?
+    public let ruleCount: Int?
+    public let updatedAt: String?
+    public let rules: [OrgFlagRuleSummary]?
+    public let overrides: [OrgFlagOverride]?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case flagKey = "flag_key"
+        case name
+        case description
+        case appId = "app_id"
+        case valueType = "value_type"
+        case isActive = "is_active"
+        case environmentValues = "environment_values"
+        case ruleCount = "rule_count"
+        case updatedAt = "updated_at"
+        case rules
+        case overrides
+    }
+
+    public init(
+        id: String, flagKey: String, name: String, description: String? = nil,
+        appId: String? = nil, valueType: String, isActive: Bool,
+        environmentValues: [String: String]? = nil, ruleCount: Int? = nil,
+        updatedAt: String? = nil, rules: [OrgFlagRuleSummary]? = nil,
+        overrides: [OrgFlagOverride]? = nil
+    ) {
+        self.id = id
+        self.flagKey = flagKey
+        self.name = name
+        self.description = description
+        self.appId = appId
+        self.valueType = valueType
+        self.isActive = isActive
+        self.environmentValues = environmentValues
+        self.ruleCount = ruleCount
+        self.updatedAt = updatedAt
+        self.rules = rules
+        self.overrides = overrides
+    }
+
+    /// The flag's summary fields, as an `OrgFlag`.
+    public var summary: OrgFlag {
+        OrgFlag(
+            id: id, flagKey: flagKey, name: name, description: description,
+            appId: appId, valueType: valueType, isActive: isActive,
+            environmentValues: environmentValues, ruleCount: ruleCount,
+            updatedAt: updatedAt
+        )
+    }
+}
+
+public struct OrgFlagRuleSummary: Codable, Sendable {
+    public let id: String
+    public let priority: Int
+    public let name: String
+    public let value: String
+    public let rolloutPercentage: Int?
+    public let isActive: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case id, priority, name, value
+        case rolloutPercentage = "rollout_percentage"
+        case isActive = "is_active"
+    }
+
+    public init(id: String, priority: Int, name: String, value: String, rolloutPercentage: Int? = nil, isActive: Bool? = nil) {
+        self.id = id
+        self.priority = priority
+        self.name = name
+        self.value = value
+        self.rolloutPercentage = rolloutPercentage
+        self.isActive = isActive
+    }
+}
+
+public struct CreateOrgFlagRequest: Encodable, Sendable {
+    public let flagKey: String
+    public let name: String
+    public let description: String?
+    public let appId: String?
+    public let valueType: String
+    public let environmentValues: [String: String]?
+    public let isActive: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case flagKey = "flag_key"
+        case name
+        case description
+        case appId = "app_id"
+        case valueType = "value_type"
+        case environmentValues = "environment_values"
+        case isActive = "is_active"
+    }
+
+    public init(
+        flagKey: String, name: String, description: String? = nil,
+        appId: String? = nil, valueType: String,
+        environmentValues: [String: String]? = nil, isActive: Bool? = nil
+    ) {
+        self.flagKey = flagKey
+        self.name = name
+        self.description = description
+        self.appId = appId
+        self.valueType = valueType
+        self.environmentValues = environmentValues
+        self.isActive = isActive
+    }
+}
+
+public struct UpdateOrgFlagRequest: Encodable, Sendable {
+    public let name: String?
+    public let description: String?
+    public let environmentValues: [String: String]?
+
+    enum CodingKeys: String, CodingKey {
+        case name
+        case description
+        case environmentValues = "environment_values"
+    }
+
+    public init(name: String? = nil, description: String? = nil, environmentValues: [String: String]? = nil) {
+        self.name = name
+        self.description = description
+        self.environmentValues = environmentValues
+    }
+}
+
+public struct ToggleOrgFlagRequest: Encodable, Sendable {
+    /// Omitted is_active flips the current state server-side.
+    public let isActive: Bool?
+    public let environment: String?
+
+    enum CodingKeys: String, CodingKey {
+        case isActive = "is_active"
+        case environment
+    }
+
+    public init(isActive: Bool? = nil, environment: String? = nil) {
+        self.isActive = isActive
+        self.environment = environment
+    }
+}
+
+// MARK: - Flag History (org endpoint, snake_case)
+
+public struct FlagHistoryEntry: Codable, Sendable {
+    public let id: String
+    public let action: String
+    public let actor: String?
+    public let environment: String?
+    public let oldValue: String?
+    public let newValue: String?
+    public let createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, action, actor, environment
+        case oldValue = "old_value"
+        case newValue = "new_value"
+        case createdAt = "created_at"
+    }
+
+    public init(
+        id: String, action: String, actor: String? = nil, environment: String? = nil,
+        oldValue: String? = nil, newValue: String? = nil, createdAt: String? = nil
+    ) {
+        self.id = id
+        self.action = action
+        self.actor = actor
+        self.environment = environment
+        self.oldValue = oldValue
+        self.newValue = newValue
+        self.createdAt = createdAt
+    }
+}
+
+public struct FlagHistoryResponse: Codable, Sendable {
+    public let history: [FlagHistoryEntry]
+
+    public init(history: [FlagHistoryEntry]) {
+        self.history = history
+    }
+}
+
+// MARK: - Flag Overrides (org endpoints, snake_case)
+
+public struct OrgFlagOverride: Codable, Sendable {
+    public let id: String
+    public let deviceKeyId: String
+    public let forcedValue: String
+    public let expiresAt: String?
+    public let createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case deviceKeyId = "device_key_id"
+        case forcedValue = "forced_value"
+        case expiresAt = "expires_at"
+        case createdAt = "created_at"
+    }
+
+    public init(id: String, deviceKeyId: String, forcedValue: String, expiresAt: String? = nil, createdAt: String? = nil) {
+        self.id = id
+        self.deviceKeyId = deviceKeyId
+        self.forcedValue = forcedValue
+        self.expiresAt = expiresAt
+        self.createdAt = createdAt
+    }
+}
+
+public struct OrgFlagOverrideListResponse: Codable, Sendable {
+    public let overrides: [OrgFlagOverride]
+
+    public init(overrides: [OrgFlagOverride]) {
+        self.overrides = overrides
+    }
+}
+
+public struct CreateFlagOverrideRequest: Encodable, Sendable {
+    public let deviceKeyId: String
+    public let forcedValue: String
+    public let expiresAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case deviceKeyId = "device_key_id"
+        case forcedValue = "forced_value"
+        case expiresAt = "expires_at"
+    }
+
+    public init(deviceKeyId: String, forcedValue: String, expiresAt: String? = nil) {
+        self.deviceKeyId = deviceKeyId
+        self.forcedValue = forcedValue
+        self.expiresAt = expiresAt
+    }
+}
+
+// MARK: - Flag Environments (org endpoints, snake_case)
+
+public struct OrgFlagEnvironment: Codable, Sendable {
+    public let id: String
+    public let name: String
+    public let slug: String
+    public let color: String?
+    public let isDefault: Bool?
+    public let sortOrder: Int?
+    public let createdAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, slug, color
+        case isDefault = "is_default"
+        case sortOrder = "sort_order"
+        case createdAt = "created_at"
+    }
+
+    public init(
+        id: String, name: String, slug: String, color: String? = nil,
+        isDefault: Bool? = nil, sortOrder: Int? = nil, createdAt: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.slug = slug
+        self.color = color
+        self.isDefault = isDefault
+        self.sortOrder = sortOrder
+        self.createdAt = createdAt
+    }
+}
+
+public struct CreateFlagEnvironmentRequest: Encodable, Sendable {
+    public let name: String
+    public let color: String?
+
+    public init(name: String, color: String? = nil) {
+        self.name = name
+        self.color = color
+    }
+}
+
+public struct UpdateFlagEnvironmentRequest: Encodable, Sendable {
+    public let name: String?
+    public let color: String?
+    /// "up" or "down" — moves the environment one slot in the sort order.
+    public let reorder: String?
+
+    public init(name: String? = nil, color: String? = nil, reorder: String? = nil) {
+        self.name = name
+        self.color = color
+        self.reorder = reorder
+    }
+}
+
+// MARK: - Rule Conditions (shared shape, string-or-array values)
+
+/// A condition value is a single string or an array of strings on the wire.
+public enum ConditionValue: Codable, Equatable, Sendable {
+    case string(String)
+    case array([String])
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let arr = try? container.decode([String].self) {
+            self = .array(arr)
+        } else if let str = try? container.decode(String.self) {
+            self = .string(str)
+        } else {
+            throw DecodingError.typeMismatch(
+                ConditionValue.self,
+                .init(codingPath: decoder.codingPath, debugDescription: "Expected String or [String]")
+            )
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .string(let s): try container.encode(s)
+        case .array(let arr): try container.encode(arr)
+        }
+    }
+
+    public var displayValue: String {
+        switch self {
+        case .string(let s): return s
+        case .array(let arr): return arr.joined(separator: ",")
+        }
+    }
+}
+
+public struct RuleCondition: Codable, Equatable, Sendable {
+    public let attribute: String
+    public let `operator`: String
+    public let value: ConditionValue
+
+    public init(attribute: String, operator: String, value: ConditionValue) {
+        self.attribute = attribute
+        self.operator = `operator`
+        self.value = value
+    }
+}
+
+// MARK: - Flag Rules (existing SDK endpoints, camelCase)
+
+public struct FlagRuleResponse: Codable, Sendable {
+    public let id: String
+    public let flagId: String
+    public let priority: Int
+    public let name: String
+    public let conditions: [RuleCondition]
+    public let value: String
+    public let rolloutPercentage: Int
+    public let isActive: Bool
+    public let createdAt: String?
+    public let updatedAt: String?
+
+    public init(
+        id: String, flagId: String, priority: Int, name: String,
+        conditions: [RuleCondition], value: String, rolloutPercentage: Int,
+        isActive: Bool, createdAt: String? = nil, updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.flagId = flagId
+        self.priority = priority
+        self.name = name
+        self.conditions = conditions
+        self.value = value
+        self.rolloutPercentage = rolloutPercentage
+        self.isActive = isActive
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+}
+
+public struct CreateFlagRuleRequest: Encodable, Sendable {
+    public let name: String
+    public let conditions: [RuleCondition]
+    public let value: String
+    public let rolloutPercentage: Int?
+    public let isActive: Bool?
+
+    public init(name: String, conditions: [RuleCondition], value: String, rolloutPercentage: Int? = nil, isActive: Bool? = nil) {
+        self.name = name
+        self.conditions = conditions
+        self.value = value
+        self.rolloutPercentage = rolloutPercentage
+        self.isActive = isActive
+    }
+}
+
+public struct UpdateFlagRuleRequest: Encodable, Sendable {
+    public let name: String?
+    public let conditions: [RuleCondition]?
+    public let value: String?
+    public let rolloutPercentage: Int?
+    public let isActive: Bool?
+    public let priority: Int?
+
+    public init(
+        name: String? = nil, conditions: [RuleCondition]? = nil, value: String? = nil,
+        rolloutPercentage: Int? = nil, isActive: Bool? = nil, priority: Int? = nil
+    ) {
+        self.name = name
+        self.conditions = conditions
+        self.value = value
+        self.rolloutPercentage = rolloutPercentage
+        self.isActive = isActive
+        self.priority = priority
+    }
+}
+
+public struct ReorderFlagRulesRequest: Encodable, Sendable {
+    /// Ordered rule IDs; array index becomes the new priority.
+    public let ruleIds: [String]
+
+    public init(ruleIds: [String]) {
+        self.ruleIds = ruleIds
+    }
+}
+
+// MARK: - Flag Evaluation (existing SDK endpoint, camelCase)
+
+public struct FlagEvaluationRequest: Encodable, Sendable {
+    public let deviceModel: String?
+    public let osVersion: String?
+    public let appVersion: String?
+    public let deviceId: String?
+    public let riskScore: Int?
+    public let locale: String?
+    public let country: String?
+    public let userId: String?
+    public let attestationStatus: String?
+    public let custom: [String: String]?
+    public let environment: String?
+
+    public init(
+        deviceModel: String? = nil, osVersion: String? = nil, appVersion: String? = nil,
+        deviceId: String? = nil, riskScore: Int? = nil, locale: String? = nil,
+        country: String? = nil, userId: String? = nil, attestationStatus: String? = nil,
+        custom: [String: String]? = nil, environment: String? = nil
+    ) {
+        self.deviceModel = deviceModel
+        self.osVersion = osVersion
+        self.appVersion = appVersion
+        self.deviceId = deviceId
+        self.riskScore = riskScore
+        self.locale = locale
+        self.country = country
+        self.userId = userId
+        self.attestationStatus = attestationStatus
+        self.custom = custom
+        self.environment = environment
+    }
+}
+
+public struct FlagEvaluationResponse: Codable, Sendable {
+    public let flagKey: String
+    public let flagId: String
+    public let environment: String
+    public let resolvedValue: String
+    public let valueType: String
+    public let matchedRule: String?
+    public let isDefault: Bool
+    public let trace: [FlagEvaluationTraceEntry]
+
+    public init(
+        flagKey: String, flagId: String, environment: String, resolvedValue: String,
+        valueType: String, matchedRule: String?, isDefault: Bool,
+        trace: [FlagEvaluationTraceEntry]
+    ) {
+        self.flagKey = flagKey
+        self.flagId = flagId
+        self.environment = environment
+        self.resolvedValue = resolvedValue
+        self.valueType = valueType
+        self.matchedRule = matchedRule
+        self.isDefault = isDefault
+        self.trace = trace
+    }
+}
+
+public struct FlagEvaluationTraceEntry: Codable, Sendable {
+    public let ruleName: String
+    public let ruleId: String
+    public let priority: Int
+    public let matched: Bool
+    public let rolloutPercentage: Int
+    public let passedRollout: Bool
+    public let conditions: [ConditionTraceEntry]
+    public let value: String
+
+    public init(
+        ruleName: String, ruleId: String, priority: Int, matched: Bool,
+        rolloutPercentage: Int, passedRollout: Bool, conditions: [ConditionTraceEntry],
+        value: String
+    ) {
+        self.ruleName = ruleName
+        self.ruleId = ruleId
+        self.priority = priority
+        self.matched = matched
+        self.rolloutPercentage = rolloutPercentage
+        self.passedRollout = passedRollout
+        self.conditions = conditions
+        self.value = value
+    }
+}
+
+public struct ConditionTraceEntry: Codable, Sendable {
+    public let attribute: String
+    public let `operator`: String
+    public let expected: String
+    public let actual: String?
+    public let passed: Bool
+
+    public init(attribute: String, operator: String, expected: String, actual: String?, passed: Bool) {
+        self.attribute = attribute
+        self.operator = `operator`
+        self.expected = expected
+        self.actual = actual
+        self.passed = passed
+    }
+}
+
+// MARK: - SSE Events (flags stream)
+
+public struct FlagStreamEvent: Codable, Sendable, Equatable {
+    /// SSE event name (e.g. "flags"), or "message" when the server sends none.
+    public let event: String
+    /// Raw data payload — a JSON document for "flags" events.
+    public let data: String
+
+    public init(event: String, data: String) {
+        self.event = event
+        self.data = data
+    }
+}
+
+/// Incremental parser for a Server-Sent-Events byte stream, fed line by line.
+///
+/// Handles the subset the flags stream emits: `event:` / `data:` fields,
+/// comment lines (`: keepalive`) which are ignored, and blank-line dispatch.
+public struct SSEParser: Sendable {
+    private var eventName: String?
+    private var dataLines: [String] = []
+
+    public init() {}
+
+    /// Feeds one line (without its trailing newline). Returns a completed
+    /// event when the line was the blank dispatch line, else nil.
+    public mutating func feed(line: String) -> FlagStreamEvent? {
+        if line.isEmpty {
+            defer {
+                eventName = nil
+                dataLines = []
+            }
+            guard !dataLines.isEmpty else { return nil }
+            return FlagStreamEvent(event: eventName ?? "message", data: dataLines.joined(separator: "\n"))
+        }
+        if line.hasPrefix(":") { return nil } // comment / keepalive
+        if line.hasPrefix("event:") {
+            eventName = String(line.dropFirst("event:".count)).trimmingCharacters(in: .whitespaces)
+        } else if line.hasPrefix("data:") {
+            var value = String(line.dropFirst("data:".count))
+            if value.hasPrefix(" ") { value.removeFirst() }
+            dataLines.append(value)
+        }
+        return nil
+    }
+}

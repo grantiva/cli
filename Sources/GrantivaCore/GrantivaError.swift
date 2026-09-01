@@ -19,6 +19,9 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
     case appNotFound(String)
     case invalidBinary(String)
     case ipaExtractionFailed(String)
+    case permissionDenied(String)
+    case notFound(String)
+    case aborted
 
     public var errorDescription: String? {
         switch self {
@@ -58,6 +61,12 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
             return "Invalid app binary: \(reason)"
         case .ipaExtractionFailed(let reason):
             return "IPA extraction failed: \(reason)"
+        case .permissionDenied(let message):
+            return message
+        case .notFound(let message):
+            return message
+        case .aborted:
+            return "Aborted."
         }
     }
 }
