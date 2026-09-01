@@ -20,7 +20,7 @@ enum OrgFlagEndpoints {
     private static let prefix = "api/v1/org/flags"
 
     /// `GET /api/v1/org/flags?app_id=&environment=`
-    static func list(appId: String?, environment: String?) -> Endpoint<EmptyBody, OrgFlagListResponse> {
+    static func list(appId: String?, environment: String?) -> Endpoint<EmptyBody, [OrgFlag]> {
         var query: [URLQueryItem] = []
         if let appId { query.append(URLQueryItem(name: "app_id", value: appId)) }
         if let environment { query.append(URLQueryItem(name: "environment", value: environment)) }
@@ -48,12 +48,12 @@ enum OrgFlagEndpoints {
     }
 
     /// `POST /api/v1/org/flags/:flagRef/toggle`
-    static func toggle(flagRef: String, body: ToggleOrgFlagRequest) -> Endpoint<ToggleOrgFlagRequest, OrgFlagDetail> {
+    static func toggle(flagRef: String, body: ToggleOrgFlagRequest) -> Endpoint<ToggleOrgFlagRequest, OrgFlagToggleResponse> {
         Endpoint(path: "\(prefix)/\(encodedSegment(flagRef))/toggle", method: .post, body: body)
     }
 
     /// `GET /api/v1/org/flags/:flagRef/history?limit=&offset=`
-    static func history(flagRef: String, limit: Int?, offset: Int?) -> Endpoint<EmptyBody, FlagHistoryResponse> {
+    static func history(flagRef: String, limit: Int?, offset: Int?) -> Endpoint<EmptyBody, [FlagHistoryEntry]> {
         var query: [URLQueryItem] = []
         if let limit { query.append(URLQueryItem(name: "limit", value: String(limit))) }
         if let offset { query.append(URLQueryItem(name: "offset", value: String(offset))) }
@@ -65,7 +65,7 @@ enum OrgFlagEndpoints {
     }
 
     /// `GET /api/v1/org/flags/:flagRef/overrides`
-    static func listOverrides(flagRef: String) -> Endpoint<EmptyBody, OrgFlagOverrideListResponse> {
+    static func listOverrides(flagRef: String) -> Endpoint<EmptyBody, [OrgFlagOverride]> {
         Endpoint(path: "\(prefix)/\(encodedSegment(flagRef))/overrides", method: .get)
     }
 

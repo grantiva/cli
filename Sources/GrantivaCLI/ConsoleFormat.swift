@@ -69,7 +69,8 @@ enum ConsoleFormat {
         if let values = flag.environmentValues, !values.isEmpty {
             lines.append("  Environment values:")
             for (env, value) in values.sorted(by: { $0.key < $1.key }) {
-                lines.append("    \(env) = \(value)")
+                let state = value.isActive ? "on" : "off"
+                lines.append("    \(env): \(state)  (on=\(value.onValue) off=\(value.offValue))")
             }
         }
         if let rules = flag.rules, !rules.isEmpty {
@@ -93,10 +94,12 @@ enum ConsoleFormat {
         return lines.joined(separator: "\n")
     }
 
-    static func environmentSummary(_ values: [String: String]?) -> String {
+    /// One cell per environment showing the value it currently serves:
+    /// `production=false staging=true` (the on-value while on, off-value while off).
+    static func environmentSummary(_ values: [String: OrgFlagEnvironmentValue]?) -> String {
         guard let values, !values.isEmpty else { return "-" }
         return values.sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value)" }
+            .map { "\($0.key)=\($0.value.effectiveValue)" }
             .joined(separator: " ")
     }
 
@@ -164,22 +167,12 @@ enum ConsoleFormat {
         let rows = entries.map { entry in
             [
                 entry.createdAt.map(shortDate) ?? "-",
-                entry.action,
-                entry.environment ?? "-",
-                changeSummary(old: entry.oldValue, new: entry.newValue),
-                entry.actor ?? "-",
+                entry.changeType,
+                entry.summary,
+                entry.actorEmail,
             ]
         }
-        return table(headers: ["WHEN", "ACTION", "ENV", "CHANGE", "ACTOR"], rows: rows)
-    }
-
-    private static func changeSummary(old: String?, new: String?) -> String {
-        switch (old, new) {
-        case (nil, nil): return "-"
-        case (nil, .some(let new)): return "→ \(new)"
-        case (.some(let old), nil): return "\(old) →"
-        case (.some(let old), .some(let new)): return "\(old) → \(new)"
-        }
+        return table(headers: ["WHEN", "ACTION", "SUMMARY", "ACTOR"], rows: rows)
     }
 
     // MARK: - Evaluation Trace

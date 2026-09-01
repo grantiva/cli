@@ -225,8 +225,12 @@ final class ConsoleAPITests: XCTestCase {
             "app_id": null,
             "value_type": "boolean",
             "is_active": true,
-            "environment_values": {"production": "false", "staging": "true"},
+            "environment_values": {
+                "production": {"on_value": "true", "off_value": "false", "is_active": false},
+                "staging": {"on_value": "true", "off_value": "false", "is_active": true}
+            },
             "rule_count": 2,
+            "created_at": "2026-08-29T12:00:00Z",
             "updated_at": "2026-08-30T12:00:00Z"
         }
         """.data(using: .utf8)!
@@ -235,7 +239,9 @@ final class ConsoleAPITests: XCTestCase {
         XCTAssertEqual(flag.flagKey, "dark_mode")
         XCTAssertEqual(flag.valueType, "boolean")
         XCTAssertTrue(flag.isActive)
-        XCTAssertEqual(flag.environmentValues?["staging"], "true")
+        XCTAssertEqual(flag.environmentValues?["staging"]?.isActive, true)
+        XCTAssertEqual(flag.environmentValues?["staging"]?.effectiveValue, "true")
+        XCTAssertEqual(flag.environmentValues?["production"]?.effectiveValue, "false")
         XCTAssertEqual(flag.ruleCount, 2)
     }
 
@@ -251,7 +257,8 @@ final class ConsoleAPITests: XCTestCase {
                 {"id": "rule-1", "priority": 0, "name": "Beta", "value": "true", "rollout_percentage": 50, "is_active": true}
             ],
             "overrides": [
-                {"id": "ovr-1", "device_key_id": "device-1", "forced_value": "true", "expires_at": null}
+                {"id": "ovr-1", "flag_id": "uuid-1", "device_key_id": "device-1", "forced_value": "true",
+                 "expires_at": null, "created_by": "gpat_cli_tes..."}
             ]
         }
         """.data(using: .utf8)!
@@ -266,7 +273,9 @@ final class ConsoleAPITests: XCTestCase {
     func testCreateOrgFlagRequestEncodesSnakeCase() throws {
         let request = CreateOrgFlagRequest(
             flagKey: "dark_mode", name: "Dark Mode", appId: "app-1",
-            valueType: "boolean", environmentValues: ["production": "false"], isActive: false
+            valueType: "boolean",
+            environmentValues: ["production": OrgFlagEnvironmentValueInput(onValue: "false")],
+            isActive: false
         )
         let data = try JSONEncoder().encode(request)
         let dict = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
@@ -274,7 +283,30 @@ final class ConsoleAPITests: XCTestCase {
         XCTAssertEqual(dict["app_id"] as? String, "app-1")
         XCTAssertEqual(dict["value_type"] as? String, "boolean")
         XCTAssertEqual(dict["is_active"] as? Bool, false)
-        XCTAssertEqual((dict["environment_values"] as? [String: String])?["production"], "false")
+        let envValues = try XCTUnwrap(dict["environment_values"] as? [String: [String: Any]])
+        XCTAssertEqual(envValues["production"]?["on_value"] as? String, "false")
+        XCTAssertNil(envValues["production"]?["off_value"])
+    }
+
+    func testToggleResponseDecodesSnakeCase() throws {
+        let json = """
+        {"id": "uuid-1", "flag_key": "dark_mode", "is_active": true, "environment": "staging"}
+        """.data(using: .utf8)!
+        let result = try JSONDecoder().decode(OrgFlagToggleResponse.self, from: json)
+        XCTAssertEqual(result.flagKey, "dark_mode")
+        XCTAssertTrue(result.isActive)
+        XCTAssertEqual(result.environment, "staging")
+    }
+
+    func testHistoryEntryDecodesSnakeCase() throws {
+        let json = """
+        [{"id": "hist-1", "flag_id": "uuid-1", "actor_email": "gpat_cli_tes...",
+          "change_type": "flag.toggled", "summary": "Enabled the flag", "created_at": "2026-08-30T12:00:00Z"}]
+        """.data(using: .utf8)!
+        let entries = try JSONDecoder().decode([FlagHistoryEntry].self, from: json)
+        XCTAssertEqual(entries.first?.changeType, "flag.toggled")
+        XCTAssertEqual(entries.first?.actorEmail, "gpat_cli_tes...")
+        XCTAssertEqual(entries.first?.summary, "Enabled the flag")
     }
 
     func testToggleRequestEncodesSnakeCase() throws {

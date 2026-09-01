@@ -41,17 +41,17 @@ struct ConsoleFlagsOverridesCommand: AsyncParsableCommand {
         }
 
         func run(client: ConsoleClient) async throws {
-            let response: OrgFlagOverrideListResponse
+            let overrides: [OrgFlagOverride]
             do {
-                response = try await client.listOverrides(key)
+                overrides = try await client.listOverrides(key)
             } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead, flagKey: key)
             }
 
             if options.json {
-                Output.line(try JSONOutput.string(response))
+                Output.line(try JSONOutput.string(overrides))
             } else {
-                Output.line(ConsoleFormat.overridesTable(response.overrides))
+                Output.line(ConsoleFormat.overridesTable(overrides))
             }
         }
     }

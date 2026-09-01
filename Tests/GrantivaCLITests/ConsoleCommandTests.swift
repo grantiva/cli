@@ -455,7 +455,11 @@ final class ConsoleCommandTests: XCTestCase {
         let table = ConsoleFormat.flagsTable([
             OrgFlag(
                 id: "uuid-1", flagKey: "dark_mode", name: "Dark Mode", valueType: "boolean",
-                isActive: true, environmentValues: ["production": "false", "staging": "true"],
+                isActive: true,
+                environmentValues: [
+                    "production": OrgFlagEnvironmentValue(onValue: "true", offValue: "false", isActive: false),
+                    "staging": OrgFlagEnvironmentValue(onValue: "true", offValue: "false", isActive: true),
+                ],
                 ruleCount: 2, updatedAt: "2026-08-30T12:34:56Z"
             )
         ])

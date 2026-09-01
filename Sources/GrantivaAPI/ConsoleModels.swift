@@ -16,6 +16,32 @@ import Foundation
 
 // MARK: - Flags (org endpoints, snake_case)
 
+/// A flag's per-environment on/off values and active state, keyed by
+/// environment slug in flag responses.
+public struct OrgFlagEnvironmentValue: Codable, Sendable, Equatable {
+    /// Raw value served while the flag is on in this environment.
+    public let onValue: String
+    /// Raw value served while the flag is off in this environment.
+    public let offValue: String
+    /// Whether the flag is on in this environment.
+    public let isActive: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case onValue = "on_value"
+        case offValue = "off_value"
+        case isActive = "is_active"
+    }
+
+    public init(onValue: String, offValue: String, isActive: Bool) {
+        self.onValue = onValue
+        self.offValue = offValue
+        self.isActive = isActive
+    }
+
+    /// The value this environment currently serves.
+    public var effectiveValue: String { isActive ? onValue : offValue }
+}
+
 public struct OrgFlag: Codable, Sendable {
     public let id: String
     public let flagKey: String
@@ -24,9 +50,10 @@ public struct OrgFlag: Codable, Sendable {
     public let appId: String?
     public let valueType: String
     public let isActive: Bool
-    /// Environment slug → raw default value ("true", "42", a JSON blob, …).
-    public let environmentValues: [String: String]?
+    /// Environment slug → on/off values and per-environment active state.
+    public let environmentValues: [String: OrgFlagEnvironmentValue]?
     public let ruleCount: Int?
+    public let createdAt: String?
     public let updatedAt: String?
 
     enum CodingKeys: String, CodingKey {
@@ -39,14 +66,15 @@ public struct OrgFlag: Codable, Sendable {
         case isActive = "is_active"
         case environmentValues = "environment_values"
         case ruleCount = "rule_count"
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
 
     public init(
         id: String, flagKey: String, name: String, description: String? = nil,
         appId: String? = nil, valueType: String, isActive: Bool,
-        environmentValues: [String: String]? = nil, ruleCount: Int? = nil,
-        updatedAt: String? = nil
+        environmentValues: [String: OrgFlagEnvironmentValue]? = nil, ruleCount: Int? = nil,
+        createdAt: String? = nil, updatedAt: String? = nil
     ) {
         self.id = id
         self.flagKey = flagKey
@@ -57,21 +85,14 @@ public struct OrgFlag: Codable, Sendable {
         self.isActive = isActive
         self.environmentValues = environmentValues
         self.ruleCount = ruleCount
+        self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
 }
 
-public struct OrgFlagListResponse: Codable, Sendable {
-    public let flags: [OrgFlag]
-
-    public init(flags: [OrgFlag]) {
-        self.flags = flags
-    }
-}
-
 /// Detail response: the flag's fields plus rule and override summaries.
-/// Also the response shape of create/update/toggle (which may omit the
-/// summaries — both arrays are optional).
+/// Also the response shape of create/update, which return the flag without
+/// the summaries (both arrays are optional) but with `rule_count`.
 public struct OrgFlagDetail: Codable, Sendable {
     public let id: String
     public let flagKey: String
@@ -80,8 +101,9 @@ public struct OrgFlagDetail: Codable, Sendable {
     public let appId: String?
     public let valueType: String
     public let isActive: Bool
-    public let environmentValues: [String: String]?
+    public let environmentValues: [String: OrgFlagEnvironmentValue]?
     public let ruleCount: Int?
+    public let createdAt: String?
     public let updatedAt: String?
     public let rules: [OrgFlagRuleSummary]?
     public let overrides: [OrgFlagOverride]?
@@ -96,6 +118,7 @@ public struct OrgFlagDetail: Codable, Sendable {
         case isActive = "is_active"
         case environmentValues = "environment_values"
         case ruleCount = "rule_count"
+        case createdAt = "created_at"
         case updatedAt = "updated_at"
         case rules
         case overrides
@@ -104,8 +127,8 @@ public struct OrgFlagDetail: Codable, Sendable {
     public init(
         id: String, flagKey: String, name: String, description: String? = nil,
         appId: String? = nil, valueType: String, isActive: Bool,
-        environmentValues: [String: String]? = nil, ruleCount: Int? = nil,
-        updatedAt: String? = nil, rules: [OrgFlagRuleSummary]? = nil,
+        environmentValues: [String: OrgFlagEnvironmentValue]? = nil, ruleCount: Int? = nil,
+        createdAt: String? = nil, updatedAt: String? = nil, rules: [OrgFlagRuleSummary]? = nil,
         overrides: [OrgFlagOverride]? = nil
     ) {
         self.id = id
@@ -117,6 +140,7 @@ public struct OrgFlagDetail: Codable, Sendable {
         self.isActive = isActive
         self.environmentValues = environmentValues
         self.ruleCount = ruleCount
+        self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.rules = rules
         self.overrides = overrides
@@ -128,8 +152,33 @@ public struct OrgFlagDetail: Codable, Sendable {
             id: id, flagKey: flagKey, name: name, description: description,
             appId: appId, valueType: valueType, isActive: isActive,
             environmentValues: environmentValues, ruleCount: ruleCount,
-            updatedAt: updatedAt
+            createdAt: createdAt, updatedAt: updatedAt
         )
+    }
+}
+
+/// Response of `POST /api/v1/org/flags/:flagRef/toggle` — the flag's identity
+/// and effective active state, not the full flag document.
+public struct OrgFlagToggleResponse: Codable, Sendable {
+    public let id: String
+    public let flagKey: String
+    /// Effective active state after the toggle (globally, or in `environment`).
+    public let isActive: Bool
+    /// The environment the toggle applied to, when scoped; nil for global.
+    public let environment: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case flagKey = "flag_key"
+        case isActive = "is_active"
+        case environment
+    }
+
+    public init(id: String, flagKey: String, isActive: Bool, environment: String? = nil) {
+        self.id = id
+        self.flagKey = flagKey
+        self.isActive = isActive
+        self.environment = environment
     }
 }
 
@@ -157,13 +206,33 @@ public struct OrgFlagRuleSummary: Codable, Sendable {
     }
 }
 
+/// Per-environment value input for flag create/update, keyed by environment
+/// slug. All fields optional — omitted fields keep their current value.
+public struct OrgFlagEnvironmentValueInput: Encodable, Sendable, Equatable {
+    public let onValue: String?
+    public let offValue: String?
+    public let isActive: Bool?
+
+    enum CodingKeys: String, CodingKey {
+        case onValue = "on_value"
+        case offValue = "off_value"
+        case isActive = "is_active"
+    }
+
+    public init(onValue: String? = nil, offValue: String? = nil, isActive: Bool? = nil) {
+        self.onValue = onValue
+        self.offValue = offValue
+        self.isActive = isActive
+    }
+}
+
 public struct CreateOrgFlagRequest: Encodable, Sendable {
     public let flagKey: String
     public let name: String
     public let description: String?
     public let appId: String?
     public let valueType: String
-    public let environmentValues: [String: String]?
+    public let environmentValues: [String: OrgFlagEnvironmentValueInput]?
     public let isActive: Bool?
 
     enum CodingKeys: String, CodingKey {
@@ -179,7 +248,7 @@ public struct CreateOrgFlagRequest: Encodable, Sendable {
     public init(
         flagKey: String, name: String, description: String? = nil,
         appId: String? = nil, valueType: String,
-        environmentValues: [String: String]? = nil, isActive: Bool? = nil
+        environmentValues: [String: OrgFlagEnvironmentValueInput]? = nil, isActive: Bool? = nil
     ) {
         self.flagKey = flagKey
         self.name = name
@@ -194,7 +263,7 @@ public struct CreateOrgFlagRequest: Encodable, Sendable {
 public struct UpdateOrgFlagRequest: Encodable, Sendable {
     public let name: String?
     public let description: String?
-    public let environmentValues: [String: String]?
+    public let environmentValues: [String: OrgFlagEnvironmentValueInput]?
 
     enum CodingKeys: String, CodingKey {
         case name
@@ -202,7 +271,10 @@ public struct UpdateOrgFlagRequest: Encodable, Sendable {
         case environmentValues = "environment_values"
     }
 
-    public init(name: String? = nil, description: String? = nil, environmentValues: [String: String]? = nil) {
+    public init(
+        name: String? = nil, description: String? = nil,
+        environmentValues: [String: OrgFlagEnvironmentValueInput]? = nil
+    ) {
         self.name = name
         self.description = description
         self.environmentValues = environmentValues
@@ -225,77 +297,75 @@ public struct ToggleOrgFlagRequest: Encodable, Sendable {
     }
 }
 
-// MARK: - Flag History (org endpoint, snake_case)
+// MARK: - Flag History (org endpoint, snake_case — a bare array on the wire)
 
 public struct FlagHistoryEntry: Codable, Sendable {
     public let id: String
-    public let action: String
-    public let actor: String?
-    public let environment: String?
-    public let oldValue: String?
-    public let newValue: String?
-    public let createdAt: String?
-
-    enum CodingKeys: String, CodingKey {
-        case id, action, actor, environment
-        case oldValue = "old_value"
-        case newValue = "new_value"
-        case createdAt = "created_at"
-    }
-
-    public init(
-        id: String, action: String, actor: String? = nil, environment: String? = nil,
-        oldValue: String? = nil, newValue: String? = nil, createdAt: String? = nil
-    ) {
-        self.id = id
-        self.action = action
-        self.actor = actor
-        self.environment = environment
-        self.oldValue = oldValue
-        self.newValue = newValue
-        self.createdAt = createdAt
-    }
-}
-
-public struct FlagHistoryResponse: Codable, Sendable {
-    public let history: [FlagHistoryEntry]
-
-    public init(history: [FlagHistoryEntry]) {
-        self.history = history
-    }
-}
-
-// MARK: - Flag Overrides (org endpoints, snake_case)
-
-public struct OrgFlagOverride: Codable, Sendable {
-    public let id: String
-    public let deviceKeyId: String
-    public let forcedValue: String
-    public let expiresAt: String?
+    public let flagId: String
+    /// Who made the change: a user email, or the API key prefix for
+    /// key-authored changes (e.g. "gpat_cli_tes...").
+    public let actorEmail: String
+    /// Change type, e.g. "flag.created", "flag.toggled", "flag.updated".
+    public let changeType: String
+    /// Human-readable one-line description of the change.
+    public let summary: String
     public let createdAt: String?
 
     enum CodingKeys: String, CodingKey {
         case id
-        case deviceKeyId = "device_key_id"
-        case forcedValue = "forced_value"
-        case expiresAt = "expires_at"
+        case flagId = "flag_id"
+        case actorEmail = "actor_email"
+        case changeType = "change_type"
+        case summary
         case createdAt = "created_at"
     }
 
-    public init(id: String, deviceKeyId: String, forcedValue: String, expiresAt: String? = nil, createdAt: String? = nil) {
+    public init(
+        id: String, flagId: String, actorEmail: String, changeType: String,
+        summary: String, createdAt: String? = nil
+    ) {
         self.id = id
-        self.deviceKeyId = deviceKeyId
-        self.forcedValue = forcedValue
-        self.expiresAt = expiresAt
+        self.flagId = flagId
+        self.actorEmail = actorEmail
+        self.changeType = changeType
+        self.summary = summary
         self.createdAt = createdAt
     }
 }
 
-public struct OrgFlagOverrideListResponse: Codable, Sendable {
-    public let overrides: [OrgFlagOverride]
+// MARK: - Flag Overrides (org endpoints, snake_case — list is a bare array)
 
-    public init(overrides: [OrgFlagOverride]) {
-        self.overrides = overrides
+public struct OrgFlagOverride: Codable, Sendable {
+    public let id: String
+    public let flagId: String?
+    public let deviceKeyId: String
+    public let forcedValue: String
+    public let expiresAt: String?
+    public let createdAt: String?
+    /// Who created the override: a user email, or the API key prefix.
+    public let createdBy: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case flagId = "flag_id"
+        case deviceKeyId = "device_key_id"
+        case forcedValue = "forced_value"
+        case expiresAt = "expires_at"
+        case createdAt = "created_at"
+        case createdBy = "created_by"
+    }
+
+    public init(
+        id: String, flagId: String? = nil, deviceKeyId: String, forcedValue: String,
+        expiresAt: String? = nil, createdAt: String? = nil, createdBy: String? = nil
+    ) {
+        self.id = id
+        self.flagId = flagId
+        self.deviceKeyId = deviceKeyId
+        self.forcedValue = forcedValue
+        self.expiresAt = expiresAt
+        self.createdAt = createdAt
+        self.createdBy = createdBy
     }
 }
 

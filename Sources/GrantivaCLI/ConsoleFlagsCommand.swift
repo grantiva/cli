@@ -48,17 +48,17 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         }
 
         func run(client: ConsoleClient) async throws {
-            let response: OrgFlagListResponse
+            let flags: [OrgFlag]
             do {
-                response = try await client.listFlags(app, env)
+                flags = try await client.listFlags(app, env)
             } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead)
             }
 
             if options.json {
-                Output.line(try JSONOutput.string(response))
+                Output.line(try JSONOutput.string(flags))
             } else {
-                Output.line(ConsoleFormat.flagsTable(response.flags))
+                Output.line(ConsoleFormat.flagsTable(flags))
             }
         }
     }
@@ -103,9 +103,9 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             commandName: "create",
             abstract: "Create a feature flag.",
             discussion: """
-            Default values per environment come from --value (applied to every \
-            environment) and/or repeated --env-value pairs, which win over \
-            --value for their environment:
+            The value each environment serves while the flag is ON comes from \
+            --value (applied to every environment) and/or repeated --env-value \
+            pairs, which win over --value for their environment:
 
               grantiva console flags create dark_mode --name "Dark Mode" --type bool \\
                 --value false --env-value staging=true
@@ -123,10 +123,10 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Value type: bool, string, int, or json.")
         var type: FlagValueTypeArgument
 
-        @Option(name: .long, help: "Default value applied to every environment.")
+        @Option(name: .long, help: "On-value applied to every environment.")
         var value: String?
 
-        @Option(name: .customLong("env-value"), help: "Per-environment default as <environment>=<value> (repeatable).")
+        @Option(name: .customLong("env-value"), help: "Per-environment on-value as <environment>=<value> (repeatable).")
         var envValue: [String] = []
 
         @Option(name: .long, help: "Scope the flag to this app ID (default: org-wide).")
@@ -151,13 +151,13 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
                 try ConsoleSupport.validateValue(envValue, type: type)
             }
 
-            var environmentValues = explicit
+            var onValues = explicit
             if let value {
                 // A blanket --value covers every environment the org has;
                 // explicit --env-value pairs win for theirs.
                 do {
-                    for environment in try await client.listEnvironments() where environmentValues[environment.slug] == nil {
-                        environmentValues[environment.slug] = value
+                    for environment in try await client.listEnvironments() where onValues[environment.slug] == nil {
+                        onValues[environment.slug] = value
                     }
                 } catch {
                     throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead)
@@ -170,7 +170,9 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
                 description: description,
                 appId: app,
                 valueType: type.wireValue,
-                environmentValues: environmentValues.isEmpty ? nil : environmentValues,
+                environmentValues: onValues.isEmpty
+                    ? nil
+                    : onValues.mapValues { OrgFlagEnvironmentValueInput(onValue: $0) },
                 isActive: off ? false : nil
             )
 
@@ -209,7 +211,7 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         @Option(name: .long, help: "New flag description.")
         var description: String?
 
-        @Option(name: .customLong("env-value"), help: "Per-environment default as <environment>=<value> (repeatable).")
+        @Option(name: .customLong("env-value"), help: "Per-environment on-value as <environment>=<value> (repeatable).")
         var envValue: [String] = []
 
         func run() async throws {
@@ -227,7 +229,9 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             let request = UpdateOrgFlagRequest(
                 name: name,
                 description: description,
-                environmentValues: environmentValues.isEmpty ? nil : environmentValues
+                environmentValues: environmentValues.isEmpty
+                    ? nil
+                    : environmentValues.mapValues { OrgFlagEnvironmentValueInput(onValue: $0) }
             )
 
             let flag: OrgFlagDetail
@@ -296,18 +300,18 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
     private static func toggle(
         key: String, isActive: Bool, env: String?, options: GlobalOptions, client: ConsoleClient
     ) async throws {
-        let flag: OrgFlagDetail
+        let result: OrgFlagToggleResponse
         do {
-            flag = try await client.toggleFlag(key, ToggleOrgFlagRequest(isActive: isActive, environment: env))
+            result = try await client.toggleFlag(key, ToggleOrgFlagRequest(isActive: isActive, environment: env))
         } catch {
             throw ConsoleSupport.map(error, scope: ConsoleScope.flagsWrite, flagKey: key)
         }
 
         if options.json {
-            Output.line(try JSONOutput.string(flag))
+            Output.line(try JSONOutput.string(result))
         } else {
-            let scope = env.map { " in \($0)" } ?? ""
-            Output.line("\(flag.flagKey) is now \(isActive ? "on" : "off")\(scope)")
+            let scope = result.environment.map { " in \($0)" } ?? ""
+            Output.line("\(result.flagKey) is now \(result.isActive ? "on" : "off")\(scope)")
         }
     }
 
@@ -463,17 +467,17 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         }
 
         func run(client: ConsoleClient) async throws {
-            let response: FlagHistoryResponse
+            let entries: [FlagHistoryEntry]
             do {
-                response = try await client.flagHistory(key, limit, offset)
+                entries = try await client.flagHistory(key, limit, offset)
             } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead, flagKey: key)
             }
 
             if options.json {
-                Output.line(try JSONOutput.string(response))
+                Output.line(try JSONOutput.string(entries))
             } else {
-                Output.line(ConsoleFormat.historyTable(response.history))
+                Output.line(ConsoleFormat.historyTable(entries))
             }
         }
     }

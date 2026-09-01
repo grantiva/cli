@@ -8,16 +8,16 @@ import GrantivaCore
 /// `.live`-style convenience init and a `.failing` double for tests.
 public struct ConsoleClient: Sendable {
     // Flags (org endpoints)
-    public var listFlags: @Sendable (_ appId: String?, _ environment: String?) async throws -> OrgFlagListResponse
+    public var listFlags: @Sendable (_ appId: String?, _ environment: String?) async throws -> [OrgFlag]
     public var createFlag: @Sendable (CreateOrgFlagRequest) async throws -> OrgFlagDetail
     public var getFlag: @Sendable (_ flagRef: String) async throws -> OrgFlagDetail
     public var updateFlag: @Sendable (_ flagRef: String, UpdateOrgFlagRequest) async throws -> OrgFlagDetail
     public var deleteFlag: @Sendable (_ flagRef: String) async throws -> Void
-    public var toggleFlag: @Sendable (_ flagRef: String, ToggleOrgFlagRequest) async throws -> OrgFlagDetail
-    public var flagHistory: @Sendable (_ flagRef: String, _ limit: Int?, _ offset: Int?) async throws -> FlagHistoryResponse
+    public var toggleFlag: @Sendable (_ flagRef: String, ToggleOrgFlagRequest) async throws -> OrgFlagToggleResponse
+    public var flagHistory: @Sendable (_ flagRef: String, _ limit: Int?, _ offset: Int?) async throws -> [FlagHistoryEntry]
 
     // Overrides (org endpoints)
-    public var listOverrides: @Sendable (_ flagRef: String) async throws -> OrgFlagOverrideListResponse
+    public var listOverrides: @Sendable (_ flagRef: String) async throws -> [OrgFlagOverride]
     public var createOverride: @Sendable (_ flagRef: String, CreateFlagOverrideRequest) async throws -> OrgFlagOverride
     public var deleteOverride: @Sendable (_ flagRef: String, _ overrideId: String) async throws -> Void
 
@@ -41,14 +41,14 @@ public struct ConsoleClient: Sendable {
     public var streamFlags: @Sendable (_ environment: String?) async throws -> AsyncThrowingStream<FlagStreamEvent, Error>
 
     public init(
-        listFlags: @escaping @Sendable (String?, String?) async throws -> OrgFlagListResponse,
+        listFlags: @escaping @Sendable (String?, String?) async throws -> [OrgFlag],
         createFlag: @escaping @Sendable (CreateOrgFlagRequest) async throws -> OrgFlagDetail,
         getFlag: @escaping @Sendable (String) async throws -> OrgFlagDetail,
         updateFlag: @escaping @Sendable (String, UpdateOrgFlagRequest) async throws -> OrgFlagDetail,
         deleteFlag: @escaping @Sendable (String) async throws -> Void,
-        toggleFlag: @escaping @Sendable (String, ToggleOrgFlagRequest) async throws -> OrgFlagDetail,
-        flagHistory: @escaping @Sendable (String, Int?, Int?) async throws -> FlagHistoryResponse,
-        listOverrides: @escaping @Sendable (String) async throws -> OrgFlagOverrideListResponse,
+        toggleFlag: @escaping @Sendable (String, ToggleOrgFlagRequest) async throws -> OrgFlagToggleResponse,
+        flagHistory: @escaping @Sendable (String, Int?, Int?) async throws -> [FlagHistoryEntry],
+        listOverrides: @escaping @Sendable (String) async throws -> [OrgFlagOverride],
         createOverride: @escaping @Sendable (String, CreateFlagOverrideRequest) async throws -> OrgFlagOverride,
         deleteOverride: @escaping @Sendable (String, String) async throws -> Void,
         listEnvironments: @escaping @Sendable () async throws -> [OrgFlagEnvironment],
@@ -181,13 +181,28 @@ extension ConsoleClient {
 
                 return AsyncThrowingStream { continuation in
                     let task = Task {
+                        // NOT `bytes.lines`: that skips empty lines, and the
+                        // blank line is exactly what dispatches an SSE event.
                         var parser = SSEParser()
+                        var buffer: [UInt8] = []
+                        func feed(_ lineBytes: [UInt8]) {
+                            var lineBytes = lineBytes
+                            if lineBytes.last == 0x0D { lineBytes.removeLast() } // trailing \r
+                            let line = String(decoding: lineBytes, as: UTF8.self)
+                            if let event = parser.feed(line: line) {
+                                continuation.yield(event)
+                            }
+                        }
                         do {
-                            for try await line in bytes.lines {
-                                if let event = parser.feed(line: line) {
-                                    continuation.yield(event)
+                            for try await byte in bytes {
+                                if byte == 0x0A { // \n
+                                    feed(buffer)
+                                    buffer.removeAll(keepingCapacity: true)
+                                } else {
+                                    buffer.append(byte)
                                 }
                             }
+                            if !buffer.isEmpty { feed(buffer) }
                             continuation.finish()
                         } catch {
                             continuation.finish(throwing: error)
