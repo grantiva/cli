@@ -1,12 +1,13 @@
 # Changelog
 
-## Unreleased
+## v1.9.0 — 2026-09-01
 
 ### Added
 - **`grantiva console`** — the dashboard from the terminal, starting with feature flags. `console flags` (alias `featureflags`) covers `list`, `get`, `create`, `update`, `on`/`off` (per-environment with `--env`), `delete`, targeting `rules list|add|update|delete|reorder`, per-device `overrides list|add|delete`, `history`, `watch` (live SSE config stream), and `eval` — a dry-run of a flag against a simulated device (`--os-version`, `--risk-score`, `--country`, `--custom key=value`, …) that renders the full rule trace: every rule in priority order with per-condition expected vs actual. `console envs` manages flag environments (`list|create|update|delete|reorder`). Flags are addressable by `flag_key` everywhere; UUIDs also work. All commands take `--json`; destructive verbs prompt on a TTY and require `--yes` otherwise. Rule conditions are given as repeated `--when attribute:op:value` or a `--conditions-json` array.
 - The org-scoped flag endpoints (`/api/v1/org/flags`, `/api/v1/org/flag-environments`) require an API key carrying the `flags:read` / `flags:write` scopes; a 403 names the missing scope.
 
 ### Fixed
+- A 403 from the flags API is no longer always reported as a missing scope. The backend uses 403 for plan limits too — `console flags rules add` on the Free tier (zero rules per flag) told you to mint a key with `flags:write`, which you already had. The server's own message ("Targeting rule limit reached (0 per flag for Free tier)…") is shown instead; the scope hint remains for a genuine scope failure.
 - `~/.grantiva/auth.json` is now written with mode 0600. It holds a plaintext API key and was previously created with default permissions.
 
 ## v1.8.0 — 2026-08-29
