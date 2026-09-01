@@ -16,6 +16,8 @@ struct ConsoleCommand: AsyncParsableCommand {
         subcommands: [
             ConsoleFlagsCommand.self,
             ConsoleEnvsCommand.self,
+            ConsoleAnalyticsCommand.self,
+            ConsoleDevicesCommand.self,
         ]
     )
 }
@@ -27,6 +29,8 @@ struct ConsoleCommand: AsyncParsableCommand {
 enum ConsoleScope {
     static let flagsRead = "flags:read"
     static let flagsWrite = "flags:write"
+    static let analyticsRead = "analytics:read"
+    static let analyticsExport = "analytics:export"
 }
 
 enum ConsoleSupport {
@@ -37,6 +41,14 @@ enum ConsoleSupport {
             throw GrantivaError.notAuthenticated
         }
         return ConsoleClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for the analytics/devices surface.
+    static func makeAnalyticsClient() throws -> AnalyticsClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return AnalyticsClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Maps raw HTTP failures onto messages a person can act on:
