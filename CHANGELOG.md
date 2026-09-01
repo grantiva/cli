@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- **`grantiva console`** — the dashboard from the terminal, starting with feature flags. `console flags` (alias `featureflags`) covers `list`, `get`, `create`, `update`, `on`/`off` (per-environment with `--env`), `delete`, targeting `rules list|add|update|delete|reorder`, per-device `overrides list|add|delete`, `history`, `watch` (live SSE config stream), and `eval` — a dry-run of a flag against a simulated device (`--os-version`, `--risk-score`, `--country`, `--custom key=value`, …) that renders the full rule trace: every rule in priority order with per-condition expected vs actual. `console envs` manages flag environments (`list|create|update|delete|reorder`). Flags are addressable by `flag_key` everywhere; UUIDs also work. All commands take `--json`; destructive verbs prompt on a TTY and require `--yes` otherwise. Rule conditions are given as repeated `--when attribute:op:value` or a `--conditions-json` array.
+- The org-scoped flag endpoints (`/api/v1/org/flags`, `/api/v1/org/flag-environments`) require an API key carrying the `flags:read` / `flags:write` scopes; a 403 names the missing scope.
+
+### Fixed
+- `~/.grantiva/auth.json` is now written with mode 0600. It holds a plaintext API key and was previously created with default permissions.
+
 ## v1.8.0 — 2026-08-29
 
 ### Fixed
