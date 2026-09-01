@@ -299,6 +299,32 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertEqual(message, "flag not found: dark_mode")
     }
 
+    func testMap403SurfacesATierLimitMessageInsteadOfBlamingScopes() {
+        // Free tier allows zero rules per flag; the backend says so with a 403.
+        let body = #"{"code":"forbidden","error":"Targeting rule limit reached (0 per flag for Free tier). Please upgrade to add more rules.","requestId":"x"}"#
+        let mapped = ConsoleSupport.map(
+            GrantivaError.networkError(body, 403),
+            scope: "flags:write"
+        )
+        guard case GrantivaError.permissionDenied(let message) = mapped else {
+            return XCTFail("expected permissionDenied, got \(mapped)")
+        }
+        XCTAssertTrue(message.contains("Targeting rule limit reached"), message)
+        XCTAssertFalse(message.contains("missing the 'flags:write' scope"), message)
+    }
+
+    func testMap403KeepsTheScopeHintWhenTheServerIsTalkingAboutScopes() {
+        let body = #"{"error":"Insufficient permissions. Required scopes: flags:write"}"#
+        let mapped = ConsoleSupport.map(
+            GrantivaError.networkError(body, 403),
+            scope: "flags:write"
+        )
+        guard case GrantivaError.permissionDenied(let message) = mapped else {
+            return XCTFail("expected permissionDenied, got \(mapped)")
+        }
+        XCTAssertTrue(message.contains("missing the 'flags:write' scope"), message)
+    }
+
     func testMap429SurfacesTheServerRetryMessage() {
         let body = #"{"error":"Rate limit exceeded. Retry after 42 seconds.","code":"rate_limited","requestId":"req-1"}"#
         let mapped = ConsoleSupport.map(

@@ -48,6 +48,17 @@ enum ConsoleSupport {
         }
         switch status {
         case 403:
+            // The backend answers 403 for two different things: a key without the
+            // scope ("Insufficient permissions. Required scopes: flags:write") and
+            // a tier limit ("Targeting rule limit reached (0 per flag for Free
+            // tier)"). When the server explains itself and the explanation is not
+            // about scopes, show it verbatim — telling someone at a plan limit to
+            // mint a new key sends them to the wrong place.
+            if let serverMessage = errorMessage(fromBody: body),
+               !serverMessage.localizedCaseInsensitiveContains("scope")
+            {
+                return GrantivaError.permissionDenied(serverMessage)
+            }
             return GrantivaError.permissionDenied(
                 "Permission denied: this API key is missing the '\(scope)' scope. "
                     + "Create a key with '\(scope)' in the dashboard under Settings → API Keys."
@@ -61,7 +72,7 @@ enum ConsoleSupport {
             // The backend's rate limiter returns
             // {"error":"Rate limit exceeded. Retry after N seconds.","code":"rate_limited",...}
             // — surface the human-readable message, not the JSON envelope.
-            let message = rateLimitMessage(fromBody: body)
+            let message = errorMessage(fromBody: body)
                 ?? "Rate limit exceeded. Wait a moment and retry."
             return GrantivaError.permissionDenied(message)
         default:
@@ -69,8 +80,8 @@ enum ConsoleSupport {
         }
     }
 
-    /// Extracts the `error` message from a 429 JSON body, if present.
-    static func rateLimitMessage(fromBody body: String) -> String? {
+    /// Extracts the `error` message from a JSON error envelope, if present.
+    static func errorMessage(fromBody body: String) -> String? {
         guard let data = body.data(using: .utf8),
               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let message = object["error"] as? String,
