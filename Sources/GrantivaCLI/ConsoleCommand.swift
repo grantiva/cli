@@ -18,6 +18,8 @@ struct ConsoleCommand: AsyncParsableCommand {
             ConsoleEnvsCommand.self,
             ConsoleAnalyticsCommand.self,
             ConsoleDevicesCommand.self,
+            ConsoleAppsCommand.self,
+            ConsoleClaimsCommand.self,
         ]
     )
 }
@@ -31,6 +33,14 @@ enum ConsoleScope {
     static let flagsWrite = "flags:write"
     static let analyticsRead = "analytics:read"
     static let analyticsExport = "analytics:export"
+    static let devicesRead = "devices:read"
+    static let appsRead = "apps:read"
+    static let appsWrite = "apps:write"
+    static let appsDelete = "apps:delete"
+    static let claimsRead = "claims:read"
+    static let claimsWrite = "claims:write"
+    static let claimsDelete = "claims:delete"
+    static let claimsTest = "claims:test"
 }
 
 enum ConsoleSupport {
@@ -41,6 +51,15 @@ enum ConsoleSupport {
             throw GrantivaError.notAuthenticated
         }
         return ConsoleClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for the `/api/v1/org/*` apps, claims and
+    /// devices surface.
+    static func makeOrgClient() throws -> OrgClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for the analytics/devices surface.
@@ -54,7 +73,7 @@ enum ConsoleSupport {
     /// Maps raw HTTP failures onto messages a person can act on:
     /// 403 names the missing scope, 404 names the flag key, 429 surfaces the
     /// server's retry guidance instead of a raw JSON blob.
-    static func map(_ error: Error, scope: String, flagKey: String? = nil) -> Error {
+    static func map(_ error: Error, scope: String, flagKey: String? = nil, notFound: String? = nil) -> Error {
         guard case GrantivaError.networkError(let body, let status) = error else {
             return error
         }
@@ -76,6 +95,9 @@ enum ConsoleSupport {
                     + "Create a key with '\(scope)' in the dashboard under Settings → API Keys."
             )
         case 404:
+            if let notFound {
+                return GrantivaError.notFound(notFound)
+            }
             if let flagKey {
                 return GrantivaError.notFound("flag not found: \(flagKey)")
             }

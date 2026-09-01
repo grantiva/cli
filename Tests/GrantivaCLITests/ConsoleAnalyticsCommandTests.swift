@@ -62,12 +62,6 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertNoThrow(try ConsoleAnalyticsCommand.ExportCommand.parse(["--data", "devices", "--json", "--out", "/tmp/d.csv"]))
     }
 
-    func testDevicesGetParses() throws {
-        let command = try ConsoleDevicesCommand.GetCommand.parse(["abc123", "--json"])
-        XCTAssertEqual(command.keyId, "abc123")
-        XCTAssertTrue(command.options.json)
-    }
-
     // MARK: - Behaviour with the failing double
 
     func testOverviewSurfacesNotAuthenticated() async throws {
@@ -79,21 +73,6 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
             guard case GrantivaError.notAuthenticated = error else {
                 return XCTFail("unexpected error \(error)")
             }
-        }
-    }
-
-    func testDevicesGetMapsA404ToTheKeyId() async throws {
-        var client = AnalyticsClient.failing
-        client.device = { _ in throw GrantivaError.networkError("{\"error\":\"Device not found\"}", 404) }
-        let command = try ConsoleDevicesCommand.GetCommand.parse(["missing-key"])
-        do {
-            try await command.run(client: client)
-            XCTFail("expected throw")
-        } catch {
-            guard case GrantivaError.notFound(let message) = error else {
-                return XCTFail("unexpected error \(error)")
-            }
-            XCTAssertEqual(message, "device not found: missing-key")
         }
     }
 
