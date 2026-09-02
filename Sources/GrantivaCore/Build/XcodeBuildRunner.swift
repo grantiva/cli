@@ -20,7 +20,7 @@ public struct XcodeBuildRunner: Sendable {
         args += ["-destination", "\(destination)", "build"]
         args += buildSettings
 
-        let command = args.map { $0.contains(" ") ? "\"\($0)\"" : $0 }.joined(separator: " ")
+        let command = args.map(shellQuoted).joined(separator: " ")
 
         do {
             let output = try await shell(command)
@@ -51,24 +51,24 @@ public struct XcodeBuildRunner: Sendable {
     }
 
     public func install(bundleId: String, productPath: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl install \(udid) \"\(productPath)\"")
+        _ = try await shell("xcrun simctl install \(shellQuoted(udid)) \(shellQuoted(productPath))")
     }
 
     public func launch(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl launch \(udid) \(bundleId)")
+        _ = try await shell("xcrun simctl launch \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func dataContainerPath(bundleId: String, udid: String) async throws -> String {
-        try await shell("xcrun simctl get_app_container \(udid) \(bundleId) data")
+        try await shell("xcrun simctl get_app_container \(shellQuoted(udid)) \(shellQuoted(bundleId)) data")
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     public func terminate(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl terminate \(udid) \(bundleId)")
+        _ = try await shell("xcrun simctl terminate \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func uninstall(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl uninstall \(udid) \(bundleId)")
+        _ = try await shell("xcrun simctl uninstall \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func test(
@@ -86,7 +86,7 @@ public struct XcodeBuildRunner: Sendable {
         }
         args += ["-destination", "\(destination)", "test"]
 
-        let command = args.map { $0.contains(" ") ? "\"\($0)\"" : $0 }.joined(separator: " ")
+        let command = args.map(shellQuoted).joined(separator: " ")
 
         do {
             let output = try await shell(command)
@@ -121,7 +121,7 @@ public struct XcodeBuildRunner: Sendable {
         }
         args += ["-destination", "\(destination)", "-showBuildSettings"]
         args += buildSettings
-        let command = args.map { $0.contains(" ") ? "\"\($0)\"" : $0 }.joined(separator: " ")
+        let command = args.map(shellQuoted).joined(separator: " ")
         let output = try await shell(command)
 
         var builtProductsDir: String?

@@ -35,6 +35,13 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     return output
 }
 
+/// Quotes one argument for `/bin/zsh -c`: single quotes, with embedded single
+/// quotes closed, escaped, and reopened. Every value that reaches `shell` from
+/// user or model input (schemes, paths, screen names) must go through here.
+public func shellQuoted(_ value: String) -> String {
+    "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
+}
+
 public func which(_ tool: String) -> String? {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/which")

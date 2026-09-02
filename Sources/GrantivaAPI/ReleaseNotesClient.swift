@@ -164,13 +164,7 @@ public struct ReleaseNotesClient: Sendable {
             create: { body in try await client.execute(ReleaseNoteEndpoints.create(body: body), baseURL: baseURL) },
             get: { noteId in try await client.execute(ReleaseNoteEndpoints.detail(noteId: noteId), baseURL: baseURL) },
             update: { noteId, body in
-                let endpoint = ReleaseNoteEndpoints.update(noteId: noteId, body: body)
-                var request = URLRequest(url: endpoint.url(relativeTo: baseURL))
-                request.httpMethod = "PATCH"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = try JSONEncoder().encode(body)
-                let data = try await client.sendRequest(request)
-                return try JSONDecoder().decode(ReleaseNote.self, from: data)
+                try await client.execute(ReleaseNoteEndpoints.update(noteId: noteId, body: body), baseURL: baseURL)
             },
             delete: { noteId in _ = try await client.execute(ReleaseNoteEndpoints.delete(noteId: noteId), baseURL: baseURL) },
             publish: { noteId in try await client.execute(ReleaseNoteEndpoints.publish(noteId: noteId), baseURL: baseURL) },

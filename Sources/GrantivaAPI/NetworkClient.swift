@@ -29,9 +29,19 @@ extension NetworkClient {
         case .post:
             let body = try endpoint.body.map { try JSONEncoder().encode($0) }
             responseData = try await post(url, body)
-        case .put, .patch:
+        case .put:
             let body = try endpoint.body.map { try JSONEncoder().encode($0) }
             responseData = try await put(url, body)
+        case .patch:
+            // The typed closures only cover the four verbs the client was born
+            // with; PATCH rides the raw-request path so it never degrades to PUT.
+            var request = URLRequest(url: url)
+            request.httpMethod = "PATCH"
+            if let body = try endpoint.body.map({ try JSONEncoder().encode($0) }) {
+                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                request.httpBody = body
+            }
+            responseData = try await sendRequest(request)
         case .delete:
             responseData = try await delete(url)
         }

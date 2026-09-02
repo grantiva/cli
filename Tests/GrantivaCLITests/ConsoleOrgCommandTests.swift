@@ -209,3 +209,22 @@ private actor Capture<T: Sendable> {
     private(set) var value: T?
     func set(_ new: T) { value = new }
 }
+
+final class ClaimsTestDataOptionTests: XCTestCase {
+    private func parse(_ data: [String]) throws -> ConsoleClaimsCommand.TestCommand {
+        var args = ["plan", "--type", "static", "--value", "gold"]
+        for pair in data { args += ["--data", pair] }
+        return try ConsoleClaimsCommand.TestCommand.parse(args)
+    }
+
+    func testDataPairsSplitOnTheFirstEqualsOnly() throws {
+        let command = try parse(["tier=gold", "query=a=b", "empty="])
+        XCTAssertEqual(command.device.context()?.additionalData, ["tier": "gold", "query": "a=b", "empty": ""])
+    }
+
+    func testDataWithoutAKeyIsRejectedInsteadOfCrashing() {
+        XCTAssertThrowsError(try parse(["="]))
+        XCTAssertThrowsError(try parse(["=value"]))
+        XCTAssertThrowsError(try parse(["novalue"]))
+    }
+}

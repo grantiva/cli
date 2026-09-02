@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- **`grantiva ci run` no longer erases its own results on a visual regression.** The failing verdict was raised inside the same error handler that marks a crashed run, so a run with a real diff was immediately re-completed with zero screens — the one run you needed to look at in the dashboard was blank. The verdict now exits 1 after the results are uploaded.
+- Scheme names, project and workspace paths, bundle IDs, and screen names are shell-quoted before they reach `xcodebuild` and `simctl`. A workspace called `My App.xcworkspace` failed project detection, and a value containing `$`, backticks, or `;` was interpreted by the shell — including values supplied to the MCP build and `grantiva_vrt_approve` tools.
+- Two `grantiva run` / `ci run` invocations against different simulators no longer share one generated flow file, so a concurrent run cannot execute the other run's screens or delete its flow mid-run.
+- Flows with the same basename in different directories (`smoke/login.yaml`, `regression/login.yaml`) are staged separately. Previously the second overwrote the first and ran twice.
+- `grantiva runner start` keeps the simulator lease for the life of the session. It used to drop the lease as soon as WDA came up, so a later `grantiva run` on the same simulator could tear down the interactive session. `runner stop` releases it.
+- `grantiva simulator ensure --device-type "iPhone 15 Pro" --boot` no longer fails on runtimes whose display geometry is not exactly 393x852 at 3x.
+- `grantiva console claims test --data '='` crashed with an index-out-of-range trap; `--data '=value'` silently used the value as the key. Both are now rejected with a validation error.
+- PATCH endpoints are sent as PATCH. `NetworkClient.execute` routed them through the PUT path; the four clients that had worked around it by hand now share one implementation.
+- Run uploads index capture and diff files by screen position, so the diff for screen 1 is never labelled `diffs[0]` when screen 0 passed.
+
+### Removed
+- `ENVIRONMENT.md`, which described the 1.5.x toolchain and test layout and had not been kept current.
+
 ## v1.9.0 — 2026-09-02
 
 ### Added

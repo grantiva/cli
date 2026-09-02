@@ -95,6 +95,16 @@ public final class SimulatorLease: @unchecked Sendable {
             )
         }
 
+        // The lock is free, but `runner start` hands its lease to the runner
+        // process it leaves behind (see `handOff(to:)`), and that process holds
+        // no descriptor. A live handed-off claim is ownership all the same.
+        if let holder = Self.claim(udid: udid, directory: directory),
+           holder.keepAlive, holder.pid != getpid(), !holder.isStale {
+            flock(descriptor, LOCK_UN)
+            Darwin.close(descriptor)
+            throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder), 1)
+        }
+
         let claim = SimulatorLeaseClaim(pid: getpid(), udid: udid, startedAt: Date())
         let lease = SimulatorLease(descriptor: descriptor, udid: udid, path: path, claim: claim)
         lease.persistClaim()
@@ -138,6 +148,27 @@ public final class SimulatorLease: @unchecked Sendable {
         claim.keepAlive = keepAlive
         stateLock.unlock()
         persistClaim()
+    }
+
+    /// Transfers ownership to a process that outlives this one. `runner start`
+    /// returns to the shell as soon as WDA is up, so a lock tied to its own
+    /// descriptor would vanish while the runner still owns the simulator. The
+    /// claim is rewritten in the runner's name, marked keep-alive, and left on
+    /// disk when the descriptor closes; `acquire` treats it as held until that
+    /// pid is gone or `runner stop` / `teardown --force` clears it.
+    public func handOff(to runnerPID: Int32) {
+        stateLock.lock()
+        claim = SimulatorLeaseClaim(
+            pid: runnerPID, udid: claim.udid, startedAt: claim.startedAt,
+            runnerPID: runnerPID, keepAlive: true
+        )
+        stateLock.unlock()
+        persistClaim()
+        stateLock.lock()
+        released = true
+        stateLock.unlock()
+        _ = flock(descriptor, LOCK_UN)
+        Darwin.close(descriptor)
     }
 
     private func persistClaim() {

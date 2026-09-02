@@ -397,31 +397,23 @@ public struct OrgAdminClient: Sendable {
     public init(apiKey: String, baseURL: String) {
         let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
         let client = NetworkClient.authorized(apiKey: apiKey)
-        @Sendable func patch<B: Encodable, R: Decodable>(_ endpoint: Endpoint<B, R>) async throws -> R {
-            var request = URLRequest(url: endpoint.url(relativeTo: baseURL))
-            request.httpMethod = "PATCH"
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.httpBody = try endpoint.body.map { try JSONEncoder().encode($0) }
-            let data = try await client.sendRequest(request)
-            return try JSONDecoder().decode(R.self, from: data)
-        }
         listWebhooks = { try await client.execute(OrgAdminEndpoints.listWebhooks(), baseURL: baseURL) }
         createWebhook = { try await client.execute(OrgAdminEndpoints.createWebhook($0), baseURL: baseURL) }
-        patchWebhook = { id, body in try await patch(OrgAdminEndpoints.patchWebhook(id, body)) }
+        patchWebhook = { id, body in try await client.execute(OrgAdminEndpoints.patchWebhook(id, body), baseURL: baseURL) }
         deleteWebhook = { _ = try await client.execute(OrgAdminEndpoints.deleteWebhook($0), baseURL: baseURL) }
         testWebhook = { try await client.execute(OrgAdminEndpoints.testWebhook($0), baseURL: baseURL) }
         deliveries = { try await client.execute(OrgAdminEndpoints.deliveries($0), baseURL: baseURL) }
         retryDelivery = { id, d in try await client.execute(OrgAdminEndpoints.retry(id, d), baseURL: baseURL) }
         listRules = { try await client.execute(OrgAdminEndpoints.listRules(), baseURL: baseURL) }
         createRule = { try await client.execute(OrgAdminEndpoints.createRule($0), baseURL: baseURL) }
-        patchRule = { id, body in try await patch(OrgAdminEndpoints.patchRule(id, body)) }
+        patchRule = { id, body in try await client.execute(OrgAdminEndpoints.patchRule(id, body), baseURL: baseURL) }
         deleteRule = { _ = try await client.execute(OrgAdminEndpoints.deleteRule($0), baseURL: baseURL) }
         ruleDeliveries = { try await client.execute(OrgAdminEndpoints.ruleDeliveries(), baseURL: baseURL) }
         failureRate = { try await client.execute(OrgAdminEndpoints.failureRate(), baseURL: baseURL) }
-        patchFailureRate = { try await patch(OrgAdminEndpoints.patchFailureRate($0)) }
+        patchFailureRate = { try await client.execute(OrgAdminEndpoints.patchFailureRate($0), baseURL: baseURL) }
         failureRateHistory = { try await client.execute(OrgAdminEndpoints.failureRateHistory(), baseURL: baseURL) }
         notificationPreferences = { try await client.execute(OrgAdminEndpoints.notificationPreferences(), baseURL: baseURL) }
-        patchNotificationPreferences = { try await patch(OrgAdminEndpoints.patchNotificationPreferences($0)) }
+        patchNotificationPreferences = { try await client.execute(OrgAdminEndpoints.patchNotificationPreferences($0), baseURL: baseURL) }
         listKeys = { try await client.execute(OrgAdminEndpoints.listKeys(), baseURL: baseURL) }
         createKey = { try await client.execute(OrgAdminEndpoints.createKey($0), baseURL: baseURL) }
         rotateKey = { id, body in try await client.execute(OrgAdminEndpoints.rotateKey(id, body), baseURL: baseURL) }

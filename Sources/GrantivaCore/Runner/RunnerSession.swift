@@ -43,7 +43,11 @@ public enum RunnerSession {
         let flowPath = try FlowGenerator.writeTemp(
             screens: screens, bundleId: bundleId, environment: environment
         )
-        defer { try? FileManager.default.removeItem(atPath: flowPath) }
+        defer {
+            try? FileManager.default.removeItem(
+                atPath: (flowPath as NSString).deletingLastPathComponent
+            )
+        }
 
         // Create a temp directory for runner reports
         let reportDir = FileManager.default.temporaryDirectory
@@ -277,8 +281,13 @@ public enum RunnerSession {
                     ))
                 }
             }
+            // Stage each flow in its own numbered directory: the basename is kept
+            // for readable runner output, but smoke/login.yaml and
+            // regression/login.yaml must not overwrite each other.
             let originalFilename = URL(fileURLWithPath: absoluteFlowPath).lastPathComponent
-            let tempFlowPath = "\(tempFlowDir)/\(originalFilename)"
+            let stageDir = "\(tempFlowDir)/\(index)"
+            try FileManager.default.createDirectory(atPath: stageDir, withIntermediateDirectories: true)
+            let tempFlowPath = "\(stageDir)/\(originalFilename)"
             try injectedContent.write(toFile: tempFlowPath, atomically: true, encoding: .utf8)
             tempFlowPaths.append(tempFlowPath)
             stagedPathMap[tempFlowPath] = flowPaths[index]

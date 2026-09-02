@@ -149,11 +149,6 @@ public struct SimulatorManager: Sendable, Decodable {
         }
         let device = try await exactDevice(nameOrUDID: udid)
         let geometry = shouldBoot ? try await displayGeometry(udid: udid) : nil
-        if shouldBoot && (name == "APP-302 iPhone 393x852" || deviceType == "iPhone 15 Pro") {
-            guard geometry?.points == [393, 852], geometry?.pixels == [1179, 2556], geometry?.scale == 3 else {
-                throw GrantivaError.invalidArgument("Provisioned simulator has unexpected display geometry; expected 393x852 points, 1179x2556 pixels, 3x scale")
-            }
-        }
         return SimulatorProvisionResult(name: name, udid: udid, deviceType: type.name, runtime: runtime.name, created: created, state: device.state, pointWidth: geometry?.points[0], pointHeight: geometry?.points[1], pixelWidth: geometry?.pixels[0], pixelHeight: geometry?.pixels[1], displayScale: geometry?.scale)
     }
 
@@ -275,7 +270,6 @@ public struct SimulatorManager: Sendable, Decodable {
     }
 }
 
-private func shellQuoted(_ value: String) -> String { "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'" }
 private func versionIsLess(_ lhs: String, _ rhs: String) -> Bool {
     let left = lhs.split(separator: ".").map { Int($0) ?? 0 }
     let right = rhs.split(separator: ".").map { Int($0) ?? 0 }

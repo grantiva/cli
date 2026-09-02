@@ -103,6 +103,7 @@ struct CICommand: AsyncParsableCommand {
                 log(message, client: client, project: project, runId: runId)
             }
 
+            var ciVerdictFailed = false
             do {
                 // 0. Preflight: ensure runner binary is extracted
                 rlog("Preparing runner...")
@@ -368,8 +369,11 @@ struct CICommand: AsyncParsableCommand {
                     Output.line("")
                 }
 
+                // A visual regression is a verdict, not a crash: the results are
+                // already uploaded. Throwing inside this `do` would land in the
+                // catch below and overwrite them with an empty completion.
                 if !allPassed {
-                    throw ExitCode.failure
+                    ciVerdictFailed = true
                 }
             } catch {
                 // Mark run as failed on the backend so it doesn't stay in "running" forever
@@ -384,6 +388,9 @@ struct CICommand: AsyncParsableCommand {
                 )
                 try? await client.completeRun(project, runId, failUpload)
                 throw error
+            }
+            if ciVerdictFailed {
+                throw ExitCode.failure
             }
         }
     }

@@ -119,8 +119,10 @@ struct ConsoleClaimsCommand: AsyncParsableCommand {
 
         func validate() throws {
             if let riskScore, !(0...100).contains(riskScore) { throw ValidationError("--risk-score must be 0–100.") }
-            for pair in data where !pair.contains("=") {
-                throw ValidationError("--data expects key=value, got '\(pair)'.")
+            for pair in data {
+                guard let eq = pair.firstIndex(of: "="), eq != pair.startIndex else {
+                    throw ValidationError("--data expects key=value, got '\(pair)'.")
+                }
             }
         }
 
@@ -132,8 +134,9 @@ struct ConsoleClaimsCommand: AsyncParsableCommand {
             if jailbroken { device.jailbreakDetected = true }
             var additional: [String: String] = [:]
             for pair in data {
-                let parts = pair.split(separator: "=", maxSplits: 1).map(String.init)
-                additional[parts[0]] = parts.count > 1 ? parts[1] : ""
+                // validate() has already rejected pairs without a non-empty key.
+                guard let eq = pair.firstIndex(of: "="), eq != pair.startIndex else { continue }
+                additional[String(pair[..<eq])] = String(pair[pair.index(after: eq)...])
             }
             if device.isEmpty, additional.isEmpty { return nil }
             return OrgClaimTestContext(device: device.isEmpty ? nil : device, additionalData: additional.isEmpty ? nil : additional)
