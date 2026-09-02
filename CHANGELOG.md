@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.9.0 — 2026-09-01
+## v1.9.0 — 2026-09-02
 
 ### Added
 - **`grantiva console analytics`** — the analytics dashboard from the terminal. `overview [--days]` (totals, success rate, unique devices, average risk, latest events), `events` (the paginated event log with `--page`, `--per-page`, `--from`/`--to`, `--device`, `--type`), `risk [--range 1d|7d|30d|90d]` (risk distribution, critical-risk devices, recent suspicious activity), `compliance [--period] [--all]` (compliance rate, violation counts, non-compliant devices), and `export --data devices|events [--period] [--out]` (CSV, to stdout or a file). Windows and event types the server would silently ignore are rejected up front. Needs a key with `analytics:read`; export needs `analytics:export`.
