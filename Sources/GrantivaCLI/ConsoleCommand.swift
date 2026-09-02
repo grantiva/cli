@@ -20,6 +20,8 @@ struct ConsoleCommand: AsyncParsableCommand {
             ConsoleDevicesCommand.self,
             ConsoleAppsCommand.self,
             ConsoleClaimsCommand.self,
+            ConsoleVRTCommand.self,
+            ConsoleReleasesCommand.self,
         ]
     )
 }
@@ -41,6 +43,10 @@ enum ConsoleScope {
     static let claimsWrite = "claims:write"
     static let claimsDelete = "claims:delete"
     static let claimsTest = "claims:test"
+    static let vrtRead = "vrt:read"
+    static let vrtWrite = "vrt:write"
+    static let releaseNotesRead = "release_notes:read"
+    static let releaseNotesWrite = "release_notes:write"
 }
 
 enum ConsoleSupport {
@@ -60,6 +66,22 @@ enum ConsoleSupport {
             throw GrantivaError.notAuthenticated
         }
         return OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for VRT run review.
+    static func makeVRTReviewClient() throws -> VRTReviewClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return VRTReviewClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for release note authoring.
+    static func makeReleaseNotesClient() throws -> ReleaseNotesClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return ReleaseNotesClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for the analytics/devices surface.

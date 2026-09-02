@@ -238,6 +238,8 @@ public struct RunScreenResultResponse: Codable, Sendable {
     public let id: String
     public let screenName: String
     public let status: String
+    /// `accepted`, `flagged`, or nil when the screen has not been reviewed.
+    public let reviewStatus: String?
     public let pixelDiffPercent: Double?
     public let perceptualDistance: Double?
     public let pixelThreshold: Double
@@ -248,6 +250,7 @@ public struct RunScreenResultResponse: Codable, Sendable {
         case id
         case screenName = "screen_name"
         case status
+        case reviewStatus = "review_status"
         case pixelDiffPercent = "pixel_diff_percent"
         case perceptualDistance = "perceptual_distance"
         case pixelThreshold = "pixel_threshold"
@@ -256,13 +259,14 @@ public struct RunScreenResultResponse: Codable, Sendable {
     }
 
     public init(
-        id: String, screenName: String, status: String,
+        id: String, screenName: String, status: String, reviewStatus: String? = nil,
         pixelDiffPercent: Double?, perceptualDistance: Double?,
         pixelThreshold: Double, perceptualThreshold: Double, message: String?
     ) {
         self.id = id
         self.screenName = screenName
         self.status = status
+        self.reviewStatus = reviewStatus
         self.pixelDiffPercent = pixelDiffPercent
         self.perceptualDistance = perceptualDistance
         self.pixelThreshold = pixelThreshold
@@ -274,9 +278,18 @@ public struct RunScreenResultResponse: Codable, Sendable {
 public struct RunDetailResponse: Codable, Sendable {
     public let run: RunListItem
     public let screens: [RunScreenResultResponse]
+    /// Failed/new screens still waiting for a review decision. Absent on
+    /// servers older than the review API.
+    public let pendingReviewCount: Int?
 
-    public init(run: RunListItem, screens: [RunScreenResultResponse]) {
+    enum CodingKeys: String, CodingKey {
+        case run, screens
+        case pendingReviewCount = "pending_review_count"
+    }
+
+    public init(run: RunListItem, screens: [RunScreenResultResponse], pendingReviewCount: Int? = nil) {
         self.run = run
         self.screens = screens
+        self.pendingReviewCount = pendingReviewCount
     }
 }
