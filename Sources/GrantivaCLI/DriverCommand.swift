@@ -116,8 +116,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let simName = simulator ?? config?.simulator ?? "iPhone 16"
         let simManager = SimulatorManager.live
         let device = try await simManager.boot(nameOrUDID: simName)
+        // Held until the runner is up, then handed to the runner process: this
+        // command returns immediately, but the session it started still owns
+        // the simulator until `runner stop`.
         let simulatorLease = try SimulatorLease.acquire(udid: device.udid)
-        defer { simulatorLease.release() }
+        var handedOff = false
+        defer { if !handedOff { simulatorLease.release() } }
 
         options.note("Starting runner...")
         options.note("  Bundle ID: \(resolvedBundleId)")
@@ -153,8 +157,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             flowPath,
         ]
 
+        let runnerPid: Int32
         if detach {
-            try await startDetached(
+            runnerPid = try await startDetached(
                 runnerBin: runnerBin,
                 runnerDir: runnerDir,
                 runnerArgs: runnerArgs,
@@ -162,7 +167,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 device: device
             )
         } else {
-            try await startForeground(
+            runnerPid = try await startForeground(
                 runnerBin: runnerBin,
                 runnerDir: runnerDir,
                 runnerArgs: runnerArgs,
@@ -170,6 +175,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 device: device
             )
         }
+        simulatorLease.handOff(to: runnerPid)
+        handedOff = true
     }
 
     // MARK: - Detached start
@@ -180,16 +187,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
         runnerArgs: [String],
         resolvedBundleId: String,
         device: SimulatorDevice
-    ) async throws {
+    ) async throws -> Int32 {
         let logPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-runner-\(Int(Date().timeIntervalSince1970)).log")
             .path
         let pidFile = logPath + ".pid"
 
-        // Shell-quote a single argument
-        func sq(_ s: String) -> String {
-            "'\(s.replacingOccurrences(of: "'", with: "'\\''"))'"
-        }
+        let sq = shellQuoted
 
         let cmdParts = ([runnerBin] + runnerArgs).map(sq).joined(separator: " ")
         let shellCmd = "cd \(sq(runnerDir)) && nohup \(cmdParts) >> \(sq(logPath)) 2>&1 & echo $! > \(sq(pidFile))"
@@ -244,6 +248,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Output.line("Tail the log with: tail -f \(logPath)")
             Output.line("Use 'grantiva runner stop' to stop the session.")
         }
+        return runnerPid
     }
 
     // MARK: - Foreground start
@@ -254,7 +259,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         runnerArgs: [String],
         resolvedBundleId: String,
         device: SimulatorDevice
-    ) async throws {
+    ) async throws -> Int32 {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: runnerBin)
         process.arguments = runnerArgs
@@ -326,6 +331,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Output.line("Use 'grantiva runner dump-hierarchy' to inspect the view hierarchy.")
             Output.line("Use 'grantiva runner stop' to stop the session.")
         }
+        return process.processIdentifier
     }
 
     // MARK: - Helpers
@@ -397,6 +403,8 @@ struct RunnerStopCommand: AsyncParsableCommand {
         }
 
         RunnerSessionInfo.remove()
+        // The session held the simulator lease by hand-off; free it now.
+        SimulatorLease.forceRelease(udid: session.udid)
 
         if options.json {
             Output.line(try JSONOutput.string(["status": "stopped", "pid": "\(session.pid)"]))

@@ -142,7 +142,7 @@ extension RangeClient {
 
 /// Builds a standard multipart/form-data body matching Vapor's Content decoding expectations.
 /// Form fields use `name="key"`, indexed arrays use `name="key[0]"`, files use `filename="name.png"`.
-private struct MultipartForm {
+struct MultipartForm {
     let data: Data
     let boundary: String
     var contentType: String { "multipart/form-data; boundary=\(boundary)" }
@@ -184,21 +184,18 @@ private struct MultipartForm {
             }
         }
 
-        // Capture files as indexed array: captures[0], captures[1], ...
-        var captureIndex = 0
-        for screen in upload.screens {
+        // Capture and diff files are indexed by screen position so captures[i]
+        // and diffs[i] always describe screens[i]. Only failed screens carry a
+        // diff, so a running counter would pair the diff for screen 1 with
+        // screen 0 whenever screen 0 passed.
+        for (i, screen) in upload.screens.enumerated() {
             if let captureData = screen.captureData {
-                body.appendFile(boundary: boundary, name: "captures[\(captureIndex)]", filename: "\(screen.name).png", data: captureData)
-                captureIndex += 1
+                body.appendFile(boundary: boundary, name: "captures[\(i)]", filename: "\(screen.name).png", data: captureData)
             }
         }
-
-        // Diff files as indexed array: diffs[0], diffs[1], ...
-        var diffIndex = 0
-        for screen in upload.screens {
+        for (i, screen) in upload.screens.enumerated() {
             if let diffData = screen.diffData {
-                body.appendFile(boundary: boundary, name: "diffs[\(diffIndex)]", filename: "\(screen.name)_diff.png", data: diffData)
-                diffIndex += 1
+                body.appendFile(boundary: boundary, name: "diffs[\(i)]", filename: "\(screen.name)_diff.png", data: diffData)
             }
         }
 

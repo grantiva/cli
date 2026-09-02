@@ -115,3 +115,41 @@ final class SimulatorLeaseTests: XCTestCase {
         }
     }
 }
+
+extension SimulatorLeaseTests {
+    func testHandedOffLeaseStaysHeldWhileTheRunnerLives() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-HANDOFF", directory: leaseDirectory)
+        // Stand in for the runner with a process that is certainly alive and
+        // is not us: our parent.
+        lease.handOff(to: getppid())
+
+        XCTAssertThrowsError(
+            try SimulatorLease.acquire(udid: "SIM-HANDOFF", directory: leaseDirectory)
+        ) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("already owned"), message)
+            XCTAssertTrue(message.contains("pid \(getppid())"), message)
+        }
+    }
+
+    func testHandedOffLeaseIsReclaimableOnceTheRunnerIsGone() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-STALE", directory: leaseDirectory)
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+        try child.run()
+        child.waitUntilExit()
+        lease.handOff(to: child.processIdentifier)
+
+        let reclaimed = try SimulatorLease.acquire(udid: "SIM-STALE", directory: leaseDirectory)
+        reclaimed.release()
+    }
+
+    func testForceReleaseClearsAHandedOffLease() throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-FORCE", directory: leaseDirectory)
+        lease.handOff(to: getppid())
+        XCTAssertTrue(SimulatorLease.forceRelease(udid: "SIM-FORCE", directory: leaseDirectory))
+
+        let reclaimed = try SimulatorLease.acquire(udid: "SIM-FORCE", directory: leaseDirectory)
+        reclaimed.release()
+    }
+}

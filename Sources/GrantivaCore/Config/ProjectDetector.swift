@@ -51,9 +51,9 @@ extension ProjectDetector {
         // Run xcodebuild -list to get schemes
         var listCmd = "xcodebuild -list -json"
         if let workspace {
-            listCmd += " -workspace \(workspace)"
+            listCmd += " -workspace \(shellQuoted(workspace))"
         } else if let project {
-            listCmd += " -project \(project)"
+            listCmd += " -project \(shellQuoted(project))"
         } else {
             throw GrantivaError.invalidArgument("No .xcworkspace or .xcodeproj found in current directory")
         }
@@ -78,11 +78,11 @@ extension ProjectDetector {
         }
 
         // Get bundle ID from build settings
-        var settingsCmd = "xcodebuild -scheme \(scheme) -showBuildSettings"
+        var settingsCmd = "xcodebuild -scheme \(shellQuoted(scheme)) -showBuildSettings"
         if let workspace {
-            settingsCmd += " -workspace \(workspace)"
+            settingsCmd += " -workspace \(shellQuoted(workspace))"
         } else if let project {
-            settingsCmd += " -project \(project)"
+            settingsCmd += " -project \(shellQuoted(project))"
         }
 
         var bundleId: String?

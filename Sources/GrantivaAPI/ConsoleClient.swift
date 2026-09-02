@@ -150,15 +150,7 @@ extension ConsoleClient {
                 _ = try await client.execute(FlagRuleEndpoints.delete(flagId: flagId, ruleId: ruleId), baseURL: baseURL)
             },
             reorderRules: { flagId, body in
-                // NetworkClient.execute sends .patch through the PUT closure,
-                // so the PATCH verb goes through the sendRequest escape hatch.
-                let endpoint = FlagRuleEndpoints.reorder(flagId: flagId, body: body)
-                var request = URLRequest(url: endpoint.url(relativeTo: baseURL))
-                request.httpMethod = "PATCH"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = try JSONEncoder().encode(body)
-                let data = try await client.sendRequest(request)
-                return try JSONDecoder().decode([FlagRuleResponse].self, from: data)
+                try await client.execute(FlagRuleEndpoints.reorder(flagId: flagId, body: body), baseURL: baseURL)
             },
             evaluateFlag: { flagId, body in
                 try await client.execute(FlagEvaluationEndpoints.evaluate(flagId: flagId, body: body), baseURL: baseURL)

@@ -73,8 +73,10 @@ public enum FlowGenerator {
         environment: [String: String] = [:]
     ) throws -> String {
         let yaml = generate(screens: screens, bundleId: bundleId, environment: environment)
+        // One directory per call: concurrent runs against different simulators
+        // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-flows")
+            .appendingPathComponent("grantiva-flows-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         let flowPath = tempDir.appendingPathComponent("flow.yaml").path
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)

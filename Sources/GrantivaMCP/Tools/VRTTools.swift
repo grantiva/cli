@@ -110,7 +110,7 @@ enum VRTTools {
         if let screens = arguments["screens"]?.arrayValue {
             let names = screens.compactMap { $0.stringValue }
             if !names.isEmpty {
-                cmd += " " + names.joined(separator: " ")
+                cmd += " " + names.map(shellQuoted).joined(separator: " ")
             }
         }
 
