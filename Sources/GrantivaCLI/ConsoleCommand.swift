@@ -22,6 +22,8 @@ struct ConsoleCommand: AsyncParsableCommand {
             ConsoleClaimsCommand.self,
             ConsoleVRTCommand.self,
             ConsoleReleasesCommand.self,
+            ConsoleFeedbackCommand.self,
+            ConsoleSupportCommand.self,
         ]
     )
 }
@@ -47,6 +49,8 @@ enum ConsoleScope {
     static let vrtWrite = "vrt:write"
     static let releaseNotesRead = "release_notes:read"
     static let releaseNotesWrite = "release_notes:write"
+    static let feedbackRead = "feedback:read"
+    static let feedbackManage = "feedback:manage"
 }
 
 enum ConsoleSupport {
@@ -66,6 +70,14 @@ enum ConsoleSupport {
             throw GrantivaError.notAuthenticated
         }
         return OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for staff-side feedback and support.
+    static func makeFeedbackClient() throws -> FeedbackClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return FeedbackClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for VRT run review.
