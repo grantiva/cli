@@ -30,6 +30,7 @@ struct ConsoleCommand: AsyncParsableCommand {
             ConsoleTeamCommand.self,
             ConsoleAuditCommand.self,
             ConsoleOrgCommand.self,
+            ConsoleOpenCommand.self,
         ]
     )
 }

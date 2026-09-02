@@ -207,6 +207,7 @@ final class OutputStreamContractTests: XCTestCase {
             ["console", "org", "settings", "set-name"],
             ["console", "org", "usage"],
             ["console", "org", "billing", "show"],
+            ["console", "open"],
         ] {
             let run = try grantiva(arguments + ["--help"])
             XCTAssertEqual(run.status, 0, "\(arguments): \(run.stderr)")
