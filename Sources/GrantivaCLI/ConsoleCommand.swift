@@ -24,6 +24,12 @@ struct ConsoleCommand: AsyncParsableCommand {
             ConsoleReleasesCommand.self,
             ConsoleFeedbackCommand.self,
             ConsoleSupportCommand.self,
+            ConsoleWebhooksCommand.self,
+            ConsoleAlertsCommand.self,
+            ConsoleKeysCommand.self,
+            ConsoleTeamCommand.self,
+            ConsoleAuditCommand.self,
+            ConsoleOrgCommand.self,
         ]
     )
 }
@@ -51,6 +57,19 @@ enum ConsoleScope {
     static let releaseNotesWrite = "release_notes:write"
     static let feedbackRead = "feedback:read"
     static let feedbackManage = "feedback:manage"
+    static let webhooksRead = "webhooks:read"
+    static let webhooksWrite = "webhooks:write"
+    static let webhooksDelete = "webhooks:delete"
+    static let webhooksTest = "webhooks:test"
+    static let alertsRead = "alerts:read"
+    static let alertsWrite = "alerts:write"
+    static let orgRead = "org:read"
+    static let orgWrite = "org:write"
+    static let keysRead = "keys:read"
+    static let keysWrite = "keys:write"
+    static let adminTeam = "admin:team"
+    static let adminAudit = "admin:audit"
+    static let adminBilling = "admin:billing"
 }
 
 enum ConsoleSupport {
@@ -70,6 +89,14 @@ enum ConsoleSupport {
             throw GrantivaError.notAuthenticated
         }
         return OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+    }
+
+    /// Same credential resolution, for org administration.
+    static func makeOrgAdminClient() throws -> OrgAdminClient {
+        guard let credentials = AuthStore.resolveCredentials() else {
+            throw GrantivaError.notAuthenticated
+        }
+        return OrgAdminClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for staff-side feedback and support.
@@ -113,14 +140,15 @@ enum ConsoleSupport {
         }
         switch status {
         case 403:
-            // The backend answers 403 for two different things: a key without the
-            // scope ("Insufficient permissions. Required scopes: flags:write") and
-            // a tier limit ("Targeting rule limit reached (0 per flag for Free
-            // tier)"). When the server explains itself and the explanation is not
-            // about scopes, show it verbatim — telling someone at a plan limit to
-            // mint a new key sends them to the wrong place.
+            // The backend answers 403 for several things: a key without the
+            // scope ("Insufficient permissions. Required scopes: flags:write"),
+            // a tier limit ("Targeting rule limit reached…"), or a rule such as
+            // "This key cannot grant scopes it does not hold". Only the first
+            // gets the mint-a-new-key hint; every other explanation is shown
+            // verbatim, because sending someone at a plan limit to create a key
+            // is the wrong advice.
             if let serverMessage = errorMessage(fromBody: body),
-               !serverMessage.localizedCaseInsensitiveContains("scope")
+               !serverMessage.hasPrefix("Insufficient permissions")
             {
                 return GrantivaError.permissionDenied(serverMessage)
             }
