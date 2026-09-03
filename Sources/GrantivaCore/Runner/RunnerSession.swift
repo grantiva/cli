@@ -593,9 +593,9 @@ public enum RunnerSession {
     static func injectAppId(_ content: String, bundleId: String) -> String {
         let lines = content.components(separatedBy: "\n")
 
-        // Find --- document separator (not at line 0)
+        // Find the document separator, including an empty header (`---` on line 0).
         var separatorIdx: Int?
-        for (i, line) in lines.enumerated() where i > 0 {
+        for (i, line) in lines.enumerated() {
             if line.trimmingCharacters(in: .whitespaces) == "---" {
                 separatorIdx = i
                 break
@@ -604,8 +604,11 @@ public enum RunnerSession {
 
         if let idx = separatorIdx {
             var headerLines = Array(lines[0..<idx])
-            if let appIdIdx = headerLines.firstIndex(where: { $0.hasPrefix("appId:") }) {
-                headerLines[appIdIdx] = "appId: \(bundleId)"
+            if let appIdIdx = headerLines.firstIndex(where: { line in
+                line.trimmingCharacters(in: .whitespaces).hasPrefix("appId:")
+            }) {
+                let indentation = String(headerLines[appIdIdx].prefix { $0 == " " || $0 == "\t" })
+                headerLines[appIdIdx] = "\(indentation)appId: \(bundleId)"
             } else {
                 headerLines.insert("appId: \(bundleId)", at: 0)
             }
