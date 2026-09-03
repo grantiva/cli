@@ -19,20 +19,30 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
 
     try process.run()
 
-    // Read data BEFORE waitUntilExit to avoid pipe buffer deadlock
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let errData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+    // Drain both pipes concurrently. Reading either stream to EOF first can
+    // deadlock when the child fills the other stream's kernel pipe buffer.
+    async let data = readToEndOfFile(pipe.fileHandleForReading)
+    async let errData = readToEndOfFile(errorPipe.fileHandleForReading)
 
     process.waitUntilExit()
+    let (outputData, errorData) = await (data, errData)
     GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
 
-    let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    let output = String(data: outputData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
     guard process.terminationStatus == 0 else {
-        let errOutput = String(data: errData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let errOutput = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         throw GrantivaError.commandFailed(errOutput.isEmpty ? command : errOutput, process.terminationStatus)
     }
     return output
+}
+
+private func readToEndOfFile(_ handle: FileHandle) async -> Data {
+    await withCheckedContinuation { continuation in
+        DispatchQueue.global(qos: .userInitiated).async {
+            continuation.resume(returning: handle.readDataToEndOfFile())
+        }
+    }
 }
 
 /// Quotes one argument for `/bin/zsh -c`: single quotes, with embedded single

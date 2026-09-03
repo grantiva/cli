@@ -2,6 +2,12 @@ import XCTest
 @testable import GrantivaCore
 
 final class ShellQuotingTests: XCTestCase {
+    func testShellDrainsStandardErrorWhileWaitingForStandardOutput() async throws {
+        let output = try await shell("head -c 1048576 /dev/zero >&2; printf done")
+
+        XCTAssertEqual(output, "done")
+    }
+
     func testPlainValuesAreWrappedInSingleQuotes() {
         XCTAssertEqual(shellQuoted("MyScheme"), "'MyScheme'")
         XCTAssertEqual(shellQuoted("My App.xcworkspace"), "'My App.xcworkspace'")
