@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 import XCTest
 @testable import GrantivaCore
@@ -55,6 +56,27 @@ final class SimulatorCapacityTests: XCTestCase {
 
         let shutdown = device(1, state: "Shutdown")
         XCTAssertEqual(try capacity.sessions(devices: [shutdown]), [])
+    }
+
+    func testBootedSimulatorWithAbandonedPendingReservationIsPruned() throws {
+        let capacity = SimulatorCapacity(directory: directory, maximum: 1, waitTimeout: 0)
+        let simulator = device(1, state: "Booted")
+        let deadPID = Int32.max
+        XCTAssertNotEqual(kill(deadPID, 0), 0)
+
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        let record = ManagedSimulatorSession(
+            udid: simulator.udid,
+            name: simulator.name,
+            sessionId: "abandoned-session",
+            ownerPID: deadPID,
+            acquiredAt: Date(),
+            state: .pending
+        )
+        let data = try JSONEncoder().encode([record])
+        try data.write(to: URL(fileURLWithPath: directory).appendingPathComponent("sessions.json"))
+
+        XCTAssertEqual(try capacity.sessions(devices: [simulator]), [])
     }
 
     func testSameSimulatorReusesItsSlot() async throws {

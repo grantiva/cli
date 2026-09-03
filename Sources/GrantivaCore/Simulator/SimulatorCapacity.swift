@@ -187,9 +187,11 @@ public struct SimulatorCapacity: Sendable {
         let states = Dictionary(uniqueKeysWithValues: devices.map { ($0.udid, $0.state) })
         records.removeAll { record in
             guard let state = states[record.udid] else { return true }
-            if state == "Booted" { return false }
-            if record.state == .pending && kill(record.ownerPID, 0) == 0 { return false }
-            return true
+            if record.state == .pending {
+                let ownerExists = kill(record.ownerPID, 0) == 0 || errno == EPERM
+                return !ownerExists
+            }
+            return state != "Booted"
         }
     }
 
