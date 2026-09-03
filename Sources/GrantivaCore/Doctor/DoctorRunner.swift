@@ -84,13 +84,27 @@ public struct DoctorRunner: Sendable {
         }
     }
 
-    func checkRunner() async -> DoctorCheck {
+    func checkRunner(
+        runnerPath: String = RunnerManager.binaryPath,
+        versionFilePath: String = RunnerManager.versionFilePath,
+        expectedVersion: String = RunnerManager.runnerVersion
+    ) async -> DoctorCheck {
         let fm = FileManager.default
-        let runnerPath = RunnerManager.binaryPath
         if fm.fileExists(atPath: runnerPath) {
+            let installedVersion = fm.contents(atPath: versionFilePath)
+                .flatMap { String(data: $0, encoding: .utf8) }
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            guard let installedVersion, installedVersion == expectedVersion else {
+                let found = installedVersion.flatMap { $0.isEmpty ? nil : $0 } ?? "unknown"
+                return DoctorCheck(
+                    name: "Runner", status: .warning,
+                    message: "Installed grantiva-runner \(found); expected \(expectedVersion)",
+                    fix: "Run: grantiva runner install"
+                )
+            }
             return DoctorCheck(
                 name: "Runner", status: .ok,
-                message: "grantiva-runner \(RunnerManager.runnerVersion)",
+                message: "grantiva-runner \(installedVersion)",
                 fix: nil
             )
         }
@@ -125,14 +139,18 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkGrantivaAuth() -> DoctorCheck {
-        if ProcessInfo.processInfo.environment["GRANTIVA_API_KEY"] != nil {
+    func checkGrantivaAuth(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        storedCredentials: AuthCredentials? = AuthStore.live.load()
+    ) -> DoctorCheck {
+        if let apiKey = environment["GRANTIVA_API_KEY"],
+           !apiKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return DoctorCheck(
                 name: "Grantiva Auth", status: .ok,
                 message: "Authenticated via GRANTIVA_API_KEY", fix: nil, section: .cloud
             )
         }
-        if let credentials = AuthStore.live.load() {
+        if let credentials = storedCredentials, !credentials.apiKey.isEmpty {
             let prefix = String(credentials.apiKey.prefix(8))
             return DoctorCheck(
                 name: "Grantiva Auth", status: .ok,
