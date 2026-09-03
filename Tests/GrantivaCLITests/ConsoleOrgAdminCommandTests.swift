@@ -52,6 +52,76 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertTrue(try ConsoleOrgCommand.BillingCommand.parseAsRoot(["show"]) is ConsoleOrgCommand.BillingCommand.ShowCommand)
     }
 
+    func testOrgSetNameRejectsAllKindsOfBlankInput() {
+        XCTAssertThrowsError(try ConsoleOrgCommand.SettingsCommand.SetNameCommand.parse([" \t\n "]))
+    }
+
+    func testOrgSettingsSetNameSendsExactName() async throws {
+        let decoder = JSONDecoder()
+        let response = try decoder.decode(OrgSettings.self, from: Data(#"{"id":"O1","name":"New Name","slug":"new-name","serviceTier":"Free","serviceTierRawValue":"free","billingEmail":null,"createdAt":null,"updatedAt":null}"#.utf8))
+        let captured = Capture<UpdateSettingsRequest>()
+        var client = OrgAdminClient.failing
+        client.updateSettings = { request in
+            await captured.set(request)
+            return response
+        }
+
+        try await ConsoleOrgCommand.SettingsCommand.SetNameCommand.parse(["New Name", "--json"]).run(client: client)
+
+        let sent = await captured.value
+        XCTAssertEqual(sent, UpdateSettingsRequest(name: "New Name"))
+    }
+
+    func testOrgSettingsBillingAndAuditCallExpectedClients() async throws {
+        let decoder = JSONDecoder()
+        let settings = try decoder.decode(OrgSettings.self, from: Data(#"{"id":"O1","name":"Example","slug":"example","serviceTier":"Free","serviceTierRawValue":"free","billingEmail":null,"createdAt":null,"updatedAt":null}"#.utf8))
+        let billing = try decoder.decode(OrgBilling.self, from: Data(#"{"plan":"Free","planRawValue":"free","madUsed":3,"madLimit":100,"currentPeriodEnd":null,"stripeCustomerId":null,"stripeSubscriptionId":null}"#.utf8))
+        let settingsCall = Capture<Bool>()
+        let billingCall = Capture<Bool>()
+        let auditCall = Capture<AuditQuery>()
+        var client = OrgAdminClient.failing
+        client.settings = {
+            await settingsCall.set(true)
+            return settings
+        }
+        client.billing = {
+            await billingCall.set(true)
+            return billing
+        }
+        client.auditLog = { page, per in
+            await auditCall.set(AuditQuery(page: page, per: per))
+            return PaginatedItems(items: [], metadata: .init(page: page ?? 1, per: per ?? 50, total: 0))
+        }
+
+        try await ConsoleOrgCommand.SettingsCommand.GetCommand.parse(["--json"]).run(client: client)
+        try await ConsoleOrgCommand.BillingCommand.ShowCommand.parse(["--json"]).run(client: client)
+        try await ConsoleAuditCommand.ListCommand.parse(["--page", "2", "--per", "25", "--json"]).run(client: client)
+
+        let didCallSettings = await settingsCall.value
+        let didCallBilling = await billingCall.value
+        let sentAuditQuery = await auditCall.value
+        XCTAssertEqual(didCallSettings, true)
+        XCTAssertEqual(didCallBilling, true)
+        XCTAssertEqual(sentAuditQuery, AuditQuery(page: 2, per: 25))
+    }
+
+    func testOrgSettingsBillingAndAuditMapRequiredScopes() async throws {
+        var client = OrgAdminClient.failing
+        client.settings = { throw GrantivaError.networkError("", 403) }
+        client.billing = { throw GrantivaError.networkError("", 403) }
+        client.auditLog = { _, _ in throw GrantivaError.networkError("", 403) }
+
+        try await assertPermissionScope("org:read") {
+            try await ConsoleOrgCommand.SettingsCommand.GetCommand.parse([]).run(client: client)
+        }
+        try await assertPermissionScope("admin:billing") {
+            try await ConsoleOrgCommand.BillingCommand.ShowCommand.parse([]).run(client: client)
+        }
+        try await assertPermissionScope("admin:audit") {
+            try await ConsoleAuditCommand.ListCommand.parse([]).run(client: client)
+        }
+    }
+
     func testWebhookCreateValidation() throws {
         XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "device.new"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h"]))
@@ -225,6 +295,26 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         let audit = ConsoleAdminFormat.audit(PaginatedItems(items: [AuditEntry(id: "1", actorEmail: "gpat_x...", action: "org.settings_updated", resourceType: "organization", resourceId: nil, metadata: ["name": "New"], ipAddress: nil, createdAt: "2026-09-01T10:00:00Z")], metadata: .init(page: 1, per: 50, total: 1)))
         XCTAssertTrue(audit.contains("name=New"), audit)
         XCTAssertTrue(audit.contains("Page 1 of 1 · 1 entries"), audit)
+    }
+}
+
+private struct AuditQuery: Sendable, Equatable {
+    let page: Int?
+    let per: Int?
+}
+
+private func assertPermissionScope(
+    _ scope: String,
+    operation: () async throws -> Void
+) async throws {
+    do {
+        try await operation()
+        XCTFail("expected permission error")
+    } catch {
+        guard case GrantivaError.permissionDenied(let message) = error else {
+            return XCTFail("unexpected \(error)")
+        }
+        XCTAssertTrue(message.contains("'\(scope)'"), message)
     }
 }
 

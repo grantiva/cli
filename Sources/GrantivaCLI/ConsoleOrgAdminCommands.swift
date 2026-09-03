@@ -668,7 +668,11 @@ struct ConsoleOrgCommand: AsyncParsableCommand {
             static let configuration = CommandConfiguration(commandName: "set-name", abstract: "Rename the organization. The slug follows the name.")
             @OptionGroup var options: GlobalOptions
             @Argument(help: "New name.") var name: String
-            func validate() throws { if name.trimmingCharacters(in: .whitespaces).isEmpty { throw ValidationError("Name must not be blank.") } }
+            func validate() throws {
+                if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    throw ValidationError("Name must not be blank.")
+                }
+            }
             func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
             func run(client: OrgAdminClient) async throws {
                 let settings: OrgSettings
