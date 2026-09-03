@@ -74,8 +74,8 @@ public struct VRTReviewClient: Sendable {
         self.reviewScreen = reviewScreen
     }
 
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
         self.init(
             listRuns: { project in

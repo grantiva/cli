@@ -154,8 +154,8 @@ public struct ReleaseNotesClient: Sendable {
         self.unpublish = unpublish
     }
 
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
         self.init(
             list: { appId, page, per in

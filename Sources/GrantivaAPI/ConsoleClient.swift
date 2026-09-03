@@ -90,8 +90,8 @@ public struct ConsoleClient: Sendable {
 // MARK: - Convenience Init (live)
 
 extension ConsoleClient {
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
 
         self.init(

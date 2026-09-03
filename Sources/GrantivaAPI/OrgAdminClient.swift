@@ -394,8 +394,8 @@ public struct OrgAdminClient: Sendable {
     public var usage: @Sendable () async throws -> OrgUsage
     public var billing: @Sendable () async throws -> OrgBilling
 
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
         listWebhooks = { try await client.execute(OrgAdminEndpoints.listWebhooks(), baseURL: baseURL) }
         createWebhook = { try await client.execute(OrgAdminEndpoints.createWebhook($0), baseURL: baseURL) }
