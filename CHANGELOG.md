@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v2.0.0 — 2026-09-03
 
 ### Fixed
 - **`grantiva ci run` no longer erases its own results on a visual regression.** The failing verdict was raised inside the same error handler that marks a crashed run, so a run with a real diff was immediately re-completed with zero screens — the one run you needed to look at in the dashboard was blank. The verdict now exits 1 after the results are uploaded.
