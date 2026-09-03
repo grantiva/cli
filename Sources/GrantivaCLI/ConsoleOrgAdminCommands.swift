@@ -469,6 +469,12 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
 
     static func notFound(_ id: String) -> String { "API key not found: \(id)" }
 
+    static func validateID(_ id: String) throws {
+        if id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw ValidationError("API key ID must not be blank.")
+        }
+    }
+
     struct ListCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "list", abstract: "List API keys (prefixes only).")
         @OptionGroup var options: GlobalOptions
@@ -484,6 +490,7 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one API key (prefix only).")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Key ID.") var key: String
+        func validate() throws { try ConsoleKeysCommand.validateID(key) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let keys: [APIKeySummary]
@@ -507,12 +514,30 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Expiry as an ISO 8601 timestamp.") var expires: String?
         func validate() throws {
             if scope.isEmpty { throw ValidationError("Pass at least one --scope.") }
-            if name.trimmingCharacters(in: .whitespaces).isEmpty { throw ValidationError("Name must not be blank.") }
+            if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { throw ValidationError("Name must not be blank.") }
+            if scope.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                throw ValidationError("--scope must not be blank.")
+            }
+            if let expires {
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime]
+                if formatter.date(from: expires) == nil {
+                    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                    if formatter.date(from: expires) == nil {
+                        throw ValidationError("--expires must be an ISO 8601 timestamp.")
+                    }
+                }
+            }
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let created: APIKeyCreated
-            do { created = try await client.createKey(CreateAPIKeyRequest(name: name, scopes: scope, expiresAt: expires)) } catch {
+            let request = CreateAPIKeyRequest(
+                name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+                scopes: scope.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) },
+                expiresAt: expires
+            )
+            do { created = try await client.createKey(request) } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.keysWrite)
             }
             try ConsoleAdmin.emit(created, options: options) { ConsoleAdminFormat.createdKey(created) }
@@ -524,11 +549,17 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Key ID.") var key: String
         @Option(name: .customLong("grace-days"), help: "Keep the old key working for this many days.") var graceDays: Int?
+        @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
         func validate() throws {
+            try ConsoleKeysCommand.validateID(key)
             if let graceDays, !(1...90).contains(graceDays) { throw ValidationError("--grace-days must be 1–90.") }
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
+            try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+        }
+        func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+            try ConsoleSupport.confirm("rotate API key '\(key)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
             let created: APIKeyCreated
             do { created = try await client.rotateKey(key, RotateAPIKeyRequest(gracePeriodDays: graceDays)) } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.keysWrite, notFound: ConsoleKeysCommand.notFound(key))
@@ -542,9 +573,13 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Key ID.") var key: String
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
+        func validate() throws { try ConsoleKeysCommand.validateID(key) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
-            try ConsoleSupport.confirm("revoke API key '\(key)'", yes: yes)
+            try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+        }
+        func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+            try ConsoleSupport.confirm("revoke API key '\(key)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
             do { try await client.revokeKey(key) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.keysWrite, notFound: ConsoleKeysCommand.notFound(key)) }
             try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: key), options: options) { "Revoked API key '\(key)'" }
         }
@@ -561,6 +596,12 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         subcommands: [MembersCommand.self, GetCommand.self, InvitesCommand.self, InviteCommand.self, RevokeInviteCommand.self, RemoveCommand.self]
     )
 
+    static func validateID(_ id: String, label: String) throws {
+        if id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw ValidationError("\(label) must not be blank.")
+        }
+    }
+
     struct MembersCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "members", abstract: "List members and their roles.")
         @OptionGroup var options: GlobalOptions
@@ -576,6 +617,7 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one organization member.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Membership ID.") var membership: String
+        func validate() throws { try ConsoleTeamCommand.validateID(membership, label: "Membership ID") }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let members: [OrgMember]
@@ -604,13 +646,18 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         @Argument(help: "Email address.") var email: String
         @Option(name: .long, help: "Role: viewer, member, or admin. Default member.") var role: String?
         func validate() throws {
-            if !email.contains("@") { throw ValidationError("'\(email)' is not an email address.") }
+            let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+            let parts = trimmedEmail.split(separator: "@", omittingEmptySubsequences: false)
+            if parts.count != 2 || parts[0].isEmpty || parts[1].isEmpty {
+                throw ValidationError("'\(email)' is not an email address.")
+            }
             if let role, !["viewer", "member", "admin"].contains(role) { throw ValidationError("--role must be viewer, member, or admin.") }
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let invite: OrgInvite
-            do { invite = try await client.invite(InviteRequest(email: email, orgRole: role)) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.adminTeam) }
+            let normalizedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+            do { invite = try await client.invite(InviteRequest(email: normalizedEmail, orgRole: role)) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.adminTeam) }
             try ConsoleAdmin.emit(invite, options: options) { "Invited \(invite.email) as \(invite.orgRole ?? "member"); expires \(ConsoleAdmin.date(invite.expiresAt))" }
         }
     }
@@ -620,9 +667,13 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Invite ID.") var invite: String
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
+        func validate() throws { try ConsoleTeamCommand.validateID(invite, label: "Invite ID") }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
-            try ConsoleSupport.confirm("revoke invite '\(invite)'", yes: yes)
+            try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+        }
+        func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+            try ConsoleSupport.confirm("revoke invite '\(invite)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
             do { try await client.revokeInvite(invite) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.adminTeam, notFound: "invite not found: \(invite)") }
             try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: invite), options: options) { "Revoked invite '\(invite)'" }
         }
@@ -633,9 +684,13 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Membership ID (from `team members`).") var membership: String
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
+        func validate() throws { try ConsoleTeamCommand.validateID(membership, label: "Membership ID") }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
-            try ConsoleSupport.confirm("remove member '\(membership)'", yes: yes)
+            try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+        }
+        func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+            try ConsoleSupport.confirm("remove member '\(membership)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
             do { try await client.removeMember(membership) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.adminTeam, notFound: "membership not found: \(membership)") }
             try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: membership), options: options) { "Removed member '\(membership)'" }
         }
