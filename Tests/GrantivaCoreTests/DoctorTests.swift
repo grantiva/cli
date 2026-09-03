@@ -32,6 +32,64 @@ final class DoctorTests: XCTestCase {
         XCTAssertNotNil(check.fix)
     }
 
+    func testRunnerCheckReportsInstalledVersion() async throws {
+        let runner = scratch.appendingPathComponent("grantiva-runner")
+        let version = scratch.appendingPathComponent("version")
+        try Data().write(to: runner)
+        try "1.2.3".write(to: version, atomically: true, encoding: .utf8)
+
+        let check = await DoctorRunner().checkRunner(
+            runnerPath: runner.path,
+            versionFilePath: version.path,
+            expectedVersion: "1.2.3"
+        )
+
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "grantiva-runner 1.2.3")
+    }
+
+    func testRunnerCheckWarnsWhenInstalledVersionIsStale() async throws {
+        let runner = scratch.appendingPathComponent("grantiva-runner")
+        let version = scratch.appendingPathComponent("version")
+        try Data().write(to: runner)
+        try "1.0.0".write(to: version, atomically: true, encoding: .utf8)
+
+        let check = await DoctorRunner().checkRunner(
+            runnerPath: runner.path,
+            versionFilePath: version.path,
+            expectedVersion: "2.0.0"
+        )
+
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertTrue(check.message.contains("1.0.0"), check.message)
+        XCTAssertTrue(check.message.contains("2.0.0"), check.message)
+        XCTAssertNotNil(check.fix)
+    }
+
+    func testRunnerCheckWarnsWhenVersionMarkerIsMissing() async throws {
+        let runner = scratch.appendingPathComponent("grantiva-runner")
+        try Data().write(to: runner)
+
+        let check = await DoctorRunner().checkRunner(
+            runnerPath: runner.path,
+            versionFilePath: scratch.appendingPathComponent("missing-version").path,
+            expectedVersion: "2.0.0"
+        )
+
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertTrue(check.message.contains("unknown"), check.message)
+    }
+
+    func testEmptyEnvironmentAPIKeyIsNotAuthenticated() {
+        let check = DoctorRunner().checkGrantivaAuth(
+            environment: ["GRANTIVA_API_KEY": "  \n"],
+            storedCredentials: nil
+        )
+
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertTrue(check.message.contains("Not authenticated"), check.message)
+    }
+
     // MARK: - exit status
 
     // `grantiva doctor || exit 1` as a CI preflight could never fire: doctor had
