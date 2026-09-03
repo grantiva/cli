@@ -5,17 +5,35 @@ public struct TableFormatter: Sendable {
 
     public func formatDevices(_ devices: [SimulatorDevice]) -> String {
         guard !devices.isEmpty else { return "No simulators found." }
+        let names = devices.map { singleLineCell($0.name) }
+        let runtimes = devices.map { singleLineCell($0.runtime) }
         var lines: [String] = []
-        let maxName = max(devices.map(\.name.count).max() ?? 0, 4)
+        let maxName = max(names.map(\.count).max() ?? 0, 4)
         let header = "Name".padding(toLength: maxName, withPad: " ", startingAt: 0) + "  State     Runtime"
-        lines.append(header)
-        lines.append(String(repeating: "─", count: header.count + 10))
-        for device in devices {
-            let name = device.name.padding(toLength: maxName, withPad: " ", startingAt: 0)
+        let rows = zip(devices.indices, devices).map { index, device in
+            let name = names[index].padding(toLength: maxName, withPad: " ", startingAt: 0)
             let state = device.isBooted ? "Booted  " : "Shutdown"
-            lines.append("\(name)  \(state)  \(device.runtime)")
+            return "\(name)  \(state)  \(runtimes[index])"
         }
+        lines.append(header)
+        lines.append(String(repeating: "─", count: max(header.count, rows.map(\.count).max() ?? 0)))
+        lines.append(contentsOf: rows)
         return lines.joined(separator: "\n")
+    }
+
+    /// Values in this table come from CoreSimulator metadata. Keep each value
+    /// confined to one row and neutralize terminal control bytes before output.
+    private func singleLineCell(_ value: String) -> String {
+        String(value.unicodeScalars.map { scalar -> Character in
+            switch scalar.properties.generalCategory {
+            case .control:
+                return scalar == "\n" || scalar == "\r" || scalar == "\t" ? " " : "�"
+            case .lineSeparator, .paragraphSeparator:
+                return " "
+            default:
+                return Character(String(scalar))
+            }
+        })
     }
 
     public func formatBuild(_ result: BuildResult) -> String {
