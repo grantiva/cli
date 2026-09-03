@@ -51,6 +51,53 @@ final class ReadyFileTests: XCTestCase {
         XCTAssertEqual(try ReadyFile.read(path).status, "passed")
     }
 
+    func testSignalRetriesAfterAWriteFailure() {
+        struct TestError: Error {}
+        let calls = LockedValue(0)
+        let signal = ReadyFileSignal(path: "/ready.json") { _, _ in
+            let call = calls.withLock { count in
+                count += 1
+                return count
+            }
+            if call == 1 { throw TestError() }
+        }
+
+        XCTAssertFalse(signal.write(RunReadyState(status: "failed", flows: [])))
+        XCTAssertFalse(signal.hasWritten)
+        XCTAssertTrue(signal.write(RunReadyState(status: "passed", flows: [])))
+        XCTAssertTrue(signal.hasWritten)
+        XCTAssertEqual(calls.value, 2)
+    }
+
+    func testConcurrentSignalWritesProduceExactlyOneSuccessfulWrite() {
+        let writerEntered = DispatchSemaphore(value: 0)
+        let allowWriterToFinish = DispatchSemaphore(value: 0)
+        let calls = LockedValue(0)
+        let results = LockedValue<[Bool]>([])
+        let signal = ReadyFileSignal(path: "/ready.json") { _, _ in
+            calls.withLock { $0 += 1 }
+            writerEntered.signal()
+            allowWriterToFinish.wait()
+        }
+        let group = DispatchGroup()
+
+        for status in ["passed", "failed"] {
+            group.enter()
+            DispatchQueue.global().async {
+                let result = signal.write(RunReadyState(status: status, flows: []))
+                results.withLock { $0.append(result) }
+                group.leave()
+            }
+        }
+
+        XCTAssertEqual(writerEntered.wait(timeout: .now() + 1), .success)
+        allowWriterToFinish.signal()
+        XCTAssertEqual(group.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(calls.value, 1)
+        XCTAssertEqual(results.value.filter { $0 }.count, 1)
+        XCTAssertTrue(signal.hasWritten)
+    }
+
     func testSignalWithoutAPathIsANoOp() {
         let signal = ReadyFileSignal(path: nil)
         XCTAssertFalse(signal.write(RunReadyState(status: "passed", flows: [])))
@@ -177,5 +224,23 @@ final class ReadyFileTests: XCTestCase {
         let report = try XCTUnwrap(RunnerReportIndex.load(reportDir: reportDir.path))
         XCTAssertEqual(report.status, "passed")
         XCTAssertNil(RunnerReportIndex.load(reportDir: scratch.appendingPathComponent("missing").path))
+    }
+}
+
+private final class LockedValue<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: Value
+
+    init(_ value: Value) {
+        storage = value
+    }
+
+    var value: Value {
+        lock.withLock { storage }
+    }
+
+    @discardableResult
+    func withLock<Result>(_ body: (inout Value) -> Result) -> Result {
+        lock.withLock { body(&storage) }
     }
 }
