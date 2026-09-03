@@ -15,6 +15,22 @@ struct ConsoleFeedbackCommand: AsyncParsableCommand {
 
     static func notFound(_ id: String) -> String { "feature request not found: \(id)" }
 
+    static func validateReference(_ value: String, name: String) throws {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { throw ValidationError("\(name) must not be empty.") }
+        guard trimmed == value else {
+            throw ValidationError("\(name) must not have leading or trailing whitespace.")
+        }
+    }
+
+    static func messageText(_ raw: String) throws -> String {
+        let text = try ConsoleReleasesCommand.bodyText(raw)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw GrantivaError.invalidArgument("--body must not be empty.")
+        }
+        return text
+    }
+
     enum Status: String, ExpressibleByArgument, CaseIterable {
         case pending, open, planned, in_progress, shipped, declined, duplicate
         var wire: FeatureStatus { FeatureStatus(rawValue: rawValue)! }
@@ -51,6 +67,7 @@ struct ConsoleFeedbackCommand: AsyncParsableCommand {
         func validate() throws {
             if let page, page < 1 { throw ValidationError("--page must be at least 1.") }
             if let per, !(1...100).contains(per) { throw ValidationError("--per must be between 1 and 100.") }
+            if let app { try ConsoleFeedbackCommand.validateReference(app, name: "--app") }
         }
 
         func run() async throws {
@@ -78,6 +95,10 @@ struct ConsoleFeedbackCommand: AsyncParsableCommand {
 
         @Argument(help: "Feature request ID.")
         var request: String
+
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(request, name: "Feature request ID")
+        }
 
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
@@ -108,6 +129,10 @@ struct ConsoleFeedbackCommand: AsyncParsableCommand {
         @Argument(help: "New status: \(Status.allCases.map(\.rawValue).joined(separator: ", ")).")
         var status: Status
 
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(request, name: "Feature request ID")
+        }
+
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
         func run(client: FeedbackClient) async throws {
@@ -137,10 +162,14 @@ struct ConsoleFeedbackCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Comment text, inline or @file.")
         var body: String
 
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(request, name: "Feature request ID")
+        }
+
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
         func run(client: FeedbackClient) async throws {
-            let text = try ConsoleReleasesCommand.bodyText(body)
+            let text = try ConsoleFeedbackCommand.messageText(body)
             let comment: OrgFeedbackComment
             do { comment = try await client.addFeatureComment(request, text) } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.feedbackManage, notFound: ConsoleFeedbackCommand.notFound(request))
@@ -202,6 +231,7 @@ struct ConsoleSupportCommand: AsyncParsableCommand {
         func validate() throws {
             if let page, page < 1 { throw ValidationError("--page must be at least 1.") }
             if let per, !(1...100).contains(per) { throw ValidationError("--per must be between 1 and 100.") }
+            if let app { try ConsoleFeedbackCommand.validateReference(app, name: "--app") }
         }
 
         func run() async throws {
@@ -229,6 +259,10 @@ struct ConsoleSupportCommand: AsyncParsableCommand {
 
         @Argument(help: "Ticket ID.")
         var ticket: String
+
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(ticket, name: "Ticket ID")
+        }
 
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
@@ -259,10 +293,14 @@ struct ConsoleSupportCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Reply text, inline or @file.")
         var body: String
 
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(ticket, name: "Ticket ID")
+        }
+
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
         func run(client: FeedbackClient) async throws {
-            let text = try ConsoleReleasesCommand.bodyText(body)
+            let text = try ConsoleFeedbackCommand.messageText(body)
             let message: OrgTicketMessage
             do { message = try await client.addTicketMessage(ticket, text) } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.feedbackManage, notFound: ConsoleSupportCommand.notFound(ticket))
@@ -285,6 +323,10 @@ struct ConsoleSupportCommand: AsyncParsableCommand {
 
         @Argument(help: "New status: \(Status.allCases.map(\.rawValue).joined(separator: ", ")).")
         var status: Status
+
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(ticket, name: "Ticket ID")
+        }
 
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
@@ -311,6 +353,10 @@ struct ConsoleSupportCommand: AsyncParsableCommand {
 
         @Argument(help: "New priority: \(Priority.allCases.map(\.rawValue).joined(separator: ", ")).")
         var priority: Priority
+
+        func validate() throws {
+            try ConsoleFeedbackCommand.validateReference(ticket, name: "Ticket ID")
+        }
 
         func run() async throws { try await run(client: ConsoleSupport.makeFeedbackClient()) }
 
