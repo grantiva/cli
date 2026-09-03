@@ -105,4 +105,35 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertEqual(state.status, "passed")
         XCTAssertEqual(state.flows.first?.name, "advertise")
     }
+
+    func testPreparedReportDirectoryCannotPublishAStaleReadyVerdict() async throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+
+        let reportDir = scratch.appendingPathComponent("reused-report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        let report = reportDir.appendingPathComponent("report.json")
+        try Data(#"{"status":"passed","flows":[{"name":"old","status":"passed"}]}"#.utf8)
+            .write(to: report)
+        try RunnerReportWorkspace.prepare(at: reportDir.path)
+
+        let readyPath = scratch.appendingPathComponent("reused-ready.json").path
+        let signal = ReadyFileSignal(path: readyPath)
+        let outcome = await RunnerExecution.run(request(
+            script: """
+            sleep 1
+            printf '{"status":"failed","flows":[{"name":"current","status":"failed"}]}' > \(report.path)
+            sleep 1
+            """,
+            lease: lease,
+            reportDir: reportDir.path,
+            readyFile: signal,
+            timeoutSeconds: 30
+        ))
+
+        XCTAssertEqual(outcome.terminationStatus, 0)
+        let state = try ReadyFile.read(readyPath)
+        XCTAssertEqual(state.status, "failed")
+        XCTAssertEqual(state.flows.first?.name, "current")
+    }
 }
