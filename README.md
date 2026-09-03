@@ -260,6 +260,7 @@ Results upload to the [Grantiva](https://grantiva.io) dashboard and post as GitH
 
 ```
 grantiva run                Run Maestro flows against a simulator (supports --keep-alive, --logs, --flow)
+grantiva record             Record a simulator and extract PNG frames at requested timestamps
 grantiva hierarchy          Dump the live UI hierarchy of a keep-alive session
 grantiva build              Build the app via xcodebuild for a simulator
 grantiva build install      Build and install the app; use --no-launch to stop before launch
@@ -271,6 +272,7 @@ grantiva simulator ensure   Create or reuse a named simulator and boot it (--nam
 grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
 grantiva simulator teardown End a session, or reclaim one simulator with --udid <UDID> --force
+grantiva simulator cleanup  Delete unavailable and stale Grantiva-managed simulators
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
@@ -283,7 +285,29 @@ grantiva mcp                Start the MCP server for AI agent integration
 grantiva init               Generate grantiva.yml
 ```
 
-All commands support `--json` for structured output.
+### Dashboard commands
+
+`grantiva console` brings the Grantiva dashboard into scripts and terminal
+workflows. Its command groups cover feature flags and environments, attestation
+analytics and devices, apps and claims, visual regression review, release notes,
+feedback and support, webhooks and alerts, API keys, team administration, the
+audit log, organization settings and billing, and opening dashboard pages.
+
+```bash
+# Explore the complete command tree and the options for one area
+grantiva console --help
+grantiva console flags --help
+
+# Examples: inspect analytics, review VRT runs, and manage webhooks
+grantiva console analytics overview --days 30
+grantiva console vrt runs
+grantiva console webhooks list
+```
+
+Commands that advertise `--json` emit structured output. Consult
+`grantiva <command> --help` for the output modes supported by a specific command;
+for example, `hierarchy` emits XML by default, while runner lifecycle commands
+do not have a JSON result.
 
 ### stdout is the result, stderr is the commentary
 
