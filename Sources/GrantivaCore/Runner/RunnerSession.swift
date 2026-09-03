@@ -314,7 +314,12 @@ public enum RunnerSession {
                 .path
             preserveReportDir = false
         }
-        try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+        // A preserved --report-dir may contain a terminal report and assets
+        // from an earlier invocation. The ready watcher must never publish
+        // that stale verdict, and capture collection must only see this run.
+        // Keep unrelated caller files intact because the directory itself is
+        // not owned by grantiva.
+        try RunnerReportWorkspace.prepare(at: reportDir)
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer {
