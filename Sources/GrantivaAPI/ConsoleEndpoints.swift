@@ -56,6 +56,15 @@ enum OrgFlagEndpoints {
         )
     }
 
+    /// `GET /api/v1/org/flags/:flagRef/evaluations?limit=`
+    static func evaluations(flagRef: String, limit: Int?) -> Endpoint<EmptyBody, OrgFlagEvaluationsResponse> {
+        Endpoint(
+            path: "\(prefix)/\(encodedSegment(flagRef))/evaluations",
+            method: .get,
+            queryItems: limit.map { [URLQueryItem(name: "limit", value: String($0))] }
+        )
+    }
+
     /// `GET /api/v1/org/flags/:flagRef/overrides`
     static func listOverrides(flagRef: String) -> Endpoint<EmptyBody, [OrgFlagOverride]> {
         Endpoint(path: "\(prefix)/\(encodedSegment(flagRef))/overrides", method: .get)

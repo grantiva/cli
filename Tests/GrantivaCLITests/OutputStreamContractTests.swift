@@ -122,6 +122,7 @@ final class OutputStreamContractTests: XCTestCase {
             ["console", "flags", "eval"],
             ["console", "flags", "history"],
             ["console", "flags", "watch"],
+            ["console", "flags", "evaluations"],
             ["console", "envs", "list"],
             ["console", "envs", "create"],
             ["console", "envs", "update"],

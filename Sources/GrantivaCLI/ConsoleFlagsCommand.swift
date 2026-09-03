@@ -22,6 +22,7 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             ConsoleFlagsOverridesCommand.self,
             EvalCommand.self,
             HistoryCommand.self,
+            EvaluationsCommand.self,
             WatchCommand.self,
         ],
         aliases: ["featureflags"]
@@ -59,6 +60,41 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
                 Output.line(try JSONOutput.string(flags))
             } else {
                 Output.line(ConsoleFormat.flagsTable(flags))
+            }
+        }
+    }
+
+    // MARK: - evaluations
+
+    struct EvaluationsCommand: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            commandName: "evaluations",
+            abstract: "Show a flag's most recent recorded evaluations."
+        )
+
+        @OptionGroup var options: GlobalOptions
+        @Argument(help: "Flag key (or UUID).") var key: String
+        @Option(name: .long, help: "Maximum entries to return, 1–200. Default 50.") var limit: Int?
+
+        func validate() throws {
+            if let limit, !(1...200).contains(limit) {
+                throw ValidationError("--limit must be between 1 and 200.")
+            }
+        }
+
+        func run() async throws { try await run(client: ConsoleSupport.makeClient()) }
+
+        func run(client: ConsoleClient) async throws {
+            let response: OrgFlagEvaluationsResponse
+            do {
+                response = try await client.flagEvaluations(key, limit)
+            } catch {
+                throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead, flagKey: key)
+            }
+            if options.json {
+                Output.line(try JSONOutput.string(response))
+            } else {
+                Output.line(ConsoleFormat.evaluationsTable(response.evaluations))
             }
         }
     }

@@ -95,6 +95,28 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertEqual(command.limit, 5)
     }
 
+    func testFlagsEvaluationsParsesAndValidatesLimit() throws {
+        let command = try ConsoleFlagsCommand.EvaluationsCommand.parse(["dark_mode", "--limit", "25", "--json"])
+        XCTAssertEqual(command.key, "dark_mode")
+        XCTAssertEqual(command.limit, 25)
+        XCTAssertTrue(command.options.json)
+        XCTAssertThrowsError(try ConsoleFlagsCommand.EvaluationsCommand.parse(["dark_mode", "--limit", "201"]))
+    }
+
+    func testFlagsEvaluationsRequestsTheFlagAndLimit() async throws {
+        let command = try ConsoleFlagsCommand.EvaluationsCommand.parse(["dark_mode", "--limit", "25", "--json"])
+        var client = ConsoleClient.failing
+        client.flagEvaluations = { flag, limit in
+            XCTAssertEqual(flag, "dark_mode")
+            XCTAssertEqual(limit, 25)
+            return OrgFlagEvaluationsResponse(evaluations: [
+                OrgFlagEvaluationEntry(id: "E1", deviceKeyId: "device-1", value: "true", evaluatedAt: "2026-09-01T00:00:00Z")
+            ])
+        }
+
+        try await command.run(client: client)
+    }
+
     func testFlagsWatchParses() throws {
         let command = try ConsoleFlagsCommand.WatchCommand.parse(["--env", "staging"])
         XCTAssertEqual(command.env, "staging")
