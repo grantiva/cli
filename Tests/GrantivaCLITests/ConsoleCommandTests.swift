@@ -95,6 +95,11 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertEqual(command.limit, 5)
     }
 
+    func testFlagsHistoryRejectsInvalidPaging() {
+        XCTAssertThrowsError(try ConsoleFlagsCommand.HistoryCommand.parse(["dark_mode", "--limit", "0"]))
+        XCTAssertThrowsError(try ConsoleFlagsCommand.HistoryCommand.parse(["dark_mode", "--offset", "-1"]))
+    }
+
     func testFlagsEvaluationsParsesAndValidatesLimit() throws {
         let command = try ConsoleFlagsCommand.EvaluationsCommand.parse(["dark_mode", "--limit", "25", "--json"])
         XCTAssertEqual(command.key, "dark_mode")
@@ -181,6 +186,12 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertEqual(command.device, "device-1")
         XCTAssertEqual(command.value, "true")
         XCTAssertEqual(command.expiresAt, "2026-09-01T00:00:00Z")
+    }
+
+    func testOverridesAddRejectsInvalidExpiry() {
+        XCTAssertThrowsError(try ConsoleFlagsOverridesCommand.AddCommand.parse([
+            "dark_mode", "--device", "device-1", "--value", "true", "--expires-at", "tomorrow",
+        ]))
     }
 
     func testOverridesDeleteParses() throws {
@@ -563,6 +574,108 @@ final class ConsoleCommandTests: XCTestCase {
         }
     }
 
+    func testFlagHistoryRoutesPagingArguments() async throws {
+        let captured = ConsoleFlagsCapture<(String, Int?, Int?)>()
+        var client = ConsoleClient.failing
+        client.flagHistory = { key, limit, offset in
+            await captured.set((key, limit, offset))
+            return []
+        }
+
+        try await ConsoleFlagsCommand.HistoryCommand.parse([
+            "dark_mode", "--limit", "5", "--offset", "10", "--json",
+        ]).run(client: client)
+
+        let arguments = await captured.value
+        XCTAssertEqual(arguments?.0, "dark_mode")
+        XCTAssertEqual(arguments?.1, 5)
+        XCTAssertEqual(arguments?.2, 10)
+    }
+
+    func testOverrideCommandsRouteFlagAndOverrideArguments() async throws {
+        var client = ConsoleClient.failing
+        let listed = ConsoleFlagsCapture<String>()
+        client.listOverrides = { key in
+            await listed.set(key)
+            return []
+        }
+        try await ConsoleFlagsOverridesCommand.ListCommand.parse(["dark_mode", "--json"]).run(client: client)
+        let listedKey = await listed.value
+        XCTAssertEqual(listedKey, "dark_mode")
+
+        let created = ConsoleFlagsCapture<CreateFlagOverrideRequest>()
+        client.getFlag = { key in
+            XCTAssertEqual(key, "dark_mode")
+            return OrgFlagDetail(
+                id: "uuid-1", flagKey: key, name: "Dark Mode",
+                valueType: "boolean", isActive: true
+            )
+        }
+        client.createOverride = { key, request in
+            XCTAssertEqual(key, "dark_mode")
+            await created.set(request)
+            return OrgFlagOverride(
+                id: "override-1", flagId: "uuid-1",
+                deviceKeyId: request.deviceKeyId, forcedValue: request.forcedValue,
+                expiresAt: request.expiresAt
+            )
+        }
+        try await ConsoleFlagsOverridesCommand.AddCommand.parse([
+            "dark_mode", "--device", "device-1", "--value", "true",
+            "--expires-at", "2026-09-01T00:00:00.123Z", "--json",
+        ]).run(client: client)
+        let request = await created.value
+        XCTAssertEqual(request?.deviceKeyId, "device-1")
+        XCTAssertEqual(request?.forcedValue, "true")
+        XCTAssertEqual(request?.expiresAt, "2026-09-01T00:00:00.123Z")
+
+        let deleted = ConsoleFlagsCapture<(String, String)>()
+        client.deleteOverride = { key, overrideID in
+            await deleted.set((key, overrideID))
+        }
+        try await ConsoleFlagsOverridesCommand.DeleteCommand.parse([
+            "dark_mode", "override-1", "--yes", "--json",
+        ]).run(client: client)
+        let deletedArguments = await deleted.value
+        XCTAssertEqual(deletedArguments?.0, "dark_mode")
+        XCTAssertEqual(deletedArguments?.1, "override-1")
+    }
+
+    func testFlagWatchRoutesEnvironmentAndConsumesFiniteStream() async throws {
+        let captured = ConsoleFlagsCapture<String?>()
+        var client = ConsoleClient.failing
+        client.streamFlags = { environment in
+            await captured.set(environment)
+            return AsyncThrowingStream { continuation in
+                continuation.yield(FlagStreamEvent(event: "flags", data: #"{"dark_mode":true}"#))
+                continuation.finish()
+            }
+        }
+
+        try await ConsoleFlagsCommand.WatchCommand.parse(["--env", "staging", "--json"]).run(client: client)
+        let environment = await captured.value
+        XCTAssertEqual(environment, "staging")
+    }
+
+    func testFlagWatchMapsErrorsRaisedAfterStreamOpens() async throws {
+        var client = ConsoleClient.failing
+        client.streamFlags = { _ in
+            AsyncThrowingStream { continuation in
+                continuation.finish(throwing: GrantivaError.networkError("forbidden", 403))
+            }
+        }
+
+        do {
+            try await ConsoleFlagsCommand.WatchCommand.parse(["--json"]).run(client: client)
+            XCTFail("should have thrown")
+        } catch {
+            guard case GrantivaError.permissionDenied(let message) = error else {
+                return XCTFail("expected permissionDenied, got \(error)")
+            }
+            XCTAssertTrue(message.contains("flags:read"), message)
+        }
+    }
+
     func testRulesAddRequiresConditions() async throws {
         let command = try ConsoleFlagsRulesCommand.AddCommand.parse(["dark_mode", "--name", "X", "--value", "true"])
         do {
@@ -663,5 +776,13 @@ final class ConsoleCommandTests: XCTestCase {
         ])
         XCTAssertTrue(table.contains("os_version gte 18.0 AND country in US,CA"), table)
         XCTAssertTrue(table.contains("50%"), table)
+    }
+}
+
+private actor ConsoleFlagsCapture<Value: Sendable> {
+    private(set) var value: Value?
+
+    func set(_ value: Value) {
+        self.value = value
     }
 }
