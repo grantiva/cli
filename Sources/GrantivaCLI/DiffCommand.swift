@@ -4,6 +4,11 @@ import GrantivaCore
 import GrantivaAPI
 
 struct DiffCommand: AsyncParsableCommand {
+    struct ComparisonOutcome {
+        let screens: [ScreenDiff]
+        let passed: Bool
+    }
+
     struct CaptureArtifact: Equatable {
         let fileName: String
         let screenName: String
@@ -343,75 +348,18 @@ struct DiffCommand: AsyncParsableCommand {
                 throw GrantivaError.noCaptures(captureDir)
             }
 
-            var screenDiffs: [ScreenDiff] = []
-            var allPassed = true
-
-            for artifact in captureArtifacts {
-                let file = artifact.fileName
-                let screenName = artifact.screenName
-                let capturePath = artifact.path ?? "\(captureDir)/\(file)"
-                let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
-
-                let baselineData = try await store.load(screenName)
-
-                if let baselineData {
-                    do {
-                        let output = try differ.compare(baselineData, captureData)
-                        let pixelPass = output.pixelDiffPercent <= diffConfig.threshold
-                        let perceptualPass = output.perceptualDistance <= diffConfig.perceptualThreshold
-                        let passed = pixelPass && perceptualPass
-
-                        var diffImagePath: String? = nil
-                        if !passed {
-                            allPassed = false
-                            let path = "\(diffDir)/\(screenName)_diff.png"
-                            try output.diffImageData.write(to: URL(fileURLWithPath: path))
-                            diffImagePath = path
-                        }
-
-                        let message = passed
-                            ? "Passed"
-                            : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
-
-                        screenDiffs.append(ScreenDiff(
-                            screenName: screenName,
-                            status: passed ? .passed : .failed,
-                            pixelDiffPercent: output.pixelDiffPercent,
-                            perceptualDistance: output.perceptualDistance,
-                            pixelThreshold: diffConfig.threshold,
-                            perceptualThreshold: diffConfig.perceptualThreshold,
-                            baselinePath: "\(store.baselineDirectory())/\(ScreenArtifact.fileName(for: screenName))",
-                            capturePath: capturePath,
-                            diffImagePath: diffImagePath,
-                            message: message
-                        ))
-                    } catch {
-                        allPassed = false
-                        screenDiffs.append(ScreenDiff(
-                            screenName: screenName,
-                            status: .error,
-                            pixelThreshold: diffConfig.threshold,
-                            perceptualThreshold: diffConfig.perceptualThreshold,
-                            capturePath: capturePath,
-                            message: "Error: \(error.localizedDescription)"
-                        ))
-                    }
-                } else {
-                    // No baseline — new screen
-                    screenDiffs.append(ScreenDiff(
-                        screenName: screenName,
-                        status: .newScreen,
-                        pixelThreshold: diffConfig.threshold,
-                        perceptualThreshold: diffConfig.perceptualThreshold,
-                        capturePath: capturePath,
-                        message: "New screen — no baseline. Run: grantiva diff approve"
-                    ))
-                }
-            }
+            let comparison = try await DiffCommand.compare(
+                captureArtifacts,
+                captureDirectory: captureDir,
+                diffDirectory: diffDir,
+                config: diffConfig,
+                store: store,
+                differ: differ
+            )
 
             let result = CompareResult(
-                screens: screenDiffs,
-                passed: allPassed,
+                screens: comparison.screens,
+                passed: comparison.passed,
                 duration: Date().timeIntervalSince(start)
             )
 
@@ -421,7 +369,7 @@ struct DiffCommand: AsyncParsableCommand {
                 Output.line(TableFormatter().formatCompare(result))
             }
 
-            if !allPassed {
+            if !comparison.passed {
                 throw ExitCode.failure
             }
         }
@@ -457,23 +405,12 @@ struct DiffCommand: AsyncParsableCommand {
             }
             let captureArtifacts = try DiffCommand.captureArtifacts(from: allCaptures)
 
-            let toApprove: [String]
-            if screenNames.isEmpty {
-                toApprove = captureArtifacts.map(\.screenName)
-            } else {
-                toApprove = screenNames
-            }
-
-            var approved: [String] = []
-            for screenName in toApprove {
-                let capturePath = "\(captureDir)/\(ScreenArtifact.fileName(for: screenName))"
-                guard fm.fileExists(atPath: capturePath) else {
-                    throw GrantivaError.noCaptures("No capture found for \"\(screenName)\"")
-                }
-                let data = try Data(contentsOf: URL(fileURLWithPath: capturePath))
-                _ = try await store.save(screenName, data)
-                approved.append(screenName)
-            }
+            let approved = try await DiffCommand.approve(
+                screenNames,
+                availableArtifacts: captureArtifacts,
+                captureDirectory: captureDir,
+                store: store
+            )
 
             let result = ApproveResult(
                 approvedScreens: approved,
@@ -552,6 +489,103 @@ struct DiffCommand: AsyncParsableCommand {
                 path: captureURL.path
             )
         }.sorted { $0.fileName < $1.fileName }
+    }
+
+    static func compare(
+        _ artifacts: [CaptureArtifact],
+        captureDirectory: String,
+        diffDirectory: String,
+        config: GrantivaConfig.DiffConfig,
+        store: BaselineStore,
+        differ: ImageDiffer
+    ) async throws -> ComparisonOutcome {
+        var screenDiffs: [ScreenDiff] = []
+        var allPassed = true
+
+        for artifact in artifacts {
+            let screenName = artifact.screenName
+            let capturePath = artifact.path ?? "\(captureDirectory)/\(artifact.fileName)"
+            let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
+
+            if let baselineData = try await store.load(screenName) {
+                do {
+                    let output = try differ.compare(baselineData, captureData)
+                    let passed = output.pixelDiffPercent <= config.threshold
+                        && output.perceptualDistance <= config.perceptualThreshold
+                    var diffImagePath: String?
+                    if !passed {
+                        allPassed = false
+                        let captureFile = ScreenArtifact.fileName(for: screenName)
+                        let stem = URL(fileURLWithPath: captureFile).deletingPathExtension().lastPathComponent
+                        let path = "\(diffDirectory)/\(stem)_diff.png"
+                        try output.diffImageData.write(to: URL(fileURLWithPath: path))
+                        diffImagePath = path
+                    }
+
+                    let message = passed
+                        ? "Passed"
+                        : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
+                    screenDiffs.append(ScreenDiff(
+                        screenName: screenName,
+                        status: passed ? .passed : .failed,
+                        pixelDiffPercent: output.pixelDiffPercent,
+                        perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: config.threshold,
+                        perceptualThreshold: config.perceptualThreshold,
+                        baselinePath: "\(store.baselineDirectory())/\(ScreenArtifact.fileName(for: screenName))",
+                        capturePath: capturePath,
+                        diffImagePath: diffImagePath,
+                        message: message
+                    ))
+                } catch {
+                    allPassed = false
+                    screenDiffs.append(ScreenDiff(
+                        screenName: screenName,
+                        status: .error,
+                        pixelThreshold: config.threshold,
+                        perceptualThreshold: config.perceptualThreshold,
+                        capturePath: capturePath,
+                        message: "Error: \(error.localizedDescription)"
+                    ))
+                }
+            } else {
+                screenDiffs.append(ScreenDiff(
+                    screenName: screenName,
+                    status: .newScreen,
+                    pixelThreshold: config.threshold,
+                    perceptualThreshold: config.perceptualThreshold,
+                    capturePath: capturePath,
+                    message: "New screen — no baseline. Run: grantiva diff approve"
+                ))
+            }
+        }
+
+        return ComparisonOutcome(screens: screenDiffs, passed: allPassed)
+    }
+
+    static func approve(
+        _ requestedScreenNames: [String],
+        availableArtifacts: [CaptureArtifact],
+        captureDirectory: String,
+        store: BaselineStore,
+        fileManager: FileManager = .default
+    ) async throws -> [String] {
+        let screenNames = requestedScreenNames.isEmpty
+            ? availableArtifacts.map(\.screenName)
+            : requestedScreenNames
+        var approved: [String] = []
+
+        for screenName in screenNames {
+            let capturePath = "\(captureDirectory)/\(ScreenArtifact.fileName(for: screenName))"
+            guard fileManager.fileExists(atPath: capturePath) else {
+                throw GrantivaError.noCaptures("No capture found for \"\(screenName)\"")
+            }
+            let data = try Data(contentsOf: URL(fileURLWithPath: capturePath))
+            _ = try await store.save(screenName, data)
+            approved.append(screenName)
+        }
+
+        return approved
     }
 
     /// Resolves the baseline store: remote (via RangeClient) if authenticated, local otherwise.
