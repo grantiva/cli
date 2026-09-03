@@ -7,6 +7,13 @@ struct DiffCommand: AsyncParsableCommand {
     struct CaptureArtifact: Equatable {
         let fileName: String
         let screenName: String
+        let path: String?
+
+        init(fileName: String, screenName: String, path: String? = nil) {
+            self.fileName = fileName
+            self.screenName = screenName
+            self.path = path
+        }
     }
 
     static let configuration = CommandConfiguration(
@@ -203,6 +210,7 @@ struct DiffCommand: AsyncParsableCommand {
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()
+            var invocationCaptures: [ScreenCapture]?
 
             // Optionally capture first (with full lifecycle)
             if capture {
@@ -287,6 +295,7 @@ struct DiffCommand: AsyncParsableCommand {
                     outputDir: captureDir,
                     expectedPixels: expectedPixels
                 )
+                invocationCaptures = captures
 
                 // Print step-by-step results
                 if !options.json {
@@ -318,13 +327,21 @@ struct DiffCommand: AsyncParsableCommand {
             guard fm.fileExists(atPath: captureDir) else {
                 throw GrantivaError.noCaptures(captureDir)
             }
-            let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
-                .filter { $0.hasSuffix(".png") }
+            let captureArtifacts: [CaptureArtifact]
+            if let invocationCaptures {
+                captureArtifacts = try DiffCommand.currentInvocationArtifacts(
+                    from: invocationCaptures,
+                    outputDir: captureDir
+                )
+            } else {
+                let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
+                    .filter { $0.hasSuffix(".png") }
+                captureArtifacts = try DiffCommand.captureArtifacts(from: captureFiles)
+            }
 
-            guard !captureFiles.isEmpty else {
+            guard !captureArtifacts.isEmpty else {
                 throw GrantivaError.noCaptures(captureDir)
             }
-            let captureArtifacts = try DiffCommand.captureArtifacts(from: captureFiles)
 
             var screenDiffs: [ScreenDiff] = []
             var allPassed = true
@@ -332,7 +349,7 @@ struct DiffCommand: AsyncParsableCommand {
             for artifact in captureArtifacts {
                 let file = artifact.fileName
                 let screenName = artifact.screenName
-                let capturePath = "\(captureDir)/\(file)"
+                let capturePath = artifact.path ?? "\(captureDir)/\(file)"
                 let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
 
                 let baselineData = try await store.load(screenName)
@@ -488,6 +505,53 @@ struct DiffCommand: AsyncParsableCommand {
             }
             return CaptureArtifact(fileName: fileName, screenName: screenName)
         }
+    }
+
+    /// Returns only screenshots explicitly produced by this runner invocation.
+    /// A persistent capture directory may also contain captures from previous
+    /// configurations, including a stale file for a screenshot that failed now.
+    static func currentInvocationArtifacts(
+        from captures: [ScreenCapture],
+        outputDir: String
+    ) throws -> [CaptureArtifact] {
+        let fileManager = FileManager.default
+        let outputURL = URL(fileURLWithPath: outputDir, isDirectory: true).standardizedFileURL
+        var seenNames: Set<String> = []
+
+        return try captures.compactMap { capture in
+            guard !capture.path.isEmpty else { return nil }
+
+            let fileName = ScreenArtifact.fileName(for: capture.screenName)
+            let expectedURL = outputURL.appendingPathComponent(fileName).standardizedFileURL
+            let captureURL = URL(fileURLWithPath: capture.path).standardizedFileURL
+            guard captureURL == expectedURL else {
+                throw GrantivaError.commandFailed(
+                    "Runner returned capture outside the invocation output set: \(capture.path)",
+                    1
+                )
+            }
+
+            var isDirectory: ObjCBool = false
+            guard fileManager.fileExists(atPath: captureURL.path, isDirectory: &isDirectory),
+                  !isDirectory.boolValue else {
+                throw GrantivaError.commandFailed(
+                    "Runner-reported capture is missing: \(capture.path)",
+                    1
+                )
+            }
+            guard seenNames.insert(fileName).inserted else {
+                throw GrantivaError.commandFailed(
+                    "Runner returned duplicate capture for \(capture.screenName)",
+                    1
+                )
+            }
+
+            return CaptureArtifact(
+                fileName: fileName,
+                screenName: capture.screenName,
+                path: captureURL.path
+            )
+        }.sorted { $0.fileName < $1.fileName }
     }
 
     /// Resolves the baseline store: remote (via RangeClient) if authenticated, local otherwise.
