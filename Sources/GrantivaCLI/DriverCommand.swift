@@ -89,7 +89,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     func run() async throws {
         // Check for existing session
-        if let existing = try? RunnerSessionInfo.load(), existing.isAlive {
+        if let existing = try? RunnerSessionInfo.load(), existing.isAlive,
+           let snapshot = try? await SimulatorReaper.processSnapshot(),
+           existing.ownsRunnerProcess(in: snapshot) {
             if options.json {
                 Output.line(try JSONOutput.string([
                     "status": "already_running",
@@ -391,7 +393,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return
         }
 
-        if session.isAlive {
+        if session.isAlive,
+           let snapshot = try? await SimulatorReaper.processSnapshot(),
+           session.ownsRunnerProcess(in: snapshot) {
             ChildProcess.terminateGroup(session.pid, gracePeriod: 1)
         }
 

@@ -38,4 +38,18 @@ public struct RunnerSessionInfo: Codable, Sendable {
     public var isAlive: Bool {
         kill(pid, 0) == 0
     }
+
+    /// PIDs are reusable; confirm the current process is still the runner that
+    /// this persisted session is allowed to control.
+    public func ownsRunnerProcess(in psOutput: String) -> Bool {
+        for line in psOutput.split(separator: "\n", omittingEmptySubsequences: true) {
+            let fields = line.split(maxSplits: 2, whereSeparator: { $0 == " " || $0 == "\t" })
+            guard fields.count == 3, Int32(fields[0]) == pid else { continue }
+            guard let executable = fields[2].split(whereSeparator: { $0 == " " || $0 == "\t" }).first else {
+                return false
+            }
+            return URL(fileURLWithPath: String(executable)).lastPathComponent.lowercased() == "grantiva-runner"
+        }
+        return false
+    }
 }
