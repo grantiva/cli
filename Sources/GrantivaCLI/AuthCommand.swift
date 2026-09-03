@@ -29,17 +29,28 @@ struct AuthCommand: AsyncParsableCommand {
         var authStore: AuthStore = .live
 
         func run() async throws {
+            let validatedBaseURL = try Self.validatedBaseURL(baseURL)
             if let apiKey {
-                try await loginWithAPIKey(apiKey)
+                try await loginWithAPIKey(apiKey, baseURL: validatedBaseURL)
             } else {
-                try await loginWithBrowser()
+                try await loginWithBrowser(baseURL: validatedBaseURL)
             }
+        }
+
+        static func validatedBaseURL(_ value: String) throws -> URL {
+            guard let url = URL(string: value),
+                  ["http", "https"].contains(url.scheme?.lowercased() ?? ""),
+                  url.host != nil
+            else {
+                throw GrantivaError.invalidArgument("--base-url must be a valid http or https URL")
+            }
+            return url
         }
 
         // MARK: - Direct API key flow (CI / headless)
 
-        private func loginWithAPIKey(_ apiKey: String) async throws {
-            let meURL = URL(string: "\(baseURL)/api/v1/auth/me")!
+        private func loginWithAPIKey(_ apiKey: String, baseURL: URL) async throws {
+            let meURL = baseURL.appending(path: "api/v1/auth/me")
             var request = URLRequest(url: meURL)
             request.httpMethod = "GET"
             request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
@@ -63,7 +74,7 @@ struct AuthCommand: AsyncParsableCommand {
 
             let credentials = AuthCredentials(
                 apiKey: apiKey,
-                baseURL: baseURL,
+                baseURL: baseURL.absoluteString,
                 email: meResponse.email
             )
             try authStore.save(credentials)
@@ -72,7 +83,7 @@ struct AuthCommand: AsyncParsableCommand {
                 let result = LoginResult(
                     authenticated: true,
                     email: meResponse.email,
-                    baseURL: baseURL,
+                    baseURL: baseURL.absoluteString,
                     apiKeyPrefix: meResponse.apiKeyPrefix
                 )
                 Output.line(try JSONOutput.string(result))
@@ -85,9 +96,9 @@ struct AuthCommand: AsyncParsableCommand {
 
         // MARK: - Browser-based flow
 
-        private func loginWithBrowser() async throws {
+        private func loginWithBrowser(baseURL: URL) async throws {
             // 1. Create a CLI session
-            let sessionURL = URL(string: "\(baseURL)/api/v1/auth/cli/sessions")!
+            let sessionURL = baseURL.appending(path: "api/v1/auth/cli/sessions")
             var createRequest = URLRequest(url: sessionURL)
             createRequest.httpMethod = "POST"
             createRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -102,19 +113,28 @@ struct AuthCommand: AsyncParsableCommand {
             let session = try JSONDecoder().decode(CreateSessionResponse.self, from: createData)
 
             // 2. Open browser
-            let loginURL = "\(baseURL)/api/v1/auth/cli?session=\(session.sessionId)"
+            let loginEndpoint = baseURL.appending(path: "api/v1/auth/cli")
+            guard var loginComponents = URLComponents(url: loginEndpoint, resolvingAgainstBaseURL: false) else {
+                throw GrantivaError.invalidArgument("--base-url must be a valid http or https URL")
+            }
+            loginComponents.queryItems = [URLQueryItem(name: "session", value: session.sessionId)]
+            guard let loginURL = loginComponents.url else {
+                throw GrantivaError.invalidArgument("could not construct authentication URL")
+            }
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-            process.arguments = [loginURL]
+            process.arguments = [loginURL.absoluteString]
             try process.run()
             process.waitUntilExit()
 
             options.note("Opening browser to sign in...")
-            options.note("If the browser doesn't open, visit: \(loginURL)")
+            options.note("If the browser doesn't open, visit: \(loginURL.absoluteString)")
             options.note("Waiting for authentication...")
 
             // 3. Poll for completion
-            let pollURL = URL(string: "\(baseURL)/api/v1/auth/cli/sessions/\(session.sessionId)")!
+            let pollURL = baseURL
+                .appending(path: "api/v1/auth/cli/sessions")
+                .appending(path: session.sessionId)
             let timeout: TimeInterval = 300 // 5 minutes
             let interval: TimeInterval = 2
             let start = Date()
@@ -140,7 +160,7 @@ struct AuthCommand: AsyncParsableCommand {
                 {
                     let credentials = AuthCredentials(
                         apiKey: apiKey,
-                        baseURL: baseURL,
+                        baseURL: baseURL.absoluteString,
                         email: email
                     )
                     try authStore.save(credentials)
@@ -151,7 +171,7 @@ struct AuthCommand: AsyncParsableCommand {
                         let result = LoginResult(
                             authenticated: true,
                             email: email,
-                            baseURL: baseURL,
+                            baseURL: baseURL.absoluteString,
                             apiKeyPrefix: prefix
                         )
                         Output.line(try JSONOutput.string(result))
