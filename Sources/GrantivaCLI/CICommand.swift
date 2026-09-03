@@ -78,7 +78,7 @@ struct CICommand: AsyncParsableCommand {
             }
             log("Authenticated with \(credentials.baseURL)")
 
-            let client = RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+            let client = try RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
             let projectId = try await ProjectIdentifier.resolve()
             let project = projectId.projectSlug
             let branch = projectId.currentBranch

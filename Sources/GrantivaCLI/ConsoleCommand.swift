@@ -80,7 +80,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return ConsoleClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try ConsoleClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for the `/api/v1/org/*` apps, claims and
@@ -89,7 +89,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try OrgClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for org administration.
@@ -97,7 +97,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return OrgAdminClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try OrgAdminClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for staff-side feedback and support.
@@ -105,7 +105,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return FeedbackClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try FeedbackClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for VRT run review.
@@ -113,7 +113,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return VRTReviewClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try VRTReviewClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for release note authoring.
@@ -121,7 +121,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return ReleaseNotesClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try ReleaseNotesClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Same credential resolution, for the analytics/devices surface.
@@ -129,7 +129,7 @@ enum ConsoleSupport {
         guard let credentials = AuthStore.resolveCredentials() else {
             throw GrantivaError.notAuthenticated
         }
-        return AnalyticsClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+        return try AnalyticsClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
     }
 
     /// Maps raw HTTP failures onto messages a person can act on:

@@ -464,7 +464,7 @@ struct DiffCommand: AsyncParsableCommand {
     /// Resolves the baseline store: remote (via RangeClient) if authenticated, local otherwise.
     static func resolveBaselineStore() async throws -> BaselineStore {
         if let credentials = AuthStore.resolveCredentials() {
-            let client = RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
+            let client = try RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
             let projectId = try await ProjectIdentifier.resolve()
             return client.asBaselineStore(project: projectId.projectSlug, branch: projectId.currentBranch, baseURL: credentials.baseURL)
         }

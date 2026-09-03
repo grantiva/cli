@@ -46,8 +46,8 @@ public struct RangeClient: Sendable {
 // MARK: - Convenience Init
 
 extension RangeClient {
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
 
         self.init(

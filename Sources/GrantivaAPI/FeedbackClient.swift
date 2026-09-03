@@ -301,8 +301,8 @@ public struct FeedbackClient: Sendable {
         self.addTicketMessage = addTicketMessage
     }
 
-    public init(apiKey: String, baseURL: String) {
-        let baseURL = URL(string: baseURL.hasSuffix("/") ? String(baseURL.dropLast()) : baseURL)!
+    public init(apiKey: String, baseURL: String) throws {
+        let baseURL = try validatedAPIBaseURL(baseURL)
         let client = NetworkClient.authorized(apiKey: apiKey)
         self.init(
             listFeatures: { q in try await client.execute(OrgFeedbackEndpoints.listFeatures(q), baseURL: baseURL) },

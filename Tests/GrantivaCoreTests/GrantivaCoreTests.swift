@@ -2,6 +2,23 @@ import XCTest
 @testable import GrantivaCore
 
 final class GrantivaCoreTests: XCTestCase {
+    func testConfiguredAPIBaseURLRejectsMalformedValues() {
+        for value in ["http://[", "not a URL", "file:///tmp/grantiva", "https:///missing-host"] {
+            XCTAssertThrowsError(try validatedAPIBaseURL(value), value) { error in
+                guard case GrantivaError.invalidArgument = error else {
+                    return XCTFail("expected invalidArgument, got \(error)")
+                }
+            }
+        }
+    }
+
+    func testConfiguredAPIBaseURLNormalizesTrailingSlash() throws {
+        XCTAssertEqual(
+            try validatedAPIBaseURL("https://api.example.com/path/").absoluteString,
+            "https://api.example.com/path"
+        )
+    }
+
 
     // MARK: - SimulatorDevice
 

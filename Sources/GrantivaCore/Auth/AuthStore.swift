@@ -6,6 +6,19 @@ public enum GrantivaDefaults {
     public static let apiBaseURL = "https://api.grantiva.io"
 }
 
+/// Parses a configured API origin without allowing malformed credentials to
+/// reach force-unwrapped request construction.
+public func validatedAPIBaseURL(_ value: String) throws -> URL {
+    let normalized = value.hasSuffix("/") ? String(value.dropLast()) : value
+    guard let url = URL(string: normalized),
+          ["http", "https"].contains(url.scheme?.lowercased()),
+          url.host != nil
+    else {
+        throw GrantivaError.invalidArgument("Configured API URL must be a valid http or https URL")
+    }
+    return url
+}
+
 // MARK: - AuthCredentials
 
 public struct AuthCredentials: Codable, Sendable {
