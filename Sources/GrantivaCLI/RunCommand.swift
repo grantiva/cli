@@ -62,6 +62,12 @@ struct RunCommand: AsyncParsableCommand {
     var simulatorManager: SimulatorManager = .live
     var runnerManager: RunnerManager = .live
 
+    func validate() throws {
+        guard timeout >= 30 else {
+            throw ValidationError("--timeout must be at least 30 seconds.")
+        }
+    }
+
     /// `--ready-file` is documented as `while [ ! -f "$f" ]; do sleep 0.2; done`,
     /// which only works if the file is absent until this run finishes and
     /// present once it has. Two things have to be true for that, and neither
@@ -265,7 +271,7 @@ struct RunCommand: AsyncParsableCommand {
                     snapshot: snapshot.rawValue,
                     failFast: !continueOnFailure,
                     reportDir: reportDir,
-                    timeoutSeconds: UInt64(max(timeout, 30)),
+                    timeoutSeconds: UInt64(timeout),
                     environment: launchEnvironment,
                     readyFile: readyFile
                 )

@@ -20,7 +20,9 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     )
 
     @OptionGroup var options: GlobalOptions
-    @OptionGroup var buildOptions: BuildOptions
+
+    @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
+    var derivedDataPath: String?
 
     @Option(name: .long, help: "Scheme to build")
     var scheme: String?
@@ -35,7 +37,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             schemeFlag: scheme,
             simulatorFlag: simulator,
             config: config,
-            skipBuild: buildOptions.shouldSkipBuild
+            skipBuild: false
         )
 
         guard let buildScheme = resolved.scheme else {
@@ -54,7 +56,10 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             workspace: resolved.workspace,
             project: resolved.project,
             destination: destination,
-            buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+            buildSettings: BuildOptions.xcodeBuildSettings(
+                derivedDataPath: derivedDataPath,
+                merging: resolved.buildSettings
+            )
         )
 
         if options.json {
@@ -163,9 +168,7 @@ struct InstallCommand: AsyncParsableCommand {
             try await runner.install(bundleId: bid, productPath: productPath, udid: device.udid)
         }
 
-        let dataContainerPath = options.json
-            ? try await runner.dataContainerPath(bundleId: bid, udid: device.udid)
-            : nil
+        let dataContainerPath = try await runner.dataContainerPath(bundleId: bid, udid: device.udid)
 
         let status = try await completeInstall {
             options.note("[grantiva] Launching \(bid)...")
@@ -183,9 +186,19 @@ struct InstallCommand: AsyncParsableCommand {
             )
             Output.line(try JSONOutput.string(result))
         } else if noLaunch {
-            Output.line("[grantiva] Done — \(bid) installed on \(device.name) (not launched)")
+            Output.line(Self.completionMessage(
+                status: .installed,
+                bundleId: bid,
+                deviceName: device.name,
+                dataContainerPath: dataContainerPath
+            ))
         } else {
-            Output.line("[grantiva] Done — \(bid) running on \(device.name)")
+            Output.line(Self.completionMessage(
+                status: .launched,
+                bundleId: bid,
+                deviceName: device.name,
+                dataContainerPath: dataContainerPath
+            ))
         }
     }
 
@@ -195,6 +208,16 @@ struct InstallCommand: AsyncParsableCommand {
         guard !noLaunch else { return .installed }
         try await launch()
         return .launched
+    }
+
+    static func completionMessage(
+        status: InstallResult.Status,
+        bundleId: String,
+        deviceName: String,
+        dataContainerPath: String
+    ) -> String {
+        let action = status == .installed ? "installed on \(deviceName) (not launched)" : "running on \(deviceName)"
+        return "[grantiva] Done — \(bundleId) \(action)\nData container: \(dataContainerPath)"
     }
 }
 

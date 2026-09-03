@@ -54,6 +54,13 @@ struct BuildOptions: ParsableArguments {
     /// Merges command-line build options with project configuration. An
     /// explicit CLI DerivedData path takes precedence over build_settings.
     func xcodeBuildSettings(merging configured: [String]) -> [String] {
+        Self.xcodeBuildSettings(derivedDataPath: derivedDataPath, merging: configured)
+    }
+
+    static func xcodeBuildSettings(
+        derivedDataPath: String?,
+        merging configured: [String]
+    ) -> [String] {
         guard let derivedDataPath else { return configured }
 
         var settings: [String] = []
@@ -84,15 +91,4 @@ struct BuildOptions: ParsableArguments {
         return try AppBinaryResolver.resolve(appFile)
     }
 
-    /// Derives a bundle ID from the app binary if one was provided.
-    func deriveBundleId() -> String? {
-        guard let appFile else { return nil }
-        let absPath = (appFile as NSString).standardizingPath
-        if absPath.hasSuffix(".app") {
-            return AppBinaryResolver.bundleId(from: absPath)
-        }
-        // For IPA, we'd need to extract first — bundle ID derivation
-        // happens after resolve in the command flow.
-        return nil
-    }
 }

@@ -106,4 +106,18 @@ final class InstallCommandTests: XCTestCase {
             "00000000-0000-0000-0000-000000000000"
         )
     }
+
+    func testHumanCompletionIncludesDataContainerPath() {
+        let message = InstallCommand.completionMessage(
+            status: .launched,
+            bundleId: "com.example.app",
+            deviceName: "iPhone 17",
+            dataContainerPath: "/tmp/simulator/data"
+        )
+
+        XCTAssertEqual(
+            message,
+            "[grantiva] Done — com.example.app running on iPhone 17\nData container: /tmp/simulator/data"
+        )
+    }
 }
