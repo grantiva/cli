@@ -41,7 +41,11 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Window in days. Default 30.")
         var days: Int?
 
+        @Option(name: .long, help: "Window: 1d, 7d, 30d, or 90d. Default 30d.")
+        var period: Range?
+
         func validate() throws {
+            if days != nil, period != nil { throw ValidationError("Pass either --period or --days, not both.") }
             if let days, days < 1 {
                 throw ValidationError("--days must be at least 1.")
             }
@@ -52,9 +56,10 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
         }
 
         func run(client: AnalyticsClient) async throws {
+            let effectiveDays = period.map { Int($0.rawValue.dropLast())! } ?? days
             let overview: AttestationAnalytics
             do {
-                overview = try await client.overview(days)
+                overview = try await client.overview(effectiveDays)
             } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.analyticsRead)
             }
@@ -62,7 +67,7 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
             if options.json {
                 Output.line(try JSONOutput.string(overview))
             } else {
-                Output.line(ConsoleAnalyticsFormat.overview(overview, days: days ?? 30))
+                Output.line(ConsoleAnalyticsFormat.overview(overview, days: effectiveDays ?? 30))
             }
         }
     }
@@ -117,7 +122,7 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Page number, starting at 1.")
         var page: Int?
 
-        @Option(name: .customLong("per-page"), help: "Events per page, 1–200. Default 50.")
+        @Option(name: [.customLong("per"), .customLong("per-page")], help: "Events per page, 1–200. Default 50. (--per-page is retained as an alias.)")
         var perPage: Int?
 
         @Option(name: .long, help: "Only events at or after this ISO 8601 timestamp, e.g. 2026-09-01T00:00:00Z.")
@@ -137,7 +142,7 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
 
         func validate() throws {
             if let page, page < 1 { throw ValidationError("--page must be at least 1.") }
-            if let perPage, !(1...200).contains(perPage) { throw ValidationError("--per-page must be between 1 and 200.") }
+            if let perPage, !(1...200).contains(perPage) { throw ValidationError("--per must be between 1 and 200.") }
             if let type, AttestationEventType(rawValue: type) == nil {
                 throw ValidationError(
                     "Unknown event type '\(type)'. Expected one of: "
@@ -184,7 +189,7 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
 
         @OptionGroup var options: GlobalOptions
 
-        @Option(name: .long, help: "Window: 1d, 7d, 30d, or 90d. Default 7d.")
+        @Option(name: [.customLong("period"), .customLong("range")], help: "Window: 1d, 7d, 30d, or 90d. Default 7d. (--range is retained as an alias.)")
         var range: Range?
 
         func run() async throws {

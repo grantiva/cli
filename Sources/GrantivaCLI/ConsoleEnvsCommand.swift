@@ -176,7 +176,7 @@ struct ConsoleEnvsCommand: AsyncParsableCommand {
             }
 
             if options.json {
-                Output.line(try JSONOutput.string(EnvironmentDeletedResult(deleted: true, environment: env)))
+                Output.line(try JSONOutput.string(OrgDeleteResponse(deleted: true, id: env)))
             } else {
                 Output.line("Deleted environment '\(env)'")
             }
@@ -230,12 +230,4 @@ struct ConsoleEnvsCommand: AsyncParsableCommand {
 enum ReorderDirection: String, ExpressibleByArgument, CaseIterable, Sendable {
     case up
     case down
-}
-
-// MARK: - Output Models
-
-@available(macOS 15, *)
-struct EnvironmentDeletedResult: Codable, Sendable {
-    let deleted: Bool
-    let environment: String
 }

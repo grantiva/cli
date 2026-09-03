@@ -11,4 +11,11 @@ public struct JSONOutput: Sendable {
         let data = try encoder.encode(value)
         return String(data: data, encoding: .utf8) ?? "{}"
     }
+
+    /// One sorted JSON document without whitespace, suitable for NDJSON streams.
+    public static func compactString<T: Encodable>(_ value: T) throws -> String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
+        return String(decoding: try encoder.encode(value), as: UTF8.self)
+    }
 }
