@@ -515,6 +515,15 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Entries to skip (for paging).")
         var offset: Int?
 
+        func validate() throws {
+            if let limit, limit < 1 {
+                throw ValidationError("--limit must be greater than zero.")
+            }
+            if let offset, offset < 0 {
+                throw ValidationError("--offset must not be negative.")
+            }
+        }
+
         func run() async throws {
             try await run(client: ConsoleSupport.makeClient())
         }
@@ -555,10 +564,6 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         var env: String?
 
         func run() async throws {
-            try await run(client: ConsoleSupport.makeClient())
-        }
-
-        func run(client: ConsoleClient) async throws {
             // Exit cleanly on Ctrl-C instead of dying mid-write with a signal.
             signal(SIGINT, SIG_IGN)
             let sigint = DispatchSource.makeSignalSource(signal: SIGINT, queue: .main)
@@ -567,21 +572,24 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             }
             sigint.resume()
 
+            try await run(client: ConsoleSupport.makeClient())
+            withExtendedLifetime(sigint) {}
+        }
+
+        func run(client: ConsoleClient) async throws {
             options.note("Watching flag configuration\(env.map { " (\($0))" } ?? "")... Ctrl-C to stop.")
 
-            let events: AsyncThrowingStream<FlagStreamEvent, Error>
             do {
-                events = try await client.streamFlags(env)
+                let events = try await client.streamFlags(env)
+                for try await event in events {
+                    if options.json {
+                        Output.line(try JSONOutput.compactString(event))
+                    } else {
+                        Output.line("[\(Self.timestamp())] \(event.event): \(event.data)")
+                    }
+                }
             } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead)
-            }
-
-            for try await event in events {
-                if options.json {
-                    Output.line(try JSONOutput.compactString(event))
-                } else {
-                    Output.line("[\(Self.timestamp())] \(event.event): \(event.data)")
-                }
             }
         }
 

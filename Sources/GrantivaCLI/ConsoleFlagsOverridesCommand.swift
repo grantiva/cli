@@ -78,6 +78,19 @@ struct ConsoleFlagsOverridesCommand: AsyncParsableCommand {
         @Option(name: .customLong("expires-at"), help: "Expiry as ISO8601 (default: never expires).")
         var expiresAt: String?
 
+        func validate() throws {
+            guard let expiresAt else { return }
+
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime]
+            if formatter.date(from: expiresAt) == nil {
+                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                guard formatter.date(from: expiresAt) != nil else {
+                    throw ValidationError("--expires-at must be an ISO8601 date and time, for example 2026-09-01T00:00:00Z.")
+                }
+            }
+        }
+
         func run() async throws {
             try await run(client: ConsoleSupport.makeClient())
         }
