@@ -26,17 +26,10 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "webhooks",
         abstract: "Manage webhook endpoints and inspect their deliveries.",
-        subcommands: [ListCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self, EventsCommand.self]
+        subcommands: [ListCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self]
     )
 
     static func notFound(_ id: String) -> String { "webhook not found: \(id)" }
-
-    static func validateEvents(_ events: [String]) throws {
-        let unknown = events.filter { WebhookEvent(rawValue: $0) == nil }
-        if !unknown.isEmpty {
-            throw ValidationError("Unknown event(s): \(unknown.joined(separator: ", ")). Run `grantiva console webhooks events` for the list.")
-        }
-    }
 
     struct ListCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "list", abstract: "List webhook endpoints.")
@@ -46,15 +39,6 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
             let hooks: [Webhook]
             do { hooks = try await client.listWebhooks() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.webhooksRead) }
             try ConsoleAdmin.emit(hooks, options: options) { ConsoleAdminFormat.webhooks(hooks) }
-        }
-    }
-
-    struct EventsCommand: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(commandName: "events", abstract: "List the event types a webhook can subscribe to.")
-        @OptionGroup var options: GlobalOptions
-        func run() async throws {
-            let events = WebhookEvent.allCases.map(\.rawValue)
-            try ConsoleAdmin.emit(events, options: options) { events.joined(separator: "\n") }
         }
     }
 
@@ -70,7 +54,6 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Description.") var description: String?
         func validate() throws {
             if event.isEmpty { throw ValidationError("Pass at least one --event.") }
-            try ConsoleWebhooksCommand.validateEvents(event)
             guard let parsed = URL(string: url), parsed.scheme == "https", parsed.host != nil else {
                 throw ValidationError("URL must be an https URL.")
             }
@@ -121,7 +104,6 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @Option(name: .long, help: "New description.") var description: String?
         func validate() throws {
             if event.isEmpty, description == nil { throw ValidationError("Nothing to update. Pass --event or --description.") }
-            try ConsoleWebhooksCommand.validateEvents(event)
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {

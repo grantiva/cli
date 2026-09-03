@@ -68,21 +68,6 @@ public struct WebhookDelivery: Codable, Sendable, Equatable {
     public let createdAt: String?
 }
 
-/// The event types the server delivers.
-public enum WebhookEvent: String, CaseIterable, Sendable {
-    case deviceHighRisk = "device.high_risk"
-    case deviceAttestationFailed = "device.attestation_failed"
-    case deviceNew = "device.new"
-    case deviceAttestedFirst = "device.attested.first"
-    case attestationAnomaly = "attestation.anomaly"
-    case flagUpdated = "flag.updated"
-    case flagCreated = "flag.created"
-    case flagDeleted = "flag.deleted"
-    case subscriptionChanged = "subscription.changed"
-    case subscriptionExpired = "subscription.expired"
-    case subscriptionRefunded = "subscription.refunded"
-}
-
 public struct RiskAlertRule: Codable, Sendable, Equatable {
     public let id: String
     public let name: String
