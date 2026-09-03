@@ -1,5 +1,15 @@
 import Foundation
 
+public enum ScreenArtifact {
+    /// Keeps a display name reversible while guaranteeing one filesystem component.
+    public static func fileName(for screenName: String, extension fileExtension: String = "png") -> String {
+        var allowed = CharacterSet.urlPathAllowed
+        allowed.remove("/")
+        let stem = screenName.addingPercentEncoding(withAllowedCharacters: allowed) ?? "screen"
+        return "\(stem).\(fileExtension)"
+    }
+}
+
 public struct BaselineStore: Sendable {
     public var save: @Sendable (String, Data) async throws -> String
     public var load: @Sendable (String) async throws -> Data?
@@ -33,12 +43,12 @@ extension BaselineStore {
                 if !fm.fileExists(atPath: dir) {
                     try fm.createDirectory(atPath: dir, withIntermediateDirectories: true)
                 }
-                let path = "\(dir)/\(screenName).png"
+                let path = "\(dir)/\(ScreenArtifact.fileName(for: screenName))"
                 try data.write(to: URL(fileURLWithPath: path))
                 return path
             },
             load: { screenName in
-                let path = "\(dir)/\(screenName).png"
+                let path = "\(dir)/\(ScreenArtifact.fileName(for: screenName))"
                 guard FileManager.default.fileExists(atPath: path) else { return nil }
                 return try Data(contentsOf: URL(fileURLWithPath: path))
             },
@@ -52,7 +62,7 @@ extension BaselineStore {
                     .sorted()
             },
             delete: { screenName in
-                let path = "\(dir)/\(screenName).png"
+                let path = "\(dir)/\(ScreenArtifact.fileName(for: screenName))"
                 try FileManager.default.removeItem(atPath: path)
             },
             baselineDirectory: { dir }

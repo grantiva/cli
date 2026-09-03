@@ -357,7 +357,7 @@ struct DiffCommand: AsyncParsableCommand {
                             perceptualDistance: output.perceptualDistance,
                             pixelThreshold: diffConfig.threshold,
                             perceptualThreshold: diffConfig.perceptualThreshold,
-                            baselinePath: "\(store.baselineDirectory())/\(screenName).png",
+                            baselinePath: "\(store.baselineDirectory())/\(ScreenArtifact.fileName(for: screenName))",
                             capturePath: capturePath,
                             diffImagePath: diffImagePath,
                             message: message
@@ -443,7 +443,7 @@ struct DiffCommand: AsyncParsableCommand {
 
             var approved: [String] = []
             for screenName in toApprove {
-                let capturePath = "\(captureDir)/\(screenName).png"
+                let capturePath = "\(captureDir)/\(ScreenArtifact.fileName(for: screenName))"
                 guard fm.fileExists(atPath: capturePath) else {
                     throw GrantivaError.noCaptures("No capture found for \"\(screenName)\"")
                 }
