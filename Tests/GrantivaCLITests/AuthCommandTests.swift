@@ -1,6 +1,8 @@
 import XCTest
 @testable import GrantivaCLI
+import GrantivaAPI
 import GrantivaCore
+import Synchronization
 
 @available(macOS 15, *)
 final class AuthCommandTests: XCTestCase {
@@ -22,5 +24,32 @@ final class AuthCommandTests: XCTestCase {
     func testValidBaseURLIsPreserved() throws {
         let url = try AuthCommand.LoginCommand.validatedBaseURL("https://example.com/custom/")
         XCTAssertEqual(url.absoluteString, "https://example.com/custom/")
+    }
+
+    func testAPIKeyLoginUsesAuthClientAndSavesCredentials() async throws {
+        var command = try AuthCommand.LoginCommand.parse([
+            "--api-key", "grantiva_secret", "--base-url", "https://api.example.com", "--json",
+        ])
+        let saved = Mutex<AuthCredentials?>(nil)
+        command.authStore = AuthStore(
+            load: { nil },
+            save: { credentials in saved.withLock { $0 = credentials } },
+            delete: {}
+        )
+        let client = AuthClient(
+            profile: { key in
+                XCTAssertEqual(key, "grantiva_secret")
+                return AuthProfile(email: "dev@example.com", apiKeyPrefix: "grantiva_se")
+            },
+            createSession: { XCTFail("Unexpected browser flow"); return AuthSession(sessionId: "") },
+            session: { _ in XCTFail("Unexpected browser flow"); return AuthSessionStatus(status: "pending") }
+        )
+
+        try await command.run(client: client)
+
+        let credentials = saved.withLock { $0 }
+        XCTAssertEqual(credentials?.apiKey, "grantiva_secret")
+        XCTAssertEqual(credentials?.baseURL, "https://api.example.com")
+        XCTAssertEqual(credentials?.email, "dev@example.com")
     }
 }

@@ -1,5 +1,6 @@
 import ArgumentParser
 import Foundation
+import GrantivaAPI
 import GrantivaCore
 
 @available(macOS 15, *)
@@ -30,10 +31,16 @@ struct AuthCommand: AsyncParsableCommand {
 
         func run() async throws {
             let validatedBaseURL = try Self.validatedBaseURL(baseURL)
+            let client = try AuthClient(baseURL: validatedBaseURL.absoluteString)
+            try await run(client: client, baseURL: validatedBaseURL)
+        }
+
+        func run(client: AuthClient, baseURL validatedBaseURL: URL? = nil) async throws {
+            let validatedBaseURL = try validatedBaseURL ?? Self.validatedBaseURL(baseURL)
             if let apiKey {
-                try await loginWithAPIKey(apiKey, baseURL: validatedBaseURL)
+                try await loginWithAPIKey(apiKey, baseURL: validatedBaseURL, client: client)
             } else {
-                try await loginWithBrowser(baseURL: validatedBaseURL)
+                try await loginWithBrowser(baseURL: validatedBaseURL, client: client)
             }
         }
 
@@ -49,28 +56,8 @@ struct AuthCommand: AsyncParsableCommand {
 
         // MARK: - Direct API key flow (CI / headless)
 
-        private func loginWithAPIKey(_ apiKey: String, baseURL: URL) async throws {
-            let meURL = baseURL.appending(path: "api/v1/auth/me")
-            var request = URLRequest(url: meURL)
-            request.httpMethod = "GET"
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
-
-            let (data, response) = try await URLSession.shared.data(for: request)
-
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw GrantivaError.networkError("Invalid response", 0)
-            }
-
-            guard httpResponse.statusCode == 200 else {
-                if httpResponse.statusCode == 401 {
-                    throw GrantivaError.notAuthenticated
-                }
-                let body = String(data: data, encoding: .utf8) ?? ""
-                throw GrantivaError.networkError(body, httpResponse.statusCode)
-            }
-
-            let meResponse = try JSONDecoder().decode(MeResponse.self, from: data)
+        private func loginWithAPIKey(_ apiKey: String, baseURL: URL, client: AuthClient) async throws {
+            let meResponse = try await client.profile(apiKey)
 
             let credentials = AuthCredentials(
                 apiKey: apiKey,
@@ -96,21 +83,9 @@ struct AuthCommand: AsyncParsableCommand {
 
         // MARK: - Browser-based flow
 
-        private func loginWithBrowser(baseURL: URL) async throws {
+        private func loginWithBrowser(baseURL: URL, client: AuthClient) async throws {
             // 1. Create a CLI session
-            let sessionURL = baseURL.appending(path: "api/v1/auth/cli/sessions")
-            var createRequest = URLRequest(url: sessionURL)
-            createRequest.httpMethod = "POST"
-            createRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            createRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-
-            let (createData, createResponse) = try await URLSession.shared.data(for: createRequest)
-
-            guard let createHTTP = createResponse as? HTTPURLResponse, createHTTP.statusCode == 200 else {
-                throw GrantivaError.networkError("Failed to create auth session", (createResponse as? HTTPURLResponse)?.statusCode ?? 0)
-            }
-
-            let session = try JSONDecoder().decode(CreateSessionResponse.self, from: createData)
+            let session = try await client.createSession()
 
             // 2. Open browser
             let loginEndpoint = baseURL.appending(path: "api/v1/auth/cli")
@@ -132,9 +107,6 @@ struct AuthCommand: AsyncParsableCommand {
             options.note("Waiting for authentication...")
 
             // 3. Poll for completion
-            let pollURL = baseURL
-                .appending(path: "api/v1/auth/cli/sessions")
-                .appending(path: session.sessionId)
             let timeout: TimeInterval = 300 // 5 minutes
             let interval: TimeInterval = 2
             let start = Date()
@@ -142,17 +114,7 @@ struct AuthCommand: AsyncParsableCommand {
             while Date().timeIntervalSince(start) < timeout {
                 try await Task.sleep(for: .seconds(interval))
 
-                var pollRequest = URLRequest(url: pollURL)
-                pollRequest.httpMethod = "GET"
-                pollRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-
-                let (pollData, pollResponse) = try await URLSession.shared.data(for: pollRequest)
-
-                guard let pollHTTP = pollResponse as? HTTPURLResponse, pollHTTP.statusCode == 200 else {
-                    continue
-                }
-
-                let pollResult = try JSONDecoder().decode(PollSessionResponse.self, from: pollData)
+                let pollResult = try await client.session(session.sessionId)
 
                 if pollResult.status == "complete",
                    let apiKey = pollResult.apiKey,
@@ -288,43 +250,6 @@ struct AuthCommand: AsyncParsableCommand {
                 Output.line("Logged out. Credentials removed from ~/.grantiva/auth.json")
             }
         }
-    }
-}
-
-// MARK: - Response Models (CLI session flow)
-
-@available(macOS 15, *)
-private struct CreateSessionResponse: Codable, Sendable {
-    let sessionId: String
-
-    enum CodingKeys: String, CodingKey {
-        case sessionId = "session_id"
-    }
-}
-
-@available(macOS 15, *)
-private struct PollSessionResponse: Codable, Sendable {
-    let status: String
-    let apiKey: String?
-    let email: String?
-
-    enum CodingKeys: String, CodingKey {
-        case status
-        case apiKey = "api_key"
-        case email
-    }
-}
-
-// MARK: - Response Models (API key validation)
-
-@available(macOS 15, *)
-private struct MeResponse: Codable, Sendable {
-    let email: String
-    let apiKeyPrefix: String
-
-    enum CodingKeys: String, CodingKey {
-        case email
-        case apiKeyPrefix = "api_key_prefix"
     }
 }
 

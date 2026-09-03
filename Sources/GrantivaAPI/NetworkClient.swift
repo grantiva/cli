@@ -76,11 +76,19 @@ extension NetworkClient {
 // MARK: - Authorized Live Implementation
 
 extension NetworkClient {
+    static func anonymous() -> NetworkClient {
+        live(apiKey: nil)
+    }
+
     static func authorized(apiKey: String) -> NetworkClient {
+        live(apiKey: apiKey)
+    }
+
+    private static func live(apiKey: String?) -> NetworkClient {
         let session = URLSession.shared
 
         @Sendable func addAuth(_ request: inout URLRequest) {
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+            if let apiKey { request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization") }
             if request.value(forHTTPHeaderField: "Accept") == nil {
                 request.setValue("application/json", forHTTPHeaderField: "Accept")
             }
