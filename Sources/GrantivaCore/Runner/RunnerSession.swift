@@ -276,6 +276,10 @@ public enum RunnerSession {
         for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
             var injectedContent = injectAppId(originalContent, bundleId: bundleId)
+            injectedContent = try FlowReferenceResolver.resolve(
+                in: injectedContent,
+                relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent
+            )
             if !environment.isEmpty {
                 let result = FlowEnvironment.inject(injectedContent, environment: environment)
                 injectedContent = result.yaml
