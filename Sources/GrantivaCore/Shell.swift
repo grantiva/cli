@@ -19,17 +19,19 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
 
     try process.run()
 
-    // Read data BEFORE waitUntilExit to avoid pipe buffer deadlock
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let errData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+    // Drain both pipes concurrently. Reading either one to EOF first can
+    // deadlock when the child fills the other pipe's kernel buffer.
+    async let data = pipe.fileHandleForReading.readToEnd()
+    async let errData = errorPipe.fileHandleForReading.readToEnd()
 
     process.waitUntilExit()
+    let (stdoutData, stderrData) = try await (data, errData)
     GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
 
-    let output = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    let output = String(data: stdoutData ?? Data(), encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
     guard process.terminationStatus == 0 else {
-        let errOutput = String(data: errData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let errOutput = String(data: stderrData ?? Data(), encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         throw GrantivaError.commandFailed(errOutput.isEmpty ? command : errOutput, process.terminationStatus)
     }
     return output

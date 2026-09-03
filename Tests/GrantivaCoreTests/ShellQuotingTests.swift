@@ -23,4 +23,9 @@ final class ShellQuotingTests: XCTestCase {
         let output = try await shell("printf '%s' \(shellQuoted(hostile))")
         XCTAssertEqual(output, hostile)
     }
+
+    func testShellDrainsLargeStderrWithoutDeadlocking() async throws {
+        let output = try await shell("/usr/bin/yes x | /usr/bin/head -c 1048576 >&2; printf 'stdout-ok'")
+        XCTAssertEqual(output, "stdout-ok")
+    }
 }
