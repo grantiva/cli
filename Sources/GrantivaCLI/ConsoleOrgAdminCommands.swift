@@ -31,6 +31,12 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
 
     static func notFound(_ id: String) -> String { "webhook not found: \(id)" }
 
+    static func validateID(_ id: String, label: String = "Webhook ID") throws {
+        if id.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw ValidationError("\(label) must not be blank.")
+        }
+    }
+
     struct ListCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "list", abstract: "List webhook endpoints.")
         @OptionGroup var options: GlobalOptions
@@ -46,6 +52,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one webhook endpoint.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
+        func validate() throws { try ConsoleWebhooksCommand.validateID(webhook) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let hooks: [Webhook]
@@ -69,7 +76,12 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Description.") var description: String?
         func validate() throws {
             if event.isEmpty { throw ValidationError("Pass at least one --event.") }
-            guard let parsed = URL(string: url), parsed.scheme == "https", parsed.host != nil else {
+            if event.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                throw ValidationError("Event types must not be blank.")
+            }
+            guard url == url.trimmingCharacters(in: .whitespacesAndNewlines),
+                  let parsed = URL(string: url), parsed.scheme?.lowercased() == "https",
+                  let host = parsed.host, !host.isEmpty, parsed.fragment == nil else {
                 throw ValidationError("URL must be an https URL.")
             }
         }
@@ -95,6 +107,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "enable", abstract: "Resume deliveries to a webhook.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
+        func validate() throws { try ConsoleWebhooksCommand.validateID(webhook) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             try await ConsoleWebhooksCommand.patch(webhook, PatchWebhookRequest(isActive: true), options: options, client: client)
@@ -105,6 +118,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "disable", abstract: "Pause deliveries to a webhook without deleting it.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
+        func validate() throws { try ConsoleWebhooksCommand.validateID(webhook) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             try await ConsoleWebhooksCommand.patch(webhook, PatchWebhookRequest(isActive: false), options: options, client: client)
@@ -118,7 +132,11 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Replace the subscribed events. Repeatable.") var event: [String] = []
         @Option(name: .long, help: "New description.") var description: String?
         func validate() throws {
+            try ConsoleWebhooksCommand.validateID(webhook)
             if event.isEmpty, description == nil { throw ValidationError("Nothing to update. Pass --event or --description.") }
+            if event.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                throw ValidationError("Event types must not be blank.")
+            }
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
@@ -140,9 +158,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @Argument(help: "Webhook ID.") var webhook: String
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
         func validate() throws {
-            if webhook.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                throw ValidationError("Webhook ID must not be blank.")
-            }
+            try ConsoleWebhooksCommand.validateID(webhook)
         }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
@@ -161,6 +177,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "test", abstract: "Send a test event and report the endpoint's response.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
+        func validate() throws { try ConsoleWebhooksCommand.validateID(webhook) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let result: WebhookTestResult
@@ -182,6 +199,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "deliveries", abstract: "List recent deliveries for a webhook.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
+        func validate() throws { try ConsoleWebhooksCommand.validateID(webhook) }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let items: [WebhookDelivery]
@@ -197,6 +215,10 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
         @Argument(help: "Delivery ID.") var delivery: String
+        func validate() throws {
+            try ConsoleWebhooksCommand.validateID(webhook)
+            try ConsoleWebhooksCommand.validateID(delivery, label: "Delivery ID")
+        }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
             let item: WebhookDelivery

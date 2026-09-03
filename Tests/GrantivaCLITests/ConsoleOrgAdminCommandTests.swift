@@ -126,8 +126,113 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "device.new"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["http://ops.example.com/h", "--event", "device.new"]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse([" https://ops.example.com/h", "--event", "device.new"]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h#fragment", "--event", "device.new"]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", " \n "]))
         XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "server.new_event"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse(["W1"]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse(["W1", "--event", "\t"]))
+    }
+
+    func testWebhookCommandsRejectBlankResourceIDs() {
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.GetCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.EnableCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.DisableCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse([" \n ", "--description", "x"]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.TestCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.DeliveriesCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.RetryCommand.parse(["W1", " \n "]))
+    }
+
+    func testWebhookListAndCreateRunClientPaths() async throws {
+        let request = Capture<CreateWebhookRequest>()
+        var client = OrgAdminClient.failing
+        client.listWebhooks = { [Webhook(id: "W1", url: "https://example.com/h", events: ["device.new"], isActive: true)] }
+        client.createWebhook = { value in
+            await request.set(value)
+            return try! JSONDecoder().decode(WebhookCreated.self, from: Data(#"{"id":"W2","url":"https://example.com/h","events":["device.new"],"isActive":true,"description":"ops","secret":"whsec_once","createdAt":null}"#.utf8))
+        }
+
+        try await ConsoleWebhooksCommand.ListCommand.parse(["--json"]).run(client: client)
+        try await ConsoleWebhooksCommand.CreateCommand.parse([
+            "https://example.com/h", "--event", "device.new", "--description", "ops", "--json",
+        ]).run(client: client)
+
+        let capturedRequest = await request.value
+        XCTAssertEqual(capturedRequest, CreateWebhookRequest(url: "https://example.com/h", events: ["device.new"], description: "ops"))
+    }
+
+    func testWebhookPatchCommandsBuildExactRequests() async throws {
+        struct Call: Sendable, Equatable { let id: String; let body: PatchWebhookRequest }
+        let calls = Capture<[Call]>()
+        var client = OrgAdminClient.failing
+        client.patchWebhook = { id, body in
+            var current = await calls.value ?? []
+            current.append(Call(id: id, body: body))
+            await calls.set(current)
+            return Webhook(id: id, url: "https://example.com/h", events: body.events ?? ["device.new"], isActive: body.isActive ?? true, description: body.description)
+        }
+
+        try await ConsoleWebhooksCommand.EnableCommand.parse(["W1", "--json"]).run(client: client)
+        try await ConsoleWebhooksCommand.DisableCommand.parse(["W2", "--json"]).run(client: client)
+        try await ConsoleWebhooksCommand.UpdateCommand.parse([
+            "W3", "--event", "flag.updated", "--event", "device.high_risk", "--description", "security", "--json",
+        ]).run(client: client)
+
+        let capturedCalls = await calls.value
+        XCTAssertEqual(capturedCalls, [
+            Call(id: "W1", body: PatchWebhookRequest(isActive: true)),
+            Call(id: "W2", body: PatchWebhookRequest(isActive: false)),
+            Call(id: "W3", body: PatchWebhookRequest(events: ["flag.updated", "device.high_risk"], description: "security")),
+        ])
+    }
+
+    func testWebhookTestDeliveriesAndRetryRunClientPaths() async throws {
+        let tested = Capture<String>()
+        let deliveriesFor = Capture<String>()
+        let retried = Capture<[String]>()
+        var client = OrgAdminClient.failing
+        client.testWebhook = { id in
+            await tested.set(id)
+            return WebhookTestResult(success: true, httpStatus: 204, responseBody: nil, latencyMs: 4, error: nil)
+        }
+        client.deliveries = { id in await deliveriesFor.set(id); return [] }
+        client.retryDelivery = { id, delivery in
+            await retried.set([id, delivery])
+            return try! JSONDecoder().decode(WebhookDelivery.self, from: Data(#"{"id":"D1","webhookId":"W1","eventType":"device.new","status":"delivered","httpStatus":204,"responseBody":null,"error":null,"attemptCount":2,"nextRetryAt":null,"deliveredAt":null,"createdAt":null}"#.utf8))
+        }
+
+        try await ConsoleWebhooksCommand.TestCommand.parse(["W1", "--json"]).run(client: client)
+        try await ConsoleWebhooksCommand.DeliveriesCommand.parse(["W2", "--json"]).run(client: client)
+        try await ConsoleWebhooksCommand.RetryCommand.parse(["W3", "D1", "--json"]).run(client: client)
+
+        let testedID = await tested.value
+        let deliveriesID = await deliveriesFor.value
+        let retriedIDs = await retried.value
+        XCTAssertEqual(testedID, "W1")
+        XCTAssertEqual(deliveriesID, "W2")
+        XCTAssertEqual(retriedIDs, ["W3", "D1"])
+    }
+
+    func testWebhookMutationsMapMissingResources() async throws {
+        var client = OrgAdminClient.failing
+        client.patchWebhook = { _, _ in throw GrantivaError.networkError("", 404) }
+        client.testWebhook = { _ in throw GrantivaError.networkError("", 404) }
+        client.deliveries = { _ in throw GrantivaError.networkError("", 404) }
+
+        for run in [
+            { try await ConsoleWebhooksCommand.EnableCommand.parse(["W1"]).run(client: client) },
+            { try await ConsoleWebhooksCommand.TestCommand.parse(["W1"]).run(client: client) },
+            { try await ConsoleWebhooksCommand.DeliveriesCommand.parse(["W1"]).run(client: client) },
+        ] as [() async throws -> Void] {
+            do {
+                try await run()
+                XCTFail("expected missing webhook")
+            } catch {
+                guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+                XCTAssertEqual(message, "webhook not found: W1")
+            }
+        }
     }
 
     func testWebhookTestExitsNonZeroOnFailure() async throws {
