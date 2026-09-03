@@ -9,11 +9,11 @@ final class AnalyticsAPITests: XCTestCase {
 
     func testOverviewEndpoint() {
         XCTAssertEqual(
-            AnalyticsEndpoints.overview(days: nil).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.overview(days: nil).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/overview"
         )
         XCTAssertEqual(
-            AnalyticsEndpoints.overview(days: 7).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.overview(days: 7).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/overview?days=7"
         )
     }
@@ -23,7 +23,7 @@ final class AnalyticsAPITests: XCTestCase {
             page: 2, perPage: 25, from: "2026-09-01T00:00:00Z", to: "2026-09-02T00:00:00Z",
             deviceId: "dev-1", eventType: .attestationFailed
         )
-        let url = AnalyticsEndpoints.events(query).url(relativeTo: base).absoluteString
+        let url = try! AnalyticsEndpoints.events(query).url(relativeTo: base).absoluteString
         XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/analytics/events?"), url)
         XCTAssertTrue(url.contains("page=2"), url)
         // The server reads `perPage` (camelCase) first; `per_page` is a fallback.
@@ -36,35 +36,35 @@ final class AnalyticsAPITests: XCTestCase {
 
     func testEventsEndpointWithoutFiltersHasNoQuery() {
         XCTAssertEqual(
-            AnalyticsEndpoints.events(EventsQuery()).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.events(EventsQuery()).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/events"
         )
     }
 
     func testRiskAndComplianceEndpoints() {
         XCTAssertEqual(
-            AnalyticsEndpoints.risk(range: .quarter).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.risk(range: .quarter).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/risk?timeRange=90d"
         )
         XCTAssertEqual(
-            AnalyticsEndpoints.compliance(period: .week).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.compliance(period: .week).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/compliance?period=7d"
         )
     }
 
     func testExportEndpoint() {
         XCTAssertEqual(
-            AnalyticsEndpoints.export(data: .events, period: .day).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.export(data: .events, period: .day).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/export?data=events&period=1d"
         )
         XCTAssertEqual(
-            AnalyticsEndpoints.export(data: .devices, period: nil).url(relativeTo: base).absoluteString,
+            try! AnalyticsEndpoints.export(data: .devices, period: nil).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/analytics/export?data=devices"
         )
     }
 
     func testDeviceEndpointPercentEncodesTheKeyId() {
-        let url = AnalyticsEndpoints.device(keyId: "abc+/=").url(relativeTo: base).absoluteString
+        let url = try! AnalyticsEndpoints.device(keyId: "abc+/=").url(relativeTo: base).absoluteString
         XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/analytics/devices/"), url)
         XCTAssertFalse(url.dropFirst("https://api.example.com/api/v1/analytics/devices/".count).contains("/"), url)
     }

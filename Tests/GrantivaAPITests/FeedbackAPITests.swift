@@ -6,13 +6,18 @@ final class FeedbackAPITests: XCTestCase {
     private let base = URL(string: "https://api.example.com")!
 
     func testFeedbackEndpointsCarryFilters() {
-        let url = OrgFeedbackEndpoints.listFeatures(FeedbackQuery(status: .inProgress, appId: "A", search: "dark", sort: .oldest, page: 2, per: 10)).url(relativeTo: base).absoluteString
+        let url = try! OrgFeedbackEndpoints.listFeatures(FeedbackQuery(status: .inProgress, appId: "A", search: "dark", sort: .oldest, page: 2, per: 10)).url(relativeTo: base).absoluteString
         for fragment in ["status=in_progress", "app_id=A", "search=dark", "sort=oldest", "page=2", "per=10"] { XCTAssertTrue(url.contains(fragment), url) }
-        XCTAssertEqual(OrgFeedbackEndpoints.listFeatures(FeedbackQuery()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/feedback")
-        XCTAssertEqual(OrgFeedbackEndpoints.setFeatureStatus("F1", body: OrgSetStatusRequest(status: "shipped")).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/feedback/F1/status")
-        XCTAssertEqual(OrgFeedbackEndpoints.addTicketMessage("T1", body: OrgMessageBodyRequest(body: "x")).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/support/T1/messages")
-        let tickets = OrgFeedbackEndpoints.listTickets(SupportQuery(status: .awaitingReply, priority: .urgent)).url(relativeTo: base).absoluteString
+        XCTAssertEqual(try! OrgFeedbackEndpoints.listFeatures(FeedbackQuery()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/feedback")
+        XCTAssertEqual(try! OrgFeedbackEndpoints.setFeatureStatus("F1", body: OrgSetStatusRequest(status: "shipped")).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/feedback/F1/status")
+        XCTAssertEqual(try! OrgFeedbackEndpoints.addTicketMessage("T1", body: OrgMessageBodyRequest(body: "x")).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/support/T1/messages")
+        let tickets = try! OrgFeedbackEndpoints.listTickets(SupportQuery(status: .awaitingReply, priority: .urgent)).url(relativeTo: base).absoluteString
         XCTAssertTrue(tickets.contains("status=awaiting_reply") && tickets.contains("priority=urgent"), tickets)
+    }
+
+    func testFeedbackIdentifiersAreEncodedAsSinglePathSegments() {
+        let url = try! OrgFeedbackEndpoints.feature("F#1/2").url(relativeTo: base)
+        XCTAssertEqual(url.absoluteString, "https://api.example.com/api/v1/org/feedback/F%231%2F2")
     }
 
     func testDecodesFeedbackAndSupportShapes() throws {

@@ -102,25 +102,25 @@ enum ReleaseNoteEndpoints {
     }
 
     static func detail(noteId: String) -> Endpoint<EmptyBody, ReleaseNote> {
-        Endpoint(path: "\(prefix)/\(noteId)", method: .get)
+        Endpoint(path: "\(prefix)/\(EndpointPath.segment(noteId))", method: .get)
     }
 
     /// PATCH — sent through the raw request path since `NetworkClient` routes
     /// `.patch` through PUT.
     static func update(noteId: String, body: UpdateReleaseNoteRequest) -> Endpoint<UpdateReleaseNoteRequest, ReleaseNote> {
-        Endpoint(path: "\(prefix)/\(noteId)", method: .patch, body: body)
+        Endpoint(path: "\(prefix)/\(EndpointPath.segment(noteId))", method: .patch, body: body)
     }
 
     static func delete(noteId: String) -> Endpoint<EmptyBody, EmptyResponse> {
-        Endpoint(path: "\(prefix)/\(noteId)", method: .delete)
+        Endpoint(path: "\(prefix)/\(EndpointPath.segment(noteId))", method: .delete)
     }
 
     static func publish(noteId: String) -> Endpoint<EmptyBody, ReleaseNote> {
-        Endpoint(path: "\(prefix)/\(noteId)/publish", method: .post)
+        Endpoint(path: "\(prefix)/\(EndpointPath.segment(noteId))/publish", method: .post)
     }
 
     static func unpublish(noteId: String) -> Endpoint<EmptyBody, ReleaseNote> {
-        Endpoint(path: "\(prefix)/\(noteId)/unpublish", method: .post)
+        Endpoint(path: "\(prefix)/\(EndpointPath.segment(noteId))/unpublish", method: .post)
     }
 }
 

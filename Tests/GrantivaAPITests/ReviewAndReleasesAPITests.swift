@@ -7,12 +7,12 @@ final class ReviewAndReleasesAPITests: XCTestCase {
 
     func testReviewEndpoints() {
         XCTAssertEqual(
-            RunReviewEndpoints.approve(project: "app", runId: "R1", body: ApproveRunRequest()).url(relativeTo: base).absoluteString,
+            try! RunReviewEndpoints.approve(project: "app", runId: "R1", body: ApproveRunRequest()).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/vrt/runs/app/R1/approve"
         )
         XCTAssertEqual(RunReviewEndpoints.reject(project: "app", runId: "R1").method, .post)
         XCTAssertEqual(
-            RunReviewEndpoints.review(project: "my app", runId: "R1", screen: "Home/Main", action: .flag).url(relativeTo: base).absoluteString,
+            try! RunReviewEndpoints.review(project: "my app", runId: "R1", screen: "Home/Main", action: .flag).url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/vrt/runs/my%20app/R1/screens/Home%2FMain/flag"
         )
     }
@@ -35,11 +35,11 @@ final class ReviewAndReleasesAPITests: XCTestCase {
     }
 
     func testReleaseNoteEndpointsAndCamelCaseWire() throws {
-        let url = ReleaseNoteEndpoints.list(appId: "A", page: 2, per: 10).url(relativeTo: base).absoluteString
+        let url = try ReleaseNoteEndpoints.list(appId: "A", page: 2, per: 10).url(relativeTo: base).absoluteString
         XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/org/release-notes?"), url)
         for fragment in ["appId=A", "page=2", "per=10"] { XCTAssertTrue(url.contains(fragment), url) }
         XCTAssertEqual(ReleaseNoteEndpoints.update(noteId: "N", body: UpdateReleaseNoteRequest(title: "x")).method, .patch)
-        XCTAssertEqual(ReleaseNoteEndpoints.publish(noteId: "N").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/release-notes/N/publish")
+        XCTAssertEqual(try ReleaseNoteEndpoints.publish(noteId: "N").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/release-notes/N/publish")
 
         let json = String(decoding: try JSONEncoder().encode(CreateReleaseNoteRequest(appId: "A", version: "2.1.0", title: "T", body: "B")), as: UTF8.self)
         XCTAssertTrue(json.contains("\"appId\":\"A\""), json)
@@ -49,6 +49,14 @@ final class ReviewAndReleasesAPITests: XCTestCase {
         let decoded = try JSONDecoder().decode(ReleaseNotePage.self, from: Data(page.utf8))
         XCTAssertEqual(decoded.items.first?.version, "2.1.0")
         XCTAssertEqual(decoded.metadata.total, 1)
+    }
+
+    func testReleaseNoteIdentifierIsEncodedAsOnePathSegment() {
+        let url = try! ReleaseNoteEndpoints.publish(noteId: "N#1/2").url(relativeTo: base)
+        XCTAssertEqual(
+            url.absoluteString,
+            "https://api.example.com/api/v1/org/release-notes/N%231%2F2/publish"
+        )
     }
 
     func testFailingDoubles() async {

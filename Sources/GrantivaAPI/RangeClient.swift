@@ -90,7 +90,7 @@ extension RangeClient {
             },
             createRun: { project, upload in
                 let endpoint = RunEndpoints.create(project: project)
-                let url = endpoint.url(relativeTo: baseURL)
+                let url = try endpoint.url(relativeTo: baseURL)
                 let form = MultipartForm.build(from: upload)
                 var request = URLRequest(url: url)
                 request.httpMethod = "POST"
@@ -101,7 +101,7 @@ extension RangeClient {
             },
             startRun: { project, startReq in
                 let endpoint = RunEndpoints.create(project: project)
-                let url = endpoint.url(relativeTo: baseURL)
+                let url = try endpoint.url(relativeTo: baseURL)
                 var request = URLRequest(url: url)
                 request.httpMethod = "POST"
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -116,7 +116,7 @@ extension RangeClient {
             },
             completeRun: { project, runId, upload in
                 let endpoint = RunEndpoints.complete(project: project, runId: runId)
-                let url = endpoint.url(relativeTo: baseURL)
+                let url = try endpoint.url(relativeTo: baseURL)
                 let form = MultipartForm.build(from: upload)
                 var request = URLRequest(url: url)
                 request.httpMethod = "PATCH"
@@ -127,7 +127,7 @@ extension RangeClient {
             },
             appendLog: { project, runId, lines in
                 let endpoint = RunEndpoints.appendLog(project: project, runId: runId)
-                let url = endpoint.url(relativeTo: baseURL)
+                let url = try endpoint.url(relativeTo: baseURL)
                 var request = URLRequest(url: url)
                 request.httpMethod = "POST"
                 request.setValue("application/json", forHTTPHeaderField: "Content-Type")

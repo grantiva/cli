@@ -6,16 +6,24 @@ final class OrgAdminAPITests: XCTestCase {
     private let base = URL(string: "https://api.example.com")!
 
     func testEndpointShapes() {
-        XCTAssertEqual(OrgAdminEndpoints.listWebhooks().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/webhooks")
-        XCTAssertEqual(OrgAdminEndpoints.retry("W", "D").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/webhooks/W/deliveries/D/retry")
+        XCTAssertEqual(try! OrgAdminEndpoints.listWebhooks().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/webhooks")
+        XCTAssertEqual(try! OrgAdminEndpoints.retry("W", "D").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/webhooks/W/deliveries/D/retry")
         XCTAssertEqual(OrgAdminEndpoints.patchWebhook("W", PatchWebhookRequest(isActive: false)).method, .patch)
         XCTAssertEqual(OrgAdminEndpoints.deleteRule("R").method, .delete)
-        XCTAssertEqual(OrgAdminEndpoints.patchFailureRate(PatchFailureRateAlertRequest(threshold: 20)).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/alerts/failure-rate")
-        XCTAssertEqual(OrgAdminEndpoints.rotateKey("K", RotateAPIKeyRequest()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/api-keys/K/rotate")
-        XCTAssertEqual(OrgAdminEndpoints.removeMember("M").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/members/M/remove")
-        let audit = OrgAdminEndpoints.auditLog(page: 2, per: 25).url(relativeTo: base).absoluteString
+        XCTAssertEqual(try! OrgAdminEndpoints.patchFailureRate(PatchFailureRateAlertRequest(threshold: 20)).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/alerts/failure-rate")
+        XCTAssertEqual(try! OrgAdminEndpoints.rotateKey("K", RotateAPIKeyRequest()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/api-keys/K/rotate")
+        XCTAssertEqual(try! OrgAdminEndpoints.removeMember("M").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/members/M/remove")
+        let audit = try! OrgAdminEndpoints.auditLog(page: 2, per: 25).url(relativeTo: base).absoluteString
         XCTAssertTrue(audit.contains("page=2") && audit.contains("per=25"), audit)
-        XCTAssertEqual(OrgAdminEndpoints.usage().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/usage")
+        XCTAssertEqual(try! OrgAdminEndpoints.usage().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/usage")
+    }
+
+    func testAdminIdentifiersAreEncodedAsSinglePathSegments() {
+        let url = try! OrgAdminEndpoints.retry("W#1", "D/2").url(relativeTo: base)
+        XCTAssertEqual(
+            url.absoluteString,
+            "https://api.example.com/api/v1/org/webhooks/W%231/deliveries/D%2F2/retry"
+        )
     }
 
     func testRequestsEncodeCamelCaseAndOmitNils() throws {

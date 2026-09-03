@@ -7,7 +7,7 @@ enum RunReviewEndpoints {
     private static let prefix = "api/v1/vrt/runs"
 
     private static func segment(_ value: String) -> String {
-        value.addingPercentEncoding(withAllowedCharacters: .reviewPathSegment) ?? value
+        EndpointPath.segment(value)
     }
 
     static func approve(project: String, runId: String, body: ApproveRunRequest) -> Endpoint<ApproveRunRequest, RunDetailResponse> {
@@ -21,14 +21,6 @@ enum RunReviewEndpoints {
     static func review(project: String, runId: String, screen: String, action: ScreenReviewAction) -> Endpoint<EmptyBody, RunScreenResultResponse> {
         Endpoint(path: "\(prefix)/\(segment(project))/\(segment(runId))/screens/\(segment(screen))/\(action.rawValue)", method: .post)
     }
-}
-
-private extension CharacterSet {
-    static let reviewPathSegment: CharacterSet = {
-        var set = CharacterSet.urlPathAllowed
-        set.remove("/")
-        return set
-    }()
 }
 
 public struct ApproveRunRequest: Codable, Sendable, Equatable {

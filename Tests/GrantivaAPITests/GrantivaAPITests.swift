@@ -7,7 +7,7 @@ final class GrantivaAPITests: XCTestCase {
 
     func testEndpointSimplePath() {
         let endpoint = Endpoint<EmptyBody, EmptyResponse>(path: "auth/me", method: .get)
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertEqual(url.absoluteString, "https://api.example.com/auth/me")
     }
 
@@ -17,7 +17,7 @@ final class GrantivaAPITests: XCTestCase {
             method: .get,
             queryItems: [URLQueryItem(name: "branch", value: "main")]
         )
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertEqual(url.absoluteString, "https://api.example.com/runs?branch=main")
     }
 
@@ -32,7 +32,7 @@ final class GrantivaAPITests: XCTestCase {
 
     func testBaselineListEndpoint() {
         let endpoint = BaselineEndpoints.list(project: "grantiva/cli", branch: "main")
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         // Project slug with "/" should be percent-encoded
         XCTAssertTrue(url.absoluteString.contains("grantiva%2Fcli"))
         XCTAssertTrue(url.absoluteString.contains("/baselines/"))
@@ -41,7 +41,7 @@ final class GrantivaAPITests: XCTestCase {
 
     func testBaselineDownloadEndpoint() {
         let endpoint = BaselineEndpoints.download(project: "owner/repo", branch: "feature/test", screen: "Home")
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertTrue(url.absoluteString.contains("owner%2Frepo"))
         XCTAssertTrue(url.absoluteString.contains("feature%2Ftest"))
         XCTAssertTrue(url.absoluteString.contains("Home"))
@@ -50,7 +50,7 @@ final class GrantivaAPITests: XCTestCase {
     func testBaselinePromoteEndpoint() {
         let request = PromoteBaselinesRequest(fromBranch: "feature/new")
         let endpoint = BaselineEndpoints.promote(project: "owner/repo", branch: "main", body: request)
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertTrue(url.absoluteString.contains("/promote"))
         XCTAssertEqual(endpoint.method, .post)
         XCTAssertEqual(endpoint.body?.fromBranch, "feature/new")
@@ -61,7 +61,7 @@ final class GrantivaAPITests: XCTestCase {
     func testRunCreateEndpoint() {
         let endpoint = RunEndpoints.create(project: "grantiva/cli")
         XCTAssertEqual(endpoint.method, .post)
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertTrue(url.absoluteString.contains("/runs/"))
     }
 
@@ -73,8 +73,14 @@ final class GrantivaAPITests: XCTestCase {
     func testRunDetailEndpoint() {
         let endpoint = RunEndpoints.detail(project: "owner/repo", runId: "550e8400-e29b-41d4-a716-446655440000")
         XCTAssertEqual(endpoint.method, .get)
-        let url = endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
         XCTAssertTrue(url.absoluteString.contains("550e8400"))
+    }
+
+    func testRunIdentifierIsEncodedAsOnePathSegment() {
+        let endpoint = RunEndpoints.detail(project: "owner/repo", runId: "run#1/logs")
+        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
+        XCTAssertTrue(url.absoluteString.hasSuffix("/run%231%2Flogs"), url.absoluteString)
     }
 
     // MARK: - Model Serialization

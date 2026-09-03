@@ -226,15 +226,15 @@ enum OrgFeedbackEndpoints {
     }
 
     static func feature(_ id: String) -> Endpoint<EmptyBody, OrgFeatureRequestDetail> {
-        Endpoint(path: "\(feedback)/\(id)", method: .get)
+        Endpoint(path: "\(feedback)/\(EndpointPath.segment(id))", method: .get)
     }
 
     static func setFeatureStatus(_ id: String, body: OrgSetStatusRequest) -> Endpoint<OrgSetStatusRequest, OrgFeatureRequest> {
-        Endpoint(path: "\(feedback)/\(id)/status", method: .post, body: body)
+        Endpoint(path: "\(feedback)/\(EndpointPath.segment(id))/status", method: .post, body: body)
     }
 
     static func addFeatureComment(_ id: String, body: OrgMessageBodyRequest) -> Endpoint<OrgMessageBodyRequest, OrgFeedbackComment> {
-        Endpoint(path: "\(feedback)/\(id)/comments", method: .post, body: body)
+        Endpoint(path: "\(feedback)/\(EndpointPath.segment(id))/comments", method: .post, body: body)
     }
 
     static func listTickets(_ q: SupportQuery) -> Endpoint<EmptyBody, OrgPage<OrgSupportTicket>> {
@@ -249,19 +249,19 @@ enum OrgFeedbackEndpoints {
     }
 
     static func ticket(_ id: String) -> Endpoint<EmptyBody, OrgSupportTicketDetail> {
-        Endpoint(path: "\(support)/\(id)", method: .get)
+        Endpoint(path: "\(support)/\(EndpointPath.segment(id))", method: .get)
     }
 
     static func setTicketStatus(_ id: String, body: OrgSetStatusRequest) -> Endpoint<OrgSetStatusRequest, OrgSupportTicket> {
-        Endpoint(path: "\(support)/\(id)/status", method: .post, body: body)
+        Endpoint(path: "\(support)/\(EndpointPath.segment(id))/status", method: .post, body: body)
     }
 
     static func setTicketPriority(_ id: String, body: OrgSetPriorityRequest) -> Endpoint<OrgSetPriorityRequest, OrgSupportTicket> {
-        Endpoint(path: "\(support)/\(id)/priority", method: .post, body: body)
+        Endpoint(path: "\(support)/\(EndpointPath.segment(id))/priority", method: .post, body: body)
     }
 
     static func addTicketMessage(_ id: String, body: OrgMessageBodyRequest) -> Endpoint<OrgMessageBodyRequest, OrgTicketMessage> {
-        Endpoint(path: "\(support)/\(id)/messages", method: .post, body: body)
+        Endpoint(path: "\(support)/\(EndpointPath.segment(id))/messages", method: .post, body: body)
     }
 }
 

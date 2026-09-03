@@ -20,7 +20,7 @@ extension NetworkClient {
         _ endpoint: Endpoint<Request, Response>,
         baseURL: URL
     ) async throws -> Response {
-        let url = endpoint.url(relativeTo: baseURL)
+        let url = try endpoint.url(relativeTo: baseURL)
 
         let responseData: Data
         switch endpoint.method {
@@ -55,13 +55,16 @@ extension NetworkClient {
 
     /// Download raw bytes (e.g. image data).
     func download(_ endpoint: Endpoint<EmptyBody, EmptyResponse>, baseURL: URL) async throws -> Data {
-        let url = endpoint.url(relativeTo: baseURL)
-        return try await get(url)
+        let url = try endpoint.url(relativeTo: baseURL)
+        var request = URLRequest(url: url)
+        request.setValue("*/*", forHTTPHeaderField: "Accept")
+        request.timeoutInterval = 300
+        return try await sendRequest(request)
     }
 
     /// Upload raw bytes with a custom content type (e.g. image/png).
     func upload(_ endpoint: Endpoint<EmptyBody, EmptyResponse>, baseURL: URL, data: Data, contentType: String) async throws {
-        let url = endpoint.url(relativeTo: baseURL)
+        let url = try endpoint.url(relativeTo: baseURL)
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.setValue(contentType, forHTTPHeaderField: "Content-Type")
@@ -78,7 +81,9 @@ extension NetworkClient {
 
         @Sendable func addAuth(_ request: inout URLRequest) {
             request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
-            request.setValue("application/json", forHTTPHeaderField: "Accept")
+            if request.value(forHTTPHeaderField: "Accept") == nil {
+                request.setValue("application/json", forHTTPHeaderField: "Accept")
+            }
         }
 
         return NetworkClient(

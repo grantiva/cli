@@ -314,16 +314,16 @@ enum OrgAdminEndpoints {
 
     static func listWebhooks() -> Endpoint<EmptyBody, [Webhook]> { Endpoint(path: "\(prefix)/webhooks", method: .get) }
     static func createWebhook(_ body: CreateWebhookRequest) -> Endpoint<CreateWebhookRequest, WebhookCreated> { Endpoint(path: "\(prefix)/webhooks", method: .post, body: body) }
-    static func patchWebhook(_ id: String, _ body: PatchWebhookRequest) -> Endpoint<PatchWebhookRequest, Webhook> { Endpoint(path: "\(prefix)/webhooks/\(id)", method: .patch, body: body) }
-    static func deleteWebhook(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/webhooks/\(id)", method: .delete) }
-    static func testWebhook(_ id: String) -> Endpoint<EmptyBody, WebhookTestResult> { Endpoint(path: "\(prefix)/webhooks/\(id)/test", method: .post) }
-    static func deliveries(_ id: String) -> Endpoint<EmptyBody, [WebhookDelivery]> { Endpoint(path: "\(prefix)/webhooks/\(id)/deliveries", method: .get) }
-    static func retry(_ id: String, _ deliveryId: String) -> Endpoint<EmptyBody, WebhookDelivery> { Endpoint(path: "\(prefix)/webhooks/\(id)/deliveries/\(deliveryId)/retry", method: .post) }
+    static func patchWebhook(_ id: String, _ body: PatchWebhookRequest) -> Endpoint<PatchWebhookRequest, Webhook> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))", method: .patch, body: body) }
+    static func deleteWebhook(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))", method: .delete) }
+    static func testWebhook(_ id: String) -> Endpoint<EmptyBody, WebhookTestResult> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))/test", method: .post) }
+    static func deliveries(_ id: String) -> Endpoint<EmptyBody, [WebhookDelivery]> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))/deliveries", method: .get) }
+    static func retry(_ id: String, _ deliveryId: String) -> Endpoint<EmptyBody, WebhookDelivery> { Endpoint(path: "\(prefix)/webhooks/\(EndpointPath.segment(id))/deliveries/\(EndpointPath.segment(deliveryId))/retry", method: .post) }
 
     static func listRules() -> Endpoint<EmptyBody, [RiskAlertRule]> { Endpoint(path: "\(prefix)/risk-alerts/rules", method: .get) }
     static func createRule(_ body: CreateRiskAlertRuleRequest) -> Endpoint<CreateRiskAlertRuleRequest, RiskAlertRule> { Endpoint(path: "\(prefix)/risk-alerts/rules", method: .post, body: body) }
-    static func patchRule(_ id: String, _ body: PatchRiskAlertRuleRequest) -> Endpoint<PatchRiskAlertRuleRequest, RiskAlertRule> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(id)", method: .patch, body: body) }
-    static func deleteRule(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(id)", method: .delete) }
+    static func patchRule(_ id: String, _ body: PatchRiskAlertRuleRequest) -> Endpoint<PatchRiskAlertRuleRequest, RiskAlertRule> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(EndpointPath.segment(id))", method: .patch, body: body) }
+    static func deleteRule(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/risk-alerts/rules/\(EndpointPath.segment(id))", method: .delete) }
     static func ruleDeliveries() -> Endpoint<EmptyBody, [RiskAlertDelivery]> { Endpoint(path: "\(prefix)/risk-alerts/deliveries", method: .get) }
     static func failureRate() -> Endpoint<EmptyBody, FailureRateAlert> { Endpoint(path: "\(prefix)/alerts/failure-rate", method: .get) }
     static func patchFailureRate(_ body: PatchFailureRateAlertRequest) -> Endpoint<PatchFailureRateAlertRequest, FailureRateAlert> { Endpoint(path: "\(prefix)/alerts/failure-rate", method: .patch, body: body) }
@@ -333,14 +333,14 @@ enum OrgAdminEndpoints {
 
     static func listKeys() -> Endpoint<EmptyBody, [APIKeySummary]> { Endpoint(path: "\(prefix)/api-keys", method: .get) }
     static func createKey(_ body: CreateAPIKeyRequest) -> Endpoint<CreateAPIKeyRequest, APIKeyCreated> { Endpoint(path: "\(prefix)/api-keys", method: .post, body: body) }
-    static func rotateKey(_ id: String, _ body: RotateAPIKeyRequest) -> Endpoint<RotateAPIKeyRequest, APIKeyCreated> { Endpoint(path: "\(prefix)/api-keys/\(id)/rotate", method: .post, body: body) }
-    static func revokeKey(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/api-keys/\(id)/revoke", method: .post) }
+    static func rotateKey(_ id: String, _ body: RotateAPIKeyRequest) -> Endpoint<RotateAPIKeyRequest, APIKeyCreated> { Endpoint(path: "\(prefix)/api-keys/\(EndpointPath.segment(id))/rotate", method: .post, body: body) }
+    static func revokeKey(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/api-keys/\(EndpointPath.segment(id))/revoke", method: .post) }
 
     static func members() -> Endpoint<EmptyBody, [OrgMember]> { Endpoint(path: "\(prefix)/members", method: .get) }
     static func invites() -> Endpoint<EmptyBody, [OrgInvite]> { Endpoint(path: "\(prefix)/invites", method: .get) }
     static func invite(_ body: InviteRequest) -> Endpoint<InviteRequest, OrgInvite> { Endpoint(path: "\(prefix)/invite", method: .post, body: body) }
-    static func revokeInvite(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/invites/\(id)", method: .delete) }
-    static func removeMember(_ membershipId: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/members/\(membershipId)/remove", method: .post) }
+    static func revokeInvite(_ id: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/invites/\(EndpointPath.segment(id))", method: .delete) }
+    static func removeMember(_ membershipId: String) -> Endpoint<EmptyBody, EmptyResponse> { Endpoint(path: "\(prefix)/members/\(EndpointPath.segment(membershipId))/remove", method: .post) }
 
     static func auditLog(page: Int?, per: Int?) -> Endpoint<EmptyBody, PaginatedItems<AuditEntry>> {
         var items: [URLQueryItem] = []
