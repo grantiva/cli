@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 
 // MARK: - Defaults
@@ -70,16 +71,7 @@ extension AuthStore {
             return try? JSONDecoder().decode(AuthCredentials.self, from: data)
         },
         save: { credentials in
-            let fm = FileManager.default
-            if !fm.fileExists(atPath: authDir) {
-                try fm.createDirectory(atPath: authDir, withIntermediateDirectories: true)
-            }
-            let encoder = JSONEncoder()
-            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-            let data = try encoder.encode(credentials)
-            try data.write(to: URL(fileURLWithPath: authPath))
-            // The file holds a plaintext API key — owner read/write only.
-            try fm.setAttributes([.posixPermissions: 0o600], ofItemAtPath: authPath)
+            try saveSecurely(credentials, directory: authDir, path: authPath)
         },
         delete: {
             let fm = FileManager.default
@@ -87,6 +79,44 @@ extension AuthStore {
             try fm.removeItem(atPath: authPath)
         }
     )
+
+    static func saveSecurely(_ credentials: AuthCredentials, directory: String, path: String) throws {
+        let fm = FileManager.default
+        try fm.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try fm.setAttributes([.posixPermissions: 0o700], ofItemAtPath: directory)
+
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(credentials)
+        let temporary = "\(directory)/.auth-\(UUID().uuidString).tmp"
+        let descriptor = Darwin.open(temporary, O_CREAT | O_EXCL | O_WRONLY | O_CLOEXEC, 0o600)
+        guard descriptor >= 0 else {
+            throw GrantivaError.commandFailed("Could not create secure auth file: \(String(cString: strerror(errno)))", 1)
+        }
+        var writeError: Int32?
+        data.withUnsafeBytes { buffer in
+            guard let base = buffer.baseAddress else { return }
+            var offset = 0
+            while offset < buffer.count {
+                let written = Darwin.write(descriptor, base.advanced(by: offset), buffer.count - offset)
+                if written > 0 { offset += written; continue }
+                if written < 0 && errno == EINTR { continue }
+                writeError = errno
+                break
+            }
+        }
+        if writeError == nil && fsync(descriptor) != 0 { writeError = errno }
+        Darwin.close(descriptor)
+        if let writeError {
+            try? fm.removeItem(atPath: temporary)
+            throw GrantivaError.commandFailed("Could not write secure auth file: \(String(cString: strerror(writeError)))", 1)
+        }
+        guard Darwin.rename(temporary, path) == 0 else {
+            let renameError = errno
+            try? fm.removeItem(atPath: temporary)
+            throw GrantivaError.commandFailed("Could not install secure auth file: \(String(cString: strerror(renameError)))", 1)
+        }
+    }
 }
 
 // MARK: - Failing
