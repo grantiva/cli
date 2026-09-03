@@ -70,9 +70,13 @@ public enum FlowGenerator {
     public static func writeTemp(
         screens: [GrantivaConfig.Screen],
         bundleId: String,
-        environment: [String: String] = [:]
+        environment: [String: String] = [:],
+        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath
     ) throws -> String {
-        let yaml = generate(screens: screens, bundleId: bundleId, environment: environment)
+        let yaml = try FlowReferenceResolver.resolve(
+            in: generate(screens: screens, bundleId: bundleId, environment: environment),
+            relativeTo: runFlowBaseDirectory
+        )
         // One directory per call: concurrent runs against different simulators
         // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
