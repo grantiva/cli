@@ -20,6 +20,27 @@ struct CILogBuffer {
     }
 }
 
+struct CIRunCompletionState {
+    private(set) var resultsCompleted = false
+
+    mutating func completeResults(
+        _ upload: RunUpload,
+        using complete: (RunUpload) async throws -> RunResponse
+    ) async throws -> RunResponse {
+        let response = try await complete(upload)
+        resultsCompleted = true
+        return response
+    }
+
+    func completeFailureIfNeeded(
+        _ upload: RunUpload,
+        using complete: (RunUpload) async throws -> RunResponse
+    ) async {
+        guard !resultsCompleted else { return }
+        _ = try? await complete(upload)
+    }
+}
+
 struct CICommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "ci",
@@ -108,6 +129,7 @@ struct CICommand: AsyncParsableCommand {
             ))
             let runId = startResponse.runId
             var remoteLogs = CILogBuffer()
+            var completionState = CIRunCompletionState()
             remoteLogs.append(log("Run started: \(runId)"))
 
             // Buffer remote logs so completion cannot race fire-and-forget tasks.
@@ -335,7 +357,9 @@ struct CICommand: AsyncParsableCommand {
                 rlog("Uploading results to \(credentials.baseURL)...")
                 try await flushLogs()
 
-                let runResponse = try await client.completeRun(project, runId, upload)
+                let runResponse = try await completionState.completeResults(upload) {
+                    try await client.completeRun(project, runId, $0)
+                }
                 rlog("Upload complete: run=\(runResponse.runId)")
                 try await flushLogs()
 
@@ -420,7 +444,9 @@ struct CICommand: AsyncParsableCommand {
                     duration: duration,
                     screens: []
                 )
-                try? await client.completeRun(project, runId, failUpload)
+                await completionState.completeFailureIfNeeded(failUpload) {
+                    try await client.completeRun(project, runId, $0)
+                }
                 throw error
             }
             if ciVerdictFailed {
