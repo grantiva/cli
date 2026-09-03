@@ -539,8 +539,10 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "revoke-invite", abstract: "Cancel a pending invite.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Invite ID.") var invite: String
+        @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
+            try ConsoleSupport.confirm("revoke invite '\(invite)'", yes: yes)
             do { try await client.revokeInvite(invite) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.adminTeam, notFound: "invite not found: \(invite)") }
             try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: invite), options: options) { "Revoked invite '\(invite)'" }
         }

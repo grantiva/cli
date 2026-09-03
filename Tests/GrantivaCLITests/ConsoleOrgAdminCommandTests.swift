@@ -79,6 +79,7 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
     func testRemoveAndRevokeRefuseOffTTYWithoutYes() async throws {
         for run in [
             { try await ConsoleTeamCommand.RemoveCommand.parse(["M1"]).run(client: .failing) },
+            { try await ConsoleTeamCommand.RevokeInviteCommand.parse(["I1"]).run(client: .failing) },
             { try await ConsoleKeysCommand.RevokeCommand.parse(["K1"]).run(client: .failing) },
             { try await ConsoleWebhooksCommand.DeleteCommand.parse(["W1"]).run(client: .failing) },
         ] as [() async throws -> Void] {
