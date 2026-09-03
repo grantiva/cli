@@ -143,12 +143,30 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
         func validate() throws {
             if let page, page < 1 { throw ValidationError("--page must be at least 1.") }
             if let perPage, !(1...200).contains(perPage) { throw ValidationError("--per must be between 1 and 200.") }
+            let fromDate = try Self.validateTimestamp(from, option: "--from")
+            let toDate = try Self.validateTimestamp(to, option: "--to")
+            if let fromDate, let toDate, fromDate > toDate {
+                throw ValidationError("--from must not be later than --to.")
+            }
+            if let device, device.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                throw ValidationError("--device must not be empty.")
+            }
             if let type, AttestationEventType(rawValue: type) == nil {
                 throw ValidationError(
                     "Unknown event type '\(type)'. Expected one of: "
                         + AttestationEventType.allCases.map(\.rawValue).joined(separator: ", ")
                 )
             }
+        }
+
+        private static func validateTimestamp(_ value: String?, option: String) throws -> Date? {
+            guard let value else { return nil }
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime]
+            if let date = formatter.date(from: value) { return date }
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            if let date = formatter.date(from: value) { return date }
+            throw ValidationError("\(option) must be an ISO 8601 timestamp, for example 2026-09-01T00:00:00Z.")
         }
 
         func run() async throws {

@@ -47,6 +47,38 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--type", "attestation_faild"]))
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--per-page", "500"]))
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--page", "0"]))
+        XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--from", "yesterday"]))
+        XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--to", "2026-09-01"]))
+        XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse([
+            "--from", "2026-09-02T00:00:00Z", "--to", "2026-09-01T00:00:00Z",
+        ]))
+        XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--device", "   "]))
+    }
+
+    func testEventsAcceptsFractionalISO8601BoundsAndForwardsEveryFilter() async throws {
+        var client = AnalyticsClient.failing
+        let captured = AnalyticsCapture<EventsQuery>()
+        client.events = { query in
+            await captured.set(query)
+            return PaginatedEventsResponse(
+                data: [],
+                meta: PaginationMeta(page: 2, perPage: 25, total: 0, totalPages: 1)
+            )
+        }
+
+        let command = try ConsoleAnalyticsCommand.EventsCommand.parse([
+            "--page", "2", "--per", "25",
+            "--from", "2026-09-01T00:00:00.123Z", "--to", "2026-09-02T00:00:00Z",
+            "--device", "dev-1", "--type", "attestation_failed", "--json",
+        ])
+        try await command.run(client: client)
+
+        let query = await captured.value
+        XCTAssertEqual(query, EventsQuery(
+            page: 2, perPage: 25,
+            from: "2026-09-01T00:00:00.123Z", to: "2026-09-02T00:00:00Z",
+            deviceId: "dev-1", eventType: .attestationFailed
+        ))
     }
 
     func testDeviceFetchesTheRequestedKey() async throws {
@@ -96,6 +128,40 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.ComplianceCommand.parse(["--period", "1y"]))
     }
 
+    func testRiskForwardsSelectedRange() async throws {
+        var client = AnalyticsClient.failing
+        let captured = AnalyticsCapture<AnalyticsTimeRange?>()
+        client.risk = { range in
+            await captured.set(range)
+            return RiskAssessmentReport(
+                tenantId: "T", period: [], totalDevices: 0, averageRiskScore: 0,
+                riskDistribution: [:], highRiskDevices: [], recentSecurityEvents: [], generatedAt: "now"
+            )
+        }
+
+        try await ConsoleAnalyticsCommand.RiskCommand.parse(["--period", "90d", "--json"]).run(client: client)
+        let range = await captured.value
+        XCTAssertEqual(range, .quarter)
+    }
+
+    func testComplianceForwardsSelectedPeriod() async throws {
+        var client = AnalyticsClient.failing
+        let captured = AnalyticsCapture<AnalyticsTimeRange?>()
+        client.compliance = { period in
+            await captured.set(period)
+            return ComplianceReport(
+                tenantId: "T", reportType: "summary", period: [], totalDevices: 0, compliantDevices: 0,
+                nonCompliantDevices: 0, complianceRate: 100, violationSummary: [:],
+                deviceCompliance: [], generatedAt: "now"
+            )
+        }
+
+        try await ConsoleAnalyticsCommand.ComplianceCommand.parse(["--period", "7d", "--all", "--json"])
+            .run(client: client)
+        let period = await captured.value
+        XCTAssertEqual(period, .week)
+    }
+
     func testExportParses() throws {
         let command = try ConsoleAnalyticsCommand.ExportCommand.parse(["--data", "events", "--period", "7d", "--out", "/tmp/e.csv"])
         XCTAssertEqual(command.data, .events)
@@ -137,6 +203,42 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
                 return XCTFail("unexpected error \(error)")
             }
             XCTAssertTrue(message.contains("analytics:export"), message)
+        }
+    }
+
+    func testEventsNamesReadScopeOn403() async throws {
+        var client = AnalyticsClient.failing
+        client.events = { _ in throw GrantivaError.networkError("Forbidden", 403) }
+        do {
+            try await ConsoleAnalyticsCommand.EventsCommand.parse([]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.permissionDenied(let message) = error else {
+                return XCTFail("unexpected error \(error)")
+            }
+            XCTAssertTrue(message.contains("analytics:read"), message)
+        }
+    }
+
+    func testRiskAndComplianceMapReadErrors() async throws {
+        var riskClient = AnalyticsClient.failing
+        riskClient.risk = { _ in throw GrantivaError.networkError("Forbidden", 403) }
+        var complianceClient = AnalyticsClient.failing
+        complianceClient.compliance = { _ in throw GrantivaError.networkError("Forbidden", 403) }
+
+        for operation in [
+            { try await ConsoleAnalyticsCommand.RiskCommand.parse([]).run(client: riskClient) },
+            { try await ConsoleAnalyticsCommand.ComplianceCommand.parse([]).run(client: complianceClient) },
+        ] {
+            do {
+                try await operation()
+                XCTFail("expected throw")
+            } catch {
+                guard case GrantivaError.permissionDenied(let message) = error else {
+                    return XCTFail("unexpected error \(error)")
+                }
+                XCTAssertTrue(message.contains("analytics:read"), message)
+            }
         }
     }
 
