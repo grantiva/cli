@@ -674,7 +674,12 @@ struct ConsoleOrgCommand: AsyncParsableCommand {
     }
 
     struct BillingCommand: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(commandName: "billing", abstract: "Plan and billing period (read-only; manage billing in the dashboard).", subcommands: [ShowCommand.self])
+        static let configuration = CommandConfiguration(
+            commandName: "billing",
+            abstract: "Plan and billing period (read-only; manage billing in the dashboard).",
+            subcommands: [ShowCommand.self],
+            defaultSubcommand: ShowCommand.self
+        )
 
         struct ShowCommand: AsyncParsableCommand {
             static let configuration = CommandConfiguration(commandName: "show", abstract: "Show the plan, usage, and current period.")

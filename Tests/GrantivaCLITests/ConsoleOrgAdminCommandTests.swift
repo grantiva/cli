@@ -47,6 +47,11 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         }
     }
 
+    func testBillingShowIsTheDefaultAndExplicitAliasStillParses() {
+        XCTAssertTrue(try ConsoleOrgCommand.BillingCommand.parseAsRoot([]) is ConsoleOrgCommand.BillingCommand.ShowCommand)
+        XCTAssertTrue(try ConsoleOrgCommand.BillingCommand.parseAsRoot(["show"]) is ConsoleOrgCommand.BillingCommand.ShowCommand)
+    }
+
     func testWebhookCreateValidation() throws {
         XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "device.new"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h"]))

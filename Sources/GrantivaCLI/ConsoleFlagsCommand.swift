@@ -394,7 +394,7 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             }
 
             if options.json {
-                Output.line(try JSONOutput.string(DeletedResult(deleted: true, flagKey: key)))
+                Output.line(try JSONOutput.string(OrgDeleteResponse(deleted: true, id: key)))
             } else {
                 Output.line("Deleted flag '\(key)'")
             }
@@ -576,13 +576,9 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead)
             }
 
-            let compactEncoder = JSONEncoder()
-            compactEncoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
-
             for try await event in events {
                 if options.json {
-                    let line = try compactEncoder.encode(event)
-                    Output.line(String(decoding: line, as: UTF8.self))
+                    Output.line(try JSONOutput.compactString(event))
                 } else {
                     Output.line("[\(Self.timestamp())] \(event.event): \(event.data)")
                 }
@@ -594,18 +590,5 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
             formatter.formatOptions = [.withInternetDateTime]
             return formatter.string(from: Date())
         }
-    }
-}
-
-// MARK: - Output Models
-
-@available(macOS 15, *)
-struct DeletedResult: Codable, Sendable {
-    let deleted: Bool
-    let flagKey: String
-
-    enum CodingKeys: String, CodingKey {
-        case deleted
-        case flagKey = "flag_key"
     }
 }

@@ -17,6 +17,12 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.OverviewCommand.parse(["--days", "0"]))
     }
 
+    func testOverviewAcceptsCanonicalPeriodAndKeepsDaysAlias() throws {
+        XCTAssertEqual(try ConsoleAnalyticsCommand.OverviewCommand.parse(["--period", "7d"]).period, .week)
+        XCTAssertEqual(try ConsoleAnalyticsCommand.OverviewCommand.parse(["--days", "7"]).days, 7)
+        XCTAssertThrowsError(try ConsoleAnalyticsCommand.OverviewCommand.parse(["--period", "7d", "--days", "7"]))
+    }
+
     func testEventsParsesEveryFilter() throws {
         let command = try ConsoleAnalyticsCommand.EventsCommand.parse([
             "--page", "2", "--per-page", "25", "--from", "2026-09-01T00:00:00Z", "--to", "2026-09-02T00:00:00Z",
@@ -28,6 +34,11 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertEqual(command.to, "2026-09-02T00:00:00Z")
         XCTAssertEqual(command.device, "dev-1")
         XCTAssertEqual(command.type, "attestation_failed")
+    }
+
+    func testEventsAcceptsCanonicalPerAndLegacyPerPage() throws {
+        XCTAssertEqual(try ConsoleAnalyticsCommand.EventsCommand.parse(["--per", "20"]).perPage, 20)
+        XCTAssertEqual(try ConsoleAnalyticsCommand.EventsCommand.parse(["--per-page", "30"]).perPage, 30)
     }
 
     func testEventsRejectsWhatTheServerWouldSilentlyIgnore() {
@@ -76,6 +87,7 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
     }
 
     func testRiskAndComplianceAcceptOnlyServerWindows() throws {
+        XCTAssertEqual(try ConsoleAnalyticsCommand.RiskCommand.parse(["--period", "30d"]).range, .month)
         XCTAssertEqual(try ConsoleAnalyticsCommand.RiskCommand.parse(["--range", "90d"]).range, .quarter)
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.RiskCommand.parse(["--range", "14d"]))
         let compliance = try ConsoleAnalyticsCommand.ComplianceCommand.parse(["--period", "1d", "--all"])
