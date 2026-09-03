@@ -68,7 +68,8 @@ struct SimulatorCommand: AsyncParsableCommand {
 
     struct Delete: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
-        @Option(name: .long) var name: String
+        @Option(name: .long, help: "Name of the simulator to delete.")
+        var name: String
         func run() async throws {
             let device = try await SimulatorManager.live.delete(name: name)
             let result = DeleteResult(name: device.name, udid: device.udid, deleted: true)

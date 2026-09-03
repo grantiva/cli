@@ -4,6 +4,13 @@ import XCTest
 import GrantivaCore
 
 final class RunCommandTests: XCTestCase {
+    func testTimeoutMustBeAtLeastThirtySeconds() throws {
+        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "29"])) { error in
+            XCTAssertTrue(String(describing: error).contains("at least 30 seconds"))
+        }
+        XCTAssertEqual(try RunCommand.parse(["--timeout", "30"]).timeout, 30)
+    }
+
     func testParsesReadyFileAndRepeatedEnvironmentPairs() throws {
         let command = try RunCommand.parse([
             "--flow", "flows/advertise.yaml",
