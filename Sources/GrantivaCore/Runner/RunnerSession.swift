@@ -159,7 +159,7 @@ public enum RunnerSession {
 
                 if let file = screenshotFiles.first {
                     let srcPath = "\(screenshotDir)/\(file)"
-                    let dstPath = "\(outputDir)/\(screen.name).png"
+                    let dstPath = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
                     if fm.fileExists(atPath: dstPath) {
                         try fm.removeItem(atPath: dstPath)
                     }
