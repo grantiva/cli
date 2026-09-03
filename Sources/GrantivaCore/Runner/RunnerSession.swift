@@ -24,7 +24,8 @@ public enum RunnerSession {
         keepAlive: Bool = false,
         snapshot: String = "failure",
         environment: [String: String] = [:],
-        readyFile: String? = nil
+        readyFile: String? = nil,
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -192,6 +193,9 @@ public enum RunnerSession {
             )
         }
 
+        if let expectedPixels {
+            try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
+        }
         return captures
     }
 
@@ -206,12 +210,13 @@ public enum RunnerSession {
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
         keepAlive: Bool = false,
-        snapshot: String = "failure"
+        snapshot: String = "failure",
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
     ) async throws -> [ScreenCapture] {
         try await runFlowFiles(
             at: [flowPath], bundleId: bundleId, udid: udid,
             runner: runner, outputDir: outputDir, appFile: appFile,
-            keepAlive: keepAlive, snapshot: snapshot
+            keepAlive: keepAlive, snapshot: snapshot, expectedPixels: expectedPixels
         )
     }
 
@@ -237,7 +242,8 @@ public enum RunnerSession {
         reportDir overrideReportDir: String? = nil,
         timeoutSeconds: UInt64 = 600,
         environment: [String: String] = [:],
-        readyFile: String? = nil
+        readyFile: String? = nil,
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -455,6 +461,9 @@ public enum RunnerSession {
             }
         }
 
+        if let expectedPixels {
+            try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
+        }
         return captures
     }
 

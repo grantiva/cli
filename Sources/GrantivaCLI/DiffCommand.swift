@@ -133,9 +133,9 @@ struct DiffCommand: AsyncParsableCommand {
                 screens: resolved.screens,
                 bundleId: bid,
                 udid: device.udid,
-                outputDir: outputDir
+                outputDir: outputDir,
+                expectedPixels: target.pixelDimensions
             )
-            try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: target.pixelDimensions)
 
             // Print step-by-step results
             if !options.json {
@@ -269,12 +269,18 @@ struct DiffCommand: AsyncParsableCommand {
                 }
 
                 options.note("Capturing \(resolved.screens.count) screen(s)...")
+                let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
+                let expectedPixels = SimulatorProvisionResult.Dimensions(
+                    width: geometry.pixels[0],
+                    height: geometry.pixels[1]
+                )
 
                 let captures = try await RunnerSession.run(
                     screens: resolved.screens,
                     bundleId: bid,
                     udid: device.udid,
-                    outputDir: captureDir
+                    outputDir: captureDir,
+                    expectedPixels: expectedPixels
                 )
 
                 // Print step-by-step results
