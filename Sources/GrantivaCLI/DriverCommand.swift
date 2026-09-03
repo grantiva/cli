@@ -191,30 +191,31 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let logPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-runner-\(Int(Date().timeIntervalSince1970)).log")
             .path
-        let pidFile = logPath + ".pid"
-
-        let sq = shellQuoted
-
-        let cmdParts = ([runnerBin] + runnerArgs).map(sq).joined(separator: " ")
-        let shellCmd = "cd \(sq(runnerDir)) && nohup \(cmdParts) >> \(sq(logPath)) 2>&1 & echo $! > \(sq(pidFile))"
-
-        let sh = Process()
-        sh.executableURL = URL(fileURLWithPath: "/bin/sh")
-        sh.arguments = ["-c", shellCmd]
-        sh.standardOutput = FileHandle.nullDevice
-        sh.standardError = FileHandle.nullDevice
-        try sh.run()
-        sh.waitUntilExit()
-
-        let pidStr = (try? String(contentsOfFile: pidFile, encoding: .utf8))?
-            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let runnerPid = Int32(pidStr) ?? -1
+        FileManager.default.createFile(atPath: logPath, contents: nil)
+        guard let log = FileHandle(forWritingAtPath: logPath) else {
+            throw GrantivaError.commandFailed("Could not open runner log: \(logPath)", 1)
+        }
+        let child: ChildProcess
+        do {
+            child = try ChildProcess.spawn(
+                executable: "/usr/bin/nohup",
+                arguments: [runnerBin] + runnerArgs,
+                workingDirectory: runnerDir,
+                stdout: log.fileDescriptor,
+                stderr: log.fileDescriptor
+            )
+            try log.close()
+        } catch {
+            try? log.close()
+            throw error
+        }
+        let runnerPid = child.pid
 
         // Poll the log file for WDA port
         let port = try await waitForWDAPort(logFile: logPath, timeout: 60)
 
         guard let port else {
-            if runnerPid > 0 { kill(runnerPid, SIGTERM) }
+            child.terminateGroup(gracePeriod: 1)
             throw GrantivaError.commandFailed(
                 "Timed out waiting for WDA to start. Log: \(logPath)", 1
             )
@@ -260,18 +261,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
         resolvedBundleId: String,
         device: SimulatorDevice
     ) async throws -> Int32 {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: runnerBin)
-        process.arguments = runnerArgs
-        process.currentDirectoryURL = URL(fileURLWithPath: runnerDir)
-
         let stdoutPipe = Pipe()
-        process.standardOutput = stdoutPipe
-        // Inherit stderr so the child can never fill an unread pipe while WDA
-        // is starting, and foreground users see the runner's diagnostics.
-        process.standardError = FileHandle.standardError
-
-        try process.run()
+        let child = try ChildProcess.spawn(
+            executable: runnerBin,
+            arguments: runnerArgs,
+            workingDirectory: runnerDir,
+            stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
+            stderr: FileHandle.standardError.fileDescriptor
+        )
+        try? stdoutPipe.fileHandleForWriting.close()
 
         let deadline = Date().addingTimeInterval(60)
         let outputTask = Task<UInt16?, Never> {
@@ -301,13 +299,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
 
         guard let port = await outputTask.value else {
-            process.terminate()
+            child.terminateGroup(gracePeriod: 1)
             RunnerSessionInfo.remove()
             throw GrantivaError.commandFailed("Timed out waiting for WDA to start", 1)
         }
 
         let session = RunnerSessionInfo(
-            pid: process.processIdentifier,
+            pid: child.pid,
             wdaPort: port,
             bundleId: resolvedBundleId,
             udid: device.udid,
@@ -319,20 +317,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Output.line(try JSONOutput.string([
                 "status": "started",
                 "port": "\(port)",
-                "pid": "\(process.processIdentifier)",
+                "pid": "\(child.pid)",
                 "bundle_id": resolvedBundleId,
                 "udid": device.udid,
             ]))
         } else {
             Output.line("Runner started")
             Output.line("  WDA port: \(port)")
-            Output.line("  PID:      \(process.processIdentifier)")
+            Output.line("  PID:      \(child.pid)")
             Output.line("  Session:  \(RunnerSessionInfo.path)")
             Output.line("")
             Output.line("Use 'grantiva runner dump-hierarchy' to inspect the view hierarchy.")
             Output.line("Use 'grantiva runner stop' to stop the session.")
         }
-        return process.processIdentifier
+        return child.pid
     }
 
     // MARK: - Helpers
@@ -394,13 +392,7 @@ struct RunnerStopCommand: AsyncParsableCommand {
         }
 
         if session.isAlive {
-            kill(session.pid, SIGTERM)
-            // Give it a moment to clean up
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-            // Force kill if still alive
-            if kill(session.pid, 0) == 0 {
-                kill(session.pid, SIGKILL)
-            }
+            ChildProcess.terminateGroup(session.pid, gracePeriod: 1)
         }
 
         RunnerSessionInfo.remove()
