@@ -187,13 +187,19 @@ struct CICommand: AsyncParsableCommand {
                     throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
                 }
                 rlog("Capturing \(resolved.screens.count) screen(s)...")
+                let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
+                let expectedPixels = SimulatorProvisionResult.Dimensions(
+                    width: geometry.pixels[0],
+                    height: geometry.pixels[1]
+                )
 
                 let screenCaptures = try await RunnerSession.run(
                     screens: resolved.screens,
                     bundleId: bid,
                     udid: device.udid,
                     runner: runnerManager,
-                    outputDir: captureDir
+                    outputDir: captureDir,
+                    expectedPixels: expectedPixels
                 )
                 rlog("Capture complete")
 

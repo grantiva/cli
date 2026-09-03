@@ -156,6 +156,11 @@ struct RunCommand: AsyncParsableCommand {
         let device = try await simulatorManager.boot(nameOrUDID: resolved.simulator)
         log("Simulator booted: \(device.name) (\(device.udid))")
         let destination = "platform=iOS Simulator,id=\(device.udid)"
+        let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
+        let expectedPixels = SimulatorProvisionResult.Dimensions(
+            width: geometry.pixels[0],
+            height: geometry.pixels[1]
+        )
 
         // Optional simulator log streaming. Started after boot so `simctl spawn`
         // has a running sim to attach to; stopped by defer so it shuts down on
@@ -253,7 +258,8 @@ struct RunCommand: AsyncParsableCommand {
                     keepAlive: keepAlive,
                     snapshot: snapshot.rawValue,
                     environment: launchEnvironment,
-                    readyFile: readyFile
+                    readyFile: readyFile,
+                    expectedPixels: expectedPixels
                 )
                 captures.append(contentsOf: screenCaptures)
             }
@@ -273,7 +279,8 @@ struct RunCommand: AsyncParsableCommand {
                     reportDir: reportDir,
                     timeoutSeconds: UInt64(timeout),
                     environment: launchEnvironment,
-                    readyFile: readyFile
+                    readyFile: readyFile,
+                    expectedPixels: expectedPixels
                 )
                 captures.append(contentsOf: flowCaptures)
             }
