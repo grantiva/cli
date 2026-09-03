@@ -445,6 +445,8 @@ public struct ComplianceViolation: Codable, Sendable, Equatable {
             detail = text
         } else if let number = try? payload.decode(Int.self, forKey: payloadKey) {
             detail = String(number)
+        } else if let number = try? payload.decode(Double.self, forKey: payloadKey) {
+            detail = String(number)
         } else {
             detail = nil
         }

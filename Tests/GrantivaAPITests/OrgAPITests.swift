@@ -87,15 +87,21 @@ final class OrgAPITests: XCTestCase {
     }
 
     func testDecodesDeviceListAndDetail() throws {
-        let list = #"{"items":[{"id":"D1","key_id":"K1","app_id":null,"app_name":null,"device_model":"iPhone16,1","os_version":"18.0","app_version":null,"risk_score":12,"jailbreak_detected":false,"is_development_build":false,"app_store_receipt":true,"attestation_count":3,"suspicious_events":0,"last_country":"US","first_seen":"2026-08-01T00:00:00Z","last_attestation":"2026-09-01T00:00:00Z"}],"page":1,"per":20,"total":1}"#
+        let list = #"{"items":[{"id":"D1","key_id":"K1","app_id":null,"app_name":null,"device_model":"iPhone16,1","os_version":"18.0","app_version":null,"risk_score":12,"jailbreak_detected":false,"is_development_build":null,"app_store_receipt":null,"attestation_count":3,"suspicious_events":0,"last_country":"US","first_seen":"2026-08-01T00:00:00Z","last_attestation":"2026-09-01T00:00:00Z"}],"page":1,"per":20,"total":1}"#
         let decoded = try JSONDecoder().decode(OrgDeviceList.self, from: Data(list.utf8))
         XCTAssertEqual(decoded.items.first?.deviceModel, "iPhone16,1")
+        XCTAssertNil(decoded.items.first?.isDevelopmentBuild)
+        XCTAssertNil(decoded.items.first?.appStoreReceipt)
         XCTAssertEqual(decoded.total, 1)
 
-        let detail = #"{"id":"D1","key_id":"K1","app_id":null,"app_name":null,"device_model":null,"os_version":null,"app_version":null,"first_app_version":null,"risk_score":0,"jailbreak_detected":false,"is_development_build":false,"app_store_receipt":true,"attestation_count":1,"suspicious_events":0,"last_suspicious_event_at":null,"consecutive_clean_attestations":0,"permissions":["basic"],"last_country":null,"subject_id":null,"first_seen":"2026-08-01T00:00:00Z","last_attestation":"2026-09-01T00:00:00Z","created_at":null,"updated_at":null,"recent_events":[{"id":"E1","event_type":"token_issued","key_id":"K1","device_id":null,"ip_address":"1.2.3.4","success":true,"error_reason":null,"risk_score":0,"created_at":"2026-09-01T00:00:00Z"}]}"#
+        let detail = #"{"id":"D1","key_id":"K1","app_id":null,"app_name":null,"device_model":null,"os_version":null,"app_version":null,"first_app_version":null,"risk_score":0,"jailbreak_detected":false,"is_development_build":null,"app_store_receipt":null,"attestation_count":1,"suspicious_events":0,"last_suspicious_event_at":null,"consecutive_clean_attestations":null,"permissions":null,"last_country":null,"subject_id":null,"first_seen":"2026-08-01T00:00:00Z","last_attestation":"2026-09-01T00:00:00Z","created_at":null,"updated_at":null,"recent_events":[{"id":"E1","event_type":"token_issued","key_id":"K1","device_id":null,"ip_address":"1.2.3.4","success":true,"error_reason":null,"risk_score":0,"created_at":null}]}"#
         let device = try JSONDecoder().decode(OrgDeviceDetail.self, from: Data(detail.utf8))
         XCTAssertEqual(device.recentEvents.first?.eventType, "token_issued")
-        XCTAssertEqual(device.permissions, ["basic"])
+        XCTAssertNil(device.isDevelopmentBuild)
+        XCTAssertNil(device.appStoreReceipt)
+        XCTAssertNil(device.consecutiveCleanAttestations)
+        XCTAssertNil(device.permissions)
+        XCTAssertNil(device.recentEvents.first?.createdAt)
     }
 
     func testFailingClientThrowsNotAuthenticated() async {

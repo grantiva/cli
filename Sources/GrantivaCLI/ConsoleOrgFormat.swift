@@ -149,12 +149,21 @@ enum ConsoleOrgFormat {
         lines.append("  App version:      \(device.appVersion ?? "-")\(device.firstAppVersion.map { " (first seen on \($0))" } ?? "")")
         lines.append("  Risk score:       \(device.riskScore) (\(ConsoleAnalyticsFormat.riskBand(device.riskScore)))")
         lines.append("  Jailbroken:       \(device.jailbreakDetected ? "yes" : "no")")
-        lines.append("  Development build: \(device.isDevelopmentBuild ? "yes" : "no")")
-        lines.append("  App Store receipt: \(device.appStoreReceipt ? "present" : "absent")")
-        lines.append("  Attestations:     \(device.attestationCount)   Clean streak: \(device.consecutiveCleanAttestations)")
+        if let developmentBuild = device.isDevelopmentBuild {
+            lines.append("  Development build: \(developmentBuild ? "yes" : "no")")
+        }
+        if let appStoreReceipt = device.appStoreReceipt {
+            lines.append("  App Store receipt: \(appStoreReceipt ? "present" : "absent")")
+        }
+        lines.append("  Attestations:     \(device.attestationCount)")
+        if let clean = device.consecutiveCleanAttestations {
+            lines.append("  Clean streak:     \(clean)")
+        }
         lines.append("  Suspicious:       \(device.suspiciousEvents)\(device.lastSuspiciousEventAt.map { " (last \(ConsoleFormat.shortDate($0)))" } ?? "")")
         if let country = device.lastCountry { lines.append("  Last country:     \(country)") }
-        if !device.permissions.isEmpty { lines.append("  Permissions:      \(device.permissions.joined(separator: ", "))") }
+        if let permissions = device.permissions, !permissions.isEmpty {
+            lines.append("  Permissions:      \(permissions.joined(separator: ", "))")
+        }
         if let subject = device.subjectId { lines.append("  Subject:          \(subject)") }
         lines.append("  First seen:       \(ConsoleFormat.shortDate(device.firstSeen))")
         lines.append("  Last attestation: \(ConsoleFormat.shortDate(device.lastAttestation))")
