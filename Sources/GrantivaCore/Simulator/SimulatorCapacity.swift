@@ -183,12 +183,17 @@ public struct SimulatorCapacity: Sendable {
         return result
     }
 
-    private static func prune(_ records: inout [ManagedSimulatorSession], devices: [SimulatorDevice]) {
+    static func prune(
+        _ records: inout [ManagedSimulatorSession],
+        devices: [SimulatorDevice],
+        isProcessAlive: (Int32) -> Bool = { kill($0, 0) == 0 || errno == EPERM }
+    ) {
         let states = Dictionary(uniqueKeysWithValues: devices.map { ($0.udid, $0.state) })
         records.removeAll { record in
             guard let state = states[record.udid] else { return true }
+            if record.state == .pending && !isProcessAlive(record.ownerPID) { return true }
             if state == "Booted" { return false }
-            if record.state == .pending && kill(record.ownerPID, 0) == 0 { return false }
+            if record.state == .pending { return false }
             return true
         }
     }
