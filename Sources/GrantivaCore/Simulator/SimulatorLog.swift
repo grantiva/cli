@@ -74,7 +74,7 @@ extension SimulatorLog {
             if let predicate = filter.predicate() {
                 args += ["--predicate", predicate]
             }
-            let command = args.map { $0.contains(" ") ? "'\($0)'" : $0 }.joined(separator: " ")
+            let command = simulatorLogCommand(args)
             let output = try await shell(command)
             return parseNDJSON(output)
         },
@@ -87,7 +87,7 @@ extension SimulatorLog {
             if let predicate = filter.predicate() {
                 args += ["--predicate", predicate]
             }
-            let command = args.map { $0.contains(" ") ? "'\($0)'" : $0 }.joined(separator: " ")
+            let command = simulatorLogCommand(args)
 
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/bin/zsh")
@@ -109,6 +109,10 @@ extension SimulatorLog {
             process.waitUntilExit()
         }
     )
+}
+
+func simulatorLogCommand(_ arguments: [String]) -> String {
+    arguments.map(shellQuoted).joined(separator: " ")
 }
 
 private func parseNDJSON(_ output: String) -> [LogEntry] {
