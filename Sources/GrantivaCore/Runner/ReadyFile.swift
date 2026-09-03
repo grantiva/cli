@@ -164,10 +164,22 @@ public struct RunnerReportIndex: Decodable, Sendable {
 public final class ReadyFileSignal: @unchecked Sendable {
     public let path: String?
     private let lock = NSLock()
+    private let writer: @Sendable (RunReadyState, String) throws -> Void
     private var written = false
 
     public init(path: String?) {
         self.path = path
+        self.writer = { state, path in
+            try ReadyFile.write(state, to: path)
+        }
+    }
+
+    init(
+        path: String?,
+        writer: @escaping @Sendable (RunReadyState, String) throws -> Void
+    ) {
+        self.path = path
+        self.writer = writer
     }
 
     /// Writes the terminal state unless it was already written. Returns whether
@@ -180,12 +192,17 @@ public final class ReadyFileSignal: @unchecked Sendable {
             lock.unlock()
             return false
         }
-        written = true
-        lock.unlock()
         do {
-            try ReadyFile.write(state, to: path)
+            // Keep the lock through the write: another caller must not begin a
+            // competing write until this one either succeeds or fails. Only a
+            // successful write consumes the signal, so transient I/O failures
+            // remain retryable.
+            try writer(state, path)
+            written = true
+            lock.unlock()
             return true
         } catch {
+            lock.unlock()
             FileHandle.standardError.write(Data("[grantiva] could not write ready file \(path): \(error)\n".utf8))
             return false
         }
