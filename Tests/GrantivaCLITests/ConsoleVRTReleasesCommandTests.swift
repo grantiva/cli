@@ -108,6 +108,31 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
         }
     }
 
+    func testVRTRunsListCallsClientAndMapsReadErrors() async throws {
+        var client = VRTReviewClient.failing
+        let captured = Capture<String>()
+        client.listRuns = { project in
+            await captured.set(project)
+            return [Self.run(status: "pending", screens: []).run]
+        }
+        try await ConsoleVRTCommand.RunsCommand.ListCommand.parse(["my-app", "--json"]).run(client: client)
+        let project = await captured.value
+        XCTAssertEqual(project, "my-app")
+
+        client.listRuns = { _ in throw GrantivaError.networkError("", 404) }
+        do {
+            try await ConsoleVRTCommand.RunsCommand.ListCommand.parse(["missing"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "project not found: missing")
+        }
+    }
+
+    func testVRTRunsListRejectsBlankProjectBeforeCallingClient() async throws {
+        XCTAssertThrowsError(try ConsoleVRTCommand.RunsCommand.ListCommand.parse(["   "]))
+    }
+
     func testVRTScreensTableShowsPendingForUnreviewedFailures() {
         let table = ConsoleVRTFormat.screensTable([Self.screen("home"), Self.screen("about", status: "passed"), Self.screen("cart", review: "flagged")])
         let lines = table.split(separator: "\n").map(String.init)

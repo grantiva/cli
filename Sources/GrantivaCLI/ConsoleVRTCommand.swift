@@ -42,6 +42,12 @@ struct ConsoleVRTCommand: AsyncParsableCommand {
             @Argument(help: "Project slug.")
             var project: String
 
+            mutating func validate() throws {
+                guard !project.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                    throw ValidationError("Project slug must not be empty.")
+                }
+            }
+
             func run() async throws { try await run(client: ConsoleSupport.makeVRTReviewClient()) }
 
             func run(client: VRTReviewClient) async throws {
