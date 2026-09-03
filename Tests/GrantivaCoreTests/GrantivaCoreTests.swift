@@ -493,7 +493,7 @@ final class MaestroFlowParserTests: XCTestCase {
         XCTAssertEqual(steps[2].tap, "Submit")
     }
 
-    func testUnsupportedCommandsSkipped() throws {
+    func testUnsupportedCommandsFailWithCommandAndLine() throws {
         let yaml = """
         - launchApp
         - setPermissions:
@@ -504,14 +504,26 @@ final class MaestroFlowParserTests: XCTestCase {
         - takeScreenshot: "Result"
         """
 
-        let config = try MaestroFlowParser.parse(yaml)
-        // Only the tapOn should make it through as a step
-        if case .steps(let steps) = config.screens[0].path {
-            XCTAssertEqual(steps.count, 1)
-            XCTAssertEqual(steps[0].tap, "Button")
-        } else {
-            XCTFail("Expected steps")
+        XCTAssertThrowsError(try MaestroFlowParser.parse(yaml, sourceName: "checkout.yaml")) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("setPermissions"))
+            XCTAssertTrue(message.contains("checkout.yaml:2"))
         }
+    }
+
+    func testUnsupportedCommandsCanBeExplicitlySkipped() throws {
+        let yaml = """
+        - pressKey: RETURN
+        - tapOn: "Button"
+        - takeScreenshot: "Result"
+        """
+
+        let config = try MaestroFlowParser.parse(yaml, allowUnsupportedCommands: true)
+        guard case .steps(let steps) = config.screens[0].path else {
+            return XCTFail("Expected steps")
+        }
+        XCTAssertEqual(steps.count, 1)
+        XCTAssertEqual(steps[0].tap, "Button")
     }
 
     func testScreenshotAtStartCreatesLaunchScreen() throws {
