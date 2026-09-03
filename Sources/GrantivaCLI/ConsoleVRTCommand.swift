@@ -209,6 +209,19 @@ struct ConsoleVRTCommand: AsyncParsableCommand {
         client: VRTReviewClient
     ) async throws {
         guard !screens.isEmpty else { throw GrantivaError.invalidArgument("name at least one screen") }
+        let detail: RunDetailResponse
+        do {
+            detail = try await client.getRun(project, run)
+        } catch {
+            throw mapReview(error, notFound: runNotFound(project, run))
+        }
+        let knownScreens = Set(detail.screens.map(\.screenName))
+        let missing = screens.filter { !knownScreens.contains($0) }
+        guard missing.isEmpty else {
+            let noun = missing.count == 1 ? "screen" : "screens"
+            throw GrantivaError.notFound("\(noun) not found in run \(run): \(missing.joined(separator: ", "))")
+        }
+
         var results: [RunScreenResultResponse] = []
         for screen in screens {
             do {
