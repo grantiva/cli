@@ -230,7 +230,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             udid: device.udid,
             startedAt: Date()
         )
-        try session.write()
+        try Self.record(session: session)
 
         if options.json {
             Output.line(try JSONOutput.string([
@@ -313,7 +313,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             udid: device.udid,
             startedAt: Date()
         )
-        try session.write()
+        try Self.record(session: session)
 
         if options.json {
             Output.line(try JSONOutput.string([
@@ -336,6 +336,19 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     // MARK: - Helpers
+
+    static func record(
+        session: RunnerSessionInfo,
+        write: (RunnerSessionInfo) throws -> Void = { try $0.write() },
+        terminate: (Int32) -> Void = { ChildProcess.terminateGroup($0, gracePeriod: 1) }
+    ) throws {
+        do {
+            try write(session)
+        } catch {
+            terminate(session.pid)
+            throw error
+        }
+    }
 
     /// Poll a log file until a WDA port appears or the timeout elapses.
     private func waitForWDAPort(logFile: String, timeout: TimeInterval) async throws -> UInt16? {
@@ -384,7 +397,11 @@ struct RunnerStopCommand: AsyncParsableCommand {
     @OptionGroup var options: GlobalOptions
 
     func run() async throws {
-        guard let session = try? RunnerSessionInfo.load() else {
+        try await run(dependencies: .live)
+    }
+
+    func run(dependencies: RunnerStopDependencies) async throws {
+        guard let session = try? dependencies.loadSession() else {
             if options.json {
                 Output.line(try JSONOutput.string(["status": "not_running"]))
             } else {
@@ -393,15 +410,16 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return
         }
 
-        if session.isAlive,
-           let snapshot = try? await SimulatorReaper.processSnapshot(),
-           session.ownsRunnerProcess(in: snapshot) {
-            ChildProcess.terminateGroup(session.pid, gracePeriod: 1)
+        if dependencies.isAlive(session) {
+            let snapshot = try await dependencies.processSnapshot()
+            if session.ownsRunnerProcess(in: snapshot) {
+                dependencies.terminateGroup(session.pid)
+            }
         }
 
-        RunnerSessionInfo.remove()
+        dependencies.removeSession()
         // The session held the simulator lease by hand-off; free it now.
-        SimulatorLease.forceRelease(udid: session.udid)
+        dependencies.releaseLease(session.udid)
 
         if options.json {
             Output.line(try JSONOutput.string(["status": "stopped", "pid": "\(session.pid)"]))
@@ -409,6 +427,24 @@ struct RunnerStopCommand: AsyncParsableCommand {
             Output.line("Runner stopped (pid \(session.pid))")
         }
     }
+}
+
+struct RunnerStopDependencies: Sendable {
+    var loadSession: @Sendable () throws -> RunnerSessionInfo
+    var isAlive: @Sendable (RunnerSessionInfo) -> Bool
+    var processSnapshot: @Sendable () async throws -> String
+    var terminateGroup: @Sendable (Int32) -> Void
+    var removeSession: @Sendable () -> Void
+    var releaseLease: @Sendable (String) -> Void
+
+    static let live = RunnerStopDependencies(
+        loadSession: { try RunnerSessionInfo.load() },
+        isAlive: { $0.isAlive },
+        processSnapshot: { try await SimulatorReaper.processSnapshot() },
+        terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 1) },
+        removeSession: { RunnerSessionInfo.remove() },
+        releaseLease: { SimulatorLease.forceRelease(udid: $0) }
+    )
 }
 
 // MARK: - Dump Hierarchy
