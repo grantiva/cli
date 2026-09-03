@@ -87,4 +87,74 @@ final class ProjectDetectorTests: XCTestCase {
             XCTAssertTrue(error.localizedDescription.contains("No schemes found"))
         }
     }
+
+    func testCacheRoundTripRemainsValidWhenProjectContainersAreOlder() throws {
+        let root = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let cacheURL = root.appendingPathComponent(".grantiva/config.json")
+        let projectURL = root.appendingPathComponent("App.xcodeproj")
+        try FileManager.default.createDirectory(at: projectURL, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSinceNow: -60)], ofItemAtPath: projectURL.path
+        )
+        let project = DetectedProject(
+            scheme: "App", project: "App.xcodeproj", bundleId: "com.example.app",
+            detectedAt: Date(timeIntervalSince1970: 123)
+        )
+
+        try ProjectDetector.writeCache(project, cacheURL: cacheURL)
+        let loaded = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)
+
+        XCTAssertEqual(loaded?.scheme, "App")
+        XCTAssertEqual(loaded?.bundleId, "com.example.app")
+        XCTAssertEqual(loaded?.detectedAt, project.detectedAt)
+    }
+
+    func testNewerWorkspaceInvalidatesCache() throws {
+        let root = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let cacheURL = root.appendingPathComponent(".grantiva/config.json")
+        try ProjectDetector.writeCache(DetectedProject(scheme: "Old"), cacheURL: cacheURL)
+        let workspaceURL = root.appendingPathComponent("App.xcworkspace")
+        try FileManager.default.createDirectory(at: workspaceURL, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSinceNow: 60)], ofItemAtPath: workspaceURL.path
+        )
+
+        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+    }
+
+    func testHiddenNewerContainerDoesNotInvalidateCache() throws {
+        let root = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let cacheURL = root.appendingPathComponent(".grantiva/config.json")
+        try ProjectDetector.writeCache(DetectedProject(scheme: "App"), cacheURL: cacheURL)
+        let hiddenURL = root.appendingPathComponent(".Hidden.xcodeproj")
+        try FileManager.default.createDirectory(at: hiddenURL, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSinceNow: 60)], ofItemAtPath: hiddenURL.path
+        )
+
+        XCTAssertEqual(
+            ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme,
+            "App"
+        )
+    }
+
+    func testMalformedCacheIsIgnored() throws {
+        let root = temporaryDirectory()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let cacheURL = root.appendingPathComponent(".grantiva/config.json")
+        try FileManager.default.createDirectory(
+            at: cacheURL.deletingLastPathComponent(), withIntermediateDirectories: true
+        )
+        try Data("not-json".utf8).write(to: cacheURL)
+
+        XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
+    }
+
+    private func temporaryDirectory() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-project-cache-\(UUID().uuidString)", isDirectory: true)
+    }
 }
