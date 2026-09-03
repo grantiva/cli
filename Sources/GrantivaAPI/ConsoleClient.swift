@@ -169,47 +169,50 @@ extension ConsoleClient {
                 request.timeoutInterval = 86_400 // SSE stream stays open; keepalives defeat idle cutoffs
 
                 let (bytes, response) = try await URLSession.shared.bytes(for: request)
-                guard let http = response as? HTTPURLResponse else {
-                    throw GrantivaError.networkError("Invalid response", 0)
-                }
-                guard http.statusCode == 200 else {
-                    if http.statusCode == 401 { throw GrantivaError.notAuthenticated }
-                    throw GrantivaError.networkError("SSE stream rejected", http.statusCode)
-                }
-
-                return AsyncThrowingStream { continuation in
-                    let task = Task {
-                        // NOT `bytes.lines`: that skips empty lines, and the
-                        // blank line is exactly what dispatches an SSE event.
-                        var parser = SSEParser()
-                        var buffer: [UInt8] = []
-                        func feed(_ lineBytes: [UInt8]) {
-                            var lineBytes = lineBytes
-                            if lineBytes.last == 0x0D { lineBytes.removeLast() } // trailing \r
-                            let line = String(decoding: lineBytes, as: UTF8.self)
-                            if let event = parser.feed(line: line) {
-                                continuation.yield(event)
-                            }
-                        }
-                        do {
-                            for try await byte in bytes {
-                                if byte == 0x0A { // \n
-                                    feed(buffer)
-                                    buffer.removeAll(keepingCapacity: true)
-                                } else {
-                                    buffer.append(byte)
-                                }
-                            }
-                            if !buffer.isEmpty { feed(buffer) }
-                            continuation.finish()
-                        } catch {
-                            continuation.finish(throwing: error)
-                        }
-                    }
-                    continuation.onTermination = { _ in task.cancel() }
-                }
+                try validateSSEResponse(response)
+                return makeSSEStream(from: bytes)
             }
         )
+    }
+}
+
+func validateSSEResponse(_ response: URLResponse) throws {
+    guard let http = response as? HTTPURLResponse else {
+        throw GrantivaError.networkError("Invalid response", 0)
+    }
+    guard http.statusCode == 200 else {
+        if http.statusCode == 401 { throw GrantivaError.notAuthenticated }
+        throw GrantivaError.networkError("SSE stream rejected", http.statusCode)
+    }
+    let mediaType = http.value(forHTTPHeaderField: "Content-Type")?
+        .split(separator: ";", maxSplits: 1)
+        .first?
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+        .lowercased()
+    guard mediaType == "text/event-stream" else {
+        throw GrantivaError.networkError("SSE response has invalid Content-Type", http.statusCode)
+    }
+}
+
+func makeSSEStream<Bytes: AsyncSequence & Sendable>(
+    from bytes: Bytes
+) -> AsyncThrowingStream<FlagStreamEvent, Error> where Bytes.Element == UInt8 {
+    AsyncThrowingStream { continuation in
+        let task = Task {
+            var decoder = SSEByteDecoder()
+            do {
+                for try await byte in bytes {
+                    if let event = try decoder.feed(byte: byte) {
+                        continuation.yield(event)
+                    }
+                }
+                decoder.finish()
+                continuation.finish()
+            } catch {
+                continuation.finish(throwing: error)
+            }
+        }
+        continuation.onTermination = { _ in task.cancel() }
     }
 }
 
