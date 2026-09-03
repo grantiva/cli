@@ -118,4 +118,32 @@ final class ChildProcessTests: XCTestCase {
         let text = try String(contentsOfFile: outPath, encoding: .utf8)
         XCTAssertTrue(text.contains("/tmp"), text)
     }
+
+    func testRunnerSessionRejectsALiveUnrelatedProcess() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sleep",
+            arguments: ["30"],
+            stdout: output,
+            stderr: output
+        )
+        defer {
+            child.terminateGroup(gracePeriod: 1)
+            child.wait()
+        }
+
+        let unrelated = RunnerSessionInfo(
+            pid: child.pid, wdaPort: 8100, bundleId: "example", udid: "device", startedAt: Date(),
+            executablePath: "/bin/sh"
+        )
+        XCTAssertTrue(unrelated.isAlive)
+        XCTAssertFalse(unrelated.ownsRunningProcess)
+
+        let owner = RunnerSessionInfo(
+            pid: child.pid, wdaPort: 8100, bundleId: "example", udid: "device", startedAt: Date(),
+            executablePath: "/bin/sleep"
+        )
+        XCTAssertTrue(owner.ownsRunningProcess)
+    }
 }

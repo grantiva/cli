@@ -89,7 +89,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     func run() async throws {
         // Check for existing session
-        if let existing = try? RunnerSessionInfo.load(), existing.isAlive {
+        if let existing = try? RunnerSessionInfo.load(), existing.ownsRunningProcess {
             if options.json {
                 Output.line(try JSONOutput.string([
                     "status": "already_running",
@@ -226,7 +226,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             wdaPort: port,
             bundleId: resolvedBundleId,
             udid: device.udid,
-            startedAt: Date()
+            startedAt: Date(),
+            executablePath: runnerBin
         )
         try session.write()
 
@@ -309,7 +310,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             wdaPort: port,
             bundleId: resolvedBundleId,
             udid: device.udid,
-            startedAt: Date()
+            startedAt: Date(),
+            executablePath: runnerBin
         )
         try session.write()
 
@@ -391,7 +393,7 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return
         }
 
-        if session.isAlive {
+        if session.ownsRunningProcess {
             ChildProcess.terminateGroup(session.pid, gracePeriod: 1)
         }
 
