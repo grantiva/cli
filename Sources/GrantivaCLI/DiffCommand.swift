@@ -4,6 +4,11 @@ import GrantivaCore
 import GrantivaAPI
 
 struct DiffCommand: AsyncParsableCommand {
+    struct CaptureArtifact: Equatable {
+        let fileName: String
+        let screenName: String
+    }
+
     static let configuration = CommandConfiguration(
         commandName: "diff",
         abstract: "Visual regression testing — capture, compare, and approve screenshots.",
@@ -315,17 +320,18 @@ struct DiffCommand: AsyncParsableCommand {
             }
             let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
                 .filter { $0.hasSuffix(".png") }
-                .sorted()
 
             guard !captureFiles.isEmpty else {
                 throw GrantivaError.noCaptures(captureDir)
             }
+            let captureArtifacts = try DiffCommand.captureArtifacts(from: captureFiles)
 
             var screenDiffs: [ScreenDiff] = []
             var allPassed = true
 
-            for file in captureFiles {
-                guard let screenName = ScreenArtifact.screenName(from: file) else { continue }
+            for artifact in captureArtifacts {
+                let file = artifact.fileName
+                let screenName = artifact.screenName
                 let capturePath = "\(captureDir)/\(file)"
                 let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
 
@@ -428,15 +434,15 @@ struct DiffCommand: AsyncParsableCommand {
 
             let allCaptures = try fm.contentsOfDirectory(atPath: captureDir)
                 .filter { $0.hasSuffix(".png") }
-                .sorted()
 
             guard !allCaptures.isEmpty else {
                 throw GrantivaError.noCaptures(captureDir)
             }
+            let captureArtifacts = try DiffCommand.captureArtifacts(from: allCaptures)
 
             let toApprove: [String]
             if screenNames.isEmpty {
-                toApprove = allCaptures.compactMap { ScreenArtifact.screenName(from: $0) }
+                toApprove = captureArtifacts.map(\.screenName)
             } else {
                 toApprove = screenNames
             }
@@ -466,6 +472,23 @@ struct DiffCommand: AsyncParsableCommand {
     }
 
     // MARK: - Baseline Store Resolution
+
+    /// Returns canonical screenshot artifacts in deterministic order. Treating an
+    /// undecodable filename as absent can make a comparison succeed without
+    /// evaluating every capture that was discovered on disk.
+    static func captureArtifacts(from fileNames: [String]) throws -> [CaptureArtifact] {
+        try fileNames.sorted().map { fileName in
+            guard
+                let screenName = ScreenArtifact.screenName(from: fileName),
+                ScreenArtifact.fileName(for: screenName) == fileName
+            else {
+                throw GrantivaError.invalidArgument(
+                    "Invalid capture filename \"\(fileName)\". Capture files must use canonical percent-encoded screen names."
+                )
+            }
+            return CaptureArtifact(fileName: fileName, screenName: screenName)
+        }
+    }
 
     /// Resolves the baseline store: remote (via RangeClient) if authenticated, local otherwise.
     static func resolveBaselineStore() async throws -> BaselineStore {
