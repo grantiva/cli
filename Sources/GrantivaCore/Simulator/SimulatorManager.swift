@@ -44,21 +44,21 @@ public struct SimulatorManager: Sendable, Decodable {
 
     public func boot(nameOrUDID: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: nameOrUDID)
-        if !device.isBooted {
-            let capacity = SimulatorCapacity.live
-            _ = try await capacity.reserve(device: device, devices: { try await listDevices() }) { sessions, elapsed in
-                guard Int(elapsed) % 10 == 0 else { return }
-                let wait = Self.capacityWait(sessions: sessions, maximum: capacity.maximum)
-                GrantivaLog.logger.log(level: wait.level, "\(wait.message)")
-            }
-            do {
+        let capacity = SimulatorCapacity.live
+        _ = try await capacity.reserve(device: device, devices: { try await listDevices() }) { sessions, elapsed in
+            guard Int(elapsed) % 10 == 0 else { return }
+            let wait = Self.capacityWait(sessions: sessions, maximum: capacity.maximum)
+            GrantivaLog.logger.log(level: wait.level, "\(wait.message)")
+        }
+        do {
+            if !device.isBooted {
                 _ = try await shell("xcrun simctl boot \(device.udid)")
                 _ = try await shell("xcrun simctl bootstatus \(device.udid) -b")
-                try capacity.activate(udid: device.udid)
-            } catch {
-                try? capacity.releaseReservation(udid: device.udid)
-                throw error
             }
+            try capacity.activate(udid: device.udid)
+        } catch {
+            try? capacity.releaseReservation(udid: device.udid)
+            throw error
         }
         return try await exactDevice(nameOrUDID: device.udid)
     }
