@@ -65,20 +65,24 @@ extension AuthStore {
         "\(authDir)/auth.json"
     }()
 
-    public static let live = AuthStore(
+    static func file(directory: String, path: String) -> AuthStore {
+        AuthStore(
         load: {
-            guard let data = FileManager.default.contents(atPath: authPath) else { return nil }
+            guard let data = FileManager.default.contents(atPath: path) else { return nil }
             return try? JSONDecoder().decode(AuthCredentials.self, from: data)
         },
         save: { credentials in
-            try saveSecurely(credentials, directory: authDir, path: authPath)
+            try saveSecurely(credentials, directory: directory, path: path)
         },
         delete: {
             let fm = FileManager.default
-            guard fm.fileExists(atPath: authPath) else { return }
-            try fm.removeItem(atPath: authPath)
+            guard fm.fileExists(atPath: path) else { return }
+            try fm.removeItem(atPath: path)
         }
-    )
+        )
+    }
+
+    public static let live = file(directory: authDir, path: authPath)
 
     static func saveSecurely(_ credentials: AuthCredentials, directory: String, path: String) throws {
         let fm = FileManager.default
@@ -138,16 +142,28 @@ extension AuthStore {
     /// 2. ~/.grantiva/auth.json file
     /// 3. nil
     public static func resolveCredentials() -> AuthCredentials? {
-        let env = ProcessInfo.processInfo.environment
+        resolveCredentials(
+            environment: ProcessInfo.processInfo.environment,
+            loadStored: { live.load() }
+        )
+    }
+
+    static func resolveCredentials(
+        environment: [String: String],
+        loadStored: () -> AuthCredentials?
+    ) -> AuthCredentials? {
 
         // 1. Environment variable
-        if let apiKey = env["GRANTIVA_API_KEY"], !apiKey.isEmpty {
-            let baseURL = env["GRANTIVA_API_URL"] ?? GrantivaDefaults.apiBaseURL
-            return AuthCredentials(apiKey: apiKey, baseURL: baseURL)
+        if let rawAPIKey = environment["GRANTIVA_API_KEY"] {
+            let apiKey = rawAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            if !apiKey.isEmpty {
+                let baseURL = environment["GRANTIVA_API_URL"] ?? GrantivaDefaults.apiBaseURL
+                return AuthCredentials(apiKey: apiKey, baseURL: baseURL)
+            }
         }
 
         // 2. Auth file
-        if let stored = live.load() {
+        if let stored = loadStored() {
             return stored
         }
 
