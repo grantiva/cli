@@ -67,6 +67,37 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertEqual(found.first { $0.pid == 502 }?.processGroup, 501)
     }
 
+    func testStaleLeasePIDReusedByUnrelatedProcessIsNotTargeted() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-reaper-tests-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+
+        let unrelated = Process()
+        unrelated.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        unrelated.arguments = ["30"]
+        try unrelated.run()
+        defer {
+            if unrelated.isRunning { unrelated.terminate() }
+            unrelated.waitUntilExit()
+        }
+
+        let lease = try SimulatorLease.acquire(udid: udid, directory: directory)
+        lease.handOff(to: unrelated.processIdentifier)
+        let snapshot = "  \(unrelated.processIdentifier)  \(unrelated.processIdentifier) /bin/sleep 30"
+
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            snapshot: { snapshot },
+            gracePeriod: 0
+        )
+
+        XCTAssertTrue(result.processes.isEmpty)
+        XCTAssertTrue(unrelated.isRunning)
+        XCTAssertTrue(result.leaseReleased)
+    }
+
     func testForceTeardownBreaksTheLeaseWhenNothingIsRunning() async throws {
         let directory = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-reaper-tests-\(UUID().uuidString)").path

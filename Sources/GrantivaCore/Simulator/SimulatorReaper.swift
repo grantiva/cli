@@ -114,6 +114,20 @@ public enum SimulatorReaper {
         try await shell("/bin/ps -axo pid=,pgid=,command=")
     }
 
+    /// Confirms that a persisted lease PID still names a Grantiva executable.
+    /// PIDs are reusable, so liveness alone is not proof of ownership.
+    static func isGrantivaProcess(pid: Int32, psOutput: String) -> Bool {
+        for line in psOutput.split(separator: "\n", omittingEmptySubsequences: true) {
+            let fields = line.split(maxSplits: 2, whereSeparator: { $0 == " " || $0 == "\t" })
+            guard fields.count == 3, Int32(fields[0]) == pid else { continue }
+            let executable = fields[2].split(whereSeparator: { $0 == " " || $0 == "\t" }).first
+            guard let executable else { return false }
+            let name = URL(fileURLWithPath: String(executable)).lastPathComponent.lowercased()
+            return name == "grantiva" || name == "grantiva-runner"
+        }
+        return false
+    }
+
     /// Kills everything holding `udid`, breaks the lease, and reconciles the
     /// capacity registry so the ownership check and the ledger agree again.
     public static func forceTeardown(
@@ -137,6 +151,7 @@ public enum SimulatorReaper {
         if let claim = SimulatorLease.claim(udid: udid, directory: leaseDirectory),
            claim.pid != getpid(),
            !targets.contains(where: { $0.pid == claim.pid }),
+           isGrantivaProcess(pid: claim.pid, psOutput: psOutput),
            kill(claim.pid, 0) == 0 || errno == EPERM {
             targets.append(ReapedProcess(
                 pid: claim.pid,
