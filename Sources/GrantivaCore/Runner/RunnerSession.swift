@@ -407,45 +407,14 @@ public enum RunnerSession {
             reportDir: reportDir
         ))
 
-        // Collect screenshots from runner output
-        let fm = FileManager.default
-        if !fm.fileExists(atPath: outputDir) {
-            try fm.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
-        }
-
-        let assetsDir = "\(reportDir)/assets"
-        var captures: [ScreenCapture] = []
-
-        if fm.fileExists(atPath: assetsDir) {
-            // Walk every per-flow subdir. Each was produced by one of the flows
-            // in the batch; order is preserved by the runner, and `flowPaths`
-            // retains CLI order, so we can pair them.
-            let flowDirs = ((try? fm.contentsOfDirectory(atPath: assetsDir)) ?? []).sorted()
-            for (idx, flowDirName) in flowDirs.enumerated() {
-                let flowSrcPath = idx < flowPaths.count ? flowPaths[idx] : flowDirName
-                let flowName = URL(fileURLWithPath: flowSrcPath)
-                    .deletingPathExtension().lastPathComponent
-                let screenshotDir = "\(assetsDir)/\(flowDirName)"
-                let screenshotFiles = ((try? fm.contentsOfDirectory(atPath: screenshotDir)) ?? [])
-                    .filter { $0.hasSuffix(".png") }
-                    .sorted()
-
-                for file in screenshotFiles {
-                    let screenshotName = "\(flowName)-\(URL(fileURLWithPath: file).deletingPathExtension().lastPathComponent)"
-                    let srcPath = "\(screenshotDir)/\(file)"
-                    let dstPath = "\(outputDir)/\(screenshotName).png"
-                    if fm.fileExists(atPath: dstPath) { try fm.removeItem(atPath: dstPath) }
-                    try fm.copyItem(atPath: srcPath, toPath: dstPath)
-                    let data = try Data(contentsOf: URL(fileURLWithPath: dstPath))
-                    captures.append(ScreenCapture(
-                        screenName: screenshotName,
-                        path: dstPath,
-                        sizeBytes: data.count,
-                        steps: [StepResult(action: "Run flow \"\(flowName)\"", status: .passed, duration: 0)]
-                    ))
-                }
-            }
-        }
+        // report.json is the runner's source of truth for flow order and asset
+        // ownership. Never infer either from physical directory enumeration.
+        var captures = try RunnerArtifactCollector.collect(
+            reportDir: reportDir,
+            outputDir: outputDir,
+            requestedFlowPaths: flowPaths,
+            stagedPathMap: stagedPathMap
+        )
 
         // If no flow took any screenshots, emit one "ran" capture per flow so
         // callers see a row in the summary.
