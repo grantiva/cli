@@ -259,7 +259,7 @@ struct CICommand: AsyncParsableCommand {
                 var allPassed = true
 
                 for file in captureFiles {
-                    let screenName = String(file.dropLast(4))
+                    guard let screenName = ScreenArtifact.screenName(from: file) else { continue }
                     let capturePath = "\(captureDir)/\(file)"
                     let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
 

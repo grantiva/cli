@@ -3,6 +3,15 @@ import XCTest
 @testable import GrantivaCore
 
 final class BaselineStoreSafetyTests: XCTestCase {
+    func testArtifactFilenameRoundTripsLogicalScreenName() {
+        for name in ["Checkout complete", "../../outside", "literal%2Fvalue"] {
+            XCTAssertEqual(
+                ScreenArtifact.screenName(from: ScreenArtifact.fileName(for: name)),
+                name
+            )
+        }
+    }
+
     func testTraversalScreenNameStaysInsideBaselineDirectory() async throws {
         let root = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-baseline-safety-\(UUID().uuidString)")
@@ -19,6 +28,8 @@ final class BaselineStoreSafetyTests: XCTestCase {
         XCTAssertEqual(URL(fileURLWithPath: saved).lastPathComponent, "..%2F..%2Foutside.png")
         let loaded = try await store.load("../../outside")
         XCTAssertEqual(loaded, Data("image".utf8))
+        let names = try await store.list()
+        XCTAssertEqual(names, ["../../outside"])
         try await store.delete("../../outside")
         XCTAssertFalse(FileManager.default.fileExists(atPath: saved))
     }

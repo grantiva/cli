@@ -325,7 +325,7 @@ struct DiffCommand: AsyncParsableCommand {
             var allPassed = true
 
             for file in captureFiles {
-                let screenName = String(file.dropLast(4))
+                guard let screenName = ScreenArtifact.screenName(from: file) else { continue }
                 let capturePath = "\(captureDir)/\(file)"
                 let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
 
@@ -436,7 +436,7 @@ struct DiffCommand: AsyncParsableCommand {
 
             let toApprove: [String]
             if screenNames.isEmpty {
-                toApprove = allCaptures.map { String($0.dropLast(4)) }
+                toApprove = allCaptures.compactMap { ScreenArtifact.screenName(from: $0) }
             } else {
                 toApprove = screenNames
             }
