@@ -13,8 +13,6 @@ public struct GrantivaConfig: Sendable, Codable {
     public var flows: [String]
     public var diff: DiffConfig
     public var a11y: A11yConfig
-    public var size: SizeConfig
-    public var ai: AIConfig
 
     public struct Screen: Sendable, Codable {
         public var name: String
@@ -78,40 +76,10 @@ public struct GrantivaConfig: Sendable, Codable {
     }
 
     public struct A11yConfig: Sendable, Codable {
-        public var failOnNewViolations: Bool
         public var rules: [String]
 
-        public init(failOnNewViolations: Bool = true, rules: [String] = ["missing_label", "small_tap_target"]) {
-            self.failOnNewViolations = failOnNewViolations
+        public init(rules: [String] = ["missing_label", "small_tap_target"]) {
             self.rules = rules
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case failOnNewViolations = "fail_on_new_violations"
-            case rules
-        }
-    }
-
-    public struct SizeConfig: Sendable, Codable {
-        public var warnMb: Double
-        public var failMb: Double
-
-        public init(warnMb: Double = 0.5, failMb: Double = 2.0) {
-            self.warnMb = warnMb
-            self.failMb = failMb
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case warnMb = "warn_mb"
-            case failMb = "fail_mb"
-        }
-    }
-
-    public struct AIConfig: Sendable, Codable {
-        public var provider: String
-
-        public init(provider: String = "none") {
-            self.provider = provider
         }
     }
 
@@ -119,7 +87,7 @@ public struct GrantivaConfig: Sendable, Codable {
         case scheme, workspace, project, simulator
         case bundleId = "bundle_id"
         case buildSettings = "build_settings"
-        case screens, flows, diff, a11y, size, ai
+        case screens, flows, diff, a11y
     }
 
     public init(
@@ -132,9 +100,7 @@ public struct GrantivaConfig: Sendable, Codable {
         screens: [Screen] = [],
         flows: [String] = [],
         diff: DiffConfig = .init(),
-        a11y: A11yConfig = .init(),
-        size: SizeConfig = .init(),
-        ai: AIConfig = .init()
+        a11y: A11yConfig = .init()
     ) {
         self.scheme = scheme
         self.workspace = workspace
@@ -146,8 +112,6 @@ public struct GrantivaConfig: Sendable, Codable {
         self.flows = flows
         self.diff = diff
         self.a11y = a11y
-        self.size = size
-        self.ai = ai
     }
 
     public init(from decoder: Decoder) throws {
@@ -162,8 +126,6 @@ public struct GrantivaConfig: Sendable, Codable {
         flows = try container.decodeIfPresent([String].self, forKey: .flows) ?? []
         diff = try container.decodeIfPresent(DiffConfig.self, forKey: .diff) ?? .init()
         a11y = try container.decodeIfPresent(A11yConfig.self, forKey: .a11y) ?? .init()
-        size = try container.decodeIfPresent(SizeConfig.self, forKey: .size) ?? .init()
-        ai = try container.decodeIfPresent(AIConfig.self, forKey: .ai) ?? .init()
     }
 
     public static func load(from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) throws -> GrantivaConfig {

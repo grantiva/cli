@@ -13,8 +13,6 @@ public struct ResolvedProject: Sendable {
     public let flows: [String]
     public let diff: GrantivaConfig.DiffConfig
     public let a11y: GrantivaConfig.A11yConfig
-    public let size: GrantivaConfig.SizeConfig
-    public let ai: GrantivaConfig.AIConfig
 
     public init(
         scheme: String? = nil,
@@ -26,9 +24,7 @@ public struct ResolvedProject: Sendable {
         screens: [GrantivaConfig.Screen] = [],
         flows: [String] = [],
         diff: GrantivaConfig.DiffConfig = .init(),
-        a11y: GrantivaConfig.A11yConfig = .init(),
-        size: GrantivaConfig.SizeConfig = .init(),
-        ai: GrantivaConfig.AIConfig = .init()
+        a11y: GrantivaConfig.A11yConfig = .init()
     ) {
         self.scheme = scheme
         self.project = project
@@ -40,8 +36,6 @@ public struct ResolvedProject: Sendable {
         self.flows = flows
         self.diff = diff
         self.a11y = a11y
-        self.size = size
-        self.ai = ai
     }
 }
 
@@ -120,9 +114,7 @@ extension ResolvedProject {
             screens: config?.screens ?? [],
             flows: config?.flows ?? [],
             diff: config?.diff ?? .init(),
-            a11y: config?.a11y ?? .init(),
-            size: config?.size ?? .init(),
-            ai: config?.ai ?? .init()
+            a11y: config?.a11y ?? .init()
         )
     }
 }

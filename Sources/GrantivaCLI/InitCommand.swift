@@ -43,7 +43,6 @@ struct InitCommand: AsyncParsableCommand {
               perceptual_threshold: 5.0
 
             # a11y:
-            #   fail_on_new_violations: true
             #   rules:
             #     - missing_label
             #     - small_tap_target
