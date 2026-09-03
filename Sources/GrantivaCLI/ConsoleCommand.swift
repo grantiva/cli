@@ -224,12 +224,16 @@ enum ConsoleSupport {
     }
 
     /// Parses repeated `--env-value production=true` pairs into a slug→value map.
-    static func parseEnvValues(_ pairs: [String]) throws -> [String: String] {
+    static func parseEnvValues(
+        _ pairs: [String],
+        optionName: String = "--env-value",
+        keyName: String = "environment"
+    ) throws -> [String: String] {
         var values: [String: String] = [:]
         for pair in pairs {
             guard let eq = pair.firstIndex(of: "="), eq != pair.startIndex else {
                 throw GrantivaError.invalidArgument(
-                    "--env-value expects <environment>=<value>, got '\(pair)'"
+                    "\(optionName) expects <\(keyName)>=<value>, got '\(pair)'"
                 )
             }
             let env = String(pair[..<eq])
@@ -305,6 +309,19 @@ enum ConsoleSupport {
             }
         case .string:
             break
+        }
+    }
+
+    static func valueType(for flag: OrgFlagDetail) throws -> FlagValueTypeArgument {
+        switch flag.valueType {
+        case "boolean": return .bool
+        case "string": return .string
+        case "integer": return .int
+        case "json": return .json
+        default:
+            throw GrantivaError.invalidArgument(
+                "flag '\(flag.flagKey)' has unsupported value type '\(flag.valueType)'"
+            )
         }
     }
 }

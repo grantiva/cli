@@ -214,6 +214,16 @@ final class ConsoleCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleSupport.parseEnvValues(["=true"]))
     }
 
+    func testParseEnvValuesNamesTheCallingOption() {
+        XCTAssertThrowsError(
+            try ConsoleSupport.parseEnvValues(["nope"], optionName: "--custom")
+        ) { error in
+            let message = String(describing: error)
+            XCTAssertTrue(message.contains("--custom"), message)
+            XCTAssertFalse(message.contains("--env-value"), message)
+        }
+    }
+
     // MARK: - Support: condition parsing
 
     func testParseWhenConditions() throws {
@@ -482,6 +492,52 @@ final class ConsoleCommandTests: XCTestCase {
             guard case GrantivaError.invalidArgument = error else {
                 return XCTFail("expected invalidArgument, got \(error)")
             }
+        }
+    }
+
+    func testUpdateCommandValidatesValuesAgainstExistingFlagType() async throws {
+        let command = try ConsoleFlagsCommand.UpdateCommand.parse([
+            "dark_mode", "--env-value", "production=maybe",
+        ])
+        var client = ConsoleClient.failing
+        client.getFlag = { _ in
+            OrgFlagDetail(
+                id: "uuid-1", flagKey: "dark_mode", name: "Dark Mode",
+                valueType: "boolean", isActive: true
+            )
+        }
+
+        do {
+            try await command.run(client: client)
+            XCTFail("should have thrown")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else {
+                return XCTFail("expected invalidArgument, got \(error)")
+            }
+            XCTAssertTrue(message.contains("bool flags"), message)
+        }
+    }
+
+    func testOverrideAddValidatesValueAgainstExistingFlagType() async throws {
+        let command = try ConsoleFlagsOverridesCommand.AddCommand.parse([
+            "max_items", "--device", "device-1", "--value", "4.2",
+        ])
+        var client = ConsoleClient.failing
+        client.getFlag = { _ in
+            OrgFlagDetail(
+                id: "uuid-2", flagKey: "max_items", name: "Max Items",
+                valueType: "integer", isActive: true
+            )
+        }
+
+        do {
+            try await command.run(client: client)
+            XCTFail("should have thrown")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else {
+                return XCTFail("expected invalidArgument, got \(error)")
+            }
+            XCTAssertTrue(message.contains("int flags"), message)
         }
     }
 
