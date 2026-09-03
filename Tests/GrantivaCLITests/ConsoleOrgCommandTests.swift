@@ -63,6 +63,120 @@ final class ConsoleOrgCommandTests: XCTestCase {
         }
     }
 
+    func testAppsListInvokesClientAndOrdersPrimaryFirst() async throws {
+        var client = OrgClient.failing
+        let calls = Capture<Int>()
+        let secondary = app(id: "secondary", bundleId: "com.example.secondary")
+        let primary = app(id: "primary", bundleId: "com.example.primary", isPrimary: true)
+        client.listApps = {
+            await calls.set(1)
+            return [secondary, primary]
+        }
+
+        try await ConsoleAppsCommand.ListCommand.parse(["--json"]).run(client: client)
+
+        let callCount = await calls.value
+        XCTAssertEqual(callCount, 1)
+        XCTAssertEqual(ConsoleAppsCommand.primaryFirst([secondary, primary]).map(\.id), ["primary", "secondary"])
+    }
+
+    func testAppsListPreservesServerOrderWithinPrimaryGroups() {
+        let apps = [
+            app(id: "regular-1", bundleId: "one"),
+            app(id: "primary-1", bundleId: "two", isPrimary: true),
+            app(id: "regular-2", bundleId: "three"),
+            app(id: "primary-2", bundleId: "four", isPrimary: true),
+        ]
+
+        XCTAssertEqual(
+            ConsoleAppsCommand.primaryFirst(apps).map(\.id),
+            ["primary-1", "primary-2", "regular-1", "regular-2"]
+        )
+    }
+
+    func testAppsLifecycleCommandsForwardExactReferenceToMatchingClientCall() async throws {
+        let reference = "com.example.app"
+        let calls = Capture<[String]>()
+        var client = OrgClient.failing
+        client.activateApp = { ref in
+            await calls.append("activate:\(ref)")
+            return OrgApp(id: "1", appName: "App", bundleId: ref, teamId: "A1B2C3D4E5", isActive: true, isPrimary: false)
+        }
+        client.deactivateApp = { ref in
+            await calls.append("deactivate:\(ref)")
+            return OrgApp(id: "1", appName: "App", bundleId: ref, teamId: "A1B2C3D4E5", isActive: false, isPrimary: false)
+        }
+        client.setPrimaryApp = { ref in
+            await calls.append("set-primary:\(ref)")
+            return OrgApp(id: "1", appName: "App", bundleId: ref, teamId: "A1B2C3D4E5", isActive: true, isPrimary: true)
+        }
+
+        try await ConsoleAppsCommand.ActivateCommand.parse([reference, "--json"]).run(client: client)
+        try await ConsoleAppsCommand.DeactivateCommand.parse([reference, "--json"]).run(client: client)
+        try await ConsoleAppsCommand.SetPrimaryCommand.parse([reference, "--json"]).run(client: client)
+
+        let recordedCalls = await calls.value
+        XCTAssertEqual(
+            recordedCalls,
+            ["activate:\(reference)", "deactivate:\(reference)", "set-primary:\(reference)"]
+        )
+    }
+
+    func testAppsLifecycleMapsNotFoundToRequestedReference() async throws {
+        var client = OrgClient.failing
+        client.deactivateApp = { _ in throw GrantivaError.networkError("{}", 404) }
+
+        do {
+            try await ConsoleAppsCommand.DeactivateCommand.parse(["missing-app"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "app not found: missing-app")
+        }
+    }
+
+    func testAppsListAndLifecycleMapTheirRequiredScopes() async throws {
+        var listClient = OrgClient.failing
+        listClient.listApps = { throw GrantivaError.networkError("{}", 403) }
+        await assertPermissionScope("apps:read") {
+            try await ConsoleAppsCommand.ListCommand.parse([]).run(client: listClient)
+        }
+
+        var lifecycleClient = OrgClient.failing
+        lifecycleClient.setPrimaryApp = { _ in throw GrantivaError.networkError("{}", 403) }
+        await assertPermissionScope("apps:write") {
+            try await ConsoleAppsCommand.SetPrimaryCommand.parse(["app-id"]).run(client: lifecycleClient)
+        }
+    }
+
+    private func app(id: String, bundleId: String, isPrimary: Bool = false) -> OrgApp {
+        OrgApp(
+            id: id,
+            appName: id,
+            bundleId: bundleId,
+            teamId: "A1B2C3D4E5",
+            isActive: true,
+            isPrimary: isPrimary
+        )
+    }
+
+    private func assertPermissionScope(
+        _ scope: String,
+        operation: () async throws -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) async {
+        do {
+            try await operation()
+            XCTFail("expected throw", file: file, line: line)
+        } catch {
+            guard case GrantivaError.permissionDenied(let message) = error else {
+                return XCTFail("unexpected \(error)", file: file, line: line)
+            }
+            XCTAssertTrue(message.contains("'\(scope)'"), message, file: file, line: line)
+        }
+    }
+
     // MARK: - Claims parsing
 
     func testClaimsCreateRequiresTheConfigurationForItsType() throws {
@@ -208,6 +322,12 @@ final class ConsoleOrgCommandTests: XCTestCase {
 private actor Capture<T: Sendable> {
     private(set) var value: T?
     func set(_ new: T) { value = new }
+}
+
+private extension Capture where T == [String] {
+    func append(_ item: String) {
+        value = (value ?? []) + [item]
+    }
 }
 
 final class ClaimsTestDataOptionTests: XCTestCase {
