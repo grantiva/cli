@@ -57,6 +57,22 @@ final class SimulatorCapacityTests: XCTestCase {
         XCTAssertEqual(try capacity.sessions(devices: [shutdown]), [])
     }
 
+    func testBootedPendingReservationWithDeadOwnerIsPruned() {
+        let simulator = device(1, state: "Booted")
+        var records = [ManagedSimulatorSession(
+            udid: simulator.udid,
+            name: simulator.name,
+            sessionId: "abandoned",
+            ownerPID: 4242,
+            acquiredAt: Date(),
+            state: .pending
+        )]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertTrue(records.isEmpty)
+    }
+
     func testSameSimulatorReusesItsSlot() async throws {
         let capacity = SimulatorCapacity(directory: directory, maximum: 1, waitTimeout: 0)
         let simulator = device(1, state: "Booted")
