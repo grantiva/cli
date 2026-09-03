@@ -44,6 +44,13 @@ struct HierarchyCommand: AsyncParsableCommand {
         case json
     }
 
+    func validate() throws {
+        guard timeout > 0 else {
+            throw ValidationError("--timeout must be greater than zero")
+        }
+        if let udid { _ = try SimulatorUDID.validate(udid) }
+    }
+
     func run() async throws {
         let session = try locateSession()
 
@@ -55,9 +62,6 @@ struct HierarchyCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
         }
 
-        guard timeout > 0 else {
-            throw GrantivaError.invalidArgument("--timeout must be greater than zero")
-        }
         let request = URLRequest(url: url, timeoutInterval: timeout)
         let (data, response) = try await URLSession.shared.data(for: request)
 
@@ -81,8 +85,8 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
     }
 
-    private func locateSession() throws -> KeepAliveSession {
-        let dir = sessionsDir()
+    func locateSession(in dir: String? = nil) throws -> KeepAliveSession {
+        let dir = dir ?? sessionsDir()
         let fm = FileManager.default
 
         guard let contents = try? fm.contentsOfDirectory(atPath: dir) else {
@@ -91,7 +95,7 @@ struct HierarchyCommand: AsyncParsableCommand {
             )
         }
 
-        let jsonFiles = contents.filter { $0.hasSuffix(".json") }
+        let jsonFiles = contents.filter { $0.hasSuffix(".json") }.sorted()
         guard !jsonFiles.isEmpty else {
             throw GrantivaError.invalidArgument(
                 "No keep-alive session found in \(dir). Start one with `grantiva run --keep-alive` first."
@@ -99,7 +103,8 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
 
         if let udid {
-            let path = "\(dir)/\(udid).json"
+            let validatedUDID = try SimulatorUDID.validate(udid)
+            let path = "\(dir)/\(validatedUDID).json"
             guard fm.fileExists(atPath: path) else {
                 throw GrantivaError.invalidArgument(
                     "No keep-alive session for udid \(udid). Available: \(jsonFiles.map { ($0 as NSString).deletingPathExtension }.joined(separator: ", "))"
@@ -115,10 +120,14 @@ struct HierarchyCommand: AsyncParsableCommand {
                   let date = attrs[.modificationDate] as? Date else { return nil }
             return (path, date)
         }
-        guard let newest = withDates.max(by: { $0.1 < $1.1 }) else {
+        let newestFirst = withDates.sorted {
+            if $0.1 != $1.1 { return $0.1 > $1.1 }
+            return $0.0 < $1.0
+        }
+        guard let session = newestFirst.lazy.compactMap({ try? loadSession(path: $0.0) }).first else {
             throw GrantivaError.invalidArgument("Could not read any session file in \(dir)")
         }
-        return try loadSession(path: newest.0)
+        return session
     }
 
     private func loadSession(path: String) throws -> KeepAliveSession {
@@ -141,7 +150,7 @@ struct HierarchyCommand: AsyncParsableCommand {
     }
 }
 
-private struct KeepAliveSession: Decodable {
+struct KeepAliveSession: Decodable {
     let udid: String
     let port: Int
     let sessionId: String
