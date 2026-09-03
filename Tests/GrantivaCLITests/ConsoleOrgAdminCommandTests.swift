@@ -111,13 +111,13 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         client.billing = { throw GrantivaError.networkError("", 403) }
         client.auditLog = { _, _ in throw GrantivaError.networkError("", 403) }
 
-        try await assertPermissionScope("org:read") {
+        await assertPermissionScope("org:read") {
             try await ConsoleOrgCommand.SettingsCommand.GetCommand.parse([]).run(client: client)
         }
-        try await assertPermissionScope("admin:billing") {
+        await assertPermissionScope("admin:billing") {
             try await ConsoleOrgCommand.BillingCommand.ShowCommand.parse([]).run(client: client)
         }
-        try await assertPermissionScope("admin:audit") {
+        await assertPermissionScope("admin:audit") {
             try await ConsoleAuditCommand.ListCommand.parse([]).run(client: client)
         }
     }
@@ -250,12 +250,84 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "101", "--url", "https://x"]))
         XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--comparison", "lt", "--url", "https://x"]))
         XCTAssertEqual(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "https://x"]).comparison, "gte")
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["   ", "--threshold", "80", "--url", "https://x"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "http://x"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "not-a-url"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["   ", "--active"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--name", " \n "]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--url", "ftp://x"]))
         XCTAssertThrowsError(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse(["--threshold", "60"]))
         XCTAssertThrowsError(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse([]))
         XCTAssertEqual(try ConsoleAlertsCommand.FailureRateCommand.SetCommand.parse(["--no-enabled"]).enabled, false)
         XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["bogus=on"]))
         XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=maybe"]))
         XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["featureVoteThresholdCount=0"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=on", "flagToggle=off"]))
+    }
+
+    func testAlertRuleListCreateAndUpdateSendExactRequests() async throws {
+        let rule = try JSONDecoder().decode(
+            RiskAlertRule.self,
+            from: Data(#"{"id":"R1","name":"High risk","threshold":80,"comparison":"gte","webhookUrl":"https://ops.example.com/risk","isActive":true,"createdAt":null}"#.utf8)
+        )
+        let listed = Capture<Bool>()
+        let created = Capture<CreateRiskAlertRuleRequest>()
+        let updatedID = Capture<String>()
+        let updated = Capture<PatchRiskAlertRuleRequest>()
+        var client = OrgAdminClient.failing
+        client.listRules = {
+            await listed.set(true)
+            return [rule]
+        }
+        client.createRule = { request in
+            await created.set(request)
+            return rule
+        }
+        client.patchRule = { id, request in
+            await updatedID.set(id)
+            await updated.set(request)
+            return rule
+        }
+
+        try await ConsoleAlertsCommand.RulesCommand.ListCommand.parse(["--json"]).run(client: client)
+        try await ConsoleAlertsCommand.RulesCommand.CreateCommand.parse([
+            "High risk", "--threshold", "80", "--comparison", "gt", "--url", "https://ops.example.com/risk", "--json",
+        ]).run(client: client)
+        try await ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse([
+            "R1", "--name", "Critical", "--threshold", "90", "--comparison", "gte",
+            "--url", "https://ops.example.com/critical", "--no-active", "--json",
+        ]).run(client: client)
+
+        let didList = await listed.value
+        let createRequest = await created.value
+        let updateID = await updatedID.value
+        let updateRequest = await updated.value
+        XCTAssertEqual(didList, true)
+        XCTAssertEqual(createRequest, CreateRiskAlertRuleRequest(name: "High risk", threshold: 80, comparison: "gt", webhookUrl: "https://ops.example.com/risk"))
+        XCTAssertEqual(updateID, "R1")
+        XCTAssertEqual(updateRequest, PatchRiskAlertRuleRequest(name: "Critical", threshold: 90, comparison: "gte", webhookUrl: "https://ops.example.com/critical", isActive: false))
+    }
+
+    func testAlertRuleCommandsMapReadWriteAndMissingErrors() async throws {
+        var client = OrgAdminClient.failing
+        client.listRules = { throw GrantivaError.networkError("", 403) }
+        await assertPermissionScope("alerts:read") {
+            try await ConsoleAlertsCommand.RulesCommand.ListCommand.parse([]).run(client: client)
+        }
+
+        client.createRule = { _ in throw GrantivaError.networkError("", 403) }
+        await assertPermissionScope("alerts:write") {
+            try await ConsoleAlertsCommand.RulesCommand.CreateCommand.parse(["r", "--threshold", "80", "--url", "https://x"]).run(client: client)
+        }
+
+        client.patchRule = { _, _ in throw GrantivaError.networkError("", 404) }
+        do {
+            try await ConsoleAlertsCommand.RulesCommand.UpdateCommand.parse(["R1", "--active"]).run(client: client)
+            XCTFail("expected not found")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "rule not found: R1")
+        }
     }
 
     func testDestructiveAdminCommandsRejectBlankIDs() {
@@ -349,6 +421,42 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         let sent = await captured.value
         XCTAssertEqual(sent?.values["flagToggle"], .bool(false))
         XCTAssertEqual(sent?.values["featureVoteThresholdCount"], .number(25))
+    }
+
+    func testNotificationsGetAndSetMapScopesAndAllBooleanSpellings() async throws {
+        let prefs = NotificationPreferences(newFeatureRequest: true, featureVoteThreshold: true, featureVoteThresholdCount: 25, featureStatusChange: true, newSupportTicket: true, ticketAdminReply: true, ticketResolved: true, ticketUserReply: true, flagToggle: false, teamInvite: true, usageAlert: true)
+        let fetched = Capture<Bool>()
+        let patched = Capture<PatchNotificationPreferencesRequest>()
+        var client = OrgAdminClient.failing
+        client.notificationPreferences = {
+            await fetched.set(true)
+            return prefs
+        }
+        client.patchNotificationPreferences = { request in
+            await patched.set(request)
+            return prefs
+        }
+
+        try await ConsoleAlertsCommand.NotificationsCommand.GetCommand.parse(["--json"]).run(client: client)
+        try await ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse([
+            "newFeatureRequest=true", "flagToggle=OFF", "usageAlert=on", "teamInvite=false", "--json",
+        ]).run(client: client)
+        let didFetch = await fetched.value
+        let patch = await patched.value
+        XCTAssertEqual(didFetch, true)
+        XCTAssertEqual(patch?.values, [
+            "newFeatureRequest": .bool(true), "flagToggle": .bool(false),
+            "usageAlert": .bool(true), "teamInvite": .bool(false),
+        ])
+
+        client.notificationPreferences = { throw GrantivaError.networkError("", 403) }
+        await assertPermissionScope("org:read") {
+            try await ConsoleAlertsCommand.NotificationsCommand.GetCommand.parse([]).run(client: client)
+        }
+        client.patchNotificationPreferences = { _ in throw GrantivaError.networkError("", 403) }
+        await assertPermissionScope("org:write") {
+            try await ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["flagToggle=on"]).run(client: client)
+        }
     }
 
     func testKeysCreateAndRotateParse() throws {
@@ -532,16 +640,18 @@ private struct AuditQuery: Sendable, Equatable {
 
 private func assertPermissionScope(
     _ scope: String,
+    file: StaticString = #filePath,
+    line: UInt = #line,
     operation: () async throws -> Void
-) async throws {
+) async {
     do {
         try await operation()
-        XCTFail("expected permission error")
+        XCTFail("expected permission error", file: file, line: line)
     } catch {
         guard case GrantivaError.permissionDenied(let message) = error else {
-            return XCTFail("unexpected \(error)")
+            return XCTFail("unexpected \(error)", file: file, line: line)
         }
-        XCTAssertTrue(message.contains("'\(scope)'"), message)
+        XCTAssertTrue(message.contains("'\(scope)'"), message, file: file, line: line)
     }
 }
 
