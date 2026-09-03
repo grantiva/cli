@@ -58,6 +58,46 @@ final class CICompletionStateTests: XCTestCase {
         }
     }
 
+    func testLogUploadFailureDoesNotPreventFailureCompletion() async {
+        struct LogFailure: LocalizedError {
+            var errorDescription: String? { "logs unavailable" }
+        }
+
+        let recorder = CompletionRecorder()
+        let state = CIRunCompletionState()
+        let logError = await state.recoverFailure(
+            upload(screenCount: 0),
+            flushLogs: { throw LogFailure() }
+        ) { upload in
+            await recorder.complete(upload)
+        }
+
+        XCTAssertEqual(logError, "logs unavailable")
+        let uploads = await recorder.uploads
+        XCTAssertEqual(uploads.count, 1)
+        XCTAssertTrue(uploads[0].screens.isEmpty)
+    }
+
+    func testFailureRecoveryDoesNotOverwriteCompletedResults() async throws {
+        let recorder = CompletionRecorder()
+        var state = CIRunCompletionState()
+        _ = try await state.completeResults(upload(screenCount: 1)) { upload in
+            await recorder.complete(upload)
+        }
+
+        let logError = await state.recoverFailure(
+            upload(screenCount: 0),
+            flushLogs: {}
+        ) { upload in
+            await recorder.complete(upload)
+        }
+
+        XCTAssertNil(logError)
+        let uploads = await recorder.uploads
+        XCTAssertEqual(uploads.count, 1)
+        XCTAssertEqual(uploads[0].screens.count, 1)
+    }
+
     private func upload(screenCount: Int) -> RunUpload {
         let screens = (0..<screenCount).map {
             RunScreenUpload(name: "screen-\($0)", status: "passed", pixelThreshold: 0.02, perceptualThreshold: 5, captureData: Data())

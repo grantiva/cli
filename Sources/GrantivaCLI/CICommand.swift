@@ -39,6 +39,25 @@ struct CIRunCompletionState {
         guard !resultsCompleted else { return }
         _ = try? await complete(upload)
     }
+
+    /// Flush any pending diagnostics, but never let a logging outage prevent the
+    /// run itself from being moved out of the backend's `running` state.
+    func recoverFailure(
+        _ upload: RunUpload,
+        flushLogs: () async throws -> Void,
+        complete: (RunUpload) async throws -> RunResponse
+    ) async -> String? {
+        let logUploadError: String?
+        do {
+            try await flushLogs()
+            logUploadError = nil
+        } catch {
+            logUploadError = error.localizedDescription
+        }
+
+        await completeFailureIfNeeded(upload, using: complete)
+        return logUploadError
+    }
 }
 
 struct CICommand: AsyncParsableCommand {
@@ -428,14 +447,6 @@ struct CICommand: AsyncParsableCommand {
             } catch {
                 // Mark run as failed on the backend so it doesn't stay in "running" forever
                 remoteLogs.append("[grantiva] Run failed: \(error)")
-                do {
-                    try await flushLogs()
-                } catch let logError {
-                    throw GrantivaError.commandFailed(
-                        "CI failed: \(error). Failed to upload CI logs: \(logError)",
-                        1
-                    )
-                }
                 let duration = Date().timeIntervalSince(start)
                 let failUpload = RunUpload(
                     branch: branch,
@@ -444,8 +455,17 @@ struct CICommand: AsyncParsableCommand {
                     duration: duration,
                     screens: []
                 )
-                await completionState.completeFailureIfNeeded(failUpload) {
+                let logUploadError = await completionState.recoverFailure(
+                    failUpload,
+                    flushLogs: flushLogs
+                ) {
                     try await client.completeRun(project, runId, $0)
+                }
+                if let logUploadError {
+                    throw GrantivaError.commandFailed(
+                        "CI failed: \(error). Failed to upload CI logs: \(logUploadError)",
+                        1
+                    )
                 }
                 throw error
             }
