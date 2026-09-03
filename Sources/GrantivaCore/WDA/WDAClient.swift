@@ -67,7 +67,7 @@ extension WDAClient {
             hierarchy: {
                 let xml = try await fetchHierarchyXML(base: base)
                 let parser = WDAHierarchyXMLParser(xml: xml)
-                return parser.parse()
+                return try parser.parse()
             },
             hierarchyXML: {
                 try await fetchHierarchyXML(base: base)
@@ -90,7 +90,7 @@ extension WDAClient {
                 let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
                 guard let elements = findJson["value"] as? [[String: Any]],
                       let first = elements.first,
-                      let elementId = first["ELEMENT"] as? String ?? first.values.first as? String else {
+                      let elementId = elementID(from: first) else {
                     throw GrantivaError.elementNotFound(label)
                 }
 
@@ -223,6 +223,11 @@ extension WDAClient {
 
     // MARK: - Helpers
 
+    static func elementID(from element: [String: Any]) -> String? {
+        element["ELEMENT"] as? String
+            ?? element["element-6066-11e4-a52e-4f735466cecf"] as? String
+    }
+
     private static func resolveSessionId(base: String) async throws -> String {
         let url = URL(string: "\(base)/status")!
         let (data, response) = try await URLSession.shared.data(from: url)
@@ -279,16 +284,22 @@ public class WDAHierarchyXMLParser: NSObject, XMLParserDelegate {
     private let xml: String
     private var stack: [NSMutableDictionary] = []
     private var root: [String: Any] = [:]
+    private var conversionFailed = false
 
     public init(xml: String) {
         self.xml = xml
     }
 
-    public func parse() -> [String: Any] {
-        guard let data = xml.data(using: .utf8) else { return [:] }
+    public func parse() throws -> [String: Any] {
+        guard let data = xml.data(using: .utf8) else {
+            throw GrantivaError.commandFailed("Failed to encode WDA hierarchy XML", 1)
+        }
         let parser = XMLParser(data: data)
         parser.delegate = self
-        parser.parse()
+        guard parser.parse(), !conversionFailed, !root.isEmpty else {
+            let detail = parser.parserError?.localizedDescription ?? "unexpected hierarchy structure"
+            throw GrantivaError.commandFailed("Failed to parse WDA hierarchy XML: \(detail)", 1)
+        }
         return root
     }
 
@@ -333,7 +344,11 @@ public class WDAHierarchyXMLParser: NSObject, XMLParserDelegate {
     public func parser(_ parser: XMLParser, didEndElement elementName: String,
                        namespaceURI: String?, qualifiedName: String?) {
         if let finished = stack.popLast(), stack.isEmpty {
-            root = finished as! [String: Any]
+            guard let dictionary = finished as? [String: Any] else {
+                conversionFailed = true
+                return
+            }
+            root = dictionary
         }
     }
 }
