@@ -14,16 +14,33 @@ final class RecordCommandTests: XCTestCase {
         try await RecorderLifecycle.waitForStart(of: recording)
     }
 
-    func testStopInterruptsAndWaitsForCaptureProcess() throws {
+    func testStopInterruptsAndWaitsForCaptureProcess() async throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/tail")
         process.arguments = ["-f", "/dev/null"]
         try process.run()
 
-        RecorderLifecycle.stop(process)
+        try await RecorderLifecycle.stop(process)
 
         XCTAssertFalse(process.isRunning)
         XCTAssertNotEqual(process.terminationReason, .exit)
+    }
+
+    func testStopEscalatesWhenRecorderIgnoresInterrupt() async throws {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sh")
+        process.arguments = ["-c", "trap '' INT; exec tail -f /dev/null"]
+        try process.run()
+
+        try await RecorderLifecycle.stop(
+            process,
+            gracefulAttempts: 1,
+            terminationAttempts: 100,
+            pollInterval: .milliseconds(1)
+        )
+
+        XCTAssertFalse(process.isRunning)
+        XCTAssertNotEqual(process.terminationStatus, 0)
     }
 
     func testCleanupStopsRecorderWhenStartupTimesOutAndPreservesTimeout() async throws {

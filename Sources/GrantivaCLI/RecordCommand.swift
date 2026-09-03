@@ -45,16 +45,26 @@ struct RecordCommand: AsyncParsableCommand {
         let recorder = Process()
         recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
         recorder.arguments = ["simctl", "io", device.udid, "recordVideo", "--codec=h264", output]
-        let stderr = Pipe()
+        let stderrURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-record-\(UUID().uuidString).log")
+        FileManager.default.createFile(atPath: stderrURL.path, contents: nil)
+        defer { try? FileManager.default.removeItem(at: stderrURL) }
+        let stderr = try FileHandle(forWritingTo: stderrURL)
         recorder.standardError = stderr
-        try recorder.run()
-        try await RecorderLifecycle.withCleanup(for: recorder) {
-            try await RecorderLifecycle.waitForStart(of: outputURL)
-            try await Task.sleep(for: .seconds(duration))
+        do {
+            try recorder.run()
+            try await RecorderLifecycle.withCleanup(for: recorder) {
+                try await RecorderLifecycle.waitForStart(of: outputURL)
+                try await Task.sleep(for: .seconds(duration))
+            }
+            try stderr.close()
+        } catch {
+            try? stderr.close()
+            throw error
         }
 
         guard FileManager.default.fileExists(atPath: output) else {
-            let message = String(data: stderr.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8) ?? ""
+            let message = (try? String(contentsOf: stderrURL, encoding: .utf8)) ?? ""
             throw GrantivaError.commandFailed("Grantiva recording produced no video: \(message)", recorder.terminationStatus)
         }
 
@@ -157,9 +167,15 @@ struct RecordCommand: AsyncParsableCommand {
 /// when it receives SIGINT. SIGTERM can leave the requested output empty while
 /// the staging file remains behind, especially for short captures.
 enum RecorderLifecycle {
-    static func withCleanup<T>(for process: Process, operation: () async throws -> T) async rethrows -> T {
-        defer { stop(process) }
-        return try await operation()
+    static func withCleanup<T>(for process: Process, operation: () async throws -> T) async throws -> T {
+        do {
+            let result = try await operation()
+            try await stop(process)
+            return result
+        } catch {
+            try? await stop(process)
+            throw error
+        }
     }
 
     static func waitForStart(
@@ -179,9 +195,33 @@ enum RecorderLifecycle {
         throw GrantivaError.commandFailed("Timed out waiting for simulator recording to start", 1)
     }
 
-    static func stop(_ process: Process) {
+    static func stop(
+        _ process: Process,
+        gracefulAttempts: Int = 50,
+        terminationAttempts: Int = 20,
+        pollInterval: Duration = .milliseconds(100)
+    ) async throws {
         if process.isRunning { process.interrupt() }
-        process.waitUntilExit()
+        if await waitForExit(process, attempts: gracefulAttempts, pollInterval: pollInterval) { return }
+
+        if process.isRunning { process.terminate() }
+        if await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) { return }
+
+        if process.isRunning { kill(process.processIdentifier, SIGKILL) }
+        guard await waitForExit(process, attempts: terminationAttempts, pollInterval: pollInterval) else {
+            throw GrantivaError.commandFailed("Timed out stopping simulator recording", 1)
+        }
+    }
+
+    private static func waitForExit(
+        _ process: Process,
+        attempts: Int,
+        pollInterval: Duration
+    ) async -> Bool {
+        for _ in 0..<attempts where process.isRunning {
+            try? await Task.sleep(for: pollInterval)
+        }
+        return !process.isRunning
     }
 }
 

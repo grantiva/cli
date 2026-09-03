@@ -266,9 +266,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
         process.currentDirectoryURL = URL(fileURLWithPath: runnerDir)
 
         let stdoutPipe = Pipe()
-        let stderrPipe = Pipe()
         process.standardOutput = stdoutPipe
-        process.standardError = stderrPipe
+        // Inherit stderr so the child can never fill an unread pipe while WDA
+        // is starting, and foreground users see the runner's diagnostics.
+        process.standardError = FileHandle.standardError
 
         try process.run()
 
