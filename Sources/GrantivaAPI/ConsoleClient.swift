@@ -15,6 +15,7 @@ public struct ConsoleClient: Sendable {
     public var deleteFlag: @Sendable (_ flagRef: String) async throws -> Void
     public var toggleFlag: @Sendable (_ flagRef: String, ToggleOrgFlagRequest) async throws -> OrgFlagToggleResponse
     public var flagHistory: @Sendable (_ flagRef: String, _ limit: Int?, _ offset: Int?) async throws -> [FlagHistoryEntry]
+    public var flagEvaluations: @Sendable (_ flagRef: String, _ limit: Int?) async throws -> OrgFlagEvaluationsResponse
 
     // Overrides (org endpoints)
     public var listOverrides: @Sendable (_ flagRef: String) async throws -> [OrgFlagOverride]
@@ -48,6 +49,7 @@ public struct ConsoleClient: Sendable {
         deleteFlag: @escaping @Sendable (String) async throws -> Void,
         toggleFlag: @escaping @Sendable (String, ToggleOrgFlagRequest) async throws -> OrgFlagToggleResponse,
         flagHistory: @escaping @Sendable (String, Int?, Int?) async throws -> [FlagHistoryEntry],
+        flagEvaluations: @escaping @Sendable (String, Int?) async throws -> OrgFlagEvaluationsResponse,
         listOverrides: @escaping @Sendable (String) async throws -> [OrgFlagOverride],
         createOverride: @escaping @Sendable (String, CreateFlagOverrideRequest) async throws -> OrgFlagOverride,
         deleteOverride: @escaping @Sendable (String, String) async throws -> Void,
@@ -70,6 +72,7 @@ public struct ConsoleClient: Sendable {
         self.deleteFlag = deleteFlag
         self.toggleFlag = toggleFlag
         self.flagHistory = flagHistory
+        self.flagEvaluations = flagEvaluations
         self.listOverrides = listOverrides
         self.createOverride = createOverride
         self.deleteOverride = deleteOverride
@@ -115,6 +118,9 @@ extension ConsoleClient {
             },
             flagHistory: { flagRef, limit, offset in
                 try await client.execute(OrgFlagEndpoints.history(flagRef: flagRef, limit: limit, offset: offset), baseURL: baseURL)
+            },
+            flagEvaluations: { flagRef, limit in
+                try await client.execute(OrgFlagEndpoints.evaluations(flagRef: flagRef, limit: limit), baseURL: baseURL)
             },
             listOverrides: { flagRef in
                 try await client.execute(OrgFlagEndpoints.listOverrides(flagRef: flagRef), baseURL: baseURL)
@@ -218,6 +224,7 @@ extension ConsoleClient {
         deleteFlag: { _ in throw GrantivaError.notAuthenticated },
         toggleFlag: { _, _ in throw GrantivaError.notAuthenticated },
         flagHistory: { _, _, _ in throw GrantivaError.notAuthenticated },
+        flagEvaluations: { _, _ in throw GrantivaError.notAuthenticated },
         listOverrides: { _ in throw GrantivaError.notAuthenticated },
         createOverride: { _, _ in throw GrantivaError.notAuthenticated },
         deleteOverride: { _, _ in throw GrantivaError.notAuthenticated },

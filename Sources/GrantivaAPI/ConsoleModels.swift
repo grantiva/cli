@@ -333,6 +333,35 @@ public struct FlagHistoryEntry: Codable, Sendable {
     }
 }
 
+// MARK: - Recorded Flag Evaluations (org endpoint, snake_case)
+
+public struct OrgFlagEvaluationEntry: Codable, Sendable, Equatable {
+    public let id: String
+    public let deviceKeyId: String?
+    public let value: String
+    public let evaluatedAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case deviceKeyId = "device_key_id"
+        case value
+        case evaluatedAt = "evaluated_at"
+    }
+
+    public init(id: String, deviceKeyId: String? = nil, value: String, evaluatedAt: String? = nil) {
+        self.id = id
+        self.deviceKeyId = deviceKeyId
+        self.value = value
+        self.evaluatedAt = evaluatedAt
+    }
+}
+
+public struct OrgFlagEvaluationsResponse: Codable, Sendable, Equatable {
+    public let evaluations: [OrgFlagEvaluationEntry]
+
+    public init(evaluations: [OrgFlagEvaluationEntry]) { self.evaluations = evaluations }
+}
+
 // MARK: - Flag Overrides (org endpoints, snake_case — list is a bare array)
 
 public struct OrgFlagOverride: Codable, Sendable {

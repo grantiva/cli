@@ -85,6 +85,23 @@ final class ConsoleAPITests: XCTestCase {
         XCTAssertTrue(url.contains("offset=20"))
     }
 
+    func testRecordedEvaluationsEndpoint() {
+        let endpoint = OrgFlagEndpoints.evaluations(flagRef: "dark/mode", limit: 50)
+        XCTAssertEqual(endpoint.method, .get)
+        XCTAssertEqual(
+            try! endpoint.url(relativeTo: base).absoluteString,
+            "https://api.example.com/api/v1/org/flags/dark%2Fmode/evaluations?limit=50"
+        )
+    }
+
+    func testRecordedEvaluationsDecodeSnakeCase() throws {
+        let json = #"{"evaluations":[{"id":"E1","device_key_id":"device-1","value":"true","evaluated_at":"2026-09-01T00:00:00Z"}]}"#
+        let response = try JSONDecoder().decode(OrgFlagEvaluationsResponse.self, from: Data(json.utf8))
+        XCTAssertEqual(response.evaluations, [
+            OrgFlagEvaluationEntry(id: "E1", deviceKeyId: "device-1", value: "true", evaluatedAt: "2026-09-01T00:00:00Z")
+        ])
+    }
+
     func testOverrideEndpoints() {
         let list = OrgFlagEndpoints.listOverrides(flagRef: "dark_mode")
         XCTAssertEqual(list.method, .get)

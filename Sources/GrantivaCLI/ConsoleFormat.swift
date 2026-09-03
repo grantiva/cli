@@ -175,6 +175,14 @@ enum ConsoleFormat {
         return table(headers: ["WHEN", "ACTION", "SUMMARY", "ACTOR"], rows: rows)
     }
 
+    static func evaluationsTable(_ entries: [OrgFlagEvaluationEntry]) -> String {
+        guard !entries.isEmpty else { return "No evaluations found." }
+        let rows = entries.map { entry in
+            [entry.evaluatedAt.map(shortDate) ?? "-", entry.deviceKeyId ?? "-", entry.value, entry.id]
+        }
+        return table(headers: ["WHEN", "DEVICE", "VALUE", "ID"], rows: rows)
+    }
+
     // MARK: - Evaluation Trace
 
     /// Renders the full dry-run rule trace: the resolved value, then every
