@@ -284,7 +284,7 @@ struct RunCommand: AsyncParsableCommand {
             if !fm.fileExists(atPath: captureDir) {
                 try? fm.createDirectory(atPath: captureDir, withIntermediateDirectories: true)
             }
-            _ = try? await shell("xcrun simctl io \(device.udid) screenshot \(failurePath)")
+            _ = try? await shell(Self.failureScreenshotCommand(udid: device.udid, path: failurePath))
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
             }
@@ -357,6 +357,10 @@ struct RunCommand: AsyncParsableCommand {
         if !allPassed {
             throw ExitCode.failure
         }
+    }
+
+    static func failureScreenshotCommand(udid: String, path: String) -> String {
+        "xcrun simctl io \(shellQuoted(udid)) screenshot \(shellQuoted(path))"
     }
 
     /// Progress narration for a human. Goes to stderr via the log; the run's

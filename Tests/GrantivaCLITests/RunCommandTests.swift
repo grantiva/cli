@@ -4,6 +4,16 @@ import XCTest
 import GrantivaCore
 
 final class RunCommandTests: XCTestCase {
+    func testFailureScreenshotCommandQuotesHostilePathAndUDID() {
+        XCTAssertEqual(
+            RunCommand.failureScreenshotCommand(
+                udid: "device'; touch /tmp/owned; '",
+                path: "/tmp/report'; touch /tmp/owned; '/failure.png"
+            ),
+            "xcrun simctl io 'device'\\''; touch /tmp/owned; '\\''' screenshot '/tmp/report'\\''; touch /tmp/owned; '\\''/failure.png'"
+        )
+    }
+
     func testTimeoutMustBeAtLeastThirtySeconds() throws {
         XCTAssertThrowsError(try RunCommand.parse(["--timeout", "29"])) { error in
             XCTAssertTrue(String(describing: error).contains("at least 30 seconds"))
