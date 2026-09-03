@@ -3,6 +3,23 @@ import Foundation
 import GrantivaCore
 import GrantivaAPI
 
+struct CILogBuffer {
+    private(set) var lines: [String] = []
+
+    mutating func append(_ line: String) {
+        lines.append(line)
+    }
+
+    mutating func flush(
+        using send: (String) async throws -> Void
+    ) async throws {
+        while let line = lines.first {
+            try await send(line)
+            lines.removeFirst()
+        }
+    }
+}
+
 struct CICommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "ci",
@@ -34,18 +51,12 @@ struct CICommand: AsyncParsableCommand {
         var runnerManager: RunnerManager = .live
         var imageDiffer: ImageDiffer = .live
 
-        /// Log a step to stderr and stream to the backend if a run is active.
-        func log(_ message: String, client: RangeClient? = nil, project: String? = nil, runId: String? = nil) {
-            guard !options.json else { return }
+        /// Log a step locally and return the backend representation for buffering.
+        @discardableResult
+        func log(_ message: String) -> String {
             let line = "[grantiva] \(message)"
             options.note(message)
-
-            // Fire-and-forget log append to backend
-            if let client, let project, let runId {
-                Task {
-                    try? await client.appendLog(project, runId, line)
-                }
-            }
+            return line
         }
 
         func run() async throws {
@@ -96,11 +107,18 @@ struct CICommand: AsyncParsableCommand {
                 branch: branch, commitSHA: trimmedSHA, trigger: trigger
             ))
             let runId = startResponse.runId
-            log("Run started: \(runId)", client: client, project: project, runId: runId)
+            var remoteLogs = CILogBuffer()
+            remoteLogs.append(log("Run started: \(runId)"))
 
-            // Helper to log with streaming
+            // Buffer remote logs so completion cannot race fire-and-forget tasks.
             func rlog(_ message: String) {
-                log(message, client: client, project: project, runId: runId)
+                remoteLogs.append(log(message))
+            }
+
+            func flushLogs() async throws {
+                try await remoteLogs.flush { line in
+                    try await client.appendLog(project, runId, line)
+                }
             }
 
             var ciVerdictFailed = false
@@ -309,9 +327,11 @@ struct CICommand: AsyncParsableCommand {
                 )
 
                 rlog("Uploading results to \(credentials.baseURL)...")
+                try await flushLogs()
 
                 let runResponse = try await client.completeRun(project, runId, upload)
                 rlog("Upload complete: run=\(runResponse.runId)")
+                try await flushLogs()
 
                 // 4. Output results
                 struct CIRunResult: Codable, Sendable {
@@ -377,7 +397,15 @@ struct CICommand: AsyncParsableCommand {
                 }
             } catch {
                 // Mark run as failed on the backend so it doesn't stay in "running" forever
-                try? await client.appendLog(project, runId, "[grantiva] Run failed: \(error)")
+                remoteLogs.append("[grantiva] Run failed: \(error)")
+                do {
+                    try await flushLogs()
+                } catch let logError {
+                    throw GrantivaError.commandFailed(
+                        "CI failed: \(error). Failed to upload CI logs: \(logError)",
+                        1
+                    )
+                }
                 let duration = Date().timeIntervalSince(start)
                 let failUpload = RunUpload(
                     branch: branch,
