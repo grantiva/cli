@@ -122,6 +122,7 @@ public struct GrantivaMCPServer: Sendable {
                 "No active runner session at \(sessionURL.path). Start one with 'grantiva runner start'."
             )
         }
+        _ = try SimulatorUDID.validate(session.udid, flag: "session UDID")
         return session
     }
 }

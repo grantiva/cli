@@ -23,7 +23,7 @@ final class MCPServerTests: XCTestCase {
             pid: getpid(),
             wdaPort: 8201,
             bundleId: "com.example.app",
-            udid: "TEST-UDID",
+            udid: "921A0945-7157-4533-BA1F-21E8132D3E40",
             startedAt: Date()
         )
         let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
@@ -37,6 +37,28 @@ final class MCPServerTests: XCTestCase {
 
         XCTAssertEqual(loaded.wdaPort, 8201)
         XCTAssertEqual(loaded.bundleId, "com.example.app")
+    }
+
+    func testSessionRejectsMalformedUDIDBeforeToolsConsumeIt() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let session = RunnerSessionInfo(
+            pid: getpid(),
+            wdaPort: 8201,
+            bundleId: "com.example.app",
+            udid: "$(touch /tmp/grantiva-mcp-injected)",
+            startedAt: Date()
+        )
+        let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
+        try FileManager.default.createDirectory(
+            at: sessionURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try JSONEncoder().encode(session).write(to: sessionURL)
+
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory)) { error in
+            XCTAssertTrue(String(describing: error).contains("session UDID"))
+        }
     }
 
     func testMissingSessionFailsLoudly() throws {
