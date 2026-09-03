@@ -6,6 +6,47 @@ import GrantivaCore
 import ArgumentParser
 
 final class ConsoleOrgAdminCommandTests: XCTestCase {
+    func testResourceGetCommandsParse() throws {
+        XCTAssertEqual(try ConsoleWebhooksCommand.GetCommand.parse(["W1"]).webhook, "W1")
+        XCTAssertEqual(try ConsoleAlertsCommand.RulesCommand.GetCommand.parse(["R1"]).rule, "R1")
+        XCTAssertEqual(try ConsoleKeysCommand.GetCommand.parse(["K1"]).key, "K1")
+        XCTAssertEqual(try ConsoleTeamCommand.GetCommand.parse(["M1"]).membership, "M1")
+    }
+
+    func testResourceGetCommandsSelectRequestedRecord() async throws {
+        let decoder = JSONDecoder()
+        var client = OrgAdminClient.failing
+        client.listWebhooks = {
+            [try! decoder.decode(Webhook.self, from: Data(#"{"id":"W1","url":"https://x","events":["device.new"],"isActive":true,"description":null,"createdAt":null,"updatedAt":null}"#.utf8))]
+        }
+        client.listRules = {
+            [try! decoder.decode(RiskAlertRule.self, from: Data(#"{"id":"R1","name":"High risk","threshold":80,"comparison":"gte","webhookUrl":"https://x","isActive":true,"createdAt":null}"#.utf8))]
+        }
+        client.listKeys = {
+            [try! decoder.decode(APIKeySummary.self, from: Data(#"{"id":"K1","name":"CI","keyPrefix":"gpat_abc","scopes":["flags:read"],"keyType":"org","isActive":true,"lastUsedAt":null,"expiresAt":null,"createdAt":null}"#.utf8))]
+        }
+        client.members = {
+            [try! decoder.decode(OrgMember.self, from: Data(#"{"id":"M1","userId":"U1","email":"dev@example.com","orgRole":"member","joinedAt":"2026-09-01T00:00:00Z"}"#.utf8))]
+        }
+
+        try await ConsoleWebhooksCommand.GetCommand.parse(["W1", "--json"]).run(client: client)
+        try await ConsoleAlertsCommand.RulesCommand.GetCommand.parse(["R1", "--json"]).run(client: client)
+        try await ConsoleKeysCommand.GetCommand.parse(["K1", "--json"]).run(client: client)
+        try await ConsoleTeamCommand.GetCommand.parse(["M1", "--json"]).run(client: client)
+    }
+
+    func testResourceGetMapsMissingRecord() async throws {
+        var client = OrgAdminClient.failing
+        client.listWebhooks = { [] }
+        do {
+            try await ConsoleWebhooksCommand.GetCommand.parse(["missing"]).run(client: client)
+            XCTFail("expected not found")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "webhook not found: missing")
+        }
+    }
+
     func testWebhookCreateValidation() throws {
         XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h", "--event", "device.new"]))
         XCTAssertThrowsError(try ConsoleWebhooksCommand.CreateCommand.parse(["https://ops.example.com/h"]))

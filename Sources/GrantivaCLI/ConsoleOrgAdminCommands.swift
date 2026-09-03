@@ -26,7 +26,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "webhooks",
         abstract: "Manage webhook endpoints and inspect their deliveries.",
-        subcommands: [ListCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self]
+        subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self]
     )
 
     static func notFound(_ id: String) -> String { "webhook not found: \(id)" }
@@ -39,6 +39,21 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
             let hooks: [Webhook]
             do { hooks = try await client.listWebhooks() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.webhooksRead) }
             try ConsoleAdmin.emit(hooks, options: options) { ConsoleAdminFormat.webhooks(hooks) }
+        }
+    }
+
+    struct GetCommand: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one webhook endpoint.")
+        @OptionGroup var options: GlobalOptions
+        @Argument(help: "Webhook ID.") var webhook: String
+        func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
+        func run(client: OrgAdminClient) async throws {
+            let hooks: [Webhook]
+            do { hooks = try await client.listWebhooks() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.webhooksRead) }
+            guard let hook = hooks.first(where: { $0.id == webhook }) else {
+                throw GrantivaError.notFound(ConsoleWebhooksCommand.notFound(webhook))
+            }
+            try ConsoleAdmin.emit(hook, options: options) { ConsoleAdminFormat.webhooks([hook]) }
         }
     }
 
@@ -196,7 +211,7 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
     )
 
     struct RulesCommand: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(commandName: "rules", abstract: "Risk alert rules (Business plan and up).", subcommands: [ListCommand.self, CreateCommand.self, UpdateCommand.self, DeleteCommand.self, DeliveriesCommand.self])
+        static let configuration = CommandConfiguration(commandName: "rules", abstract: "Risk alert rules (Business plan and up).", subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, UpdateCommand.self, DeleteCommand.self, DeliveriesCommand.self])
 
         struct ListCommand: AsyncParsableCommand {
             static let configuration = CommandConfiguration(commandName: "list", abstract: "List risk alert rules.")
@@ -206,6 +221,21 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
                 let rules: [RiskAlertRule]
                 do { rules = try await client.listRules() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
                 try ConsoleAdmin.emit(rules, options: options) { ConsoleAdminFormat.rules(rules) }
+            }
+        }
+
+        struct GetCommand: AsyncParsableCommand {
+            static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one risk alert rule.")
+            @OptionGroup var options: GlobalOptions
+            @Argument(help: "Rule ID.") var rule: String
+            func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
+            func run(client: OrgAdminClient) async throws {
+                let rules: [RiskAlertRule]
+                do { rules = try await client.listRules() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsRead) }
+                guard let found = rules.first(where: { $0.id == rule }) else {
+                    throw GrantivaError.notFound("rule not found: \(rule)")
+                }
+                try ConsoleAdmin.emit(found, options: options) { ConsoleAdminFormat.rules([found]) }
             }
         }
 
@@ -396,7 +426,7 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "keys",
         abstract: "Manage API keys. A key can only create keys with scopes it holds itself.",
-        subcommands: [ListCommand.self, CreateCommand.self, RotateCommand.self, RevokeCommand.self]
+        subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, RotateCommand.self, RevokeCommand.self]
     )
 
     static func notFound(_ id: String) -> String { "API key not found: \(id)" }
@@ -409,6 +439,21 @@ struct ConsoleKeysCommand: AsyncParsableCommand {
             let keys: [APIKeySummary]
             do { keys = try await client.listKeys() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.keysRead) }
             try ConsoleAdmin.emit(keys, options: options) { ConsoleAdminFormat.keys(keys) }
+        }
+    }
+
+    struct GetCommand: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one API key (prefix only).")
+        @OptionGroup var options: GlobalOptions
+        @Argument(help: "Key ID.") var key: String
+        func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
+        func run(client: OrgAdminClient) async throws {
+            let keys: [APIKeySummary]
+            do { keys = try await client.listKeys() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.keysRead) }
+            guard let found = keys.first(where: { $0.id == key }) else {
+                throw GrantivaError.notFound(ConsoleKeysCommand.notFound(key))
+            }
+            try ConsoleAdmin.emit(found, options: options) { ConsoleAdminFormat.keys([found]) }
         }
     }
 
@@ -475,7 +520,7 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "team",
         abstract: "Members and invites.",
-        subcommands: [MembersCommand.self, InvitesCommand.self, InviteCommand.self, RevokeInviteCommand.self, RemoveCommand.self]
+        subcommands: [MembersCommand.self, GetCommand.self, InvitesCommand.self, InviteCommand.self, RevokeInviteCommand.self, RemoveCommand.self]
     )
 
     struct MembersCommand: AsyncParsableCommand {
@@ -486,6 +531,21 @@ struct ConsoleTeamCommand: AsyncParsableCommand {
             let members: [OrgMember]
             do { members = try await client.members() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.orgRead) }
             try ConsoleAdmin.emit(members, options: options) { ConsoleAdminFormat.members(members) }
+        }
+    }
+
+    struct GetCommand: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(commandName: "get", abstract: "Show one organization member.")
+        @OptionGroup var options: GlobalOptions
+        @Argument(help: "Membership ID.") var membership: String
+        func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
+        func run(client: OrgAdminClient) async throws {
+            let members: [OrgMember]
+            do { members = try await client.members() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.orgRead) }
+            guard let member = members.first(where: { $0.id == membership }) else {
+                throw GrantivaError.notFound("membership not found: \(membership)")
+            }
+            try ConsoleAdmin.emit(member, options: options) { ConsoleAdminFormat.members([member]) }
         }
     }
 
