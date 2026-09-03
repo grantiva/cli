@@ -168,7 +168,7 @@ public final class ChildProcess: @unchecked Sendable {
         Self.terminateGroup(processGroup, gracePeriod: gracePeriod)
     }
 
-    static func terminateGroup(_ pgid: pid_t, gracePeriod: TimeInterval = 5) {
+    public static func terminateGroup(_ pgid: pid_t, gracePeriod: TimeInterval = 5) {
         guard pgid > 1, pgid != getpgrp() else { return }
         kill(-pgid, SIGINT)
         let deadline = Date().addingTimeInterval(gracePeriod)
