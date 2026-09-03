@@ -44,9 +44,19 @@ extension ProjectDetector {
             throw GrantivaError.invalidArgument("Cannot read current directory")
         }
 
+        return try await detect(contents: contents) { command in
+            try await shell(command)
+        }
+    }
+
+    static func detect(
+        contents: [String],
+        runShell: @escaping @Sendable (String) async throws -> String
+    ) async throws -> DetectedProject {
         // Find workspace or project
-        let workspace = contents.first { $0.hasSuffix(".xcworkspace") && !$0.hasPrefix(".") }
-        let project = contents.first { $0.hasSuffix(".xcodeproj") }
+        let sortedContents = contents.sorted()
+        let workspace = sortedContents.first { $0.hasSuffix(".xcworkspace") && !$0.hasPrefix(".") }
+        let project = sortedContents.first { $0.hasSuffix(".xcodeproj") && !$0.hasPrefix(".") }
 
         // Run xcodebuild -list to get schemes
         var listCmd = "xcodebuild -list -json"
@@ -58,7 +68,7 @@ extension ProjectDetector {
             throw GrantivaError.invalidArgument("No .xcworkspace or .xcodeproj found in current directory")
         }
 
-        let listOutput = try await shell(listCmd)
+        let listOutput = try await runShell(listCmd)
         guard let listData = listOutput.data(using: .utf8) else {
             throw GrantivaError.invalidArgument("Could not parse xcodebuild -list output")
         }
@@ -86,7 +96,7 @@ extension ProjectDetector {
         }
 
         var bundleId: String?
-        if let settingsOutput = try? await shell(settingsCmd) {
+        if let settingsOutput = try? await runShell(settingsCmd) {
             for line in settingsOutput.components(separatedBy: "\n") {
                 let trimmed = line.trimmingCharacters(in: .whitespaces)
                 if trimmed.hasPrefix("PRODUCT_BUNDLE_IDENTIFIER = ") {
