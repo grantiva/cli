@@ -15,13 +15,7 @@ enum VRTTools {
             description: "Capture screenshots for all configured screens. Equivalent to 'grantiva diff capture --no-build --json'. Assumes the app is already running on the simulator.",
             inputSchema: .object([
                 "type": .string("object"),
-                "properties": .object([
-                    "screens": .object([
-                        "type": .string("array"),
-                        "items": .object(["type": .string("string")]),
-                        "description": .string("Optional list of screen names to capture. If omitted, captures all configured screens."),
-                    ]),
-                ]),
+                "properties": .object([:]),
             ]),
             annotations: .init(readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false)
         ),
@@ -61,16 +55,6 @@ enum VRTTools {
     static func capture(arguments: [String: Value]) async throws -> CallTool.Result {
         let cmd = "grantiva diff capture --no-build --json"
 
-        // We don't currently support per-screen filtering via the CLI,
-        // but we include the parameter for future use
-        if let screens = arguments["screens"]?.arrayValue {
-            let names = screens.compactMap { $0.stringValue }
-            if !names.isEmpty {
-                // Reserved for future per-screen capture support
-                _ = names
-            }
-        }
-
         do {
             let output = try await shell(cmd)
             return CallTool.Result(
@@ -95,13 +79,21 @@ enum VRTTools {
             )
         } catch let error as GrantivaError {
             if case .commandFailed(let msg, _) = error {
-                // Compare may exit non-zero on diffs found - that's expected
-                return CallTool.Result(
-                    content: [.text(text: msg, annotations: nil, _meta: nil)]
-                )
+                return compareFailureResult(message: msg)
             }
             throw error
         }
+    }
+
+    static func compareFailureResult(message: String) -> CallTool.Result {
+        let data = Data(message.utf8)
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let isDiffVerdict = json?["passed"] as? Bool == false
+            && json?["screens"] is [[String: Any]]
+        return CallTool.Result(
+            content: [.text(text: message, annotations: nil, _meta: nil)],
+            isError: isDiffVerdict ? nil : true
+        )
     }
 
     static func approve(arguments: [String: Value]) async throws -> CallTool.Result {

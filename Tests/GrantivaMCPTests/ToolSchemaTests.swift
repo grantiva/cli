@@ -88,7 +88,7 @@ final class ToolSchemaTests: XCTestCase {
     }
 
     func testParameterlessToolsDeclareAnEmptyPropertiesMap() throws {
-        for name in ["grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_context", "grantiva_vrt_compare"] {
+        for name in ["grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_context", "grantiva_vrt_capture", "grantiva_vrt_compare"] {
             let tool = try XCTUnwrap(allTools().first { $0.name == name })
             let properties = try XCTUnwrap(object(object(tool.inputSchema)?["properties"]))
             XCTAssertTrue(properties.isEmpty, "\(name) should declare no parameters, has \(properties.keys.sorted())")
