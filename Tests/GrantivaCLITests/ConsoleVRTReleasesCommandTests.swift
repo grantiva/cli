@@ -62,6 +62,7 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
     func testVRTScreenReviewsEachScreenInOrder() async throws {
         var client = VRTReviewClient.failing
         let calls = Capture<[String]>()
+        client.getRun = { _, _ in Self.run(status: "pending", screens: [Self.screen("home"), Self.screen("settings")]) }
         client.reviewScreen = { _, _, screen, action in
             let existing = await calls.value ?? []
             await calls.set(existing + ["\(action.rawValue):\(screen)"])
@@ -71,6 +72,28 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
         let made = await calls.value
         XCTAssertEqual(made, ["flag:home", "flag:settings"])
         XCTAssertThrowsError(try ConsoleVRTCommand.ScreenCommand.AcceptCommand.parse(["app", "R1"]))
+    }
+
+    func testVRTScreenValidatesEveryNameBeforeReviewing() async throws {
+        var client = VRTReviewClient.failing
+        let calls = Capture<[String]>()
+        client.getRun = { _, _ in Self.run(status: "pending", screens: [Self.screen("home"), Self.screen("settings")]) }
+        client.reviewScreen = { _, _, screen, _ in
+            await calls.set((await calls.value ?? []) + [screen])
+            return Self.screen(screen, review: "accepted")
+        }
+
+        do {
+            try await ConsoleVRTCommand.ScreenCommand.AcceptCommand.parse([
+                "app", "R1", "home", "misspelled", "settings", "--json",
+            ]).run(client: client)
+            XCTFail("expected validation failure")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertTrue(message.contains("misspelled"), message)
+        }
+        let made = await calls.value ?? []
+        XCTAssertEqual(made, [])
     }
 
     func testVRTRunsGetMapsNotFound() async throws {
