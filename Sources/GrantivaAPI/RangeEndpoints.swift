@@ -1,13 +1,5 @@
 import Foundation
 
-// MARK: - Auth Endpoints
-
-enum AuthEndpoints {
-    static func me() -> Endpoint<EmptyBody, MeResponse> {
-        Endpoint(path: "api/v1/auth/me", method: .get)
-    }
-}
-
 // MARK: - Baseline Endpoints
 
 enum BaselineEndpoints {
@@ -41,13 +33,6 @@ enum BaselineEndpoints {
         )
     }
 
-    static func promote(project: String, branch: String, body: PromoteBaselinesRequest) -> Endpoint<PromoteBaselinesRequest, EmptyResponse> {
-        Endpoint(
-            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))/promote",
-            method: .post,
-            body: body
-        )
-    }
 }
 
 // MARK: - Run Endpoints

@@ -194,18 +194,6 @@ public final class SimulatorLease: @unchecked Sendable {
         return try? JSONDecoder.leaseDecoder.decode(SimulatorLeaseClaim.self, from: data)
     }
 
-    /// True when some live process holds the lease for `udid`.
-    public static func isHeld(udid: String, directory: String? = nil) -> Bool {
-        let path = leasePath(udid: udid, directory: directory)
-        guard FileManager.default.fileExists(atPath: path) else { return false }
-        let descriptor = Darwin.open(path, O_RDWR | O_CLOEXEC)
-        guard descriptor >= 0 else { return false }
-        defer { Darwin.close(descriptor) }
-        guard flock(descriptor, LOCK_EX | LOCK_NB) == 0 else { return true }
-        flock(descriptor, LOCK_UN)
-        return false
-    }
-
     /// Breaks a lease regardless of who holds it. Only for `teardown --force`,
     /// after the owning processes have been reaped: the claim is cleared and the
     /// lock file unlinked, so any descriptor still open on the old inode can no
