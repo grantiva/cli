@@ -1,51 +1,5 @@
 import Foundation
 
-// MARK: - Auth
-
-public struct RegisterResponse: Codable, Sendable {
-    public let apiKey: String
-    public let email: String
-
-    enum CodingKeys: String, CodingKey {
-        case apiKey = "api_key"
-        case email
-    }
-
-    public init(apiKey: String, email: String) {
-        self.apiKey = apiKey
-        self.email = email
-    }
-}
-
-public struct MeResponse: Codable, Sendable {
-    public let email: String
-    public let apiKeyPrefix: String
-
-    enum CodingKeys: String, CodingKey {
-        case email
-        case apiKeyPrefix = "api_key_prefix"
-    }
-
-    public init(email: String, apiKeyPrefix: String) {
-        self.email = email
-        self.apiKeyPrefix = apiKeyPrefix
-    }
-}
-
-// MARK: - Baseline Requests
-
-public struct PromoteBaselinesRequest: Encodable, Sendable {
-    public let fromBranch: String
-
-    enum CodingKeys: String, CodingKey {
-        case fromBranch = "from_branch"
-    }
-
-    public init(fromBranch: String) {
-        self.fromBranch = fromBranch
-    }
-}
-
 // MARK: - Baseline Responses
 
 public struct BaselineListResponse: Codable, Sendable {

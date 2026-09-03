@@ -77,22 +77,6 @@ extension BaselineStore {
     }
 }
 
-// MARK: - Resolve
-
-extension BaselineStore {
-    /// Resolves the baseline store based on authentication state.
-    /// If authenticated (via env or auth.json), returns a placeholder that GrantivaCLI
-    /// should replace with a RangeClient-backed store. Falls back to local.
-    public static func resolve(directory: String = ".grantiva/baselines") -> BaselineStore {
-        if AuthStore.resolveCredentials() != nil {
-            // Caller (GrantivaCLI) should wire up RangeClient.asBaselineStore() instead.
-            // This fallback returns local so library-only callers still work.
-            return .local(directory: directory)
-        }
-        return .local(directory: directory)
-    }
-}
-
 // MARK: - Failing
 
 extension BaselineStore {

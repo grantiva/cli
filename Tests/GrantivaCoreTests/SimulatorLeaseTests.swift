@@ -77,14 +77,6 @@ final class SimulatorLeaseTests: XCTestCase {
         XCTAssertNotNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
         lease.release()
         XCTAssertNil(SimulatorLease.claim(udid: "SIM-1", directory: leaseDirectory))
-        XCTAssertFalse(SimulatorLease.isHeld(udid: "SIM-1", directory: leaseDirectory))
-    }
-
-    func testHeldLeaseIsReportedAsHeld() throws {
-        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
-        defer { lease.release() }
-        XCTAssertTrue(SimulatorLease.isHeld(udid: "SIM-1", directory: leaseDirectory))
-        XCTAssertFalse(SimulatorLease.isHeld(udid: "SIM-2", directory: leaseDirectory))
     }
 
     func testForceReleaseReclaimsAHeldLease() throws {

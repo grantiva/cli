@@ -4,13 +4,10 @@ import GrantivaCore
 // MARK: - RangeClient
 
 public struct RangeClient: Sendable {
-    public var me: @Sendable () async throws -> MeResponse
     public var listBaselines: @Sendable (String, String) async throws -> [String]
     public var downloadBaseline: @Sendable (String, String, String) async throws -> Data
     public var uploadBaseline: @Sendable (String, String, String, Data) async throws -> Void
     public var deleteBaseline: @Sendable (String, String, String) async throws -> Void
-    public var promoteBaselines: @Sendable (String, String, String) async throws -> Void
-    public var createRun: @Sendable (String, RunUpload) async throws -> RunResponse
     /// Start a run with status "running" — returns run ID immediately.
     public var startRun: @Sendable (String, StartRunRequest) async throws -> RunResponse
     /// Complete a running run with screen results and images.
@@ -19,24 +16,18 @@ public struct RangeClient: Sendable {
     public var appendLog: @Sendable (String, String, String) async throws -> Void
 
     public init(
-        me: @escaping @Sendable () async throws -> MeResponse,
         listBaselines: @escaping @Sendable (String, String) async throws -> [String],
         downloadBaseline: @escaping @Sendable (String, String, String) async throws -> Data,
         uploadBaseline: @escaping @Sendable (String, String, String, Data) async throws -> Void,
         deleteBaseline: @escaping @Sendable (String, String, String) async throws -> Void,
-        promoteBaselines: @escaping @Sendable (String, String, String) async throws -> Void,
-        createRun: @escaping @Sendable (String, RunUpload) async throws -> RunResponse,
         startRun: @escaping @Sendable (String, StartRunRequest) async throws -> RunResponse,
         completeRun: @escaping @Sendable (String, String, RunUpload) async throws -> RunResponse,
         appendLog: @escaping @Sendable (String, String, String) async throws -> Void
     ) {
-        self.me = me
         self.listBaselines = listBaselines
         self.downloadBaseline = downloadBaseline
         self.uploadBaseline = uploadBaseline
         self.deleteBaseline = deleteBaseline
-        self.promoteBaselines = promoteBaselines
-        self.createRun = createRun
         self.startRun = startRun
         self.completeRun = completeRun
         self.appendLog = appendLog
@@ -51,9 +42,6 @@ extension RangeClient {
         let client = NetworkClient.authorized(apiKey: apiKey)
 
         self.init(
-            me: {
-                try await client.execute(AuthEndpoints.me(), baseURL: baseURL)
-            },
             listBaselines: { project, branch in
                 let response: BaselineListResponse = try await client.execute(
                     BaselineEndpoints.list(project: project, branch: branch),
@@ -80,24 +68,6 @@ extension RangeClient {
                     BaselineEndpoints.delete(project: project, branch: branch, screen: screen),
                     baseURL: baseURL
                 )
-            },
-            promoteBaselines: { project, targetBranch, fromBranch in
-                let request = PromoteBaselinesRequest(fromBranch: fromBranch)
-                _ = try await client.execute(
-                    BaselineEndpoints.promote(project: project, branch: targetBranch, body: request),
-                    baseURL: baseURL
-                )
-            },
-            createRun: { project, upload in
-                let endpoint = RunEndpoints.create(project: project)
-                let url = try endpoint.url(relativeTo: baseURL)
-                let form = MultipartForm.build(from: upload)
-                var request = URLRequest(url: url)
-                request.httpMethod = "POST"
-                request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
-                request.httpBody = form.data
-                let data = try await client.sendRequest(request)
-                return try JSONDecoder().decode(RunResponse.self, from: data)
             },
             startRun: { project, startReq in
                 let endpoint = RunEndpoints.create(project: project)
@@ -248,13 +218,10 @@ extension RangeClient {
 
 extension RangeClient {
     public static let failing = RangeClient(
-        me: { throw GrantivaError.notAuthenticated },
         listBaselines: { _, _ in throw GrantivaError.notAuthenticated },
         downloadBaseline: { _, _, _ in throw GrantivaError.notAuthenticated },
         uploadBaseline: { _, _, _, _ in throw GrantivaError.notAuthenticated },
         deleteBaseline: { _, _, _ in throw GrantivaError.notAuthenticated },
-        promoteBaselines: { _, _, _ in throw GrantivaError.notAuthenticated },
-        createRun: { _, _ in throw GrantivaError.notAuthenticated },
         startRun: { _, _ in throw GrantivaError.notAuthenticated },
         completeRun: { _, _, _ in throw GrantivaError.notAuthenticated },
         appendLog: { _, _, _ in throw GrantivaError.notAuthenticated }

@@ -47,15 +47,6 @@ final class GrantivaAPITests: XCTestCase {
         XCTAssertTrue(url.absoluteString.contains("Home"))
     }
 
-    func testBaselinePromoteEndpoint() {
-        let request = PromoteBaselinesRequest(fromBranch: "feature/new")
-        let endpoint = BaselineEndpoints.promote(project: "owner/repo", branch: "main", body: request)
-        let url = try! endpoint.url(relativeTo: URL(string: "https://api.example.com")!)
-        XCTAssertTrue(url.absoluteString.contains("/promote"))
-        XCTAssertEqual(endpoint.method, .post)
-        XCTAssertEqual(endpoint.body?.fromBranch, "feature/new")
-    }
-
     // MARK: - Run Endpoints
 
     func testRunCreateEndpoint() {
@@ -85,13 +76,6 @@ final class GrantivaAPITests: XCTestCase {
 
     // MARK: - Model Serialization
 
-    func testPromoteBaselinesRequestEncoding() throws {
-        let request = PromoteBaselinesRequest(fromBranch: "develop")
-        let data = try JSONEncoder().encode(request)
-        let dict = try JSONSerialization.jsonObject(with: data) as! [String: String]
-        XCTAssertEqual(dict["from_branch"], "develop")
-    }
-
     func testRunResponseDecoding() throws {
         let json = """
         {
@@ -112,16 +96,6 @@ final class GrantivaAPITests: XCTestCase {
         XCTAssertEqual(response.passedCount, 3)
         XCTAssertEqual(response.failedCount, 0)
         XCTAssertEqual(response.newCount, 0)
-    }
-
-    func testMeResponseDecoding() throws {
-        let json = """
-        {"email": "test@example.com", "api_key_prefix": "grantiva_ab"}
-        """.data(using: .utf8)!
-
-        let me = try JSONDecoder().decode(MeResponse.self, from: json)
-        XCTAssertEqual(me.email, "test@example.com")
-        XCTAssertEqual(me.apiKeyPrefix, "grantiva_ab")
     }
 
     func testRunListItemDecoding() throws {
@@ -163,7 +137,7 @@ final class GrantivaAPITests: XCTestCase {
 
     func testFailingClientThrowsNotAuthenticated() async {
         do {
-            _ = try await RangeClient.failing.me()
+            _ = try await RangeClient.failing.listBaselines("owner/repo", "main")
             XCTFail("Should have thrown")
         } catch {
             // Expected
