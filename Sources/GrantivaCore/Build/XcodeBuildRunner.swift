@@ -1,7 +1,11 @@
 import Foundation
 
 public struct XcodeBuildRunner: Sendable {
-    public init() {}
+    private let execute: @Sendable (String) async throws -> String
+
+    public init(execute: @escaping @Sendable (String) async throws -> String = { try await shell($0) }) {
+        self.execute = execute
+    }
 
     public func build(
         scheme: String,
@@ -23,7 +27,7 @@ public struct XcodeBuildRunner: Sendable {
         let command = args.map(shellQuoted).joined(separator: " ")
 
         do {
-            let output = try await shell(command)
+            let output = try await execute(command)
             let duration = Date().timeIntervalSince(start)
             let warnings = output.components(separatedBy: "\n").filter { $0.contains("warning:") }
             let productPath = try? await resolveProductPath(
@@ -51,24 +55,24 @@ public struct XcodeBuildRunner: Sendable {
     }
 
     public func install(bundleId: String, productPath: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl install \(shellQuoted(udid)) \(shellQuoted(productPath))")
+        _ = try await execute("xcrun simctl install \(shellQuoted(udid)) \(shellQuoted(productPath))")
     }
 
     public func launch(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl launch \(shellQuoted(udid)) \(shellQuoted(bundleId))")
+        _ = try await execute("xcrun simctl launch \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func dataContainerPath(bundleId: String, udid: String) async throws -> String {
-        try await shell("xcrun simctl get_app_container \(shellQuoted(udid)) \(shellQuoted(bundleId)) data")
+        try await execute("xcrun simctl get_app_container \(shellQuoted(udid)) \(shellQuoted(bundleId)) data")
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     public func terminate(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl terminate \(shellQuoted(udid)) \(shellQuoted(bundleId))")
+        _ = try await execute("xcrun simctl terminate \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func uninstall(bundleId: String, udid: String) async throws {
-        _ = try await shell("xcrun simctl uninstall \(shellQuoted(udid)) \(shellQuoted(bundleId))")
+        _ = try await execute("xcrun simctl uninstall \(shellQuoted(udid)) \(shellQuoted(bundleId))")
     }
 
     public func test(
@@ -89,7 +93,7 @@ public struct XcodeBuildRunner: Sendable {
         let command = args.map(shellQuoted).joined(separator: " ")
 
         do {
-            let output = try await shell(command)
+            let output = try await execute(command)
             let duration = Date().timeIntervalSince(start)
             let (passed, failed) = parseTestCounts(from: output)
             return TestResult(
@@ -122,37 +126,36 @@ public struct XcodeBuildRunner: Sendable {
         args += ["-destination", "\(destination)", "-showBuildSettings"]
         args += buildSettings
         let command = args.map(shellQuoted).joined(separator: " ")
-        let output = try await shell(command)
+        let output = try await execute(command)
 
-        var builtProductsDir: String?
-        var productName: String?
-        for line in output.components(separatedBy: "\n") {
+        var currentDir: String?
+        for line in output.components(separatedBy: "\n") + [""] {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.hasPrefix("BUILT_PRODUCTS_DIR = ") {
-                builtProductsDir = String(trimmed.dropFirst("BUILT_PRODUCTS_DIR = ".count))
+                currentDir = String(trimmed.dropFirst("BUILT_PRODUCTS_DIR = ".count))
             }
-            if trimmed.hasPrefix("FULL_PRODUCT_NAME = ") {
-                productName = String(trimmed.dropFirst("FULL_PRODUCT_NAME = ".count))
+            if trimmed.hasPrefix("FULL_PRODUCT_NAME = "), let currentDir {
+                let name = String(trimmed.dropFirst("FULL_PRODUCT_NAME = ".count))
+                if name.hasSuffix(".app") { return "\(currentDir)/\(name)" }
+            }
+            if trimmed.isEmpty {
+                currentDir = nil
             }
         }
-        guard let dir = builtProductsDir, let name = productName else {
-            throw GrantivaError.buildFailed("Could not resolve product path from build settings")
-        }
-        return "\(dir)/\(name)"
+        throw GrantivaError.buildFailed("Could not resolve app product path from build settings")
     }
 
     private func parseTestCounts(from output: String) -> (passed: Int, failed: Int) {
-        var passed = 0
-        var failed = 0
-        for line in output.components(separatedBy: "\n") {
-            if line.contains("Test Suite") && line.contains("passed") {
-                passed += 1
-            }
-            if line.contains("Test Suite") && line.contains("failed") {
-                failed += 1
-            }
+        let pattern = #"Executed\s+(\d+)\s+tests?,\s+with\s+(\d+)\s+failures?"#
+        guard let regex = try? NSRegularExpression(pattern: pattern),
+              let match = regex.matches(in: output, range: NSRange(output.startIndex..., in: output)).last,
+              let totalRange = Range(match.range(at: 1), in: output),
+              let failedRange = Range(match.range(at: 2), in: output),
+              let total = Int(output[totalRange]),
+              let failed = Int(output[failedRange]) else {
+            return (0, 0)
         }
-        return (passed, failed)
+        return (max(0, total - failed), failed)
     }
 }
 
