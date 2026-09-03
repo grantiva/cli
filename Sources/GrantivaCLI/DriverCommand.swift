@@ -273,34 +273,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
 
-        let deadline = Date().addingTimeInterval(60)
-        let outputTask = Task<UInt16?, Never> {
-            let handle = stdoutPipe.fileHandleForReading
-            var accumulated = ""
-            while Date() < deadline {
-                let available = handle.availableData
-                guard !available.isEmpty else {
-                    try? await Task.sleep(nanoseconds: 100_000_000)
-                    continue
-                }
-                if let chunk = String(data: available, encoding: .utf8) {
-                    accumulated += chunk
-                    if let p = extractWDAPort(from: accumulated) { return p }
-                    if accumulated.contains("launchApp") && accumulated.contains("✓") {
-                        for candidate: UInt16 in [8430, 8100, 8200] {
-                            let url = URL(string: "http://localhost:\(candidate)/status")!
-                            if let (_, resp) = try? await URLSession.shared.data(from: url),
-                               let http = resp as? HTTPURLResponse, http.statusCode == 200 {
-                                return candidate
-                            }
-                        }
-                    }
-                }
-            }
-            return nil
-        }
-
-        guard let port = await outputTask.value else {
+        let output = Self.outputStream(from: stdoutPipe.fileHandleForReading)
+        guard let port = await Self.waitForForegroundWDAPort(
+            chunks: output,
+            timeout: {
+                try? await Task.sleep(for: .seconds(60))
+            },
+            probe: Self.probeKnownWDAPorts
+        ) else {
             child.terminateGroup(gracePeriod: 1)
             RunnerSessionInfo.remove()
             throw GrantivaError.commandFailed("Timed out waiting for WDA to start", 1)
@@ -337,6 +317,70 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     // MARK: - Helpers
 
+    /// Convert process output into a cancellable stream. `availableData` blocks
+    /// when called directly, which can otherwise prevent the startup timeout
+    /// from ever firing for a silent or wedged runner.
+    static func outputStream(from handle: FileHandle) -> AsyncStream<Data> {
+        AsyncStream { continuation in
+            handle.readabilityHandler = { readableHandle in
+                let data = readableHandle.availableData
+                if data.isEmpty {
+                    readableHandle.readabilityHandler = nil
+                    continuation.finish()
+                } else {
+                    continuation.yield(data)
+                }
+            }
+            continuation.onTermination = { _ in
+                handle.readabilityHandler = nil
+                try? handle.close()
+            }
+        }
+    }
+
+    static func waitForForegroundWDAPort(
+        chunks: AsyncStream<Data>,
+        timeout: @escaping @Sendable () async -> Void,
+        probe: @escaping @Sendable () async -> UInt16?
+    ) async -> UInt16? {
+        await withTaskGroup(of: UInt16?.self) { group in
+            group.addTask {
+                var accumulated = Data()
+                for await chunk in chunks {
+                    accumulated.append(chunk)
+                    let text = String(decoding: accumulated, as: UTF8.self)
+                    if let port = extractWDAPort(from: text) {
+                        return port
+                    }
+                    if text.contains("launchApp"), text.contains("✓"),
+                       let port = await probe() {
+                        return port
+                    }
+                }
+                return nil
+            }
+            group.addTask {
+                await timeout()
+                return nil
+            }
+
+            let result = await group.next() ?? nil
+            group.cancelAll()
+            return result
+        }
+    }
+
+    private static func probeKnownWDAPorts() async -> UInt16? {
+        for candidate: UInt16 in [8430, 8100, 8200] {
+            let url = URL(string: "http://localhost:\(candidate)/status")!
+            if let (_, response) = try? await URLSession.shared.data(from: url),
+               let http = response as? HTTPURLResponse, http.statusCode == 200 {
+                return candidate
+            }
+        }
+        return nil
+    }
+
     static func record(
         session: RunnerSessionInfo,
         write: (RunnerSessionInfo) throws -> Void = { try $0.write() },
@@ -356,7 +400,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         while Date() < deadline {
             try await Task.sleep(nanoseconds: 500_000_000) // 500ms
             guard let content = try? String(contentsOfFile: logFile, encoding: .utf8) else { continue }
-            if let p = extractWDAPort(from: content) { return p }
+            if let p = Self.extractWDAPort(from: content) { return p }
             if content.contains("launchApp") && content.contains("✓") {
                 for candidate: UInt16 in [8430, 8100, 8200] {
                     let url = URL(string: "http://localhost:\(candidate)/status")!
@@ -371,7 +415,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     /// Extract a WDA port number from a string of runner output.
-    private func extractWDAPort(from text: String) -> UInt16? {
+    private static func extractWDAPort(from text: String) -> UInt16? {
         let patterns = ["port[: ]+([0-9]+)", "localhost:([0-9]+)", "WDA.*?([0-9]{4,5})"]
         for pattern in patterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
@@ -383,6 +427,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
         return nil
     }
+
 }
 
 // MARK: - Stop

@@ -5,6 +5,51 @@ import GrantivaCore
 
 @available(macOS 15, *)
 final class RunnerLifecycleCommandTests: XCTestCase {
+    func testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks() async {
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        let probed = LockedValue(false)
+        continuation.yield(Data("Starting WDA on localhost:84".utf8))
+        continuation.yield(Data("30\n".utf8))
+        continuation.finish()
+
+        let port = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: stream,
+            timeout: { try? await Task.sleep(for: .seconds(5)) },
+            probe: { probed.set(true); return nil }
+        )
+
+        XCTAssertEqual(port, 8430)
+        XCTAssertFalse(probed.value)
+    }
+
+    func testForegroundPortDiscoveryTimesOutWhenRunnerIsSilent() async {
+        let pipe = Pipe()
+        defer { try? pipe.fileHandleForWriting.close() }
+        let stream = RunnerStartCommand.outputStream(from: pipe.fileHandleForReading)
+
+        let port = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: stream,
+            timeout: {},
+            probe: { XCTFail("Silent output must not trigger probing"); return nil }
+        )
+
+        XCTAssertNil(port)
+    }
+
+    func testForegroundPortDiscoveryProbesAfterLaunchCompletes() async {
+        let (stream, continuation) = AsyncStream<Data>.makeStream()
+        continuation.yield(Data("launchApp completed ✓\n".utf8))
+        continuation.finish()
+
+        let port = await RunnerStartCommand.waitForForegroundWDAPort(
+            chunks: stream,
+            timeout: { try? await Task.sleep(for: .seconds(5)) },
+            probe: { 8200 }
+        )
+
+        XCTAssertEqual(port, 8200)
+    }
+
     func testStartTerminatesSpawnedProcessWhenSessionCannotBeRecorded() {
         let session = makeSession()
         let terminated = LockedValue<Int32?>(nil)
