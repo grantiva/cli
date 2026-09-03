@@ -20,7 +20,7 @@ jobs:
             | sed -E 's/.*"([^"]+)".*/\1/')
           stage=$(mktemp -d)
           tar -xzf "$tarball" -C "$stage"
-          actual=$("$stage/grantiva-runner" --version | head -n1 | awk '{print $2}')
+          actual=$("$stage/grantiva-runner" --version | sed -n '1p' | awk '{print $2}')
           if [ "$expected" != "$actual" ]; then
             echo "::error::RunnerManager.runnerVersion is \"$expected\" but"
             echo "::error::embedded tarball binary reports \"$actual\"."
