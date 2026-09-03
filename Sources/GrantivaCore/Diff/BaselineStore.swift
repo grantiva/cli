@@ -8,6 +8,13 @@ public enum ScreenArtifact {
         let stem = screenName.addingPercentEncoding(withAllowedCharacters: allowed) ?? "screen"
         return "\(stem).\(fileExtension)"
     }
+
+    public static func screenName(from fileName: String, extension fileExtension: String = "png") -> String? {
+        let suffix = ".\(fileExtension)"
+        guard fileName.hasSuffix(suffix) else { return nil }
+        let stem = String(fileName.dropLast(suffix.count))
+        return stem.removingPercentEncoding
+    }
 }
 
 public struct BaselineStore: Sendable {
@@ -58,7 +65,7 @@ extension BaselineStore {
                 let files = try fm.contentsOfDirectory(atPath: dir)
                 return files
                     .filter { $0.hasSuffix(".png") }
-                    .map { String($0.dropLast(4)) }
+                    .compactMap { ScreenArtifact.screenName(from: $0) }
                     .sorted()
             },
             delete: { screenName in
