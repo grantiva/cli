@@ -219,7 +219,13 @@ enum RecorderLifecycle {
         pollInterval: Duration
     ) async -> Bool {
         for _ in 0..<attempts where process.isRunning {
-            try? await Task.sleep(for: pollInterval)
+            // Cleanup commonly runs after the recording task has been cancelled.
+            // Sleeping on that task would throw immediately and burn through every
+            // poll before Process has observed the signal. Use an unstructured task
+            // so cancellation of the operation cannot prevent cleanup from waiting.
+            await Task.detached {
+                try? await Task.sleep(for: pollInterval)
+            }.value
         }
         return !process.isRunning
     }
