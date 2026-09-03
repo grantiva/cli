@@ -67,48 +67,69 @@ extension RunnerManager {
                 throw GrantivaError.runnerNotFound
             }
 
-            // Preserve WDA build cache across updates
-            let hadCache = fm.fileExists(atPath: cacheDir)
-            let tempCache = "\(baseDir)-cache-\(UUID().uuidString)"
-            if hadCache {
-                try fm.moveItem(atPath: cacheDir, toPath: tempCache)
-            }
-
-            // Clean and recreate
-            if fm.fileExists(atPath: baseDir) {
-                try fm.removeItem(atPath: baseDir)
-            }
-            try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
-
-            // Extract tar.gz
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
-            process.arguments = ["-xzf", tarURL.path, "-C", baseDir]
-            try process.run()
-            process.waitUntilExit()
-            guard process.terminationStatus == 0 else {
-                // Restore cache on failure
-                if hadCache { try? fm.moveItem(atPath: tempCache, toPath: cacheDir) }
-                throw GrantivaError.commandFailed("Failed to extract runner binary", process.terminationStatus)
-            }
-
-            // Restore WDA build cache
-            if hadCache {
-                if fm.fileExists(atPath: cacheDir) {
-                    try? fm.removeItem(atPath: cacheDir)
+            try installIfNeeded(
+                baseDir: baseDir,
+                binaryPath: binaryPath,
+                versionFilePath: versionFilePath,
+                cacheDir: cacheDir,
+                version: runnerVersion
+            ) { destination in
+                let process = Process()
+                process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+                process.arguments = ["-xzf", tarURL.path, "-C", destination]
+                try process.run()
+                process.waitUntilExit()
+                guard process.terminationStatus == 0 else {
+                    throw GrantivaError.commandFailed("Failed to extract runner binary", process.terminationStatus)
                 }
-                try fm.moveItem(atPath: tempCache, toPath: cacheDir)
             }
-
-            // Make binary executable
-            try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binaryPath)
-
-            // Write version marker
-            try runnerVersion.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
         },
         runnerPath: { binaryPath },
         runnerDir: { baseDir }
     )
+
+    static func installIfNeeded(
+        baseDir: String,
+        binaryPath: String,
+        versionFilePath: String,
+        cacheDir: String,
+        version: String,
+        extract: (String) throws -> Void
+    ) throws {
+        let fm = FileManager.default
+        if fm.fileExists(atPath: binaryPath),
+           let versionData = fm.contents(atPath: versionFilePath),
+           String(data: versionData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == version {
+            return
+        }
+
+        // Preserve WDA build cache across updates, including every failure path.
+        let hadCache = fm.fileExists(atPath: cacheDir)
+        let tempCache = "\(baseDir)-cache-\(UUID().uuidString)"
+        var cacheRestored = !hadCache
+        if hadCache { try fm.moveItem(atPath: cacheDir, toPath: tempCache) }
+        defer {
+            if !cacheRestored, fm.fileExists(atPath: tempCache) {
+                try? fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
+                if fm.fileExists(atPath: cacheDir) { try? fm.removeItem(atPath: cacheDir) }
+                if (try? fm.moveItem(atPath: tempCache, toPath: cacheDir)) != nil { cacheRestored = true }
+            }
+        }
+
+        if fm.fileExists(atPath: baseDir) { try fm.removeItem(atPath: baseDir) }
+        try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
+
+        try extract(baseDir)
+
+        if hadCache {
+            if fm.fileExists(atPath: cacheDir) { try fm.removeItem(atPath: cacheDir) }
+            try fm.moveItem(atPath: tempCache, toPath: cacheDir)
+            cacheRestored = true
+        }
+
+        try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binaryPath)
+        try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
+    }
 }
 
 extension RunnerManager {
