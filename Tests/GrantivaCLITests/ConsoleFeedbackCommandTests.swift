@@ -30,6 +30,29 @@ final class ConsoleFeedbackCommandTests: XCTestCase {
         XCTAssertEqual(sent?.sort, .newest)
         XCTAssertThrowsError(try ConsoleFeedbackCommand.ListCommand.parse(["--status", "done"]))
         XCTAssertThrowsError(try ConsoleFeedbackCommand.ListCommand.parse(["--sort", "random"]))
+        XCTAssertThrowsError(try ConsoleFeedbackCommand.ListCommand.parse(["--app", "  "]))
+    }
+
+    func testFeedbackGetPassesReferenceAndMapsFailures() async throws {
+        var client = FeedbackClient.failing
+        let captured = Capture<String>()
+        client.getFeature = { request in
+            await captured.set(request)
+            return OrgFeatureRequestDetail(feature: Self.feature("Dark mode"), comments: [])
+        }
+
+        try await ConsoleFeedbackCommand.GetCommand.parse(["F1", "--json"]).run(client: client)
+        let sent = await captured.value
+        XCTAssertEqual(sent, "F1")
+
+        client.getFeature = { _ in throw GrantivaError.networkError("missing", 404) }
+        do {
+            try await ConsoleFeedbackCommand.GetCommand.parse(["F9"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "feature request not found: F9")
+        }
     }
 
     func testFeedbackSetStatusAndCommentParseAndMap() async throws {
@@ -70,6 +93,94 @@ final class ConsoleFeedbackCommandTests: XCTestCase {
         try await ConsoleSupportCommand.ReplyCommand.parse(["T1", "--body", "@\(file.path)", "--json"]).run(client: client)
         let sent = await captured.value
         XCTAssertEqual(sent, "Fixed in 2.1.1")
+    }
+
+    func testSupportListBuildsCompleteQueryAndResolvesApp() async throws {
+        var org = OrgClient.failing
+        org.getApp = { ref in
+            XCTAssertEqual(ref, "com.x.app")
+            return OrgApp(id: "APP-UUID", appName: "A", bundleId: ref, teamId: "T", isActive: true, isPrimary: true)
+        }
+        var client = FeedbackClient.failing
+        let captured = Capture<SupportQuery>()
+        client.listTickets = { query in
+            await captured.set(query)
+            return OrgPage(items: [Self.ticket("Crash")], page: 2, per: 5, total: 6)
+        }
+
+        try await ConsoleSupportCommand.ListCommand.parse([
+            "--status", "awaiting_reply", "--priority", "urgent", "--app", "com.x.app",
+            "--search", "crash", "--page", "2", "--per", "5", "--json",
+        ]).run(client: client, orgClient: org)
+
+        let sent = await captured.value
+        XCTAssertEqual(sent?.status, .awaitingReply)
+        XCTAssertEqual(sent?.priority, .urgent)
+        XCTAssertEqual(sent?.appId, "APP-UUID")
+        XCTAssertEqual(sent?.search, "crash")
+        XCTAssertEqual(sent?.page, 2)
+        XCTAssertEqual(sent?.per, 5)
+    }
+
+    func testSupportGetPassesReferenceAndMapsFailures() async throws {
+        var client = FeedbackClient.failing
+        let captured = Capture<String>()
+        client.getTicket = { ticket in
+            await captured.set(ticket)
+            return OrgSupportTicketDetail(ticket: Self.ticket("Crash"), messages: [])
+        }
+
+        try await ConsoleSupportCommand.GetCommand.parse(["T1"]).run(client: client)
+        let sent = await captured.value
+        XCTAssertEqual(sent, "T1")
+
+        client.getTicket = { _ in throw GrantivaError.networkError("missing", 404) }
+        do {
+            try await ConsoleSupportCommand.GetCommand.parse(["T9"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "support ticket not found: T9")
+        }
+
+        client.getTicket = { _ in throw GrantivaError.networkError("", 403) }
+        do {
+            try await ConsoleSupportCommand.GetCommand.parse(["T1"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.permissionDenied(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertTrue(message.contains("feedback:read"), message)
+        }
+    }
+
+    func testReferencesAndMessageBodiesRejectWhitespace() async throws {
+        XCTAssertThrowsError(try ConsoleFeedbackCommand.GetCommand.parse([" "]))
+        XCTAssertThrowsError(try ConsoleFeedbackCommand.SetStatusCommand.parse([" F1", "shipped"]))
+        XCTAssertThrowsError(try ConsoleFeedbackCommand.CommentCommand.parse(["F1 ", "--body", "x"]))
+        XCTAssertThrowsError(try ConsoleSupportCommand.GetCommand.parse(["\n"]))
+        XCTAssertThrowsError(try ConsoleSupportCommand.ReplyCommand.parse([" T1", "--body", "x"]))
+        XCTAssertThrowsError(try ConsoleSupportCommand.SetStatusCommand.parse(["T1 ", "closed"]))
+        XCTAssertThrowsError(try ConsoleSupportCommand.SetPriorityCommand.parse([" ", "high"]))
+        XCTAssertThrowsError(try ConsoleSupportCommand.ListCommand.parse(["--app", " "]))
+
+        do {
+            try await ConsoleFeedbackCommand.CommentCommand.parse(["F1", "--body", " \n "]).run(client: .failing)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "--body must not be empty.")
+        }
+
+        let file = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: file) }
+        try "\n\t".write(to: file, atomically: true, encoding: .utf8)
+        do {
+            try await ConsoleSupportCommand.ReplyCommand.parse(["T1", "--body", "@\(file.path)"]).run(client: .failing)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "--body must not be empty.")
+        }
     }
 
     func testSupportListAndPriorityParse() throws {
