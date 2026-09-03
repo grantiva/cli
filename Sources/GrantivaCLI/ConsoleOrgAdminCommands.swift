@@ -221,6 +221,12 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
     struct RulesCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "rules", abstract: "Risk alert rules (Business plan and up).", subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, UpdateCommand.self, DeleteCommand.self, DeliveriesCommand.self])
 
+        static func validateWebhookURL(_ value: String) throws {
+            guard let url = URL(string: value), url.scheme == "https", url.host != nil else {
+                throw ValidationError("--url must be an https URL.")
+            }
+        }
+
         struct ListCommand: AsyncParsableCommand {
             static let configuration = CommandConfiguration(commandName: "list", abstract: "List risk alert rules.")
             @OptionGroup var options: GlobalOptions
@@ -255,8 +261,10 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
             @Option(name: .long, help: "gt (above) or gte (at or above). Default gte.") var comparison: String = "gte"
             @Option(name: .long, help: "Webhook URL to call.") var url: String
             func validate() throws {
+                if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { throw ValidationError("Rule name must not be blank.") }
                 if !(0...100).contains(threshold) { throw ValidationError("--threshold must be 0–100.") }
                 if !["gt", "gte"].contains(comparison) { throw ValidationError("--comparison must be gt or gte.") }
+                try RulesCommand.validateWebhookURL(url)
             }
             func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
             func run(client: OrgAdminClient) async throws {
@@ -278,9 +286,12 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
             @Option(name: .long) var url: String?
             @Flag(name: .long, inversion: .prefixedNo, help: "Activate or deactivate the rule.") var active: Bool?
             func validate() throws {
+                if rule.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { throw ValidationError("Rule ID must not be blank.") }
                 if name == nil, threshold == nil, comparison == nil, url == nil, active == nil { throw ValidationError("Nothing to update.") }
+                if let name, name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { throw ValidationError("--name must not be blank.") }
                 if let threshold, !(0...100).contains(threshold) { throw ValidationError("--threshold must be 0–100.") }
                 if let comparison, !["gt", "gte"].contains(comparison) { throw ValidationError("--comparison must be gt or gte.") }
+                if let url { try RulesCommand.validateWebhookURL(url) }
             }
             func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
             func run(client: OrgAdminClient) async throws {
@@ -403,9 +414,11 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
             @Argument(help: "name=on|off pairs, or featureVoteThresholdCount=<n>.") var settings: [String]
             func validate() throws {
                 if settings.isEmpty { throw ValidationError("Pass at least one name=on|off.") }
+                var seen = Set<String>()
                 for pair in settings {
                     let parts = pair.split(separator: "=", maxSplits: 1).map(String.init)
                     guard parts.count == 2 else { throw ValidationError("Expected name=value, got '\(pair)'.") }
+                    guard seen.insert(parts[0]).inserted else { throw ValidationError("Preference '\(parts[0])' was specified more than once.") }
                     if parts[0] == "featureVoteThresholdCount" {
                         guard let n = Int(parts[1]), (1...10_000).contains(n) else { throw ValidationError("featureVoteThresholdCount must be 1–10000.") }
                     } else {
