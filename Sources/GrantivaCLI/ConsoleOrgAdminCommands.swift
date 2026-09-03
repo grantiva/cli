@@ -139,9 +139,17 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
+        func validate() throws {
+            if webhook.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                throw ValidationError("Webhook ID must not be blank.")
+            }
+        }
         func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
         func run(client: OrgAdminClient) async throws {
-            try ConsoleSupport.confirm("delete webhook '\(webhook)'", yes: yes)
+            try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+        }
+        func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+            try ConsoleSupport.confirm("delete webhook '\(webhook)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
             do { try await client.deleteWebhook(webhook) } catch {
                 throw ConsoleSupport.map(error, scope: ConsoleScope.webhooksDelete, notFound: ConsoleWebhooksCommand.notFound(webhook))
             }
@@ -289,9 +297,17 @@ struct ConsoleAlertsCommand: AsyncParsableCommand {
             @OptionGroup var options: GlobalOptions
             @Argument(help: "Rule ID.") var rule: String
             @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).") var yes = false
+            func validate() throws {
+                if rule.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    throw ValidationError("Rule ID must not be blank.")
+                }
+            }
             func run() async throws { try await run(client: ConsoleSupport.makeOrgAdminClient()) }
             func run(client: OrgAdminClient) async throws {
-                try ConsoleSupport.confirm("delete risk alert rule '\(rule)'", yes: yes)
+                try await run(client: client, interactive: isatty(fileno(stdin)) == 1)
+            }
+            func run(client: OrgAdminClient, interactive: Bool, readAnswer: () -> String? = { readLine() }) async throws {
+                try ConsoleSupport.confirm("delete risk alert rule '\(rule)'", yes: yes, interactive: interactive, readAnswer: readAnswer)
                 do { try await client.deleteRule(rule) } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.alertsWrite, notFound: "rule not found: \(rule)") }
                 try ConsoleAdmin.emit(OrgDeleteResponse(deleted: true, id: rule), options: options) { "Deleted rule '\(rule)'" }
             }
