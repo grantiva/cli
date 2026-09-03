@@ -156,6 +156,12 @@ final class AnalyticsAPITests: XCTestCase {
         }
     }
 
+    func testComplianceViolationPreservesDoublePayload() throws {
+        let wire = #"{"riskThreshold":{"_0":12.5}}"#
+        let decoded = try JSONDecoder().decode(ComplianceViolation.self, from: Data(wire.utf8))
+        XCTAssertEqual(decoded.description, "riskThreshold(\"12.5\")")
+    }
+
     func testDeviceProfileEncodesBackToSnakeCase() throws {
         let profile = DeviceProfile(
             id: "D1", keyId: "K1", firstSeen: "a", lastAttestation: "b", attestationCount: 1, riskScore: 2,

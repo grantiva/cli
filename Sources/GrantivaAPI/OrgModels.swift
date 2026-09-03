@@ -452,8 +452,8 @@ public struct OrgDevice: Codable, Sendable, Equatable {
     public let appVersion: String?
     public let riskScore: Int
     public let jailbreakDetected: Bool
-    public let isDevelopmentBuild: Bool
-    public let appStoreReceipt: Bool
+    public let isDevelopmentBuild: Bool?
+    public let appStoreReceipt: Bool?
     public let attestationCount: Int
     public let suspiciousEvents: Int
     public let lastCountry: String?
@@ -482,7 +482,7 @@ public struct OrgDevice: Codable, Sendable, Equatable {
     public init(
         id: String, keyId: String, appId: String? = nil, appName: String? = nil, deviceModel: String? = nil,
         osVersion: String? = nil, appVersion: String? = nil, riskScore: Int, jailbreakDetected: Bool,
-        isDevelopmentBuild: Bool = false, appStoreReceipt: Bool = true, attestationCount: Int, suspiciousEvents: Int,
+        isDevelopmentBuild: Bool? = nil, appStoreReceipt: Bool? = nil, attestationCount: Int, suspiciousEvents: Int,
         lastCountry: String? = nil, firstSeen: String, lastAttestation: String
     ) {
         self.id = id
@@ -504,19 +504,7 @@ public struct OrgDevice: Codable, Sendable, Equatable {
     }
 }
 
-public struct OrgDeviceList: Codable, Sendable, Equatable {
-    public let items: [OrgDevice]
-    public let page: Int
-    public let per: Int
-    public let total: Int
-
-    public init(items: [OrgDevice], page: Int, per: Int, total: Int) {
-        self.items = items
-        self.page = page
-        self.per = per
-        self.total = total
-    }
-}
+public typealias OrgDeviceList = OrgPage<OrgDevice>
 
 public struct OrgDeviceEvent: Codable, Sendable, Equatable {
     public let id: String
@@ -568,13 +556,13 @@ public struct OrgDeviceDetail: Codable, Sendable, Equatable {
     public let firstAppVersion: String?
     public let riskScore: Int
     public let jailbreakDetected: Bool
-    public let isDevelopmentBuild: Bool
-    public let appStoreReceipt: Bool
+    public let isDevelopmentBuild: Bool?
+    public let appStoreReceipt: Bool?
     public let attestationCount: Int
     public let suspiciousEvents: Int
     public let lastSuspiciousEventAt: String?
-    public let consecutiveCleanAttestations: Int
-    public let permissions: [String]
+    public let consecutiveCleanAttestations: Int?
+    public let permissions: [String]?
     public let lastCountry: String?
     public let subjectId: String?
     public let firstSeen: String
