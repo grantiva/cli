@@ -60,6 +60,114 @@ struct CIRunCompletionState {
     }
 }
 
+struct CIComparisonOutcome {
+    let screens: [RunScreenUpload]
+    let allPassed: Bool
+}
+
+/// Testable orchestration seam for turning this runner invocation's captures
+/// into backend uploads.
+struct CIComparisonPipeline {
+    var validateCaptures: ([ScreenCapture]) throws -> [DiffCommand.CaptureArtifact]
+    var loadCapture: (String) throws -> Data
+    var loadBaseline: (String) async throws -> Data?
+    var compare: (Data, Data) throws -> DiffOutput
+    var writeDiff: (String, Data) throws -> Void
+
+    func run(
+        captures: [ScreenCapture],
+        pixelThreshold: Double,
+        perceptualThreshold: Double
+    ) async throws -> CIComparisonOutcome {
+        let artifacts = try validateCaptures(captures)
+        let pathsByScreen = Dictionary(uniqueKeysWithValues: artifacts.compactMap { artifact in
+            artifact.path.map { (artifact.screenName, $0) }
+        })
+        var uploads: [RunScreenUpload] = []
+        var allPassed = true
+
+        for capture in captures.sorted(by: {
+            ScreenArtifact.fileName(for: $0.screenName) < ScreenArtifact.fileName(for: $1.screenName)
+        }) {
+            let steps = capture.steps.map {
+                RunStepUpload(
+                    action: $0.action, status: $0.status.rawValue,
+                    duration: $0.duration, message: $0.message
+                )
+            }
+
+            // RunnerSession deliberately returns an entry with an empty path
+            // when a configured screenshot is absent. It is a failed result,
+            // not an invitation to reuse a same-name file from an earlier run.
+            guard !capture.path.isEmpty else {
+                allPassed = false
+                let message = capture.steps.first(where: { $0.status == .failed })?.message
+                    ?? "Screenshot not found in runner output"
+                uploads.append(RunScreenUpload(
+                    name: capture.screenName, status: "error",
+                    pixelThreshold: pixelThreshold,
+                    perceptualThreshold: perceptualThreshold,
+                    message: message, steps: steps
+                ))
+                continue
+            }
+
+            guard let capturePath = pathsByScreen[capture.screenName] else {
+                throw GrantivaError.commandFailed(
+                    "Runner capture was not in the validated invocation set: \(capture.screenName)",
+                    1
+                )
+            }
+            let captureData = try loadCapture(capturePath)
+            let baselineData = try await loadBaseline(capture.screenName)
+            if let baselineData {
+                do {
+                    let output = try compare(baselineData, captureData)
+                    let passed = output.pixelDiffPercent <= pixelThreshold
+                        && output.perceptualDistance <= perceptualThreshold
+                    var diffData: Data?
+                    if !passed {
+                        allPassed = false
+                        try writeDiff(capture.screenName, output.diffImageData)
+                        diffData = output.diffImageData
+                    }
+                    let message = passed
+                        ? "Passed"
+                        : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
+                    uploads.append(RunScreenUpload(
+                        name: capture.screenName, status: passed ? "passed" : "failed",
+                        pixelDiffPercent: output.pixelDiffPercent,
+                        perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: pixelThreshold,
+                        perceptualThreshold: perceptualThreshold,
+                        message: message, captureData: captureData,
+                        diffData: diffData, steps: steps
+                    ))
+                } catch {
+                    allPassed = false
+                    uploads.append(RunScreenUpload(
+                        name: capture.screenName, status: "error",
+                        pixelThreshold: pixelThreshold,
+                        perceptualThreshold: perceptualThreshold,
+                        message: "Error: \(error.localizedDescription)",
+                        captureData: captureData, steps: steps
+                    ))
+                }
+            } else {
+                uploads.append(RunScreenUpload(
+                    name: capture.screenName, status: "new_screen",
+                    pixelThreshold: pixelThreshold,
+                    perceptualThreshold: perceptualThreshold,
+                    message: "New screen — no baseline",
+                    captureData: captureData, steps: steps
+                ))
+            }
+        }
+
+        return CIComparisonOutcome(screens: uploads, allPassed: allPassed)
+    }
+}
+
 struct CICommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "ci",
@@ -260,19 +368,6 @@ struct CICommand: AsyncParsableCommand {
                     FileHandle.standardError.write(Data("\n".utf8))
                 }
 
-                // Build step uploads lookup by screen name
-                var stepsByScreen: [String: [RunStepUpload]] = [:]
-                for capture in screenCaptures {
-                    stepsByScreen[capture.screenName] = capture.steps.map { step in
-                        RunStepUpload(
-                            action: step.action,
-                            status: step.status.rawValue,
-                            duration: step.duration,
-                            message: step.message
-                        )
-                    }
-                }
-
                 // 2. Compare against baselines
                 let diffConfig = config?.diff ?? .init()
                 let fm = FileManager.default
@@ -283,85 +378,30 @@ struct CICommand: AsyncParsableCommand {
                     try fm.createDirectory(atPath: diffDir, withIntermediateDirectories: true)
                 }
 
-                guard fm.fileExists(atPath: captureDir) else {
-                    throw GrantivaError.noCaptures(captureDir)
-                }
-                let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
-                    .filter { $0.hasSuffix(".png") }
-                    .sorted()
-
-                guard !captureFiles.isEmpty else {
-                    throw GrantivaError.noCaptures(captureDir)
-                }
-
-                rlog("Comparing \(captureFiles.count) screen(s) against baselines...")
-
-                var screenUploads: [RunScreenUpload] = []
-                var allPassed = true
-
-                for file in captureFiles {
-                    guard let screenName = ScreenArtifact.screenName(from: file) else { continue }
-                    let capturePath = "\(captureDir)/\(file)"
-                    let captureData = try Data(contentsOf: URL(fileURLWithPath: capturePath))
-
-                    let baselineData = try await store.load(screenName)
-
-                    if let baselineData {
-                        do {
-                            let output = try differ.compare(baselineData, captureData)
-                            let pixelPass = output.pixelDiffPercent <= diffConfig.threshold
-                            let perceptualPass = output.perceptualDistance <= diffConfig.perceptualThreshold
-                            let passed = pixelPass && perceptualPass
-
-                            var diffData: Data? = nil
-                            if !passed {
-                                allPassed = false
-                                let path = "\(diffDir)/\(screenName)_diff.png"
-                                try output.diffImageData.write(to: URL(fileURLWithPath: path))
-                                diffData = output.diffImageData
-                            }
-
-                            let message = passed
-                                ? "Passed"
-                                : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
-
-                            screenUploads.append(RunScreenUpload(
-                                name: screenName,
-                                status: passed ? "passed" : "failed",
-                                pixelDiffPercent: output.pixelDiffPercent,
-                                perceptualDistance: output.perceptualDistance,
-                                pixelThreshold: diffConfig.threshold,
-                                perceptualThreshold: diffConfig.perceptualThreshold,
-                                message: message,
-                                captureData: captureData,
-                                diffData: diffData,
-                                steps: stepsByScreen[screenName] ?? []
-                            ))
-                        } catch {
-                            allPassed = false
-                            screenUploads.append(RunScreenUpload(
-                                name: screenName,
-                                status: "error",
-                                pixelThreshold: diffConfig.threshold,
-                                perceptualThreshold: diffConfig.perceptualThreshold,
-                                message: "Error: \(error.localizedDescription)",
-                                captureData: captureData,
-                                steps: stepsByScreen[screenName] ?? []
-                            ))
-                        }
-                    } else {
-                        // New screen — no baseline
-                        screenUploads.append(RunScreenUpload(
-                            name: screenName,
-                            status: "new_screen",
-                            pixelThreshold: diffConfig.threshold,
-                            perceptualThreshold: diffConfig.perceptualThreshold,
-                            message: "New screen — no baseline",
-                            captureData: captureData,
-                            steps: stepsByScreen[screenName] ?? []
-                        ))
+                rlog("Comparing \(screenCaptures.count) screen(s) against baselines...")
+                let comparison = try await CIComparisonPipeline(
+                    validateCaptures: {
+                        try CICommand.currentInvocationArtifacts(from: $0, outputDir: captureDir)
+                    },
+                    loadCapture: { path in
+                        try Data(contentsOf: URL(fileURLWithPath: path))
+                    },
+                    loadBaseline: store.load,
+                    compare: differ.compare,
+                    writeDiff: { screenName, data in
+                        let captureFile = ScreenArtifact.fileName(for: screenName)
+                        let stem = URL(fileURLWithPath: captureFile)
+                            .deletingPathExtension().lastPathComponent
+                        let path = "\(diffDir)/\(stem)_diff.png"
+                        try data.write(to: URL(fileURLWithPath: path))
                     }
-                }
+                ).run(
+                    captures: screenCaptures,
+                    pixelThreshold: diffConfig.threshold,
+                    perceptualThreshold: diffConfig.perceptualThreshold
+                )
+                let screenUploads = comparison.screens
+                let allPassed = comparison.allPassed
 
                 // 3. Complete run with results
                 let duration = Date().timeIntervalSince(start)
@@ -473,5 +513,14 @@ struct CICommand: AsyncParsableCommand {
                 throw ExitCode.failure
             }
         }
+    }
+
+    /// CI always captures before comparing, so its artifact set must come from
+    /// that invocation rather than from the persistent capture directory.
+    static func currentInvocationArtifacts(
+        from captures: [ScreenCapture],
+        outputDir: String
+    ) throws -> [DiffCommand.CaptureArtifact] {
+        try DiffCommand.currentInvocationArtifacts(from: captures, outputDir: outputDir)
     }
 }
