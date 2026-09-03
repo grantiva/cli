@@ -83,6 +83,86 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAlertsCommand.NotificationsCommand.SetCommand.parse(["featureVoteThresholdCount=0"]))
     }
 
+    func testDestructiveAdminCommandsRejectBlankIDs() {
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.DeleteCommand.parse([" \n\t ", "--yes"]))
+        XCTAssertThrowsError(try ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse([" \n\t ", "--yes"]))
+    }
+
+    func testDestructiveAdminCommandsRefuseOffTTYBeforeCallingClient() async throws {
+        let deletedWebhook = Capture<String>()
+        let deletedRule = Capture<String>()
+        var client = OrgAdminClient.failing
+        client.deleteWebhook = { await deletedWebhook.set($0) }
+        client.deleteRule = { await deletedRule.set($0) }
+
+        do {
+            try await ConsoleWebhooksCommand.DeleteCommand.parse(["W1"]).run(
+                client: client,
+                interactive: false,
+                readAnswer: { XCTFail("non-TTY refusal must not read stdin"); return "yes" }
+            )
+            XCTFail("expected non-TTY refusal")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertTrue(message.contains("--yes"), message)
+        }
+
+        do {
+            try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1"]).run(
+                client: client,
+                interactive: false,
+                readAnswer: { XCTFail("non-TTY refusal must not read stdin"); return "yes" }
+            )
+            XCTFail("expected non-TTY refusal")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertTrue(message.contains("--yes"), message)
+        }
+
+        let webhookCall = await deletedWebhook.value
+        let ruleCall = await deletedRule.value
+        XCTAssertNil(webhookCall, "webhook client must not run before confirmation")
+        XCTAssertNil(ruleCall, "rule client must not run before confirmation")
+    }
+
+    func testDestructiveAdminCommandsWithYesCallClientWithExactID() async throws {
+        let deletedWebhook = Capture<String>()
+        let deletedRule = Capture<String>()
+        var client = OrgAdminClient.failing
+        client.deleteWebhook = { await deletedWebhook.set($0) }
+        client.deleteRule = { await deletedRule.set($0) }
+
+        try await ConsoleWebhooksCommand.DeleteCommand.parse(["W1", "--yes", "--json"]).run(client: client, interactive: false)
+        try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1", "--yes", "--json"]).run(client: client, interactive: false)
+
+        let webhookCall = await deletedWebhook.value
+        let ruleCall = await deletedRule.value
+        XCTAssertEqual(webhookCall, "W1")
+        XCTAssertEqual(ruleCall, "R1")
+    }
+
+    func testDestructiveAdminCommandsMapMissingResources() async throws {
+        var client = OrgAdminClient.failing
+        client.deleteWebhook = { _ in throw GrantivaError.networkError("", 404) }
+        client.deleteRule = { _ in throw GrantivaError.networkError("", 404) }
+
+        do {
+            try await ConsoleWebhooksCommand.DeleteCommand.parse(["W1", "--yes"]).run(client: client, interactive: false)
+            XCTFail("expected missing webhook")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "webhook not found: W1")
+        }
+
+        do {
+            try await ConsoleAlertsCommand.RulesCommand.DeleteCommand.parse(["R1", "--yes"]).run(client: client, interactive: false)
+            XCTFail("expected missing rule")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "rule not found: R1")
+        }
+    }
+
     func testNotificationsSetBuildsAPatch() async throws {
         var client = OrgAdminClient.failing
         let captured = Capture<PatchNotificationPreferencesRequest>()
