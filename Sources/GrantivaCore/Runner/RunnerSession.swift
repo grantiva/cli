@@ -61,7 +61,9 @@ public enum RunnerSession {
         defer {
             exportTraceArtifacts(
                 reportDir: reportDir, outputDir: outputDir,
-                snapshot: snapshot, flowName: "screens"
+                snapshot: snapshot,
+                requestedFlowPaths: ["screens"],
+                stagedPathMap: [flowPath: "screens"]
             )
         }
 
@@ -328,8 +330,9 @@ public enum RunnerSession {
             }
         }
         defer {
-            exportTraceArtifactsForAllFlows(
-                reportDir: reportDir, outputDir: outputDir, snapshot: snapshot
+            exportTraceArtifacts(
+                reportDir: reportDir, outputDir: outputDir, snapshot: snapshot,
+                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap
             )
         }
 
@@ -481,116 +484,102 @@ public enum RunnerSession {
         reportDir: String,
         outputDir: String,
         snapshot: String,
-        flowName: String,
-        restrictToFlowDir: String? = nil
+        requestedFlowPaths: [String],
+        stagedPathMap: [String: String]
     ) {
         let mode = snapshot.lowercased()
         guard mode == "trailing" || mode == "full" else { return }
 
         let fm = FileManager.default
-        let assetsDir = "\(reportDir)/assets"
-        guard fm.fileExists(atPath: assetsDir) else { return }
-
-        // The runner writes assets/<flow-id>/cmd-NNN-<kind>-<timing>.png (and .xml).
-        let flowSubdir: String?
-        if let restrictToFlowDir {
-            flowSubdir = restrictToFlowDir
-        } else {
-            let flowDirs = (try? fm.contentsOfDirectory(atPath: assetsDir)) ?? []
-            flowSubdir = flowDirs.first
+        let flows: [RunnerArtifactCollector.AttributedFlow]
+        do {
+            flows = try RunnerArtifactCollector.attributedFlows(
+                reportDir: reportDir,
+                requestedFlowPaths: requestedFlowPaths,
+                stagedPathMap: stagedPathMap
+            )
+        } catch {
+            FileHandle.standardError.write(Data(
+                "[grantiva] trace export skipped: \(error.localizedDescription)\n".utf8
+            ))
+            return
         }
-        guard let flowSubdir else { return }
-        let stepDir = "\(assetsDir)/\(flowSubdir)"
 
         let traceDir = "\(outputDir)/trace"
-        if !fm.fileExists(atPath: traceDir) {
-            try? fm.createDirectory(atPath: traceDir, withIntermediateDirectories: true)
-        }
-
-        let entries = (try? fm.contentsOfDirectory(atPath: stepDir)) ?? []
-        let sorted = entries.sorted()
-
-        // Parse cmd-NNN-... prefix so we can group by step and decide what to keep.
         struct StepArtifact {
             let file: String
+            let source: URL
             let index: Int
             let kind: String // "before", "after", or "" (hierarchy xml)
         }
-        var artifacts: [StepArtifact] = []
-        for name in sorted {
-            guard name.hasPrefix("cmd-") else { continue }
-            let stripped = String(name.dropFirst("cmd-".count))
-            let parts = stripped.split(separator: "-", maxSplits: 1).map(String.init)
-            guard let indexStr = parts.first, let idx = Int(indexStr) else { continue }
-            let kind: String
-            if name.hasSuffix("-before.png") {
-                kind = "before"
-            } else if name.hasSuffix("-after.png") {
-                kind = "after"
-            } else if name.hasSuffix(".xml") {
-                kind = "xml"
-            } else {
-                kind = "other"
+        var assignedDestinations: Set<String> = []
+
+        for flow in flows {
+            var isDirectory: ObjCBool = false
+            guard fm.fileExists(atPath: flow.assetsURL.path, isDirectory: &isDirectory),
+                  isDirectory.boolValue else { continue }
+
+            var artifacts: [StepArtifact] = []
+            for name in ((try? fm.contentsOfDirectory(atPath: flow.assetsURL.path)) ?? []).sorted() {
+                guard name.hasPrefix("cmd-") else { continue }
+                let lowercasedName = name.lowercased()
+                guard lowercasedName.hasSuffix(".png") || lowercasedName.hasSuffix(".xml") else {
+                    continue
+                }
+                let stripped = String(name.dropFirst("cmd-".count))
+                let parts = stripped.split(separator: "-", maxSplits: 1).map(String.init)
+                guard let indexStr = parts.first, let idx = Int(indexStr) else { continue }
+                let kind: String
+                if name.hasSuffix("-before.png") {
+                    kind = "before"
+                } else if name.hasSuffix("-after.png") {
+                    kind = "after"
+                } else if name.hasSuffix(".xml") {
+                    kind = "xml"
+                } else {
+                    kind = "other"
+                }
+                do {
+                    artifacts.append(StepArtifact(
+                        file: name,
+                        source: try RunnerArtifactCollector.artifactURL(named: name, in: flow),
+                        index: idx,
+                        kind: kind
+                    ))
+                } catch {
+                    FileHandle.standardError.write(Data(
+                        "[grantiva] trace export skipped \(name): \(error.localizedDescription)\n".utf8
+                    ))
+                }
             }
-            artifacts.append(StepArtifact(file: name, index: idx, kind: kind))
-        }
 
-        let maxIndex = artifacts.map { $0.index }.max() ?? 0
-        let failingIndex = maxIndex // last captured step == last executed step
-
-        let keep: [StepArtifact]
-        switch mode {
-        case "full":
-            keep = artifacts
-        case "trailing":
-            // Failing step: all its artifacts. Previous step: just the "after"
-            // shot — that's the "last good state" right before the failing step.
-            keep = artifacts.filter { a in
-                if a.index == failingIndex { return true }
-                if a.index == failingIndex - 1 && a.kind == "after" { return true }
-                return false
+            let failingIndex = artifacts.map(\.index).max() ?? 0
+            let keep = mode == "full" ? artifacts : artifacts.filter { artifact in
+                artifact.index == failingIndex
+                    || (artifact.index == failingIndex - 1 && artifact.kind == "after")
             }
-        default:
-            keep = []
-        }
 
-        for a in keep {
-            let dst = "\(traceDir)/\(flowName)-\(a.file)"
-            if fm.fileExists(atPath: dst) {
-                try? fm.removeItem(atPath: dst)
+            for artifact in keep {
+                let destination = "\(traceDir)/\(flow.userName)-\(artifact.file)"
+                let destinationKey = destination.precomposedStringWithCanonicalMapping.lowercased()
+                guard assignedDestinations.insert(destinationKey).inserted else {
+                    FileHandle.standardError.write(Data(
+                        "[grantiva] trace export skipped duplicate destination \((destination as NSString).lastPathComponent)\n".utf8
+                    ))
+                    continue
+                }
+                do {
+                    if !fm.fileExists(atPath: traceDir) {
+                        try fm.createDirectory(atPath: traceDir, withIntermediateDirectories: true)
+                    }
+                    if fm.fileExists(atPath: destination) {
+                        try fm.removeItem(atPath: destination)
+                    }
+                    try fm.copyItem(atPath: artifact.source.path, toPath: destination)
+                } catch {
+                    FileHandle.standardError.write(Data("[grantiva] trace export failed for \(artifact.file): \(error)\n".utf8))
+                }
             }
-            do {
-                try fm.copyItem(atPath: "\(stepDir)/\(a.file)", toPath: dst)
-            } catch {
-                FileHandle.standardError.write(Data("[grantiva] trace export failed for \(a.file): \(error)\n".utf8))
-            }
-        }
-    }
-
-    /// Convenience wrapper that walks every per-flow assets subdir and runs the
-    /// trace export for each. Used by the batched runFlowFiles path.
-    static func exportTraceArtifactsForAllFlows(
-        reportDir: String,
-        outputDir: String,
-        snapshot: String
-    ) {
-        let mode = snapshot.lowercased()
-        guard mode == "trailing" || mode == "full" else { return }
-
-        let fm = FileManager.default
-        let assetsDir = "\(reportDir)/assets"
-        guard fm.fileExists(atPath: assetsDir) else { return }
-        let flowDirs = ((try? fm.contentsOfDirectory(atPath: assetsDir)) ?? []).sorted()
-        for flowDirName in flowDirs {
-            // Build a synthetic reportDir that points at this one flow, because
-            // exportTraceArtifacts expects `<reportDir>/assets/<flow>/…` layout
-            // and walks the first subdir. Simplest adapter: pass the root-level
-            // reportDir but hint the flowName from the subdir name.
-            exportTraceArtifacts(
-                reportDir: reportDir, outputDir: outputDir,
-                snapshot: snapshot, flowName: flowDirName,
-                restrictToFlowDir: flowDirName
-            )
         }
     }
 
