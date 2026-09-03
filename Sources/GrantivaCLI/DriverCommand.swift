@@ -496,14 +496,14 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
         case "json":
             // Parse XML to JSON
             let parser = WDAHierarchyXMLParser(xml: xmlSource)
-            let tree = parser.parse()
+            let tree = try parser.parse()
             let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
             Output.line(String(data: jsonData, encoding: .utf8) ?? "{}")
 
         case "tree":
             // Parse XML and pretty-print as tree
             let parser = WDAHierarchyXMLParser(xml: xmlSource)
-            let tree = parser.parse()
+            let tree = try parser.parse()
             printTree(element: tree, indent: 0)
 
         default:
