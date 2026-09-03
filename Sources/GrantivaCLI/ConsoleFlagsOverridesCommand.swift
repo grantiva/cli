@@ -83,6 +83,14 @@ struct ConsoleFlagsOverridesCommand: AsyncParsableCommand {
         }
 
         func run(client: ConsoleClient) async throws {
+            let flag: OrgFlagDetail
+            do {
+                flag = try await client.getFlag(key)
+            } catch {
+                throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead, flagKey: key)
+            }
+            try ConsoleSupport.validateValue(value, type: ConsoleSupport.valueType(for: flag))
+
             let request = CreateFlagOverrideRequest(
                 deviceKeyId: device,
                 forcedValue: value,

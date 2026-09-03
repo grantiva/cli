@@ -226,6 +226,19 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
                 )
             }
 
+            if !environmentValues.isEmpty {
+                let flag: OrgFlagDetail
+                do {
+                    flag = try await client.getFlag(key)
+                } catch {
+                    throw ConsoleSupport.map(error, scope: ConsoleScope.flagsRead, flagKey: key)
+                }
+                let type = try ConsoleSupport.valueType(for: flag)
+                for value in environmentValues.values {
+                    try ConsoleSupport.validateValue(value, type: type)
+                }
+            }
+
             let request = UpdateOrgFlagRequest(
                 name: name,
                 description: description,
@@ -411,7 +424,11 @@ struct ConsoleFlagsCommand: AsyncParsableCommand {
         }
 
         func run(client: ConsoleClient) async throws {
-            let customAttributes = try ConsoleSupport.parseEnvValues(custom)
+            let customAttributes = try ConsoleSupport.parseEnvValues(
+                custom,
+                optionName: "--custom",
+                keyName: "key"
+            )
             let flagId = try await ConsoleSupport.resolveFlagId(key, client: client)
 
             let request = FlagEvaluationRequest(
