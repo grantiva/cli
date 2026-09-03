@@ -332,6 +332,12 @@ struct ConsoleClaimsCommand: AsyncParsableCommand {
         @Flag(name: .long, help: "Skip the confirmation prompt (required when stdin is not a TTY).")
         var yes = false
 
+        func validate() throws {
+            if claim.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                throw ValidationError("Claim reference must not be empty.")
+            }
+        }
+
         func run() async throws { try await run(client: ConsoleSupport.makeOrgClient()) }
 
         func run(client: OrgClient) async throws {
@@ -364,6 +370,12 @@ struct ConsoleClaimsCommand: AsyncParsableCommand {
 
         func validate() throws {
             if claims.isEmpty { throw ValidationError("List at least one claim.") }
+            if claims.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                throw ValidationError("Claim references must not be empty.")
+            }
+            if Set(claims).count != claims.count {
+                throw ValidationError("List each claim exactly once; duplicate references are not allowed.")
+            }
         }
 
         func run() async throws { try await run(client: ConsoleSupport.makeOrgClient()) }

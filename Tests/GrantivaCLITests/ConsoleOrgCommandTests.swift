@@ -140,8 +140,53 @@ final class ConsoleOrgCommandTests: XCTestCase {
     func testClaimsReorderAndUpdateValidation() throws {
         XCTAssertThrowsError(try ConsoleClaimsCommand.ReorderCommand.parse([]))
         XCTAssertEqual(try ConsoleClaimsCommand.ReorderCommand.parse(["a", "b"]).claims, ["a", "b"])
+        XCTAssertThrowsError(try ConsoleClaimsCommand.ReorderCommand.parse(["a", "a"]))
+        XCTAssertThrowsError(try ConsoleClaimsCommand.ReorderCommand.parse(["a", " "]))
         XCTAssertThrowsError(try ConsoleClaimsCommand.UpdateCommand.parse(["plan"]))
         XCTAssertEqual(try ConsoleClaimsCommand.UpdateCommand.parse(["plan", "--no-active"]).active, false)
+    }
+
+    func testClaimsReorderSendsEachReferenceInRequestedOrder() async throws {
+        var client = OrgClient.failing
+        let captured = Capture<ReorderOrgClaimsRequest>()
+        client.reorderClaims = { request in
+            await captured.set(request)
+            return []
+        }
+
+        try await ConsoleClaimsCommand.ReorderCommand.parse(["region", "plan", "score", "--json"])
+            .run(client: client)
+
+        let request = await captured.value
+        XCTAssertEqual(request?.claimRefs, ["region", "plan", "score"])
+    }
+
+    func testClaimsDeleteRequiresConfirmationBeforeCallingClient() async throws {
+        XCTAssertThrowsError(try ConsoleClaimsCommand.DeleteCommand.parse([" ", "--yes"]))
+
+        let calls = Capture<[String]>()
+        var client = OrgClient.failing
+        client.deleteClaim = { claim in
+            await calls.set([claim])
+            return OrgDeleteResponse(deleted: true, id: claim)
+        }
+
+        do {
+            try await ConsoleClaimsCommand.DeleteCommand.parse(["plan"]).run(client: client)
+            XCTFail("expected non-TTY refusal")
+        } catch {
+            guard case GrantivaError.invalidArgument(let message) = error else {
+                return XCTFail("unexpected \(error)")
+            }
+            XCTAssertTrue(message.contains("--yes"), message)
+        }
+        let callsBeforeConfirmation = await calls.value
+        XCTAssertNil(callsBeforeConfirmation, "refusal must happen before the destructive request")
+
+        try await ConsoleClaimsCommand.DeleteCommand.parse(["plan", "--yes", "--json"])
+            .run(client: client)
+        let callsAfterConfirmation = await calls.value
+        XCTAssertEqual(callsAfterConfirmation, ["plan"])
     }
 
     // MARK: - Devices parsing
