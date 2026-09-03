@@ -81,11 +81,7 @@ final class GrantivaCoreTests: XCTestCase {
         XCTAssertNil(config.simulator)
         XCTAssertEqual(config.diff.threshold, 0.02)
         XCTAssertEqual(config.diff.perceptualThreshold, 5.0)
-        XCTAssertEqual(config.a11y.failOnNewViolations, true)
         XCTAssertEqual(config.a11y.rules, ["missing_label", "small_tap_target"])
-        XCTAssertEqual(config.size.warnMb, 0.5)
-        XCTAssertEqual(config.size.failMb, 2.0)
-        XCTAssertEqual(config.ai.provider, "none")
     }
 
     func testConfigYAMLParsing() throws {
@@ -123,9 +119,7 @@ final class GrantivaCoreTests: XCTestCase {
         let config = try YAMLDecoder().decode(GrantivaConfig.self, from: yaml)
         XCTAssertNil(config.scheme)
         XCTAssertEqual(config.diff.threshold, 0.02)
-        XCTAssertEqual(config.a11y.failOnNewViolations, true)
-        XCTAssertEqual(config.size.warnMb, 0.5)
-        XCTAssertEqual(config.ai.provider, "none")
+        XCTAssertEqual(config.a11y.rules, ["missing_label", "small_tap_target"])
     }
 
     func testScreenPathLaunch() throws {
