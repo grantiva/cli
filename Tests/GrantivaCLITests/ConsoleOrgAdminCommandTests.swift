@@ -182,6 +182,28 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertEqual(create.expires, "2027-01-01T00:00:00Z")
         XCTAssertThrowsError(try ConsoleKeysCommand.CreateCommand.parse(["ci"]))
         XCTAssertThrowsError(try ConsoleKeysCommand.RotateCommand.parse(["K1", "--grace-days", "365"]))
+        XCTAssertThrowsError(try ConsoleKeysCommand.CreateCommand.parse(["ci", "--scope", " "]))
+        XCTAssertThrowsError(try ConsoleKeysCommand.CreateCommand.parse(["ci", "--scope", "flags:read", "--expires", "tomorrow"]))
+        XCTAssertNoThrow(try ConsoleKeysCommand.CreateCommand.parse(["ci", "--scope", "flags:read", "--expires", "2027-01-01T00:00:00Z"]))
+        XCTAssertNoThrow(try ConsoleKeysCommand.CreateCommand.parse(["ci", "--scope", "flags:read", "--expires", "2027-01-01T00:00:00.123Z"]))
+    }
+
+    func testKeysCreateNormalizesRequest() async throws {
+        let captured = Capture<CreateAPIKeyRequest>()
+        var client = OrgAdminClient.failing
+        client.createKey = { request in
+            await captured.set(request)
+            return try! JSONDecoder().decode(APIKeyCreated.self, from: Data(#"{"id":"K1","name":"CI key","keyPrefix":"gpat_abc","rawKey":"secret","scopes":["flags:read"],"keyType":"org","isActive":true,"expiresAt":"2027-01-01T00:00:00Z","createdAt":null}"#.utf8))
+        }
+
+        try await ConsoleKeysCommand.CreateCommand.parse([
+            " CI key \n", "--scope", " flags:read \n", "--expires", "2027-01-01T00:00:00Z", "--json",
+        ]).run(client: client)
+
+        let request = await captured.value
+        XCTAssertEqual(request?.name, "CI key")
+        XCTAssertEqual(request?.scopes, ["flags:read"])
+        XCTAssertEqual(request?.expiresAt, "2027-01-01T00:00:00Z")
     }
 
     func testKeysCreateSurfacesTheSubsetRule() async throws {
@@ -198,8 +220,108 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
 
     func testTeamInviteAndRemoveParse() throws {
         XCTAssertThrowsError(try ConsoleTeamCommand.InviteCommand.parse(["not-an-email"]))
+        XCTAssertThrowsError(try ConsoleTeamCommand.InviteCommand.parse(["@example.com"]))
+        XCTAssertNoThrow(try ConsoleTeamCommand.InviteCommand.parse(["a@localhost"]))
+        XCTAssertThrowsError(try ConsoleTeamCommand.InviteCommand.parse(["a@@example.com"]))
         XCTAssertThrowsError(try ConsoleTeamCommand.InviteCommand.parse(["a@b.com", "--role", "owner"]))
         XCTAssertEqual(try ConsoleTeamCommand.InviteCommand.parse(["a@b.com", "--role", "viewer"]).role, "viewer")
+    }
+
+    func testTeamInviteNormalizesEmailAndBuildsRequest() async throws {
+        let captured = Capture<InviteRequest>()
+        var client = OrgAdminClient.failing
+        client.invite = { request in
+            await captured.set(request)
+            return try! JSONDecoder().decode(OrgInvite.self, from: Data(#"{"id":"I1","email":"dev@example.com","orgRole":"admin","status":"pending","invitedBy":null,"expiresAt":"2026-09-10T00:00:00Z","createdAt":null}"#.utf8))
+        }
+
+        try await ConsoleTeamCommand.InviteCommand.parse([
+            " dev@example.com \n", "--role", "admin", "--json",
+        ]).run(client: client)
+
+        let request = await captured.value
+        XCTAssertEqual(request?.email, "dev@example.com")
+        XCTAssertEqual(request?.orgRole, "admin")
+    }
+
+    func testKeysAndTeamRejectBlankResourceIDs() {
+        let blank = " \n\t "
+        XCTAssertThrowsError(try ConsoleKeysCommand.GetCommand.parse([blank]))
+        XCTAssertThrowsError(try ConsoleKeysCommand.RotateCommand.parse([blank, "--yes"]))
+        XCTAssertThrowsError(try ConsoleKeysCommand.RevokeCommand.parse([blank, "--yes"]))
+        XCTAssertThrowsError(try ConsoleTeamCommand.GetCommand.parse([blank]))
+        XCTAssertThrowsError(try ConsoleTeamCommand.RevokeInviteCommand.parse([blank, "--yes"]))
+        XCTAssertThrowsError(try ConsoleTeamCommand.RemoveCommand.parse([blank, "--yes"]))
+    }
+
+    func testRotateRevokeAndRemoveRefuseBeforeCallingClients() async throws {
+        let rotated = Capture<String>()
+        let revokedKey = Capture<String>()
+        let revokedInvite = Capture<String>()
+        let removedMember = Capture<String>()
+        var client = OrgAdminClient.failing
+        client.rotateKey = { id, _ in
+            await rotated.set(id)
+            throw GrantivaError.networkError("", 500)
+        }
+        client.revokeKey = { await revokedKey.set($0) }
+        client.revokeInvite = { await revokedInvite.set($0) }
+        client.removeMember = { await removedMember.set($0) }
+
+        let operations: [() async throws -> Void] = [
+            { try await ConsoleKeysCommand.RotateCommand.parse(["K1"]).run(client: client, interactive: false) },
+            { try await ConsoleKeysCommand.RevokeCommand.parse(["K1"]).run(client: client, interactive: false) },
+            { try await ConsoleTeamCommand.RevokeInviteCommand.parse(["I1"]).run(client: client, interactive: false) },
+            { try await ConsoleTeamCommand.RemoveCommand.parse(["M1"]).run(client: client, interactive: false) },
+        ]
+        for operation in operations {
+            do {
+                try await operation()
+                XCTFail("expected non-TTY refusal")
+            } catch {
+                guard case GrantivaError.invalidArgument(let message) = error else { return XCTFail("unexpected \(error)") }
+                XCTAssertTrue(message.contains("--yes"), message)
+            }
+        }
+
+        let rotatedValue = await rotated.value
+        let revokedKeyValue = await revokedKey.value
+        let revokedInviteValue = await revokedInvite.value
+        let removedMemberValue = await removedMember.value
+        XCTAssertNil(rotatedValue)
+        XCTAssertNil(revokedKeyValue)
+        XCTAssertNil(revokedInviteValue)
+        XCTAssertNil(removedMemberValue)
+    }
+
+    func testRotateRevokeAndRemoveWithYesSendExactRequests() async throws {
+        let rotated = Capture<(String, Int?)>()
+        let revokedKey = Capture<String>()
+        let revokedInvite = Capture<String>()
+        let removedMember = Capture<String>()
+        var client = OrgAdminClient.failing
+        client.rotateKey = { id, request in
+            await rotated.set((id, request.gracePeriodDays))
+            return try! JSONDecoder().decode(APIKeyCreated.self, from: Data(#"{"id":"K2","name":"CI","keyPrefix":"gpat_new","rawKey":"secret","scopes":["flags:read"],"keyType":"org","isActive":true,"expiresAt":null,"createdAt":null}"#.utf8))
+        }
+        client.revokeKey = { await revokedKey.set($0) }
+        client.revokeInvite = { await revokedInvite.set($0) }
+        client.removeMember = { await removedMember.set($0) }
+
+        try await ConsoleKeysCommand.RotateCommand.parse(["K1", "--grace-days", "7", "--yes", "--json"]).run(client: client, interactive: false)
+        try await ConsoleKeysCommand.RevokeCommand.parse(["K1", "--yes", "--json"]).run(client: client, interactive: false)
+        try await ConsoleTeamCommand.RevokeInviteCommand.parse(["I1", "--yes", "--json"]).run(client: client, interactive: false)
+        try await ConsoleTeamCommand.RemoveCommand.parse(["M1", "--yes", "--json"]).run(client: client, interactive: false)
+
+        let rotateRequest = await rotated.value
+        XCTAssertEqual(rotateRequest?.0, "K1")
+        XCTAssertEqual(rotateRequest?.1, 7)
+        let revokedKeyValue = await revokedKey.value
+        let revokedInviteValue = await revokedInvite.value
+        let removedMemberValue = await removedMember.value
+        XCTAssertEqual(revokedKeyValue, "K1")
+        XCTAssertEqual(revokedInviteValue, "I1")
+        XCTAssertEqual(removedMemberValue, "M1")
     }
 
     func testRemoveAndRevokeRefuseOffTTYWithoutYes() async throws {
