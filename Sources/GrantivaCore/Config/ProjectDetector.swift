@@ -121,25 +121,34 @@ extension ProjectDetector {
     private static let cachePath = ".grantiva/config.json"
 
     public static func loadCache() -> DetectedProject? {
-        let fm = FileManager.default
-        guard fm.fileExists(atPath: cachePath),
-              let data = fm.contents(atPath: cachePath),
+        let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+        return loadCache(
+            cacheURL: cwd.appendingPathComponent(cachePath),
+            projectDirectory: cwd
+        )
+    }
+
+    static func loadCache(
+        cacheURL: URL,
+        projectDirectory: URL,
+        fileManager fm: FileManager = .default
+    ) -> DetectedProject? {
+        guard fm.fileExists(atPath: cacheURL.path),
+              let data = fm.contents(atPath: cacheURL.path),
               let cached = try? JSONDecoder().decode(DetectedProject.self, from: data) else {
             return nil
         }
 
-        // Invalidate if xcodeproj is newer than cache
-        let cacheURL = URL(fileURLWithPath: cachePath)
         guard let cacheDate = try? fm.attributesOfItem(atPath: cacheURL.path)[.modificationDate] as? Date else {
             return cached
         }
 
-        let cwd = fm.currentDirectoryPath
-        if let contents = try? fm.contentsOfDirectory(atPath: cwd) {
-            for item in contents where item.hasSuffix(".xcodeproj") {
-                let projPath = "\(cwd)/\(item)"
-                if let projDate = try? fm.attributesOfItem(atPath: projPath)[.modificationDate] as? Date,
-                   projDate > cacheDate {
+        if let contents = try? fm.contentsOfDirectory(atPath: projectDirectory.path) {
+            for item in contents where
+                !item.hasPrefix(".") && (item.hasSuffix(".xcodeproj") || item.hasSuffix(".xcworkspace")) {
+                let containerURL = projectDirectory.appendingPathComponent(item)
+                if let modificationDate = try? fm.attributesOfItem(atPath: containerURL.path)[.modificationDate] as? Date,
+                   modificationDate > cacheDate {
                     return nil // Cache invalidated
                 }
             }
@@ -149,14 +158,21 @@ extension ProjectDetector {
     }
 
     public static func saveCache(_ project: DetectedProject) {
-        let fm = FileManager.default
-        let dir = URL(fileURLWithPath: ".grantiva")
-        if !fm.fileExists(atPath: dir.path) {
-            try? fm.createDirectory(at: dir, withIntermediateDirectories: true)
+        let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+        try? writeCache(project, cacheURL: cwd.appendingPathComponent(cachePath))
+    }
+
+    static func writeCache(
+        _ project: DetectedProject,
+        cacheURL: URL,
+        fileManager fm: FileManager = .default
+    ) throws {
+        let directory = cacheURL.deletingLastPathComponent()
+        if !fm.fileExists(atPath: directory.path) {
+            try fm.createDirectory(at: directory, withIntermediateDirectories: true)
         }
-        if let data = try? JSONEncoder().encode(project) {
-            fm.createFile(atPath: cachePath, contents: data)
-        }
+        let data = try JSONEncoder().encode(project)
+        try data.write(to: cacheURL, options: .atomic)
     }
 }
 
