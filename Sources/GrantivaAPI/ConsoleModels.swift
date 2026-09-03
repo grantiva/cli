@@ -734,16 +734,89 @@ public struct SSEParser: Sendable {
                 dataLines = []
             }
             guard !dataLines.isEmpty else { return nil }
-            return FlagStreamEvent(event: eventName ?? "message", data: dataLines.joined(separator: "\n"))
+            let dispatchedName = eventName.flatMap { $0.isEmpty ? nil : $0 } ?? "message"
+            return FlagStreamEvent(event: dispatchedName, data: dataLines.joined(separator: "\n"))
         }
         if line.hasPrefix(":") { return nil } // comment / keepalive
-        if line.hasPrefix("event:") {
-            eventName = String(line.dropFirst("event:".count)).trimmingCharacters(in: .whitespaces)
-        } else if line.hasPrefix("data:") {
-            var value = String(line.dropFirst("data:".count))
-            if value.hasPrefix(" ") { value.removeFirst() }
+
+        let separator = line.firstIndex(of: ":")
+        let field = separator.map { String(line[..<$0]) } ?? line
+        var value = separator.map { String(line[line.index(after: $0)...]) } ?? ""
+        // The SSE grammar strips exactly one leading ASCII space from a field
+        // value. Other leading and trailing whitespace is significant.
+        if value.first == " " { value.removeFirst() }
+
+        if field == "event" {
+            eventName = value
+        } else if field == "data" {
             dataLines.append(value)
         }
         return nil
+    }
+}
+
+enum SSEByteDecoderError: Error, Equatable, LocalizedError {
+    case lineTooLong(maximumBytes: Int)
+
+    var errorDescription: String? {
+        switch self {
+        case .lineTooLong(let maximumBytes):
+            return "SSE line exceeds the \(maximumBytes)-byte limit"
+        }
+    }
+}
+
+/// Splits an SSE byte stream into physical lines without relying on
+/// `AsyncBytes.lines`, which does not expose the blank dispatch lines.
+struct SSEByteDecoder: Sendable {
+    static let defaultMaximumLineBytes = 64 * 1024
+
+    private var parser = SSEParser()
+    private var line: [UInt8] = []
+    private var previousByteWasCR = false
+    private var isFirstLine = true
+    private let maximumLineBytes: Int
+
+    init(maximumLineBytes: Int = defaultMaximumLineBytes) {
+        self.maximumLineBytes = maximumLineBytes
+    }
+
+    mutating func feed(byte: UInt8) throws -> FlagStreamEvent? {
+        if previousByteWasCR {
+            previousByteWasCR = false
+            if byte == 0x0A { return nil } // CRLF is one line ending.
+        }
+
+        if byte == 0x0D {
+            previousByteWasCR = true
+            return dispatchLine()
+        }
+        if byte == 0x0A {
+            return dispatchLine()
+        }
+        guard line.count < maximumLineBytes else {
+            throw SSEByteDecoderError.lineTooLong(maximumBytes: maximumLineBytes)
+        }
+        line.append(byte)
+        return nil
+    }
+
+    /// An unterminated final line and any pending event are discarded per SSE.
+    mutating func finish() {
+        line.removeAll(keepingCapacity: false)
+        parser = SSEParser()
+        previousByteWasCR = false
+    }
+
+    private mutating func dispatchLine() -> FlagStreamEvent? {
+        if isFirstLine {
+            isFirstLine = false
+            if line.starts(with: [0xEF, 0xBB, 0xBF]) {
+                line.removeFirst(3)
+            }
+        }
+        let decoded = String(decoding: line, as: UTF8.self)
+        line.removeAll(keepingCapacity: true)
+        return parser.feed(line: decoded)
     }
 }

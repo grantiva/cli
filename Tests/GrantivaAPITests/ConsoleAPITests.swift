@@ -473,6 +473,101 @@ final class ConsoleAPITests: XCTestCase {
         XCTAssertEqual(event?.data, "second")
     }
 
+    func testSSEParserUsesSpecFieldValueWhitespaceAndEmptyFields() {
+        var parser = SSEParser()
+        XCTAssertNil(parser.feed(line: "event:  spaced "))
+        XCTAssertNil(parser.feed(line: "data"))
+        XCTAssertNil(parser.feed(line: "data: value "))
+        XCTAssertEqual(
+            parser.feed(line: ""),
+            FlagStreamEvent(event: " spaced ", data: "\nvalue ")
+        )
+
+        XCTAssertNil(parser.feed(line: "event"))
+        XCTAssertNil(parser.feed(line: "data: next"))
+        XCTAssertEqual(parser.feed(line: "")?.event, "message")
+    }
+
+    func testSSEByteDecoderSupportsAllSSELineEndings() throws {
+        for separator in ["\n", "\r\n", "\r"] {
+            var decoder = SSEByteDecoder()
+            var events: [FlagStreamEvent] = []
+            for byte in "event: flags\(separator)data: yes\(separator)\(separator)".utf8 {
+                if let event = try decoder.feed(byte: byte) { events.append(event) }
+            }
+            XCTAssertEqual(events, [FlagStreamEvent(event: "flags", data: "yes")], "separator: \(separator.debugDescription)")
+        }
+    }
+
+    func testSSEByteDecoderIgnoresInitialUTF8BOM() throws {
+        var decoder = SSEByteDecoder()
+        var event: FlagStreamEvent?
+        for byte in ([0xEF, 0xBB, 0xBF] + Array("data: hello\n\n".utf8)) {
+            event = try decoder.feed(byte: byte) ?? event
+        }
+        XCTAssertEqual(event, FlagStreamEvent(event: "message", data: "hello"))
+    }
+
+    func testSSEByteDecoderDiscardsUnterminatedEventAtEOF() throws {
+        var decoder = SSEByteDecoder()
+        for byte in "data: incomplete\n".utf8 {
+            XCTAssertNil(try decoder.feed(byte: byte))
+        }
+        decoder.finish()
+        XCTAssertNil(try decoder.feed(byte: 0x0A))
+    }
+
+    func testSSEByteDecoderBoundsPhysicalLines() throws {
+        var decoder = SSEByteDecoder(maximumLineBytes: 4)
+        for byte in "data".utf8 { XCTAssertNil(try decoder.feed(byte: byte)) }
+        XCTAssertThrowsError(try decoder.feed(byte: UInt8(ascii: ":"))) { error in
+            XCTAssertEqual(error as? SSEByteDecoderError, .lineTooLong(maximumBytes: 4))
+        }
+    }
+
+    func testMakeSSEStreamForwardsEventsAndUpstreamError() async throws {
+        let upstream = AsyncThrowingStream<UInt8, Error> { continuation in
+            for byte in "data: first\n\n".utf8 { continuation.yield(byte) }
+            continuation.finish(throwing: SSETestError.upstream)
+        }
+        var iterator = makeSSEStream(from: upstream).makeAsyncIterator()
+        let first = try await iterator.next()
+        XCTAssertEqual(first, FlagStreamEvent(event: "message", data: "first"))
+        do {
+            _ = try await iterator.next()
+            XCTFail("Expected upstream failure")
+        } catch {
+            XCTAssertEqual(error as? SSETestError, .upstream)
+        }
+    }
+
+    func testValidateSSEResponseRequiresEventStreamContentType() throws {
+        let url = URL(string: "https://api.example.com/stream")!
+        let valid = try XCTUnwrap(HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "Text/Event-Stream; charset=utf-8"]
+        ))
+        XCTAssertNoThrow(try validateSSEResponse(valid))
+
+        let invalid = try XCTUnwrap(HTTPURLResponse(
+            url: url,
+            statusCode: 200,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "application/json"]
+        ))
+        XCTAssertThrowsError(try validateSSEResponse(invalid))
+
+        let unauthorized = try XCTUnwrap(HTTPURLResponse(
+            url: url,
+            statusCode: 401,
+            httpVersion: nil,
+            headerFields: ["Content-Type": "text/event-stream"]
+        ))
+        XCTAssertThrowsError(try validateSSEResponse(unauthorized))
+    }
+
     // MARK: - ConsoleClient Failing
 
     func testFailingConsoleClientThrows() async {
@@ -489,4 +584,8 @@ final class ConsoleAPITests: XCTestCase {
             // Expected
         }
     }
+}
+
+private enum SSETestError: Error, Equatable {
+    case upstream
 }
