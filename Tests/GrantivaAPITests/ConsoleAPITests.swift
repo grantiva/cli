@@ -9,12 +9,12 @@ final class ConsoleAPITests: XCTestCase {
     func testListFlagsEndpoint() {
         let endpoint = OrgFlagEndpoints.list(appId: nil, environment: nil)
         XCTAssertEqual(endpoint.method, .get)
-        XCTAssertEqual(endpoint.url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/flags")
+        XCTAssertEqual(try! endpoint.url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/flags")
     }
 
     func testListFlagsEndpointWithFilters() {
         let endpoint = OrgFlagEndpoints.list(appId: "app-1", environment: "staging")
-        let url = endpoint.url(relativeTo: base).absoluteString
+        let url = try! endpoint.url(relativeTo: base).absoluteString
         XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/org/flags?"))
         XCTAssertTrue(url.contains("app_id=app-1"))
         XCTAssertTrue(url.contains("environment=staging"))
@@ -24,14 +24,14 @@ final class ConsoleAPITests: XCTestCase {
         let body = CreateOrgFlagRequest(flagKey: "dark_mode", name: "Dark Mode", valueType: "boolean")
         let endpoint = OrgFlagEndpoints.create(body: body)
         XCTAssertEqual(endpoint.method, .post)
-        XCTAssertEqual(endpoint.url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/flags")
+        XCTAssertEqual(try! endpoint.url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/flags")
     }
 
     func testDetailEndpointAcceptsFlagKey() {
         let endpoint = OrgFlagEndpoints.detail(flagRef: "dark_mode")
         XCTAssertEqual(endpoint.method, .get)
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode"
         )
     }
@@ -39,21 +39,21 @@ final class ConsoleAPITests: XCTestCase {
     func testDetailEndpointAcceptsUUID() {
         let endpoint = OrgFlagEndpoints.detail(flagRef: "550e8400-e29b-41d4-a716-446655440000")
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/550e8400-e29b-41d4-a716-446655440000"
         )
     }
 
     func testFlagRefIsPercentEncoded() {
         let endpoint = OrgFlagEndpoints.detail(flagRef: "weird/key")
-        XCTAssertTrue(endpoint.url(relativeTo: base).absoluteString.contains("weird%2Fkey"))
+        XCTAssertTrue(try! endpoint.url(relativeTo: base).absoluteString.contains("weird%2Fkey"))
     }
 
     func testUpdateFlagEndpoint() {
         let endpoint = OrgFlagEndpoints.update(flagRef: "dark_mode", body: UpdateOrgFlagRequest(name: "New"))
         XCTAssertEqual(endpoint.method, .put)
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode"
         )
     }
@@ -62,7 +62,7 @@ final class ConsoleAPITests: XCTestCase {
         let endpoint = OrgFlagEndpoints.delete(flagRef: "dark_mode")
         XCTAssertEqual(endpoint.method, .delete)
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode"
         )
     }
@@ -71,7 +71,7 @@ final class ConsoleAPITests: XCTestCase {
         let endpoint = OrgFlagEndpoints.toggle(flagRef: "dark_mode", body: ToggleOrgFlagRequest(isActive: true))
         XCTAssertEqual(endpoint.method, .post)
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode/toggle"
         )
     }
@@ -79,7 +79,7 @@ final class ConsoleAPITests: XCTestCase {
     func testHistoryEndpoint() {
         let endpoint = OrgFlagEndpoints.history(flagRef: "dark_mode", limit: 10, offset: 20)
         XCTAssertEqual(endpoint.method, .get)
-        let url = endpoint.url(relativeTo: base).absoluteString
+        let url = try! endpoint.url(relativeTo: base).absoluteString
         XCTAssertTrue(url.hasPrefix("https://api.example.com/api/v1/org/flags/dark_mode/history?"))
         XCTAssertTrue(url.contains("limit=10"))
         XCTAssertTrue(url.contains("offset=20"))
@@ -89,7 +89,7 @@ final class ConsoleAPITests: XCTestCase {
         let list = OrgFlagEndpoints.listOverrides(flagRef: "dark_mode")
         XCTAssertEqual(list.method, .get)
         XCTAssertEqual(
-            list.url(relativeTo: base).absoluteString,
+            try! list.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode/overrides"
         )
 
@@ -99,14 +99,14 @@ final class ConsoleAPITests: XCTestCase {
         )
         XCTAssertEqual(create.method, .post)
         XCTAssertEqual(
-            create.url(relativeTo: base).absoluteString,
+            try! create.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode/overrides"
         )
 
         let delete = OrgFlagEndpoints.deleteOverride(flagRef: "dark_mode", overrideId: "ovr-1")
         XCTAssertEqual(delete.method, .delete)
         XCTAssertEqual(
-            delete.url(relativeTo: base).absoluteString,
+            try! delete.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flags/dark_mode/overrides/ovr-1"
         )
     }
@@ -117,28 +117,28 @@ final class ConsoleAPITests: XCTestCase {
         let list = FlagEnvironmentEndpoints.list()
         XCTAssertEqual(list.method, .get)
         XCTAssertEqual(
-            list.url(relativeTo: base).absoluteString,
+            try! list.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flag-environments"
         )
 
         let create = FlagEnvironmentEndpoints.create(body: CreateFlagEnvironmentRequest(name: "Staging"))
         XCTAssertEqual(create.method, .post)
         XCTAssertEqual(
-            create.url(relativeTo: base).absoluteString,
+            try! create.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flag-environments"
         )
 
         let update = FlagEnvironmentEndpoints.update(envId: "env-1", body: UpdateFlagEnvironmentRequest(reorder: "up"))
         XCTAssertEqual(update.method, .put)
         XCTAssertEqual(
-            update.url(relativeTo: base).absoluteString,
+            try! update.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flag-environments/env-1"
         )
 
         let delete = FlagEnvironmentEndpoints.delete(envId: "env-1")
         XCTAssertEqual(delete.method, .delete)
         XCTAssertEqual(
-            delete.url(relativeTo: base).absoluteString,
+            try! delete.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/org/flag-environments/env-1"
         )
     }
@@ -151,7 +151,7 @@ final class ConsoleAPITests: XCTestCase {
         let list = FlagRuleEndpoints.list(flagId: flagId)
         XCTAssertEqual(list.method, .get)
         XCTAssertEqual(
-            list.url(relativeTo: base).absoluteString,
+            try! list.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/rules"
         )
 
@@ -161,28 +161,28 @@ final class ConsoleAPITests: XCTestCase {
         )
         XCTAssertEqual(create.method, .post)
         XCTAssertEqual(
-            create.url(relativeTo: base).absoluteString,
+            try! create.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/rules"
         )
 
         let update = FlagRuleEndpoints.update(flagId: flagId, ruleId: "rule-1", body: UpdateFlagRuleRequest(name: "New"))
         XCTAssertEqual(update.method, .put)
         XCTAssertEqual(
-            update.url(relativeTo: base).absoluteString,
+            try! update.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/rules/rule-1"
         )
 
         let delete = FlagRuleEndpoints.delete(flagId: flagId, ruleId: "rule-1")
         XCTAssertEqual(delete.method, .delete)
         XCTAssertEqual(
-            delete.url(relativeTo: base).absoluteString,
+            try! delete.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/rules/rule-1"
         )
 
         let reorder = FlagRuleEndpoints.reorder(flagId: flagId, body: ReorderFlagRulesRequest(ruleIds: ["a", "b"]))
         XCTAssertEqual(reorder.method, .patch)
         XCTAssertEqual(
-            reorder.url(relativeTo: base).absoluteString,
+            try! reorder.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/rules/reorder"
         )
     }
@@ -194,7 +194,7 @@ final class ConsoleAPITests: XCTestCase {
         let endpoint = FlagEvaluationEndpoints.evaluate(flagId: flagId, body: FlagEvaluationRequest())
         XCTAssertEqual(endpoint.method, .post)
         XCTAssertEqual(
-            endpoint.url(relativeTo: base).absoluteString,
+            try! endpoint.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/\(flagId)/evaluate"
         )
     }
@@ -202,13 +202,13 @@ final class ConsoleAPITests: XCTestCase {
     func testStreamEndpoint() {
         let plain = FlagEvaluationEndpoints.stream(environment: nil)
         XCTAssertEqual(
-            plain.url(relativeTo: base).absoluteString,
+            try! plain.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/stream"
         )
 
         let scoped = FlagEvaluationEndpoints.stream(environment: "staging")
         XCTAssertEqual(
-            scoped.url(relativeTo: base).absoluteString,
+            try! scoped.url(relativeTo: base).absoluteString,
             "https://api.example.com/api/v1/flags/stream?environment=staging"
         )
     }

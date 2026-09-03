@@ -3,15 +3,7 @@ import Foundation
 // MARK: - Path Encoding
 
 private func orgSegment(_ value: String) -> String {
-    value.addingPercentEncoding(withAllowedCharacters: .orgPathSegment) ?? value
-}
-
-private extension CharacterSet {
-    static let orgPathSegment: CharacterSet = {
-        var set = CharacterSet.urlPathAllowed
-        set.remove("/")
-        return set
-    }()
+    EndpointPath.segment(value)
 }
 
 // MARK: - Org App Endpoints (§9b — snake_case wire)

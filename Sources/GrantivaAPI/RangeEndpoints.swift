@@ -1,19 +1,5 @@
 import Foundation
 
-// MARK: - Path Encoding
-
-private func encodedSegment(_ value: String) -> String {
-    value.addingPercentEncoding(withAllowedCharacters: .urlPathAllowedWithoutSlash) ?? value
-}
-
-private extension CharacterSet {
-    static let urlPathAllowedWithoutSlash: CharacterSet = {
-        var set = CharacterSet.urlPathAllowed
-        set.remove("/")
-        return set
-    }()
-}
-
 // MARK: - Auth Endpoints
 
 enum AuthEndpoints {
@@ -29,35 +15,35 @@ enum BaselineEndpoints {
 
     static func list(project: String, branch: String) -> Endpoint<EmptyBody, BaselineListResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(encodedSegment(branch))",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))",
             method: .get
         )
     }
 
     static func download(project: String, branch: String, screen: String) -> Endpoint<EmptyBody, EmptyResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(encodedSegment(branch))/\(encodedSegment(screen))",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))/\(EndpointPath.segment(screen))",
             method: .get
         )
     }
 
     static func upload(project: String, branch: String, screen: String) -> Endpoint<EmptyBody, EmptyResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(encodedSegment(branch))/\(encodedSegment(screen))",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))/\(EndpointPath.segment(screen))",
             method: .post
         )
     }
 
     static func delete(project: String, branch: String, screen: String) -> Endpoint<EmptyBody, EmptyResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(encodedSegment(branch))/\(encodedSegment(screen))",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))/\(EndpointPath.segment(screen))",
             method: .delete
         )
     }
 
     static func promote(project: String, branch: String, body: PromoteBaselinesRequest) -> Endpoint<PromoteBaselinesRequest, EmptyResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(encodedSegment(branch))/promote",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(branch))/promote",
             method: .post,
             body: body
         )
@@ -71,35 +57,35 @@ enum RunEndpoints {
 
     static func create(project: String) -> Endpoint<EmptyBody, RunResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))",
+            path: "\(prefix)/\(EndpointPath.segment(project))",
             method: .post
         )
     }
 
     static func list(project: String) -> Endpoint<EmptyBody, RunListResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))",
+            path: "\(prefix)/\(EndpointPath.segment(project))",
             method: .get
         )
     }
 
     static func detail(project: String, runId: String) -> Endpoint<EmptyBody, RunDetailResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(runId)",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(runId))",
             method: .get
         )
     }
 
     static func complete(project: String, runId: String) -> Endpoint<EmptyBody, RunResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(runId)",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(runId))",
             method: .patch
         )
     }
 
     static func appendLog(project: String, runId: String) -> Endpoint<EmptyBody, EmptyResponse> {
         Endpoint(
-            path: "\(prefix)/\(encodedSegment(project))/\(runId)/logs",
+            path: "\(prefix)/\(EndpointPath.segment(project))/\(EndpointPath.segment(runId))/logs",
             method: .post
         )
     }

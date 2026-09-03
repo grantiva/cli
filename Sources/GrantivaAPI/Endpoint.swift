@@ -1,4 +1,19 @@
 import Foundation
+import GrantivaCore
+
+enum EndpointPath {
+    static func segment(_ value: String) -> String {
+        value.addingPercentEncoding(withAllowedCharacters: .pathSegment) ?? value
+    }
+}
+
+private extension CharacterSet {
+    static let pathSegment: CharacterSet = {
+        var set = CharacterSet.urlPathAllowed
+        set.remove("/")
+        return set
+    }()
+}
 
 // MARK: - HTTP Method
 
@@ -30,16 +45,21 @@ public struct Endpoint<Request: Encodable & Sendable, Response: Decodable & Send
         self.queryItems = queryItems
     }
 
-    public func url(relativeTo baseURL: URL) -> URL {
+    public func url(relativeTo baseURL: URL) throws -> URL {
         let base = baseURL.absoluteString.hasSuffix("/")
             ? baseURL.absoluteString
             : baseURL.absoluteString + "/"
         // Path segments are already percent-encoded by the endpoint definitions,
         // so we concatenate directly to avoid double-encoding.
-        var components = URLComponents(string: base + path)!
+        guard var components = URLComponents(string: base + path) else {
+            throw GrantivaError.invalidArgument("Invalid endpoint URL: \(base + path)")
+        }
         if let queryItems, !queryItems.isEmpty {
             components.queryItems = queryItems
         }
-        return components.url!
+        guard let url = components.url else {
+            throw GrantivaError.invalidArgument("Invalid endpoint URL: \(base + path)")
+        }
+        return url
     }
 }

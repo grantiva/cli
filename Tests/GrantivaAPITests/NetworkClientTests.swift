@@ -45,6 +45,21 @@ final class NetworkClientTests: XCTestCase {
         _ = try await client(recording: recorder).execute(endpoint, baseURL: URL(string: "https://api.example")!)
         XCTAssertEqual(recorder.calls, ["put"])
     }
+
+    func testDownloadUsesRawAcceptHeaderAndLongTimeout() async throws {
+        let recorder = Recorder()
+        let endpoint = Endpoint<EmptyBody, EmptyResponse>(path: "exports/report.csv", method: .get)
+
+        _ = try await client(recording: recorder).download(
+            endpoint,
+            baseURL: URL(string: "https://api.example")!
+        )
+
+        XCTAssertEqual(recorder.calls, ["sendRequest"])
+        let request = try XCTUnwrap(recorder.requests.first)
+        XCTAssertEqual(request.value(forHTTPHeaderField: "Accept"), "*/*")
+        XCTAssertEqual(request.timeoutInterval, 300)
+    }
 }
 
 final class MultipartFormTests: XCTestCase {

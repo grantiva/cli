@@ -53,15 +53,7 @@ enum AnalyticsEndpoints {
 
     /// `GET /api/v1/analytics/devices/:keyId`
     static func device(keyId: String) -> Endpoint<EmptyBody, DeviceDetailsResponse> {
-        let encoded = keyId.addingPercentEncoding(withAllowedCharacters: .analyticsPathSegment) ?? keyId
+        let encoded = EndpointPath.segment(keyId)
         return Endpoint(path: "\(prefix)/devices/\(encoded)", method: .get)
     }
-}
-
-private extension CharacterSet {
-    static let analyticsPathSegment: CharacterSet = {
-        var set = CharacterSet.urlPathAllowed
-        set.remove("/")
-        return set
-    }()
 }

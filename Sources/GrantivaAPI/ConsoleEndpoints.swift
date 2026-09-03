@@ -3,15 +3,7 @@ import Foundation
 // MARK: - Path Encoding
 
 private func encodedSegment(_ value: String) -> String {
-    value.addingPercentEncoding(withAllowedCharacters: .urlPathAllowedWithoutSlash) ?? value
-}
-
-private extension CharacterSet {
-    static let urlPathAllowedWithoutSlash: CharacterSet = {
-        var set = CharacterSet.urlPathAllowed
-        set.remove("/")
-        return set
-    }()
+    EndpointPath.segment(value)
 }
 
 // MARK: - Org Flag Endpoints (console contract §7a — snake_case wire)

@@ -156,7 +156,7 @@ extension ConsoleClient {
                 try await client.execute(FlagEvaluationEndpoints.evaluate(flagId: flagId, body: body), baseURL: baseURL)
             },
             streamFlags: { environment in
-                let url = FlagEvaluationEndpoints.stream(environment: environment).url(relativeTo: baseURL)
+                let url = try FlagEvaluationEndpoints.stream(environment: environment).url(relativeTo: baseURL)
                 var request = URLRequest(url: url)
                 request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
                 request.setValue("text/event-stream", forHTTPHeaderField: "Accept")

@@ -8,33 +8,33 @@ final class OrgAPITests: XCTestCase {
     // MARK: - Endpoint shapes
 
     func testAppEndpoints() {
-        XCTAssertEqual(OrgAppEndpoints.list().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps")
+        XCTAssertEqual(try! OrgAppEndpoints.list().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps")
         XCTAssertEqual(OrgAppEndpoints.create(body: CreateOrgAppRequest(appName: "A", bundleId: "com.a", teamId: "T")).method, .post)
-        XCTAssertEqual(OrgAppEndpoints.detail(appRef: "com.example.app").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps/com.example.app")
+        XCTAssertEqual(try! OrgAppEndpoints.detail(appRef: "com.example.app").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps/com.example.app")
         XCTAssertEqual(OrgAppEndpoints.update(appRef: "x", body: UpdateOrgAppRequest(appName: "N")).method, .put)
         XCTAssertEqual(OrgAppEndpoints.delete(appRef: "x").method, .delete)
-        XCTAssertEqual(OrgAppEndpoints.setPrimary(appRef: "x").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps/x/set-primary")
-        XCTAssertEqual(OrgAppEndpoints.activate(appRef: "x").url(relativeTo: base).lastPathComponent, "activate")
-        XCTAssertEqual(OrgAppEndpoints.deactivate(appRef: "x").url(relativeTo: base).lastPathComponent, "deactivate")
+        XCTAssertEqual(try! OrgAppEndpoints.setPrimary(appRef: "x").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/apps/x/set-primary")
+        XCTAssertEqual(try! OrgAppEndpoints.activate(appRef: "x").url(relativeTo: base).lastPathComponent, "activate")
+        XCTAssertEqual(try! OrgAppEndpoints.deactivate(appRef: "x").url(relativeTo: base).lastPathComponent, "deactivate")
     }
 
     func testClaimEndpoints() {
-        XCTAssertEqual(OrgClaimEndpoints.list().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims")
-        XCTAssertEqual(OrgClaimEndpoints.detail(claimRef: "plan").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/plan")
-        XCTAssertEqual(OrgClaimEndpoints.reorder(body: ReorderOrgClaimsRequest(claimRefs: ["a"])).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/reorder")
+        XCTAssertEqual(try! OrgClaimEndpoints.list().url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims")
+        XCTAssertEqual(try! OrgClaimEndpoints.detail(claimRef: "plan").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/plan")
+        XCTAssertEqual(try! OrgClaimEndpoints.reorder(body: ReorderOrgClaimsRequest(claimRefs: ["a"])).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/reorder")
         XCTAssertEqual(OrgClaimEndpoints.reorder(body: ReorderOrgClaimsRequest(claimRefs: ["a"])).method, .put)
-        XCTAssertEqual(OrgClaimEndpoints.test(body: TestOrgClaimRequest(claim: OrgClaimDefinition(claimKey: "k", claimName: "k", claimType: "static", dataType: "string", staticValue: "v"))).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/test")
-        XCTAssertEqual(OrgClaimEndpoints.preview(claimRef: "plan", body: PreviewOrgClaimRequest()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/plan/preview")
+        XCTAssertEqual(try! OrgClaimEndpoints.test(body: TestOrgClaimRequest(claim: OrgClaimDefinition(claimKey: "k", claimName: "k", claimType: "static", dataType: "string", staticValue: "v"))).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/test")
+        XCTAssertEqual(try! OrgClaimEndpoints.preview(claimRef: "plan", body: PreviewOrgClaimRequest()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/claims/plan/preview")
     }
 
     func testDeviceEndpointsCarryEveryFilter() {
         let query = OrgDeviceQuery(page: 2, per: 50, riskMin: 21, riskMax: 50, jailbroken: false, appId: "APP", search: "ipad")
-        let url = OrgDeviceEndpoints.list(query).url(relativeTo: base).absoluteString
+        let url = try! OrgDeviceEndpoints.list(query).url(relativeTo: base).absoluteString
         for fragment in ["page=2", "per=50", "risk_min=21", "risk_max=50", "jailbroken=false", "app_id=APP", "search=ipad"] {
             XCTAssertTrue(url.contains(fragment), url)
         }
-        XCTAssertEqual(OrgDeviceEndpoints.list(OrgDeviceQuery()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/devices")
-        XCTAssertEqual(OrgDeviceEndpoints.detail(keyId: "a/b").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/devices/a%2Fb")
+        XCTAssertEqual(try! OrgDeviceEndpoints.list(OrgDeviceQuery()).url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/devices")
+        XCTAssertEqual(try! OrgDeviceEndpoints.detail(keyId: "a/b").url(relativeTo: base).absoluteString, "https://api.example.com/api/v1/org/devices/a%2Fb")
     }
 
     // MARK: - Wire encoding
