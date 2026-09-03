@@ -6,26 +6,22 @@ import MCP
 /// over the Model Context Protocol via stdio transport.
 @available(macOS 15, *)
 public struct GrantivaMCPServer: Sendable {
-    public init() {}
+    private let projectDirectory: URL?
+
+    public init(projectDirectory: URL? = nil) {
+        self.projectDirectory = projectDirectory
+    }
 
     public func run() async throws {
-        // Load config (optional - some tools work without it)
+        let projectDirectory = try Self.resolveProjectDirectory(projectDirectory)
+        guard FileManager.default.changeCurrentDirectoryPath(projectDirectory.path) else {
+            throw GrantivaError.invalidArgument("Cannot use project directory: \(projectDirectory.path)")
+        }
+
+        // All relative tool paths now resolve from the selected project root.
         let config = try? GrantivaConfig.load()
 
-        // Resolve WDA session - start runner if not running
-        let session: RunnerSessionInfo
-        if let existing = try? RunnerSessionInfo.load(), existing.isAlive {
-            session = existing
-        } else {
-            // No active session. The MCP server requires a running runner.
-            // Tools that don't need WDA (build, sim, context) will still work,
-            // but UI tools will fail gracefully.
-            let port: UInt16 = 8100
-            session = RunnerSessionInfo(
-                pid: 0, wdaPort: port, bundleId: config?.bundleId ?? "",
-                udid: "", startedAt: Date()
-            )
-        }
+        let session = try Self.loadActiveSession(projectDirectory: projectDirectory)
 
         let wda = WDAClient.live(port: session.wdaPort)
         let simManager = SimulatorManager.live
@@ -101,5 +97,31 @@ public struct GrantivaMCPServer: Sendable {
         let transport = StdioTransport()
         try await server.start(transport: transport)
         await server.waitUntilCompleted()
+    }
+
+    static func resolveProjectDirectory(_ directory: URL?) throws -> URL {
+        let resolved = (directory ?? URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
+            .standardizedFileURL
+        var isDirectory: ObjCBool = false
+        guard FileManager.default.fileExists(atPath: resolved.path, isDirectory: &isDirectory),
+              isDirectory.boolValue else {
+            throw GrantivaError.invalidArgument("Project directory does not exist: \(resolved.path)")
+        }
+        guard FileManager.default.fileExists(atPath: resolved.appendingPathComponent("grantiva.yml").path) else {
+            throw GrantivaError.invalidArgument("No grantiva.yml found in project directory: \(resolved.path)")
+        }
+        return resolved
+    }
+
+    static func loadActiveSession(projectDirectory: URL) throws -> RunnerSessionInfo {
+        let sessionURL = projectDirectory.appendingPathComponent(RunnerSessionInfo.path)
+        guard let data = try? Data(contentsOf: sessionURL),
+              let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
+              session.isAlive else {
+            throw GrantivaError.invalidArgument(
+                "No active runner session at \(sessionURL.path). Start one with 'grantiva runner start'."
+            )
+        }
+        return session
     }
 }
