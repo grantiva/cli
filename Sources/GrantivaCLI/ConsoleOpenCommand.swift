@@ -37,16 +37,29 @@ struct ConsoleOpenCommand: AsyncParsableCommand {
 
     /// Maps the API host the CLI is configured for to the matching web host.
     static func dashboardURL(area: Area, apiBaseURL: String) -> String {
+        guard var components = URLComponents(string: apiBaseURL),
+              let scheme = components.scheme?.lowercased(),
+              scheme == "http" || scheme == "https",
+              let host = components.host?.lowercased(), !host.isEmpty
+        else {
+            return "https://grantiva.io" + area.path
+        }
+
         let web: String
-        if apiBaseURL.contains("dev-api.grantiva.io") {
+        if host == "dev-api.grantiva.io" {
             web = "https://dev.grantiva.io"
-        } else if apiBaseURL.contains("api.grantiva.io") {
+        } else if host == "api.grantiva.io" {
             web = "https://grantiva.io"
-        } else if let url = URL(string: apiBaseURL), let host = url.host {
-            // A custom deployment: assume the dashboard shares the API host.
-            web = "\(url.scheme ?? "https")://\(host)\(url.port.map { ":\($0)" } ?? "")"
         } else {
-            web = "https://grantiva.io"
+            // A custom deployment: assume the dashboard shares the API origin.
+            // URLComponents preserves IPv6 brackets and avoids carrying an API
+            // base path, query, credentials, or fragment into the dashboard URL.
+            components.path = ""
+            components.query = nil
+            components.fragment = nil
+            components.user = nil
+            components.password = nil
+            web = components.string ?? "https://grantiva.io"
         }
         return web + area.path
     }
@@ -55,19 +68,31 @@ struct ConsoleOpenCommand: AsyncParsableCommand {
         let apiBaseURL = AuthStore.resolveCredentials()?.baseURL
             ?? ProcessInfo.processInfo.environment["GRANTIVA_API_URL"]
             ?? GrantivaDefaults.apiBaseURL
+        try run(apiBaseURL: apiBaseURL, openURL: Self.openInBrowser)
+    }
+
+    /// Injectable execution path so command behavior can be verified without
+    /// launching a user's browser.
+    func run(apiBaseURL: String, openURL: (String) throws -> Int32) throws {
         let url = Self.dashboardURL(area: area, apiBaseURL: apiBaseURL)
         if options.json {
             Output.line(try JSONOutput.string(["url": url]))
             return
         }
+
+        let status = try openURL(url)
+        guard status == 0 else {
+            throw GrantivaError.commandFailed("open \(url)", status)
+        }
+        options.note("Opened \(url)")
+    }
+
+    private static func openInBrowser(_ url: String) throws -> Int32 {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
         process.arguments = [url]
         try process.run()
         process.waitUntilExit()
-        guard process.terminationStatus == 0 else {
-            throw GrantivaError.invalidArgument("could not open \(url)")
-        }
-        options.note("Opened \(url)")
+        return process.terminationStatus
     }
 }
