@@ -69,10 +69,6 @@ public enum RunnerSession {
         _ = try? await shell(
             "xcrun simctl status_bar \(udid) override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4"
         )
-        defer {
-            Task { _ = try? await shell("xcrun simctl status_bar \(udid) clear") }
-        }
-
         // Run the runner
         // Global flags go before `test`, test flags after
         var args = [
@@ -104,18 +100,20 @@ public enum RunnerSession {
 
         // stdout is relayed to stderr so CI sees runner progress in real time;
         // stderr is captured for error reporting.
-        let outcome = await RunnerExecution.run(RunnerExecution.Request(
-            executable: runnerBin,
-            arguments: Array(args.dropFirst()), // drop the binary path
-            workingDirectory: runnerDir,
-            lease: simulatorLease,
-            keepAlive: keepAlive,
-            timeoutSeconds: timeoutSeconds,
-            pathMap: [:],
-            reportDir: reportDir,
-            expectedFlows: 1,
-            readyFile: readySignal
-        ))
+        let outcome = await runWithStatusBarCleanup(udid: udid) {
+            await RunnerExecution.run(RunnerExecution.Request(
+                executable: runnerBin,
+                arguments: Array(args.dropFirst()), // drop the binary path
+                workingDirectory: runnerDir,
+                lease: simulatorLease,
+                keepAlive: keepAlive,
+                timeoutSeconds: timeoutSeconds,
+                pathMap: [:],
+                reportDir: reportDir,
+                expectedFlows: 1,
+                readyFile: readySignal
+            ))
+        }
 
         guard outcome.terminationStatus == 0 else {
             let reason = outcome.timedOut
@@ -333,10 +331,6 @@ public enum RunnerSession {
         _ = try? await shell(
             "xcrun simctl status_bar \(udid) override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4"
         )
-        defer {
-            Task { _ = try? await shell("xcrun simctl status_bar \(udid) clear") }
-        }
-
         var args = [
             runnerBin,
             "--platform", "ios",
@@ -366,18 +360,20 @@ public enum RunnerSession {
         // kill them prematurely. Use an effectively-infinite timeout then.
         let effectiveTimeout: UInt64 = keepAlive ? 60 * 60 * 24 : timeoutSeconds
 
-        let outcome = await RunnerExecution.run(RunnerExecution.Request(
-            executable: runnerBin,
-            arguments: Array(args.dropFirst()),
-            workingDirectory: runnerDir,
-            lease: simulatorLease,
-            keepAlive: keepAlive,
-            timeoutSeconds: effectiveTimeout,
-            pathMap: stagedPathMap,
-            reportDir: reportDir,
-            expectedFlows: flowPaths.count,
-            readyFile: readySignal
-        ))
+        let outcome = await runWithStatusBarCleanup(udid: udid) {
+            await RunnerExecution.run(RunnerExecution.Request(
+                executable: runnerBin,
+                arguments: Array(args.dropFirst()),
+                workingDirectory: runnerDir,
+                lease: simulatorLease,
+                keepAlive: keepAlive,
+                timeoutSeconds: effectiveTimeout,
+                pathMap: stagedPathMap,
+                reportDir: reportDir,
+                expectedFlows: flowPaths.count,
+                readyFile: readySignal
+            ))
+        }
 
         let pathRewriter = OutputRewriter(replacements: stagedPathMap)
         let stderr = pathRewriter.rewrite(outcome.stderr)
@@ -465,6 +461,20 @@ public enum RunnerSession {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    static func runWithStatusBarCleanup<T>(
+        udid: String,
+        clear: (String) async -> Void = clearStatusBar,
+        operation: () async -> T
+    ) async -> T {
+        let result = await operation()
+        await clear(udid)
+        return result
+    }
+
+    private static func clearStatusBar(udid: String) async {
+        _ = try? await shell("xcrun simctl status_bar \(udid) clear")
     }
 
     /// Maps the CLI-facing snapshot mode to the runner's `--artifacts` value.
