@@ -51,7 +51,7 @@ extension ProjectIdentifier {
         }
 
         // SSH format: git@github.com:owner/repo
-        if url.contains("@") && url.contains(":") {
+        if url.contains("@") && url.contains(":") && !url.contains("://") {
             if let colonIndex = url.lastIndex(of: ":") {
                 return String(url[url.index(after: colonIndex)...])
             }

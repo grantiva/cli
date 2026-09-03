@@ -53,6 +53,8 @@ extension ResolvedProject {
         bundleIdFlag: String? = nil,
         config: GrantivaConfig? = nil,
         detector: ProjectDetector = .live,
+        loadCache: @Sendable () -> DetectedProject? = { ProjectDetector.loadCache() },
+        saveCache: @Sendable (DetectedProject) -> Void = { ProjectDetector.saveCache($0) },
         skipBuild: Bool = false,
         appBundleId: String? = nil
     ) async throws -> ResolvedProject {
@@ -68,21 +70,21 @@ extension ResolvedProject {
         if !skipBuild {
             if flagScheme == nil && configScheme == nil {
                 // Try cache first
-                detected = ProjectDetector.loadCache()
+                detected = loadCache()
                 if detected == nil {
                     // Live detection
                     detected = try await detector.detect()
                     if let detected {
-                        ProjectDetector.saveCache(detected)
+                        saveCache(detected)
                     }
                 }
             } else if bundleIdFlag == nil && config?.bundleId == nil && appBundleId == nil {
                 // We have scheme but no bundle ID — try cache/detection for bundle ID
-                detected = ProjectDetector.loadCache()
+                detected = loadCache()
                 if detected == nil {
                     detected = try? await detector.detect()
                     if let detected {
-                        ProjectDetector.saveCache(detected)
+                        saveCache(detected)
                     }
                 }
             }
