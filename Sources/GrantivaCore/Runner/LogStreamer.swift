@@ -1,5 +1,70 @@
 import Foundation
 
+/// Turns arbitrarily fragmented pipe bytes into complete, prefixed log lines.
+/// Buffering bytes rather than decoded strings preserves UTF-8 scalars split
+/// across consecutive `FileHandle` callbacks.
+final class PrefixedLineDecoder: @unchecked Sendable {
+    private let prefix: Data
+    private let lock = NSLock()
+    private var buffer = Data()
+    private var finished = false
+
+    init(prefix: String = "[log] ") {
+        self.prefix = Data(prefix.utf8)
+    }
+
+    func consume(_ data: Data) -> [Data] {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !finished else { return [] }
+        buffer.append(data)
+
+        var lines: [Data] = []
+        while let newline = buffer.firstIndex(of: 0x0A) {
+            var line = Data(buffer[..<newline])
+            buffer.removeSubrange(...newline)
+            if line.last == 0x0D {
+                line.removeLast()
+            }
+            lines.append(prefixed(line))
+        }
+        return lines
+    }
+
+    /// Emits a final unterminated line, if any. Safe to call more than once.
+    func finish() -> [Data] {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !finished else { return [] }
+        finished = true
+        guard !buffer.isEmpty else { return [] }
+        defer { buffer.removeAll(keepingCapacity: false) }
+        return [prefixed(buffer)]
+    }
+
+    private func prefixed(_ line: Data) -> Data {
+        var result = prefix
+        result.append(line)
+        result.append(0x0A)
+        return result
+    }
+}
+
+private final class SerializedLogOutput: @unchecked Sendable {
+    private let lock = NSLock()
+
+    func write(_ lines: [Data]) {
+        guard !lines.isEmpty else { return }
+        lock.lock()
+        defer { lock.unlock() }
+        for line in lines {
+            FileHandle.standardError.write(line)
+        }
+    }
+}
+
 /// Streams `xcrun simctl spawn <udid> log stream` output into the current
 /// process's stderr with a `[log]` prefix so simulator app logs interleave
 /// naturally with grantiva and runner output.
@@ -13,7 +78,10 @@ public final class LogStreamer: @unchecked Sendable {
     private var process: Process?
     private var stderrPipe: Pipe?
     private var stdoutPipe: Pipe?
+    private var stderrDecoder: PrefixedLineDecoder?
+    private var stdoutDecoder: PrefixedLineDecoder?
     private let lock = NSLock()
+    private let output = SerializedLogOutput()
     private var stopped = false
 
     public init() {}
@@ -44,31 +112,40 @@ public final class LogStreamer: @unchecked Sendable {
         p.standardOutput = outPipe
         p.standardError = errPipe
 
-        // Forward each readable chunk line-by-line with a [log] prefix.
-        let forward: @Sendable (FileHandle) -> Void = { handle in
+        let outDecoder = PrefixedLineDecoder()
+        let errDecoder = PrefixedLineDecoder()
+
+        // Pipe reads may split anywhere, including in the middle of a line or
+        // UTF-8 scalar, so each pipe keeps independent raw-byte decoder state.
+        let forward: @Sendable (FileHandle, PrefixedLineDecoder) -> Void = { [output] handle, decoder in
             handle.readabilityHandler = { fh in
                 let data = fh.availableData
-                if data.isEmpty { return }
-                guard let chunk = String(data: data, encoding: .utf8) else { return }
-                let lines = chunk.split(separator: "\n", omittingEmptySubsequences: false)
-                for (i, line) in lines.enumerated() {
-                    // The final element of split(...) may be "" after a trailing
-                    // newline — drop to avoid a bare "[log]" line.
-                    if i == lines.count - 1 && line.isEmpty { continue }
-                    let prefixed = "[log] \(line)\n"
-                    FileHandle.standardError.write(Data(prefixed.utf8))
+                if data.isEmpty {
+                    handle.readabilityHandler = nil
+                    output.write(decoder.finish())
+                } else {
+                    output.write(decoder.consume(data))
                 }
             }
         }
 
-        forward(outPipe.fileHandleForReading)
-        forward(errPipe.fileHandleForReading)
+        forward(outPipe.fileHandleForReading, outDecoder)
+        forward(errPipe.fileHandleForReading, errDecoder)
 
-        try p.run()
+        do {
+            try p.run()
+        } catch {
+            outPipe.fileHandleForReading.readabilityHandler = nil
+            errPipe.fileHandleForReading.readabilityHandler = nil
+            throw error
+        }
 
         process = p
         stdoutPipe = outPipe
         stderrPipe = errPipe
+        stdoutDecoder = outDecoder
+        stderrDecoder = errDecoder
+        stopped = false
     }
 
     /// Stops the log stream subprocess. Safe to call multiple times.
@@ -81,11 +158,17 @@ public final class LogStreamer: @unchecked Sendable {
 
         stdoutPipe?.fileHandleForReading.readabilityHandler = nil
         stderrPipe?.fileHandleForReading.readabilityHandler = nil
+        output.write(stdoutDecoder?.finish() ?? [])
+        output.write(stderrDecoder?.finish() ?? [])
 
         if let p = process, p.isRunning {
             p.terminate()
         }
         process = nil
+        stdoutPipe = nil
+        stderrPipe = nil
+        stdoutDecoder = nil
+        stderrDecoder = nil
     }
 }
 
