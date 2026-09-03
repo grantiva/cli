@@ -21,7 +21,11 @@ public struct MaestroFlowParser {
     // MARK: - Public API
 
     /// Parse a Maestro flow YAML string into a GrantivaConfig.
-    public static func parse(_ content: String) throws -> GrantivaConfig {
+    public static func parse(
+        _ content: String,
+        sourceName: String = "<input>",
+        allowUnsupportedCommands: Bool = false
+    ) throws -> GrantivaConfig {
         let (configSection, commandsSection) = splitDocuments(content)
 
         // Parse config section
@@ -39,7 +43,13 @@ public struct MaestroFlowParser {
 
         if let commandsSection,
            let rawCommands = try Yams.load(yaml: commandsSection) as? [Any] {
-            screens = convertToScreens(rawCommands, flowName: flowName)
+            screens = try convertToScreens(
+                rawCommands,
+                flowName: flowName,
+                sourceName: sourceName,
+                lineNumbers: commandLineNumbers(in: content),
+                allowUnsupportedCommands: allowUnsupportedCommands
+            )
         }
 
         return GrantivaConfig(bundleId: bundleId, screens: screens)
@@ -62,7 +72,7 @@ public struct MaestroFlowParser {
         for file in files {
             let filePath = directory.appendingPathComponent(file)
             let contents = try String(contentsOf: filePath, encoding: .utf8)
-            let flowConfig = try parse(contents)
+            let flowConfig = try parse(contents, sourceName: filePath.path)
 
             if bundleId == nil {
                 bundleId = flowConfig.bundleId
@@ -88,7 +98,11 @@ public struct MaestroFlowParser {
     }
 
     /// Parse Maestro commands into Grantiva steps (for `runFlow` sub-flow support).
-    public static func parseSteps(_ content: String) throws -> [GrantivaConfig.Screen.Step] {
+    public static func parseSteps(
+        _ content: String,
+        sourceName: String = "<input>",
+        allowUnsupportedCommands: Bool = false
+    ) throws -> [GrantivaConfig.Screen.Step] {
         let (_, commandsSection) = splitDocuments(content)
         let yaml = commandsSection ?? content
 
@@ -97,9 +111,16 @@ public struct MaestroFlowParser {
         }
 
         var steps: [GrantivaConfig.Screen.Step] = []
-        for raw in rawCommands {
-            if let parsed = parseCommand(raw), case .step(let step) = parsed {
+        let lineNumbers = commandLineNumbers(in: content)
+        for (index, raw) in rawCommands.enumerated() {
+            guard let parsed = parseCommand(raw) else { continue }
+            switch parsed {
+            case .step(let step):
                 steps.append(step)
+            case .unsupported(let command) where !allowUnsupportedCommands:
+                throw unsupportedCommand(command, sourceName: sourceName, line: lineNumbers[safe: index])
+            default:
+                break
             }
         }
         return steps
@@ -143,12 +164,18 @@ public struct MaestroFlowParser {
 
     /// Convert a flat list of Maestro commands into Grantiva screens.
     /// Each `takeScreenshot` creates a screen boundary.
-    static func convertToScreens(_ commands: [Any], flowName: String?) -> [GrantivaConfig.Screen] {
+    static func convertToScreens(
+        _ commands: [Any],
+        flowName: String?,
+        sourceName: String,
+        lineNumbers: [Int],
+        allowUnsupportedCommands: Bool
+    ) throws -> [GrantivaConfig.Screen] {
         var screens: [GrantivaConfig.Screen] = []
         var currentSteps: [GrantivaConfig.Screen.Step] = []
         var screenIndex = 0
 
-        for raw in commands {
+        for (index, raw) in commands.enumerated() {
             guard let command = parseCommand(raw) else { continue }
 
             switch command {
@@ -162,8 +189,13 @@ public struct MaestroFlowParser {
                 }
                 screenIndex += 1
 
-            case .launchApp, .stopApp, .skip:
+            case .launchApp, .stopApp:
                 break
+
+            case .unsupported(let name):
+                guard allowUnsupportedCommands else {
+                    throw unsupportedCommand(name, sourceName: sourceName, line: lineNumbers[safe: index])
+                }
 
             case .step(let step):
                 currentSteps.append(step)
@@ -191,7 +223,7 @@ public struct MaestroFlowParser {
         case stopApp
         case takeScreenshot(name: String?)
         case step(GrantivaConfig.Screen.Step)
-        case skip
+        case unsupported(String)
     }
 
     /// Parse a single Maestro command (either a bare string or a dictionary).
@@ -201,9 +233,9 @@ public struct MaestroFlowParser {
             switch str {
             case "launchApp": return .launchApp
             case "stopApp", "killApp": return .stopApp
-            case "back": return .skip
+            case "back": return .unsupported(str)
             case "scroll": return .step(.init(swipe: "up")) // default scroll down = swipe up
-            default: return .skip
+            default: return .unsupported(str)
             }
         }
 
@@ -227,7 +259,7 @@ public struct MaestroFlowParser {
             if let text = val as? String {
                 return .step(.init(type: text))
             }
-            return .skip
+            return .unsupported("inputText")
         }
 
         // --- Assertions ---
@@ -240,7 +272,7 @@ public struct MaestroFlowParser {
                let text = obj["text"] as? String ?? obj["id"] as? String {
                 return .step(.init(assertVisible: text))
             }
-            return .skip
+            return .unsupported("assertVisible")
         }
 
         if let val = dict["assertNotVisible"] {
@@ -251,7 +283,7 @@ public struct MaestroFlowParser {
                let text = obj["text"] as? String ?? obj["id"] as? String {
                 return .step(.init(assertNotVisible: text))
             }
-            return .skip
+            return .unsupported("assertNotVisible")
         }
 
         // --- Swipe (coordinate-based) ---
@@ -273,7 +305,7 @@ public struct MaestroFlowParser {
                 }
                 return .step(.init(swipe: direction))
             }
-            return .skip
+            return .unsupported("swipe")
         }
 
         // --- Scroll → swipe (inverted: Maestro scroll down = finger swipe up) ---
@@ -294,7 +326,7 @@ public struct MaestroFlowParser {
             if let text = val["text"] as? String ?? val["id"] as? String {
                 return .step(.init(assertVisible: text))
             }
-            return .skip
+            return .unsupported("scrollUntilVisible")
         }
 
         // --- Wait ---
@@ -309,7 +341,7 @@ public struct MaestroFlowParser {
             if let text = val["text"] as? String ?? val["id"] as? String {
                 return .step(.init(assertVisible: text))
             }
-            return .skip
+            return .unsupported("extendedWaitUntil")
         }
 
         // --- Screenshots ---
@@ -327,7 +359,7 @@ public struct MaestroFlowParser {
             if let obj = val as? [String: Any], let file = obj["file"] as? String {
                 return .step(.init(runFlow: file))
             }
-            return .skip
+            return .unsupported("runFlow")
         }
 
         // --- App lifecycle ---
@@ -340,7 +372,7 @@ public struct MaestroFlowParser {
         // evalScript, runScript, copyTextFrom, pasteText, assertTrue, startRecording,
         // stopRecording, openLink, setAirplaneMode, toggleAirplaneMode
 
-        return .skip
+        return .unsupported(dict.keys.sorted().first ?? "<unknown>")
     }
 
     // MARK: - Helpers
@@ -355,7 +387,25 @@ public struct MaestroFlowParser {
                 return .step(.init(tap: text))
             }
         }
-        return .skip
+        return .unsupported("tapOn")
+    }
+
+    private static func unsupportedCommand(
+        _ command: String,
+        sourceName: String,
+        line: Int?
+    ) -> GrantivaError {
+        let location = line.map { "\(sourceName):\($0)" } ?? sourceName
+        return .invalidArgument("Unsupported Maestro command '\(command)' at \(location)")
+    }
+
+    private static func commandLineNumbers(in content: String) -> [Int] {
+        content.components(separatedBy: "\n").enumerated().compactMap { index, line in
+            let indentation = line.prefix { $0 == " " || $0 == "\t" }
+            let trimmed = line.dropFirst(indentation.count)
+            guard indentation.isEmpty, trimmed == "-" || trimmed.hasPrefix("- ") else { return nil }
+            return index + 1
+        }
     }
 
     /// Invert scroll direction to swipe direction.
@@ -375,5 +425,11 @@ public struct MaestroFlowParser {
         if let d = value as? Double { return d }
         if let i = value as? Int { return Double(i) }
         return nil
+    }
+}
+
+private extension Array {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }

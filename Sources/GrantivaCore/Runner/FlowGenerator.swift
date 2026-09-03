@@ -11,7 +11,7 @@ public enum FlowGenerator {
         var lines: [String] = []
 
         // Header
-        lines.append("appId: \(bundleId)")
+        lines.append("appId: \(FlowEnvironment.quoted(bundleId))")
         lines.append("---")
 
         // launchApp creates the WDA session — required before any interaction.
@@ -30,19 +30,19 @@ public enum FlowGenerator {
         for screen in screens {
             switch screen.path {
             case .launch:
-                lines.append("- takeScreenshot: \(screen.name)")
+                lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
 
             case .steps(let steps):
                 for step in steps {
                     if let label = step.tap {
-                        lines.append("- tapOn: \"\(label)\"")
+                        lines.append("- tapOn: \(FlowEnvironment.quoted(label))")
                     }
                     if let direction = step.swipe {
                         lines.append("- swipe:")
                         lines.append("    direction: \(maestroSwipeDirection(direction))")
                     }
                     if let text = step.type {
-                        lines.append("- inputText: \"\(text)\"")
+                        lines.append("- inputText: \(FlowEnvironment.quoted(text))")
                     }
                     if let seconds = step.wait {
                         let ms = Int(seconds * 1000)
@@ -50,16 +50,16 @@ public enum FlowGenerator {
                         lines.append("    timeout: \(ms)")
                     }
                     if let label = step.assertVisible {
-                        lines.append("- assertVisible: \"\(label)\"")
+                        lines.append("- assertVisible: \(FlowEnvironment.quoted(label))")
                     }
                     if let label = step.assertNotVisible {
-                        lines.append("- assertNotVisible: \"\(label)\"")
+                        lines.append("- assertNotVisible: \(FlowEnvironment.quoted(label))")
                     }
                     if let path = step.runFlow {
-                        lines.append("- runFlow: \"\(path)\"")
+                        lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
                     }
                 }
-                lines.append("- takeScreenshot: \(screen.name)")
+                lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
             }
         }
 
