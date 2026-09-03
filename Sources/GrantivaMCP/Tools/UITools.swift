@@ -115,7 +115,9 @@ enum UITools {
             let tmpPath = FileManager.default.temporaryDirectory
                 .appendingPathComponent("grantiva-mcp-\(UUID().uuidString).png").path
             defer { try? FileManager.default.removeItem(atPath: tmpPath) }
-            _ = try await shell("xcrun simctl io \(session.udid) screenshot \"\(tmpPath)\"")
+            _ = try await shell(
+                "xcrun simctl io \(shellQuoted(session.udid)) screenshot \(shellQuoted(tmpPath))"
+            )
             imageData = try Data(contentsOf: URL(fileURLWithPath: tmpPath))
         } else {
             imageData = try await wda.screenshot()
