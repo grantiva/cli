@@ -129,6 +129,7 @@ final class OutputStreamContractTests: XCTestCase {
             ["console", "envs", "reorder"],
             ["console", "analytics", "overview"],
             ["console", "analytics", "events"],
+            ["console", "analytics", "device"],
             ["console", "analytics", "risk"],
             ["console", "analytics", "compliance"],
             ["console", "analytics", "export"],

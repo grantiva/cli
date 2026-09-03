@@ -38,6 +38,43 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.EventsCommand.parse(["--page", "0"]))
     }
 
+    func testDeviceFetchesTheRequestedKey() async throws {
+        var client = AnalyticsClient.failing
+        let captured = AnalyticsCapture<String>()
+        client.device = { keyId in
+            await captured.set(keyId)
+            return DeviceDetailsResponse(
+                keyId: keyId,
+                deviceProfile: DeviceProfile(
+                    id: "D1", keyId: keyId, firstSeen: "2026-08-01T00:00:00Z",
+                    lastAttestation: "2026-09-01T00:00:00Z", attestationCount: 1,
+                    riskScore: 0, jailbreakDetected: false, suspiciousEvents: 0
+                ),
+                recentEvents: [],
+                complianceStatus: ComplianceResult(
+                    isCompliant: true, score: 100, violations: [], lastChecked: "2026-09-01T00:00:00Z"
+                ),
+                lastUpdated: "2026-09-01T00:00:00Z"
+            )
+        }
+
+        try await ConsoleAnalyticsCommand.DeviceCommand.parse(["KEY-1", "--json"]).run(client: client)
+        let keyId = await captured.value
+        XCTAssertEqual(keyId, "KEY-1")
+    }
+
+    func testDeviceMapsNotFound() async throws {
+        var client = AnalyticsClient.failing
+        client.device = { _ in throw GrantivaError.networkError("", 404) }
+        do {
+            try await ConsoleAnalyticsCommand.DeviceCommand.parse(["missing"]).run(client: client)
+            XCTFail("expected throw")
+        } catch {
+            guard case GrantivaError.notFound(let message) = error else { return XCTFail("unexpected \(error)") }
+            XCTAssertEqual(message, "analytics device not found: missing")
+        }
+    }
+
     func testRiskAndComplianceAcceptOnlyServerWindows() throws {
         XCTAssertEqual(try ConsoleAnalyticsCommand.RiskCommand.parse(["--range", "90d"]).range, .quarter)
         XCTAssertThrowsError(try ConsoleAnalyticsCommand.RiskCommand.parse(["--range", "14d"]))
@@ -122,4 +159,9 @@ final class ConsoleAnalyticsCommandTests: XCTestCase {
         XCTAssertFalse(filtered.contains("GOOD"))
         XCTAssertTrue(ConsoleAnalyticsFormat.compliance(report, showAll: true).contains("GOOD"))
     }
+}
+
+private actor AnalyticsCapture<T: Sendable> {
+    private(set) var value: T?
+    func set(_ newValue: T) { value = newValue }
 }

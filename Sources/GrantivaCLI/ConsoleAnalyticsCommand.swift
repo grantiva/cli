@@ -13,6 +13,7 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
         subcommands: [
             OverviewCommand.self,
             EventsCommand.self,
+            DeviceCommand.self,
             RiskCommand.self,
             ComplianceCommand.self,
             ExportCommand.self,
@@ -62,6 +63,43 @@ struct ConsoleAnalyticsCommand: AsyncParsableCommand {
                 Output.line(try JSONOutput.string(overview))
             } else {
                 Output.line(ConsoleAnalyticsFormat.overview(overview, days: days ?? 30))
+            }
+        }
+    }
+
+    // MARK: - device
+
+    struct DeviceCommand: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(
+            commandName: "device",
+            abstract: "Show one device's risk profile, compliance status, and recent events."
+        )
+
+        @OptionGroup var options: GlobalOptions
+
+        @Argument(help: "Device key ID.")
+        var keyId: String
+
+        func run() async throws {
+            try await run(client: ConsoleSupport.makeAnalyticsClient())
+        }
+
+        func run(client: AnalyticsClient) async throws {
+            let detail: DeviceDetailsResponse
+            do {
+                detail = try await client.device(keyId)
+            } catch {
+                throw ConsoleSupport.map(
+                    error,
+                    scope: ConsoleScope.analyticsRead,
+                    notFound: "analytics device not found: \(keyId)"
+                )
+            }
+
+            if options.json {
+                Output.line(try JSONOutput.string(detail))
+            } else {
+                Output.line(ConsoleAnalyticsFormat.device(detail))
             }
         }
     }
