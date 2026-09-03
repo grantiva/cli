@@ -36,10 +36,11 @@ struct ConsoleAppsCommand: AsyncParsableCommand {
         func run(client: OrgClient) async throws {
             let apps: [OrgApp]
             do { apps = try await client.listApps() } catch { throw ConsoleSupport.map(error, scope: ConsoleScope.appsRead) }
+            let orderedApps = ConsoleAppsCommand.primaryFirst(apps)
             if options.json {
-                Output.line(try JSONOutput.string(apps))
+                Output.line(try JSONOutput.string(orderedApps))
             } else {
-                Output.line(ConsoleOrgFormat.appsTable(apps))
+                Output.line(ConsoleOrgFormat.appsTable(orderedApps))
             }
         }
     }
@@ -266,5 +267,12 @@ struct ConsoleAppsCommand: AsyncParsableCommand {
         } else {
             Output.line("\(app.bundleId) \(verb)")
         }
+    }
+
+    /// The command promises primary-first output. Preserve the server's order
+    /// within each group so repeated invocations remain predictable even when
+    /// the API does not pre-sort its response.
+    static func primaryFirst(_ apps: [OrgApp]) -> [OrgApp] {
+        apps.filter(\.isPrimary) + apps.filter { !$0.isPrimary }
     }
 }
