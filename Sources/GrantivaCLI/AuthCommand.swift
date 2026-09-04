@@ -116,7 +116,7 @@ struct AuthCommand: AsyncParsableCommand {
 
                 let pollResult = try await client.session(session.sessionId)
 
-                if pollResult.status == "complete",
+                if pollResult.status == "active",
                    let apiKey = pollResult.apiKey,
                    let email = pollResult.email
                 {

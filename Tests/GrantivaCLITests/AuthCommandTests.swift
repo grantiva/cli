@@ -6,6 +6,17 @@ import Synchronization
 
 @available(macOS 15, *)
 final class AuthCommandTests: XCTestCase {
+    func testCompletedBrowserSessionUsesActiveStatus() throws {
+        let response = try JSONDecoder().decode(
+            AuthSessionStatus.self,
+            from: Data(#"{"status":"active","api_key":"gpat_test","email":"user@example.com"}"#.utf8)
+        )
+
+        XCTAssertEqual(response.status, "active")
+        XCTAssertEqual(response.apiKey, "gpat_test")
+        XCTAssertEqual(response.email, "user@example.com")
+    }
+
     func testMalformedBaseURLThrowsInvalidArgument() {
         XCTAssertThrowsError(try AuthCommand.LoginCommand.validatedBaseURL("http://[")) { error in
             guard case GrantivaError.invalidArgument(let message) = error else {
