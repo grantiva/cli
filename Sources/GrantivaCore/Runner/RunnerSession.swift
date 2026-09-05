@@ -152,9 +152,8 @@ public enum RunnerSession {
 
             // Map screen names to their expected screenshot files
             for screen in screens {
-                let pattern = screen.name
                 let screenshotFiles = ((try? fm.contentsOfDirectory(atPath: screenshotDir)) ?? [])
-                    .filter { $0.contains(pattern) && $0.hasSuffix(".png") }
+                    .filter { screenshotName(in: $0) == screen.name }
                     .sorted()
 
                 if let file = screenshotFiles.first {
@@ -197,6 +196,16 @@ public enum RunnerSession {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    /// Runner artifacts are cmd-<step>-<screenshot name>.png. Match the entire
+    /// name, preserving hyphens, so a shorter name cannot claim another screen.
+    static func screenshotName(in file: String) -> String? {
+        guard file.hasPrefix("cmd-"), file.hasSuffix(".png") else { return nil }
+        let parts = file.dropFirst(4).dropLast(4).split(separator: "-", maxSplits: 1)
+        guard parts.count == 2, !parts[0].isEmpty,
+              parts[0].allSatisfy({ $0.isNumber }) else { return nil }
+        return String(parts[1])
     }
 
     /// Run a pre-existing Maestro YAML flow file directly, collecting any screenshots it takes.
