@@ -4,6 +4,56 @@ import XCTest
 import GrantivaCore
 
 final class RunCommandTests: XCTestCase {
+    func testMixedSuiteDoesNotHoldOrPublishBeforeExternalFlows() async throws {
+        var events: [String] = []
+        var published = false
+        _ = try await RunCommand.runSuite(
+            hasScreens: true, hasFlows: true, keepAlive: true, readyFile: "suite.ready",
+            runScreens: { hold, ready in
+                XCTAssertFalse(hold, "holding here would prevent external flows from starting")
+                if ready != nil { published = true }
+                events.append("screens")
+                return []
+            },
+            runFlows: { hold, ready in
+                XCTAssertFalse(published, "waiters must not be released before external flows")
+                XCTAssertTrue(hold)
+                XCTAssertEqual(ready, "suite.ready")
+                events.append("flows")
+                return []
+            }
+        )
+        XCTAssertEqual(events, ["screens", "flows"])
+    }
+
+    func testSingleScreenSessionRetainsReadinessAndKeepAlive() async throws {
+        _ = try await RunCommand.runSuite(
+            hasScreens: true, hasFlows: false, keepAlive: true, readyFile: "suite.ready",
+            runScreens: { hold, ready in
+                XCTAssertTrue(hold)
+                XCTAssertEqual(ready, "suite.ready")
+                return []
+            },
+            runFlows: { _, _ in XCTFail("No external flows configured"); return [] }
+        )
+    }
+
+    func testFailedScreenCaptureCannotBeOverriddenByLaterFlowSuccess() async throws {
+        do {
+            _ = try await RunCommand.runSuite(
+                hasScreens: true, hasFlows: true, keepAlive: true, readyFile: "suite.ready",
+                runScreens: { _, _ in
+                    [ScreenCapture(screenName: "missing", path: "", sizeBytes: 0,
+                        steps: [StepResult(action: "Take screenshot", status: .failed, duration: 0)])]
+                },
+                runFlows: { _, _ in XCTFail("Failed captures must stop suite success"); return [] }
+            )
+            XCTFail("Expected suite failure")
+        } catch {
+            XCTAssertEqual(error as? ExitCode, .failure)
+        }
+    }
+
     func testFailureScreenshotCommandQuotesHostilePathAndUDID() {
         XCTAssertEqual(
             RunCommand.failureScreenshotCommand(

@@ -247,43 +247,46 @@ struct RunCommand: AsyncParsableCommand {
 
         var captures: [ScreenCapture] = []
         do {
-            if !resolved.screens.isEmpty {
-                let screenCaptures = try await RunnerSession.run(
-                    screens: resolved.screens,
-                    bundleId: bid,
-                    udid: device.udid,
-                    runner: runnerManager,
-                    outputDir: captureDir,
-                    appFile: productPath,
-                    keepAlive: keepAlive,
-                    snapshot: snapshot.rawValue,
-                    environment: launchEnvironment,
-                    readyFile: readyFile,
-                    expectedPixels: expectedPixels
-                )
-                captures.append(contentsOf: screenCaptures)
-            }
-
-            if !resolved.flows.isEmpty {
-                log("Running \(resolved.flows.count) flow(s) in one GrantivaAgent session: \(resolved.flows.joined(separator: ", "))")
-                let flowCaptures = try await RunnerSession.runFlowFiles(
-                    at: resolved.flows,
-                    bundleId: bid,
-                    udid: device.udid,
-                    runner: runnerManager,
-                    outputDir: captureDir,
-                    appFile: productPath,
-                    keepAlive: keepAlive,
-                    snapshot: snapshot.rawValue,
-                    failFast: !continueOnFailure,
-                    reportDir: reportDir,
-                    timeoutSeconds: UInt64(timeout),
-                    environment: launchEnvironment,
-                    readyFile: readyFile,
-                    expectedPixels: expectedPixels
-                )
-                captures.append(contentsOf: flowCaptures)
-            }
+            captures = try await Self.runSuite(
+                hasScreens: !resolved.screens.isEmpty,
+                hasFlows: !resolved.flows.isEmpty,
+                keepAlive: keepAlive,
+                readyFile: readyFile,
+                runScreens: { keepAlive, readyFile in
+                    try await RunnerSession.run(
+                        screens: resolved.screens,
+                        bundleId: bid,
+                        udid: device.udid,
+                        runner: runnerManager,
+                        outputDir: captureDir,
+                        appFile: productPath,
+                        keepAlive: keepAlive,
+                        snapshot: snapshot.rawValue,
+                        environment: launchEnvironment,
+                        readyFile: readyFile,
+                        expectedPixels: expectedPixels
+                    )
+                },
+                runFlows: { keepAlive, readyFile in
+                    log("Running \(resolved.flows.count) flow(s) in one GrantivaAgent session: \(resolved.flows.joined(separator: ", "))")
+                    return try await RunnerSession.runFlowFiles(
+                        at: resolved.flows,
+                        bundleId: bid,
+                        udid: device.udid,
+                        runner: runnerManager,
+                        outputDir: captureDir,
+                        appFile: productPath,
+                        keepAlive: keepAlive,
+                        snapshot: snapshot.rawValue,
+                        failFast: !continueOnFailure,
+                        reportDir: reportDir,
+                        timeoutSeconds: UInt64(timeout),
+                        environment: launchEnvironment,
+                        readyFile: readyFile,
+                        expectedPixels: expectedPixels
+                    )
+                }
+            )
         } catch {
             // Runner failed — take a failure screenshot so the developer can see the current state
             let failurePath = "\(captureDir)/failure-\(Int(Date().timeIntervalSince1970)).png"
@@ -368,6 +371,30 @@ struct RunCommand: AsyncParsableCommand {
 
     static func failureScreenshotCommand(udid: String, path: String) -> String {
         "xcrun simctl io \(shellQuoted(udid)) screenshot \(shellQuoted(path))"
+    }
+
+    /// Only the final session owns suite readiness and the post-run hold.
+    static func runSuite(
+        hasScreens: Bool,
+        hasFlows: Bool,
+        keepAlive: Bool,
+        readyFile: String?,
+        runScreens: (Bool, String?) async throws -> [ScreenCapture],
+        runFlows: (Bool, String?) async throws -> [ScreenCapture]
+    ) async throws -> [ScreenCapture] {
+        var captures: [ScreenCapture] = []
+        if hasScreens {
+            captures += try await runScreens(keepAlive && !hasFlows, hasFlows ? nil : readyFile)
+            // Missing captures are returned as failed steps rather than thrown.
+            // Do not let the later session publish success for a failed suite.
+            if hasFlows, captures.contains(where: { $0.steps.contains(where: { $0.status != .passed }) }) {
+                throw ExitCode.failure
+            }
+        }
+        if hasFlows {
+            captures += try await runFlows(keepAlive, readyFile)
+        }
+        return captures
     }
 
     /// Progress narration for a human. Goes to stderr via the log; the run's
