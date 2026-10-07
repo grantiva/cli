@@ -18,7 +18,9 @@ grantiva hierarchy > state.xml
 grantiva hierarchy --format json > state.json
 ```
 
-`grantiva hierarchy` reads `~/.grantiva/runner/sessions/<udid>.json` (written by `--keep-alive`), opens an HTTP read against the running GrantivaAgent on its allocated port, and prints the XCUI accessibility tree. It does **not** create a session, launch the app, or otherwise touch the app's state. The app stays exactly where the flow left it.
+`grantiva hierarchy` finds the session that `--keep-alive` published, opens an HTTP read against the running GrantivaAgent on its allocated port, and prints the XCUI accessibility tree. The session lives in `/tmp/grantiva-sessions/`: grantiva-runner writes `<pid>-<timestamp>.grantiva` (port and session ID) when it starts holding the session, and grantiva writes `<pid>.owner.json` next to it the moment the runner is spawned, recording which simulator UDID that runner owns. Both files are removed when the run ends; a file whose `pid` is no longer running is ignored, so a crashed or `kill -9`'d run never masquerades as a live session.
+
+With `--ready-file`, the ready file is written only after the runner's session file is on disk, so a waiter that polls the ready file and then immediately calls `grantiva hierarchy` never races the session. It does **not** create a session, launch the app, or otherwise touch the app's state. The app stays exactly where the flow left it.
 
 If no keep-alive session is live, the command fails fast with an actionable error — it will not start a new session behind your back (which would relaunch and destroy the state you wanted to inspect).
 
@@ -31,7 +33,7 @@ If no keep-alive session is live, the command fails fast with an actionable erro
 
 | Flag | Description |
 |------|-------------|
-| `--udid` | Target a specific simulator's session (defaults to the newest keep-alive session). |
+| `--udid` | Target a specific simulator's session, resolved through grantiva's `<pid>.owner.json` sidecar (defaults to the newest live keep-alive session). |
 | `--format` | `xml` (default) or `json`. |
 
 ## Alternative: `grantiva runner dump-hierarchy`
@@ -45,6 +47,8 @@ grantiva runner stop
 ```
 
 This path is preserved for backward compatibility and MCP integration. New flows should prefer `grantiva run --keep-alive` + `grantiva hierarchy`, which integrate natively with flow execution.
+
+`grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--keep-alive` session (`dump-hierarchy --udid <UDID>` selects a specific simulator).
 
 ## Agent integration
 

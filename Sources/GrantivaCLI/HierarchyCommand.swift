@@ -10,8 +10,9 @@ struct HierarchyCommand: AsyncParsableCommand {
         commandName: "hierarchy",
         abstract: "Dump the UI hierarchy of a booted simulator without relaunching the app.",
         discussion: """
-        Reads the session file written by `grantiva run --keep-alive` and issues a \
-        read-only request to GrantivaAgent for the current page source. The target \
+        Finds the session published by `grantiva run --keep-alive` (in \
+        /tmp/grantiva-sessions, with the simulator UDID recorded by grantiva) and \
+        issues a read-only request to GrantivaAgent for the current page source. The target \
         app is never touched — no launch, no stopApp, no clearState.
 
         Typical agent workflow:
@@ -54,9 +55,10 @@ struct HierarchyCommand: AsyncParsableCommand {
     func run() async throws {
         let session = try locateSession()
 
-        let path = format == .json
-            ? "/session/\(session.sessionId)/source?format=json"
-            : "/session/\(session.sessionId)/source"
+        // The runner's `sessionId` is its own keep-alive identifier, not a
+        // WebDriverAgent session, so the session-scoped route 404s. The bare
+        // /source route serves the current application's tree.
+        let path = format == .json ? "/source?format=json" : "/source"
 
         guard let url = URL(string: "http://127.0.0.1:\(session.port)\(path)") else {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
@@ -85,59 +87,9 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
     }
 
-    func locateSession(in dir: String? = nil) throws -> KeepAliveSession {
-        let dir = dir ?? sessionsDir()
-        let fm = FileManager.default
-
-        guard let contents = try? fm.contentsOfDirectory(atPath: dir) else {
-            throw GrantivaError.invalidArgument(
-                "No keep-alive session found. Start one with `grantiva run --keep-alive` first."
-            )
-        }
-
-        let jsonFiles = contents.filter { $0.hasSuffix(".json") }.sorted()
-        guard !jsonFiles.isEmpty else {
-            throw GrantivaError.invalidArgument(
-                "No keep-alive session found in \(dir). Start one with `grantiva run --keep-alive` first."
-            )
-        }
-
-        if let udid {
-            let validatedUDID = try SimulatorUDID.validate(udid)
-            let path = "\(dir)/\(validatedUDID).json"
-            guard fm.fileExists(atPath: path) else {
-                throw GrantivaError.invalidArgument(
-                    "No keep-alive session for udid \(udid). Available: \(jsonFiles.map { ($0 as NSString).deletingPathExtension }.joined(separator: ", "))"
-                )
-            }
-            return try loadSession(path: path)
-        }
-
-        // Pick the most recently modified session file.
-        let withDates: [(String, Date)] = jsonFiles.compactMap {
-            let path = "\(dir)/\($0)"
-            guard let attrs = try? fm.attributesOfItem(atPath: path),
-                  let date = attrs[.modificationDate] as? Date else { return nil }
-            return (path, date)
-        }
-        let newestFirst = withDates.sorted {
-            if $0.1 != $1.1 { return $0.1 > $1.1 }
-            return $0.0 < $1.0
-        }
-        guard let session = newestFirst.lazy.compactMap({ try? loadSession(path: $0.0) }).first else {
-            throw GrantivaError.invalidArgument("Could not read any session file in \(dir)")
-        }
-        return session
-    }
-
-    private func loadSession(path: String) throws -> KeepAliveSession {
-        let data = try Data(contentsOf: URL(fileURLWithPath: path))
-        return try JSONDecoder().decode(KeepAliveSession.self, from: data)
-    }
-
-    private func sessionsDir() -> String {
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
-        return "\(home)/.grantiva/runner/sessions"
+    /// Resolves the keep-alive session to query. `store` is injectable for tests.
+    func locateSession(store: KeepAliveSessionStore = KeepAliveSessionStore()) throws -> KeepAliveSession {
+        try store.locate(udid: udid.map { try SimulatorUDID.validate($0) })
     }
 
     /// WDA returns `{"value": "<?xml…>", "sessionId": "…"}`. Extract the XML.
@@ -150,9 +102,3 @@ struct HierarchyCommand: AsyncParsableCommand {
     }
 }
 
-struct KeepAliveSession: Decodable {
-    let udid: String
-    let port: Int
-    let sessionId: String
-    let appId: String?
-}

@@ -25,6 +25,11 @@ enum RunnerExecution {
         let reportDir: String
         let expectedFlows: Int
         let readyFile: ReadyFileSignal
+        /// Where keep-alive sessions are discovered. Overridable for tests.
+        var sessions: KeepAliveSessionStore = KeepAliveSessionStore()
+        /// How long, after the flows finish, to wait for the runner's keep-alive
+        /// session file before publishing the ready file anyway.
+        var sessionFileGrace: TimeInterval = 10
     }
 
     static func run(_ request: Request) async -> Outcome {
@@ -53,6 +58,19 @@ enum RunnerExecution {
         try? stderrPipe.fileHandleForWriting.close()
 
         request.lease.recordRunner(pid: child.pid, keepAlive: request.keepAlive)
+
+        // The runner's own session file (/tmp/grantiva-sessions/<pid>-<ts>.grantiva)
+        // carries no simulator UDID. Record udid -> runner pid now, before the
+        // flows run, so `grantiva hierarchy --udid` can resolve the session the
+        // moment the runner publishes it — and before any --ready-file exists.
+        if request.keepAlive {
+            request.sessions.recordOwner(udid: request.lease.udid, runnerPid: child.pid)
+        }
+        defer {
+            if request.keepAlive {
+                request.sessions.removeOwner(runnerPid: child.pid)
+            }
+        }
 
         // Ctrl-C (or `kill -INT`) now reaps the runner's whole process group —
         // grantiva-runner, WebDriverAgent's xcodebuild, and any simctl diagnose
@@ -109,11 +127,26 @@ enum RunnerExecution {
         // flows finish, so process exit is not the completion signal. Poll the
         // report the runner writes and publish the ready file the moment every
         // flow reaches a terminal state.
+        //
+        // The runner writes its keep-alive session file just after the last
+        // flow goes terminal, so a waiter that polls the ready file and then
+        // immediately runs `grantiva hierarchy` could race it. Hold the ready
+        // file (briefly) until that session file is on disk.
         let watcher = readyFile.path.map { _ in
             Task.detached(priority: .utility) {
+                var completeSince: Date?
                 while !Task.isCancelled {
                     if let index = RunnerReportIndex.load(reportDir: request.reportDir),
                        index.isComplete(expectedFlows: request.expectedFlows) {
+                        if request.keepAlive, child.isRunning,
+                           request.sessions.session(forRunnerPid: child.pid) == nil {
+                            let since = completeSince ?? Date()
+                            completeSince = since
+                            if Date().timeIntervalSince(since) < request.sessionFileGrace {
+                                try? await Task.sleep(nanoseconds: 100_000_000)
+                                continue
+                            }
+                        }
                         var state = index.readyState
                         state = RunReadyState(
                             status: state.status,
