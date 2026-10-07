@@ -509,16 +509,28 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
     @Option(name: .shortAndLong, help: "Output format: tree, json, or xml (default: tree)")
     var format: String = "tree"
 
+    @Option(name: .long, help: "Simulator UDID when falling back to a `grantiva run --keep-alive` session")
+    var udid: String?
+
+    func validate() throws {
+        if let udid { _ = try SimulatorUDID.validate(udid) }
+    }
+
     func run() async throws {
-        // Resolve port from session or flag
+        // Resolve port from flag, `runner start` session, or keep-alive session
         let wdaPort: UInt16
         if let flagPort = port {
             wdaPort = flagPort
         } else if let session = try? RunnerSessionInfo.load(), session.isAlive {
             wdaPort = session.wdaPort
+        } else if let keepAlive = try? KeepAliveSessionStore().locate(udid: udid),
+                  let port = UInt16(exactly: keepAlive.port) {
+            // Same discovery as `grantiva hierarchy`: a held `grantiva run
+            // --keep-alive` session serves this command too.
+            wdaPort = port
         } else {
             throw GrantivaError.invalidArgument(
-                "No active runner session. Start one with 'grantiva runner start' or pass --port."
+                "No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port."
             )
         }
 

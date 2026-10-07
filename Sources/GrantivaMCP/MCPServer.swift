@@ -113,16 +113,28 @@ public struct GrantivaMCPServer: Sendable {
         return resolved
     }
 
-    static func loadActiveSession(projectDirectory: URL) throws -> RunnerSessionInfo {
+    /// A `grantiva runner start` session in the project wins; otherwise the
+    /// newest `grantiva run --keep-alive` session (shared discovery with
+    /// `grantiva hierarchy`) is adapted to the same shape.
+    static func loadActiveSession(
+        projectDirectory: URL,
+        keepAliveSessions: KeepAliveSessionStore = KeepAliveSessionStore()
+    ) throws -> RunnerSessionInfo {
         let sessionURL = projectDirectory.appendingPathComponent(RunnerSessionInfo.path)
-        guard let data = try? Data(contentsOf: sessionURL),
-              let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
-              session.isAlive else {
-            throw GrantivaError.invalidArgument(
-                "No active runner session at \(sessionURL.path). Start one with 'grantiva runner start'."
+        if let data = try? Data(contentsOf: sessionURL),
+           let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
+           session.isAlive {
+            _ = try SimulatorUDID.validate(session.udid, flag: "session UDID")
+            return session
+        }
+        if let keepAlive = try? keepAliveSessions.locate(), let port = UInt16(exactly: keepAlive.port) {
+            let udid = keepAlive.udid.flatMap { try? SimulatorUDID.validate($0) } ?? ""
+            return RunnerSessionInfo(
+                pid: keepAlive.pid, wdaPort: port, bundleId: "", udid: udid, startedAt: Date()
             )
         }
-        _ = try SimulatorUDID.validate(session.udid, flag: "session UDID")
-        return session
+        throw GrantivaError.invalidArgument(
+            "No active runner session at \(sessionURL.path). Start one with 'grantiva runner start' or `grantiva run --keep-alive`."
+        )
     }
 }

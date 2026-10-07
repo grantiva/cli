@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- **`grantiva hierarchy` could not find a held `--keep-alive` session.** It still read the v1.1.0 location, `~/.grantiva/runner/sessions/<udid>.json`, which nothing has written since the embedded runner started publishing its own session file at `/tmp/grantiva-sessions/<pid>-<timestamp>.grantiva`, so every invocation failed with "No keep-alive session found" while `curl …/source` against the same port worked. The command now reads the runner's session files directly, and because they carry no simulator UDID, `grantiva run --keep-alive` records a `<pid>.owner.json` sidecar beside them at spawn time mapping the runner to its UDID; `--udid <UDID>` resolves through that sidecar, and with no flag the newest live session is used. Sessions whose runner pid is no longer running are skipped. The dead `~/.grantiva/runner/sessions` path is gone. `grantiva runner dump-hierarchy` and the MCP server fall back to the same discovery when no `grantiva runner start` session is active, so the three cannot drift apart again.
+- `grantiva hierarchy` requested `/session/<sessionId>/source`, where `sessionId` is the runner's own keep-alive identifier rather than a WebDriverAgent session, so GrantivaAgent answered HTTP 404 "invalid session id" even once the session was found. It now requests the bare `/source` route (and `/source?format=json`), which is what `curl` against the agent had been exercising all along.
+- With `--keep-alive --ready-file`, the ready file is now written only once the runner's session file exists. Previously it could appear a beat before the session file, so a waiter that polled the ready file and immediately ran `grantiva hierarchy` could see no session. The hold is capped at ten seconds so a runner that never publishes a session cannot wedge the waiter.
+
 ## v2.0.0 — 2026-09-03
 
 ### Fixed

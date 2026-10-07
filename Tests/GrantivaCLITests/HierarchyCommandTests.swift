@@ -1,7 +1,10 @@
 import Foundation
+import GrantivaCore
 import XCTest
 @testable import GrantivaCLI
 
+/// `grantiva hierarchy` session selection. Discovery itself is covered by
+/// KeepAliveSessionStoreTests; these prove the command routes its flags into it.
 final class HierarchyCommandTests: XCTestCase {
     func testRejectsInvalidTimeoutBeforeLookingForSessions() {
         XCTAssertThrowsError(try HierarchyCommand.parse(["--timeout", "0"]))
@@ -13,35 +16,39 @@ final class HierarchyCommandTests: XCTestCase {
 
     func testExplicitUDIDLoadsOnlyItsSession() throws {
         let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
         let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
-        try writeSession(udid: udid, sessionId: "wanted", to: directory)
-        try writeSession(udid: "11111111-2222-3333-4444-555555555555", sessionId: "other", to: directory)
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "wanted", in: directory)
+        try writeRunnerSession(pid: 200, nanos: 2, sessionId: "other", in: directory)
+        store.recordOwner(udid: udid, runnerPid: 100)
+        store.recordOwner(udid: "11111111-2222-3333-4444-555555555555", runnerPid: 200)
+
         let command = try HierarchyCommand.parse(["--udid", udid])
-        XCTAssertEqual(try command.locateSession(in: directory.path).sessionId, "wanted")
+        XCTAssertEqual(try command.locateSession(store: store).sessionId, "wanted")
     }
 
-    func testNewestCorruptSessionIsSkipped() throws {
+    func testWithoutUDIDTheNewestLiveSessionIsUsed() throws {
         let directory = try temporaryDirectory()
-        let valid = directory.appendingPathComponent("valid.json")
-        try writeSession(udid: "valid", sessionId: "usable", to: directory)
-        let corrupt = directory.appendingPathComponent("newest.json")
-        try Data("not json".utf8).write(to: corrupt)
-        try FileManager.default.setAttributes([.modificationDate: Date(timeIntervalSinceNow: 10)], ofItemAtPath: corrupt.path)
-        try FileManager.default.setAttributes([.modificationDate: Date(timeIntervalSinceNow: -10)], ofItemAtPath: valid.path)
-        XCTAssertEqual(try HierarchyCommand.parse([]).locateSession(in: directory.path).sessionId, "usable")
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "older", in: directory)
+        try writeRunnerSession(pid: 200, nanos: 2, sessionId: "newest-but-dead", in: directory)
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { $0 == 100 })
+        XCTAssertEqual(try HierarchyCommand.parse([]).locateSession(store: store).sessionId, "older")
     }
 
-    func testMissingOrUnreadableSessionsAreReported() throws {
+    func testMissingSessionsAreReportedWithTheStartHint() throws {
         let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
-        XCTAssertThrowsError(try HierarchyCommand.parse([]).locateSession(in: missing))
-        let directory = try temporaryDirectory()
-        try Data("bad".utf8).write(to: directory.appendingPathComponent("bad.json"))
-        XCTAssertThrowsError(try HierarchyCommand.parse([]).locateSession(in: directory.path))
+        let store = KeepAliveSessionStore(directory: missing, isProcessAlive: { _ in true })
+        XCTAssertThrowsError(try HierarchyCommand.parse([]).locateSession(store: store)) { error in
+            XCTAssertTrue(String(describing: error).contains("grantiva run --keep-alive"))
+        }
     }
 
-    private func writeSession(udid: String, sessionId: String, to directory: URL) throws {
-        let data = try JSONSerialization.data(withJSONObject: ["udid": udid, "port": 8100, "sessionId": sessionId, "appId": "com.example"])
-        try data.write(to: directory.appendingPathComponent("\(udid).json"))
+    private func writeRunnerSession(pid: Int, nanos: Int, sessionId: String, in directory: URL) throws {
+        let data = try JSONSerialization.data(withJSONObject: [
+            "version": 1, "sessionId": sessionId, "createdAt": "2026-10-07T10:00:00Z",
+            "pid": pid, "port": 8100 + pid, "outputDir": "/tmp/out",
+        ])
+        try data.write(to: directory.appendingPathComponent("\(pid)-\(nanos).grantiva"))
     }
 
     private func temporaryDirectory() throws -> URL {
