@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'
+      # Bare SemVer only: 2.0.1, 2.1.0-rc1. Tags are never prefixed with v.
+      - '[0-9]+.[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+-*'
 
 permissions:
   contents: write
@@ -25,24 +27,27 @@ jobs:
 
       - name: Check the tag matches the compiled-in version
         run: |
-          # The git tag carries a v prefix by convention; the version the binary
-          # reports must not (SemVer 2.0.0 sanctions the prefix for VCS tags
-          # only). Verify they agree before anything is published — a mismatch
-          # would ship a GitHub release and a Homebrew formula claiming a
-          # version `grantiva --version` does not report.
-          TAG="${{ github.ref_name }}"
-          SEMVER="${TAG#v}"
+          # The git tag IS the version: no v prefix, exactly what
+          # `grantiva --version` prints. Verify they agree before anything is
+          # published — a mismatch would ship a GitHub release and a Homebrew
+          # formula claiming a version the binary does not report.
+          VERSION="${{ github.ref_name }}"
+          case "$VERSION" in
+            v*)
+              echo "Tag $VERSION has a v prefix. Tags are bare SemVer (e.g. 2.0.1); retag without the v." >&2
+              exit 1 ;;
+          esac
           DECLARED=$(sed -n 's/.*grantivaVersion = "\(.*\)".*/\1/p' Sources/GrantivaCore/Version.swift)
           if [ -z "$DECLARED" ]; then
             echo "Could not read grantivaVersion from Sources/GrantivaCore/Version.swift" >&2
             exit 1
           fi
-          if [ "$SEMVER" != "$DECLARED" ]; then
-            echo "Tag $TAG implies version $SEMVER, but Version.swift declares $DECLARED." >&2
+          if [ "$VERSION" != "$DECLARED" ]; then
+            echo "Tag is $VERSION, but Version.swift declares $DECLARED." >&2
             echo "Bump Version.swift to match the tag, or tag the version the binary reports." >&2
             exit 1
           fi
-          echo "tag $TAG / version $SEMVER — matches Version.swift"
+          echo "tag $VERSION matches Version.swift"
 
       - name: Build universal binary
         run: swift build -c release --arch arm64 --arch x86_64
@@ -68,14 +73,9 @@ jobs:
         run: |
           SHA=$(shasum -a 256 "grantiva-${{ github.ref_name }}-macos.tar.gz" | awk '{print $1}')
 
-          # TAG keeps the v prefix: it names the git tag and the release asset.
-          # SEMVER drops it, because Homebrew's `version` field is a version
-          # string, and SemVer 2.0.0 does not permit a leading v there — the
-          # prefix is only sanctioned for VCS tags. Without this the formula
-          # published `version "v1.6.5"` while `grantiva --version` printed
-          # `1.6.5`.
-          TAG="${{ github.ref_name }}"
-          SEMVER="${TAG#v}"
+          # The tag is the bare version, so it names the git tag, the release
+          # asset, and Homebrew's `version` field without any rewriting.
+          VERSION="${{ github.ref_name }}"
 
           git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/grantiva/homebrew-tap.git /tmp/homebrew-tap
           cd /tmp/homebrew-tap
@@ -84,9 +84,9 @@ jobs:
           class Grantiva < Formula
             desc "The CLI for iOS developers — visual regression testing, feature flags, and more"
             homepage "https://grantiva.io"
-            url "https://github.com/grantiva/cli/releases/download/${TAG}/grantiva-${TAG}-macos.tar.gz"
+            url "https://github.com/grantiva/cli/releases/download/${VERSION}/grantiva-${VERSION}-macos.tar.gz"
             sha256 "${SHA}"
-            version "${SEMVER}"
+            version "${VERSION}"
             license "MIT"
 
             depends_on :macos
@@ -105,5 +105,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Formula/grantiva.rb
-          git commit -m "Update grantiva to ${SEMVER}"
+          git commit -m "Update grantiva to ${VERSION}"
           git push
