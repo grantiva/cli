@@ -153,6 +153,20 @@ final class ProjectDetectorTests: XCTestCase {
         XCTAssertNil(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root))
     }
 
+    func testPreChangeCacheFileStillLoads() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent(".grantiva"), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let legacy = """
+            {"scheme":"Demo","project":"Demo.xcodeproj","bundleId":"com.demo","detectedAt":700000000}
+            """
+        let cacheURL = dir.appendingPathComponent(".grantiva/config.json")
+        try legacy.write(to: cacheURL, atomically: true, encoding: .utf8)
+        let cached = ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: dir)
+        XCTAssertEqual(cached?.scheme, "Demo")
+        XCTAssertEqual(cached?.bundleId, "com.demo")
+    }
+
     private func temporaryDirectory() -> URL {
         FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-project-cache-\(UUID().uuidString)", isDirectory: true)

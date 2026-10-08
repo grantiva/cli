@@ -13,6 +13,11 @@ public struct GrantivaConfig: Sendable, Codable {
     public var flows: [String]
     public var diff: DiffConfig
     public var a11y: A11yConfig
+    /// Which platform this file describes. `.ios` for grantiva.yml and
+    /// Maestro-format input; `.android` for grantiva-android.yml.
+    public var platform: Platform = .ios
+    /// Gradle-side settings. Present only when `platform == .android`.
+    public var android: AndroidProject?
 
     public struct Screen: Sendable, Codable {
         public var name: String
@@ -88,6 +93,7 @@ public struct GrantivaConfig: Sendable, Codable {
         case bundleId = "bundle_id"
         case buildSettings = "build_settings"
         case screens, flows, diff, a11y
+        case platform
     }
 
     public init(
@@ -100,7 +106,9 @@ public struct GrantivaConfig: Sendable, Codable {
         screens: [Screen] = [],
         flows: [String] = [],
         diff: DiffConfig = .init(),
-        a11y: A11yConfig = .init()
+        a11y: A11yConfig = .init(),
+        platform: Platform = .ios,
+        android: AndroidProject? = nil
     ) {
         self.scheme = scheme
         self.workspace = workspace
@@ -112,6 +120,8 @@ public struct GrantivaConfig: Sendable, Codable {
         self.flows = flows
         self.diff = diff
         self.a11y = a11y
+        self.platform = platform
+        self.android = android
     }
 
     public init(from decoder: Decoder) throws {
@@ -126,32 +136,80 @@ public struct GrantivaConfig: Sendable, Codable {
         flows = try container.decodeIfPresent([String].self, forKey: .flows) ?? []
         diff = try container.decodeIfPresent(DiffConfig.self, forKey: .diff) ?? .init()
         a11y = try container.decodeIfPresent(A11yConfig.self, forKey: .a11y) ?? .init()
+        platform = try container.decodeIfPresent(Platform.self, forKey: .platform) ?? .ios
+        android = nil
     }
 
-    public static func load(from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)) throws -> GrantivaConfig {
-        let fm = FileManager.default
+    public static func load(
+        from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    ) throws -> GrantivaConfig {
+        try load(platform: .ios, from: directory)
+    }
 
-        // 1. Try grantiva.yml (Grantiva or Maestro format)
-        let configURL = directory.appendingPathComponent("grantiva.yml")
+    /// Loads the config file for `platform`, or throws `configNotFound`.
+    /// A file that exists but does not parse is an error carrying the file
+    /// name and the YAML diagnostic; it never falls through.
+    public static func load(
+        platform: Platform,
+        from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    ) throws -> GrantivaConfig {
+        guard let config = try loadIfPresent(platform: platform, from: directory) else {
+            throw GrantivaError.configNotFound
+        }
+        return config
+    }
+
+    /// Like `load(platform:from:)` but returns nil when no file exists.
+    public static func loadIfPresent(
+        platform: Platform,
+        from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    ) throws -> GrantivaConfig? {
+        let fm = FileManager.default
+        let configURL = directory.appendingPathComponent(platform.configFileName)
+
         if fm.fileExists(atPath: configURL.path) {
             let contents = try String(contentsOf: configURL, encoding: .utf8)
-
-            // Auto-detect Maestro format
-            if MaestroFlowParser.isMaestroFormat(contents) {
-                return try MaestroFlowParser.parse(contents)
-            }
-
-            let decoder = YAMLDecoder()
-            return try decoder.decode(GrantivaConfig.self, from: contents)
+            return try parse(contents, platform: platform, fileName: platform.configFileName)
         }
 
-        // 2. Try .maestro/ directory (Maestro flow files)
+        // The .maestro/ fallback is an iOS-era convention; Android has none.
+        guard platform == .ios else { return nil }
         let maestroDir = directory.appendingPathComponent(".maestro")
         if fm.fileExists(atPath: maestroDir.path) {
             return try MaestroFlowParser.loadDirectory(maestroDir)
         }
+        return nil
+    }
 
-        throw GrantivaError.configNotFound
+    static func parse(_ contents: String, platform: Platform, fileName: String) throws -> GrantivaConfig {
+        if platform == .ios, MaestroFlowParser.isMaestroFormat(contents) {
+            return try MaestroFlowParser.parse(contents)
+        }
+        var config: GrantivaConfig
+        do {
+            config = try YAMLDecoder().decode(GrantivaConfig.self, from: contents)
+        } catch {
+            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+        }
+        if let declared = (try? YAMLDecoder().decode(DeclaredPlatform.self, from: contents))?.platform,
+           declared != platform {
+            throw GrantivaError.invalidArgument(
+                "\(fileName) declares `platform: \(declared.rawValue)` but it is the \(platform.displayName) config file."
+            )
+        }
+        config.platform = platform
+        if platform == .android {
+            do {
+                config.android = try YAMLDecoder().decode(AndroidProject.self, from: contents)
+            } catch {
+                throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+            }
+        }
+        return config
+    }
+
+    private struct DeclaredPlatform: Decodable {
+        var platform: Platform?
     }
 }
 
