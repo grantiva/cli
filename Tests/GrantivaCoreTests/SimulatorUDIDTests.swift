@@ -50,4 +50,31 @@ final class SimulatorUDIDTests: XCTestCase {
             "DEADBEEF-0000-4000-8000-000000000001"
         )
     }
+
+    func testDeviceIDAcceptsSimulatorUDIDs() throws {
+        XCTAssertEqual(try DeviceID.validate("921A0945-7157-4533-BA1F-21E8132D3E40"), "921A0945-7157-4533-BA1F-21E8132D3E40")
+    }
+
+    func testDeviceIDAcceptsEmulatorSerials() throws {
+        XCTAssertEqual(try DeviceID.validate(" emulator-5554 "), "emulator-5554")
+        XCTAssertTrue(DeviceID.isADBSerial("emulator-5584"))
+    }
+
+    func testDeviceIDAcceptsHardwareAndTCPSerials() throws {
+        XCTAssertEqual(try DeviceID.validate("R5CT30ABCDE"), "R5CT30ABCDE")
+        XCTAssertEqual(try DeviceID.validate("192.168.1.20:5555"), "192.168.1.20:5555")
+    }
+
+    func testDeviceIDRejectsBlankAndShellNoise() {
+        XCTAssertThrowsError(try DeviceID.validate(""))
+        XCTAssertThrowsError(try DeviceID.validate("   "))
+        XCTAssertThrowsError(try DeviceID.validate("emulator 5554"))
+        XCTAssertThrowsError(try DeviceID.validate("$UDID"))
+    }
+
+    func testSimulatorUDIDStillRejectsSerials() {
+        XCTAssertThrowsError(try SimulatorUDID.validate("emulator-5554")) { error in
+            XCTAssertTrue("\(error)".contains("not a simulator UDID"))
+        }
+    }
 }
