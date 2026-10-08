@@ -3,16 +3,25 @@
 ## Unreleased
 
 ### Added
-- `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. Android is resolved and validated but not yet runnable; it lands in the next two releases. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
+- Android support for `init`, `doctor`, `build`, `build install`, `run`, `diff capture`, `diff compare`, and `diff approve`, driven through `adb`, Gradle, and the embedded runner's UIAutomator2 driver. `grantiva init --platform android` (or `init` in a Gradle project) writes `grantiva-android.yml`. See `docs/android.md`.
+- Android flags: `--module`, `--variant`, `--application-id`, `--emulator <AVD>`, `--device <serial>`, `--allow-device-settings`, `--headless`, and `--logs-tag`. A flag from the other platform is rejected by name.
+- Emulator selection: the configured AVD is used when running and booted otherwise (`-no-snapshot-save -no-boot-anim`, `-no-window` under `--headless` or without a terminal). Emulators Grantiva boots are recorded in `~/.grantiva/android/started.json`.
+- Stable Android captures: System UI demo mode, animation scales 0, portrait pinned; previous values saved in `.grantiva/android-settings-<serial>.json` and restored, including after an interrupted run.
+- `doctor` checks the Android SDK, adb, emulator, JDK, and AVDs when the project is Android, and reports both toolchains as advice when no project is detected. `--platform` selects.
+- `examples/android`, a three-screen Compose app with a `grantiva-android.yml`.
+- `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
 - `grantiva-android.yml` is recognised as the Android config file. A config file that exists but does not parse is now an error naming the file and the YAML position, instead of being silently ignored.
 - The embedded runner tarball ships the UIAutomator2 driver APKs. Existing installs re-extract it once on first use; the WebDriverAgent build cache is kept.
 
 ### Changed
+- Android captures and baselines live in `.grantiva/captures/android/` and `.grantiva/baselines/android/`. iOS paths are unchanged.
+- Android baselines are local only. `ci run` on Android, and remote baselines for Android, fail with "Android baselines are local only until the Grantiva backend supports platforms; use local baselines". `diff compare` and `diff approve` use the local store and print that line once when you are logged in.
+- `--app-file` accepts an `.apk` on Android; the application ID is read with `apkanalyzer`.
+- `grantiva run --logs` on Android streams `logcat` for the app's uid.
+- The `--scheme`, `--simulator`, and `--bundle-id` options are now declared once, shared by every device command; their names and behavior are unchanged.
 - Device, build, and runner-argument handling moved behind a `DevicePlatform` abstraction. iOS behaviour is unchanged.
 - An empty or comments-only config file loads as defaults, as before. A config file with a YAML error is reported with its file name and position.
 - A directory with both an Xcode project (or workspace) and a root `settings.gradle`/`settings.gradle.kts`, and no `grantiva.yml`, now needs `--platform ios` (or `GRANTIVA_PLATFORM=ios`). Before, it ran as iOS without asking. Kotlin Multiplatform and Compose Multiplatform repos with no config file are the likely case: a root `settings.gradle.kts` with the iOS app in a subdirectory. React Native and Flutter keep their projects under `ios/` and `android/`, so top-level detection still sees them as iOS.
-- `grantiva init` in a directory whose only project marker is a Gradle settings file now reports that Android support arrives in the next release. Pass `--platform ios` to write `grantiva.yml` anyway.
-- Any command that resolves to Android fails with "Android support arrives in the next release" instead of running. That covers `--platform android`, `GRANTIVA_PLATFORM=android`, a lone `grantiva-android.yml`, and a Gradle-only directory.
 
 ## 2.0.1 — 2026-10-07
 

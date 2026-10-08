@@ -20,3 +20,5 @@ Grantiva finds the SDK through `ANDROID_HOME`, then `ANDROID_SDK_ROOT`, then
 GitHub-hosted macOS runners cannot boot the Android emulator (no nested virtualization),
 and Grantiva does not run on Linux. Android `ci run` needs a self-hosted Mac runner or a
 developer machine.
+
+See docs/android.md for using Grantiva with an Android project.
