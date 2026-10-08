@@ -81,7 +81,7 @@ public struct ADB: Sendable {
     }
 
     public func launch(serial: String, applicationId: String) async throws {
-        _ = try await execute(line(serial, "shell monkey -p \(shellQuoted(applicationId)) -c android.intent.category.LAUNCHER 1"))
+        _ = try await execute(line(serial, "shell monkey -p \(shellQuoted(applicationId)) -c android.intent.category.LAUNCHER --pct-syskeys 0 1"))
     }
 
     public func forceStop(serial: String, applicationId: String) async throws {

@@ -40,7 +40,7 @@ final class ADBTests: XCTestCase {
             "'/sdk/platform-tools/adb' devices -l",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' emu avd name",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell getprop 'ro.product.cpu.abi'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell monkey -p 'com.example.app' -c android.intent.category.LAUNCHER 1",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell monkey -p 'com.example.app' -c android.intent.category.LAUNCHER --pct-syskeys 0 1",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell pm uninstall 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' exec-out screencap -p > '/tmp/shot'\\''s.png'",
