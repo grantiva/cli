@@ -48,8 +48,8 @@ final class IOSPlatformTests: XCTestCase {
         XCTAssertTrue(executor.commands[0].contains("'platform=iOS Simulator,id=ABC'"))
     }
 
-    func testMakeReturnsIOS() {
-        XCTAssertEqual(DevicePlatformFactory.make(.ios).platform, .ios)
+    func testMakeReturnsIOS() throws {
+        XCTAssertEqual(try DevicePlatformFactory.make(.ios).platform, .ios)
     }
 
     func testScreenshotUsesSimctlIO() async throws {

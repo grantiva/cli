@@ -111,8 +111,8 @@ struct InjectedDevicePlatform: Decodable {
         value = nil
     }
 
-    func make(_ platform: Platform) -> any DevicePlatform {
-        value ?? DevicePlatformFactory.make(platform)
+    func make(_ platform: Platform, android: AndroidPlatform.Options = .init()) throws -> any DevicePlatform {
+        try value ?? DevicePlatformFactory.make(platform, android: android)
     }
 }
 
@@ -166,8 +166,8 @@ struct PlatformOptions: ParsableArguments {
                 )
             }
         }
-        // DevicePlatformFactory traps on Android until AndroidPlatform lands;
-        // stop here with a message instead of crashing.
+        // The commands do not take Android flags yet; stop here with a
+        // message until they do.
         if resolved == .android {
             throw GrantivaError.invalidArgument(
                 "Android support arrives in the next release. Pass --platform ios to run this directory as an iOS project."

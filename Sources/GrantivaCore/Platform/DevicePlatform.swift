@@ -91,13 +91,12 @@ public protocol DevicePlatform: Sendable {
 }
 
 public enum DevicePlatformFactory {
-    public static func make(_ platform: Platform) -> any DevicePlatform {
+    public static func make(_ platform: Platform, android: AndroidPlatform.Options = AndroidPlatform.Options()) throws -> any DevicePlatform {
         switch platform {
         case .ios:
             return IOSPlatform()
         case .android:
-            // Plan 2 replaces this with AndroidPlatform().
-            fatalError("Android support is not available in this build")
+            return try AndroidPlatform.live(options: android)
         }
     }
 }

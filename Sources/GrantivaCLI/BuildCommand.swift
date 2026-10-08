@@ -36,7 +36,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = devicePlatform.make(platform)
+        let device = try devicePlatform.make(platform)
 
         let resolved = try await ResolvedProject.resolve(
             schemeFlag: scheme,
@@ -106,7 +106,7 @@ struct InstallCommand: AsyncParsableCommand {
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = devicePlatform.make(platform)
+        let device = try devicePlatform.make(platform)
 
         let resolvedBinary = try buildOptions.resolveAppBinary()
         defer { resolvedBinary?.cleanup() }

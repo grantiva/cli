@@ -53,7 +53,7 @@ struct DiffCommand: AsyncParsableCommand {
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
-            let device = devicePlatform.make(platform)
+            let device = try devicePlatform.make(platform)
 
             // Resolve the app binary first (if provided) so we can derive bundle ID
             let resolvedBinary = try buildOptions.resolveAppBinary()
@@ -249,7 +249,7 @@ struct DiffCommand: AsyncParsableCommand {
                     throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
                 }
 
-                let device = devicePlatform.make(platform)
+                let device = try devicePlatform.make(platform)
                 let booted = try await device.bootDevice(named: resolved.simulator)
 
                 if !buildOptions.shouldSkipInstall {

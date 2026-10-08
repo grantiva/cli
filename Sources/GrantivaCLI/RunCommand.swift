@@ -108,7 +108,7 @@ struct RunCommand: AsyncParsableCommand {
 
     private func execute() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = devicePlatform.make(platform)
+        let device = try devicePlatform.make(platform)
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
         // screenshots go there and nothing is written to ./.grantiva.

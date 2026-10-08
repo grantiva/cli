@@ -211,7 +211,7 @@ struct CICommand: AsyncParsableCommand {
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
-            let device = devicePlatform.make(platform)
+            let device = try devicePlatform.make(platform)
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()
