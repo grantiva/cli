@@ -157,9 +157,12 @@ struct PlatformOptions: ParsableArguments {
         if let source {
             let existing = resolver.existingConfigFiles()
             if !existing.contains(resolved), let other = existing.first {
+                let advice = resolved == .android
+                    ? "Create \(resolved.configFileName) by hand; grantiva init --platform android arrives in the next release."
+                    : "Create \(resolved.configFileName) with grantiva init --platform \(resolved.rawValue)."
                 throw GrantivaError.invalidArgument(
                     "\(source) was given but \(resolved.configFileName) does not exist here. "
-                        + "Found \(other.configFileName). Create \(resolved.configFileName) with grantiva init --platform \(resolved.rawValue)."
+                        + "Found \(other.configFileName). \(advice)"
                 )
             }
         }

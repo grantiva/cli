@@ -87,4 +87,41 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)
         XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .android, from: dir))
     }
+
+    func testEmptyIOSFileLoadsAsDefaults() throws {
+        try write("grantiva.yml", "")
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        XCTAssertEqual(config.platform, .ios)
+        XCTAssertTrue(config.screens.isEmpty)
+        XCTAssertNil(config.android)
+    }
+
+    func testWhitespaceOnlyIOSFileLoadsAsDefaults() throws {
+        try write("grantiva.yml", "   \n\n")
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        XCTAssertEqual(config.platform, .ios)
+        XCTAssertTrue(config.screens.isEmpty)
+    }
+
+    func testCommentsOnlyAndroidFileLoadsAsDefaults() throws {
+        try write("grantiva-android.yml", "# just a comment\n")
+        let config = try GrantivaConfig.load(platform: .android, from: dir)
+        XCTAssertEqual(config.platform, .android)
+        XCTAssertEqual(config.android?.module, "app")
+        XCTAssertTrue(config.screens.isEmpty)
+    }
+
+    func testMaestroFormatParseErrorNamesTheFile() throws {
+        try write("grantiva.yml", "appId: com.example.demo\n---\n- launchApp\n- tapOn: [unclosed\n")
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            XCTAssertTrue("\(error)".contains("grantiva.yml could not be parsed"), "\(error)")
+        }
+    }
+
+    func testMultiDocumentMaestroFileStillLoads() throws {
+        try write("grantiva.yml", "appId: com.example.demo\n---\n- launchApp\n- takeScreenshot: Home\n")
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        XCTAssertEqual(config.bundleId, "com.example.demo")
+        XCTAssertEqual(config.platform, .ios)
+    }
 }

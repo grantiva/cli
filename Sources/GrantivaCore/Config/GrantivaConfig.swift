@@ -182,8 +182,25 @@ public struct GrantivaConfig: Sendable, Codable {
     }
 
     static func parse(_ contents: String, platform: Platform, fileName: String) throws -> GrantivaConfig {
+        // An empty, whitespace-only, or comments-only file has no YAML
+        // document; treat it as "all defaults". Only the first document is
+        // read, since Maestro-format files carry several (`Yams.load` throws
+        // on a multi-document stream).
+        let firstDocument: Node?
+        do {
+            firstDocument = try Parser(yaml: contents).nextRoot()
+        } catch {
+            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+        }
+        if firstDocument == nil {
+            return GrantivaConfig(platform: platform, android: platform == .android ? AndroidProject() : nil)
+        }
         if platform == .ios, MaestroFlowParser.isMaestroFormat(contents) {
-            return try MaestroFlowParser.parse(contents)
+            do {
+                return try MaestroFlowParser.parse(contents)
+            } catch {
+                throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+            }
         }
         var config: GrantivaConfig
         do {

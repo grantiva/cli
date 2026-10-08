@@ -86,6 +86,7 @@ final class PlatformOptionTests: XCTestCase {
         let options = try PlatformOptions.parse(["--platform", "android"])
         XCTAssertThrowsError(try options.loadConfig(directory: dir, environment: [:])) { error in
             XCTAssertTrue("\(error)".contains("grantiva-android.yml"), "\(error)")
+            XCTAssertTrue("\(error)".contains("by hand; grantiva init --platform android arrives in the next release"), "\(error)")
         }
     }
 }

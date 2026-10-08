@@ -155,9 +155,10 @@ struct RunCommand: AsyncParsableCommand {
         log("Runner ready")
 
         // Boot simulator
-        log("Booting \(platform.displayName) device: \(resolved.simulator)")
+        let deviceNoun = platform == .ios ? "simulator" : "emulator"
+        log("Booting \(deviceNoun): \(resolved.simulator)")
         let booted = try await device.bootDevice(named: resolved.simulator)
-        log("Device booted: \(booted.name) (\(booted.udid))")
+        log("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions
 
