@@ -22,23 +22,15 @@ public struct PlatformResolver: Sendable {
     }
 
     public func resolve(flag: Platform?) throws -> Platform {
-        let configs = existingConfigFiles()
-
+        // An explicit flag always wins. Whether its config file exists is the
+        // command layer's concern (e.g. `grantiva init --platform android`).
         if let flag {
-            // An explicit platform whose config file is missing, while the
-            // other platform's file is present, is almost always a typo.
-            if !configs.isEmpty, !configs.contains(flag) {
-                throw GrantivaError.invalidArgument(
-                    "--platform \(flag.rawValue) was given but \(flag.configFileName) does not exist here. "
-                        + "Found \(configs.map(\.configFileName).joined(separator: ", ")). "
-                        + "Create \(flag.configFileName) with `grantiva init --platform \(flag.rawValue)`."
-                )
-            }
             return flag
         }
 
         if let raw = environment[Self.environmentKey], !raw.isEmpty {
-            guard let platform = Platform(rawValue: raw.lowercased()) else {
+            let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            guard let platform = Platform(rawValue: normalized) else {
                 throw GrantivaError.invalidArgument(
                     "\(Self.environmentKey) is \"\(raw)\"; expected ios or android."
                 )
@@ -46,6 +38,7 @@ public struct PlatformResolver: Sendable {
             return platform
         }
 
+        let configs = existingConfigFiles()
         switch configs.count {
         case 1:
             return configs[0]

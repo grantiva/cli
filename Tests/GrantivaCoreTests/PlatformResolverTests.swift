@@ -29,13 +29,14 @@ final class PlatformResolverTests: XCTestCase {
 
     func testFlagWinsOverEverything() throws {
         try touch("grantiva.yml")
-        try touch("settings.gradle")
-        XCTAssertEqual(try resolver(env: ["GRANTIVA_PLATFORM": "android"]).resolve(flag: .ios), .ios)
+        XCTAssertEqual(try resolver(env: ["GRANTIVA_PLATFORM": "ios"]).resolve(flag: .android), .android)
+        XCTAssertEqual(try resolver().resolve(flag: .android), .android)
     }
 
     func testEnvironmentWinsOverFiles() throws {
         try touch("grantiva.yml")
         XCTAssertEqual(try resolver(env: ["GRANTIVA_PLATFORM": "android"]).resolve(flag: nil), .android)
+        XCTAssertEqual(try resolver(env: ["GRANTIVA_PLATFORM": "android\n"]).resolve(flag: nil), .android)
     }
 
     func testInvalidEnvironmentValueIsAnError() throws {
@@ -60,15 +61,7 @@ final class PlatformResolverTests: XCTestCase {
         }
     }
 
-    func testFlagForMissingConfigFileNamesTheFile() throws {
-        try touch("grantiva.yml")
-        XCTAssertThrowsError(try resolver().resolve(flag: .android)) { error in
-            XCTAssertTrue("\(error)".contains("grantiva-android.yml"), "\(error)")
-        }
-    }
-
-    func testFlagWithoutAnyConfigFallsThroughToDetection() throws {
-        try touch("settings.gradle.kts")
+    func testFlagWithoutAnyConfigIsAccepted() throws {
         XCTAssertEqual(try resolver().resolve(flag: .android), .android)
     }
 
