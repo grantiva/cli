@@ -72,7 +72,7 @@ struct TargetOptions: ParsableArguments {
                 skipBuild: skipBuild, appBundleId: appID
             )
         case .android:
-            return Self.resolveAndroid(
+            return try Self.resolveAndroid(
                 moduleFlag: module, variantFlag: variant, applicationIdFlag: applicationId,
                 emulatorFlag: emulator, deviceFlag: device, config: config, appID: appID
             )
@@ -84,9 +84,14 @@ struct TargetOptions: ParsableArguments {
     static func resolveAndroid(
         moduleFlag: String?, variantFlag: String?, applicationIdFlag: String?,
         emulatorFlag: String?, deviceFlag: String?, config: GrantivaConfig?, appID: String?
-    ) -> ResolvedProject {
+    ) throws -> ResolvedProject {
         let configured = config?.android ?? AndroidProject()
         let applicationId = applicationIdFlag ?? configured.applicationId ?? appID
+        if let applicationId, applicationId.wholeMatch(of: /[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+/) == nil {
+            throw GrantivaError.invalidArgument(
+                "Application ID \"\(applicationId)\" is not a valid Android application ID (letters, digits, underscores, at least one dot)."
+            )
+        }
         let android = AndroidProject(
             module: moduleFlag ?? configured.module,
             variant: variantFlag ?? configured.variant,

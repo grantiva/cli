@@ -19,6 +19,13 @@ final class GradleBuildRunnerTests: XCTestCase {
         XCTAssertEqual(GradleBuildRunner.taskName(module: "mobile", variant: "freeDebug"), ":mobile:assembleFreeDebug")
     }
 
+    func testNestedAndColonPrefixedModules() {
+        XCTAssertEqual(GradleBuildRunner.taskName(module: ":app", variant: "debug"), ":app:assembleDebug")
+        XCTAssertEqual(GradleBuildRunner.taskName(module: "feature:app", variant: "debug"), ":feature:app:assembleDebug")
+        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: "feature:app", extraArgs: []), "/p/feature/app/build")
+        XCTAssertEqual(GradleBuildRunner.buildDirectory(projectRoot: "/p", module: ":app", extraArgs: []), "/p/app/build")
+    }
+
     func testCommandUsesTheWrapperWhenPresentElseGradleOnPath() throws {
         let noWrapper = GradleBuildRunner.command(projectRoot: scratch.path, module: "app", variant: "debug", extraArgs: ["-PsomeFlag=1"], javaHome: "/jdk")
         XCTAssertEqual(noWrapper, "cd \(shellQuoted(scratch.path)) && JAVA_HOME='/jdk' gradle ':app:assembleDebug' --console=plain '-PsomeFlag=1'")

@@ -77,6 +77,18 @@ struct RunCommand: AsyncParsableCommand {
     ///   failures (missing project, bad scheme, build failure, no simulator)
     ///   that never reach the runner and used to leave the waiter hanging until
     ///   CI's global timeout.
+    static let unfilteredLogsWarning = "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
+
+    /// The line printed once device log streaming starts.
+    static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
+        switch platform {
+        case .ios:
+            return "Streaming simulator logs" + (predicate.map { " (predicate: \($0))" } ?? "")
+        case .android:
+            return "Streaming emulator logs" + (tag.map { " (tag: \($0))" } ?? "")
+        }
+    }
+
     func run() async throws {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
@@ -168,6 +180,13 @@ struct RunCommand: AsyncParsableCommand {
         // installed, and the application ID may come from the build.
         let wantsLogs = logs || logsPredicate != nil || logsTag != nil
         func startLogStream(appID: String?) async -> LogStreamer? {
+            // iOS names the predicate it streams with: the explicit one or the
+            // default derived from the bundle ID. Without either, it streams
+            // unfiltered and says so first.
+            let predicate = platform == .ios ? (logsPredicate ?? appID.map(defaultLogPredicate(forBundleID:))) : nil
+            if platform == .ios, predicate == nil {
+                log(Self.unfilteredLogsWarning)
+            }
             let streamer = LogStreamer()
             do {
                 let stream = try await device.logStream(
@@ -175,7 +194,7 @@ struct RunCommand: AsyncParsableCommand {
                     filter: logsPredicate ?? logsTag, level: logsLevel
                 )
                 try streamer.start(executable: stream.executable, arguments: stream.arguments)
-                log("Streaming \(deviceNoun) logs")
+                log(Self.logStreamNarration(platform: platform, predicate: predicate, tag: logsTag))
                 return streamer
             } catch {
                 GrantivaLog.logger.warning("failed to start log stream: \(error)")

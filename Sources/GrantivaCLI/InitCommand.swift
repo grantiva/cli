@@ -104,6 +104,7 @@ struct InitCommand: AsyncParsableCommand {
         \(idLine)
         emulator: \(emulator)
         system_image: "system-images;android-35;google_apis;arm64-v8a"
+        # Intel Macs: use "system-images;android-35;google_apis;x86_64"
         # build_args: ["-PsomeFlag=1"]
 
         screens:

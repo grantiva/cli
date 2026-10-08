@@ -3760,8 +3760,8 @@ $GRANTIVA run --logs                               # 3 screens pass; [log] lines
 $GRANTIVA diff capture                             # 3 captures under .grantiva/captures/android
 $GRANTIVA diff approve                             # 3 baselines under .grantiva/baselines/android
 $GRANTIVA diff compare                             # all pass
-sed -i '' 's/Line three./Line three, changed./' app/src/main/java/dev/grantiva/example/MainActivity.kt
-$GRANTIVA diff compare --capture                   # Details fails, Home and Settings pass
+sed -i '' 's/Line two\./Line two, changed./' app/src/main/java/dev/grantiva/example/MainActivity.kt
+$GRANTIVA diff compare --capture                   # Details fails on the changed Line two (its Line three. assertion still holds), Home and Settings pass
 git checkout app/src/main/java/dev/grantiva/example/MainActivity.kt
 $GRANTIVA ci run                                   # exits non-zero with the local-only message, before booting anything
 $GRANTIVA run --device emulator-5554               # same 3 screens via the serial

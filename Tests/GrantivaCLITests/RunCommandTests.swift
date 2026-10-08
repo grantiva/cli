@@ -169,4 +169,25 @@ final class RunCommandTests: XCTestCase {
         let message = String(describing: error)
         XCTAssertTrue(message.contains("ready-file"), message)
     }
+
+    func testLogStreamNarrationNamesThePredicateOnIOSAndTheTagOnAndroid() {
+        XCTAssertEqual(
+            RunCommand.logStreamNarration(platform: .ios, predicate: "subsystem == \"com.x\"", tag: nil),
+            "Streaming simulator logs (predicate: subsystem == \"com.x\")"
+        )
+        XCTAssertEqual(
+            RunCommand.logStreamNarration(platform: .ios, predicate: "eventMessage CONTAINS \"x\"", tag: nil),
+            "Streaming simulator logs (predicate: eventMessage CONTAINS \"x\")"
+        )
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .ios, predicate: nil, tag: nil), "Streaming simulator logs")
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: nil), "Streaming emulator logs")
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: "MyTag"), "Streaming emulator logs (tag: MyTag)")
+    }
+
+    func testChattyLogWarningIsTheBaseCommitWording() {
+        XCTAssertEqual(
+            RunCommand.unfilteredLogsWarning,
+            "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
+        )
+    }
 }

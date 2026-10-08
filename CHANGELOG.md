@@ -9,7 +9,7 @@
 - Stable Android captures: System UI demo mode, animation scales 0, portrait pinned; previous values saved in `.grantiva/android-settings-<serial>.json` and restored, including after an interrupted run.
 - `doctor` checks the Android SDK, adb, emulator, JDK, and AVDs when the project is Android, and reports both toolchains as advice when no project is detected. `--platform` selects.
 - `examples/android`, a three-screen Compose app with a `grantiva-android.yml`.
-- `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
+- `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, `diff approve`, `doctor`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
 - `grantiva-android.yml` is recognised as the Android config file. A config file that exists but does not parse is now an error naming the file and the YAML position, instead of being silently ignored.
 - The embedded runner tarball ships the UIAutomator2 driver APKs. Existing installs re-extract it once on first use; the WebDriverAgent build cache is kept.
 

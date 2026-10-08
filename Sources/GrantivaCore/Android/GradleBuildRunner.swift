@@ -17,8 +17,14 @@ public struct GradleBuildRunner: Sendable {
 
     /// `freeDebug` becomes `assembleFreeDebug`: only the first letter changes,
     /// the camel case inside the variant is already right.
+    /// A module path without its leading colons: `:feature:app` and
+    /// `feature:app` both become `feature:app`.
+    static func normalizedModule(_ module: String) -> String {
+        String(module.drop(while: { $0 == ":" }))
+    }
+
     public static func taskName(module: String, variant: String) -> String {
-        ":\(module):assemble\(variant.prefix(1).uppercased())\(variant.dropFirst())"
+        ":\(normalizedModule(module)):assemble\(variant.prefix(1).uppercased())\(variant.dropFirst())"
     }
 
     public static func command(
@@ -40,7 +46,8 @@ public struct GradleBuildRunner: Sendable {
             let path = String(override)
             return path.hasPrefix("/") ? path : "\(projectRoot)/\(path)"
         }
-        return "\(projectRoot)/\(module)/build"
+        let directory = normalizedModule(module).replacingOccurrences(of: ":", with: "/")
+        return "\(projectRoot)/\(directory)/build"
     }
 
     public func build(

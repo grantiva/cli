@@ -152,6 +152,7 @@ final class AndroidCommandTests: XCTestCase {
         _ = try? await command.run()
         let failureShots = (try? FileManager.default.contentsOfDirectory(atPath: ".grantiva/captures/android")) ?? []
         XCTAssertFalse(failureShots.isEmpty, "the failure capture directory is the Android one")
-        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/\(failureShots[0])"), "nothing lands in the iOS directory")
+        let firstShot = try XCTUnwrap(failureShots.first)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/\(firstShot)"), "nothing lands in the iOS directory")
     }
 }

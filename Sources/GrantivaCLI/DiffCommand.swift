@@ -203,16 +203,16 @@ struct DiffCommand: AsyncParsableCommand {
         var imageDiffer: ImageDiffer = .live
 
         func run() async throws {
-            // Only --capture touches a device, so only it insists on a platform.
-            // A bare compare reads the resolved platform's config, falling back
-            // to grantiva.yml, and is not blocked by an ambiguous directory or
-            // a bad GRANTIVA_PLATFORM.
+            // Only --capture loads the config strictly. A bare compare resolves
+            // the platform (iOS when nothing points anywhere) and surfaces an
+            // ambiguous directory or a bad GRANTIVA_PLATFORM rather than
+            // silently comparing the wrong platform's captures.
             let platform: Platform
             let config: GrantivaConfig?
             if capture {
                 (platform, config) = try platformOptions.loadConfig()
             } else {
-                platform = (try? platformOptions.resolve()) ?? .ios
+                platform = try platformOptions.resolve()
                 config = try GrantivaConfig.loadIfPresent(platform: platform)
             }
             let captureDir = DiffCommand.captureDirectory(for: platform)
@@ -392,7 +392,7 @@ struct DiffCommand: AsyncParsableCommand {
         var screenNames: [String] = []
 
         func run() async throws {
-            let platform = (try? platformOptions.resolve()) ?? .ios
+            let platform = try platformOptions.resolve()
             let captureDir = DiffCommand.captureDirectory(for: platform)
             let fm = FileManager.default
             let store = try await DiffCommand.resolveBaselineStore(platform: platform)

@@ -61,6 +61,27 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertEqual(bare.simulator, "", "no emulator configured means auto-select")
     }
 
+    func testInvalidApplicationIDIsRejected() async throws {
+        do {
+            _ = try await TargetOptions.parse(["--application-id", "bad id"]).resolve(platform: .android, config: nil, skipBuild: true, appID: nil)
+            XCTFail("expected an error")
+        } catch GrantivaError.invalidArgument(let message) {
+            XCTAssertEqual(message, "Application ID \"bad id\" is not a valid Android application ID (letters, digits, underscores, at least one dot).")
+        }
+        for bad in ["com", "1com.x", "com..x", "com.x."] {
+            XCTAssertThrowsError(try TargetOptions.resolveAndroid(
+                moduleFlag: nil, variantFlag: nil, applicationIdFlag: bad, emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+            ), bad)
+        }
+        let ok = try TargetOptions.resolveAndroid(
+            moduleFlag: nil, variantFlag: nil, applicationIdFlag: "com.example_app.Demo1", emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+        )
+        XCTAssertEqual(ok.bundleId, "com.example_app.Demo1")
+        XCTAssertNil(try TargetOptions.resolveAndroid(
+            moduleFlag: nil, variantFlag: nil, applicationIdFlag: nil, emulatorFlag: nil, deviceFlag: nil, config: nil, appID: nil
+        ).bundleId)
+    }
+
     func testExtraBuildSettingsUseGradleArgsOnAndroid() async throws {
         let resolved = ResolvedProject(buildSettings: ["-Pa=1"], android: AndroidProject())
         XCTAssertEqual(try TargetOptions.parse([]).extraBuildSettings(platform: .android, derivedDataPath: nil, resolved: resolved), ["-Pa=1"])
