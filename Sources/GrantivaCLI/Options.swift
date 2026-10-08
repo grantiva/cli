@@ -92,3 +92,78 @@ struct BuildOptions: ParsableArguments {
     }
 
 }
+
+extension Platform: ExpressibleByArgument {}
+
+/// Test seam a command can carry as a plain stored property. ArgumentParser
+/// requires every stored property of a command to be Decodable; an existential
+/// `any DevicePlatform` is not, so it rides in this box. Decoding always yields
+/// an empty box, meaning "make the platform from the resolved `Platform`";
+/// tests assign a fake before calling `run()`.
+struct InjectedDevicePlatform: Decodable {
+    var value: (any DevicePlatform)?
+
+    init(_ value: (any DevicePlatform)? = nil) {
+        self.value = value
+    }
+
+    init(from decoder: Decoder) throws {
+        value = nil
+    }
+
+    func make(_ platform: Platform) -> any DevicePlatform {
+        value ?? DevicePlatformFactory.make(platform)
+    }
+}
+
+struct PlatformOptions: ParsableArguments {
+    @Option(name: .long, help: "Target platform: ios or android. Defaults to whichever of grantiva.yml / grantiva-android.yml exists, else the project files in this directory. GRANTIVA_PLATFORM also sets it.")
+    var platform: Platform?
+
+    /// Resolves the platform. When nothing at all points anywhere (no flag, no
+    /// GRANTIVA_PLATFORM, no config file, no project files in this directory)
+    /// the answer is iOS: before Android support every command was iOS and ran
+    /// fine without a project here (`--app-file` + `--bundle-id`, a project in
+    /// a subdirectory, `diff compare` over existing captures).
+    func resolve(
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) throws -> Platform {
+        let resolver = PlatformResolver(directory: directory, environment: environment)
+        if platform == nil,
+           (environment[PlatformResolver.environmentKey] ?? "").isEmpty,
+           resolver.existingConfigFiles().isEmpty,
+           resolver.detectFromDirectory().isEmpty {
+            return .ios
+        }
+        return try resolver.resolve(flag: platform)
+    }
+
+    /// Resolves the platform and loads its config file. A missing file yields
+    /// nil config; a malformed one throws. An explicit choice (`--platform` or
+    /// GRANTIVA_PLATFORM) whose config file is missing while the other
+    /// platform's file is present also throws: that is a wrong directory or a
+    /// skipped `init`, not a config-less run.
+    func loadConfig(
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) throws -> (Platform, GrantivaConfig?) {
+        let resolver = PlatformResolver(directory: directory, environment: environment)
+        let resolved = try resolve(directory: directory, environment: environment)
+        let envValue = environment[PlatformResolver.environmentKey] ?? ""
+        let source: String? = platform != nil
+            ? "--platform \(resolved.rawValue)"
+            : (envValue.isEmpty ? nil : "\(PlatformResolver.environmentKey)=\(resolved.rawValue)")
+        if let source {
+            let existing = resolver.existingConfigFiles()
+            if !existing.contains(resolved), let other = existing.first {
+                throw GrantivaError.invalidArgument(
+                    "\(source) was given but \(resolved.configFileName) does not exist here. "
+                        + "Found \(other.configFileName). Create \(resolved.configFileName) with grantiva init --platform \(resolved.rawValue)."
+                )
+            }
+        }
+        let config = try GrantivaConfig.loadIfPresent(platform: resolved, from: directory)
+        return (resolved, config)
+    }
+}
