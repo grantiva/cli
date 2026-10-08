@@ -20,13 +20,13 @@ struct RunCommand: AsyncParsableCommand {
     @Flag(name: .long, help: "Keep GrantivaAgent session alive after flows complete so `grantiva hierarchy` can inspect UI state without relaunching the app. Release with Ctrl-C.")
     var keepAlive: Bool = false
 
-    @Flag(name: .long, help: "Stream simulator app logs into this terminal, prefixed with [log]. Filter defaults to lines whose subsystem or process matches the app's bundle ID.")
+    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem or process matches the app's bundle ID; on Android, to lines from the app's uid.")
     var logs: Bool = false
 
-    @Option(name: .long, help: "Custom NSPredicate for `simctl log stream --predicate`. Implies --logs.")
+    @Option(name: .long, help: "Custom NSPredicate for `simctl log stream --predicate` (iOS). Implies --logs.")
     var logsPredicate: String?
 
-    @Option(name: .long, help: "logcat tag to keep when streaming Android logs with --logs (Android).")
+    @Option(name: .long, help: "logcat tag to keep when streaming logs (Android). Implies --logs.")
     var logsTag: String?
 
     @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default` (warnings/errors/default).")
@@ -161,28 +161,33 @@ struct RunCommand: AsyncParsableCommand {
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions
 
-        // Optional device log streaming. Started after boot so the stream has
-        // a running device to attach to; stopped by defer so it shuts down on
-        // any exit path (success, failure, Ctrl-C).
-        let logStreamer: LogStreamer?
-        if logs || logsPredicate != nil || logsTag != nil {
+        // Optional device log streaming, stopped by defer so it shuts down on
+        // any exit path (success, failure, Ctrl-C). iOS starts it right after
+        // boot, as it always has. Android starts it after install: logcat
+        // filters by the app's uid, which exists only once the package is
+        // installed, and the application ID may come from the build.
+        let wantsLogs = logs || logsPredicate != nil || logsTag != nil
+        func startLogStream(appID: String?) async -> LogStreamer? {
             let streamer = LogStreamer()
             do {
                 let stream = try await device.logStream(
-                    deviceID: booted.udid, appID: resolved.bundleId ?? appBundleId,
+                    deviceID: booted.udid, appID: appID,
                     filter: logsPredicate ?? logsTag, level: logsLevel
                 )
                 try streamer.start(executable: stream.executable, arguments: stream.arguments)
                 log("Streaming \(deviceNoun) logs")
-                logStreamer = streamer
+                return streamer
             } catch {
                 GrantivaLog.logger.warning("failed to start log stream: \(error)")
-                logStreamer = nil
+                log("Log streaming unavailable: \(error)")
+                return nil
             }
-        } else {
-            logStreamer = nil
         }
+        var logStreamer: LogStreamer?
         defer { logStreamer?.stop() }
+        if wantsLogs, platform == .ios {
+            logStreamer = await startLogStream(appID: resolved.bundleId ?? appBundleId)
+        }
 
         // Build / install / launch
         var productPath: String?
@@ -229,6 +234,9 @@ struct RunCommand: AsyncParsableCommand {
         if !buildOptions.shouldSkipInstall, let productPath {
             log("Installing \(bid)...")
             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+        }
+        if wantsLogs, platform != .ios {
+            logStreamer = await startLogStream(appID: bid)
         }
         // Do not pre-launch: flows drive the app themselves via launchApp/clearState.
         // A grantiva-side launch creates a process WDA can't control, causing stopApp

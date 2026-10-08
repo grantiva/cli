@@ -85,14 +85,33 @@ final class AndroidCommandTests: XCTestCase {
         var command = try InstallCommand.parse(["--no-launch", "--module", "mobile", "--variant", "freeDebug"])
         let fake = FakeDevicePlatform(platform: .android)
         command.devicePlatform = InjectedDevicePlatform(fake)
-        do {
-            try await command.run()
-        } catch {
-            // The data-container step is unsupported on Android and throws after install.
-            XCTAssertTrue("\(error)".contains("data container"), "\(error)")
-        }
+        try await command.run()
         XCTAssertTrue(fake.calls.contains("build(module=mobile,variant=freeDebug,args=[])"), "\(fake.calls)")
         XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertFalse(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
+    }
+
+    func testBuildInstallOnAndroidLaunchesTheBuiltApplicationID() async throws {
+        var command = try InstallCommand.parse(["--module", "mobile"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
+    }
+
+    /// The app's uid only exists once it is installed, so on Android the log
+    /// stream starts after install, with the application ID from the build.
+    func testRunOnAndroidStartsTheLogStreamAfterInstallWithTheBuiltApplicationID() async throws {
+        var command = try RunCommand.parse(["--logs", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        let calls = fake.calls
+        let install = try XCTUnwrap(calls.firstIndex(of: "install(com.fake.built,/fake/app.apk)"), "\(calls)")
+        let stream = try XCTUnwrap(calls.firstIndex(of: "logStream(com.fake.built,-)"), "\(calls)")
+        XCTAssertGreaterThan(stream, install, "\(calls)")
     }
 
     func testAppFileAPKGoesThroughThePlatformResolver() async throws {

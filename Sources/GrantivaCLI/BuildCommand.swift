@@ -45,7 +45,10 @@ struct BuildOnlyCommand: AsyncParsableCommand {
 
         let booted = try await device.bootDevice(named: resolved.simulator)
 
-        options.note("[grantiva] Building \(resolved.scheme ?? ":\(resolved.android?.module ?? "app"):assemble\(resolved.android?.variant ?? "debug")") for \(booted.name)...")
+        let buildTarget = resolved.scheme ?? GradleBuildRunner.taskName(
+            module: resolved.android?.module ?? "app", variant: resolved.android?.variant ?? "debug"
+        )
+        options.note("[grantiva] Building \(buildTarget) for \(booted.name)...")
 
         let result = try await device.build(PlatformBuildRequest(
             config: config ?? GrantivaConfig(),
@@ -191,12 +194,13 @@ struct InstallCommand: AsyncParsableCommand {
 
     /// DevicePlatform has no data-container call yet; on iOS this is the same
     /// `simctl get_app_container ... data` lookup the command always did.
-    static func dataContainerPath(platform: Platform, bundleId: String, deviceID: String) async throws -> String {
+    /// Android has no host-readable data container, so there is none to report.
+    static func dataContainerPath(platform: Platform, bundleId: String, deviceID: String) async throws -> String? {
         switch platform {
         case .ios:
             return try await XcodeBuildRunner().dataContainerPath(bundleId: bundleId, udid: deviceID)
         case .android:
-            throw GrantivaError.invalidArgument("Reading the app data container is not supported on Android yet.")
+            return nil
         }
     }
 
@@ -212,10 +216,12 @@ struct InstallCommand: AsyncParsableCommand {
         status: InstallResult.Status,
         bundleId: String,
         deviceName: String,
-        dataContainerPath: String
+        dataContainerPath: String?
     ) -> String {
         let action = status == .installed ? "installed on \(deviceName) (not launched)" : "running on \(deviceName)"
-        return "[grantiva] Done — \(bundleId) \(action)\nData container: \(dataContainerPath)"
+        let done = "[grantiva] Done — \(bundleId) \(action)"
+        guard let dataContainerPath else { return done }
+        return "\(done)\nData container: \(dataContainerPath)"
     }
 }
 
