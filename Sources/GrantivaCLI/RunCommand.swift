@@ -10,6 +10,7 @@ struct RunCommand: AsyncParsableCommand {
 
     @OptionGroup var options: GlobalOptions
     @OptionGroup var buildOptions: BuildOptions
+    @OptionGroup var platformOptions: PlatformOptions
 
     @Option(name: .long, help: "Scheme to build")
     var scheme: String?
@@ -59,7 +60,8 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp environment.")
     var env: [String] = []
 
-    var simulatorManager: SimulatorManager = .live
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
     var runnerManager: RunnerManager = .live
 
     func validate() throws {
@@ -105,7 +107,8 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     private func execute() async throws {
-        let config = try? GrantivaConfig.load()
+        let (platform, config) = try platformOptions.loadConfig()
+        let device = devicePlatform.make(platform)
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
         // screenshots go there and nothing is written to ./.grantiva.
@@ -152,21 +155,19 @@ struct RunCommand: AsyncParsableCommand {
         log("Runner ready")
 
         // Boot simulator
-        log("Booting simulator: \(resolved.simulator)")
-        let device = try await simulatorManager.boot(nameOrUDID: resolved.simulator)
-        log("Simulator booted: \(device.name) (\(device.udid))")
-        let destination = "platform=iOS Simulator,id=\(device.udid)"
-        let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
-        let expectedPixels = SimulatorProvisionResult.Dimensions(
-            width: geometry.pixels[0],
-            height: geometry.pixels[1]
-        )
+        let deviceNoun = platform == .ios ? "simulator" : "emulator"
+        log("Booting \(deviceNoun): \(resolved.simulator)")
+        let booted = try await device.bootDevice(named: resolved.simulator)
+        log("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
+        let geometry = try await device.displayGeometry(deviceID: booted.udid)
+        let expectedPixels = geometry.dimensions
 
         // Optional simulator log streaming. Started after boot so `simctl spawn`
         // has a running sim to attach to; stopped by defer so it shuts down on
-        // any exit path (success, failure, Ctrl-C).
+        // any exit path (success, failure, Ctrl-C). iOS-only until the log
+        // stream moves behind DevicePlatform.
         let logStreamer: LogStreamer?
-        if logs || logsPredicate != nil {
+        if platform == .ios, logs || logsPredicate != nil {
             let predicate: String?
             if let explicit = logsPredicate {
                 predicate = explicit
@@ -178,7 +179,7 @@ struct RunCommand: AsyncParsableCommand {
             }
             let streamer = LogStreamer()
             do {
-                try streamer.start(udid: device.udid, predicate: predicate, level: logsLevel)
+                try streamer.start(udid: booted.udid, predicate: predicate, level: logsLevel)
                 log("Streaming simulator logs\(predicate.map { " (predicate: \($0))" } ?? "")")
                 logStreamer = streamer
             } catch {
@@ -199,21 +200,18 @@ struct RunCommand: AsyncParsableCommand {
             log("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
             productPath = resolvedBinary.appPath
         } else {
-            guard let buildScheme = resolved.scheme else {
-                throw GrantivaError.invalidArgument(
-                    "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-                )
+            // A missing scheme is rejected by the platform's build with the
+            // same message the command used to throw here.
+            if let buildScheme = resolved.scheme {
+                log("Building \(buildScheme)...")
             }
 
-            log("Building \(buildScheme)...")
-
-            let buildResult = try await XcodeBuildRunner().build(
-                scheme: buildScheme,
-                workspace: resolved.workspace,
-                project: resolved.project,
-                destination: destination,
-                buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
-            )
+            let buildResult = try await device.build(PlatformBuildRequest(
+                config: config ?? GrantivaConfig(),
+                resolved: resolved,
+                deviceID: booted.udid,
+                extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+            ))
             log("Build finished: success=\(buildResult.success) duration=\(String(format: "%.1fs", buildResult.duration))")
 
             guard buildResult.success else {
@@ -233,9 +231,7 @@ struct RunCommand: AsyncParsableCommand {
 
         if !buildOptions.shouldSkipInstall, let productPath {
             log("Installing \(bid)...")
-            try await XcodeBuildRunner().install(
-                bundleId: bid, productPath: productPath, udid: device.udid
-            )
+            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
         }
         // Do not pre-launch: flows drive the app themselves via launchApp/clearState.
         // A grantiva-side launch creates a process WDA can't control, causing stopApp
@@ -256,7 +252,8 @@ struct RunCommand: AsyncParsableCommand {
                     try await RunnerSession.run(
                         screens: resolved.screens,
                         bundleId: bid,
-                        udid: device.udid,
+                        udid: booted.udid,
+                        platform: device,
                         runner: runnerManager,
                         outputDir: captureDir,
                         appFile: productPath,
@@ -272,7 +269,8 @@ struct RunCommand: AsyncParsableCommand {
                     return try await RunnerSession.runFlowFiles(
                         at: resolved.flows,
                         bundleId: bid,
-                        udid: device.udid,
+                        udid: booted.udid,
+                        platform: device,
                         runner: runnerManager,
                         outputDir: captureDir,
                         appFile: productPath,
@@ -294,7 +292,7 @@ struct RunCommand: AsyncParsableCommand {
             if !fm.fileExists(atPath: captureDir) {
                 try? fm.createDirectory(atPath: captureDir, withIntermediateDirectories: true)
             }
-            _ = try? await shell(Self.failureScreenshotCommand(udid: device.udid, path: failurePath))
+            _ = try? await shell(Self.failureScreenshotCommand(udid: booted.udid, path: failurePath))
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
             }

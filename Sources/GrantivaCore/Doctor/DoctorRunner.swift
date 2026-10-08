@@ -87,7 +87,7 @@ public struct DoctorRunner: Sendable {
     func checkRunner(
         runnerPath: String = RunnerManager.binaryPath,
         versionFilePath: String = RunnerManager.versionFilePath,
-        expectedVersion: String = RunnerManager.runnerVersion
+        expectedVersion: String = RunnerManager.installStamp
     ) async -> DoctorCheck {
         let fm = FileManager.default
         if fm.fileExists(atPath: runnerPath) {

@@ -107,7 +107,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
 
         // Resolve config
-        let config = try? GrantivaConfig.load()
+        let config = try GrantivaConfig.loadIfPresent(platform: .ios)
         let resolvedBundleId = bundleId ?? config?.bundleId
         guard let resolvedBundleId else {
             throw GrantivaError.invalidArgument(

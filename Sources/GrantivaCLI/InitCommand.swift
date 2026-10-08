@@ -9,6 +9,7 @@ struct InitCommand: AsyncParsableCommand {
     )
 
     @OptionGroup var verbosity: VerbosityOptions
+    @OptionGroup var platformOptions: PlatformOptions
 
     @Option(name: .long, help: "Scheme name")
     var scheme: String?
@@ -19,6 +20,16 @@ struct InitCommand: AsyncParsableCommand {
     func run() async throws {
         let fm = FileManager.default
         let cwd = fm.currentDirectoryPath
+
+        let platform = try Self.platform(
+            flag: platformOptions.platform,
+            detected: PlatformResolver(directory: URL(fileURLWithPath: cwd, isDirectory: true)).detectFromDirectory()
+        )
+        if platform == .android {
+            throw GrantivaError.invalidArgument(
+                "Android init arrives in the next release; create grantiva-android.yml by hand for now"
+            )
+        }
 
         // Generate grantiva.yml
         let configPath = "\(cwd)/grantiva.yml"
@@ -51,6 +62,23 @@ struct InitCommand: AsyncParsableCommand {
             GrantivaLog.logger.info("Created grantiva.yml")
         }
 
+    }
+
+    /// Which platform to initialize. An explicit flag wins; otherwise the
+    /// project files decide, and a directory with none of them stays iOS, as
+    /// `init` always was.
+    static func platform(flag: Platform?, detected: [Platform]) throws -> Platform {
+        if let flag { return flag }
+        switch detected.count {
+        case 2:
+            throw GrantivaError.invalidArgument(
+                "Found both an Xcode project and Gradle settings. Pass --platform ios|android."
+            )
+        case 1:
+            return detected[0]
+        default:
+            return .ios
+        }
     }
 
     private func detectScheme() -> String? {

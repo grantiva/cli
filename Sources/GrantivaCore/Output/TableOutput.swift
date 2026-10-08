@@ -39,7 +39,7 @@ public struct TableFormatter: Sendable {
     public func formatBuild(_ result: BuildResult) -> String {
         var lines: [String] = []
         lines.append(result.success ? "✓ Build succeeded" : "✗ Build failed")
-        lines.append("  Scheme: \(result.scheme)")
+        lines.append("  Scheme: \(result.scheme ?? "(none)")")
         lines.append("  Duration: \(String(format: "%.1f", result.duration))s")
         if !result.warnings.isEmpty {
             lines.append("  Warnings: \(result.warnings.count)")

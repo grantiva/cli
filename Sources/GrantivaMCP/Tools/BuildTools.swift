@@ -97,7 +97,7 @@ enum BuildTools {
 
         let summary = """
             Build \(result.success ? "succeeded" : "FAILED")
-            Scheme: \(result.scheme)
+            Scheme: \(result.scheme ?? "(none)")
             Duration: \(String(format: "%.1fs", result.duration))
             Warnings: \(result.warnings.count)
             Errors: \(result.errors.count)\(result.errors.isEmpty ? "" : "\n" + result.errors.joined(separator: "\n"))

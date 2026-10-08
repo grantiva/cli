@@ -19,7 +19,7 @@ public struct GrantivaMCPServer: Sendable {
         }
 
         // All relative tool paths now resolve from the selected project root.
-        let config = try? GrantivaConfig.load()
+        let config = try GrantivaConfig.loadIfPresent(platform: .ios)
 
         let session = try Self.loadActiveSession(projectDirectory: projectDirectory)
 

@@ -37,6 +37,7 @@ struct DiffCommand: AsyncParsableCommand {
 
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
+        @OptionGroup var platformOptions: PlatformOptions
 
         @Option(name: .long, help: "Scheme to build")
         var scheme: String?
@@ -47,10 +48,12 @@ struct DiffCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Bundle identifier")
         var bundleId: String?
 
-        var simulatorManager: SimulatorManager = .live
+        /// Empty means "make one from the resolved platform"; tests inject a fake.
+        var devicePlatform = InjectedDevicePlatform()
 
         func run() async throws {
-            let config = try? GrantivaConfig.load()
+            let (platform, config) = try platformOptions.loadConfig()
+            let device = devicePlatform.make(platform)
 
             // Resolve the app binary first (if provided) so we can derive bundle ID
             let resolvedBinary = try buildOptions.resolveAppBinary()
@@ -71,13 +74,12 @@ struct DiffCommand: AsyncParsableCommand {
             let outputDir = ".grantiva/captures"
             let start = Date()
 
-            var device: SimulatorDevice
+            var booted: BootedDevice
 
             if !buildOptions.shouldSkipInstall {
                 // Full lifecycle: boot → build → install → launch → capture
                 // OR: boot → install pre-built → launch → capture
-                device = try await simulatorManager.boot(nameOrUDID: resolved.simulator)
-                let destination = "platform=iOS Simulator,id=\(device.udid)"
+                booted = try await device.bootDevice(named: resolved.simulator)
 
                 var productPath: String?
 
@@ -86,22 +88,18 @@ struct DiffCommand: AsyncParsableCommand {
                     options.note("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
                     productPath = resolvedBinary.appPath
                 } else {
-                    // Build from source
-                    guard let buildScheme = resolved.scheme else {
-                        throw GrantivaError.invalidArgument(
-                            "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-                        )
+                    // Build from source. A missing scheme is rejected by the
+                    // platform's build with the same message as before.
+                    if let buildScheme = resolved.scheme {
+                        options.note("Building \(buildScheme)...")
                     }
 
-                    options.note("Building \(buildScheme)...")
-
-                    let buildResult = try await XcodeBuildRunner().build(
-                        scheme: buildScheme,
-                        workspace: resolved.workspace,
-                        project: resolved.project,
-                        destination: destination,
-                        buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
-                    )
+                    let buildResult = try await device.build(PlatformBuildRequest(
+                        config: config ?? GrantivaConfig(),
+                        resolved: resolved,
+                        deviceID: booted.udid,
+                        extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                    ))
 
                     guard buildResult.success else {
                         if options.json {
@@ -117,11 +115,9 @@ struct DiffCommand: AsyncParsableCommand {
                 // Install and launch
                 if let bid = resolved.bundleId {
                     if let productPath {
-                        try await XcodeBuildRunner().install(
-                            bundleId: bid, productPath: productPath, udid: device.udid
-                        )
+                        try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                     }
-                    try await XcodeBuildRunner().launch(bundleId: bid, udid: device.udid)
+                    try await device.launch(appID: bid, deviceID: booted.udid)
                     try await Task.sleep(for: .seconds(2))
                 }
 
@@ -130,10 +126,10 @@ struct DiffCommand: AsyncParsableCommand {
                 // --no-build still honors an explicit target. This matters on
                 // hosts where an iPad is already booted while the evidence
                 // command asks for an iPhone by name/UDID.
-                device = if let simulator {
-                    try await simulatorManager.boot(nameOrUDID: simulator)
+                booted = if let simulator {
+                    try await device.bootDevice(named: simulator)
                 } else {
-                    try await simulatorManager.bootedDevice()
+                    try await DiffCommand.currentlyBootedDevice(platform: platform)
                 }
             }
 
@@ -141,15 +137,20 @@ struct DiffCommand: AsyncParsableCommand {
                 throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
             }
 
-            let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
-            let target = CaptureSimulatorTarget(name: device.name, udid: device.udid, geometry: geometry)
+            let geometry = try await device.displayGeometry(deviceID: booted.udid)
+            let target = CaptureSimulatorTarget(
+                name: booted.name,
+                udid: booted.udid,
+                geometry: DiffCommand.simulatorGeometry(geometry)
+            )
 
             options.note("Capturing \(resolved.screens.count) screen(s)...")
 
             let captures = try await RunnerSession.run(
                 screens: resolved.screens,
                 bundleId: bid,
-                udid: device.udid,
+                udid: booted.udid,
+                platform: device,
                 outputDir: outputDir,
                 expectedPixels: target.pixelDimensions
             )
@@ -194,6 +195,7 @@ struct DiffCommand: AsyncParsableCommand {
 
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
+        @OptionGroup var platformOptions: PlatformOptions
 
         @Option(name: .long, help: "Scheme to build")
         var scheme: String?
@@ -207,11 +209,24 @@ struct DiffCommand: AsyncParsableCommand {
         @Flag(name: .long, help: "Capture screenshots before comparing (runs full lifecycle)")
         var capture = false
 
-        var simulatorManager: SimulatorManager = .live
+        /// Empty means "make one from the resolved platform"; tests inject a fake.
+        var devicePlatform = InjectedDevicePlatform()
         var imageDiffer: ImageDiffer = .live
 
         func run() async throws {
-            let config = try? GrantivaConfig.load()
+            // Only --capture touches a device, so only it resolves a platform.
+            // A bare compare reads grantiva.yml as it always did and is not
+            // blocked by an ambiguous directory or a bad GRANTIVA_PLATFORM.
+            let platform: Platform
+            let config: GrantivaConfig?
+            if capture {
+                let loaded = try platformOptions.loadConfig()
+                platform = loaded.0
+                config = loaded.1
+            } else {
+                platform = .ios
+                config = try GrantivaConfig.loadIfPresent(platform: .ios)
+            }
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()
@@ -234,31 +249,28 @@ struct DiffCommand: AsyncParsableCommand {
                     throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
                 }
 
-                let device = try await simulatorManager.boot(nameOrUDID: resolved.simulator)
+                let device = devicePlatform.make(platform)
+                let booted = try await device.bootDevice(named: resolved.simulator)
 
                 if !buildOptions.shouldSkipInstall {
-                    let destination = "platform=iOS Simulator,id=\(device.udid)"
                     var productPath: String?
 
                     if let resolvedBinary {
                         options.note("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
                         productPath = resolvedBinary.appPath
                     } else {
-                        guard let buildScheme = resolved.scheme else {
-                            throw GrantivaError.invalidArgument(
-                                "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-                            )
+                        // A missing scheme is rejected by the platform's build
+                        // with the same message as before.
+                        if let buildScheme = resolved.scheme {
+                            options.note("Building \(buildScheme)...")
                         }
 
-                        options.note("Building \(buildScheme)...")
-
-                        let buildResult = try await XcodeBuildRunner().build(
-                            scheme: buildScheme,
-                            workspace: resolved.workspace,
-                            project: resolved.project,
-                            destination: destination,
-                            buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
-                        )
+                        let buildResult = try await device.build(PlatformBuildRequest(
+                            config: config ?? GrantivaConfig(),
+                            resolved: resolved,
+                            deviceID: booted.udid,
+                            extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                        ))
 
                         guard buildResult.success else {
                             if options.json {
@@ -273,11 +285,9 @@ struct DiffCommand: AsyncParsableCommand {
 
                     if let bid = resolved.bundleId {
                         if let productPath {
-                            try await XcodeBuildRunner().install(
-                                bundleId: bid, productPath: productPath, udid: device.udid
-                            )
+                            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                         }
-                        try await XcodeBuildRunner().launch(bundleId: bid, udid: device.udid)
+                        try await device.launch(appID: bid, deviceID: booted.udid)
                         try await Task.sleep(for: .seconds(2))
                     }
                 }
@@ -287,16 +297,14 @@ struct DiffCommand: AsyncParsableCommand {
                 }
 
                 options.note("Capturing \(resolved.screens.count) screen(s)...")
-                let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
-                let expectedPixels = SimulatorProvisionResult.Dimensions(
-                    width: geometry.pixels[0],
-                    height: geometry.pixels[1]
-                )
+                let geometry = try await device.displayGeometry(deviceID: booted.udid)
+                let expectedPixels = geometry.dimensions
 
                 let captures = try await RunnerSession.run(
                     screens: resolved.screens,
                     bundleId: bid,
-                    udid: device.udid,
+                    udid: booted.udid,
+                    platform: device,
                     outputDir: captureDir,
                     expectedPixels: expectedPixels
                 )
@@ -596,5 +604,32 @@ struct DiffCommand: AsyncParsableCommand {
             return client.asBaselineStore(project: projectId.projectSlug, branch: projectId.currentBranch, baseURL: credentials.baseURL)
         }
         return .local()
+    }
+
+    /// `diff capture --no-build` without `--simulator` captures whatever device
+    /// is already booted. DevicePlatform has no "current device" call yet, so
+    /// this stays on simctl for iOS.
+    static func currentlyBootedDevice(platform: Platform) async throws -> BootedDevice {
+        switch platform {
+        case .ios:
+            let device = try await SimulatorManager.live.bootedDevice()
+            return BootedDevice(udid: device.udid, name: device.name)
+        case .android:
+            throw GrantivaError.invalidArgument("--no-build on Android needs --simulator to name the device.")
+        }
+    }
+
+    /// The capture report's simulator geometry, derived the same way
+    /// `SimulatorManager.displayGeometry` derives it: points are pixels over
+    /// scale, rounded.
+    static func simulatorGeometry(_ geometry: DeviceGeometry) -> SimulatorDisplayGeometry {
+        SimulatorDisplayGeometry(
+            points: [
+                Int((Double(geometry.pixelWidth) / geometry.scale).rounded()),
+                Int((Double(geometry.pixelHeight) / geometry.scale).rounded()),
+            ],
+            pixels: [geometry.pixelWidth, geometry.pixelHeight],
+            scale: geometry.scale
+        )
     }
 }

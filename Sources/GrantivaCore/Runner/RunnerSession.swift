@@ -18,6 +18,7 @@ public enum RunnerSession {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         udid: String,
+        platform: any DevicePlatform = IOSPlatform(),
         runner: RunnerManager = .live,
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
@@ -68,32 +69,18 @@ public enum RunnerSession {
         }
 
         // Freeze status bar for deterministic screenshots
-        _ = try? await shell(
-            "xcrun simctl status_bar \(udid) override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4"
-        )
+        await platform.prepareForCapture(deviceID: udid)
         // Run the runner
-        // Global flags go before `test`, test flags after
-        var args = [
-            runnerBin,
-            "--platform", "ios",
-            "--device", udid,
-            "--no-ansi",
-            "--no-app-install",
-        ]
-        if let appFile {
-            args += ["--app-file", appFile]
-        }
-        args += [
-            "test",
-            "--output", reportDir,
-            "--flatten",
-            "--wait-for-idle-timeout", "0",
-            "--artifacts", runnerArtifactMode(for: snapshot),
-        ]
-        if keepAlive {
-            args += ["--keep-alive"]
-        }
-        args += [flowPath]
+        let args = runnerArguments(
+            runnerBin: runnerBin,
+            platform: platform,
+            udid: udid,
+            appFile: appFile,
+            reportDir: reportDir,
+            snapshot: snapshot,
+            keepAlive: keepAlive,
+            flowPaths: [flowPath]
+        )
 
         // Timeout: kill the runner if it takes longer than 5 minutes
         // Keep-alive sessions block waiting for SIGINT; a normal 5-minute cap
@@ -102,7 +89,10 @@ public enum RunnerSession {
 
         // stdout is relayed to stderr so CI sees runner progress in real time;
         // stderr is captured for error reporting.
-        let outcome = await runWithStatusBarCleanup(udid: udid) {
+        let outcome = await runWithStatusBarCleanup(
+            udid: udid,
+            clear: { await platform.restoreAfterCapture(deviceID: $0) }
+        ) {
             await RunnerExecution.run(RunnerExecution.Request(
                 executable: runnerBin,
                 arguments: Array(args.dropFirst()), // drop the binary path
@@ -242,6 +232,7 @@ public enum RunnerSession {
         at flowPaths: [String],
         bundleId: String,
         udid: String,
+        platform: any DevicePlatform = IOSPlatform(),
         runner: RunnerManager = .live,
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
@@ -349,39 +340,27 @@ public enum RunnerSession {
             )
         }
 
-        _ = try? await shell(
-            "xcrun simctl status_bar \(udid) override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4"
+        await platform.prepareForCapture(deviceID: udid)
+        let args = runnerArguments(
+            runnerBin: runnerBin,
+            platform: platform,
+            udid: udid,
+            appFile: appFile,
+            reportDir: reportDir,
+            snapshot: snapshot,
+            failFast: failFast,
+            keepAlive: keepAlive,
+            flowPaths: tempFlowPaths
         )
-        var args = [
-            runnerBin,
-            "--platform", "ios",
-            "--device", udid,
-            "--no-ansi",
-            "--no-app-install",
-        ]
-        if let appFile {
-            args += ["--app-file", appFile]
-        }
-        args += [
-            "test",
-            "--output", reportDir,
-            "--flatten",
-            "--wait-for-idle-timeout", "0",
-            "--artifacts", runnerArtifactMode(for: snapshot),
-        ]
-        if failFast {
-            args += ["--fail-fast"]
-        }
-        if keepAlive {
-            args += ["--keep-alive"]
-        }
-        args += tempFlowPaths
 
         // Keep-alive sessions block waiting for SIGINT; a normal cap would
         // kill them prematurely. Use an effectively-infinite timeout then.
         let effectiveTimeout: UInt64 = keepAlive ? 60 * 60 * 24 : timeoutSeconds
 
-        let outcome = await runWithStatusBarCleanup(udid: udid) {
+        let outcome = await runWithStatusBarCleanup(
+            udid: udid,
+            clear: { await platform.restoreAfterCapture(deviceID: $0) }
+        ) {
             await RunnerExecution.run(RunnerExecution.Request(
                 executable: runnerBin,
                 arguments: Array(args.dropFirst()),
@@ -455,7 +434,7 @@ public enum RunnerSession {
 
     static func runWithStatusBarCleanup<T>(
         udid: String,
-        clear: (String) async -> Void = clearStatusBar,
+        clear: (String) async -> Void,
         operation: () async -> T
     ) async -> T {
         let result = await operation()
@@ -463,8 +442,31 @@ public enum RunnerSession {
         return result
     }
 
-    private static func clearStatusBar(udid: String) async {
-        _ = try? await shell("xcrun simctl status_bar \(udid) clear")
+    /// Builds the full runner argv (binary path first). Global flags go before
+    /// `test`, test flags after; the platform supplies its own pieces of each.
+    static func runnerArguments(
+        runnerBin: String,
+        platform: any DevicePlatform,
+        udid: String,
+        appFile: String?,
+        reportDir: String,
+        snapshot: String,
+        failFast: Bool = false,
+        keepAlive: Bool,
+        flowPaths: [String]
+    ) -> [String] {
+        var args = [runnerBin] + platform.runnerGlobalArguments(deviceID: udid, appFile: appFile)
+        args += ["test", "--output", reportDir, "--flatten"]
+        args += platform.runnerTestArguments()
+        args += ["--artifacts", runnerArtifactMode(for: snapshot)]
+        if failFast {
+            args += ["--fail-fast"]
+        }
+        if keepAlive {
+            args += ["--keep-alive"]
+        }
+        args += flowPaths
+        return args
     }
 
     /// Maps the CLI-facing snapshot mode to the runner's `--artifacts` value.

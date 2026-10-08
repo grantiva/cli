@@ -64,3 +64,38 @@ public enum SimulatorUDID {
         return trimmed
     }
 }
+
+/// Shape validation for any device identifier Grantiva accepts: a simulator
+/// UDID or an adb serial. Use this where a command can target either
+/// platform; keep `SimulatorUDID.validate` where only a simulator makes sense.
+public enum DeviceID {
+    public static func isSimulatorUDID(_ value: String) -> Bool {
+        SimulatorUDID.isWellFormed(value)
+    }
+
+    /// adb serials: `emulator-NNNN`, a hardware serial (letters, digits, `_`,
+    /// `-`, `.`), or `host:port`. One token, no whitespace, no shell
+    /// metacharacters.
+    public static func isADBSerial(_ value: String) -> Bool {
+        guard !value.isEmpty, value.count <= 64 else { return false }
+        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_-.:"))
+        guard value.unicodeScalars.allSatisfy({ allowed.contains($0) }) else { return false }
+        guard value.first!.isLetter || value.first!.isNumber else { return false }
+        return true
+    }
+
+    public static func validate(_ value: String, flag: String = "--udid") throws -> String {
+        let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            throw GrantivaError.invalidArgument(
+                "\(flag) is empty. Pass a simulator UDID or an adb serial — if this came from a shell variable, it was unset."
+            )
+        }
+        guard isSimulatorUDID(trimmed) || isADBSerial(trimmed) else {
+            throw GrantivaError.invalidArgument(
+                "\(flag) \(trimmed) is neither a simulator UDID (8-4-4-4-12 hex) nor an adb serial (for example emulator-5554)."
+            )
+        }
+        return trimmed
+    }
+}

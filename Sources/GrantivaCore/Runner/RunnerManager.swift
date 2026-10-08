@@ -22,6 +22,15 @@ public struct RunnerManager: Sendable, Decodable {
 extension RunnerManager {
     public static let runnerVersion = "1.1.18-grantiva.7"
 
+    /// What the version file holds. Bump the suffix whenever the tarball
+    /// layout changes without a runner rebuild, so `installIfNeeded` sees a
+    /// mismatch and re-extracts.
+    public static let installStamp = runnerVersion + "+android-drivers"
+
+    static func embeddedTarballURL(arch: String) -> URL? {
+        Bundle.module.url(forResource: "grantiva-runner-\(arch)", withExtension: "tar.gz")
+    }
+
     static let baseDir: String = {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         return "\(home)/.grantiva/runner"
@@ -39,14 +48,14 @@ extension RunnerManager {
         "\(baseDir)/cache"
     }()
 
-    /// Returns the resource name for the current CPU architecture.
-    private static var archResourceName: String {
+    /// Returns the tarball arch suffix for the current CPU architecture.
+    private static var currentArch: String {
         #if arch(arm64)
-        return "grantiva-runner-arm64"
+        return "arm64"
         #elseif arch(x86_64)
-        return "grantiva-runner-amd64"
+        return "amd64"
         #else
-        return "grantiva-runner-arm64"
+        return "arm64"
         #endif
     }
 
@@ -58,12 +67,12 @@ extension RunnerManager {
             if fm.fileExists(atPath: binaryPath),
                let versionData = fm.contents(atPath: versionFilePath),
                let version = String(data: versionData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
-               version == runnerVersion {
+               version == installStamp {
                 return
             }
 
             // Extract from embedded resource (arch-specific)
-            guard let tarURL = Bundle.module.url(forResource: archResourceName, withExtension: "tar.gz") else {
+            guard let tarURL = embeddedTarballURL(arch: currentArch) else {
                 throw GrantivaError.runnerNotFound
             }
 
@@ -72,7 +81,7 @@ extension RunnerManager {
                 binaryPath: binaryPath,
                 versionFilePath: versionFilePath,
                 cacheDir: cacheDir,
-                version: runnerVersion
+                version: installStamp
             ) { destination in
                 let process = Process()
                 process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")

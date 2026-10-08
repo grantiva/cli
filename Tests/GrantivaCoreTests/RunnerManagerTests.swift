@@ -51,6 +51,33 @@ final class RunnerManagerTests: XCTestCase {
         }
         return paths
     }
+
+    func testEmbeddedTarballContainsTheUIAutomator2APKs() throws {
+        for arch in ["arm64", "amd64"] {
+            let url = try XCTUnwrap(RunnerManager.embeddedTarballURL(arch: arch))
+            let listing = try listTarball(url)
+            XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-v9.11.1.apk"), arch)
+            XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-debug-androidTest.apk"), arch)
+            XCTAssertFalse(listing.contains { $0.hasPrefix("./drivers/android/devicelab") }, "only the UIA2 APKs ship: \(arch)")
+        }
+    }
+
+    func testInstallStampChangesWhenDriversChangeButRunnerVersionDoesNot() {
+        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.18-grantiva.7")
+        XCTAssertEqual(RunnerManager.installStamp, "1.1.18-grantiva.7+android-drivers")
+    }
+
+    private func listTarball(_ url: URL) throws -> [String] {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        process.arguments = ["-tzf", url.path]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        try process.run()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        return String(decoding: data, as: UTF8.self).split(separator: "\n").map(String.init)
+    }
 }
 
 private struct Paths {

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. Android is resolved and validated but not yet runnable; it lands in the next two releases. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
+- `grantiva-android.yml` is recognised as the Android config file. A config file that exists but does not parse is now an error naming the file and the YAML position, instead of being silently ignored.
+- The embedded runner tarball ships the UIAutomator2 driver APKs. Existing installs re-extract it once on first use; the WebDriverAgent build cache is kept.
+
+### Changed
+- Device, build, and runner-argument handling moved behind a `DevicePlatform` abstraction. iOS behaviour is unchanged.
+- An empty or comments-only config file loads as defaults, as before. A config file with a YAML error is reported with its file name and position.
+- A directory with both an Xcode project (or workspace) and a root `settings.gradle`/`settings.gradle.kts`, and no `grantiva.yml`, now needs `--platform ios` (or `GRANTIVA_PLATFORM=ios`). Before, it ran as iOS without asking. Kotlin Multiplatform and Compose Multiplatform repos with no config file are the likely case: a root `settings.gradle.kts` with the iOS app in a subdirectory. React Native and Flutter keep their projects under `ios/` and `android/`, so top-level detection still sees them as iOS.
+- `grantiva init` in a directory whose only project marker is a Gradle settings file now reports that Android support arrives in the next release. Pass `--platform ios` to write `grantiva.yml` anyway.
+- Any command that resolves to Android fails with "Android support arrives in the next release" instead of running. That covers `--platform android`, `GRANTIVA_PLATFORM=android`, a lone `grantiva-android.yml`, and a Gradle-only directory.
+
 ## 2.0.1 — 2026-10-07
 
 ### Changed

@@ -185,6 +185,7 @@ struct CICommand: AsyncParsableCommand {
 
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
+        @OptionGroup var platformOptions: PlatformOptions
 
         @Option(name: .long, help: "Scheme to build")
         var scheme: String?
@@ -195,7 +196,8 @@ struct CICommand: AsyncParsableCommand {
         @Option(name: .long, help: "Bundle identifier")
         var bundleId: String?
 
-        var simulatorManager: SimulatorManager = .live
+        /// Empty means "make one from the resolved platform"; tests inject a fake.
+        var devicePlatform = InjectedDevicePlatform()
         var runnerManager: RunnerManager = .live
         var imageDiffer: ImageDiffer = .live
 
@@ -208,7 +210,8 @@ struct CICommand: AsyncParsableCommand {
         }
 
         func run() async throws {
-            let config = try? GrantivaConfig.load()
+            let (platform, config) = try platformOptions.loadConfig()
+            let device = devicePlatform.make(platform)
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()
@@ -278,10 +281,10 @@ struct CICommand: AsyncParsableCommand {
                 rlog("Runner ready")
 
                 // 1. Boot → Build → Install → Launch → Capture
-                rlog("Booting simulator: \(resolved.simulator)")
-                let device = try await simulatorManager.boot(nameOrUDID: resolved.simulator)
-                rlog("Simulator booted: \(device.name) (\(device.udid))")
-                let destination = "platform=iOS Simulator,id=\(device.udid)"
+                let deviceNoun = platform == .ios ? "simulator" : "emulator"
+                rlog("Booting \(deviceNoun): \(resolved.simulator)")
+                let booted = try await device.bootDevice(named: resolved.simulator)
+                rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
 
                 var productPath: String?
 
@@ -291,21 +294,18 @@ struct CICommand: AsyncParsableCommand {
                     rlog("Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
                     productPath = resolvedBinary.appPath
                 } else {
-                    guard let buildScheme = resolved.scheme else {
-                        throw GrantivaError.invalidArgument(
-                            "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-                        )
+                    // A missing scheme is rejected by the platform's build with
+                    // the same message the command used to throw here.
+                    if let buildScheme = resolved.scheme {
+                        rlog("Building \(buildScheme)...")
                     }
 
-                    rlog("Building \(buildScheme)...")
-
-                    let buildResult = try await XcodeBuildRunner().build(
-                        scheme: buildScheme,
-                        workspace: resolved.workspace,
-                        project: resolved.project,
-                        destination: destination,
-                        buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
-                    )
+                    let buildResult = try await device.build(PlatformBuildRequest(
+                        config: config ?? GrantivaConfig(),
+                        resolved: resolved,
+                        deviceID: booted.udid,
+                        extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                    ))
                     rlog("Build finished: success=\(buildResult.success) duration=\(String(format: "%.1fs", buildResult.duration))")
 
                     guard buildResult.success else {
@@ -322,12 +322,10 @@ struct CICommand: AsyncParsableCommand {
                 if !buildOptions.shouldSkipInstall, let bid = resolved.bundleId {
                     if let productPath {
                         rlog("Installing \(bid)...")
-                        try await XcodeBuildRunner().install(
-                            bundleId: bid, productPath: productPath, udid: device.udid
-                        )
+                        try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                     }
                     rlog("Launching \(bid)...")
-                    try await XcodeBuildRunner().launch(bundleId: bid, udid: device.udid)
+                    try await device.launch(appID: bid, deviceID: booted.udid)
                     try await Task.sleep(for: .seconds(2))
                 }
 
@@ -336,16 +334,14 @@ struct CICommand: AsyncParsableCommand {
                     throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
                 }
                 rlog("Capturing \(resolved.screens.count) screen(s)...")
-                let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
-                let expectedPixels = SimulatorProvisionResult.Dimensions(
-                    width: geometry.pixels[0],
-                    height: geometry.pixels[1]
-                )
+                let geometry = try await device.displayGeometry(deviceID: booted.udid)
+                let expectedPixels = geometry.dimensions
 
                 let screenCaptures = try await RunnerSession.run(
                     screens: resolved.screens,
                     bundleId: bid,
-                    udid: device.udid,
+                    udid: booted.udid,
+                    platform: device,
                     runner: runnerManager,
                     outputDir: captureDir,
                     expectedPixels: expectedPixels

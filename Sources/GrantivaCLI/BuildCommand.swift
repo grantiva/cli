@@ -20,6 +20,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     )
 
     @OptionGroup var options: GlobalOptions
+    @OptionGroup var platformOptions: PlatformOptions
 
     @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
     var derivedDataPath: String?
@@ -30,8 +31,12 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Simulator name")
     var simulator: String?
 
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
+
     func run() async throws {
-        let config = try? GrantivaConfig.load()
+        let (platform, config) = try platformOptions.loadConfig()
+        let device = devicePlatform.make(platform)
 
         let resolved = try await ResolvedProject.resolve(
             schemeFlag: scheme,
@@ -46,21 +51,19 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             )
         }
 
-        let device = try await SimulatorManager.live.boot(nameOrUDID: resolved.simulator)
-        let destination = "platform=iOS Simulator,id=\(device.udid)"
+        let booted = try await device.bootDevice(named: resolved.simulator)
 
-        options.note("[grantiva] Building \(buildScheme) for \(device.name)...")
+        options.note("[grantiva] Building \(buildScheme) for \(booted.name)...")
 
-        let result = try await XcodeBuildRunner().build(
-            scheme: buildScheme,
-            workspace: resolved.workspace,
-            project: resolved.project,
-            destination: destination,
-            buildSettings: BuildOptions.xcodeBuildSettings(
+        let result = try await device.build(PlatformBuildRequest(
+            config: config ?? GrantivaConfig(),
+            resolved: resolved,
+            deviceID: booted.udid,
+            extraBuildSettings: BuildOptions.xcodeBuildSettings(
                 derivedDataPath: derivedDataPath,
                 merging: resolved.buildSettings
             )
-        )
+        ))
 
         if options.json {
             Output.line(try JSONOutput.string(result))
@@ -84,6 +87,7 @@ struct InstallCommand: AsyncParsableCommand {
 
     @OptionGroup var options: GlobalOptions
     @OptionGroup var buildOptions: BuildOptions
+    @OptionGroup var platformOptions: PlatformOptions
 
     @Option(name: .long, help: "Scheme to build")
     var scheme: String?
@@ -97,8 +101,12 @@ struct InstallCommand: AsyncParsableCommand {
     @Flag(name: .long, help: "Install the app without launching it.")
     var noLaunch: Bool = false
 
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
+
     func run() async throws {
-        let config = try? GrantivaConfig.load()
+        let (platform, config) = try platformOptions.loadConfig()
+        let device = devicePlatform.make(platform)
 
         let resolvedBinary = try buildOptions.resolveAppBinary()
         defer { resolvedBinary?.cleanup() }
@@ -114,8 +122,7 @@ struct InstallCommand: AsyncParsableCommand {
             appBundleId: appBundleId
         )
 
-        let device = try await SimulatorManager.live.boot(nameOrUDID: resolved.simulator)
-        let destination = "platform=iOS Simulator,id=\(device.udid)"
+        let booted = try await device.bootDevice(named: resolved.simulator)
 
         var productPath: String?
 
@@ -125,21 +132,18 @@ struct InstallCommand: AsyncParsableCommand {
             options.note("[grantiva] Using pre-built binary: \(URL(fileURLWithPath: resolvedBinary.appPath).lastPathComponent)")
             productPath = resolvedBinary.appPath
         } else {
-            guard let buildScheme = resolved.scheme else {
-                throw GrantivaError.invalidArgument(
-                    "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-                )
+            // A missing scheme is rejected by the platform's build with the
+            // same message the command used to throw here.
+            if let buildScheme = resolved.scheme {
+                options.note("[grantiva] Building \(buildScheme) for \(booted.name)...")
             }
 
-            options.note("[grantiva] Building \(buildScheme) for \(device.name)...")
-
-            let result = try await XcodeBuildRunner().build(
-                scheme: buildScheme,
-                workspace: resolved.workspace,
-                project: resolved.project,
-                destination: destination,
-                buildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
-            )
+            let result = try await device.build(PlatformBuildRequest(
+                config: config ?? GrantivaConfig(),
+                resolved: resolved,
+                deviceID: booted.udid,
+                extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+            ))
 
             if !options.json {
                 Output.line(TableFormatter().formatBuild(result))
@@ -161,18 +165,16 @@ struct InstallCommand: AsyncParsableCommand {
             )
         }
 
-        let runner = XcodeBuildRunner()
-
         if let productPath {
             options.note("[grantiva] Installing \(bid)...")
-            try await runner.install(bundleId: bid, productPath: productPath, udid: device.udid)
+            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
         }
 
-        let dataContainerPath = try await runner.dataContainerPath(bundleId: bid, udid: device.udid)
+        let dataContainerPath = try await Self.dataContainerPath(platform: platform, bundleId: bid, deviceID: booted.udid)
 
         let status = try await completeInstall {
             options.note("[grantiva] Launching \(bid)...")
-            try await runner.launch(bundleId: bid, udid: device.udid)
+            try await device.launch(appID: bid, deviceID: booted.udid)
         }
 
         if options.json {
@@ -180,7 +182,7 @@ struct InstallCommand: AsyncParsableCommand {
                 status: status,
                 scheme: resolved.scheme,
                 bundleId: bid,
-                simulator: .init(name: device.name, udid: device.udid),
+                simulator: .init(name: booted.name, udid: booted.udid),
                 appPath: productPath,
                 dataContainerPath: dataContainerPath
             )
@@ -189,16 +191,27 @@ struct InstallCommand: AsyncParsableCommand {
             Output.line(Self.completionMessage(
                 status: .installed,
                 bundleId: bid,
-                deviceName: device.name,
+                deviceName: booted.name,
                 dataContainerPath: dataContainerPath
             ))
         } else {
             Output.line(Self.completionMessage(
                 status: .launched,
                 bundleId: bid,
-                deviceName: device.name,
+                deviceName: booted.name,
                 dataContainerPath: dataContainerPath
             ))
+        }
+    }
+
+    /// DevicePlatform has no data-container call yet; on iOS this is the same
+    /// `simctl get_app_container ... data` lookup the command always did.
+    static func dataContainerPath(platform: Platform, bundleId: String, deviceID: String) async throws -> String {
+        switch platform {
+        case .ios:
+            return try await XcodeBuildRunner().dataContainerPath(bundleId: bundleId, udid: deviceID)
+        case .android:
+            throw GrantivaError.invalidArgument("Reading the app data container is not supported on Android yet.")
         }
     }
 
