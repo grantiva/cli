@@ -175,6 +175,9 @@ struct CICommand: AsyncParsableCommand {
         subcommands: [CIRunCommand.self]
     )
 
+    /// Android never reaches the remote baseline store; `ci run` refuses it up front.
+    static let androidLocalOnlyMessage = DiffCommand.androidLocalOnlyMessage
+
     // MARK: - ci run
 
     struct CIRunCommand: AsyncParsableCommand {
@@ -203,6 +206,9 @@ struct CICommand: AsyncParsableCommand {
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
+            guard platform == .ios else {
+                throw GrantivaError.invalidArgument(DiffCommand.androidLocalOnlyMessage)
+            }
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             let device = try devicePlatform.make(platform, android: target.androidOptions)
             let captureDir = ".grantiva/captures"

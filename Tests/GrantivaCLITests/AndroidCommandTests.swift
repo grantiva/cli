@@ -124,4 +124,34 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertTrue(fake.calls.contains("resolveBinary(\(apk))"), "\(fake.calls)")
         XCTAssertTrue(fake.calls.contains("install(com.fake.binary,\(apk))"), "\(fake.calls)")
     }
+
+    func testCIRunOnAndroidFailsWithTheLocalOnlyMessageBeforeAnyDeviceWork() async throws {
+        try """
+        module: app
+        screens:
+          - name: Home
+            path: launch
+        """.write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        var command = try CICommand.CIRunCommand.parse(["--no-build", "--application-id", "com.fake"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains(DiffCommand.androidLocalOnlyMessage), "\(error)")
+            XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
+        }
+    }
+
+    func testRunOnAndroidCapturesUnderTheAndroidDirectory() async throws {
+        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        let failureShots = (try? FileManager.default.contentsOfDirectory(atPath: ".grantiva/captures/android")) ?? []
+        XCTAssertFalse(failureShots.isEmpty, "the failure capture directory is the Android one")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/\(failureShots[0])"), "nothing lands in the iOS directory")
+    }
 }

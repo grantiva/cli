@@ -62,7 +62,7 @@ struct DiffCommand: AsyncParsableCommand {
                 throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
             }
 
-            let outputDir = ".grantiva/captures"
+            let outputDir = DiffCommand.captureDirectory(for: platform)
             let start = Date()
 
             var booted: BootedDevice
@@ -215,8 +215,8 @@ struct DiffCommand: AsyncParsableCommand {
                 platform = (try? platformOptions.resolve()) ?? .ios
                 config = try GrantivaConfig.loadIfPresent(platform: platform)
             }
-            let captureDir = ".grantiva/captures"
-            let diffDir = ".grantiva/captures/diffs"
+            let captureDir = DiffCommand.captureDirectory(for: platform)
+            let diffDir = "\(captureDir)/diffs"
             let start = Date()
             var invocationCaptures: [ScreenCapture]?
 
@@ -322,7 +322,7 @@ struct DiffCommand: AsyncParsableCommand {
 
             let diffConfig = config?.diff ?? .init()
             let fm = FileManager.default
-            let store = try await DiffCommand.resolveBaselineStore()
+            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
             let differ = imageDiffer
 
             // Create diffs directory
@@ -386,14 +386,16 @@ struct DiffCommand: AsyncParsableCommand {
         )
 
         @OptionGroup var options: GlobalOptions
+        @OptionGroup var platformOptions: PlatformOptions
 
         @Argument(help: "Screen names to approve (default: all)")
         var screenNames: [String] = []
 
         func run() async throws {
-            let captureDir = ".grantiva/captures"
+            let platform = (try? platformOptions.resolve()) ?? .ios
+            let captureDir = DiffCommand.captureDirectory(for: platform)
             let fm = FileManager.default
-            let store = try await DiffCommand.resolveBaselineStore()
+            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
 
             guard fm.fileExists(atPath: captureDir) else {
                 throw GrantivaError.noCaptures(captureDir)
@@ -590,9 +592,30 @@ struct DiffCommand: AsyncParsableCommand {
         return approved
     }
 
-    /// Resolves the baseline store: remote (via RangeClient) if authenticated, local otherwise.
-    static func resolveBaselineStore() async throws -> BaselineStore {
-        if let credentials = AuthStore.resolveCredentials() {
+    static let androidLocalOnlyMessage =
+        "Android baselines are local only until the Grantiva backend supports platforms; use local baselines"
+
+    static func captureDirectory(for platform: Platform) -> String {
+        platform == .ios ? ".grantiva/captures" : ".grantiva/captures/android"
+    }
+
+    static func baselineDirectory(for platform: Platform) -> String {
+        platform == .ios ? ".grantiva/baselines" : ".grantiva/baselines/android"
+    }
+
+    /// Remote when authenticated, local otherwise; Android is always local
+    /// and says so once when a login would otherwise have picked remote.
+    static func resolveBaselineStore(
+        platform: Platform,
+        credentials: AuthCredentials? = AuthStore.resolveCredentials()
+    ) async throws -> BaselineStore {
+        if platform == .android {
+            if credentials != nil {
+                GrantivaLog.logger.warning("\(androidLocalOnlyMessage)")
+            }
+            return .local(directory: baselineDirectory(for: .android))
+        }
+        if let credentials {
             let client = try RangeClient(apiKey: credentials.apiKey, baseURL: credentials.baseURL)
             let projectId = try await ProjectIdentifier.resolve()
             return client.asBaselineStore(project: projectId.projectSlug, branch: projectId.currentBranch, baseURL: credentials.baseURL)

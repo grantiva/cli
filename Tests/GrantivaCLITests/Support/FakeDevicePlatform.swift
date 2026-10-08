@@ -38,7 +38,10 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         record("resolveBinary(\(path))"); return ResolvedBinary(appPath: path, tempDir: nil, appID: "com.fake.binary")
     }
     func defaultDevice() async throws -> BootedDevice { record("defaultDevice"); return BootedDevice(udid: bootedID, name: bootedName) }
-    func screenshot(deviceID: String, to path: String) async throws { record("screenshot") }
+    func screenshot(deviceID: String, to path: String) async throws {
+        record("screenshot")
+        FileManager.default.createFile(atPath: path, contents: Data())
+    }
     func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
         record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
     }

@@ -114,7 +114,7 @@ struct RunCommand: AsyncParsableCommand {
         // screenshots go there and nothing is written to ./.grantiva.
         let captureDir = reportDir.map { dir in
             (dir.hasPrefix("/") ? dir : FileManager.default.currentDirectoryPath + "/" + dir) + "/captures"
-        } ?? ".grantiva/captures"
+        } ?? DiffCommand.captureDirectory(for: platform)
 
         // Resolve app binary first (if --app-file provided)
         let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
