@@ -77,4 +77,12 @@ final class SimulatorUDIDTests: XCTestCase {
             XCTAssertTrue("\(error)".contains("not a simulator UDID"))
         }
     }
+
+    func testADBSerialIsASCIIOnly() {
+        XCTAssertTrue(DeviceID.isADBSerial("emulator-5554"))
+        XCTAssertTrue(DeviceID.isADBSerial("192.168.1.10:5555"))
+        XCTAssertFalse(DeviceID.isADBSerial("émulator-5554"))
+        XCTAssertFalse(DeviceID.isADBSerial("-5554"))
+        XCTAssertFalse(DeviceID.isADBSerial("emu\nlator"))
+    }
 }
