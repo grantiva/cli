@@ -43,6 +43,29 @@ final class PlatformOptionTests: XCTestCase {
         XCTAssertNil(config)
     }
 
+    private static let androidNotYet =
+        "Android support arrives in the next release. Pass --platform ios to run this directory as an iOS project."
+
+    func testGradleOnlyDirectoryFailsCleanlyUntilAndroidShips() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try "".write(to: dir.appendingPathComponent("settings.gradle.kts"), atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])) { error in
+            XCTAssertTrue("\(error)".contains(Self.androidNotYet), "\(error)")
+        }
+    }
+
+    func testAndroidConfigOnlyDirectoryFailsCleanlyUntilAndroidShips() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try "app_id: com.example\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])) { error in
+            XCTAssertTrue("\(error)".contains(Self.androidNotYet), "\(error)")
+        }
+    }
+
     func testEnvironmentPlatformWithoutConfigThrowsWhenOtherConfigExists() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

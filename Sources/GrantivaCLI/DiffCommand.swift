@@ -214,7 +214,19 @@ struct DiffCommand: AsyncParsableCommand {
         var imageDiffer: ImageDiffer = .live
 
         func run() async throws {
-            let (platform, config) = try platformOptions.loadConfig()
+            // Only --capture touches a device, so only it resolves a platform.
+            // A bare compare reads grantiva.yml as it always did and is not
+            // blocked by an ambiguous directory or a bad GRANTIVA_PLATFORM.
+            let platform: Platform
+            let config: GrantivaConfig?
+            if capture {
+                let loaded = try platformOptions.loadConfig()
+                platform = loaded.0
+                config = loaded.1
+            } else {
+                platform = .ios
+                config = try GrantivaConfig.loadIfPresent(platform: .ios)
+            }
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()

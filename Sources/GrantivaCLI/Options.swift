@@ -163,6 +163,13 @@ struct PlatformOptions: ParsableArguments {
                 )
             }
         }
+        // DevicePlatformFactory traps on Android until AndroidPlatform lands;
+        // stop here with a message instead of crashing.
+        if resolved == .android {
+            throw GrantivaError.invalidArgument(
+                "Android support arrives in the next release. Pass --platform ios to run this directory as an iOS project."
+            )
+        }
         let config = try GrantivaConfig.loadIfPresent(platform: resolved, from: directory)
         return (resolved, config)
     }
