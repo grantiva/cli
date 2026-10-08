@@ -25,27 +25,19 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
     var derivedDataPath: String?
 
-    @Option(name: .long, help: "Scheme to build")
-    var scheme: String?
-
-    @Option(name: .long, help: "Simulator name")
-    var simulator: String?
+    @OptionGroup var target: TargetOptions
 
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = try devicePlatform.make(platform)
+        try target.checkFlags(for: platform, derivedDataPath: derivedDataPath)
+        let device = try devicePlatform.make(platform, android: target.androidOptions)
 
-        let resolved = try await ResolvedProject.resolve(
-            schemeFlag: scheme,
-            simulatorFlag: simulator,
-            config: config,
-            skipBuild: false
-        )
+        let resolved = try await target.resolve(platform: platform, config: config, skipBuild: false, appID: nil)
 
-        guard let buildScheme = resolved.scheme else {
+        if platform == .ios, resolved.scheme == nil {
             throw GrantivaError.invalidArgument(
                 "No scheme specified. Pass --scheme or set it in grantiva.yml."
             )
@@ -53,15 +45,14 @@ struct BuildOnlyCommand: AsyncParsableCommand {
 
         let booted = try await device.bootDevice(named: resolved.simulator)
 
-        options.note("[grantiva] Building \(buildScheme) for \(booted.name)...")
+        options.note("[grantiva] Building \(resolved.scheme ?? ":\(resolved.android?.module ?? "app"):assemble\(resolved.android?.variant ?? "debug")") for \(booted.name)...")
 
         let result = try await device.build(PlatformBuildRequest(
             config: config ?? GrantivaConfig(),
             resolved: resolved,
             deviceID: booted.udid,
-            extraBuildSettings: BuildOptions.xcodeBuildSettings(
-                derivedDataPath: derivedDataPath,
-                merging: resolved.buildSettings
+            extraBuildSettings: target.extraBuildSettings(
+                platform: platform, derivedDataPath: derivedDataPath, resolved: resolved
             )
         ))
 
@@ -88,15 +79,7 @@ struct InstallCommand: AsyncParsableCommand {
     @OptionGroup var options: GlobalOptions
     @OptionGroup var buildOptions: BuildOptions
     @OptionGroup var platformOptions: PlatformOptions
-
-    @Option(name: .long, help: "Scheme to build")
-    var scheme: String?
-
-    @Option(name: .long, help: "Simulator name")
-    var simulator: String?
-
-    @Option(name: .long, help: "Bundle identifier")
-    var bundleId: String?
+    @OptionGroup var target: TargetOptions
 
     @Flag(name: .long, help: "Install the app without launching it.")
     var noLaunch: Bool = false
@@ -106,25 +89,22 @@ struct InstallCommand: AsyncParsableCommand {
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = try devicePlatform.make(platform)
+        try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+        let device = try devicePlatform.make(platform, android: target.androidOptions)
 
-        let resolvedBinary = try buildOptions.resolveAppBinary()
+        let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
         defer { resolvedBinary?.cleanup() }
 
-        let appBundleId = resolvedBinary.flatMap { AppBinaryResolver.bundleId(from: $0.appPath) }
+        let appBundleId = resolvedBinary?.appID
 
-        let resolved = try await ResolvedProject.resolve(
-            schemeFlag: scheme,
-            simulatorFlag: simulator,
-            bundleIdFlag: bundleId,
-            config: config,
-            skipBuild: buildOptions.shouldSkipBuild,
-            appBundleId: appBundleId
+        let resolved = try await target.resolve(
+            platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
         )
 
         let booted = try await device.bootDevice(named: resolved.simulator)
 
         var productPath: String?
+        var builtAppID: String?
 
         if buildOptions.shouldSkipInstall {
             options.note("[grantiva] Skipping build and install (--no-build)")
@@ -142,7 +122,9 @@ struct InstallCommand: AsyncParsableCommand {
                 config: config ?? GrantivaConfig(),
                 resolved: resolved,
                 deviceID: booted.udid,
-                extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                extraBuildSettings: target.extraBuildSettings(
+                    platform: platform, derivedDataPath: buildOptions.derivedDataPath, resolved: resolved
+                )
             ))
 
             if !options.json {
@@ -157,11 +139,14 @@ struct InstallCommand: AsyncParsableCommand {
             }
 
             productPath = result.productPath
+            builtAppID = result.applicationId
         }
 
-        guard let bid = resolved.bundleId else {
+        guard let bid = resolved.bundleId ?? builtAppID else {
             throw GrantivaError.invalidArgument(
-                "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."
+                platform == .ios
+                    ? "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."
+                    : TargetOptions.appIDMessage(for: .android)
             )
         }
 

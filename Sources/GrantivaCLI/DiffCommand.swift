@@ -38,33 +38,24 @@ struct DiffCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
         @OptionGroup var platformOptions: PlatformOptions
-
-        @Option(name: .long, help: "Scheme to build")
-        var scheme: String?
-
-        @Option(name: .long, help: "Simulator name")
-        var simulator: String?
-
-        @Option(name: .long, help: "Bundle identifier")
-        var bundleId: String?
+        @OptionGroup var target: TargetOptions
 
         /// Empty means "make one from the resolved platform"; tests inject a fake.
         var devicePlatform = InjectedDevicePlatform()
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
-            let device = try devicePlatform.make(platform)
+            try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+            let device = try devicePlatform.make(platform, android: target.androidOptions)
 
             // Resolve the app binary first (if provided) so we can derive bundle ID
-            let resolvedBinary = try buildOptions.resolveAppBinary()
+            let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
             defer { resolvedBinary?.cleanup() }
 
-            let appBundleId = resolvedBinary.flatMap { AppBinaryResolver.bundleId(from: $0.appPath) }
+            let appBundleId = resolvedBinary?.appID
 
-            let resolved = try await ResolvedProject.resolve(
-                schemeFlag: scheme, simulatorFlag: simulator, bundleIdFlag: bundleId, config: config,
-                skipBuild: buildOptions.shouldSkipBuild,
-                appBundleId: appBundleId
+            let resolved = try await target.resolve(
+                platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
             )
 
             guard !resolved.screens.isEmpty else {
@@ -75,6 +66,7 @@ struct DiffCommand: AsyncParsableCommand {
             let start = Date()
 
             var booted: BootedDevice
+            var builtAppID: String?
 
             if !buildOptions.shouldSkipInstall {
                 // Full lifecycle: boot → build → install → launch → capture
@@ -98,7 +90,9 @@ struct DiffCommand: AsyncParsableCommand {
                         config: config ?? GrantivaConfig(),
                         resolved: resolved,
                         deviceID: booted.udid,
-                        extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                        extraBuildSettings: target.extraBuildSettings(
+                            platform: platform, derivedDataPath: buildOptions.derivedDataPath, resolved: resolved
+                        )
                     ))
 
                     guard buildResult.success else {
@@ -110,10 +104,11 @@ struct DiffCommand: AsyncParsableCommand {
                         throw ExitCode.failure
                     }
                     productPath = buildResult.productPath
+                    builtAppID = buildResult.applicationId
                 }
 
                 // Install and launch
-                if let bid = resolved.bundleId {
+                if let bid = resolved.bundleId ?? builtAppID {
                     if let productPath {
                         try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                     }
@@ -126,19 +121,21 @@ struct DiffCommand: AsyncParsableCommand {
                 // --no-build still honors an explicit target. This matters on
                 // hosts where an iPad is already booted while the evidence
                 // command asks for an iPhone by name/UDID.
-                booted = if let simulator {
-                    try await device.bootDevice(named: simulator)
+                booted = if let explicit = target.simulator ?? target.device ?? target.emulator {
+                    try await device.bootDevice(named: explicit)
                 } else {
-                    try await DiffCommand.currentlyBootedDevice(platform: platform)
+                    try await device.defaultDevice()
                 }
             }
 
-            guard let bid = resolved.bundleId else {
-                throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
+            guard let bid = resolved.bundleId ?? builtAppID else {
+                throw GrantivaError.invalidArgument(
+                    platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
+                )
             }
 
             let geometry = try await device.displayGeometry(deviceID: booted.udid)
-            let target = CaptureSimulatorTarget(
+            let captureTarget = CaptureSimulatorTarget(
                 name: booted.name,
                 udid: booted.udid,
                 geometry: DiffCommand.simulatorGeometry(geometry)
@@ -152,7 +149,7 @@ struct DiffCommand: AsyncParsableCommand {
                 udid: booted.udid,
                 platform: device,
                 outputDir: outputDir,
-                expectedPixels: target.pixelDimensions
+                expectedPixels: captureTarget.pixelDimensions
             )
 
             // Print step-by-step results
@@ -174,7 +171,7 @@ struct DiffCommand: AsyncParsableCommand {
                 screens: captures,
                 directory: outputDir,
                 duration: Date().timeIntervalSince(start),
-                simulator: target
+                simulator: captureTarget
             )
 
             if options.json {
@@ -196,15 +193,7 @@ struct DiffCommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
         @OptionGroup var platformOptions: PlatformOptions
-
-        @Option(name: .long, help: "Scheme to build")
-        var scheme: String?
-
-        @Option(name: .long, help: "Simulator name")
-        var simulator: String?
-
-        @Option(name: .long, help: "Bundle identifier")
-        var bundleId: String?
+        @OptionGroup var target: TargetOptions
 
         @Flag(name: .long, help: "Capture screenshots before comparing (runs full lifecycle)")
         var capture = false
@@ -214,18 +203,17 @@ struct DiffCommand: AsyncParsableCommand {
         var imageDiffer: ImageDiffer = .live
 
         func run() async throws {
-            // Only --capture touches a device, so only it resolves a platform.
-            // A bare compare reads grantiva.yml as it always did and is not
-            // blocked by an ambiguous directory or a bad GRANTIVA_PLATFORM.
+            // Only --capture touches a device, so only it insists on a platform.
+            // A bare compare reads the resolved platform's config, falling back
+            // to grantiva.yml, and is not blocked by an ambiguous directory or
+            // a bad GRANTIVA_PLATFORM.
             let platform: Platform
             let config: GrantivaConfig?
             if capture {
-                let loaded = try platformOptions.loadConfig()
-                platform = loaded.0
-                config = loaded.1
+                (platform, config) = try platformOptions.loadConfig()
             } else {
-                platform = .ios
-                config = try GrantivaConfig.loadIfPresent(platform: .ios)
+                platform = (try? platformOptions.resolve()) ?? .ios
+                config = try GrantivaConfig.loadIfPresent(platform: platform)
             }
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
@@ -234,23 +222,24 @@ struct DiffCommand: AsyncParsableCommand {
 
             // Optionally capture first (with full lifecycle)
             if capture {
-                let resolvedBinary = try buildOptions.resolveAppBinary()
+                try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+                let device = try devicePlatform.make(platform, android: target.androidOptions)
+
+                let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
                 defer { resolvedBinary?.cleanup() }
 
-                let appBundleId = resolvedBinary.flatMap { AppBinaryResolver.bundleId(from: $0.appPath) }
+                let appBundleId = resolvedBinary?.appID
 
-                let resolved = try await ResolvedProject.resolve(
-                    schemeFlag: scheme, simulatorFlag: simulator, bundleIdFlag: bundleId, config: config,
-                    skipBuild: buildOptions.shouldSkipBuild,
-                    appBundleId: appBundleId
+                let resolved = try await target.resolve(
+                    platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
                 )
 
                 guard !resolved.screens.isEmpty else {
                     throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
                 }
 
-                let device = try devicePlatform.make(platform)
                 let booted = try await device.bootDevice(named: resolved.simulator)
+                var builtAppID: String?
 
                 if !buildOptions.shouldSkipInstall {
                     var productPath: String?
@@ -269,7 +258,9 @@ struct DiffCommand: AsyncParsableCommand {
                             config: config ?? GrantivaConfig(),
                             resolved: resolved,
                             deviceID: booted.udid,
-                            extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                            extraBuildSettings: target.extraBuildSettings(
+                                platform: platform, derivedDataPath: buildOptions.derivedDataPath, resolved: resolved
+                            )
                         ))
 
                         guard buildResult.success else {
@@ -281,9 +272,10 @@ struct DiffCommand: AsyncParsableCommand {
                             throw ExitCode.failure
                         }
                         productPath = buildResult.productPath
+                        builtAppID = buildResult.applicationId
                     }
 
-                    if let bid = resolved.bundleId {
+                    if let bid = resolved.bundleId ?? builtAppID {
                         if let productPath {
                             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                         }
@@ -292,8 +284,10 @@ struct DiffCommand: AsyncParsableCommand {
                     }
                 }
 
-                guard let bid = resolved.bundleId else {
-                    throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
+                guard let bid = resolved.bundleId ?? builtAppID else {
+                    throw GrantivaError.invalidArgument(
+                        platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
+                    )
                 }
 
                 options.note("Capturing \(resolved.screens.count) screen(s)...")
@@ -604,19 +598,6 @@ struct DiffCommand: AsyncParsableCommand {
             return client.asBaselineStore(project: projectId.projectSlug, branch: projectId.currentBranch, baseURL: credentials.baseURL)
         }
         return .local()
-    }
-
-    /// `diff capture --no-build` without `--simulator` captures whatever device
-    /// is already booted. DevicePlatform has no "current device" call yet, so
-    /// this stays on simctl for iOS.
-    static func currentlyBootedDevice(platform: Platform) async throws -> BootedDevice {
-        switch platform {
-        case .ios:
-            let device = try await SimulatorManager.live.bootedDevice()
-            return BootedDevice(udid: device.udid, name: device.name)
-        case .android:
-            throw GrantivaError.invalidArgument("--no-build on Android needs --simulator to name the device.")
-        }
     }
 
     /// The capture report's simulator geometry, derived the same way
