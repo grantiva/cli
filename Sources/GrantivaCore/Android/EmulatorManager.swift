@@ -65,7 +65,7 @@ public struct EmulatorManager: Sendable {
         try await execute("\(shellQuoted(sdk.emulator)) -list-avds")
             .components(separatedBy: "\n")
             .map { $0.trimmingCharacters(in: .whitespaces) }
-            .filter { !$0.isEmpty && !$0.hasPrefix("INFO") && !$0.hasPrefix("WARNING") }
+            .filter { !$0.isEmpty && !$0.hasPrefix("INFO") && !$0.hasPrefix("WARNING") && !$0.hasPrefix("ERROR") }
     }
 
     public static func choosePort(used: [String]) -> Int? {
@@ -86,15 +86,23 @@ public struct EmulatorManager: Sendable {
         let devices = try await adb.devices()
         let broken = devices.filter { !$0.isUsable }
         let running = devices.filter { $0.isEmulator && $0.isUsable }
+        // Every emulator's AVD name is read, whatever its state: one that is
+        // still booting shows as `offline` and must not be booted a second time.
         var names: [String: String] = [:]
-        for device in running {
-            names[device.serial] = (try? await adb.avdName(serial: device.serial)) ?? device.serial
+        for device in devices where device.isEmulator {
+            names[device.serial] = try? await adb.avdName(serial: device.serial)
         }
+        // A booting emulator answers on its console (so its name is known)
+        // while adb still reports it offline.
+        let booting = devices.filter { $0.isEmulator && $0.state == "offline" && names[$0.serial] != nil }
         let brokenNote = broken.isEmpty ? "" : " Skipped: " + broken.map { "\($0.serial) is \($0.state)" }.joined(separator: ", ") + "."
 
         if let configured, !configured.isEmpty {
             if let match = running.first(where: { names[$0.serial] == configured }) {
                 return BootedDevice(udid: match.serial, name: configured)
+            }
+            if let starting = booting.first(where: { names[$0.serial] == configured }) {
+                return try await waitForBooting(starting.serial, name: configured)
             }
             let avds = try await listAVDs()
             guard avds.contains(configured) else {
@@ -110,6 +118,15 @@ public struct EmulatorManager: Sendable {
         case 1:
             return BootedDevice(udid: running[0].serial, name: names[running[0].serial] ?? running[0].serial)
         case 0:
+            if booting.count == 1 {
+                return try await waitForBooting(booting[0].serial, name: names[booting[0].serial] ?? booting[0].serial)
+            }
+            if booting.count > 1 {
+                let list = booting.map { "\($0.serial) (\(names[$0.serial] ?? "?"))" }.joined(separator: ", ")
+                throw GrantivaError.invalidArgument(
+                    "Several emulators are still booting: \(list). Pass --emulator <AVD> or --device <serial>."
+                )
+            }
             let avds = try await listAVDs()
             if avds.count == 1 {
                 return try await boot(avd: avds[0])
@@ -127,6 +144,12 @@ public struct EmulatorManager: Sendable {
         }
     }
 
+    private func waitForBooting(_ serial: String, name: String) async throws -> BootedDevice {
+        GrantivaLog.logger.info("Waiting for \(serial) (\(name)) to finish booting")
+        try await waitForBoot(serial: serial)
+        return BootedDevice(udid: serial, name: name)
+    }
+
     /// Boots `avd` on the first free even port and waits for it.
     public func boot(avd: String) async throws -> BootedDevice {
         let used = try await adb.devices().map(\.serial)
@@ -138,15 +161,24 @@ public struct EmulatorManager: Sendable {
         GrantivaLog.logger.info("Booting AVD \(avd) as \(serial)")
         let pid = try spawn(sdk.emulator, arguments)
         try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid))
-        try await waitForBoot(serial: serial)
+        try await waitForBoot(serial: serial, pid: pid)
         return BootedDevice(udid: serial, name: avd)
     }
 
     /// Done when `sys.boot_completed` is 1, `pm path android` answers, and the
-    /// keyguard has been dismissed.
-    public func waitForBoot(serial: String) async throws {
+    /// keyguard has been dismissed. With `pid` (an emulator Grantiva spawned),
+    /// a process that exits early fails at once and its ledger record is removed.
+    public func waitForBoot(serial: String, pid: Int32? = nil) async throws {
+        let log = "\(provenance.directory)/emulator-\(serial.replacingOccurrences(of: "emulator-", with: "")).log"
         let deadline = Date().addingTimeInterval(bootTimeout)
         while Date() < deadline {
+            if let pid, !Self.isAlive(pid) {
+                try? provenance.remove(serial: serial)
+                throw GrantivaError.commandFailed(
+                    "The emulator process for \(serial) (pid \(pid)) exited before it finished booting. See \(log).",
+                    1
+                )
+            }
             if (try? await adb.getprop(serial: serial, "sys.boot_completed")) == "1",
                let path = try? await adb.shell(serial: serial, "pm path android"), path.contains("package:") {
                 _ = try? await adb.shell(serial: serial, "wm dismiss-keyguard")
@@ -155,8 +187,13 @@ public struct EmulatorManager: Sendable {
             try await Task.sleep(for: .seconds(pollInterval))
         }
         throw GrantivaError.commandFailed(
-            "\(serial) did not finish booting within \(Int(bootTimeout))s. Raise \(Self.bootTimeoutVariable) or check \(provenance.directory)/emulator-<port>.log.",
+            "\(serial) did not finish booting within \(Int(bootTimeout))s. Raise \(Self.bootTimeoutVariable) or check \(log).",
             1
         )
+    }
+
+    /// `kill(pid, 0)` probes without signalling; EPERM still means it exists.
+    static func isAlive(_ pid: Int32) -> Bool {
+        kill(pid, 0) == 0 || errno == EPERM
     }
 }

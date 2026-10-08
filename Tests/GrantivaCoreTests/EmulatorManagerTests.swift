@@ -17,7 +17,7 @@ final class EmulatorManagerTests: XCTestCase {
     private final class SpawnRecorder: @unchecked Sendable {
         var calls: [(String, [String])] = []
         func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 {
-            calls.append((executable, arguments)); return 4242
+            calls.append((executable, arguments)); return getpid() // a live pid, so the liveness check passes
         }
     }
 
@@ -131,7 +131,9 @@ final class EmulatorManagerTests: XCTestCase {
     func testOfflineAndUnauthorizedDevicesAreReportedNotUsed() async throws {
         let shell = ScriptedShell([
             .success("List of devices attached\nemulator-5554 offline\nemulator-5556 unauthorized"),
-            .success(""),
+            .success(""), // emu avd name emulator-5554: console does not answer
+            .success(""), // emu avd name emulator-5556
+            .success(""), // emulator -list-avds
         ])
         do {
             _ = try await manager(shell).selectDevice(configured: nil)
@@ -152,5 +154,56 @@ final class EmulatorManagerTests: XCTestCase {
             XCTAssertTrue("\(error)".contains("did not finish booting"), "\(error)")
             XCTAssertTrue("\(error)".contains("GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS"), "\(error)")
         }
+    }
+
+    func testListAVDsSkipsErrorLines() async throws {
+        let shell = ScriptedShell([.success("ERROR   | Unable to connect to adb daemon\nPixel_8_API_35")])
+        let avds = try await manager(shell).listAVDs()
+        XCTAssertEqual(avds, ["Pixel_8_API_35"])
+    }
+
+    func testConfiguredAVDThatIsStillBootingIsWaitedOnNotBootedAgain() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 offline"), // adb devices
+            .success("Pixel_8_API_35\nOK"),                              // emu avd name
+            .success("1"),                                               // sys.boot_completed
+            .success("package:/system/framework/framework-res.apk"),     // pm path android
+            .success(""),                                                // wm dismiss-keyguard
+        ])
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: "Pixel_8_API_35")
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+        XCTAssertTrue(spawn.calls.isEmpty, "a booting copy of the AVD must not be started twice")
+        XCTAssertFalse(shell.commands.contains { $0.contains("-list-avds") })
+    }
+
+    func testWithoutConfigASingleBootingEmulatorIsWaitedOn() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 offline"),
+            .success("Only_One\nOK"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let device = try await manager(shell, spawn: spawn).selectDevice(configured: nil)
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Only_One"))
+        XCTAssertTrue(spawn.calls.isEmpty)
+    }
+
+    func testWaitForBootFailsFastWhenTheEmulatorProcessExited() async throws {
+        let provenance = AndroidProvenance(directory: scratch.path)
+        try provenance.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "Pixel_8_API_35", pid: Int32.max))
+        let shell = ScriptedShell()
+        shell.fallback = "0"
+        let started = Date()
+        do {
+            try await manager(shell).waitForBoot(serial: "emulator-5556", pid: Int32.max)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("emulator-5556"), "\(error)")
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+            XCTAssertTrue("\(error)".contains("\(scratch.path)/emulator-5556.log"), "\(error)")
+        }
+        XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
+        XCTAssertFalse(try provenance.contains(serial: "emulator-5556"))
     }
 }
