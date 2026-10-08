@@ -90,22 +90,23 @@ public final class LogStreamer: @unchecked Sendable {
     /// down. `predicate` is passed verbatim to `simctl log stream --predicate`;
     /// pass `nil` for no predicate (warning: very chatty).
     public func start(udid: String, predicate: String?, level: String?) throws {
+        var args = ["simctl", "spawn", udid, "log", "stream", "--style", "compact"]
+        if let predicate, !predicate.isEmpty { args += ["--predicate", predicate] }
+        if let level, !level.isEmpty { args += ["--level", level] }
+        try start(executable: "/usr/bin/xcrun", arguments: args)
+    }
+
+    /// Starts streaming the output of an arbitrary log process (for example a
+    /// platform's `LogStreamCommand`). Non-blocking. Call `stop()` to tear down.
+    public func start(executable: String, arguments: [String]) throws {
         lock.lock()
         defer { lock.unlock() }
 
         guard process == nil else { return }
 
-        var args = ["simctl", "spawn", udid, "log", "stream", "--style", "compact"]
-        if let predicate, !predicate.isEmpty {
-            args += ["--predicate", predicate]
-        }
-        if let level, !level.isEmpty {
-            args += ["--level", level]
-        }
-
         let p = Process()
-        p.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-        p.arguments = args
+        p.executableURL = URL(fileURLWithPath: executable)
+        p.arguments = arguments
 
         let outPipe = Pipe()
         let errPipe = Pipe()

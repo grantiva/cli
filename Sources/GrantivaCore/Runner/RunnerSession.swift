@@ -18,7 +18,7 @@ public enum RunnerSession {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         udid: String,
-        platform: any DevicePlatform = IOSPlatform(),
+        platform: any DevicePlatform,
         runner: RunnerManager = .live,
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
@@ -91,7 +91,10 @@ public enum RunnerSession {
         // stderr is captured for error reporting.
         let outcome = await runWithStatusBarCleanup(
             udid: udid,
-            clear: { await platform.restoreAfterCapture(deviceID: $0) }
+            clear: { id in
+                await platform.restoreAfterCapture(deviceID: id)
+                await platform.cleanupOrphans(deviceID: id)
+            }
         ) {
             await RunnerExecution.run(RunnerExecution.Request(
                 executable: runnerBin,
@@ -103,6 +106,7 @@ public enum RunnerSession {
                 pathMap: [:],
                 reportDir: reportDir,
                 expectedFlows: 1,
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
                 readyFile: readySignal
             ))
         }
@@ -205,6 +209,7 @@ public enum RunnerSession {
         at flowPath: String,
         bundleId: String,
         udid: String,
+        platform: any DevicePlatform,
         runner: RunnerManager = .live,
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
@@ -214,7 +219,7 @@ public enum RunnerSession {
     ) async throws -> [ScreenCapture] {
         try await runFlowFiles(
             at: [flowPath], bundleId: bundleId, udid: udid,
-            runner: runner, outputDir: outputDir, appFile: appFile,
+            platform: platform, runner: runner, outputDir: outputDir, appFile: appFile,
             keepAlive: keepAlive, snapshot: snapshot, expectedPixels: expectedPixels
         )
     }
@@ -232,7 +237,7 @@ public enum RunnerSession {
         at flowPaths: [String],
         bundleId: String,
         udid: String,
-        platform: any DevicePlatform = IOSPlatform(),
+        platform: any DevicePlatform,
         runner: RunnerManager = .live,
         outputDir: String = ".grantiva/captures",
         appFile: String? = nil,
@@ -359,7 +364,10 @@ public enum RunnerSession {
 
         let outcome = await runWithStatusBarCleanup(
             udid: udid,
-            clear: { await platform.restoreAfterCapture(deviceID: $0) }
+            clear: { id in
+                await platform.restoreAfterCapture(deviceID: id)
+                await platform.cleanupOrphans(deviceID: id)
+            }
         ) {
             await RunnerExecution.run(RunnerExecution.Request(
                 executable: runnerBin,
@@ -371,6 +379,7 @@ public enum RunnerSession {
                 pathMap: stagedPathMap,
                 reportDir: reportDir,
                 expectedFlows: flowPaths.count,
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
                 readyFile: readySignal
             ))
         }
@@ -440,6 +449,11 @@ public enum RunnerSession {
         let result = await operation()
         await clear(udid)
         return result
+    }
+
+    /// Extra environment for the runner process, supplied by the platform.
+    static func runnerEnvironment(platform: any DevicePlatform, runnerDir: String) -> [String: String] {
+        platform.runnerEnvironment(runnerHome: runnerDir)
     }
 
     /// Builds the full runner argv (binary path first). Global flags go before

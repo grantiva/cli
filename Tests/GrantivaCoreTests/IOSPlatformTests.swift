@@ -51,6 +51,38 @@ final class IOSPlatformTests: XCTestCase {
     func testMakeReturnsIOS() {
         XCTAssertEqual(DevicePlatformFactory.make(.ios).platform, .ios)
     }
+
+    func testScreenshotUsesSimctlIO() async throws {
+        let executor = ScriptedExecutor([.success("")])
+        try await IOSPlatform(execute: executor.execute).screenshot(deviceID: "ABC", to: "/tmp/a b.png")
+        XCTAssertEqual(executor.commands, ["xcrun simctl io 'ABC' screenshot '/tmp/a b.png'"])
+    }
+
+    func testLogStreamBuildsTheSimctlSpawnCommand() async throws {
+        let command = try await IOSPlatform().logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
+        XCTAssertEqual(command.executable, "/usr/bin/xcrun")
+        XCTAssertEqual(command.arguments, [
+            "simctl", "spawn", "ABC", "log", "stream", "--style", "compact",
+            "--predicate", defaultLogPredicate(forBundleID: "com.example"), "--level", "debug",
+        ])
+        let explicit = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
+        XCTAssertEqual(explicit.arguments.suffix(2), ["--predicate", "subsystem == \"x\""])
+        let none = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
+        XCTAssertFalse(none.arguments.contains("--predicate"))
+    }
+
+    func testRunnerEnvironmentIsEmptyOnIOS() {
+        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/r"), [:])
+    }
+
+    func testResolveBinaryRejectsAnAPK() async {
+        do {
+            _ = try await IOSPlatform().resolveBinary("/tmp/app.apk")
+            XCTFail("expected rejection")
+        } catch {
+            XCTAssertTrue("\(error)".contains(".app or .ipa"), "\(error)")
+        }
+    }
 }
 
 private final class ScriptedExecutor: @unchecked Sendable {

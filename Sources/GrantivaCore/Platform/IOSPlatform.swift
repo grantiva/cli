@@ -82,4 +82,34 @@ public struct IOSPlatform: DevicePlatform {
     public func runnerTestArguments() -> [String] {
         ["--wait-for-idle-timeout", "0"]
     }
+
+    public func resolveBinary(_ path: String) async throws -> ResolvedBinary {
+        let resolved = try AppBinaryResolver.resolve(path)
+        return ResolvedBinary(appPath: resolved.appPath, tempDir: resolved.tempDir, appID: AppBinaryResolver.bundleId(from: resolved.appPath))
+    }
+
+    public func defaultDevice() async throws -> BootedDevice {
+        let device = try await simulators.bootedDevice()
+        return BootedDevice(udid: device.udid, name: device.name)
+    }
+
+    public func screenshot(deviceID: String, to path: String) async throws {
+        _ = try await execute("xcrun simctl io \(shellQuoted(deviceID)) screenshot \(shellQuoted(path))")
+    }
+
+    public func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
+        var args = ["simctl", "spawn", deviceID, "log", "stream", "--style", "compact"]
+        let predicate = filter ?? appID.map(defaultLogPredicate(forBundleID:))
+        if let predicate, !predicate.isEmpty {
+            args += ["--predicate", predicate]
+        }
+        if let level, !level.isEmpty {
+            args += ["--level", level]
+        }
+        return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
+    }
+
+    public func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+
+    public func cleanupOrphans(deviceID: String) async {}
 }

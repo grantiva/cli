@@ -13,6 +13,8 @@ public struct ResolvedProject: Sendable {
     public let flows: [String]
     public let diff: GrantivaConfig.DiffConfig
     public let a11y: GrantivaConfig.A11yConfig
+    /// The Gradle project to build when the platform is Android.
+    public let android: AndroidProject?
 
     public init(
         scheme: String? = nil,
@@ -24,7 +26,8 @@ public struct ResolvedProject: Sendable {
         screens: [GrantivaConfig.Screen] = [],
         flows: [String] = [],
         diff: GrantivaConfig.DiffConfig = .init(),
-        a11y: GrantivaConfig.A11yConfig = .init()
+        a11y: GrantivaConfig.A11yConfig = .init(),
+        android: AndroidProject? = nil
     ) {
         self.scheme = scheme
         self.project = project
@@ -36,6 +39,7 @@ public struct ResolvedProject: Sendable {
         self.flows = flows
         self.diff = diff
         self.a11y = a11y
+        self.android = android
     }
 }
 
