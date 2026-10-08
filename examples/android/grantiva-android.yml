@@ -1,0 +1,25 @@
+# Grantiva example Android project. Run from this directory:
+#   grantiva run
+#   grantiva diff capture && grantiva diff approve && grantiva diff compare
+platform: android
+module: app
+variant: debug
+application_id: dev.grantiva.example
+emulator: Pixel_8_API_35
+system_image: "system-images;android-35;google_apis;arm64-v8a"
+
+screens:
+  - name: Home
+    path: launch
+  - name: Details
+    path:
+      - tap: Details
+      - assert_visible: Line three.
+  - name: Settings
+    path:
+      - tap: Settings
+      - assert_visible: Settings
+
+diff:
+  threshold: 0.02
+  perceptual_threshold: 5.0
