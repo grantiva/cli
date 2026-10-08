@@ -206,4 +206,34 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
         XCTAssertFalse(try provenance.contains(serial: "emulator-5556"))
     }
+
+    /// The real case: an emulator Grantiva spawned exits at once ("AVD already
+    /// in use"). Nothing has reaped it, so it is a zombie and `kill(pid, 0)`
+    /// alone still says it is alive.
+    func testWaitForBootFailsFastWhenASpawnedChildExitedUnreaped() async throws {
+        let devnull = open("/dev/null", O_RDWR)
+        XCTAssertGreaterThanOrEqual(devnull, 0)
+        defer { close(devnull) }
+        let child = try ChildProcess.spawn(executable: "/usr/bin/false", arguments: [], stdin: devnull, stdout: devnull, stderr: devnull)
+        // Block until it has exited, but leave it unreaped (WNOWAIT): a zombie.
+        var info = siginfo_t()
+        XCTAssertEqual(waitid(P_PID, id_t(child.pid), &info, WEXITED | WNOWAIT), 0)
+        XCTAssertEqual(kill(child.pid, 0), 0, "precondition: a zombie still answers kill(pid, 0)")
+
+        let provenance = AndroidProvenance(directory: scratch.path)
+        try provenance.register(StartedEmulatorRecord(serial: "emulator-5558", avd: "Pixel_8_API_35", pid: child.pid))
+        let shell = ScriptedShell()
+        shell.fallback = "0"
+        let started = Date()
+        do {
+            try await manager(shell).waitForBoot(serial: "emulator-5558", pid: child.pid)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("emulator-5558"), "\(error)")
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+            XCTAssertTrue("\(error)".contains("\(scratch.path)/emulator-5558.log"), "\(error)")
+        }
+        XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
+        XCTAssertFalse(try provenance.contains(serial: "emulator-5558"))
+    }
 }

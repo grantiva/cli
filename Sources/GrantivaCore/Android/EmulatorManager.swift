@@ -192,8 +192,17 @@ public struct EmulatorManager: Sendable {
         )
     }
 
-    /// `kill(pid, 0)` probes without signalling; EPERM still means it exists.
+    /// An emulator we spawned is our child: once it exits it stays a zombie
+    /// (and `kill(pid, 0)` keeps succeeding) until reaped, so reap it here
+    /// with `WNOHANG`. A pid that is not our child (ECHILD, e.g. from a ledger
+    /// written by another process) falls back to `kill(pid, 0)`, where EPERM
+    /// still means it exists.
     static func isAlive(_ pid: Int32) -> Bool {
-        kill(pid, 0) == 0 || errno == EPERM
+        var status: Int32 = 0
+        let reaped = waitpid(pid, &status, WNOHANG)
+        if reaped == pid { return false }
+        if reaped == 0 { return true }
+        guard errno == ECHILD else { return true }
+        return kill(pid, 0) == 0 || errno == EPERM
     }
 }
