@@ -1,0 +1,31 @@
+$ grantiva record --device emulator-5554 --duration 2 --frames-at 1000 --output "/tmp/qa rec/a.mp4" --json
+Error: Grantiva recording ended at 0ms before requested frame 1000ms exited with code 1
+exit 1
+a.mp4
+$ grantiva record --device emulator-5554 --duration 2 --frames-at 1000 --json   (default output, static screen, try 1)
+Error: Grantiva recording ended at 0ms before requested frame 1000ms exited with code 1
+packet,0.000000 
+$ grantiva record --device emulator-5554 --duration 2 --frames-at 1000 --json   (default output, static screen, try 2)
+Error: Grantiva recording ended at 0ms before requested frame 1000ms exited with code 1
+packet,0.000000 
+$ grantiva record --device emulator-5554 --duration 2 --frames-at 1000 --output "/tmp/qa rec/a.mp4" --json   (UI changing)
+{
+  "frames" : [
+    {
+      "actualMilliseconds" : 978,
+      "path" : "\/tmp\/qa rec\/a-frames\/001000ms.png",
+      "requestedMilliseconds" : 1000
+    }
+  ],
+  "requestedDurationSeconds" : 2,
+  "simulator" : "Pixel_8_API_35",
+  "udid" : "emulator-5554",
+  "video" : "\/tmp\/qa rec\/a.mp4"
+}
+exit 0
+a-frames
+a.json
+a.mp4
+
+/tmp/qa rec/a-frames:
+001000ms.png

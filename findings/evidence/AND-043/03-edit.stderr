@@ -1,0 +1,78 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/03-edit.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/03-edit
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.6s)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ tapOn: text="Edit Landmark" (728ms)
+    ✓ assertVisible: text="Edit Landmark" (594ms)
+    ✓ tapOn: text="Name" (135ms)
+    ✓ inputText: " Renamed" (770ms)
+    ✓ tapOn: text="Done" (201ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (582ms)
+    ✓ takeScreenshot (131ms)
+✓ 03-edit 5.9s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.6s)
+    ✓ tapOn (1.1s)
+    ✓ tapOn (728ms)
+    ✓ assertVisible (593ms)
+    ✓ tapOn (136ms)
+    ✓ inputText (770ms)
+    ✓ tapOn (201ms)
+    ✓ assertVisible (582ms)
+    ✓ takeScreenshot (131ms)
+✓ 03-edit 5.9s
+
+  9 steps passing (5.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✓ PASS       9      9      0      0       5.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0       5.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/03-edit
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/03-edit/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/03-edit/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/03-edit/allure-results
+
+  Built by Grantiva
+

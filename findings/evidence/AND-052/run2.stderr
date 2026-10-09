@@ -1,0 +1,81 @@
+Resolved: scheme=(none) simulator=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5556
+Emulator booted: qa-android-1 (emulator-5556)
+Build finished: success=true duration=1.2s
+Installing com.kylebrowning.landmarks...
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/flows/qa-arrow.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] qa-arrow (qa-arrow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ tapOn: text="Deep Links" (1.3s)
+    ✓ tapOn: text="Mountains → Yosemite Valley" (923ms)
+    ✓ assertVisible: text="Yosemite, CA" (570ms)
+    ✓ takeScreenshot (206ms)
+✓ qa-arrow 4.6s
+
+  [1/1] qa-arrow (/Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/flows/qa-arrow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ tapOn (1.3s)
+    ✓ tapOn (923ms)
+    ✓ assertVisible (570ms)
+    ✓ takeScreenshot (206ms)
+✓ qa-arrow 4.6s
+
+  5 steps passing (4.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  qa-arrow                       ✓ PASS       5      5      0      0       4.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       5      5      0      0       4.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: session=34243-1791580452659202000
+  /tmp/grantiva-sessions/34243-1791580452659202000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

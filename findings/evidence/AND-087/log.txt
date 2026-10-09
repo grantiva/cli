@@ -1,0 +1,20 @@
+$ grantiva diff compare --no-build --device emulator-5554   (baselines just approved)
+✓ Visual diff passed
+  Duration: 0.1s
+  Passed: 3  Failed: 0  New: 0  Errors: 0
+✓ Deep Links  pixel=0.00%  perceptual=0.0
+✓ Favorites  pixel=0.00%  perceptual=0.0
+✓ Home  pixel=0.00%  perceptual=0.0
+exit 0
+--- captures/android/Favorites.png overwritten with Home.png
+$ grantiva diff compare
+  Passed: 2  Failed: 1  New: 0  Errors: 0
+
+✓ Deep Links  pixel=0.00%  perceptual=0.0
+✗ Favorites  pixel=3.57%  perceptual=40.0
+    Failed: pixel=3.57% perceptual=40.0
+✓ Home  pixel=0.00%  perceptual=0.0
+exit 1
+$ grantiva diff compare --json
+exit 1
+JSON valid

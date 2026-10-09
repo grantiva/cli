@@ -1,0 +1,148 @@
+{
+  "id": "flow-000",
+  "name": "01-browse",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-386AA082-4CEE-4C2D-93D9-EFB93AC3894C/0/01-browse.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T13:57:21.454047-07:00",
+  "endTime": "2026-10-09T13:57:24.24703-07:00",
+  "duration": 2792,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T13:57:21.454321-07:00",
+      "endTime": "2026-10-09T13:57:23.13907-07:00",
+      "duration": 1684,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-09T13:57:23.139483-07:00",
+      "endTime": "2026-10-09T13:57:23.544567-07:00",
+      "duration": 405,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-03ec-0000-007000000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-09T13:57:23.544954-07:00",
+      "endTime": "2026-10-09T13:57:24.096725-07:00",
+      "duration": 551,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-03ec-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "failed",
+      "startTime": "2026-10-09T13:57:24.097081-07:00",
+      "endTime": "2026-10-09T13:57:24.24655-07:00",
+      "duration": 149,
+      "error": {
+        "type": "network",
+        "message": "Failed to take screenshot: send request: Get \"http://localhost/session/b7ae147d-b0f8-4904-9c67-b6b6d1f1daef/screenshot\": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused (cause: send request: Get \"http://localhost/session/b7ae147d-b0f8-4904-9c67-b6b6d1f1daef/screenshot\": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused)"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Golden Gate Bridge\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"San Francisco, CA\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Plan Visit\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Plan Visit"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}

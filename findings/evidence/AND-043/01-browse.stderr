@@ -1,0 +1,76 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/01-browse
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ assertVisible: text="Landmarks" (391ms)
+    ✓ assertVisible: text="Featured" (529ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn: text="Golden Gate Bridge" (163ms)
+    ✓ assertVisible: text="San Francisco, CA" (587ms)
+    ✓ assertVisible: text="Plan Visit" (7ms)
+    ✓ takeScreenshot (125ms)
+✓ 01-browse 3.7s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ assertVisible (391ms)
+    ✓ assertVisible (529ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn (163ms)
+    ✓ assertVisible (587ms)
+    ✓ assertVisible (7ms)
+    ✓ takeScreenshot (125ms)
+✓ 01-browse 3.7s
+
+  8 steps passing (3.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/01-browse
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/01-browse/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/01-browse/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/01-browse/allure-results
+
+  Built by Grantiva
+

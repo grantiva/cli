@@ -1,0 +1,19 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: Pixel_8_API_35
+
+screens:
+  - name: Home
+    path: launch
+  - name: Deep Links
+    path:
+      - tap: "Deep Links"
+  - name: Favorites
+    path:
+      - tap: "Favorites"
+
+diff:
+  threshold: 0.02
+  perceptual_threshold: 5.0

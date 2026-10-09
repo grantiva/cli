@@ -1,0 +1,80 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/10-seed-many.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✓ scroll (395ms)
+    ✓ scroll (356ms)
+    ✓ scroll (382ms)
+    ✓ scroll (365ms)
+    ✗ assertVisible: text="Landmark 30" (17.4s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 10-seed-many 21.5s
+
+  [1/1] 10-seed-many (.maestro/10-seed-many.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✓ scroll (395ms)
+    ✓ scroll (356ms)
+    ✓ scroll (382ms)
+    ✓ scroll (365ms)
+    ✗ assertVisible (17.6s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+    ✗ takeScreenshot (0ms)
+✗ 10-seed-many 21.5s
+
+  5 steps passing (21.5s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-seed-many                   ✗ FAIL       7      5      1      1      21.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       7      5      1      1      21.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/10-seed-many/captures/failure-1791580175.png
+Error: Runner failed (exit 1):
+ exited with code 1

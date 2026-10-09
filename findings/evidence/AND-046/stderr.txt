@@ -1,0 +1,120 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=3
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 3 flow(s)...
+Running 3 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml, .maestro/01-browse.yaml, .maestro/05-category.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 3 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/3] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Landmarks" (453ms)
+    ✓ assertVisible: text="Featured" (553ms)
+    ✗ assertVisible: text="This never appears" (17.1s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 99-crash 20.2s
+
+  [2/3] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ assertVisible: text="Landmarks" (323ms)
+    ✓ assertVisible: text="Featured" (581ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn: text="Golden Gate Bridge" (175ms)
+    ✓ assertVisible: text="San Francisco, CA" (594ms)
+    ✓ assertVisible: text="Plan Visit" (5ms)
+    ✓ takeScreenshot (123ms)
+✓ 01-browse 3.6s
+
+  [3/3] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn: text="Lakes" (1.3s)
+    ✓ assertVisible: text="Lake Tahoe" (942ms)
+    ✓ assertVisible: text="Mono Lake" (68ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (525ms)
+    ✓ takeScreenshot (271ms)
+✓ 05-category 4.9s
+
+  [1/3] 99-crash (.maestro/99-crash.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible (453ms)
+    ✓ assertVisible (553ms)
+    ✗ assertVisible (17.2s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 99-crash 20.2s
+
+  [2/3] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ assertVisible (323ms)
+    ✓ assertVisible (581ms)
+    ✓ takeScreenshot (125ms)
+    ✓ tapOn (175ms)
+    ✓ assertVisible (594ms)
+    ✓ assertVisible (5ms)
+    ✓ takeScreenshot (123ms)
+✓ 01-browse 3.6s
+
+  [3/3] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn (1.3s)
+    ✓ assertVisible (942ms)
+    ✓ assertVisible (67ms)
+    ✓ assertNotVisible (525ms)
+    ✓ takeScreenshot (271ms)
+✓ 05-category 4.9s
+
+  17 steps passing (28.8s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      3      1      0      20.2s  google sdk_gphone64_arm64 (...
+  01-browse                      ✓ PASS       8      8      0      0       3.6s  google sdk_gphone64_arm64 (...
+  05-category                    ✓ PASS       6      6      0      0       4.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             2/3      18     17      1      0      28.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report/captures/failure-1791580026.png
+Error: Runner failed (exit 1):
+ exited with code 1

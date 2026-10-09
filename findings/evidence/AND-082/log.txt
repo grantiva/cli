@@ -1,0 +1,15 @@
+before: 
+emulator-5556 localfilesystem:/tmp/uia2-emulator-5556.sock tcp:6790
+emulator-5554 localfilesystem:/tmp/uia2-emulator-5554.sock tcp:6790
+emulator-5554 tcp:55172 tcp:6790
+
+u0_a207      26475   370   16612684 157004 0                   0 S io.appium.uiautomator2.server
+$ grantiva runner stop
+Runner stopped (pid 55825)
+exit 0
+after:
+emulator-5556 localfilesystem:/tmp/uia2-emulator-5556.sock tcp:6790
+
+(no uiautomator2 process on 5554)
+runner 55825 gone
+ls: .grantiva/session.json: No such file or directory

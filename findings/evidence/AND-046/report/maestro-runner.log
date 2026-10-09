@@ -1,0 +1,79 @@
+14:06:35.430183 [INFO] === Test execution started ===
+14:06:35.430261 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report
+14:06:35.430266 [INFO] Platform: android
+14:06:35.430269 [INFO] Driver: uiautomator2
+14:06:35.430713 [INFO] Validated 3 flow(s)
+14:06:35.430728 [INFO] Single device execution mode
+14:06:35.430732 [INFO] Starting flow execution (parallel: false, devices: [])
+14:06:35.430736 [INFO] Creating driver for single device execution
+14:06:35.430740 [INFO] Connecting to Android device: emulator-5554
+14:06:35.510806 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:06:35.531411 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:06:35.932745 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:06:35.945787 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:06:37.007535 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:06:37.014475 [INFO] Session created successfully: 60124aca-76ae-43fb-8ded-f2951486e30c
+14:06:37.063145 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:06:37.065984 [INFO] === Starting flow: 99-crash ===
+14:06:37.065991 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-C293F6CC-90C7-4157-B822-E8B85FA3D3A2/0/99-crash.yaml
+14:06:37.065995 [INFO] Total steps: 4
+14:06:37.071180 [DEBUG] Executing step 0: launchApp
+14:06:38.998997 [DEBUG] Step 0 completed successfully (1927ms): launchApp
+14:06:38.999356 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:06:38.999570 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:06:39.054070 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.108261 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.172882 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.225852 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.278668 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.359741 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.452532 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:06:39.452583 [DEBUG] Step 1 completed successfully (453ms): assertVisible: text="Landmarks"
+14:06:39.453028 [DEBUG] Executing step 2: assertVisible: text="Featured"
+14:06:40.006096 [DEBUG] Step 2 completed successfully (553ms): assertVisible: text="Featured"
+14:06:40.006599 [DEBUG] Executing step 3: assertVisible: text="This never appears"
+14:06:57.082896 [ERROR] Step 3 failed (17076ms): assertVisible: text="This never appears" - Error: Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+14:06:57.244271 [INFO] === Flow completed: 99-crash (status: failed, duration: 20178ms, passed: 3, failed: 1, skipped: 0) ===
+14:06:57.244303 [INFO] === Starting flow: 01-browse ===
+14:06:57.244309 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-C293F6CC-90C7-4157-B822-E8B85FA3D3A2/1/01-browse.yaml
+14:06:57.244322 [INFO] Total steps: 8
+14:06:57.246123 [DEBUG] Executing step 0: launchApp
+14:06:58.957611 [DEBUG] Step 0 completed successfully (1711ms): launchApp
+14:06:58.957998 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:06:59.281301 [DEBUG] Step 1 completed successfully (323ms): assertVisible: text="Landmarks"
+14:06:59.281684 [DEBUG] Executing step 2: assertVisible: text="Featured"
+14:06:59.863385 [DEBUG] Step 2 completed successfully (581ms): assertVisible: text="Featured"
+14:06:59.863740 [DEBUG] Executing step 3: takeScreenshot
+14:06:59.989208 [DEBUG] Step 3 completed successfully (125ms): takeScreenshot
+14:06:59.989455 [DEBUG] Executing step 4: tapOn: text="Golden Gate Bridge"
+14:07:00.165156 [DEBUG] Step 4 completed successfully (175ms): tapOn: text="Golden Gate Bridge"
+14:07:00.165763 [DEBUG] Executing step 5: assertVisible: text="San Francisco, CA"
+14:07:00.760084 [DEBUG] Step 5 completed successfully (594ms): assertVisible: text="San Francisco, CA"
+14:07:00.760379 [DEBUG] Executing step 6: assertVisible: text="Plan Visit"
+14:07:00.765480 [DEBUG] Step 6 completed successfully (5ms): assertVisible: text="Plan Visit"
+14:07:00.765766 [DEBUG] Executing step 7: takeScreenshot
+14:07:00.889492 [DEBUG] Step 7 completed successfully (123ms): takeScreenshot
+14:07:00.891181 [INFO] === Flow completed: 01-browse (status: passed, duration: 3646ms, passed: 8, failed: 0, skipped: 0) ===
+14:07:00.891191 [INFO] === Starting flow: 05-category ===
+14:07:00.891196 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-C293F6CC-90C7-4157-B822-E8B85FA3D3A2/2/05-category.yaml
+14:07:00.891199 [INFO] Total steps: 6
+14:07:00.896078 [DEBUG] Executing step 0: launchApp
+14:07:02.738989 [DEBUG] Step 0 completed successfully (1842ms): launchApp
+14:07:02.739374 [DEBUG] Executing step 1: tapOn: text="Lakes"
+14:07:04.007723 [DEBUG] Step 1 completed successfully (1268ms): tapOn: text="Lakes"
+14:07:04.008455 [DEBUG] Executing step 2: assertVisible: text="Lake Tahoe"
+14:07:04.951203 [DEBUG] Step 2 completed successfully (942ms): assertVisible: text="Lake Tahoe"
+14:07:04.954407 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+14:07:05.023162 [DEBUG] Step 3 completed successfully (68ms): assertVisible: text="Mono Lake"
+14:07:05.023840 [DEBUG] Executing step 4: assertNotVisible: text="Golden Gate Bridge"
+14:07:05.549779 [DEBUG] Step 4 completed successfully (525ms): assertNotVisible: text="Golden Gate Bridge"
+14:07:05.550114 [DEBUG] Executing step 5: takeScreenshot
+14:07:05.822037 [DEBUG] Step 5 completed successfully (271ms): takeScreenshot
+14:07:05.825608 [INFO] === Flow completed: 05-category (status: passed, duration: 4934ms, passed: 6, failed: 0, skipped: 0) ===
+14:07:06.497462 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:07:06.510220 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:07:06.510250 [INFO] Flow execution completed: 2 passed, 1 failed, 0 skipped
+14:07:06.510569 [INFO] Generating reports...
+14:07:06.512061 [INFO] Shutting down devices started by maestro-runner...
+14:07:06.512072 [INFO] Shutting down all tracked emulators
+14:07:06.512081 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,13 @@
+$ grantiva emulator teardown --serial emulator-5556   (manual emulator, no ledger record)
+Error: Invalid argument: emulator-5556 was not started by Grantiva (see `grantiva emulator sessions`). Pass --force to kill it anyway.
+exit 1
+List of devices attached
+emulator-5554	device
+emulator-5556	device
+
+$ grantiva emulator teardown --serial emulator-5556 --force
+Killed emulator-5556.
+exit 0
+List of devices attached
+emulator-5554	device
+

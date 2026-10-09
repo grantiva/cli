@@ -1,0 +1,48 @@
+14:09:36.713895 [INFO] === Test execution started ===
+14:09:36.713964 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/11-slow
+14:09:36.713970 [INFO] Platform: android
+14:09:36.713975 [INFO] Driver: uiautomator2
+14:09:36.714304 [INFO] Validated 1 flow(s)
+14:09:36.714315 [INFO] Single device execution mode
+14:09:36.714320 [INFO] Starting flow execution (parallel: false, devices: [])
+14:09:36.714324 [INFO] Creating driver for single device execution
+14:09:36.714328 [INFO] Connecting to Android device: emulator-5554
+14:09:36.791353 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:09:36.812262 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:09:37.218216 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:09:37.234676 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:09:37.797554 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:09:37.805377 [INFO] Session created successfully: 9d1c3dac-8126-42d1-8166-47f20b907b15
+14:09:37.854399 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:09:37.856799 [INFO] === Starting flow: 11-slow ===
+14:09:37.856808 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-29D76282-B1A5-4860-A2F7-81EA1885613D/0/11-slow.yaml
+14:09:37.856813 [INFO] Total steps: 6
+14:09:37.861664 [DEBUG] Executing step 0: launchApp
+14:09:39.533683 [DEBUG] Step 0 completed successfully (1672ms): launchApp
+14:09:39.536033 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:09:39.537996 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:09:40.035172 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:40.806888 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:41.165095 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:41.621851 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:42.126916 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:42.410215 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:42.636305 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:42.868071 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:09:42.868104 [DEBUG] Step 1 completed successfully (3332ms): tapOn: text="Deep Links"
+14:09:42.868567 [DEBUG] Executing step 2: tapOn: text="Slow Screen"
+14:09:43.707163 [DEBUG] Step 2 completed successfully (838ms): tapOn: text="Slow Screen"
+14:09:43.707497 [DEBUG] Executing step 3: assertVisible: text="Loading…"
+14:09:44.308135 [DEBUG] Step 3 completed successfully (600ms): assertVisible: text="Loading…"
+14:09:44.308521 [DEBUG] Executing step 4: extendedWaitUntil: visible text="Loaded after delay"
+14:09:46.815880 [DEBUG] Step 4 completed successfully (2507ms): extendedWaitUntil: visible text="Loaded after delay"
+14:09:46.816207 [DEBUG] Executing step 5: takeScreenshot
+14:09:46.951692 [DEBUG] Step 5 completed successfully (135ms): takeScreenshot
+14:09:46.953236 [INFO] === Flow completed: 11-slow (status: passed, duration: 9096ms, passed: 6, failed: 0, skipped: 0) ===
+14:09:47.363083 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:09:47.376677 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:09:47.376699 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:09:47.376905 [INFO] Generating reports...
+14:09:47.377633 [INFO] Shutting down devices started by maestro-runner...
+14:09:47.377659 [INFO] Shutting down all tracked emulators
+14:09:47.377666 [INFO] Shutting down all tracked simulators

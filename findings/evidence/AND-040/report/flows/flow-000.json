@@ -1,0 +1,107 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-823FFDE9-21B1-43EB-877C-BC6A53364C6D/0/99-crash.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:02:35.77916-07:00",
+  "endTime": "2026-10-09T14:02:56.048506-07:00",
+  "duration": 20269,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:02:35.779449-07:00",
+      "endTime": "2026-10-09T14:02:37.545782-07:00",
+      "duration": 1766,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:02:37.546153-07:00",
+      "endTime": "2026-10-09T14:02:38.228299-07:00",
+      "duration": 682,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-047b-0000-007000000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:02:38.228648-07:00",
+      "endTime": "2026-10-09T14:02:38.814032-07:00",
+      "duration": 585,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-047b-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "failed",
+      "startTime": "2026-10-09T14:02:38.814716-07:00",
+      "endTime": "2026-10-09T14:02:56.048101-07:00",
+      "duration": 17233,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    }
+  ],
+  "artifacts": {}
+}

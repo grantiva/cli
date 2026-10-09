@@ -1,0 +1,74 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/08-caching
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn: text="Deep Links" (2.1s)
+    ✓ tapOn: text="Caching Demo" (758ms)
+    ✓ assertVisible: text="Cache Policy" (633ms)
+    ✓ tapOn: text="Fetch with Policy" (169ms)
+    ✓ takeScreenshot (187ms)
+    ✓ tapOn: text="Clear Cache" (186ms)
+✓ 08-caching 5.8s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn (2.1s)
+    ✓ tapOn (758ms)
+    ✓ assertVisible (633ms)
+    ✓ tapOn (169ms)
+    ✓ takeScreenshot (187ms)
+    ✓ tapOn (186ms)
+✓ 08-caching 5.8s
+
+  7 steps passing (5.8s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       5.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       5.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/08-caching
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/08-caching/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/08-caching/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-043/08-caching/allure-results
+
+  Built by Grantiva
+

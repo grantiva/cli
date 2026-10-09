@@ -1,0 +1,107 @@
+{
+  "id": "flow-000",
+  "name": "qa-fail-late",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-4A88765F-D076-44BA-9EF1-B430448E03F5/0/qa-fail-late.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:05:10.972303-07:00",
+  "endTime": "2026-10-09T14:05:32.44546-07:00",
+  "duration": 21472,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:05:10.97286-07:00",
+      "endTime": "2026-10-09T14:05:13.073168-07:00",
+      "duration": 2100,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:05:13.073673-07:00",
+      "endTime": "2026-10-09T14:05:14.674583-07:00",
+      "duration": 1600,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 425,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"San Francisco, CA\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:05:14.675003-07:00",
+      "endTime": "2026-10-09T14:05:15.250009-07:00",
+      "duration": 574,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-04d6-0000-00ae00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Definitely Not Here\"",
+      "status": "failed",
+      "startTime": "2026-10-09T14:05:15.250344-07:00",
+      "endTime": "2026-10-09T14:05:32.444945-07:00",
+      "duration": 17194,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Definitely Not Here"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    }
+  ],
+  "artifacts": {}
+}

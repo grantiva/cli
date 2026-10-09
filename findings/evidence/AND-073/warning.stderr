@@ -1,0 +1,92 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F07453CB-18A5-4B29-89C3-FDDB753650AA
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-09 14:17:13.368 W/ziparchive(21580): Unable to open '/data/app/~~dxdPGedHSv4EIcaGq7b1Cw==/com.kylebrowning.landmarks-tZ7nqlIi_9q2BMZ5jZ2r5A==/base.dm': No such file or directory
+[log] 10-09 14:17:13.368 W/ziparchive(21580): Unable to open '/data/app/~~dxdPGedHSv4EIcaGq7b1Cw==/com.kylebrowning.landmarks-tZ7nqlIi_9q2BMZ5jZ2r5A==/base.dm': No such file or directory
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Common causes for lock verification issues are non-optimized dex code
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): and incorrect proguard optimizations.
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-09 14:17:13.580 W/wning.landmarks(21580): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-09 14:17:13.615 W/HWUI    (21580): Unknown dataspace 0
+[log] 10-09 14:17:13.944 W/HWUI    (21580): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+[log] 10-09 14:17:13.944 W/HWUI    (21580): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+    ✓ launchApp (1.7s)
+    ✓ assertVisible: text="Landmarks" (341ms)
+    ✓ assertVisible: text="Featured" (585ms)
+    ✓ takeScreenshot (147ms)
+[log] 10-09 14:17:15.523 W/WindowOnBackDispatcher(21580): OnBackInvokedCallback is not enabled for the application.
+[log] 10-09 14:17:15.523 W/WindowOnBackDispatcher(21580): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+    ✓ tapOn: text="Golden Gate Bridge" (169ms)
+    ✓ assertVisible: text="San Francisco, CA" (603ms)
+    ✓ assertVisible: text="Plan Visit" (7ms)
+    ✓ takeScreenshot (124ms)
+✓ 01-browse 3.7s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ assertVisible (341ms)
+    ✓ assertVisible (585ms)
+    ✓ takeScreenshot (147ms)
+    ✓ tapOn (169ms)
+    ✓ assertVisible (603ms)
+    ✓ assertVisible (7ms)
+    ✓ takeScreenshot (124ms)
+✓ 01-browse 3.7s
+
+  8 steps passing (3.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F07453CB-18A5-4B29-89C3-FDDB753650AA
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F07453CB-18A5-4B29-89C3-FDDB753650AA/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F07453CB-18A5-4B29-89C3-FDDB753650AA/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F07453CB-18A5-4B29-89C3-FDDB753650AA/allure-results
+
+  Built by Grantiva
+
