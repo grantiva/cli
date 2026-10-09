@@ -1,0 +1,21 @@
+OVERVIEW: Promote current captures to baselines.
+
+USAGE: grantiva diff approve [--json] [--verbose] [--quiet] [--platform <platform>] [<screen-names> ...]
+
+ARGUMENTS:
+  <screen-names>          Screen names to approve (default: all)
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --version               Show the version.
+  -h, --help              Show help information.
+

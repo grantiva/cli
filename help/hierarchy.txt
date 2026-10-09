@@ -1,0 +1,38 @@
+OVERVIEW: Dump the UI hierarchy of a booted simulator or emulator without
+relaunching the app.
+
+Finds the session published by `grantiva run --keep-alive` (in
+/tmp/grantiva-sessions, with the simulator UDID or adb serial recorded by
+grantiva) and reads the current page source: from GrantivaAgent on iOS, from
+the UIAutomator2 server on Android. The target app is never touched — no
+launch, no stopApp, no clearState.
+
+Typical agent workflow:
+
+    # Terminal 1 (or backgrounded in CI):
+    grantiva run --keep-alive --flow flows/onboarding.yaml
+
+    # Terminal 2:
+    grantiva hierarchy > state.xml
+
+If no keep-alive session is running, this command fails with a clear message
+rather than trying to start one (which would relaunch the app and destroy the
+state you wanted to inspect).
+
+USAGE: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --udid <udid>           Simulator UDID or adb serial to target (default:
+                          newest keep-alive session)
+  --timeout <timeout>     Seconds to wait for GrantivaAgent's page-source
+                          response. Default: 60. (default: 60.0)
+  --format <format>       Output format: xml or json (default: xml)
+  --version               Show the version.
+  -h, --help              Show help information.
+

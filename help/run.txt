@@ -1,0 +1,84 @@
+OVERVIEW: Run Maestro flows against a simulator. No visual regression — reports
+step pass/fail and captures a screenshot on failure.
+
+USAGE: grantiva run <options>
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+                          Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the simulator.
+  --derived-data-path <derived-data-path>
+                          Write Xcode build products and intermediates to this
+                          DerivedData directory.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --scheme <scheme>       Scheme to build (iOS)
+  --simulator <simulator> Simulator name or UDID (iOS)
+  --bundle-id <bundle-id> Bundle identifier (iOS)
+  --module <module>       Gradle module to assemble (Android; default app)
+  --variant <variant>     Gradle build variant, e.g. debug or freeDebug
+                          (Android; default debug)
+  --application-id <application-id>
+                          Application ID (Android; read from the build or the
+                          APK when omitted)
+  --emulator <emulator>   AVD name to use, booting it if needed (Android)
+  --device <device>       adb serial of an attached emulator or physical device
+                          (Android)
+  --allow-device-settings Apply demo mode and animation settings on a physical
+                          device too (Android)
+  --headless              Boot an emulator without a window (Android)
+  --flow <flow>           Run a single flow file instead of all configured flows
+  --keep-alive            Keep GrantivaAgent session alive after flows complete
+                          so `grantiva hierarchy` can inspect UI state without
+                          relaunching the app. Release with Ctrl-C.
+  --logs                  Stream app logs from the simulator or emulator into
+                          this terminal, prefixed with [log] (iOS and Android).
+                          On iOS the filter defaults to lines whose subsystem
+                          or process matches the app's bundle ID; on Android,
+                          to lines from the app's uid.
+  --logs-predicate <logs-predicate>
+                          Custom NSPredicate for `simctl log stream
+                          --predicate` (iOS). Implies --logs.
+  --logs-tag <logs-tag>   logcat tag to keep when streaming logs (Android).
+                          Implies --logs.
+  --logs-level <logs-level>
+                          Log level for --logs: default, info, debug. Defaults
+                          to `default` (warnings/errors/default).
+  --snapshot <snapshot>   Snapshot policy: failure (default — one shot after
+                          failure), trailing (last-good step + failure step),
+                          full (every step). (default: failure)
+  --continue-on-failure   Keep running remaining flows after a failure. Default
+                          is fail-fast — stop the suite on the first broken
+                          flow, which matches CI semantics and avoids wasting
+                          cycles.
+  --report-dir <report-dir>
+                          Write the runner's report.json + assets to this
+                          directory (workspace-relative). Survives grantiva's
+                          cleanup so CI can upload it. Default: ephemeral tmp
+                          dir.
+  --timeout <timeout>     Max seconds to wait for the runner subprocess before
+                          killing it with SIGTERM. Default: 600 (10 min). Bump
+                          this for long multi-flow suites. (default: 600)
+  --ready-file <ready-file>
+                          Write this file once the run reaches a terminal
+                          state, containing its status. Deleted at startup, and
+                          always written — a setup failure records `failed`
+                          rather than leaving a waiter hanging. Wait on it with
+                          `while [ ! -f <path> ]; do sleep 0.2; done` instead
+                          of polling report.json — useful with --keep-alive,
+                          where the session outlives the flows.
+  --env <env>             Environment variable for the app under test, as
+                          KEY=VALUE. Repeatable. Forwarded through the flow's
+                          launchApp environment.
+  --version               Show the version.
+  -h, --help              Show help information.
+

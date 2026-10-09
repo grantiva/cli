@@ -1,0 +1,27 @@
+OVERVIEW: Register an app so devices running it can attest.
+
+The first app registered becomes the primary app. Bundle ID and Team ID cannot
+be changed afterwards.
+
+USAGE: grantiva console apps register [--json] [--verbose] [--quiet] <bundle-id> --team-id <team-id> [--name <name>] [--description <description>] [--primary]
+
+ARGUMENTS:
+  <bundle-id>             Bundle ID, e.g. com.example.app.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --team-id <team-id>     Apple Developer Team ID (10 characters, from
+                          developer.apple.com).
+  --name <name>           Display name. Defaults to the last segment of the
+                          bundle ID.
+  --description <description>
+                          Description.
+  --primary               Make this the primary app, demoting the current one.
+  --version               Show the version.
+  -h, --help              Show help information.
+

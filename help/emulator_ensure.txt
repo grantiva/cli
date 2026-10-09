@@ -1,0 +1,26 @@
+OVERVIEW: Create the AVD when missing (installing its system image first) and
+boot it. stdout is the serial, or the AVD name with --no-boot.
+
+USAGE: grantiva emulator ensure [--json] [--verbose] [--quiet] [--name <name>] [--system-image <system-image>] [--boot] [--no-boot] [--headless]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           AVD name. Defaults to emulator in
+                          grantiva-android.yml.
+  --system-image <system-image>
+                          System image package for a new AVD, e.g.
+                          "system-images;android-35;google_apis;arm64-v8a".
+                          Defaults to system_image in grantiva-android.yml,
+                          then that value.
+  --boot/--no-boot        Boot the emulator and wait for it to be ready. On by
+                          default; --no-boot creates it without booting.
+                          (default: --boot)
+  --headless              Boot without a window.
+  --version               Show the version.
+  -h, --help              Show help information.
+

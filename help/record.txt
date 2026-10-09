@@ -1,0 +1,31 @@
+OVERVIEW: Record a simulator or emulator and extract PNG frames at exact
+requested timestamps.
+
+USAGE: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --simulator <simulator> Simulator name or UDID to record (iOS; reads
+                          simulator from grantiva.yml if omitted)
+  --emulator <emulator>   AVD name to record, booting it if needed (Android;
+                          reads emulator from grantiva-android.yml if omitted)
+  --device <device>       adb serial of an attached emulator or device (Android)
+  --duration <duration>   Recording duration in seconds (Android caps a
+                          recording at 180)
+  --output <output>       Output video path (default:
+                          .grantiva/recordings/recording.mov on iOS, .mp4 on
+                          Android)
+  --frames-at <frames-at> Comma-separated frame timestamps in milliseconds,
+                          e.g. 0,150,300,600
+  --version               Show the version.
+  -h, --help              Show help information.
+

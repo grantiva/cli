@@ -1,0 +1,21 @@
+OVERVIEW: Provision, inspect, and tear down managed simulators.
+
+USAGE: grantiva simulator <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  ensure                  Create or reuse a named simulator and boot it.
+                          `--name` alone is enough: the device type is read
+                          from the name and the newest installed runtime is
+                          used.
+  delete
+  sessions
+  teardown                End a managed session, or reclaim one simulator by
+                          UDID when no ledger entry exists.
+  cleanup                 Delete Grantiva-created simulators that are shut down
+                          and not part of an active session.
+
+  See 'grantiva help simulator <subcommand>' for detailed help.

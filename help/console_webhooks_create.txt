@@ -1,0 +1,24 @@
+OVERVIEW: Create a webhook endpoint. The signing secret is shown once.
+
+Example:
+  grantiva console webhooks create https://ops.example.com/grantiva --event
+device.high_risk --event flag.updated
+
+USAGE: grantiva console webhooks create [--json] [--verbose] [--quiet] <url> --event <event> ... [--description <description>]
+
+ARGUMENTS:
+  <url>                   Endpoint URL (https).
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --event <event>         Event type to subscribe to. Repeatable.
+  --description <description>
+                          Description.
+  --version               Show the version.
+  -h, --help              Show help information.
+

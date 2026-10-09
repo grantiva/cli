@@ -1,0 +1,22 @@
+OVERVIEW: Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the
+current directory.
+
+USAGE: grantiva init [--verbose] [--quiet] [--platform <platform>] [--scheme <scheme>] [--bundle-id <bundle-id>] [--application-id <application-id>]
+
+OPTIONS:
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --scheme <scheme>       Scheme name
+  --bundle-id <bundle-id> Bundle identifier
+  --application-id <application-id>
+                          Application ID (Android)
+  --version               Show the version.
+  -h, --help              Show help information.
+

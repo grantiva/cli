@@ -1,0 +1,20 @@
+OVERVIEW: Dump the view hierarchy from a running app for agent inspection.
+
+USAGE: grantiva runner dump-hierarchy [--json] [--verbose] [--quiet] [--port <port>] [--format <format>] [--udid <udid>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  -p, --port <port>       WDA port (auto-detected from active session if
+                          omitted)
+  -f, --format <format>   Output format: tree, json, or xml (default: tree)
+                          (default: tree)
+  --udid <udid>           Simulator UDID or adb serial when falling back to a
+                          `grantiva run --keep-alive` session
+  --version               Show the version.
+  -h, --help              Show help information.
+

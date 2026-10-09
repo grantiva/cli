@@ -1,0 +1,23 @@
+OVERVIEW: Create an API key. The raw key is shown once.
+
+Example:
+  grantiva console keys create ci-flags --scope flags:read --scope flags:write
+--expires 2027-01-01T00:00:00Z
+
+USAGE: grantiva console keys create [--json] [--verbose] [--quiet] <name> --scope <scope> ... [--expires <expires>]
+
+ARGUMENTS:
+  <name>                  Key name.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --scope <scope>         Scope to grant. Repeatable.
+  --expires <expires>     Expiry as an ISO 8601 timestamp.
+  --version               Show the version.
+  -h, --help              Show help information.
+

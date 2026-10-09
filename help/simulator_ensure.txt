@@ -1,0 +1,27 @@
+OVERVIEW: Create or reuse a named simulator and boot it. `--name` alone is
+enough: the device type is read from the name and the newest installed runtime
+is used.
+
+USAGE: grantiva simulator ensure [--json] [--verbose] [--quiet] --name <name> [--device-type <device-type>] [--runtime <runtime>] [--boot] [--no-boot]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Simulator name. Also the source of the device type
+                          when --device-type is omitted, so `--name "iPhone
+                          17"` works on its own.
+  --device-type <device-type>
+                          Device type name ("iPhone 17 Pro") or identifier.
+                          Defaults to the device model named in --name.
+  --runtime <runtime>     Runtime name, version, identifier, or `latest`.
+                          Defaults to the newest installed iOS runtime.
+  --boot/--no-boot        Boot the simulator and wait for it to be ready. On by
+                          default; --no-boot creates it without booting.
+                          (default: --boot)
+  --version               Show the version.
+  -h, --help              Show help information.
+

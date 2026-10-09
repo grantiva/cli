@@ -1,0 +1,33 @@
+OVERVIEW: Change a claim's name, description, priority, active state, or
+configuration.
+
+The claim's type, data type and key are fixed at creation. Only the
+configuration option matching the claim's type applies.
+
+USAGE: grantiva console claims update [<options>] <claim>
+
+ARGUMENTS:
+  <claim>                 Claim key or UUID.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           New display name.
+  --description <description>
+                          New description.
+  --priority <priority>   New priority.
+  --active/--no-active    Activate or deactivate the claim.
+  --value <value>         New static value.
+  --rules <rules>         New conditional rules as JSON, or @file.json.
+  --expression <expression>
+                          New dynamic expression.
+  --external <external>   New external configuration as JSON, or @file.json.
+  --validation <validation>
+                          New validation rules as JSON, or @file.json.
+  --version               Show the version.
+  -h, --help              Show help information.
+

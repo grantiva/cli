@@ -1,0 +1,29 @@
+OVERVIEW: Update a targeting rule.
+
+USAGE: grantiva console flags rules update [--json] [--verbose] [--quiet] <key> <rule-id> [--name <name>] [--value <value>] [--when <when> ...] [--conditions-json <conditions-json>] [--rollout <rollout>] [--active] [--inactive]
+
+ARGUMENTS:
+  <key>                   Flag key (or UUID).
+  <rule-id>               Rule ID (from 'rules list').
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           New rule name.
+  --value <value>         New value the flag resolves to when this rule matches.
+  --when <when>           Replacement condition as
+                          <attribute>:<operator>:<value> (repeatable; replaces
+                          all conditions).
+  --conditions-json <conditions-json>
+                          Replacement conditions as a JSON array (replaces all
+                          conditions).
+  --rollout <rollout>     New rollout percentage 0-100.
+  --active                Activate the rule.
+  --inactive              Deactivate the rule.
+  --version               Show the version.
+  -h, --help              Show help information.
+

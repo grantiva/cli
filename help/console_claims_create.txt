@@ -1,0 +1,44 @@
+OVERVIEW: Create a custom claim.
+
+Examples:
+  grantiva console claims create plan --type static --value gold
+  grantiva console claims create region --type conditional --rules @rules.json
+  grantiva console claims create score --type dynamic --data-type number
+--expression 'risk_score * 2'
+
+USAGE: grantiva console claims create [<options>] <key> --type <type>
+
+ARGUMENTS:
+  <key>                   Claim key: starts with a letter; letters, digits and
+                          underscores only.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Display name. Defaults to the claim key.
+  --type <type>           Claim type: static, conditional, dynamic, or
+                          external. (values: static, conditional, dynamic,
+                          external)
+  --data-type <data-type> Value type: string, number, boolean, array, object,
+                          or date. Default string. (values: string, number,
+                          boolean, array, object, date; default: string)
+  --description <description>
+                          Description.
+  --value <value>         Static value (for --type static).
+  --rules <rules>         Conditional rules as a JSON array, or @file.json (for
+                          --type conditional).
+  --expression <expression>
+                          Expression (for --type dynamic).
+  --external <external>   External endpoint configuration as JSON, or
+                          @file.json (for --type external, Enterprise).
+  --validation <validation>
+                          Validation rules as JSON, or @file.json.
+  --priority <priority>   Priority (lower evaluates first). Default 0.
+  --inactive              Create the claim inactive.
+  --version               Show the version.
+  -h, --help              Show help information.
+

@@ -1,0 +1,21 @@
+OVERVIEW: Register and manage the apps (bundle IDs) attesting under this
+organization.
+
+USAGE: grantiva console apps <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  list                    List registered apps, primary first.
+  get                     Show one app by bundle ID or UUID.
+  register                Register an app so devices running it can attest.
+  update                  Rename an app or change its description and toggles.
+  delete                  Delete an app and everything attached to it.
+  activate                Allow attestations from this app.
+  deactivate              Stop accepting attestations from this app. The
+                          primary app cannot be deactivated.
+  set-primary             Make this app the primary app. It must be active.
+
+  See 'grantiva help console apps <subcommand>' for detailed help.

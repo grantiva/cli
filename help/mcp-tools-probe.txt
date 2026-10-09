@@ -1,0 +1,40 @@
+# MCP tools/list probe, grantiva 2.0.1, 2026-10-09
+
+$ printf <initialize>
+<tools/list>
+ | grantiva mcp --project-dir /tmp
+exit 1, stdout empty, stderr:
+Error: Invalid argument: No grantiva.yml or grantiva-android.yml found in project directory: /tmp
+
+$ ... | grantiva mcp --project-dir <scratch dir containing only a minimal grantiva.yml>
+exit 1, stdout empty, stderr:
+Error: Invalid argument: No active runner session at <scratch>/mcpproj/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive`.
+
+The server refuses to start (and so never answers initialize or tools/list) without a config file AND a live runner session
+(Sources/GrantivaMCP/MCPServer.swift resolveProjectDirectory + loadActiveSession, then attachDriver).
+tools/list therefore cannot be captured device-free. Tool definitions enumerated from Sources/GrantivaMCP/Tools/*.swift instead:
+
+BuildTools.swift:13:"grantiva_build",
+BuildTools.swift:43:"grantiva_run",
+BuildTools.swift:73:"grantiva_test",
+ContextTool.swift:13:"grantiva_context",
+EmulatorTools.swift:34:"grantiva_emulator_list",
+EmulatorTools.swift:40:"grantiva_emulator_boot",
+EmulatorTools.swift:51:"grantiva_emulator_ensure",
+EmulatorTools.swift:65:"grantiva_emulator_delete",
+ScriptTools.swift:13:"grantiva_script",
+SimTools.swift:13:"grantiva_sim_list",
+SimTools.swift:28:"grantiva_sim_boot",
+SimTools.swift:42:"grantiva_sim_ensure",
+SimTools.swift:57:"grantiva_sim_delete",
+UITools.swift:13:"grantiva_screenshot",
+UITools.swift:31:"grantiva_tap",
+UITools.swift:53:"grantiva_swipe",
+UITools.swift:69:"grantiva_type",
+UITools.swift:84:"grantiva_a11y_tree",
+UITools.swift:93:"grantiva_a11y_check",
+VRTTools.swift:14:"grantiva_vrt_capture",
+VRTTools.swift:23:"grantiva_vrt_compare",
+VRTTools.swift:35:"grantiva_vrt_approve",
+Resources: grantiva://hierarchy (application/json), grantiva://screenshot (image/png)
+Tool count: 22 (spec section 2 says 19).

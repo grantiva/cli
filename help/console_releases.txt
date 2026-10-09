@@ -1,0 +1,24 @@
+OVERVIEW: Author the What's New release notes shown to users after they
+upgrade.
+
+A note is attached to an app and a version. Devices see the notes for versions
+between the one they installed and the one they are running, once published.
+
+USAGE: grantiva console releases <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  list                    List release notes, newest first.
+  get                     Show a release note including its body.
+  create                  Create a release note for an app version.
+  update                  Change a note's version, title, or body. Use
+                          publish/unpublish for its state.
+  publish                 Publish a note so upgrading devices see it.
+  unpublish               Hide a note from devices. Devices that already read
+                          it are not shown it again on republish.
+  delete                  Delete a release note.
+
+  See 'grantiva help console releases <subcommand>' for detailed help.

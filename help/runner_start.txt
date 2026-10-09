@@ -1,0 +1,30 @@
+OVERVIEW: Start the runner with WDA and keep it alive for interactive use.
+
+USAGE: grantiva runner start [--json] [--verbose] [--quiet] [--platform <platform>] [--bundle-id <bundle-id>] [--simulator <simulator>] [--application-id <application-id>] [--emulator <emulator>] [--device <device>] [--headless] [--detach]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --bundle-id <bundle-id> App bundle identifier (iOS; reads from grantiva.yml
+                          if omitted)
+  --simulator <simulator> Simulator name or UDID (iOS; reads from grantiva.yml
+                          if omitted)
+  --application-id <application-id>
+                          Application ID (Android; reads from
+                          grantiva-android.yml if omitted)
+  --emulator <emulator>   AVD name to use, booting it if needed (Android)
+  --device <device>       adb serial of an attached emulator or device (Android)
+  --headless              Boot an emulator without a window (Android)
+  --detach                Detach the runner process from this terminal. Prints
+                          the log file path on start.
+  --version               Show the version.
+  -h, --help              Show help information.
+

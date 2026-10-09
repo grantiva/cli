@@ -1,0 +1,27 @@
+OVERVIEW: List devices, most recently attested first.
+
+Risk bands: low 0–20, medium 21–50, high 51–75, critical 76–100.
+
+USAGE: grantiva console devices list [--json] [--verbose] [--quiet] [--page <page>] [--per <per>] [--risk-min <risk-min>] [--risk-max <risk-max>] [--jailbroken] [--no-jailbroken] [--app <app>] [--search <search>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --page <page>           Page number, starting at 1.
+  --per <per>             Devices per page, 1–100. Default 20.
+  --risk-min <risk-min>   Only devices with risk score at or above this (0–100).
+  --risk-max <risk-max>   Only devices with risk score at or below this (0–100).
+  --jailbroken/--no-jailbroken
+                          Only jailbroken devices, or only clean ones with
+                          --no-jailbroken.
+  --app <app>             Only devices attesting under this app (UUID or bundle
+                          ID).
+  --search <search>       Match key ID, model, OS version, or country
+                          (case-insensitive).
+  --version               Show the version.
+  -h, --help              Show help information.
+

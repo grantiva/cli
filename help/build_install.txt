@@ -1,0 +1,41 @@
+OVERVIEW: Build and install the app on a simulator, then optionally launch it.
+
+USAGE: grantiva build install <options>
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+                          Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the simulator.
+  --derived-data-path <derived-data-path>
+                          Write Xcode build products and intermediates to this
+                          DerivedData directory.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --scheme <scheme>       Scheme to build (iOS)
+  --simulator <simulator> Simulator name or UDID (iOS)
+  --bundle-id <bundle-id> Bundle identifier (iOS)
+  --module <module>       Gradle module to assemble (Android; default app)
+  --variant <variant>     Gradle build variant, e.g. debug or freeDebug
+                          (Android; default debug)
+  --application-id <application-id>
+                          Application ID (Android; read from the build or the
+                          APK when omitted)
+  --emulator <emulator>   AVD name to use, booting it if needed (Android)
+  --device <device>       adb serial of an attached emulator or physical device
+                          (Android)
+  --allow-device-settings Apply demo mode and animation settings on a physical
+                          device too (Android)
+  --headless              Boot an emulator without a window (Android)
+  --no-launch             Install the app without launching it.
+  --version               Show the version.
+  -h, --help              Show help information.
+

@@ -1,0 +1,26 @@
+OVERVIEW: Create a release note for an app version.
+
+Example:
+  grantiva console releases create com.example.app 2.1.0 --title "Dark mode"
+--body @notes.md --publish
+
+USAGE: grantiva console releases create [--json] [--verbose] [--quiet] <app> <version> --title <title> --body <body> [--publish]
+
+ARGUMENTS:
+  <app>                   App bundle ID or UUID.
+  <version>               Version, e.g. 2.1.0.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --title <title>         Title (up to 200 characters).
+  --body <body>           Body as Markdown, inline or @file.md (up to 20,000
+                          characters).
+  --publish               Publish immediately.
+  --version               Show the version.
+  -h, --help              Show help information.
+

@@ -1,0 +1,24 @@
+OVERVIEW: List feature requests, most voted first.
+
+USAGE: grantiva console feedback list [--json] [--verbose] [--quiet] [--status <status>] [--app <app>] [--search <search>] [--sort <sort>] [--page <page>] [--per <per>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --status <status>       Only this status: pending, open, planned,
+                          in_progress, shipped, declined, duplicate. (values:
+                          pending, open, planned, in_progress, shipped,
+                          declined, duplicate)
+  --app <app>             Only requests for this app (bundle ID or UUID).
+  --search <search>       Match title or description (case-insensitive).
+  --sort <sort>           Order: votes (default), newest, or oldest. (values:
+                          votes, newest, oldest)
+  --page <page>           Page number, starting at 1.
+  --per <per>             Requests per page, 1–100. Default 20.
+  --version               Show the version.
+  -h, --help              Show help information.
+

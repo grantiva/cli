@@ -1,0 +1,22 @@
+OVERVIEW: Alert a webhook when a device's risk score crosses a threshold.
+
+USAGE: grantiva console alerts rules create [--json] [--verbose] [--quiet] <name> --threshold <threshold> [--comparison <comparison>] --url <url>
+
+ARGUMENTS:
+  <name>                  Rule name.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --threshold <threshold> Risk score threshold, 0–100.
+  --comparison <comparison>
+                          gt (above) or gte (at or above). Default gte.
+                          (default: gte)
+  --url <url>             Webhook URL to call.
+  --version               Show the version.
+  -h, --help              Show help information.
+

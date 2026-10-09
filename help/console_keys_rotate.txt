@@ -1,0 +1,22 @@
+OVERVIEW: Replace a key with a new one holding the same scopes. The old key is
+revoked immediately unless --grace-days is given.
+
+USAGE: grantiva console keys rotate [--json] [--verbose] [--quiet] <key> [--grace-days <grace-days>] [--yes]
+
+ARGUMENTS:
+  <key>                   Key ID.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --grace-days <grace-days>
+                          Keep the old key working for this many days.
+  --yes                   Skip the confirmation prompt (required when stdin is
+                          not a TTY).
+  --version               Show the version.
+  -h, --help              Show help information.
+

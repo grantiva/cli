@@ -1,0 +1,24 @@
+OVERVIEW: Approve a run: accepted screens become the branch baselines.
+
+Every failed or new screen must have been accepted or flagged first, unless
+--accept-all is given, which accepts all of them. Flagged screens keep the old
+baseline.
+
+USAGE: grantiva console vrt approve [--json] [--verbose] [--quiet] <project> <run> [--accept-all]
+
+ARGUMENTS:
+  <project>               Project slug.
+  <run>                   Run ID.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --accept-all            Accept every screen still awaiting review, then
+                          approve.
+  --version               Show the version.
+  -h, --help              Show help information.
+

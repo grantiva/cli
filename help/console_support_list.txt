@@ -1,0 +1,23 @@
+OVERVIEW: List tickets, most recently updated first.
+
+USAGE: grantiva console support list [--json] [--verbose] [--quiet] [--status <status>] [--priority <priority>] [--app <app>] [--search <search>] [--page <page>] [--per <per>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --status <status>       Only this status: open, awaiting_reply, resolved,
+                          closed. (values: open, awaiting_reply, resolved,
+                          closed)
+  --priority <priority>   Only this priority: low, normal, high, urgent.
+                          (values: low, normal, high, urgent)
+  --app <app>             Only tickets for this app (bundle ID or UUID).
+  --search <search>       Match subject or submitter email (case-insensitive).
+  --page <page>           Page number, starting at 1.
+  --per <per>             Tickets per page, 1–100. Default 20.
+  --version               Show the version.
+  -h, --help              Show help information.
+

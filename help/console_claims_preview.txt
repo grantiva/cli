@@ -1,0 +1,30 @@
+OVERVIEW: Evaluate a saved claim against a simulated device.
+
+USAGE: grantiva console claims preview [--json] [--verbose] [--quiet] <claim> [--device-model <device-model>] [--os-version <os-version>] [--app-version <app-version>] [--risk-score <risk-score>] [--attestation-count <attestation-count>] [--jailbroken] [--country <country>] [--data <data> ...]
+
+ARGUMENTS:
+  <claim>                 Claim key or UUID.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --device-model <device-model>
+                          Simulated device model, e.g. iPhone16,1.
+  --os-version <os-version>
+                          Simulated OS version, e.g. 18.0.
+  --app-version <app-version>
+                          Simulated app version.
+  --risk-score <risk-score>
+                          Simulated risk score, 0–100.
+  --attestation-count <attestation-count>
+                          Simulated attestation count.
+  --jailbroken            Simulate a jailbroken device.
+  --country <country>     Simulated country code, e.g. CA.
+  --data <data>           Extra evaluation data as key=value. Repeatable.
+  --version               Show the version.
+  -h, --help              Show help information.
+
