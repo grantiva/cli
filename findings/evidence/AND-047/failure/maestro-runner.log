@@ -1,0 +1,70 @@
+14:05:09.223334 [INFO] === Test execution started ===
+14:05:09.223410 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-047/failure
+14:05:09.223417 [INFO] Platform: android
+14:05:09.223422 [INFO] Driver: uiautomator2
+14:05:09.223730 [INFO] Validated 1 flow(s)
+14:05:09.223749 [INFO] Single device execution mode
+14:05:09.223755 [INFO] Starting flow execution (parallel: false, devices: [])
+14:05:09.223760 [INFO] Creating driver for single device execution
+14:05:09.223765 [INFO] Connecting to Android device: emulator-5554
+14:05:09.309111 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:05:09.335680 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:05:09.762495 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:05:09.778317 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:05:10.878455 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:05:10.888465 [INFO] Session created successfully: 494ca10a-da1f-49fd-b84e-cf3aba07a2ce
+14:05:10.962779 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:05:10.965404 [INFO] === Starting flow: qa-fail-late ===
+14:05:10.965412 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-4A88765F-D076-44BA-9EF1-B430448E03F5/0/qa-fail-late.yaml
+14:05:10.965415 [INFO] Total steps: 4
+14:05:10.972792 [DEBUG] Executing step 0: launchApp
+14:05:13.073142 [DEBUG] Step 0 completed successfully (2100ms): launchApp
+14:05:13.073661 [DEBUG] Executing step 1: tapOn: text="Golden Gate Bridge"
+14:05:13.073985 [DEBUG] Flutter: parallel search (text="Golden Gate Bridge", id="")
+14:05:13.130331 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.190706 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.246279 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.303299 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.349912 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.389130 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.428575 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.472677 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.531531 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.582103 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.676231 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.834490 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.897679 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.949712 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:13.983349 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.017621 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.050390 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.082223 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.115151 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.153078 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.192594 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.229363 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.265969 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.297691 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.330176 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.362424 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.400893 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.436328 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.469551 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.500663 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.534071 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.568772 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.609004 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.674371 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:05:14.674573 [DEBUG] Step 1 completed successfully (1600ms): tapOn: text="Golden Gate Bridge"
+14:05:14.674998 [DEBUG] Executing step 2: assertVisible: text="San Francisco, CA"
+14:05:15.250001 [DEBUG] Step 2 completed successfully (574ms): assertVisible: text="San Francisco, CA"
+14:05:15.250340 [DEBUG] Executing step 3: assertVisible: text="Definitely Not Here"
+14:05:32.285978 [ERROR] Step 3 failed (17035ms): assertVisible: text="Definitely Not Here" - Error: Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+14:05:32.447301 [INFO] === Flow completed: qa-fail-late (status: failed, duration: 21481ms, passed: 3, failed: 1, skipped: 0) ===
+14:05:32.831271 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:05:32.843267 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:05:32.843293 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:05:32.843453 [INFO] Generating reports...
+14:05:32.844106 [INFO] Shutting down devices started by maestro-runner...
+14:05:32.844126 [INFO] Shutting down all tracked emulators
+14:05:32.844135 [INFO] Shutting down all tracked simulators

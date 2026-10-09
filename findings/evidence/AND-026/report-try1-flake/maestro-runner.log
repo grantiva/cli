@@ -1,0 +1,44 @@
+13:57:19.798771 [INFO] === Test execution started ===
+13:57:19.798836 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-026/report
+13:57:19.798840 [INFO] Platform: android
+13:57:19.798843 [INFO] Driver: uiautomator2
+13:57:19.799157 [INFO] Validated 1 flow(s)
+13:57:19.799178 [INFO] Single device execution mode
+13:57:19.799184 [INFO] Starting flow execution (parallel: false, devices: [])
+13:57:19.799189 [INFO] Creating driver for single device execution
+13:57:19.799193 [INFO] Connecting to Android device: emulator-5554
+13:57:19.879908 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+13:57:19.901928 [INFO] Starting UIAutomator2 server on device emulator-5554
+13:57:20.307878 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+13:57:20.319666 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+13:57:21.393076 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+13:57:21.400481 [INFO] Session created successfully: b7ae147d-b0f8-4904-9c67-b6b6d1f1daef
+13:57:21.447136 [INFO] Driver created: android on google sdk_gphone64_arm64
+13:57:21.448952 [INFO] === Starting flow: 01-browse ===
+13:57:21.448957 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-386AA082-4CEE-4C2D-93D9-EFB93AC3894C/0/01-browse.yaml
+13:57:21.448960 [INFO] Total steps: 8
+13:57:21.454315 [DEBUG] Executing step 0: launchApp
+13:57:23.139039 [DEBUG] Step 0 completed successfully (1684ms): launchApp
+13:57:23.139478 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+13:57:23.139811 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+13:57:23.244116 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+13:57:23.353725 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+13:57:23.435583 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+13:57:23.544521 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+13:57:23.544558 [DEBUG] Step 1 completed successfully (405ms): assertVisible: text="Landmarks"
+13:57:23.544948 [DEBUG] Executing step 2: assertVisible: text="Featured"
+13:57:24.096716 [DEBUG] Step 2 completed successfully (551ms): assertVisible: text="Featured"
+13:57:24.097075 [DEBUG] Executing step 3: takeScreenshot
+13:57:24.246466 [ERROR] Step 3 failed (149ms): takeScreenshot - Error: Failed to take screenshot: send request: Get "http://localhost/session/b7ae147d-b0f8-4904-9c67-b6b6d1f1daef/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused (cause: send request: Get "http://localhost/session/b7ae147d-b0f8-4904-9c67-b6b6d1f1daef/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused)
+13:57:24.248264 [INFO] === Flow completed: 01-browse (status: failed, duration: 2799ms, passed: 3, failed: 1, skipped: 4) ===
+13:57:24.249368 [DEBUG] failed to close client during cleanup: send request: Delete "http://localhost/session/b7ae147d-b0f8-4904-9c67-b6b6d1f1daef": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused
+13:57:24.262734 [WARN] failed to force-stop io.appium.uiautomator2.server: adb shell am force-stop io.appium.uiautomator2.server: exit status 1: adb: device offline
+13:57:24.275157 [WARN] failed to force-stop io.appium.uiautomator2.server.test: adb shell am force-stop io.appium.uiautomator2.server.test: exit status 1: adb: device offline
+13:57:24.589705 [WARN] failed to remove socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: device 'emulator-5554' not found
+13:57:24.602516 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: device 'emulator-5554' not found
+13:57:24.614751 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: device 'emulator-5554' not found
+13:57:24.614773 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+13:57:24.614973 [INFO] Generating reports...
+13:57:24.615609 [INFO] Shutting down devices started by maestro-runner...
+13:57:24.615624 [INFO] Shutting down all tracked emulators
+13:57:24.615631 [INFO] Shutting down all tracked simulators

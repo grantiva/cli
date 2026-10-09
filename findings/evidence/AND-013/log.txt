@@ -1,0 +1,24 @@
+$ grantiva emulator ensure --name qa-android-1
+Booting AVD qa-android-1 as emulator-5556
+Reused qa-android-1 (emulator-5556) — Booted
+emulator-5556
+exit 0
+[{"pid":19482,"startedAt":813271244.347498,"serial":"emulator-5554","avd":"Pixel_8_API_35"},{"pid":66219,"startedAt":813272032.689144,"serial":"emulator-5556","avd":"qa-android-1"}]
+$ adb -s emulator-5556 emu kill   (emulator dies outside Grantiva; record now stale)
+OK: killing emulator, bye bye
+OK
+$ emulator -avd qa-android-1 -port 5556 -no-window ... (user starts it by hand)
+manual qemu pid 67043
+49817 /Users/kyle/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64 -avd Pixel_8_API_35 -no-snapshot-save -no-boot-anim
+67043 /Users/kyle/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd qa-android-1 -port 5556 -no-window -no-snapshot-save -no-boot-anim
+$ grantiva emulator sessions
+Grantiva-started emulators (2):
+  emulator-5554 (Pixel_8_API_35) — pid 19482 exited, adb: device
+  emulator-5556 (qa-android-1) — pid 66219 exited, adb: device
+$ grantiva emulator teardown --serial emulator-5556   (no --force)
+Killed emulator-5556 (qa-android-1).
+exit 0
+List of devices attached
+emulator-5554	device
+
+  PID TTY           TIME CMD

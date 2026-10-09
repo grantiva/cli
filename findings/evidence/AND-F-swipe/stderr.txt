@@ -1,0 +1,87 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-F-swipe/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (751ms)
+    ✓ tapOn: text="Favorite" (722ms)
+    ✓ assertVisible: text="Unfavorite" (169ms)
+    ✓ tapOn: text="Landmarks" (371ms)
+    ✓ tapOn: text="Favorites" (270ms)
+    ✓ assertVisible: text="Lake Tahoe" (130ms)
+    ✓ takeScreenshot (234ms)
+[swipe] Using screen coords: (972,1200) → (108,1200)
+    ✓ swipe: LEFT (456ms)
+    ✓ tapOn: text="Remove" (259ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (224ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (155ms)
+    ✓ takeScreenshot (249ms)
+✓ 02-favorite 10.6s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.8s)
+    ✓ tapOn (1.4s)
+    ✓ tapOn (899ms)
+    ✓ assertVisible (339ms)
+    ✓ tapOn (1.1s)
+    ✓ tapOn (760ms)
+    ✓ assertVisible (270ms)
+    ✓ takeScreenshot (381ms)
+    ✓ swipe (620ms)
+    ✓ tapOn (850ms)
+    ✓ assertNotVisible (434ms)
+    ✓ assertVisible (309ms)
+    ✓ takeScreenshot (395ms)
+✓ 02-favorite 10.6s
+
+  13 steps passing (10.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      10.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      10.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-F-swipe/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-F-swipe/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-F-swipe/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-F-swipe/report/allure-results
+
+  Built by Grantiva
+

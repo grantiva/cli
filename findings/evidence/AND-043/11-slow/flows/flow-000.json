@@ -1,0 +1,145 @@
+{
+  "id": "flow-000",
+  "name": "11-slow",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-29D76282-B1A5-4860-A2F7-81EA1885613D/0/11-slow.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:09:37.861415-07:00",
+  "endTime": "2026-10-09T14:09:46.952068-07:00",
+  "duration": 9090,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:37.861671-07:00",
+      "endTime": "2026-10-09T14:09:39.533769-07:00",
+      "duration": 1672,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:39.536045-07:00",
+      "endTime": "2026-10-09T14:09:42.868113-07:00",
+      "duration": 3332,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:42.868578-07:00",
+      "endTime": "2026-10-09T14:09:43.70717-07:00",
+      "duration": 838,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Slow Screen",
+        "bounds": {
+          "x": 42,
+          "y": 1157,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:43.707504-07:00",
+      "endTime": "2026-10-09T14:09:44.308146-07:00",
+      "duration": 600,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-05a1-0000-00d000000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Loaded after delay\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:44.308529-07:00",
+      "endTime": "2026-10-09T14:09:46.81589-07:00",
+      "duration": 2507,
+      "element": {
+        "found": true,
+        "id": "00000000-0000-05a1-0000-00d000000004",
+        "text": "Loaded after delay",
+        "bounds": {
+          "x": 359,
+          "y": 1159,
+          "width": 363,
+          "height": 63
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-09T14:09:46.816213-07:00",
+      "endTime": "2026-10-09T14:09:46.951702-07:00",
+      "duration": 135,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-005-Slow Loaded.png"
+      }
+    }
+  ],
+  "artifacts": {}
+}

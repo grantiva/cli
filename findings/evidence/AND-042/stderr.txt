@@ -1,0 +1,88 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=5 flows=12
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Build finished: success=true duration=2.0s
+Installing com.kylebrowning.landmarks...
+Running 13 flow(s)...
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-042E5A43-A6A7-43DC-84F3-A09757D38E3B
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ takeScreenshot (142ms)
+    ✓ tapOn: text="Favorites" (988ms)
+    ✓ takeScreenshot (151ms)
+    ✓ tapOn: text="Deep Links" (525ms)
+    ✓ takeScreenshot (156ms)
+    ✓ tapOn: text="Landmarks" (580ms)
+    ✗ tapOn: text="Lakes" (17.2s)
+      ╰─ Element not found: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ flow 21.6s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-EBA30256-2319-4619-85AA-ECCB13F021BE/flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ takeScreenshot (142ms)
+    ✓ tapOn (988ms)
+    ✓ takeScreenshot (151ms)
+    ✓ tapOn (525ms)
+    ✓ takeScreenshot (156ms)
+    ✓ tapOn (580ms)
+    ✗ tapOn (17.4s)
+      ╰─ Element not found: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 21.6s
+
+  7 steps passing (21.6s)
+  1 steps failing
+  5 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL      13      7      1      5      21.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      7      1      5      21.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-042E5A43-A6A7-43DC-84F3-A09757D38E3B
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-042E5A43-A6A7-43DC-84F3-A09757D38E3B/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-042E5A43-A6A7-43DC-84F3-A09757D38E3B/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-042E5A43-A6A7-43DC-84F3-A09757D38E3B/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-042/report/captures/failure-1791579560.png
+Error: Runner failed (exit 1):
+ exited with code 1

@@ -1,0 +1,18 @@
+--- before
+emulator-5556 tcp:56881 tcp:6790
+emulator-5554 tcp:56885 tcp:6790
+
+List of devices attached
+emulator-5554	device
+emulator-5556	device
+
+Killed emulator-5556 (qa-android-1).
+exit 0
+--- after
+emulator-5554 tcp:56885 tcp:6790
+
+List of devices attached
+emulator-5554	device
+
+  PID TTY           TIME CMD
+[{"serial":"emulator-5554","pid":19482,"startedAt":813271244.347498,"avd":"Pixel_8_API_35"}]

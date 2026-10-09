@@ -1,0 +1,31 @@
+before: anim=1 demo=0 rot=1 file=none
+mid-run (grantiva pid 25925): anim=0 demo=1 rot=0 file=.grantiva/android-settings-emulator-5554.json
+25400 25399 timeout 900 /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --flow .maestro/11-slow.yaml --simulator qa-ios-2 --ready-file /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-032/x.ready
+25402 25400 /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --flow .maestro/11-slow.yaml --simulator qa-ios-2 --ready-file /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-032/x.ready
+25485 21491 timeout 600 /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --flow .maestro/03-edit.yaml --simulator qa-ios-1 --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit
+25486 25485 /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --flow .maestro/03-edit.yaml --simulator qa-ios-1 --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit
+25925 25903 /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --flow /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/flows/qa-longwait.yaml --device emulator-5554 --keep-alive
+25960 25925 /Users/kyle/.grantiva/runner/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBCE1D2E-3E45-4074-9A20-6E3D22D3DBCC --flatten --artifacts failure --fail-fast --keep-alive /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-F88667D6-83DB-4CF8-B0A9-949B6CEE7AC4/0/qa-longwait.yaml
+after kill -9 grantiva: anim=0 demo=1 rot=0 file=.grantiva/android-settings-emulator-5554.json
+surviving processes:
+25960     1 /Users/kyle/.grantiva/runner/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBCE1D2E-3E45-4074-9A20-6E3D22D3DBCC --flatten --artifacts failure --fail-fast --keep-alive /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-F88667D6-83DB-4CF8-B0A9-949B6CEE7AC4/0/qa-longwait.yaml
+emulator-5554 localfilesystem:/tmp/uia2-emulator-5554.sock tcp:6790
+
+/tmp/uia2-emulator-5554.pid
+/tmp/uia2-emulator-5554.sock
+
+/tmp/grantiva-sessions:
+25960.owner.json
+$ grantiva run --no-build --flow .maestro/05-category.yaml --device emulator-5554   (orphaned runner 25960 still alive)
+Error: failed to create driver: device emulator-5554 is already in use
+Another maestro-runner instance may be using this device.
+Socket: /tmp/uia2-emulator-5554.sock
+Hint: Wait for it to finish or use a different device
+ exited with code 1
+exit 1
+settings: anim=1 demo=0 file=none
+--- orphan runner stopped with SIGINT; left: forward localfilesystem:/tmp/uia2-emulator-5554.sock, /tmp/uia2-emulator-5554.{pid,sock}, /tmp/grantiva-sessions/25960.owner.json
+$ grantiva run --no-build --flow .maestro/05-category.yaml --device emulator-5554
+  05-category                    ✓ PASS       6      6      0      0       5.3s  google sdk_gphone64_arm64 (...
+exit 0
+

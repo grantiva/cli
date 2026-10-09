@@ -1,0 +1,42 @@
+14:07:07.552648 [INFO] === Test execution started ===
+14:07:07.552728 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-046/report-failfast
+14:07:07.552733 [INFO] Platform: android
+14:07:07.552737 [INFO] Driver: uiautomator2
+14:07:07.553190 [INFO] Validated 3 flow(s)
+14:07:07.553209 [INFO] Single device execution mode
+14:07:07.553216 [INFO] Starting flow execution (parallel: false, devices: [])
+14:07:07.553222 [INFO] Creating driver for single device execution
+14:07:07.553227 [INFO] Connecting to Android device: emulator-5554
+14:07:07.630591 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:07:07.651930 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:07:08.049265 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:07:08.061698 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:07:09.121500 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:07:09.129260 [INFO] Session created successfully: b6037238-2dfb-4780-9d39-2244ce47b012
+14:07:09.221147 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:07:09.223587 [INFO] === Starting flow: 99-crash ===
+14:07:09.223593 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-083D3060-0400-4529-96B6-B1F9CB970D6C/0/99-crash.yaml
+14:07:09.223596 [INFO] Total steps: 4
+14:07:09.230623 [DEBUG] Executing step 0: launchApp
+14:07:10.911917 [DEBUG] Step 0 completed successfully (1681ms): launchApp
+14:07:10.912449 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:07:10.912703 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:07:10.971853 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.027744 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.084155 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.140224 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.198002 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.271917 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:07:11.271968 [DEBUG] Step 1 completed successfully (359ms): assertVisible: text="Landmarks"
+14:07:11.272388 [DEBUG] Executing step 2: assertVisible: text="Featured"
+14:07:11.832427 [DEBUG] Step 2 completed successfully (560ms): assertVisible: text="Featured"
+14:07:11.832787 [DEBUG] Executing step 3: assertVisible: text="This never appears"
+14:07:28.937870 [ERROR] Step 3 failed (17105ms): assertVisible: text="This never appears" - Error: Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+14:07:29.107990 [INFO] === Flow completed: 99-crash (status: failed, duration: 19884ms, passed: 3, failed: 1, skipped: 0) ===
+14:07:29.525830 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:07:29.538153 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:07:29.538188 [INFO] Flow execution completed: 0 passed, 1 failed, 2 skipped
+14:07:29.538493 [INFO] Generating reports...
+14:07:29.539593 [INFO] Shutting down devices started by maestro-runner...
+14:07:29.539612 [INFO] Shutting down all tracked emulators
+14:07:29.539620 [INFO] Shutting down all tracked simulators

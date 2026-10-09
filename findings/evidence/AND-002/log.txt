@@ -1,0 +1,19 @@
+$ grantiva emulator ensure --name qa-android-img --system-image "system-images;android-34;google_apis;arm64-v8a" --no-boot
+Fri Oct  9 13:55:41 PDT 2026
+[debug] 2026-10-09T20:55:41Z com.grantiva.cli: $ '/Users/kyle/Library/Android/sdk/emulator/emulator' -list-avds
+[debug] 2026-10-09T20:55:41Z com.grantiva.cli: exit 0: '/Users/kyle/Library/Android/sdk/emulator/emulator' -list-avds
+Installing system-images;android-34;google_apis;arm64-v8a with sdkmanager
+[debug] 2026-10-09T20:55:41Z com.grantiva.cli: $ yes 2>/dev/null | JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home' '/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager' --sdk_root='/Users/kyle/Library/Android/sdk' 'system-images;android-34;google_apis;arm64-v8a'
+[debug] 2026-10-09T20:56:44Z com.grantiva.cli: exit 0: yes 2>/dev/null | JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home' '/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/sdkmanager' --sdk_root='/Users/kyle/Library/Android/sdk' 'system-images;android-34;google_apis;arm64-v8a'
+Creating AVD qa-android-img
+[debug] 2026-10-09T20:56:44Z com.grantiva.cli: $ echo no | JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home' '/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager' create avd -n 'qa-android-img' -k 'system-images;android-34;google_apis;arm64-v8a' -d pixel_8
+[debug] 2026-10-09T20:56:45Z com.grantiva.cli: exit 0: echo no | JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home' '/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager' create avd -n 'qa-android-img' -k 'system-images;android-34;google_apis;arm64-v8a' -d pixel_8
+Created qa-android-img — Shutdown
+qa-android-img
+real 63.67
+user 15.65
+sys 12.15
+exit 0
+Fri Oct  9 13:56:45 PDT 2026
+android-34
+android-35
