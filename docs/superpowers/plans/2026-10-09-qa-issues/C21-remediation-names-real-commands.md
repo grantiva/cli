@@ -44,7 +44,21 @@ On iOS, MCP `grantiva_tap` by label hits this string whenever WDA's name differs
 ```
 << {"error": {"code": -32603, "message": "Internal error: Element not found: \"Favorites\". Run grantiva ui a11y to inspect the tree."}}
 ```
-`grantiva ui` does not exist. Repro: the I05 repro (`grantiva_tap {"label":"Favorites"}` against a keep-alive session
-on qa-ios-2 in a copy of /Users/kyle/Developer/landmarks-demo/ios).
+`grantiva ui` does not exist. Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios QA=/Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-2 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-2
+grantiva run --no-build --flow .maestro/01-browse.yaml --simulator qa-ios-2 --keep-alive --ready-file /tmp/c21.ready &
+while [ ! -f /tmp/c21.ready ]; do sleep 0.2; done
+cat > /tmp/c21.json <<'J'
+[{"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"qa","version":"1"}}},
+ {"method":"notifications/initialized","jsonrpc":"2.0"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"Favorites"}}}]
+J
+python3 $QA/findings/evidence/IOS-mcp/client.py /tmp/c21.json /tmp/c21 /tmp/qa-ios-app -- grantiva mcp
+grep -o 'Element not found[^"]*' /tmp/c21/transcript.txt; kill -INT %1
+```
 Evidence (qa-ios worktree): findings/evidence/IOS-mcp/phase1/transcript.txt (ids 7, 10).
 Extra acceptance criterion: none beyond the existing ones; verify the iOS error text after I05 lands.

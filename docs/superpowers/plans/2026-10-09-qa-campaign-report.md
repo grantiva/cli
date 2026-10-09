@@ -35,28 +35,28 @@ Raw findings: 30 CLI + 14 docs, 36 iOS, 23 Android. After confirmation: every CL
 
 Gate defects, found before the campaign started and confirmed on both platforms:
 
-- Flow-level `env:`, `--env`, and `launchApp.environment` never reach the app on iOS or Android (A01, with iOS detail).
+- Launch environment is dropped (A01, with iOS detail): on iOS `--env` does reach the app and only the flow-header `env:` is dropped; on Android `env:`, `--env`, and `launchApp.environment` are all dropped.
 - `swipe` with `from:` ignores the element and swipes screen center while reporting success (A02).
 - Bare `scroll` is unsupported although README lists it (C10).
-- `simulator ensure --name` fails when the name carries no device model, contrary to README (folded into C21).
+- `simulator ensure --name` fails when the name carries no device model, contrary to README (I10).
 
 Most consequential briefs beyond those:
 
 - C01 (crash): `runner install` deletes `~/.grantiva/runner`, including other processes' lease locks, before extracting, and traps with exit 133 when the resource bundle is missing. This hit the campaign once at 13:55 and wiped a live runner.
-- C02 / A03: the emulator ledger lists a hand-started emulator as Grantiva-owned, so `emulator teardown --all` would kill it. True on this host now.
-- I02 / IOS-F27: `diff capture --no-build` ignores `simulator:` in `grantiva.yml` and drives the first booted device. During the campaign it attached to the user's iPhone 17 Pro for about four seconds. MCP `grantiva_vrt_capture` runs the same path.
-- I01 / IOS-F24: two concurrent runs on different simulators share one WebDriverAgent derived-data path and kill each other; 3 of 3 paired runs failed, against README's concurrency promise.
-- IOS-F09 / F10: a run on a manually booted simulator takes a capacity slot and session teardown would shut it down. The user's iPhone 17 Pro has held a slot under a dead owner since before the campaign.
-- I03 / IOS-F36: a failed `diff capture` leaves stale captures and `diff compare` then passes, a false pass.
+- C02 (CLI-F04, AND-F03): the emulator ledger lists a hand-started emulator as Grantiva-owned, so `emulator teardown --all` would kill it. True on this host now.
+- I02 (IOS-F27): `diff capture --no-build` ignores `simulator:` in `grantiva.yml` and drives the first booted device. During the campaign it attached to the user's iPhone 17 Pro for about four seconds. MCP `grantiva_vrt_capture` runs the same path.
+- I01 (IOS-F24): two concurrent runs on different simulators share one WebDriverAgent derived-data path and kill each other; 3 of 3 paired runs failed, against README's concurrency promise.
+- I08 (IOS-F09, IOS-F10): a run on a manually booted simulator takes a capacity slot and session teardown would shut it down. The user's iPhone 17 Pro has held a slot under a dead owner since before the campaign.
+- I03 (IOS-F36): a failed `diff capture` leaves stale captures and `diff compare` then passes, a false pass.
 - C03: the MCP server attaches to the newest keep-alive session on the machine regardless of project or platform.
-- C04 / A06: `--report-dir`, `--timeout`, `--continue-on-failure` are ignored for screens-style runs.
-- A05: config `application_id` overrides the ID of the APK actually built or passed, so the paid APK is installed but the free app is tested.
+- C04 (CLI-F08, AND-F06): `--report-dir`, `--timeout`, `--continue-on-failure` are ignored for screens-style runs.
+- A03: config `application_id` overrides the ID of the APK actually built or passed, so the paid APK is installed but the free app is tested.
 - C05 / C06: MCP VRT tools exec whatever `grantiva` is first on PATH; `grantiva_context` reports the wrong device.
-- IOS-F30 / F31: MCP `grantiva_tap` matches element name rather than label; `grantiva_type` calls an endpoint the agent does not serve.
+- I05 / I06 (IOS-F30, IOS-F31): MCP `grantiva_tap` matches element name rather than label; `grantiva_type` calls an endpoint the agent does not serve.
 
 ## Doc discrepancies
 
-Ten docs briefs (D01–D09 plus one iOS). The spec's count of 19 MCP tools was stale; the binary registers 22.
+Ten docs-severity briefs: C26, D02–D09 and I19 (D01 is contract severity). The spec's count of 19 MCP tools was stale; the binary registers 22.
 
 ## Host state
 

@@ -1,7 +1,7 @@
 # Use the plain screen name, not percent-encoding, in capture, baseline and diff file names
 
 Severity: ux
-Platforms: ios
+Platforms: ios, android
 Found by: IOS-F18 (matrix rows IOS-090, IOS-092, IOS-029)
 Binary: grantiva 2.0.1 (commit c8dc86d), runner 1.1.18-grantiva.7, Xcode 27.0, qa-ios-1 (iPhone 17, iOS 26.0)
 Note: the encoding is deliberate (BaselineStore.swift:4, "Keeps a display name reversible"), so the fix is to narrow it,

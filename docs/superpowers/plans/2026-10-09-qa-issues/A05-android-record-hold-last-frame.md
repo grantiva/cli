@@ -48,6 +48,7 @@ Sources/GrantivaCore/Android/AndroidPlatform.swift:261-271 records with plain `s
 - Re-running the repro: exit 0, a PNG at 1000 ms, `actualMilliseconds` reported as the frame actually shown (the held
   frame), and the mp4's duration is ~2 s (e.g. remux with the last frame held to the requested length, or treat a
   requested time past the last frame as "last frame" on Android).
-- On iOS the current strict check is kept unless the same VFR behaviour applies.
+- On iOS the current strict check is kept unless the same VFR behaviour applies. Note: iOS `record --frames-at 500,1500` also
+  reported `-> 0ms` during the CLI slice (untriaged), so the fixer should check whether the cause is shared.
 - GrantivaCLITests/RecordCommandTests: a fixture mp4 with one frame at 0 and requested duration 2 s returns a frame for
   1000 ms instead of throwing; a test that `requestedMilliseconds` beyond the requested duration still throws.

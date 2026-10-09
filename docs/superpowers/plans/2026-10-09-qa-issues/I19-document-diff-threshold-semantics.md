@@ -30,7 +30,10 @@ grantiva diff capture --no-build --simulator qa-ios-1 && grantiva diff approve -
 sed -i '' 's/threshold: 0.02/threshold: 1.0/' grantiva.yml
 grantiva diff capture --no-build --simulator qa-ios-1 && grantiva diff compare --json | grep -E '"message"|pixel_threshold'
 ```
-(Fails only when a screen differs, e.g. through the capture race in A04's iOS detail; repeat if all pass.)
+To force a diff deterministically (`diff capture` has no `--env`, and env does not reach the app, see A01), rename a landmark
+in the app source (e.g. "Golden Gate Bridge" to "Golden Gate Bridge 2" in the iOS landmarks data), rebuild with
+`grantiva build install --simulator qa-ios-1`, then repeat the last two commands (capture, compare). Home and Landmarks
+differ from the approved baseline, so compare must fail on pixel and perceptual checks.
 
 ## Evidence
 - findings/evidence/triage/F28-thr1.json

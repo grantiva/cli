@@ -1,7 +1,8 @@
 # Let `screens:` `tap:` steps request an exact match, or prefer an exact full-text hit over a substring hit
 
 Severity: enhancement
-Platforms: android (ios likely, same generated flow)
+Platforms: android
+Note: iOS likely affected too, same generated flow.
 Found by: AND-F07 (NOT A BUG; matrix rows AND-042), triage "Enhancement"
 Binary: grantiva 2.0.1 (commit c8dc86d), runner 1.1.18-grantiva.7+android-drivers-2, emulator-5554 (Pixel_8_API_35, API 35)
 

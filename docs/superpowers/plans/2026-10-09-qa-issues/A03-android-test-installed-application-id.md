@@ -40,7 +40,7 @@ adb -s emulator-5554 uninstall com.kylebrowning.landmarks.paid   # clean up
 - findings/evidence/AND-028/log.txt (`--variant paidDebug`), AND-026/log.txt (config without `application_id`)
 
 ## Suspected cause
-Sources/GrantivaCLI/TargetOptions.swift:91 (`applicationIdFlag ?? configured.applicationId ?? appID`) ranks the config
+Sources/GrantivaCLI/TargetOptions.swift:92 (`applicationIdFlag ?? configured.applicationId ?? appID`) ranks the config
 above the APK's ID (`appID`, read by Sources/GrantivaCore/Android/AndroidPlatform.swift:136 and passed from
 Sources/GrantivaCLI/RunCommand.swift:132-139); Sources/GrantivaCLI/RunCommand.swift:248 (`resolved.bundleId ?? builtAppID`)
 does the same against the Gradle output metadata. The ID then feeds install narration (:254), flow `appId` injection and

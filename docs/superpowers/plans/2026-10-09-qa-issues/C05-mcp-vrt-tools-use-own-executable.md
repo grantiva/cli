@@ -80,7 +80,13 @@ Repro:
 export GRANTIVA_SESSION_ID=qa-ios QA=/Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios
 rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
 export PATH="/opt/homebrew/bin:$PATH"; which -a grantiva | head -1     # 2.0.0 first
-python3 $QA/findings/evidence/IOS-mcp/client.py $QA/findings/evidence/IOS-mcp/phase7.json /tmp/c05 /tmp/qa-ios-app \
+cat > /tmp/c05.json <<'J'
+[{"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"qa","version":"1"}}},
+ {"method":"notifications/initialized","jsonrpc":"2.0"},
+ {"method":"tools/call","params":{"name":"grantiva_vrt_compare","arguments":{}}},
+ {"method":"tools/call","params":{"name":"grantiva_vrt_approve","arguments":{"screens":["Home"]}}}]
+J
+python3 $QA/findings/evidence/IOS-mcp/client.py /tmp/c05.json /tmp/c05 /tmp/qa-ios-app \
   -- ~/.grantiva-qa/bin/grantiva mcp --project-dir /tmp/qa-ios-app
 grep -o "Unknown option[^\\]*" /tmp/c05/transcript.txt
 ```

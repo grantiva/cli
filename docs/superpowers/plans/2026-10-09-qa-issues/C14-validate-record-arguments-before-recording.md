@@ -41,4 +41,6 @@ Sources/GrantivaCLI/RecordCommand.swift:88 records before `parseTimestamps()` ru
 - Move `--frames-at` parsing into `validate()`.
 - GrantivaCLITests/RecordCommandTests: `--frames-at a,b` fails parsing with a ValidationError and the injected device's
   `recordVideo` is never called; an extensionless `--output` is accepted or rejected before `recordVideo`.
+- `.mp4` is acceptable only if the written file is actually an MPEG-4 container: C13's iOS detail shows `.mp4` currently
+  yields a QuickTime MOV, so either write real MP4 or reject/rename `.mp4` rather than leaving the wrong container.
 - Update help: record `--output` to state the accepted extensions.
