@@ -12,7 +12,7 @@ enum VRTTools {
     static let definitions: [Tool] = [
         Tool(
             name: "grantiva_vrt_capture",
-            description: "Capture screenshots for all configured screens. Equivalent to 'grantiva diff capture --no-build --json'. Assumes the app is already running on the simulator.",
+            description: "Capture screenshots for all configured screens. Equivalent to 'grantiva diff capture --no-build --json'. Assumes the app is already running on the device.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([:]),
@@ -52,11 +52,25 @@ enum VRTTools {
 
     // MARK: - Handlers
 
-    static func capture(arguments: [String: Value]) async throws -> CallTool.Result {
-        let cmd = "grantiva diff capture --no-build --json"
+    static func captureCommand(platform: Platform) -> String {
+        "grantiva diff capture --no-build --json --platform \(platform.rawValue)"
+    }
 
+    static func compareCommand(platform: Platform) -> String {
+        "grantiva diff compare --json --platform \(platform.rawValue)"
+    }
+
+    static func approveCommand(platform: Platform, screens: [String]) -> String {
+        var cmd = "grantiva diff approve --json --platform \(platform.rawValue)"
+        if !screens.isEmpty {
+            cmd += " " + screens.map(shellQuoted).joined(separator: " ")
+        }
+        return cmd
+    }
+
+    static func capture(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
         do {
-            let output = try await shell(cmd)
+            let output = try await shell(captureCommand(platform: platform))
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -71,9 +85,9 @@ enum VRTTools {
         }
     }
 
-    static func compare(arguments: [String: Value]) async throws -> CallTool.Result {
+    static func compare(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
         do {
-            let output = try await shell("grantiva diff compare --json")
+            let output = try await shell(compareCommand(platform: platform))
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -96,18 +110,10 @@ enum VRTTools {
         )
     }
 
-    static func approve(arguments: [String: Value]) async throws -> CallTool.Result {
-        var cmd = "grantiva diff approve --json"
-
-        if let screens = arguments["screens"]?.arrayValue {
-            let names = screens.compactMap { $0.stringValue }
-            if !names.isEmpty {
-                cmd += " " + names.map(shellQuoted).joined(separator: " ")
-            }
-        }
-
+    static func approve(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
+        let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
         do {
-            let output = try await shell(cmd)
+            let output = try await shell(approveCommand(platform: platform, screens: screens))
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )

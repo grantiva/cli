@@ -14,7 +14,7 @@ final class UIToolsTests: XCTestCase {
     func testTapByLabelForwardsTheLabelAndReturnsTheUpdatedHierarchy() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.tap(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder, hierarchyJSON: #"{"type":"Root"}"#),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: #"{"type":"Root"}"#),
             arguments: ["label": .string("Sign In")]
         )
         XCTAssertNil(result.isError)
@@ -27,7 +27,7 @@ final class UIToolsTests: XCTestCase {
     func testTapByCoordinatesForwardsBothAxes() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.tap(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["x": .double(120), "y": .double(240)]
         )
         XCTAssertNil(result.isError)
@@ -40,7 +40,7 @@ final class UIToolsTests: XCTestCase {
         // {"x": 120, "y": 240} produces. This must not be rejected.
         let recorder = WDARecorder()
         let result = try await UITools.tap(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["x": .int(120), "y": .int(240)]
         )
         let text = try textContent(of: result)
@@ -50,7 +50,7 @@ final class UIToolsTests: XCTestCase {
 
     func testTapWithNoArgumentsReturnsAnErrorResultInsteadOfThrowing() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.tap(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: [:])
+        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("provide either 'label' or both 'x' and 'y'"))
         XCTAssertTrue(recorder.calls.isEmpty, "A rejected tap must not touch WDA")
@@ -58,7 +58,7 @@ final class UIToolsTests: XCTestCase {
 
     func testTapWithOnlyOneCoordinateIsRejected() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.tap(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: ["x": .double(10)])
+        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["x": .double(10)])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(recorder.calls.isEmpty)
     }
@@ -66,7 +66,7 @@ final class UIToolsTests: XCTestCase {
     func testTapPrefersLabelOverCoordinatesWhenBothAreProvided() async throws {
         let recorder = WDARecorder()
         _ = try await UITools.tap(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["label": .string("OK"), "x": .double(1), "y": .double(2)]
         )
         XCTAssertEqual(recorder.calls.first, "tapByLabel(OK)")
@@ -74,7 +74,7 @@ final class UIToolsTests: XCTestCase {
 
     func testTapRejectsAWrongTypedLabel() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.tap(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: ["label": .int(7)])
+        let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["label": .int(7)])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(recorder.calls.isEmpty)
     }
@@ -84,7 +84,7 @@ final class UIToolsTests: XCTestCase {
     func testSwipeForwardsTheDirection() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.swipe(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["direction": .string("left")]
         )
         XCTAssertNil(result.isError)
@@ -94,7 +94,7 @@ final class UIToolsTests: XCTestCase {
 
     func testSwipeWithoutDirectionIsRejectedBeforeReachingWDA() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.swipe(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: [:])
+        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("'direction' is required"))
         XCTAssertTrue(recorder.calls.isEmpty)
@@ -102,7 +102,7 @@ final class UIToolsTests: XCTestCase {
 
     func testSwipeWithANonStringDirectionIsRejected() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.swipe(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: ["direction": .bool(true)])
+        let result = try await UITools.swipe(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["direction": .bool(true)])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(recorder.calls.isEmpty)
     }
@@ -112,7 +112,7 @@ final class UIToolsTests: XCTestCase {
     func testTypeForwardsTheTextVerbatim() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.type(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["text": .string("hello world")]
         )
         XCTAssertNil(result.isError)
@@ -122,14 +122,14 @@ final class UIToolsTests: XCTestCase {
 
     func testTypeAcceptsAnEmptyString() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.type(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: ["text": .string("")])
+        let result = try await UITools.type(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: ["text": .string("")])
         XCTAssertNil(result.isError)
         XCTAssertEqual(recorder.calls.first, "typeText()")
     }
 
     func testTypeWithoutTextIsRejectedBeforeReachingWDA() async throws {
         let recorder = WDARecorder()
-        let result = try await UITools.type(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: [:])
+        let result = try await UITools.type(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("'text' is required"))
         XCTAssertTrue(recorder.calls.isEmpty)
@@ -140,7 +140,7 @@ final class UIToolsTests: XCTestCase {
     func testA11yTreeReturnsPrettyPrintedSortedJSON() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.a11yTree(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder, hierarchyJSON: #"{"z":1,"a":2}"#)
+            driver: MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: #"{"z":1,"a":2}"#)
         )
         let text = try textContent(of: result)
         XCTAssertNil(result.isError)
@@ -171,8 +171,9 @@ final class UIToolsTests: XCTestCase {
 
     func testA11yCheckFlagsMissingLabelsAndSmallTapTargets() async throws {
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
-            config: nil
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
+            config: nil,
+            platform: .ios
         )
         let text = try textContent(of: result)
         XCTAssertTrue(text.contains("Found 2 accessibility violation(s)"), text)
@@ -193,8 +194,9 @@ final class UIToolsTests: XCTestCase {
             ]}
             """
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: nested),
-            config: nil
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: nested),
+            config: nil,
+            platform: .ios
         )
         XCTAssertTrue(try textContent(of: result).contains("Found 1 accessibility violation(s)"))
     }
@@ -202,8 +204,9 @@ final class UIToolsTests: XCTestCase {
     func testA11yCheckHonoursTheConfiguredRuleSubset() async throws {
         let config = GrantivaConfig(a11y: .init(rules: ["missing_label"]))
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
-            config: config
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
+            config: config,
+            platform: .ios
         )
         let text = try textContent(of: result)
         XCTAssertTrue(text.contains("Found 1 accessibility violation(s)"), text)
@@ -213,8 +216,9 @@ final class UIToolsTests: XCTestCase {
     func testA11yCheckWithNoRulesEnabledReportsNothing() async throws {
         let config = GrantivaConfig(a11y: .init(rules: []))
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
-            config: config
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: Self.violationHierarchy),
+            config: config,
+            platform: .ios
         )
         XCTAssertEqual(try textContent(of: result), "No accessibility violations found.")
     }
@@ -222,8 +226,9 @@ final class UIToolsTests: XCTestCase {
     func testA11yCheckIgnoresDisabledElements() async throws {
         let hierarchy = #"{"type":"XCUIElementTypeButton","label":"","name":"","enabled":false}"#
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: hierarchy),
-            config: nil
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: hierarchy),
+            config: nil,
+            platform: .ios
         )
         XCTAssertEqual(try textContent(of: result), "No accessibility violations found.")
     }
@@ -231,8 +236,9 @@ final class UIToolsTests: XCTestCase {
     func testA11yCheckAcceptsANameInPlaceOfALabel() async throws {
         let hierarchy = #"{"type":"XCUIElementTypeButton","label":"","name":"submit","enabled":true}"#
         let result = try await UITools.a11yCheck(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: hierarchy),
-            config: nil
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: hierarchy),
+            config: nil,
+            platform: .ios
         )
         XCTAssertEqual(try textContent(of: result), "No accessibility violations found.")
     }
@@ -242,7 +248,8 @@ final class UIToolsTests: XCTestCase {
     func testScreenshotReturnsBase64PNGImageContentByDefault() async throws {
         let recorder = WDARecorder()
         let result = try await UITools.screenshot(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder, screenshotBytes: [0x89, 0x50, 0x4E, 0x47]),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder, screenshotBytes: [0x89, 0x50, 0x4E, 0x47]),
+            device: MCPFakeDevicePlatform(platform: .ios),
             session: MCPTestSupport.sessionWithoutUDID(),
             arguments: [:]
         )
@@ -254,10 +261,38 @@ final class UIToolsTests: XCTestCase {
 
     func testScreenshotTreatsAnUnknownFormatAsBase64() async throws {
         let result = try await UITools.screenshot(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder()),
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()),
+            device: MCPFakeDevicePlatform(platform: .ios),
             session: MCPTestSupport.sessionWithoutUDID(),
             arguments: ["format": .string("bogus")]
         )
         XCTAssertNoThrow(try imageContent(of: result))
+    }
+
+    func testScreenshotWithADeviceGoesThroughThePlatform() async throws {
+        let recorder = WDARecorder()
+        let device = MCPFakeDevicePlatform(platform: .android)
+        let session = RunnerSessionInfo(pid: 0, wdaPort: 0, bundleId: "", udid: "emulator-5554", startedAt: Date())
+        let result = try await UITools.screenshot(driver: MCPTestSupport.fakeDriver(recorder: recorder), device: device, session: session, arguments: [:])
+        XCTAssertEqual(device.calls, ["screenshot(emulator-5554)"])
+        XCTAssertTrue(recorder.calls.isEmpty, "the driver is not asked when a device is known")
+        XCTAssertEqual(try imageContent(of: result).mimeType, "image/png")
+    }
+
+    func testA11yCheckFlagsAClickableAndroidNodeWithoutALabel() async throws {
+        let tree = #"{"type":"hierarchy","platform":"android","children":[{"type":"android.view.View","clickable":true,"enabled":true,"frame":{"x":"0","y":"0","width":"100","height":"100"},"children":[]}]}"#
+        let result = try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: tree), config: nil, platform: .android)
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("missing_label"), text)
+        XCTAssertFalse(text.contains("small_tap_target"), text)
+    }
+
+    func testA11yCheckUses48dpOnAndroidAnd44ptOnIOS() async throws {
+        let android = #"{"type":"hierarchy","children":[{"type":"android.widget.Button","label":"Go","enabled":true,"frame":{"x":"0","y":"0","width":"46","height":"46"},"children":[]}]}"#
+        let androidText = try textContent(of: try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: android), config: nil, platform: .android))
+        XCTAssertTrue(androidText.contains("below the 48x48dp minimum"), androidText)
+        let ios = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","label":"Go","enabled":true,"frame":{"x":"0","y":"0","width":"46","height":"46"},"children":[]}]}"#
+        let iosText = try textContent(of: try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: ios), config: nil, platform: .ios))
+        XCTAssertEqual(iosText, "No accessibility violations found.")
     }
 }

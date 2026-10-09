@@ -39,7 +39,7 @@ final class ToolRegistrationTests: XCTestCase {
     ]
 
     private func allTools() -> [Tool] {
-        MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder())).allTools()
+        MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allTools()
     }
 
     func testRegistryExposesExactlyTheAdvertisedToolSet() {
@@ -85,7 +85,7 @@ final class ToolRegistrationTests: XCTestCase {
     // MARK: - Resources
 
     func testRegistryExposesHierarchyAndScreenshotResources() {
-        let resources = MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder())).allResources()
+        let resources = MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allResources()
         XCTAssertEqual(resources.map(\.uri).sorted(), ["grantiva://hierarchy", "grantiva://screenshot"])
         XCTAssertEqual(
             Dictionary(uniqueKeysWithValues: resources.map { ($0.uri, $0.mimeType) }),

@@ -61,10 +61,10 @@ final class ToolErrorContractTests: XCTestCase {
 
     /// The tools that already honored the contract, kept here so the shape stays uniform.
     func testUIToolsReturnToolErrorsForInvalidArguments() async throws {
-        let wda = DriverClient.wda(port: 8100)
-        assertToolError(try await UITools.tap(wda: wda, arguments: [:]), contains: "Error:")
-        assertToolError(try await UITools.swipe(wda: wda, arguments: [:]), contains: "'direction' is required")
-        assertToolError(try await UITools.type(wda: wda, arguments: [:]), contains: "'text' is required")
-        assertToolError(try await ScriptTools.script(wda: wda, arguments: [:]), contains: "'steps' array is required")
+        let driver = DriverClient.wda(port: 8100)
+        assertToolError(try await UITools.tap(driver: driver, arguments: [:]), contains: "Error:")
+        assertToolError(try await UITools.swipe(driver: driver, arguments: [:]), contains: "'direction' is required")
+        assertToolError(try await UITools.type(driver: driver, arguments: [:]), contains: "'text' is required")
+        assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' array is required")
     }
 }

@@ -2,7 +2,7 @@ import Foundation
 import GrantivaCore
 import MCP
 
-/// The Grantiva MCP server. Exposes iOS simulator automation tools and resources
+/// The Grantiva MCP server. Exposes iOS simulator and Android emulator automation tools and resources
 /// over the Model Context Protocol via stdio transport.
 @available(macOS 15, *)
 public struct GrantivaMCPServer: Sendable {
@@ -19,21 +19,21 @@ public struct GrantivaMCPServer: Sendable {
         }
 
         // All relative tool paths now resolve from the selected project root.
-        let config = try GrantivaConfig.loadIfPresent(platform: .ios)
-
+        let platform = try PlatformResolver(directory: projectDirectory).resolveOrDefault(flag: nil)
+        let config = try GrantivaConfig.loadIfPresent(platform: platform)
         let session = try Self.loadActiveSession(projectDirectory: projectDirectory)
+        let device = try DevicePlatformFactory.make(platform)
+        let attachment = try await device.attachDriver(deviceID: session.udid, port: Self.driverPort(for: session))
 
-        let wda = DriverClient.wda(port: session.wdaPort)
-        let simManager = SimulatorManager.live
-        let buildRunner = XcodeBuildRunner()
-
-        // Build the tool registry
         let tools = ToolRegistry(
-            wda: wda,
+            driver: attachment.client,
+            platform: platform,
+            device: device,
             config: config,
             session: session,
-            simulatorManager: simManager,
-            buildRunner: buildRunner
+            simulatorManager: SimulatorManager.live,
+            buildRunner: XcodeBuildRunner(),
+            emulators: try? EmulatorToolDependencies.live()
         )
 
         let allTools = tools.allTools()
@@ -44,10 +44,10 @@ public struct GrantivaMCPServer: Sendable {
             name: "grantiva",
             version: grantivaVersion,
             instructions: """
-                Grantiva MCP server for iOS simulator automation. \
-                Use grantiva_* tools to interact with the iOS simulator: \
+                Grantiva MCP server for iOS simulator and Android emulator automation. \
+                Use grantiva_* tools to interact with the device: \
                 tap, swipe, type, take screenshots, inspect the accessibility tree, \
-                build and run apps, manage simulators, and run visual regression tests.
+                build and run apps, manage simulators and emulators, and run visual regression tests.
                 """,
             capabilities: .init(
                 resources: .init(subscribe: true, listChanged: false),
@@ -107,10 +107,19 @@ public struct GrantivaMCPServer: Sendable {
               isDirectory.boolValue else {
             throw GrantivaError.invalidArgument("Project directory does not exist: \(resolved.path)")
         }
-        guard FileManager.default.fileExists(atPath: resolved.appendingPathComponent("grantiva.yml").path) else {
-            throw GrantivaError.invalidArgument("No grantiva.yml found in project directory: \(resolved.path)")
+        let hasConfig = Platform.allCases.contains {
+            FileManager.default.fileExists(atPath: resolved.appendingPathComponent($0.configFileName).path)
+        }
+        guard hasConfig else {
+            throw GrantivaError.invalidArgument("No grantiva.yml or grantiva-android.yml found in project directory: \(resolved.path)")
         }
         return resolved
+    }
+
+    /// The runner's keep-alive session file carries port 0 on Android (the
+    /// runner does not proxy UIAutomator2); nil tells the platform to forward one.
+    static func driverPort(for session: RunnerSessionInfo) -> UInt16? {
+        session.wdaPort > 0 ? session.wdaPort : nil
     }
 
     /// A `grantiva runner start` session in the project wins; otherwise the
@@ -124,11 +133,11 @@ public struct GrantivaMCPServer: Sendable {
         if let data = try? Data(contentsOf: sessionURL),
            let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
            session.isAlive {
-            _ = try SimulatorUDID.validate(session.udid, flag: "session UDID")
+            _ = try DeviceID.validate(session.udid, flag: "session UDID")
             return session
         }
         if let keepAlive = try? keepAliveSessions.locate(), let port = UInt16(exactly: keepAlive.port) {
-            let udid = keepAlive.udid.flatMap { try? SimulatorUDID.validate($0) } ?? ""
+            let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
             return RunnerSessionInfo(
                 pid: keepAlive.pid, wdaPort: port, bundleId: "", udid: udid, startedAt: Date()
             )

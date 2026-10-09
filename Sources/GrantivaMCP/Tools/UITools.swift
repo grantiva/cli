@@ -11,7 +11,7 @@ enum UITools {
     static let definitions: [Tool] = [
         Tool(
             name: "grantiva_screenshot",
-            description: "Take a screenshot of the iOS simulator. Returns a base64-encoded PNG image.",
+            description: "Take a screenshot of the device (iOS simulator or Android emulator). Returns a base64-encoded PNG image.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -39,11 +39,11 @@ enum UITools {
                     ]),
                     "x": .object([
                         "type": .string("number"),
-                        "description": .string("X coordinate to tap (used if label is not provided)"),
+                        "description": .string("X coordinate to tap (used if label is not provided) — points on iOS, device pixels on Android"),
                     ]),
                     "y": .object([
                         "type": .string("number"),
-                        "description": .string("Y coordinate to tap (used if label is not provided)"),
+                        "description": .string("Y coordinate to tap (used if label is not provided) — points on iOS, device pixels on Android"),
                     ]),
                 ]),
             ]),
@@ -51,7 +51,7 @@ enum UITools {
         ),
         Tool(
             name: "grantiva_swipe",
-            description: "Swipe on the iOS simulator screen. After swiping, returns the updated accessibility tree.",
+            description: "Swipe on the device (iOS simulator or Android emulator) screen. After swiping, returns the updated accessibility tree.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -67,7 +67,7 @@ enum UITools {
         ),
         Tool(
             name: "grantiva_type",
-            description: "Type text into the currently focused field on the iOS simulator. After typing, returns the updated accessibility tree.",
+            description: "Type text into the currently focused field on the device (iOS simulator or Android emulator). After typing, returns the updated accessibility tree.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -91,7 +91,7 @@ enum UITools {
         ),
         Tool(
             name: "grantiva_a11y_check",
-            description: "Run accessibility audit on the current screen. Checks for missing labels on interactive elements and tap targets smaller than 44pt.",
+            description: "Run accessibility audit on the current screen. Checks for missing labels on interactive elements and tap targets smaller than 44pt (iOS) or 48dp (Android).",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([:]),
@@ -103,24 +103,23 @@ enum UITools {
     // MARK: - Handlers
 
     static func screenshot(
-        wda: DriverClient,
+        driver: DriverClient,
+        device: any DevicePlatform,
         session: RunnerSessionInfo,
         arguments: [String: Value]
     ) async throws -> CallTool.Result {
         let format = arguments["format"]?.stringValue ?? "base64"
 
         let imageData: Data
-        // Prefer simctl screenshot for full-device fidelity when UDID is available
+        // Prefer the platform's full-device screenshot when a device is known.
         if !session.udid.isEmpty {
             let tmpPath = FileManager.default.temporaryDirectory
                 .appendingPathComponent("grantiva-mcp-\(UUID().uuidString).png").path
             defer { try? FileManager.default.removeItem(atPath: tmpPath) }
-            _ = try await shell(
-                "xcrun simctl io \(shellQuoted(session.udid)) screenshot \(shellQuoted(tmpPath))"
-            )
+            try await device.screenshot(deviceID: session.udid, to: tmpPath)
             imageData = try Data(contentsOf: URL(fileURLWithPath: tmpPath))
         } else {
-            imageData = try await wda.screenshot()
+            imageData = try await driver.screenshot()
         }
 
         if format == "file" {
@@ -138,21 +137,21 @@ enum UITools {
         )
     }
 
-    static func tap(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func tap(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         if let label = arguments["label"]?.stringValue {
-            try await wda.tapByLabel(label)
+            try await driver.tapByLabel(label)
             // Brief settle time for animations
             try await Task.sleep(nanoseconds: 500_000_000)
-            let tree = try await fetchHierarchyJSON(wda: wda)
+            let tree = try await fetchHierarchyJSON(driver: driver)
             return CallTool.Result(
                 content: [
                     .text(text: "Tapped on \"\(label)\". Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
                 ]
             )
         } else if let x = arguments["x"]?.doubleValue, let y = arguments["y"]?.doubleValue {
-            try await wda.tapByCoordinate(x, y)
+            try await driver.tapByCoordinate(x, y)
             try await Task.sleep(nanoseconds: 500_000_000)
-            let tree = try await fetchHierarchyJSON(wda: wda)
+            let tree = try await fetchHierarchyJSON(driver: driver)
             return CallTool.Result(
                 content: [
                     .text(text: "Tapped at (\(Int(x)), \(Int(y))). Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
@@ -166,16 +165,16 @@ enum UITools {
         }
     }
 
-    static func swipe(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func swipe(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let direction = arguments["direction"]?.stringValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'direction' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
-        try await wda.swipe(direction)
+        try await driver.swipe(direction)
         try await Task.sleep(nanoseconds: 500_000_000)
-        let tree = try await fetchHierarchyJSON(wda: wda)
+        let tree = try await fetchHierarchyJSON(driver: driver)
         return CallTool.Result(
             content: [
                 .text(text: "Swiped \(direction). Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
@@ -183,16 +182,16 @@ enum UITools {
         )
     }
 
-    static func type(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func type(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let text = arguments["text"]?.stringValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'text' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
-        try await wda.typeText(text)
+        try await driver.typeText(text)
         try await Task.sleep(nanoseconds: 300_000_000)
-        let tree = try await fetchHierarchyJSON(wda: wda)
+        let tree = try await fetchHierarchyJSON(driver: driver)
         return CallTool.Result(
             content: [
                 .text(text: "Typed \"\(text)\". Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
@@ -200,19 +199,19 @@ enum UITools {
         )
     }
 
-    static func a11yTree(wda: DriverClient) async throws -> CallTool.Result {
-        let tree = try await fetchHierarchyJSON(wda: wda)
+    static func a11yTree(driver: DriverClient) async throws -> CallTool.Result {
+        let tree = try await fetchHierarchyJSON(driver: driver)
         return CallTool.Result(
             content: [.text(text: tree, annotations: nil, _meta: nil)]
         )
     }
 
-    static func a11yCheck(wda: DriverClient, config: GrantivaConfig?) async throws -> CallTool.Result {
-        let hierarchy = try await wda.hierarchy()
+    static func a11yCheck(driver: DriverClient, config: GrantivaConfig?, platform: Platform) async throws -> CallTool.Result {
+        let hierarchy = try await driver.hierarchy()
         let rules = config?.a11y.rules ?? ["missing_label", "small_tap_target"]
 
         var violations: [[String: String]] = []
-        checkViolations(element: hierarchy, rules: rules, violations: &violations)
+        checkViolations(element: hierarchy, rules: rules, platform: platform, violations: &violations)
 
         if violations.isEmpty {
             return CallTool.Result(
@@ -232,10 +231,32 @@ enum UITools {
         )
     }
 
+    static let iosInteractiveTypes = [
+        "XCUIElementTypeButton", "XCUIElementTypeTextField", "XCUIElementTypeSecureTextField", "XCUIElementTypeSwitch",
+        "XCUIElementTypeSlider", "XCUIElementTypeStepper", "XCUIElementTypeLink", "XCUIElementTypeSegmentedControl",
+    ]
+    static let androidInteractiveTypes = [
+        "android.widget.Button", "android.widget.ImageButton", "android.widget.EditText", "android.widget.CheckBox",
+        "android.widget.Switch", "android.widget.RadioButton", "android.widget.ToggleButton", "android.widget.SeekBar",
+        "android.widget.Spinner",
+    ]
+
+    /// 44 pt on iOS (HIG), 48 dp on Android (Material).
+    static func minimumTapTarget(for platform: Platform) -> Double {
+        platform == .ios ? 44 : 48
+    }
+
+    /// Known interactive classes on either platform, or any Android node the
+    /// framework marks clickable (Compose nodes carry no widget class).
+    static func isInteractive(_ element: [String: Any]) -> Bool {
+        let type = element["type"] as? String ?? ""
+        return iosInteractiveTypes.contains(type) || androidInteractiveTypes.contains(type) || element["clickable"] as? Bool == true
+    }
+
     // MARK: - Private Helpers
 
-    private static func fetchHierarchyJSON(wda: DriverClient) async throws -> String {
-        let tree = try await wda.hierarchy()
+    private static func fetchHierarchyJSON(driver: DriverClient) async throws -> String {
+        let tree = try await driver.hierarchy()
         let data = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
         return String(data: data, encoding: .utf8) ?? "{}"
     }
@@ -244,6 +265,7 @@ enum UITools {
     private static func checkViolations(
         element: [String: Any],
         rules: [String],
+        platform: Platform,
         violations: inout [[String: String]]
     ) {
         let type = element["type"] as? String ?? ""
@@ -251,19 +273,7 @@ enum UITools {
         let name = element["name"] as? String ?? ""
         let enabled = element["enabled"] as? Bool ?? true
 
-        // Interactive element types that need labels
-        let interactiveTypes = [
-            "XCUIElementTypeButton",
-            "XCUIElementTypeTextField",
-            "XCUIElementTypeSecureTextField",
-            "XCUIElementTypeSwitch",
-            "XCUIElementTypeSlider",
-            "XCUIElementTypeStepper",
-            "XCUIElementTypeLink",
-            "XCUIElementTypeSegmentedControl",
-        ]
-
-        let isInteractive = interactiveTypes.contains(type)
+        let isInteractive = Self.isInteractive(element)
 
         // Rule: missing_label
         if rules.contains("missing_label") && isInteractive && enabled {
@@ -281,14 +291,16 @@ enum UITools {
             if let frame = element["frame"] as? [String: String],
                let wStr = frame["width"], let hStr = frame["height"],
                let w = Double(wStr), let h = Double(hStr) {
-                if w < 44 || h < 44 {
+                let minimum = minimumTapTarget(for: platform)
+                let unit = platform == .ios ? "pt" : "dp"
+                if w < minimum || h < minimum {
                     let desc = label.isEmpty ? (name.isEmpty ? type : name) : label
                     violations.append([
                         "rule": "small_tap_target",
                         "type": type,
                         "element": desc,
                         "size": "\(Int(w))x\(Int(h))",
-                        "message": "Tap target \"\(desc)\" is \(Int(w))x\(Int(h))pt, below the 44x44pt minimum.",
+                        "message": "Tap target \"\(desc)\" is \(Int(w))x\(Int(h))\(unit), below the \(Int(minimum))x\(Int(minimum))\(unit) minimum.",
                     ])
                 }
             }
@@ -297,7 +309,7 @@ enum UITools {
         // Recurse into children
         if let children = element["children"] as? [[String: Any]] {
             for child in children {
-                checkViolations(element: child, rules: rules, violations: &violations)
+                checkViolations(element: child, rules: rules, platform: platform, violations: &violations)
             }
         }
     }

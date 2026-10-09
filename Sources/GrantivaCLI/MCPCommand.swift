@@ -9,7 +9,7 @@ struct MCPCommand: AsyncParsableCommand {
         abstract: "Start the Grantiva MCP server for AI agent integration."
     )
 
-    @Option(name: .long, help: "Project directory containing grantiva.yml and .grantiva/session.json.")
+    @Option(name: .long, help: "Project directory containing grantiva.yml or grantiva-android.yml and .grantiva/session.json.")
     var projectDir: String?
 
     func run() async throws {

@@ -19,7 +19,7 @@ final class ToolSchemaTests: XCTestCase {
     ]
 
     private func allTools() -> [Tool] {
-        MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder())).allTools()
+        MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allTools()
     }
 
     // MARK: - Structural validation

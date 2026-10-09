@@ -107,4 +107,31 @@ final class MCPServerTests: XCTestCase {
         try Data().write(to: directory.appendingPathComponent("grantiva.yml"))
         return directory
     }
+
+    /// Review Focus 5.
+    func testProjectDirectoryAcceptsAnAndroidOnlyProject() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try "platform: android\nmodule: app\n".write(to: directory.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try GrantivaMCPServer.resolveProjectDirectory(directory).standardizedFileURL, directory.standardizedFileURL)
+    }
+
+    /// Review Focus 5.
+    func testLoadActiveSessionAcceptsAnADBSerial() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let session = RunnerSessionInfo(pid: getpid(), wdaPort: 61211, bundleId: "dev.grantiva.example", udid: "emulator-5554", startedAt: Date())
+        let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
+        try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try JSONEncoder().encode(session).write(to: sessionURL)
+        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory)
+        XCTAssertEqual(loaded.udid, "emulator-5554")
+        XCTAssertEqual(loaded.wdaPort, 61211)
+    }
+
+    func testDriverPortIsNilForAKeepAliveSessionWithPortZero() {
+        XCTAssertNil(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 0, bundleId: "", udid: "emulator-5554", startedAt: Date())))
+        XCTAssertEqual(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 8100, bundleId: "", udid: "", startedAt: Date())), 8100)
+    }
 }
