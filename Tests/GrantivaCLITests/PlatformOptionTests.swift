@@ -43,27 +43,24 @@ final class PlatformOptionTests: XCTestCase {
         XCTAssertNil(config)
     }
 
-    private static let androidNotYet =
-        "Android support arrives in the next release. Pass --platform ios to run this directory as an iOS project."
-
-    func testGradleOnlyDirectoryFailsCleanlyUntilAndroidShips() throws {
+    func testGradleOnlyDirectoryResolvesAndroidWithNilConfig() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: dir) }
         try "".write(to: dir.appendingPathComponent("settings.gradle.kts"), atomically: true, encoding: .utf8)
-        XCTAssertThrowsError(try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])) { error in
-            XCTAssertTrue("\(error)".contains(Self.androidNotYet), "\(error)")
-        }
+        let (platform, config) = try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])
+        XCTAssertEqual(platform, .android)
+        XCTAssertNil(config)
     }
 
-    func testAndroidConfigOnlyDirectoryFailsCleanlyUntilAndroidShips() throws {
+    func testAndroidConfigOnlyDirectoryLoadsTheAndroidConfig() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: dir) }
-        try "app_id: com.example\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
-        XCTAssertThrowsError(try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])) { error in
-            XCTAssertTrue("\(error)".contains(Self.androidNotYet), "\(error)")
-        }
+        try "module: mobile\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let (platform, config) = try PlatformOptions.parse([]).loadConfig(directory: dir, environment: [:])
+        XCTAssertEqual(platform, .android)
+        XCTAssertEqual(config?.android?.module, "mobile")
     }
 
     func testEnvironmentPlatformWithoutConfigThrowsWhenOtherConfigExists() throws {
@@ -86,7 +83,7 @@ final class PlatformOptionTests: XCTestCase {
         let options = try PlatformOptions.parse(["--platform", "android"])
         XCTAssertThrowsError(try options.loadConfig(directory: dir, environment: [:])) { error in
             XCTAssertTrue("\(error)".contains("grantiva-android.yml"), "\(error)")
-            XCTAssertTrue("\(error)".contains("by hand; grantiva init --platform android arrives in the next release"), "\(error)")
+            XCTAssertTrue("\(error)".contains("Create grantiva-android.yml with grantiva init --platform android."), "\(error)")
         }
     }
 }

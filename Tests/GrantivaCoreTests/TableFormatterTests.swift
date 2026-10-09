@@ -17,6 +17,27 @@ final class TableFormatterTests: XCTestCase {
         XCTAssertEqual(lines[1], String(repeating: "─", count: lines[1].count))
     }
 
+    func testAndroidBuildPrintsTheAPKPathInPlaceOfTheScheme() {
+        let output = TableFormatter().formatBuild(BuildResult(
+            success: true, duration: 1, warnings: [], errors: [],
+            productPath: "/b/app-debug.apk", applicationId: "com.x"
+        ))
+        let lines = output.split(separator: "\n").map(String.init)
+
+        XCTAssertTrue(lines.contains("  APK: /b/app-debug.apk"), output)
+        XCTAssertFalse(output.contains("Scheme:"), output)
+    }
+
+    func testIOSBuildStillPrintsTheScheme() {
+        let output = TableFormatter().formatBuild(BuildResult(
+            success: true, scheme: "Demo", duration: 1, warnings: [], errors: [],
+            productPath: "/b/Demo.app"
+        ))
+
+        XCTAssertTrue(output.split(separator: "\n").map(String.init).contains("  Scheme: Demo"), output)
+        XCTAssertFalse(output.contains("APK:"), output)
+    }
+
     func testDeviceValuesCannotInjectAdditionalRowsOrTerminalControls() {
         let output = TableFormatter().formatDevices([
             device(name: "Phone\nforged\u{001B}[31m", runtime: "iOS\t27"),

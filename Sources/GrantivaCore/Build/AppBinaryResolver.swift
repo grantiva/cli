@@ -9,20 +9,24 @@ public struct AppBinaryResolver: Sendable {
         let absPath = (path as NSString).standardizingPath
         let fm = FileManager.default
 
+        // Reject the wrong kind of binary (e.g. an .apk) before checking that
+        // it exists, so the error names the real problem.
+        guard absPath.hasSuffix(".ipa") || absPath.hasSuffix(".app") else {
+            let filename = URL(fileURLWithPath: absPath).lastPathComponent
+            throw GrantivaError.invalidBinary(
+                "Expected .app or .ipa file, got: \"\(filename)\""
+            )
+        }
+
         guard fm.fileExists(atPath: absPath) else {
             throw GrantivaError.appNotFound(absPath)
         }
 
         if absPath.hasSuffix(".ipa") {
             return try extractIPA(absPath)
-        } else if absPath.hasSuffix(".app") {
+        } else {
             try validateSimulatorBuild(absPath)
             return ResolvedBinary(appPath: absPath, tempDir: nil)
-        } else {
-            let filename = URL(fileURLWithPath: absPath).lastPathComponent
-            throw GrantivaError.invalidBinary(
-                "Expected .app or .ipa file, got: \"\(filename)\""
-            )
         }
     }
 
@@ -116,6 +120,15 @@ public struct ResolvedBinary: Sendable {
 
     /// If non-nil, this temp directory should be cleaned up when done.
     public let tempDir: URL?
+
+    /// The bundle ID (iOS) or application ID (Android) read from the binary, when known.
+    public let appID: String?
+
+    public init(appPath: String, tempDir: URL?, appID: String? = nil) {
+        self.appPath = appPath
+        self.tempDir = tempDir
+        self.appID = appID
+    }
 
     /// Remove the temp directory if one was created (e.g., from IPA extraction).
     public func cleanup() {

@@ -78,9 +78,11 @@ public enum DeviceID {
     /// metacharacters.
     public static func isADBSerial(_ value: String) -> Bool {
         guard !value.isEmpty, value.count <= 64 else { return false }
-        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "_-.:"))
-        guard value.unicodeScalars.allSatisfy({ allowed.contains($0) }) else { return false }
-        guard value.first!.isLetter || value.first!.isNumber else { return false }
+        let scalars = value.unicodeScalars
+        guard scalars.allSatisfy({ scalar in
+            scalar.isASCII && (scalar.properties.isAlphabetic || ("0"..."9").contains(scalar) || "_-.:".unicodeScalars.contains(scalar))
+        }) else { return false }
+        guard let first = scalars.first, first.properties.isAlphabetic || ("0"..."9").contains(first) else { return false }
         return true
     }
 

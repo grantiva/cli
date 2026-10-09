@@ -175,6 +175,9 @@ struct CICommand: AsyncParsableCommand {
         subcommands: [CIRunCommand.self]
     )
 
+    /// Android never reaches the remote baseline store; `ci run` refuses it up front.
+    static let androidLocalOnlyMessage = DiffCommand.androidLocalOnlyMessage
+
     // MARK: - ci run
 
     struct CIRunCommand: AsyncParsableCommand {
@@ -186,15 +189,7 @@ struct CICommand: AsyncParsableCommand {
         @OptionGroup var options: GlobalOptions
         @OptionGroup var buildOptions: BuildOptions
         @OptionGroup var platformOptions: PlatformOptions
-
-        @Option(name: .long, help: "Scheme to build")
-        var scheme: String?
-
-        @Option(name: .long, help: "Simulator name")
-        var simulator: String?
-
-        @Option(name: .long, help: "Bundle identifier")
-        var bundleId: String?
+        @OptionGroup var target: TargetOptions
 
         /// Empty means "make one from the resolved platform"; tests inject a fake.
         var devicePlatform = InjectedDevicePlatform()
@@ -211,22 +206,24 @@ struct CICommand: AsyncParsableCommand {
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
-            let device = devicePlatform.make(platform)
+            guard platform == .ios else {
+                throw GrantivaError.invalidArgument(DiffCommand.androidLocalOnlyMessage)
+            }
+            try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+            let device = try devicePlatform.make(platform, android: target.androidOptions)
             let captureDir = ".grantiva/captures"
             let diffDir = ".grantiva/captures/diffs"
             let start = Date()
 
             // Resolve app binary first (if --app-file provided) so we can derive bundle ID
-            let resolvedBinary = try buildOptions.resolveAppBinary()
+            let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
             defer { resolvedBinary?.cleanup() }
 
-            let appBundleId = resolvedBinary.flatMap { AppBinaryResolver.bundleId(from: $0.appPath) }
+            let appBundleId = resolvedBinary?.appID
 
             // Resolve project
-            let resolved = try await ResolvedProject.resolve(
-                schemeFlag: scheme, simulatorFlag: simulator, bundleIdFlag: bundleId, config: config,
-                skipBuild: buildOptions.shouldSkipBuild,
-                appBundleId: appBundleId
+            let resolved = try await target.resolve(
+                platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
             )
             log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count)")
 
@@ -287,6 +284,7 @@ struct CICommand: AsyncParsableCommand {
                 rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
 
                 var productPath: String?
+                var builtAppID: String?
 
                 if buildOptions.shouldSkipInstall {
                     rlog("Skipping build and install (--no-build)")
@@ -304,7 +302,9 @@ struct CICommand: AsyncParsableCommand {
                         config: config ?? GrantivaConfig(),
                         resolved: resolved,
                         deviceID: booted.udid,
-                        extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                        extraBuildSettings: target.extraBuildSettings(
+                            platform: platform, derivedDataPath: buildOptions.derivedDataPath, resolved: resolved
+                        )
                     ))
                     rlog("Build finished: success=\(buildResult.success) duration=\(String(format: "%.1fs", buildResult.duration))")
 
@@ -317,9 +317,10 @@ struct CICommand: AsyncParsableCommand {
                         throw ExitCode.failure
                     }
                     productPath = buildResult.productPath
+                    builtAppID = buildResult.applicationId
                 }
 
-                if !buildOptions.shouldSkipInstall, let bid = resolved.bundleId {
+                if !buildOptions.shouldSkipInstall, let bid = resolved.bundleId ?? builtAppID {
                     if let productPath {
                         rlog("Installing \(bid)...")
                         try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
@@ -330,8 +331,10 @@ struct CICommand: AsyncParsableCommand {
                 }
 
                 // Run the embedded runner for navigation + screenshots
-                guard let bid = resolved.bundleId else {
-                    throw GrantivaError.invalidArgument("Bundle ID is required for screen capture")
+                guard let bid = resolved.bundleId ?? builtAppID else {
+                    throw GrantivaError.invalidArgument(
+                        platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
+                    )
                 }
                 rlog("Capturing \(resolved.screens.count) screen(s)...")
                 let geometry = try await device.displayGeometry(deviceID: booted.udid)

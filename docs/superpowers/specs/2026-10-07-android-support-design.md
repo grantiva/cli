@@ -234,7 +234,7 @@ provenance file, and refuses others unless `--force`. `emulator sessions` and
 Install: `adb -s <serial> install -r -t -d <apk>`. On
 `INSTALL_FAILED_UPDATE_INCOMPATIBLE` the package is uninstalled and the install
 retried once. Launch:
-`monkey -p <applicationId> -c android.intent.category.LAUNCHER 1`, so no activity
+`monkey -p <applicationId> -c android.intent.category.LAUNCHER --pct-syskeys 0 1`, so no activity
 name is needed. Terminate: `am force-stop`. Uninstall: `pm uninstall`.
 
 ### Stable captures

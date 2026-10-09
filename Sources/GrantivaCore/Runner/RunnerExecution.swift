@@ -24,6 +24,8 @@ enum RunnerExecution {
         let pathMap: [String: String]
         let reportDir: String
         let expectedFlows: Int
+        /// Extra environment for the runner process; empty inherits ours unchanged.
+        var environment: [String: String] = [:]
         let readyFile: ReadyFileSignal
         /// Where keep-alive sessions are discovered. Overridable for tests.
         var sessions: KeepAliveSessionStore = KeepAliveSessionStore()
@@ -42,6 +44,7 @@ enum RunnerExecution {
                 executable: request.executable,
                 arguments: request.arguments,
                 workingDirectory: request.workingDirectory,
+                environment: request.environment.isEmpty ? nil : request.environment,
                 stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
                 stderr: stderrPipe.fileHandleForWriting.fileDescriptor
             )

@@ -152,4 +152,106 @@ final class DiffCommandTests: XCTestCase {
             XCTAssertTrue(error.localizedDescription.contains("No capture found for \"Missing\""))
         }
     }
+
+    func testDirectoriesArePerPlatform() {
+        XCTAssertEqual(DiffCommand.captureDirectory(for: .ios), ".grantiva/captures")
+        XCTAssertEqual(DiffCommand.captureDirectory(for: .android), ".grantiva/captures/android")
+        XCTAssertEqual(DiffCommand.baselineDirectory(for: .ios), ".grantiva/baselines")
+        XCTAssertEqual(DiffCommand.baselineDirectory(for: .android), ".grantiva/baselines/android")
+    }
+
+    func testAndroidBaselineStoreIsLocalEvenWhenAuthenticated() async throws {
+        let credentials = AuthCredentials(apiKey: "key", baseURL: "https://example.invalid")
+        let store = try await DiffCommand.resolveBaselineStore(platform: .android, credentials: credentials)
+        XCTAssertEqual(store.baselineDirectory(), ".grantiva/baselines/android")
+        let anonymous = try await DiffCommand.resolveBaselineStore(platform: .android, credentials: nil)
+        XCTAssertEqual(anonymous.baselineDirectory(), ".grantiva/baselines/android")
+    }
+
+    func testIOSBaselineStoreIsUnchangedWhenAnonymous() async throws {
+        let store = try await DiffCommand.resolveBaselineStore(platform: .ios, credentials: nil)
+        XCTAssertEqual(store.baselineDirectory(), ".grantiva/baselines")
+    }
+
+    /// Review Focus 5: approving Android captures never touches the iOS baseline root.
+    func testApproveOnAndroidWritesOnlyUnderTheAndroidDirectory() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { FileManager.default.changeCurrentDirectoryPath(previous) }
+        try "module: app\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        try FileManager.default.createDirectory(atPath: ".grantiva/captures/android", withIntermediateDirectories: true)
+        try Data([0x89, 0x50]).write(to: URL(fileURLWithPath: ".grantiva/captures/android/Home.png"))
+
+        try await DiffCommand.ApproveCommand.parse([]).run()
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: ".grantiva/baselines/android/Home.png"))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/baselines/Home.png"))
+    }
+
+    private func inTemporaryDirectory(_ body: (URL) async throws -> Void) async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { FileManager.default.changeCurrentDirectoryPath(previous) }
+        try await body(dir)
+    }
+
+    private func withEnvironment(_ key: String, _ value: String?, _ body: () async throws -> Void) async rethrows {
+        let previous = ProcessInfo.processInfo.environment[key]
+        if let value { setenv(key, value, 1) } else { unsetenv(key) }
+        defer {
+            if let previous { setenv(key, previous, 1) } else { unsetenv(key) }
+        }
+        try await body()
+    }
+
+    func testBareApproveSurfacesAnAmbiguousDirectory() async throws {
+        try await withEnvironment("GRANTIVA_PLATFORM", nil) {
+            try await inTemporaryDirectory { dir in
+                try "scheme: Demo\n".write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+                try "module: app\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+                do {
+                    try await DiffCommand.ApproveCommand.parse([]).run()
+                    XCTFail("expected an error")
+                } catch {
+                    XCTAssertTrue("\(error)".contains("--platform"), "\(error)")
+                }
+            }
+        }
+    }
+
+    func testBareCompareSurfacesAnAmbiguousDirectory() async throws {
+        try await withEnvironment("GRANTIVA_PLATFORM", nil) {
+            try await inTemporaryDirectory { dir in
+                try "scheme: Demo\n".write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+                try "module: app\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+                do {
+                    try await DiffCommand.CompareCommand.parse([]).run()
+                    XCTFail("expected an error")
+                } catch {
+                    XCTAssertTrue("\(error)".contains("--platform"), "\(error)")
+                }
+            }
+        }
+    }
+
+    func testBareApproveHonorsGrantivaPlatformEnvironment() async throws {
+        try await withEnvironment("GRANTIVA_PLATFORM", "android") {
+            try await inTemporaryDirectory { dir in
+                try "module: app\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+                try FileManager.default.createDirectory(atPath: ".grantiva/captures/android", withIntermediateDirectories: true)
+                try Data([0x89, 0x50]).write(to: URL(fileURLWithPath: ".grantiva/captures/android/Home.png"))
+
+                try await DiffCommand.ApproveCommand.parse([]).run()
+
+                XCTAssertTrue(FileManager.default.fileExists(atPath: ".grantiva/baselines/android/Home.png"))
+                XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/baselines/Home.png"))
+            }
+        }
+    }
 }

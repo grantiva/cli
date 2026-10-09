@@ -82,15 +82,6 @@ struct BuildOptions: ParsableArguments {
         return settings
     }
 
-    /// Resolves the product path for the app binary.
-    /// - When `--app-file` is set: resolves the binary (extracting IPA if needed), validates it.
-    /// - When `--no-build` is set: returns nil (no binary to install).
-    /// - Otherwise: returns nil (caller should build normally).
-    func resolveAppBinary() throws -> ResolvedBinary? {
-        guard let appFile else { return nil }
-        return try AppBinaryResolver.resolve(appFile)
-    }
-
 }
 
 extension Platform: ExpressibleByArgument {}
@@ -111,8 +102,8 @@ struct InjectedDevicePlatform: Decodable {
         value = nil
     }
 
-    func make(_ platform: Platform) -> any DevicePlatform {
-        value ?? DevicePlatformFactory.make(platform)
+    func make(_ platform: Platform, android: AndroidPlatform.Options = .init()) throws -> any DevicePlatform {
+        try value ?? DevicePlatformFactory.make(platform, android: android)
     }
 }
 
@@ -157,21 +148,12 @@ struct PlatformOptions: ParsableArguments {
         if let source {
             let existing = resolver.existingConfigFiles()
             if !existing.contains(resolved), let other = existing.first {
-                let advice = resolved == .android
-                    ? "Create \(resolved.configFileName) by hand; grantiva init --platform android arrives in the next release."
-                    : "Create \(resolved.configFileName) with grantiva init --platform \(resolved.rawValue)."
+                let advice = "Create \(resolved.configFileName) with grantiva init --platform \(resolved.rawValue)."
                 throw GrantivaError.invalidArgument(
                     "\(source) was given but \(resolved.configFileName) does not exist here. "
                         + "Found \(other.configFileName). \(advice)"
                 )
             }
-        }
-        // DevicePlatformFactory traps on Android until AndroidPlatform lands;
-        // stop here with a message instead of crashing.
-        if resolved == .android {
-            throw GrantivaError.invalidArgument(
-                "Android support arrives in the next release. Pass --platform ios to run this directory as an iOS project."
-            )
         }
         let config = try GrantivaConfig.loadIfPresent(platform: resolved, from: directory)
         return (resolved, config)

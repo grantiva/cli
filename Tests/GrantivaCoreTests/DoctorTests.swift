@@ -151,4 +151,41 @@ final class DoctorTests: XCTestCase {
         ),
         DoctorCheck(name: "Booted Simulator", status: .warning, message: "No simulator booted", fix: nil),
     ]
+
+    func testAndroidSDKCheckIsAnErrorOnlyWhenAndroidIsRequired() async {
+        let runner = DoctorRunner()
+        let missingRequired = runner.checkAndroidSDK(sdk: nil, required: true)
+        XCTAssertEqual(missingRequired.status, .error)
+        XCTAssertTrue(missingRequired.fix?.contains("scripts/android-env.sh") == true)
+        let missingOptional = runner.checkAndroidSDK(sdk: nil, required: false)
+        XCTAssertEqual(missingOptional.status, .warning)
+        let present = runner.checkAndroidSDK(sdk: AndroidSDK(root: scratch.path), required: true)
+        XCTAssertEqual(present.status, .ok)
+        XCTAssertEqual(present.message, scratch.path)
+    }
+
+    func testAVDCheckWarnsWhenNoneExist() async {
+        let runner = DoctorRunner()
+        let none = await runner.checkAVDs(list: { [] })
+        XCTAssertEqual(none.status, .warning)
+        XCTAssertTrue(none.fix?.contains("android-env.sh") == true)
+        let some = await runner.checkAVDs(list: { ["Pixel_8_API_35"] })
+        XCTAssertEqual(some.status, .ok)
+        XCTAssertEqual(some.message, "Pixel_8_API_35")
+    }
+
+    func testConfigCheckNamesThePlatformsFile() {
+        let runner = DoctorRunner()
+        let android = runner.checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(android.name, "grantiva-android.yml")
+        XCTAssertEqual(android.status, .warning)
+        XCTAssertEqual(android.fix, "Run: grantiva init --platform android")
+    }
+
+    func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
+        let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
+        XCTAssertTrue(checks.contains { $0.name == "Android SDK" })
+        XCTAssertTrue(checks.contains { $0.name == "Xcode" })
+        XCTAssertFalse(DoctorRunner.hasFailures(checks.filter { $0.name.hasPrefix("Android") || $0.name == "adb" || $0.name == "JDK" }))
+    }
 }

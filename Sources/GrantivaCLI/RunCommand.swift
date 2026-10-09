@@ -12,14 +12,7 @@ struct RunCommand: AsyncParsableCommand {
     @OptionGroup var buildOptions: BuildOptions
     @OptionGroup var platformOptions: PlatformOptions
 
-    @Option(name: .long, help: "Scheme to build")
-    var scheme: String?
-
-    @Option(name: .long, help: "Simulator name")
-    var simulator: String?
-
-    @Option(name: .long, help: "Bundle identifier")
-    var bundleId: String?
+    @OptionGroup var target: TargetOptions
 
     @Option(name: .long, help: "Run a single flow file instead of all configured flows")
     var flow: String?
@@ -27,11 +20,14 @@ struct RunCommand: AsyncParsableCommand {
     @Flag(name: .long, help: "Keep GrantivaAgent session alive after flows complete so `grantiva hierarchy` can inspect UI state without relaunching the app. Release with Ctrl-C.")
     var keepAlive: Bool = false
 
-    @Flag(name: .long, help: "Stream simulator app logs into this terminal, prefixed with [log]. Filter defaults to lines whose subsystem or process matches the app's bundle ID.")
+    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem or process matches the app's bundle ID; on Android, to lines from the app's uid.")
     var logs: Bool = false
 
-    @Option(name: .long, help: "Custom NSPredicate for `simctl log stream --predicate`. Implies --logs.")
+    @Option(name: .long, help: "Custom NSPredicate for `simctl log stream --predicate` (iOS). Implies --logs.")
     var logsPredicate: String?
+
+    @Option(name: .long, help: "logcat tag to keep when streaming logs (Android). Implies --logs.")
+    var logsTag: String?
 
     @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default` (warnings/errors/default).")
     var logsLevel: String?
@@ -81,6 +77,18 @@ struct RunCommand: AsyncParsableCommand {
     ///   failures (missing project, bad scheme, build failure, no simulator)
     ///   that never reach the runner and used to leave the waiter hanging until
     ///   CI's global timeout.
+    static let unfilteredLogsWarning = "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
+
+    /// The line printed once device log streaming starts.
+    static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
+        switch platform {
+        case .ios:
+            return "Streaming simulator logs" + (predicate.map { " (predicate: \($0))" } ?? "")
+        case .android:
+            return "Streaming emulator logs" + (tag.map { " (tag: \($0))" } ?? "")
+        }
+    }
+
     func run() async throws {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
@@ -108,25 +116,27 @@ struct RunCommand: AsyncParsableCommand {
 
     private func execute() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let device = devicePlatform.make(platform)
+        try target.checkFlags(
+            for: platform, derivedDataPath: buildOptions.derivedDataPath,
+            logsPredicate: logsPredicate, logsTag: logsTag
+        )
+        let device = try devicePlatform.make(platform, android: target.androidOptions)
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
         // screenshots go there and nothing is written to ./.grantiva.
         let captureDir = reportDir.map { dir in
             (dir.hasPrefix("/") ? dir : FileManager.default.currentDirectoryPath + "/" + dir) + "/captures"
-        } ?? ".grantiva/captures"
+        } ?? DiffCommand.captureDirectory(for: platform)
 
         // Resolve app binary first (if --app-file provided)
-        let resolvedBinary = try buildOptions.resolveAppBinary()
+        let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }
         defer { resolvedBinary?.cleanup() }
 
-        let appBundleId = resolvedBinary.flatMap { AppBinaryResolver.bundleId(from: $0.appPath) }
+        let appBundleId = resolvedBinary?.appID
 
         // Resolve project
-        var resolved = try await ResolvedProject.resolve(
-            schemeFlag: scheme, simulatorFlag: simulator, bundleIdFlag: bundleId, config: config,
-            skipBuild: buildOptions.shouldSkipBuild,
-            appBundleId: appBundleId
+        var resolved = try await target.resolve(
+            platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
         )
 
         // --flow overrides configured flows and skips screens
@@ -139,7 +149,8 @@ struct RunCommand: AsyncParsableCommand {
                 buildSettings: resolved.buildSettings,
                 simulator: resolved.simulator,
                 screens: [],
-                flows: [flow]
+                flows: [flow],
+                android: resolved.android
             )
         }
 
@@ -162,37 +173,44 @@ struct RunCommand: AsyncParsableCommand {
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions
 
-        // Optional simulator log streaming. Started after boot so `simctl spawn`
-        // has a running sim to attach to; stopped by defer so it shuts down on
-        // any exit path (success, failure, Ctrl-C). iOS-only until the log
-        // stream moves behind DevicePlatform.
-        let logStreamer: LogStreamer?
-        if platform == .ios, logs || logsPredicate != nil {
-            let predicate: String?
-            if let explicit = logsPredicate {
-                predicate = explicit
-            } else if let bundle = resolved.bundleId ?? appBundleId {
-                predicate = defaultLogPredicate(forBundleID: bundle)
-            } else {
-                log("--logs requested but no bundle ID resolved; streaming without a predicate (very chatty).")
-                predicate = nil
+        // Optional device log streaming, stopped by defer so it shuts down on
+        // any exit path (success, failure, Ctrl-C). iOS starts it right after
+        // boot, as it always has. Android starts it after install: logcat
+        // filters by the app's uid, which exists only once the package is
+        // installed, and the application ID may come from the build.
+        let wantsLogs = logs || logsPredicate != nil || logsTag != nil
+        func startLogStream(appID: String?) async -> LogStreamer? {
+            // iOS names the predicate it streams with: the explicit one or the
+            // default derived from the bundle ID. Without either, it streams
+            // unfiltered and says so first.
+            let predicate = platform == .ios ? (logsPredicate ?? appID.map(defaultLogPredicate(forBundleID:))) : nil
+            if platform == .ios, predicate == nil {
+                log(Self.unfilteredLogsWarning)
             }
             let streamer = LogStreamer()
             do {
-                try streamer.start(udid: booted.udid, predicate: predicate, level: logsLevel)
-                log("Streaming simulator logs\(predicate.map { " (predicate: \($0))" } ?? "")")
-                logStreamer = streamer
+                let stream = try await device.logStream(
+                    deviceID: booted.udid, appID: appID,
+                    filter: logsPredicate ?? logsTag, level: logsLevel
+                )
+                try streamer.start(executable: stream.executable, arguments: stream.arguments)
+                log(Self.logStreamNarration(platform: platform, predicate: predicate, tag: logsTag))
+                return streamer
             } catch {
                 GrantivaLog.logger.warning("failed to start log stream: \(error)")
-                logStreamer = nil
+                log("Log streaming unavailable: \(error)")
+                return nil
             }
-        } else {
-            logStreamer = nil
         }
+        var logStreamer: LogStreamer?
         defer { logStreamer?.stop() }
+        if wantsLogs, platform == .ios {
+            logStreamer = await startLogStream(appID: resolved.bundleId ?? appBundleId)
+        }
 
         // Build / install / launch
         var productPath: String?
+        var builtAppID: String?
 
         if buildOptions.shouldSkipInstall {
             log("Skipping build and install (--no-build)")
@@ -210,7 +228,9 @@ struct RunCommand: AsyncParsableCommand {
                 config: config ?? GrantivaConfig(),
                 resolved: resolved,
                 deviceID: booted.udid,
-                extraBuildSettings: buildOptions.xcodeBuildSettings(merging: resolved.buildSettings)
+                extraBuildSettings: target.extraBuildSettings(
+                    platform: platform, derivedDataPath: buildOptions.derivedDataPath, resolved: resolved
+                )
             ))
             log("Build finished: success=\(buildResult.success) duration=\(String(format: "%.1fs", buildResult.duration))")
 
@@ -223,15 +243,19 @@ struct RunCommand: AsyncParsableCommand {
                 throw ExitCode.failure
             }
             productPath = buildResult.productPath
+            builtAppID = buildResult.applicationId
         }
 
-        guard let bid = resolved.bundleId else {
-            throw GrantivaError.invalidArgument("Bundle ID is required to run flows")
+        guard let bid = resolved.bundleId ?? builtAppID else {
+            throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
         }
 
         if !buildOptions.shouldSkipInstall, let productPath {
             log("Installing \(bid)...")
             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+        }
+        if wantsLogs, platform != .ios {
+            logStreamer = await startLogStream(appID: bid)
         }
         // Do not pre-launch: flows drive the app themselves via launchApp/clearState.
         // A grantiva-side launch creates a process WDA can't control, causing stopApp
@@ -292,7 +316,7 @@ struct RunCommand: AsyncParsableCommand {
             if !fm.fileExists(atPath: captureDir) {
                 try? fm.createDirectory(atPath: captureDir, withIntermediateDirectories: true)
             }
-            _ = try? await shell(Self.failureScreenshotCommand(udid: booted.udid, path: failurePath))
+            try? await device.screenshot(deviceID: booted.udid, to: failurePath)
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
             }
@@ -365,10 +389,6 @@ struct RunCommand: AsyncParsableCommand {
         if !allPassed {
             throw ExitCode.failure
         }
-    }
-
-    static func failureScreenshotCommand(udid: String, path: String) -> String {
-        "xcrun simctl io \(shellQuoted(udid)) screenshot \(shellQuoted(path))"
     }
 
     /// Only the final session owns suite readiness and the post-run hold.

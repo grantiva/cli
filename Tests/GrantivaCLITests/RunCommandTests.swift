@@ -54,16 +54,6 @@ final class RunCommandTests: XCTestCase {
         }
     }
 
-    func testFailureScreenshotCommandQuotesHostilePathAndUDID() {
-        XCTAssertEqual(
-            RunCommand.failureScreenshotCommand(
-                udid: "device'; touch /tmp/owned; '",
-                path: "/tmp/report'; touch /tmp/owned; '/failure.png"
-            ),
-            "xcrun simctl io 'device'\\''; touch /tmp/owned; '\\''' screenshot '/tmp/report'\\''; touch /tmp/owned; '\\''/failure.png'"
-        )
-    }
-
     func testTimeoutMustBeAtLeastThirtySeconds() throws {
         XCTAssertThrowsError(try RunCommand.parse(["--timeout", "29"])) { error in
             XCTAssertTrue(String(describing: error).contains("at least 30 seconds"))
@@ -178,5 +168,26 @@ final class RunCommandTests: XCTestCase {
         let error = await runInADirectoryWithNoProject(command)
         let message = String(describing: error)
         XCTAssertTrue(message.contains("ready-file"), message)
+    }
+
+    func testLogStreamNarrationNamesThePredicateOnIOSAndTheTagOnAndroid() {
+        XCTAssertEqual(
+            RunCommand.logStreamNarration(platform: .ios, predicate: "subsystem == \"com.x\"", tag: nil),
+            "Streaming simulator logs (predicate: subsystem == \"com.x\")"
+        )
+        XCTAssertEqual(
+            RunCommand.logStreamNarration(platform: .ios, predicate: "eventMessage CONTAINS \"x\"", tag: nil),
+            "Streaming simulator logs (predicate: eventMessage CONTAINS \"x\")"
+        )
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .ios, predicate: nil, tag: nil), "Streaming simulator logs")
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: nil), "Streaming emulator logs")
+        XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: "MyTag"), "Streaming emulator logs (tag: MyTag)")
+    }
+
+    func testChattyLogWarningIsTheBaseCommitWording() {
+        XCTAssertEqual(
+            RunCommand.unfilteredLogsWarning,
+            "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
+        )
     }
 }

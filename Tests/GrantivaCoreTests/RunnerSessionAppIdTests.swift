@@ -107,4 +107,31 @@ final class RunnerSessionAppIdTests: XCTestCase {
             "/tmp/screens.yaml",
         ])
     }
+
+    func testRunnerEnvironmentComesFromThePlatform() {
+        struct EnvPlatform: DevicePlatform {
+            let platform: Platform = .android
+            func bootDevice(named: String) async throws -> BootedDevice { fatalError() }
+            func displayGeometry(deviceID: String) async throws -> DeviceGeometry { fatalError() }
+            func build(_ request: PlatformBuildRequest) async throws -> BuildResult { fatalError() }
+            func install(appID: String, productPath: String, deviceID: String) async throws {}
+            func launch(appID: String, deviceID: String) async throws {}
+            func terminate(appID: String, deviceID: String) async throws {}
+            func uninstall(appID: String, deviceID: String) async throws {}
+            func prepareForCapture(deviceID: String) async {}
+            func restoreAfterCapture(deviceID: String) async {}
+            func runnerGlobalArguments(deviceID: String, appFile: String?) -> [String] { [] }
+            func runnerTestArguments() -> [String] { [] }
+            func resolveBinary(_ path: String) async throws -> ResolvedBinary { fatalError() }
+            func defaultDevice() async throws -> BootedDevice { fatalError() }
+            func screenshot(deviceID: String, to path: String) async throws {}
+            func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand { fatalError() }
+            func runnerEnvironment(runnerHome: String) -> [String: String] { ["MAESTRO_RUNNER_HOME": runnerHome] }
+            func cleanupOrphans(deviceID: String) async {}
+        }
+        XCTAssertEqual(
+            RunnerSession.runnerEnvironment(platform: EnvPlatform(), runnerDir: "/home/.grantiva/runner"),
+            ["MAESTRO_RUNNER_HOME": "/home/.grantiva/runner"]
+        )
+    }
 }

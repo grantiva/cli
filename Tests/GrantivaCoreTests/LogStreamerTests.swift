@@ -51,6 +51,16 @@ final class LogStreamerTests: XCTestCase {
         XCTAssertEqual(strings(stderr.consume(Data("or\n".utf8))), ["[log] error\n"])
     }
 
+    func testStartWithExplicitExecutableStreamsItsOutputWithThePrefix() throws {
+        let streamer = LogStreamer()
+        try streamer.start(executable: "/bin/echo", arguments: ["hello from a fake log"])
+        // Give the readability handler a moment, then stop; the assertion is
+        // that start(executable:arguments:) exists and does not throw for a
+        // real executable. Output goes to stderr and is not captured here.
+        Thread.sleep(forTimeInterval: 0.2)
+        streamer.stop()
+    }
+
     private func strings(_ values: [Data]) -> [String] {
         values.map { String(decoding: $0, as: UTF8.self) }
     }

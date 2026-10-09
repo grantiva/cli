@@ -4,22 +4,38 @@ public struct DoctorRunner: Sendable {
     public init() {}
 
     public func runAllChecks() async -> [DoctorCheck] {
+        await runAllChecks(platforms: [.ios], required: true)
+    }
+
+    /// `platforms` are the toolchains to inspect; `required` says whether a
+    /// missing toolchain is an error (a detected project) or advice (nothing
+    /// detected, so both platforms are reported).
+    public func runAllChecks(platforms: [Platform], required: Bool) async -> [DoctorCheck] {
         var checks: [DoctorCheck] = []
-
-        // Required
-        checks.append(await checkXcode())
-        checks.append(await checkXcodeVersion())
-        checks.append(await checkBootedSimulator())
+        if platforms.contains(.ios) {
+            checks.append(await checkXcode(required: required))
+            checks.append(await checkXcodeVersion(required: required))
+            checks.append(await checkBootedSimulator())
+        }
+        if platforms.contains(.android) {
+            let sdk = AndroidSDK.locate()
+            checks.append(checkAndroidSDK(sdk: sdk, required: required))
+            if let sdk {
+                checks.append(await checkADB(sdk: sdk, required: required))
+                checks.append(checkEmulatorBinary(sdk: sdk, required: required))
+                checks.append(await checkJDK(required: required))
+                let manager = EmulatorManager(sdk: sdk, adb: ADB(path: sdk.adb))
+                checks.append(await checkAVDs(list: { (try? await manager.listAVDs()) ?? [] }))
+                checks.append(await checkRunningEmulator(adb: ADB(path: sdk.adb)))
+            }
+        }
         checks.append(await checkRunner())
-
-        // Project
-        checks.append(checkGrantivaConfig())
+        for platform in platforms {
+            checks.append(checkConfig(for: platform))
+        }
         checks.append(checkGitRepository())
-
-        // CI / Cloud
         checks.append(checkGrantivaAuth())
         checks.append(checkGitHubApp())
-
         return checks
     }
 
@@ -37,16 +53,16 @@ public struct DoctorRunner: Sendable {
     /// succeeds and prints a path that does not exist. Reporting that as a
     /// passing toolchain is worse than reporting nothing: it is exactly the
     /// broken-CI-image case doctor exists to catch.
-    func checkXcode() async -> DoctorCheck {
+    func checkXcode(required: Bool = true) async -> DoctorCheck {
         let missing = DoctorCheck(
-            name: "Xcode", status: .error,
+            name: "Xcode", status: required ? .error : .warning,
             message: "Xcode not found",
             fix: "Install Xcode from the App Store and run: xcode-select --install"
         )
         guard let path = try? await shell("xcode-select -p"), !path.isEmpty else { return missing }
         guard FileManager.default.fileExists(atPath: path) else {
             return DoctorCheck(
-                name: "Xcode", status: .error,
+                name: "Xcode", status: required ? .error : .warning,
                 message: "\(path) does not exist",
                 fix: "Point at an installed Xcode: sudo xcode-select -s /Applications/Xcode.app (or unset DEVELOPER_DIR)"
             )
@@ -54,9 +70,9 @@ public struct DoctorRunner: Sendable {
         return DoctorCheck(name: "Xcode", status: .ok, message: path, fix: nil)
     }
 
-    func checkXcodeVersion() async -> DoctorCheck {
+    func checkXcodeVersion(required: Bool = true) async -> DoctorCheck {
         let unknown = DoctorCheck(
-            name: "Xcode Version", status: .error,
+            name: "Xcode Version", status: required ? .error : .warning,
             message: "Could not determine Xcode version",
             fix: "Ensure Xcode is properly installed"
         )
@@ -115,14 +131,62 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkGrantivaConfig() -> DoctorCheck {
-        if FileManager.default.fileExists(atPath: "grantiva.yml") {
-            return DoctorCheck(name: "grantiva.yml", status: .ok, message: "Found", fix: nil, section: .project)
+    func checkAndroidSDK(sdk: AndroidSDK?, required: Bool) -> DoctorCheck {
+        guard let sdk else {
+            return DoctorCheck(
+                name: "Android SDK", status: required ? .error : .warning,
+                message: "Not found (ANDROID_HOME, ANDROID_SDK_ROOT, ~/Library/Android/sdk)",
+                fix: "Run: scripts/android-env.sh, or set ANDROID_HOME"
+            )
+        }
+        return DoctorCheck(name: "Android SDK", status: .ok, message: sdk.root, fix: nil)
+    }
+
+    func checkADB(sdk: AndroidSDK, required: Bool) async -> DoctorCheck {
+        guard let version = try? await shell("\(shellQuoted(sdk.adb)) version | head -1"), !version.isEmpty else {
+            return DoctorCheck(name: "adb", status: required ? .error : .warning, message: "\(sdk.adb) did not run", fix: "Run: sdkmanager platform-tools")
+        }
+        return DoctorCheck(name: "adb", status: .ok, message: version, fix: nil)
+    }
+
+    func checkEmulatorBinary(sdk: AndroidSDK, required: Bool) -> DoctorCheck {
+        guard FileManager.default.fileExists(atPath: sdk.emulator) else {
+            return DoctorCheck(name: "Android Emulator", status: required ? .error : .warning, message: "Not installed", fix: "Run: sdkmanager emulator")
+        }
+        return DoctorCheck(name: "Android Emulator", status: .ok, message: sdk.emulator, fix: nil)
+    }
+
+    func checkJDK(required: Bool) async -> DoctorCheck {
+        guard let home = await AndroidSDK.javaHome() else {
+            return DoctorCheck(name: "JDK", status: required ? .error : .warning, message: "No JDK found (JAVA_HOME or /usr/libexec/java_home)", fix: "Run: brew install openjdk@21 and set JAVA_HOME (see docs/android-environment.md)")
+        }
+        return DoctorCheck(name: "JDK", status: .ok, message: home, fix: nil)
+    }
+
+    func checkAVDs(list: () async -> [String]) async -> DoctorCheck {
+        let avds = await list()
+        guard !avds.isEmpty else {
+            return DoctorCheck(name: "Android AVDs", status: .warning, message: "No AVD exists", fix: "Run: scripts/android-env.sh (creates Pixel_8_API_35)")
+        }
+        return DoctorCheck(name: "Android AVDs", status: .ok, message: avds.joined(separator: ", "), fix: nil)
+    }
+
+    func checkRunningEmulator(adb: ADB) async -> DoctorCheck {
+        let running = ((try? await adb.devices()) ?? []).filter { $0.isEmulator && $0.isUsable }
+        guard !running.isEmpty else {
+            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd Pixel_8_API_35")
+        }
+        return DoctorCheck(name: "Running Emulator", status: .ok, message: running.map(\.serial).joined(separator: ", "), fix: nil)
+    }
+
+    func checkConfig(for platform: Platform, directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
+        let name = platform.configFileName
+        if FileManager.default.fileExists(atPath: "\(directory)/\(name)") {
+            return DoctorCheck(name: name, status: .ok, message: "Found", fix: nil, section: .project)
         }
         return DoctorCheck(
-            name: "grantiva.yml", status: .warning,
-            message: "Not found",
-            fix: "Run: grantiva init",
+            name: name, status: .warning, message: "Not found",
+            fix: platform == .ios ? "Run: grantiva init" : "Run: grantiva init --platform android",
             section: .project
         )
     }

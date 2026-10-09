@@ -8,6 +8,7 @@ public struct BuildResult: Sendable, Codable {
     public let warnings: [String]
     public let errors: [String]
     public let productPath: String?
+    public let applicationId: String?
 
     public init(
         success: Bool,
@@ -16,7 +17,8 @@ public struct BuildResult: Sendable, Codable {
         duration: TimeInterval,
         warnings: [String],
         errors: [String],
-        productPath: String?
+        productPath: String?,
+        applicationId: String? = nil
     ) {
         self.success = success
         self.scheme = scheme
@@ -25,5 +27,6 @@ public struct BuildResult: Sendable, Codable {
         self.warnings = warnings
         self.errors = errors
         self.productPath = productPath
+        self.applicationId = applicationId
     }
 }
