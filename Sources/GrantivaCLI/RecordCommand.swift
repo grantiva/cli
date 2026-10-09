@@ -5,81 +5,102 @@ import GrantivaCore
 import ImageIO
 import UniformTypeIdentifiers
 
-/// Grantiva-owned simulator recording and timestamped frame extraction.
+/// Grantiva-owned device recording and timestamped frame extraction.
 ///
-/// This deliberately keeps all simulator selection and capture mechanics in
-/// Grantiva: callers never need to invoke simctl or Device Hub directly.
+/// All device selection and capture mechanics stay in Grantiva: callers never
+/// invoke simctl, adb, or Device Hub directly.
 struct RecordCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "record",
-        abstract: "Record a simulator and extract PNG frames at exact requested timestamps."
+        abstract: "Record a simulator or emulator and extract PNG frames at exact requested timestamps."
     )
 
     @OptionGroup var options: GlobalOptions
+    @OptionGroup var platformOptions: PlatformOptions
 
-    @Option(name: .long, help: "Simulator name or UDID to record")
-    var simulator: String
+    @Option(name: .long, help: "Simulator name or UDID to record (iOS; reads simulator from grantiva.yml if omitted)")
+    var simulator: String?
 
-    @Option(name: .long, help: "Recording duration in seconds")
+    @Option(name: .long, help: "AVD name to record, booting it if needed (Android; reads emulator from grantiva-android.yml if omitted)")
+    var emulator: String?
+
+    @Option(name: .long, help: "adb serial of an attached emulator or device (Android)")
+    var device: String?
+
+    @Option(name: .long, help: "Recording duration in seconds (Android caps a recording at 180)")
     var duration: Double
 
-    @Option(name: .long, help: "Output .mov path (default: .grantiva/recordings/recording.mov)")
-    var output: String = ".grantiva/recordings/recording.mov"
+    @Option(name: .long, help: "Output video path (default: .grantiva/recordings/recording.mov on iOS, .mp4 on Android)")
+    var output: String?
 
     @Option(name: .long, help: "Comma-separated frame timestamps in milliseconds, e.g. 0,150,300,600")
     var framesAt: String?
 
-    var simulatorManager: SimulatorManager = .live
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
+
+    static func defaultOutput(for platform: Platform) -> String {
+        platform == .ios ? ".grantiva/recordings/recording.mov" : ".grantiva/recordings/recording.mp4"
+    }
+
+    /// The device name the platform boots. iOS needs a simulator; Android
+    /// may leave it empty and let the platform pick the running emulator.
+    static func target(platform: Platform, simulator: String?, emulator: String?, device: String?, config: GrantivaConfig?) throws -> String {
+        switch platform {
+        case .ios:
+            if emulator != nil { throw GrantivaError.invalidArgument("--emulator is an Android option, but this is an iOS project.") }
+            if device != nil { throw GrantivaError.invalidArgument("--device is an Android option, but this is an iOS project.") }
+            guard let name = simulator ?? config?.simulator else {
+                throw GrantivaError.invalidArgument("No simulator named. Pass --simulator or set simulator in grantiva.yml.")
+            }
+            return name
+        case .android:
+            if simulator != nil { throw GrantivaError.invalidArgument("--simulator is an iOS option, but this is an Android project.") }
+            if device != nil, emulator != nil {
+                throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
+            }
+            if let device { _ = try DeviceID.validate(device, flag: "--device") }
+            return device ?? emulator ?? config?.android?.emulator ?? ""
+        }
+    }
 
     func run() async throws {
         guard duration > 0 else {
             throw GrantivaError.invalidArgument("--duration must be greater than zero")
         }
-        let device = try await simulatorManager.boot(nameOrUDID: simulator)
-        let outputURL = URL(fileURLWithPath: output)
+        let (platform, config) = try platformOptions.loadConfig()
+        let targetName = try Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
+        if platform == .android, !(duration.isFinite && duration <= Double(AndroidPlatform.maximumRecordingSeconds)) {
+            throw GrantivaError.invalidArgument(
+                "Android recordings are capped at \(AndroidPlatform.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(duration) is too long."
+            )
+        }
+        let platformDevice = try devicePlatform.make(platform)
+        let outputPath = output ?? Self.defaultOutput(for: platform)
+
+        let booted = try await platformDevice.bootDevice(named: targetName)
+        let outputURL = URL(fileURLWithPath: outputPath)
         try FileManager.default.createDirectory(
             at: outputURL.deletingLastPathComponent(), withIntermediateDirectories: true
         )
         try? FileManager.default.removeItem(at: outputURL)
 
-        let recorder = Process()
-        recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-        recorder.arguments = ["simctl", "io", device.udid, "recordVideo", "--codec=h264", output]
-        let stderrURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-record-\(UUID().uuidString).log")
-        FileManager.default.createFile(atPath: stderrURL.path, contents: nil)
-        defer { try? FileManager.default.removeItem(at: stderrURL) }
-        let stderr = try FileHandle(forWritingTo: stderrURL)
-        recorder.standardError = stderr
-        do {
-            try recorder.run()
-            try await RecorderLifecycle.withCleanup(for: recorder) {
-                try await RecorderLifecycle.waitForStart(of: outputURL)
-                try await Task.sleep(for: .seconds(duration))
-            }
-            try stderr.close()
-        } catch {
-            try? stderr.close()
-            throw error
-        }
-
-        guard FileManager.default.fileExists(atPath: output) else {
-            let message = (try? String(contentsOf: stderrURL, encoding: .utf8)) ?? ""
-            throw GrantivaError.commandFailed("Grantiva recording produced no video: \(message)", recorder.terminationStatus)
+        try await platformDevice.recordVideo(deviceID: booted.udid, to: outputPath, seconds: duration)
+        guard FileManager.default.fileExists(atPath: outputPath) else {
+            throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
         }
 
         let requested = try parseTimestamps()
-        let geometry = try await simulatorManager.displayGeometry(udid: device.udid)
-        let target = CaptureSimulatorTarget(name: device.name, udid: device.udid, geometry: geometry)
+        let geometry = try await platformDevice.displayGeometry(deviceID: booted.udid)
         let frames = try await extractFrames(
             from: outputURL,
             requestedMilliseconds: requested,
-            expectedPixels: target.pixelDimensions
+            expectedPixels: geometry.dimensions
         )
         let report = RecordReport(
-            simulator: device.name,
-            udid: device.udid,
-            video: output,
+            simulator: booted.name,
+            udid: booted.udid,
+            video: outputPath,
             requestedDurationSeconds: duration,
             frames: frames
         )
@@ -89,7 +110,7 @@ struct RecordCommand: AsyncParsableCommand {
         if options.json {
             Output.line(try JSONOutput.string(report))
         } else {
-            Output.line("Recording: \(output)")
+            Output.line("Recording: \(outputPath)")
             Output.line("Frame report: \(reportURL.path)")
             for frame in frames {
                 Output.line("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
