@@ -16,6 +16,8 @@ final class ToolSchemaTests: XCTestCase {
         "grantiva_script": ["steps"],
         "grantiva_sim_ensure": ["name"],
         "grantiva_sim_delete": ["name"],
+        "grantiva_emulator_ensure": ["name"],
+        "grantiva_emulator_delete": ["name"],
     ]
 
     private func allTools() -> [Tool] {

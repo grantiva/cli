@@ -21,6 +21,7 @@ struct ToolRegistry: Sendable {
         UITools.definitions
             + BuildTools.definitions
             + SimTools.definitions
+            + EmulatorTools.definitions
             + [ContextTool.definition]
             + ScriptTools.definitions
             + VRTTools.definitions
@@ -71,11 +72,11 @@ struct ToolRegistry: Sendable {
 
         // Build Tools
         case "grantiva_build":
-            result = try await BuildTools.build(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments)
         case "grantiva_run":
-            result = try await BuildTools.run(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.run(device: device, platform: platform, config: config, arguments: arguments)
         case "grantiva_test":
-            result = try await BuildTools.test(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.test(runner: buildRunner, platform: platform, config: config, simManager: simulatorManager, arguments: arguments)
 
         // Sim Tools
         case "grantiva_sim_list":
@@ -86,6 +87,16 @@ struct ToolRegistry: Sendable {
             result = try await SimTools.ensure(simManager: simulatorManager, arguments: arguments)
         case "grantiva_sim_delete":
             result = try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
+
+        // Emulator Tools
+        case "grantiva_emulator_list":
+            result = try await EmulatorTools.list(deps: emulators, arguments: arguments)
+        case "grantiva_emulator_boot":
+            result = try await EmulatorTools.boot(deps: emulators, config: config, arguments: arguments)
+        case "grantiva_emulator_ensure":
+            result = try await EmulatorTools.ensure(deps: emulators, arguments: arguments)
+        case "grantiva_emulator_delete":
+            result = try await EmulatorTools.delete(deps: emulators, arguments: arguments)
 
         // Context
         case "grantiva_context":

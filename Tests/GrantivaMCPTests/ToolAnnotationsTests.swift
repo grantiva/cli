@@ -11,6 +11,7 @@ final class ToolAnnotationsTests: XCTestCase {
         UITools.definitions
             + BuildTools.definitions
             + SimTools.definitions
+            + EmulatorTools.definitions
             + [ContextTool.definition]
             + ScriptTools.definitions
             + VRTTools.definitions
@@ -21,8 +22,8 @@ final class ToolAnnotationsTests: XCTestCase {
     }
 
     func testAllToolsAreRegistered() {
-        XCTAssertEqual(allTools.count, 18)
-        XCTAssertEqual(Set(allTools.map(\.name)).count, 18, "Tool names must be unique")
+        XCTAssertEqual(allTools.count, 22)
+        XCTAssertEqual(Set(allTools.map(\.name)).count, 22, "Tool names must be unique")
     }
 
     /// `grantiva_test` runs `xcodebuild test`: it boots a simulator and writes build
@@ -36,6 +37,7 @@ final class ToolAnnotationsTests: XCTestCase {
             "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
             "grantiva_build", "grantiva_run", "grantiva_test",
             "grantiva_sim_boot", "grantiva_sim_ensure", "grantiva_sim_delete",
+            "grantiva_emulator_boot", "grantiva_emulator_ensure", "grantiva_emulator_delete",
             "grantiva_script",
             "grantiva_vrt_capture", "grantiva_vrt_compare", "grantiva_vrt_approve",
         ]
@@ -45,7 +47,7 @@ final class ToolAnnotationsTests: XCTestCase {
     }
 
     func testReadOnlyToolsAreMarkedReadOnly() throws {
-        for name in ["grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_sim_list", "grantiva_context"] {
+        for name in ["grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_sim_list", "grantiva_emulator_list", "grantiva_context"] {
             XCTAssertEqual(try tool(name).annotations.readOnlyHint, true, "\(name) only reads")
         }
     }
@@ -58,16 +60,18 @@ final class ToolAnnotationsTests: XCTestCase {
         }
     }
 
-    func testSimDeleteIsMarkedDestructive() throws {
-        let delete = try tool("grantiva_sim_delete")
-        XCTAssertEqual(delete.annotations.readOnlyHint, false)
-        XCTAssertEqual(delete.annotations.destructiveHint, true)
+    func testDeleteToolsAreMarkedDestructive() throws {
+        for name in ["grantiva_sim_delete", "grantiva_emulator_delete"] {
+            let delete = try tool(name)
+            XCTAssertEqual(delete.annotations.readOnlyHint, false)
+            XCTAssertEqual(delete.annotations.destructiveHint, true)
+        }
     }
 
     /// No other tool destroys state, so nothing else should carry the destructive hint.
-    func testOnlySimDeleteIsDestructive() {
+    func testOnlyTheDeleteToolsAreDestructive() {
         let destructive = allTools.filter { $0.annotations.destructiveHint == true }.map(\.name)
-        XCTAssertEqual(destructive, ["grantiva_sim_delete"])
+        XCTAssertEqual(destructive, ["grantiva_sim_delete", "grantiva_emulator_delete"])
     }
 
     /// The VRT tools reach the remote Range baseline API when the user is authenticated;
