@@ -135,13 +135,17 @@ final class AndroidPlatformTests: XCTestCase {
         }
     }
 
-    func testCleanupOrphansForceStopsUIA2AndRemovesForwards() async {
-        let shell = ScriptedShell()
+    func testCleanupOrphansForceStopsUIA2AndRemovesOnlyThisSerialsForwards() async {
+        let shell = ScriptedShell([
+            .success(""), .success(""),
+            .success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790"),
+        ])
         await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove-all",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
         ])
     }
 

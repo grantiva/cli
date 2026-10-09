@@ -29,9 +29,11 @@ public struct AndroidProvenance: Sendable {
 
     private var ledgerPath: String { "\(directory)/started.json" }
 
+    /// A serial can be reused after an emulator exits, so a new record for
+    /// the same serial replaces the old one instead of being dropped.
     public func register(_ record: StartedEmulatorRecord) throws {
         try withLedgerLock { records in
-            guard !records.contains(where: { $0.serial == record.serial }) else { return }
+            records.removeAll { $0.serial == record.serial }
             records.append(record)
         }
     }
@@ -46,6 +48,48 @@ public struct AndroidProvenance: Sendable {
 
     public func all() throws -> [StartedEmulatorRecord] {
         try withLedgerLock { $0 }
+    }
+
+    // MARK: Created AVDs
+
+    private var createdPath: String { "\(directory)/created-avds.json" }
+
+    /// AVDs `emulator ensure` created. `emulator delete` refuses any other
+    /// AVD without `--force`.
+    public func registerCreatedAVD(_ name: String) throws {
+        try withCreatedLock { names in
+            guard !names.contains(name) else { return }
+            names.append(name)
+        }
+    }
+
+    public func createdAVDs() throws -> [String] {
+        try withCreatedLock { $0 }
+    }
+
+    public func removeCreatedAVD(_ name: String) throws {
+        try withCreatedLock { $0.removeAll { $0 == name } }
+    }
+
+    @discardableResult
+    private func withCreatedLock<T>(_ body: (inout [String]) throws -> T) throws -> T {
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        let descriptor = Darwin.open("\(directory)/ledger.lock", O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)
+        guard descriptor >= 0 else {
+            throw GrantivaError.commandFailed("Could not open the emulator ledger lock: \(String(cString: strerror(errno)))", 1)
+        }
+        defer { Darwin.close(descriptor) }
+        guard flock(descriptor, LOCK_EX) == 0 else {
+            throw GrantivaError.commandFailed("Could not lock the emulator ledger: \(String(cString: strerror(errno)))", 1)
+        }
+        defer { flock(descriptor, LOCK_UN) }
+        var names: [String] = []
+        if let data = FileManager.default.contents(atPath: createdPath), !data.isEmpty {
+            names = try JSONDecoder().decode([String].self, from: data)
+        }
+        let result = try body(&names)
+        try JSONEncoder().encode(names).write(to: URL(fileURLWithPath: createdPath), options: .atomic)
+        return result
     }
 
     @discardableResult

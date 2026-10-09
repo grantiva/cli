@@ -211,6 +211,6 @@ public struct AndroidPlatform: DevicePlatform {
         for package in ADB.uiAutomator2Packages {
             _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
         }
-        _ = try? await adb.removeAllForwards(serial: deviceID)
+        _ = try? await adb.removeForwards(serial: deviceID)
     }
 }
