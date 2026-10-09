@@ -39,11 +39,11 @@ enum UITools {
                     ]),
                     "x": .object([
                         "type": .string("number"),
-                        "description": .string("X coordinate to tap (used if label is not provided) — points on iOS, device pixels on Android"),
+                        "description": .string("X coordinate to tap, in the same unit as the hierarchy frames: points on iOS, dp on Android (used if label is not provided)"),
                     ]),
                     "y": .object([
                         "type": .string("number"),
-                        "description": .string("Y coordinate to tap (used if label is not provided) — points on iOS, device pixels on Android"),
+                        "description": .string("Y coordinate to tap, in the same unit as the hierarchy frames: points on iOS, dp on Android (used if label is not provided)"),
                     ]),
                 ]),
             ]),

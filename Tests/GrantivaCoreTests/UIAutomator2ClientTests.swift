@@ -121,11 +121,12 @@ final class UIAutomator2ClientTests: XCTestCase {
         } catch { XCTFail("\(error)") }
     }
 
-    func testTapByCoordinateSendsPixelPointerActions() async throws {
+    func testTapByCoordinateScalesDpToPixels() async throws {
         let transport = ScriptedTransport([(#"{"value":null}"#, 200)])
-        try await client(transport).tapByCoordinate(540, 1200)
+        try await client(transport).tapByCoordinate(270, 600)
         XCTAssertEqual(transport.calls.map(\.path), ["/wd/hub/session/abc-123/actions"])
         XCTAssertTrue(transport.calls[0].body.contains(#""x":540"#), transport.calls[0].body)
+        XCTAssertTrue(transport.calls[0].body.contains(#""y":1200"#), transport.calls[0].body)
         XCTAssertTrue(transport.calls[0].body.contains(#""pointerType":"touch""#), transport.calls[0].body)
     }
 

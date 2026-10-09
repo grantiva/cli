@@ -134,4 +134,17 @@ final class MCPServerTests: XCTestCase {
         XCTAssertNil(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 0, bundleId: "", udid: "emulator-5554", startedAt: Date())))
         XCTAssertEqual(GrantivaMCPServer.driverPort(for: RunnerSessionInfo(pid: 1, wdaPort: 8100, bundleId: "", udid: "", startedAt: Date())), 8100)
     }
+
+    /// A directory with both config files is ambiguous on its own; the
+    /// server's `--platform` flag settles it.
+    func testExplicitPlatformWinsOverADualConfigDirectory() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try "scheme: Example\n".write(to: directory.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        try "platform: android\nmodule: app\n".write(to: directory.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let resolver = PlatformResolver(directory: directory)
+        XCTAssertThrowsError(try resolver.resolveOrDefault(flag: nil))
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: .android), .android)
+    }
 }

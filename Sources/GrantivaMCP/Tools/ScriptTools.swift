@@ -31,7 +31,7 @@ enum ScriptTools {
                                 ]),
                                 "tap_xy": .object([
                                     "type": .string("object"),
-                                    "description": .string("Coordinates to tap: {x, y}"),
+                                    "description": .string("Coordinates to tap: {x, y}, in the same unit as the hierarchy frames (points on iOS, dp on Android)"),
                                     "properties": .object([
                                         "x": .object(["type": .string("number")]),
                                         "y": .object(["type": .string("number")]),

@@ -137,8 +137,8 @@ enum UIAutomator2Requests {
 }
 
 extension DriverClient {
-    /// The Android driver. Coordinates are device pixels; `scale` converts
-    /// hierarchy bounds to dp.
+    /// The Android driver. Tap coordinates are dp, converted to pixels with
+    /// `scale`; hierarchy bounds are reported in dp.
     public static func uiAutomator2(
         endpoint: UIAutomator2Endpoint, scale: Double, transport: UIAutomator2Transport = .live
     ) -> DriverClient {
@@ -170,7 +170,7 @@ extension DriverClient {
             },
             tapByCoordinate: { x, y in
                 try await R.pointer(transport, session: session, [
-                    ["type": "pointerMove", "duration": 0, "x": Int(x), "y": Int(y)],
+                    ["type": "pointerMove", "duration": 0, "x": Int((x * scale).rounded()), "y": Int((y * scale).rounded())],
                     ["type": "pointerDown", "button": 0],
                     ["type": "pause", "duration": 100],
                     ["type": "pointerUp", "button": 0],

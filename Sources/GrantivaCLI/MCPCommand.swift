@@ -12,8 +12,10 @@ struct MCPCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Project directory containing grantiva.yml or grantiva-android.yml and .grantiva/session.json.")
     var projectDir: String?
 
+    @OptionGroup var platformOptions: PlatformOptions
+
     func run() async throws {
         let directory = projectDir.map { URL(fileURLWithPath: $0) }
-        try await GrantivaMCPServer(projectDirectory: directory).run()
+        try await GrantivaMCPServer(projectDirectory: directory, platform: platformOptions.platform).run()
     }
 }

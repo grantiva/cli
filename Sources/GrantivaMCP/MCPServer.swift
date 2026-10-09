@@ -7,9 +7,13 @@ import MCP
 @available(macOS 15, *)
 public struct GrantivaMCPServer: Sendable {
     private let projectDirectory: URL?
+    private let platform: Platform?
 
-    public init(projectDirectory: URL? = nil) {
+    /// `platform` is the `--platform` flag; nil resolves it from the project
+    /// directory (and fails when both config files are present).
+    public init(projectDirectory: URL? = nil, platform: Platform? = nil) {
         self.projectDirectory = projectDirectory
+        self.platform = platform
     }
 
     public func run() async throws {
@@ -19,10 +23,15 @@ public struct GrantivaMCPServer: Sendable {
         }
 
         // All relative tool paths now resolve from the selected project root.
-        let platform = try PlatformResolver(directory: projectDirectory).resolveOrDefault(flag: nil)
+        let platform = try PlatformResolver(directory: projectDirectory).resolveOrDefault(flag: self.platform)
         let config = try GrantivaConfig.loadIfPresent(platform: platform)
         let session = try Self.loadActiveSession(projectDirectory: projectDirectory)
         let device = try DevicePlatformFactory.make(platform)
+        if platform == .android, session.udid.isEmpty {
+            throw GrantivaError.invalidArgument(
+                "The runner session does not record which Android device it holds. Start it with `grantiva runner start` or `grantiva run --keep-alive` from this version of Grantiva."
+            )
+        }
         let attachment = try await device.attachDriver(deviceID: session.udid, port: Self.driverPort(for: session))
 
         let tools = ToolRegistry(
@@ -94,9 +103,16 @@ public struct GrantivaMCPServer: Sendable {
         }
 
         // Start on stdio transport
+        // Detach on both paths: on Android the attachment owns an adb forward.
         let transport = StdioTransport()
-        try await server.start(transport: transport)
-        await server.waitUntilCompleted()
+        do {
+            try await server.start(transport: transport)
+            await server.waitUntilCompleted()
+        } catch {
+            await attachment.detach()
+            throw error
+        }
+        await attachment.detach()
     }
 
     static func resolveProjectDirectory(_ directory: URL?) throws -> URL {
