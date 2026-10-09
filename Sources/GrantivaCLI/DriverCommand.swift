@@ -78,14 +78,31 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     @OptionGroup var options: GlobalOptions
 
-    @Option(name: .long, help: "App bundle identifier (reads from grantiva.yml if omitted)")
+    @OptionGroup var platformOptions: PlatformOptions
+
+    @Option(name: .long, help: "App bundle identifier (iOS; reads from grantiva.yml if omitted)")
     var bundleId: String?
 
-    @Option(name: .long, help: "Simulator name or UDID (reads from grantiva.yml if omitted)")
+    @Option(name: .long, help: "Simulator name or UDID (iOS; reads from grantiva.yml if omitted)")
     var simulator: String?
+
+    @Option(name: .long, help: "Application ID (Android; reads from grantiva-android.yml if omitted)")
+    var applicationId: String?
+
+    @Option(name: .long, help: "AVD name to use, booting it if needed (Android)")
+    var emulator: String?
+
+    @Option(name: .long, help: "adb serial of an attached emulator or device (Android)")
+    var device: String?
+
+    @Flag(name: .long, help: "Boot an emulator without a window (Android)")
+    var headless = false
 
     @Flag(name: .long, help: "Detach the runner process from this terminal. Prints the log file path on start.")
     var detach: Bool = false
+
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
         // Check for existing session
@@ -106,38 +123,43 @@ struct RunnerStartCommand: AsyncParsableCommand {
             return
         }
 
-        // Resolve config
-        let config = try GrantivaConfig.loadIfPresent(platform: .ios)
-        let resolvedBundleId = bundleId ?? config?.bundleId
-        guard let resolvedBundleId else {
-            throw GrantivaError.invalidArgument(
-                "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."
-            )
+        let (platform, config) = try platformOptions.loadConfig()
+        if platform == .ios {
+            if emulator != nil { throw GrantivaError.invalidArgument("--emulator is an Android option, but this is an iOS project.") }
+            if device != nil { throw GrantivaError.invalidArgument("--device is an Android option, but this is an iOS project.") }
+            if headless { throw GrantivaError.invalidArgument("--headless is an Android option, but this is an iOS project.") }
         }
+        if platform == .android, simulator != nil {
+            throw GrantivaError.invalidArgument("--simulator is an iOS option, but this is an Android project.")
+        }
+        if device != nil, emulator != nil {
+            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
+        }
+        if let device { _ = try DeviceID.validate(device, flag: "--device") }
+        let resolvedAppID = try Self.appID(platform: platform, bundleId: bundleId, applicationId: applicationId, config: config)
+        let targetName = Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
 
-        let simName = simulator ?? config?.simulator ?? "iPhone 16"
-        let simManager = SimulatorManager.live
-        let device = try await simManager.boot(nameOrUDID: simName)
+        let platformDevice = try devicePlatform.make(platform, android: .init(headless: headless))
+        let booted = try await platformDevice.bootDevice(named: targetName)
         // Held until the runner is up, then handed to the runner process: this
         // command returns immediately, but the session it started still owns
-        // the simulator until `runner stop`.
-        let simulatorLease = try SimulatorLease.acquire(udid: device.udid)
+        // the device until `runner stop`.
+        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid)
         var handedOff = false
         defer { if !handedOff { simulatorLease.release() } }
 
+        let deviceNoun = platform == .ios ? "Simulator" : "Device"
         options.note("Starting runner...")
-        options.note("  Bundle ID: \(resolvedBundleId)")
-        options.note("  Simulator: \(device.name) (\(device.udid))")
+        options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
+        options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")
 
-        // Ensure runner binary is available
         let runner = RunnerManager.live
         try await runner.ensureAvailable()
         let runnerBin = runner.runnerPath()
         let runnerDir = runner.runnerDir()
 
-        // Create a flow that launches the app and waits a long time (1 hour)
         let flowYaml = """
-        appId: \(resolvedBundleId)
+        appId: \(resolvedAppID)
         ---
         - launchApp
         - waitForAnimationToEnd:
@@ -149,47 +171,98 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let flowPath = tempDir.appendingPathComponent("session-flow.yaml").path
         try flowYaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
 
-        let runnerArgs = [
-            "--platform", "ios",
-            "--device", device.udid,
-            "--no-ansi",
-            "--no-app-install",
-            "test",
-            "--wait-for-idle-timeout", "0",
-            flowPath,
-        ]
-
+        let runnerArgs = Self.runnerArguments(platform: platformDevice, deviceID: booted.udid, flowPath: flowPath)
+        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir)
+        let launch = Launch(
+            runnerBin: runnerBin, runnerDir: runnerDir, runnerArgs: runnerArgs,
+            environment: environment.isEmpty ? nil : environment,
+            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice
+        )
         let runnerPid: Int32
         if detach {
-            runnerPid = try await startDetached(
-                runnerBin: runnerBin,
-                runnerDir: runnerDir,
-                runnerArgs: runnerArgs,
-                resolvedBundleId: resolvedBundleId,
-                device: device
-            )
+            runnerPid = try await startDetached(launch)
         } else {
-            runnerPid = try await startForeground(
-                runnerBin: runnerBin,
-                runnerDir: runnerDir,
-                runnerArgs: runnerArgs,
-                resolvedBundleId: resolvedBundleId,
-                device: device
-            )
+            runnerPid = try await startForeground(launch)
         }
         simulatorLease.handOff(to: runnerPid)
         handedOff = true
     }
 
+    static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
+        switch platform {
+        case .ios:
+            if applicationId != nil { throw GrantivaError.invalidArgument("--application-id is an Android option, but this is an iOS project.") }
+            guard let id = bundleId ?? config?.bundleId else {
+                throw GrantivaError.invalidArgument("No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml.")
+            }
+            return id
+        case .android:
+            if bundleId != nil { throw GrantivaError.invalidArgument("--bundle-id is an iOS option, but this is an Android project.") }
+            guard let id = applicationId ?? config?.android?.applicationId else {
+                throw GrantivaError.invalidArgument("No application ID. Pass --application-id or set application_id in grantiva-android.yml.")
+            }
+            return id
+        }
+    }
+
+    static func target(platform: Platform, simulator: String?, emulator: String?, device: String?, config: GrantivaConfig?) -> String {
+        switch platform {
+        case .ios: return simulator ?? config?.simulator ?? "iPhone 16"
+        case .android: return device ?? emulator ?? config?.android?.emulator ?? ""
+        }
+    }
+
+    /// Global flags, `test`, the platform's test flags, then the flow. On iOS
+    /// this is byte-for-byte the argv `runner start` has always used.
+    static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String) -> [String] {
+        platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments() + [flowPath]
+    }
+
+    /// Polls `attach` until the runner has opened its UIAutomator2 session.
+    /// The successful attachment is returned un-detached: its forward is the
+    /// port `session.json` records and `dump-hierarchy` and the MCP server use.
+    static func waitForUIAutomator2(
+        attach: @Sendable () async throws -> DriverAttachment,
+        timeout: TimeInterval,
+        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+    ) async -> DriverAttachment? {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if let attachment = try? await attach() { return attachment }
+            await sleep()
+        } while Date() < deadline
+        return nil
+    }
+
+    struct Launch {
+        let runnerBin: String
+        let runnerDir: String
+        let runnerArgs: [String]
+        let environment: [String: String]?
+        let appID: String
+        let device: BootedDevice
+        let platform: Platform
+        let platformDevice: any DevicePlatform
+    }
+
+    /// The local end of the forward to the runner's UIAutomator2 session. The
+    /// forward is left in place: it is the port the session records.
+    private static func waitForUIAutomator2Port(_ launch: Launch) async -> UInt16? {
+        let device = launch.platformDevice
+        let serial = launch.device.udid
+        let attachment = await Self.waitForUIAutomator2(
+            attach: { try await device.attachDriver(deviceID: serial, port: nil) }, timeout: 90
+        )
+        return attachment.map { UInt16(clamping: $0.port) }
+    }
+
+    private static func portLabel(_ platform: Platform) -> String {
+        platform == .android ? "UIAutomator2 port" : "WDA port"
+    }
+
     // MARK: - Detached start
 
-    private func startDetached(
-        runnerBin: String,
-        runnerDir: String,
-        runnerArgs: [String],
-        resolvedBundleId: String,
-        device: SimulatorDevice
-    ) async throws -> Int32 {
+    private func startDetached(_ launch: Launch) async throws -> Int32 {
         let logPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-runner-\(Int(Date().timeIntervalSince1970)).log")
             .path
@@ -201,8 +274,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         do {
             child = try ChildProcess.spawn(
                 executable: "/usr/bin/nohup",
-                arguments: [runnerBin] + runnerArgs,
-                workingDirectory: runnerDir,
+                arguments: [launch.runnerBin] + launch.runnerArgs,
+                workingDirectory: launch.runnerDir,
+                environment: launch.environment,
                 stdout: log.fileDescriptor,
                 stderr: log.fileDescriptor
             )
@@ -213,21 +287,26 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
         let runnerPid = child.pid
 
-        // Poll the log file for WDA port
-        let port = try await waitForWDAPort(logFile: logPath, timeout: 60)
+        let port: UInt16?
+        if launch.platform == .android {
+            port = await Self.waitForUIAutomator2Port(launch)
+        } else {
+            // Poll the log file for WDA port
+            port = try await waitForWDAPort(logFile: logPath, timeout: 60)
+        }
 
         guard let port else {
             child.terminateGroup(gracePeriod: 1)
             throw GrantivaError.commandFailed(
-                "Timed out waiting for WDA to start. Log: \(logPath)", 1
+                "Timed out waiting for \(launch.platform == .android ? "the UIAutomator2 session" : "WDA") to start. Log: \(logPath)", 1
             )
         }
 
         let session = RunnerSessionInfo(
             pid: runnerPid,
             wdaPort: port,
-            bundleId: resolvedBundleId,
-            udid: device.udid,
+            bundleId: launch.appID,
+            udid: launch.device.udid,
             startedAt: Date()
         )
         try Self.record(session: session)
@@ -237,13 +316,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(runnerPid)",
-                "bundle_id": resolvedBundleId,
-                "udid": device.udid,
+                "bundle_id": launch.appID,
+                "udid": launch.device.udid,
                 "log": logPath,
             ]))
         } else {
             Output.line("Runner started (detached)")
-            Output.line("  WDA port: \(port)")
+            Output.line("  \(Self.portLabel(launch.platform)): \(port)")
             Output.line("  PID:      \(runnerPid)")
             Output.line("  Log:      \(logPath)")
             Output.line("  Session:  \(RunnerSessionInfo.path)")
@@ -256,41 +335,50 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     // MARK: - Foreground start
 
-    private func startForeground(
-        runnerBin: String,
-        runnerDir: String,
-        runnerArgs: [String],
-        resolvedBundleId: String,
-        device: SimulatorDevice
-    ) async throws -> Int32 {
+    private func startForeground(_ launch: Launch) async throws -> Int32 {
         let stdoutPipe = Pipe()
         let child = try ChildProcess.spawn(
-            executable: runnerBin,
-            arguments: runnerArgs,
-            workingDirectory: runnerDir,
+            executable: launch.runnerBin,
+            arguments: launch.runnerArgs,
+            workingDirectory: launch.runnerDir,
+            environment: launch.environment,
             stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
             stderr: FileHandle.standardError.fileDescriptor
         )
         try? stdoutPipe.fileHandleForWriting.close()
 
         let output = Self.outputStream(from: stdoutPipe.fileHandleForReading)
-        guard let port = await Self.waitForForegroundWDAPort(
-            chunks: output,
-            timeout: {
-                try? await Task.sleep(for: .seconds(60))
-            },
-            probe: Self.probeKnownWDAPorts
-        ) else {
-            child.terminateGroup(gracePeriod: 1)
-            RunnerSessionInfo.remove()
-            throw GrantivaError.commandFailed("Timed out waiting for WDA to start", 1)
+        let port: UInt16
+        if launch.platform == .android {
+            // The port comes from the forward, not the output; keep draining
+            // the pipe so the runner never blocks on a full one.
+            Task { for await _ in output {} }
+            guard let found = await Self.waitForUIAutomator2Port(launch) else {
+                child.terminateGroup(gracePeriod: 1)
+                RunnerSessionInfo.remove()
+                throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
+            }
+            port = found
+        } else {
+            guard let found = await Self.waitForForegroundWDAPort(
+                chunks: output,
+                timeout: {
+                    try? await Task.sleep(for: .seconds(60))
+                },
+                probe: Self.probeKnownWDAPorts
+            ) else {
+                child.terminateGroup(gracePeriod: 1)
+                RunnerSessionInfo.remove()
+                throw GrantivaError.commandFailed("Timed out waiting for WDA to start", 1)
+            }
+            port = found
         }
 
         let session = RunnerSessionInfo(
             pid: child.pid,
             wdaPort: port,
-            bundleId: resolvedBundleId,
-            udid: device.udid,
+            bundleId: launch.appID,
+            udid: launch.device.udid,
             startedAt: Date()
         )
         try Self.record(session: session)
@@ -300,12 +388,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(child.pid)",
-                "bundle_id": resolvedBundleId,
-                "udid": device.udid,
+                "bundle_id": launch.appID,
+                "udid": launch.device.udid,
             ]))
         } else {
             Output.line("Runner started")
-            Output.line("  WDA port: \(port)")
+            Output.line("  \(Self.portLabel(launch.platform)): \(port)")
             Output.line("  PID:      \(child.pid)")
             Output.line("  Session:  \(RunnerSessionInfo.path)")
             Output.line("")
@@ -462,6 +550,12 @@ struct RunnerStopCommand: AsyncParsableCommand {
             }
         }
 
+        // The runner's own teardown clears its forwards and the UIA2 server
+        // when it exits cleanly; after a kill they may still be there.
+        if DeviceID.isAndroidSerial(session.udid) {
+            await dependencies.cleanupOrphans(session.udid)
+        }
+
         dependencies.removeSession()
         // The session held the simulator lease by hand-off; free it now.
         dependencies.releaseLease(session.udid)
@@ -481,6 +575,7 @@ struct RunnerStopDependencies: Sendable {
     var terminateGroup: @Sendable (Int32) -> Void
     var removeSession: @Sendable () -> Void
     var releaseLease: @Sendable (String) -> Void
+    var cleanupOrphans: @Sendable (String) async -> Void
 
     static let live = RunnerStopDependencies(
         loadSession: { try RunnerSessionInfo.load() },
@@ -488,7 +583,11 @@ struct RunnerStopDependencies: Sendable {
         processSnapshot: { try await SimulatorReaper.processSnapshot() },
         terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 1) },
         removeSession: { RunnerSessionInfo.remove() },
-        releaseLease: { SimulatorLease.forceRelease(udid: $0) }
+        releaseLease: { SimulatorLease.forceRelease(udid: $0) },
+        cleanupOrphans: { serial in
+            guard let platform = try? AndroidPlatform.live() else { return }
+            await platform.cleanupOrphans(deviceID: serial)
+        }
     )
 }
 
