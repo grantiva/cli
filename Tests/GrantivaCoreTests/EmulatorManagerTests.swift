@@ -403,9 +403,11 @@ final class EmulatorManagerTests: XCTestCase {
         let ledger = AndroidProvenance(directory: scratch.path)
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
         let shell = ScriptedShell([
-            .success(""), .success(""), .success(""),
+            .success("List of devices attached\nemulator-5554 device"),   // ownership: listed
+            .success("Pixel_8_API_35\nOK"),                               // ownership: emu avd name matches
+            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
             .success("List of devices attached\nemulator-5554 device"),
-            .success(""),
+            .success(""),                                                 // emu kill
             .success("List of devices attached"),
         ])
         let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
@@ -416,11 +418,51 @@ final class EmulatorManagerTests: XCTestCase {
     func testTeardownOfARecordedEmulatorThatIsAlreadyGoneJustDropsTheRecord() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
-        let shell = ScriptedShell([.success(""), .success(""), .success(""), .success("List of devices attached")])
+        let shell = ScriptedShell([
+            .success("List of devices attached"),                         // ownership: not listed, no name read
+            .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
+            .success("List of devices attached"),
+        ])
         let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
         XCTAssertEqual(outcome.killed, false)
         XCTAssertEqual(try ledger.all(), [])
         XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu avd name") })
+    }
+
+    /// A dead pid's serial reused by someone else's emulator is not ours.
+    func testTeardownRefusesAReusedSerialWhoseAVDDiffersAndDropsTheRecord() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Old", pid: try deadPID()))
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device"),
+            .success("Other\nOK"),
+        ])
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.all(), [], "the stale record is dropped")
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+        XCTAssertFalse(shell.commands.contains { $0.contains("force-stop") })
+    }
+
+    func testTeardownKillsAReusedSerialWhoseAVDMatches() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Old", pid: try deadPID()))
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 device"),
+            .success("Old\nOK"),
+            .success(""), .success(""), .success(""),
+            .success("List of devices attached\nemulator-5554 device"),
+            .success(""),
+            .success("List of devices attached"),
+        ])
+        let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+        XCTAssertEqual(outcome, EmulatorTeardownOutcome(serial: "emulator-5554", avd: "Old", killed: true, recorded: true))
+        XCTAssertEqual(try ledger.all(), [])
     }
 
     func testTeardownTimesOutWhenTheEmulatorKeepsRunning() async throws {
@@ -441,10 +483,39 @@ final class EmulatorManagerTests: XCTestCase {
         let ledger = AndroidProvenance(directory: scratch.path)
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try deadPID()))
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try deadPID()))
-        let shell = ScriptedShell([.success("List of devices attached\nemulator-5554 device\nemulator-5556 device")])
-        shell.fallback = "List of devices attached"
+        let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
+        let second = "List of devices attached\nemulator-5556 device"
+        let shell = ScriptedShell([
+            // emulator-5554
+            .success(both), .success("A\nOK"),                           // ownership
+            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+            .success(both), .success(""), .success(second),              // listed, emu kill, gone
+            // emulator-5556
+            .success(second), .success("B\nOK"),
+            .success(""), .success(""), .success(""),
+            .success(second), .success(""), .success("List of devices attached"),
+        ])
         let outcomes = try await manager(shell).teardownAll()
         XCTAssertEqual(outcomes.map(\.serial), ["emulator-5554", "emulator-5556"])
+        XCTAssertEqual(outcomes.map(\.killed), [true, true])
+        XCTAssertEqual(shell.commands.filter { $0.hasSuffix("emu kill") }, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' emu kill",
+            "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill",
+        ])
         XCTAssertEqual(try ledger.all(), [])
+    }
+
+    func testDeleteRefusesWhenARunningEmulatorsNameCannotBeRead() async {
+        let shell = ScriptedShell([
+            .success("List of devices attached\nemulator-5554 offline"),
+            .failure(GrantivaError.commandFailed("offline", 1)),
+        ])
+        do {
+            try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: true)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("refusing to delete"), "\(error)")
+        }
+        XCTAssertFalse(shell.commands.contains { $0.contains("delete avd") })
     }
 }

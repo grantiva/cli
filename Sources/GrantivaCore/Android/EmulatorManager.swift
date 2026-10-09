@@ -288,7 +288,17 @@ public struct EmulatorManager: Sendable {
     /// is never deleted.
     public func deleteAVD(name: String, force: Bool) async throws {
         for device in try await adb.devices() where device.isEmulator {
-            if (try? await adb.avdName(serial: device.serial)) == name {
+            // Fail closed: an emulator whose console cannot be read yet may be
+            // this very AVD still booting.
+            let running: String
+            do {
+                running = try await adb.avdName(serial: device.serial)
+            } catch {
+                throw GrantivaError.invalidArgument(
+                    "Could not read the AVD name of \(device.serial); refusing to delete \"\(name)\" while an emulator is booting. Try again when it is up."
+                )
+            }
+            if running == name {
                 throw GrantivaError.invalidArgument(
                     "AVD \"\(name)\" is running as \(device.serial). Run `grantiva emulator teardown --serial \(device.serial)` first."
                 )
@@ -333,7 +343,16 @@ public struct EmulatorManager: Sendable {
     /// Stops the UIAutomator2 server, drops this serial's forwards, asks the
     /// emulator to exit, and waits for both the process and the serial to go.
     public func teardown(serial: String, force: Bool) async throws -> EmulatorTeardownOutcome {
-        let record = try provenance.all().first { $0.serial == serial }
+        var record = try provenance.all().first { $0.serial == serial }
+        // A record whose process is gone proves nothing about the serial: the
+        // port may now belong to someone else's emulator. Keep it only when
+        // the listed emulator still runs the recorded AVD.
+        if let stale = record, !Self.isAlive(stale.pid),
+           try await adb.devices().contains(where: { $0.serial == serial }),
+           (try? await adb.avdName(serial: serial)) != stale.avd {
+            try provenance.remove(serial: serial)
+            record = nil
+        }
         guard record != nil || force else {
             throw GrantivaError.invalidArgument(
                 "\(serial) was not started by Grantiva (see `grantiva emulator sessions`). Pass --force to kill it anyway."
