@@ -1,0 +1,9 @@
+(config without emulator:)
+$ grantiva run --no-build --flow .maestro/01-browse.yaml   (two emulators running)
+Error: Invalid argument: Several emulators are running: emulator-5554 (Pixel_8_API_35), emulator-5556 (qa-android-1). Pass --emulator <AVD> or --device <serial>.
+exit 1
+Killed emulator-5556 (qa-android-1).
+$ grantiva run --no-build --flow .maestro/01-browse.yaml   (only emulator-5554 running)
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+  01-browse                      ✓ PASS       8      8      0      0       3.7s  google sdk_gphone64_arm64 (...
+exit 0

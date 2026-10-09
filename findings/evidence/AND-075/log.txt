@@ -1,0 +1,13 @@
+after success run (AND-071..073): (no logcat process)
+failure run exit 1
+after failure: (no logcat process)
+during: 47930 /Users/kyle/Library/Android/sdk/platform-tools/adb -s emulator-5554 logcat --uid=10210 -v time
+ctrl-c exit 130
+after Ctrl-C: 47930 /Users/kyle/Library/Android/sdk/platform-tools/adb -s emulator-5554 logcat --uid=10210 -v time
+  PID  PPID ELAPSED COMMAND
+47930     1   00:22 /Users/kyle/Library/Android/sdk/platform-tools/adb -s emulator-5554 logcat --uid=10210 -v time
+killed orphan 47930 (QA cleanup)
+--- keep-alive + --logs, Ctrl-C after flows
+during: 48875 48867 /Users/kyle/Library/Android/sdk/platform-tools/adb -s emulator-5554 logcat --uid=10210 -v time
+exit 0
+after: (no logcat process)

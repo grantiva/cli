@@ -1,0 +1,79 @@
+Resolved: scheme=(none) simulator=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5556
+Emulator booted: qa-android-1 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/03-edit.yaml
+Warning: restoring Android settings left by an interrupted run on emulator-5556
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-gboard/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ tapOn: text="Deep Links" (1.0s)
+    ✓ tapOn: text="Edit Landmark" (713ms)
+    ✓ assertVisible: text="Edit Landmark" (623ms)
+    ✓ tapOn: text="Name" (128ms)
+    ✓ inputText: " Renamed" (1.0s)
+    ✓ tapOn: text="Done" (1.0s)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (572ms)
+    ✓ takeScreenshot (136ms)
+✓ 03-edit 7.0s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.7s)
+    ✓ tapOn (1.0s)
+    ✓ tapOn (713ms)
+    ✓ assertVisible (623ms)
+    ✓ tapOn (128ms)
+    ✓ inputText (1.0s)
+    ✓ tapOn (1.0s)
+    ✓ assertVisible (572ms)
+    ✓ takeScreenshot (136ms)
+✓ 03-edit 7.0s
+
+  9 steps passing (7.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✓ PASS       9      9      0      0       7.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0       7.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-gboard/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-gboard/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-gboard/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-gboard/report/allure-results
+
+  Built by Grantiva
+

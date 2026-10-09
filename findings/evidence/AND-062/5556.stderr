@@ -1,0 +1,76 @@
+Resolved: scheme=(none) simulator=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5556
+Emulator booted: qa-android-1 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/06-visit.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-062/r5556
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 06-visit (06-visit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Half Dome" (1.5s)
+    ✓ tapOn: text="Plan Visit" (676ms)
+    ✓ assertVisible: text="Visit Scheduled!" (47ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (29ms)
+    ✓ takeScreenshot (149ms)
+    ✓ tapOn: text="Done" (88ms)
+    ✓ assertVisible: text="Half Dome" (61ms)
+✓ 06-visit 4.5s
+
+  [1/1] 06-visit (.maestro/06-visit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.5s)
+    ✓ tapOn (676ms)
+    ✓ assertVisible (47ms)
+    ✓ assertVisible (29ms)
+    ✓ takeScreenshot (149ms)
+    ✓ tapOn (88ms)
+    ✓ assertVisible (61ms)
+✓ 06-visit 4.5s
+
+  8 steps passing (4.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  06-visit                       ✓ PASS       8      8      0      0       4.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       4.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-062/r5556
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-062/r5556/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-062/r5556/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/AND-062/r5556/allure-results
+
+  Built by Grantiva
+

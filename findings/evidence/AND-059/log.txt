@@ -1,0 +1,52 @@
+keep-alive grantiva pids: 30332 (5554) 34100 (5556)
+before SIGINT:
+30364 30332 /Users/kyle/.grantiva/runner/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-in
+34243 34100 /Users/kyle/.grantiva/runner/grantiva-runner --platform android --device emulator-5556 --no-ansi --no-app-in
+emulator-5554 localfilesystem:/tmp/uia2-emulator-5554.sock tcp:6790
+emulator-5556 localfilesystem:/tmp/uia2-emulator-5556.sock tcp:6790
+
+/tmp/uia2-emulator-5554.pid
+/tmp/uia2-emulator-5554.sock
+/tmp/uia2-emulator-5556.pid
+/tmp/uia2-emulator-5556.sock
+u0_a207      16015   370   16577376 156820 0                   0 S io.appium.uiautomator2.server
+u0_a208       3600   370   16657220 173912 0                   0 S io.appium.uiautomator2.server
+after SIGINT (2s):
+  PID TTY           TIME CMD
+forwards:
+
+uia2 files:
+(eval):3: no matches found: /tmp/uia2-*
+sessions:
+25960.owner.json
+emulator-5554 uia2 procs:
+emulator-5554 anim=1 demo=0 rot=1 file=none
+emulator-5556 uia2 procs:
+emulator-5556 anim=null demo=0 rot=1 file=none
+ready 5554:
+{
+  "finishedAt" : "2026-10-09T21:13:27Z",
+  "flows" : [
+    {
+      "name" : "qa-deeplinks",
+      "status" : "passed"
+    }
+  ],
+  "reportDir" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF",
+  "status" : "passed"
+}ready 5556:
+{
+  "finishedAt" : "2026-10-09T21:14:12Z",
+  "flows" : [
+    {
+      "name" : "qa-arrow",
+      "status" : "passed"
+    }
+  ],
+  "reportDir" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-report-C8175DA9-8D2B-43FD-A108-64A7F04A94A7",
+  "status" : "passed"
+}run1 stderr tail:
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

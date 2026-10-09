@@ -1,0 +1,74 @@
+Resolved: scheme=(none) simulator=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/flows/qa-deeplinks.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] qa-deeplinks (qa-deeplinks.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.6s)
+    ✓ tapOn: text="Deep Links" (1.3s)
+    ✓ assertVisible: text="Slow Screen" (1.1s)
+✓ qa-deeplinks 5.2s
+
+  [1/1] qa-deeplinks (/Users/kyle/Developer/grantiva-cli/.worktrees/qa-android/findings/evidence/flows/qa-deeplinks.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.6s)
+    ✓ tapOn (1.3s)
+    ✓ assertVisible (1.1s)
+✓ qa-deeplinks 5.0s
+
+  3 steps passing (5.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  qa-deeplinks                   ✓ PASS       3      3      0      0       5.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       3      3      0      0       5.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DC5A8097-C904-4B62-8D2A-2BA190D41BBF/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: session=30364-1791580407887465000
+  /tmp/grantiva-sessions/30364-1791580407887465000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

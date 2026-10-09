@@ -1,0 +1,8 @@
+$ grantiva run --no-build --flow .maestro/05-category.yaml --device emulator-5554   (keep-alive run pid 30332 owns emulator-5554)
+Emulator booted: Pixel_8_API_35 (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/05-category.yaml
+Failure screenshot: .grantiva/captures/android/failure-1791580459.png
+Error: Simulator emulator-5554 is already owned by another Grantiva run (pid 30332, started 60s ago, grantiva-runner pid 30364, --keep-alive). Release it with `grantiva simulator teardown --udid emulator-5554 --force`, or run against a different simulator via `grantiva simulator ensure --name <unique-name>`. exited with code 1
+exit 1 after 1s

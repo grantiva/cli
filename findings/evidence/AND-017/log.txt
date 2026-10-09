@@ -1,0 +1,22 @@
+Grantiva-started emulators (2):
+  emulator-5554 (Pixel_8_API_35) — pid 19482 exited, adb: device
+  emulator-5556 (qa-android-1) — pid 68937 running, adb: device
+$ grantiva emulator teardown --serial emulator-5556
+Killed emulator-5556 (qa-android-1).
+exit 0
+List of devices attached
+emulator-5554	device
+
+$ GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS=5 grantiva emulator ensure --name qa-android-1
+Booting AVD qa-android-1 as emulator-5556
+Error: emulator-5556 did not finish booting within 5s. Raise GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS or check /Users/kyle/.grantiva/android/emulator-5556.log. exited with code 1
+exit 1 after 5s
+processes after the timeout:
+67271 /Users/kyle/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64-headless -avd qa-android-1 -port 5556 -no-snapshot-save -no-boot-anim -no-window
+List of devices attached
+emulator-5554	device
+emulator-5556	device
+
+Grantiva-started emulators (2):
+  emulator-5554 (Pixel_8_API_35) — pid 19482 exited, adb: device
+  emulator-5556 (qa-android-1) — pid 67271 running, adb: device
