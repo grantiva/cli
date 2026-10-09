@@ -103,11 +103,14 @@ final class AndroidPlatformTests: XCTestCase {
     func testResolveBinaryRequiresAnExistingAPKAndReadsItsID() async throws {
         let apk = scratch.appendingPathComponent("app.apk").path
         try Data().write(to: URL(fileURLWithPath: apk))
-        let shell = ScriptedShell([.success("com.example.app\n")])
+        let shell = ScriptedShell([.success(""), .success("com.example.app\n")])
         let resolved = try await platform(shell).resolveBinary(apk)
         XCTAssertEqual(resolved.appPath, apk)
         XCTAssertEqual(resolved.appID, "com.example.app")
-        XCTAssertEqual(shell.commands, ["'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))"])
+        XCTAssertEqual(shell.commands, [
+            "/usr/libexec/java_home",
+            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+        ])
 
         do {
             _ = try await platform(ScriptedShell()).resolveBinary(scratch.appendingPathComponent("Demo.app").path)
@@ -135,13 +138,17 @@ final class AndroidPlatformTests: XCTestCase {
         }
     }
 
-    func testCleanupOrphansForceStopsUIA2AndRemovesForwards() async {
-        let shell = ScriptedShell()
+    func testCleanupOrphansForceStopsUIA2AndRemovesOnlyThisSerialsForwards() async {
+        let shell = ScriptedShell([
+            .success(""), .success(""),
+            .success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790"),
+        ])
         await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove-all",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
         ])
     }
 
@@ -176,5 +183,112 @@ final class AndroidPlatformTests: XCTestCase {
         } else {
             XCTAssertEqual(try DevicePlatformFactory.make(.android).platform, .android)
         }
+    }
+
+    func testLogStreamWithALevelAndNoTagFiltersEveryTagAtThatPriority() async throws {
+        let shell = ScriptedShell([.success(""), .success("package:com.example uid:10123")])
+        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: "warning")
+        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-s", "*:W"])
+    }
+
+    func testResolveBinaryRunsApkanalyzerWithJavaHomeWhenKnown() async throws {
+        let apk = scratch.appendingPathComponent("app.apk").path
+        FileManager.default.createFile(atPath: apk, contents: Data())
+        let shell = ScriptedShell([.success("/jdk\n"), .success("com.example.app\n")])
+        let sdk = AndroidSDK(root: "/sdk")
+        let adb = ADB(path: sdk.adb, execute: shell.execute)
+        let p = AndroidPlatform(
+            sdk: sdk, adb: adb, gradle: GradleBuildRunner(execute: shell.execute),
+            emulators: EmulatorManager(sdk: sdk, adb: adb, execute: shell.execute, spawn: { _, _ in 1 },
+                                       provenance: AndroidProvenance(directory: scratch.path), bootTimeout: 1, pollInterval: 0.01),
+            captureSettings: AndroidCaptureSettings(adb: adb, stateDirectory: scratch.path),
+            execute: shell.execute, environment: ["PATH": "/usr/bin"]
+        )
+        let resolved = try await p.resolveBinary(apk)
+        XCTAssertEqual(resolved.appID, "com.example.app")
+        XCTAssertEqual(shell.commands, [
+            "/usr/libexec/java_home",
+            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+        ])
+    }
+
+    func testAttachDriverWithoutAPortForwardsAndDetachRemovesIt() async throws {
+        let shell = ScriptedShell([
+            .success("61211"),                       // forward
+            .success("Physical size: 1080x2400"),    // wm size
+            .success("Physical density: 420"),       // wm density
+            .success(""),                            // forward --remove
+        ])
+        let transport = UIAutomator2Transport { _ in (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200) }
+        let p = platform(shell)
+        let attachment = try await p.attachDriver(deviceID: "emulator-5554", port: nil, transport: transport)
+        XCTAssertEqual(attachment.port, 61211)
+        await attachment.detach()
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm size'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm density'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+        ])
+    }
+
+    func testAttachDriverWithAKnownPortDoesNotForwardAndDetachIsANoOp() async throws {
+        let shell = ScriptedShell([.success("Physical size: 1080x2400"), .success("Physical density: 420")])
+        let transport = UIAutomator2Transport { _ in (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200) }
+        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+        XCTAssertEqual(attachment.port, 7000)
+        await attachment.detach()
+        XCTAssertEqual(shell.commands.count, 2)
+    }
+
+    /// An adb restart drops the forward `runner start` recorded; attach makes
+    /// a fresh one rather than fail.
+    func testAttachDriverFallsBackToAFreshForwardWhenTheRecordedPortIsDead() async throws {
+        let shell = ScriptedShell([
+            .success("61211"),                       // forward
+            .success("Physical size: 1080x2400"),    // wm size
+            .success("Physical density: 420"),       // wm density
+        ])
+        let transport = UIAutomator2Transport { request in
+            guard request.url?.port == 61211 else { throw URLError(.cannotConnectToHost) }
+            return (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200)
+        }
+        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+        XCTAssertEqual(attachment.port, 61211)
+        XCTAssertEqual(shell.commands.first, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790")
+    }
+
+    func testRecordVideoRecordsPullsAndRemoves() async throws {
+        let shell = ScriptedShell()
+        let out = scratch.appendingPathComponent("rec.mp4").path
+        try await platform(shell).recordVideo(deviceID: "emulator-5554", to: out, seconds: 4.2)
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell screenrecord --time-limit 5 '/sdcard/grantiva-record.mp4'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' pull '/sdcard/grantiva-record.mp4' \(shellQuoted(out))",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell rm -f '/sdcard/grantiva-record.mp4'",
+        ])
+    }
+
+    /// Review Focus 3.
+    func testRecordVideoOver180SecondsIsRefusedBeforeTouchingTheDevice() async {
+        let shell = ScriptedShell()
+        do {
+            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: 200)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Android recordings are capped at 180 seconds"), "\(error)")
+        }
+        XCTAssertTrue(shell.commands.isEmpty)
+    }
+
+    func testRecordVideoRefusesAnInfiniteDuration() async {
+        let shell = ScriptedShell()
+        do {
+            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: .infinity)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("capped at 180 seconds"), "\(error)")
+        }
+        XCTAssertTrue(shell.commands.isEmpty)
     }
 }

@@ -128,6 +128,8 @@ final class RunnerSessionAppIdTests: XCTestCase {
             func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand { fatalError() }
             func runnerEnvironment(runnerHome: String) -> [String: String] { ["MAESTRO_RUNNER_HOME": runnerHome] }
             func cleanupOrphans(deviceID: String) async {}
+            func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment { fatalError() }
+            func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
         }
         XCTAssertEqual(
             RunnerSession.runnerEnvironment(platform: EnvPlatform(), runnerDir: "/home/.grantiva/runner"),

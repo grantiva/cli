@@ -83,6 +83,19 @@ final class IOSPlatformTests: XCTestCase {
             XCTAssertTrue("\(error)".contains(".app or .ipa"), "\(error)")
         }
     }
+
+    func testAttachDriverNeedsAPortAndReturnsWDA() async throws {
+        let platform = IOSPlatform(execute: ScriptedExecutor([]).execute)
+        let attachment = try await platform.attachDriver(deviceID: "921A0945-7157-4533-BA1F-21E8132D3E40", port: 8100)
+        XCTAssertEqual(attachment.port, 8100)
+        await attachment.detach()
+        do {
+            _ = try await platform.attachDriver(deviceID: "921A0945-7157-4533-BA1F-21E8132D3E40", port: nil)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("WebDriverAgent port"), "\(error)")
+        }
+    }
 }
 
 private final class ScriptedExecutor: @unchecked Sendable {

@@ -86,6 +86,12 @@ public enum DeviceID {
         return true
     }
 
+    /// An adb serial that is not also a simulator UDID (a UDID is made of hex
+    /// digits and dashes, which `isADBSerial` would accept).
+    public static func isAndroidSerial(_ value: String) -> Bool {
+        isADBSerial(value) && !isSimulatorUDID(value)
+    }
+
     public static func validate(_ value: String, flag: String = "--udid") throws -> String {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else {

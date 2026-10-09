@@ -145,8 +145,51 @@ public struct ADB: Sendable {
         return nil
     }
 
-    public func removeAllForwards(serial: String) async throws {
-        _ = try await execute(line(serial, "forward --remove-all"))
+    /// `adb forward tcp:0 tcp:<devicePort>` prints the local port it chose.
+    public func forward(serial: String, devicePort: Int) async throws -> Int {
+        let output = try await execute(line(serial, "forward tcp:0 tcp:\(devicePort)"))
+        guard let port = Int(output.trimmingCharacters(in: .whitespacesAndNewlines)), port > 0 else {
+            throw GrantivaError.commandFailed("Could not forward a local port to \(serial):\(devicePort): \(output)", 1)
+        }
+        return port
+    }
+
+    public func removeForward(serial: String, localPort: Int) async throws {
+        _ = try await execute(line(serial, "forward --remove tcp:\(localPort)"))
+    }
+
+    /// Local tcp ports forwarded for `serial`, from `adb forward --list`.
+    public func forwards(serial: String) async throws -> [Int] {
+        Self.parseForwards(try await execute(line(serial, "forward --list")), serial: serial)
+    }
+
+    /// Lines look like `<serial> tcp:<local> tcp:<remote>`; only this serial's
+    /// `tcp:` locals count. `--remove-all` is host-wide, so it is never used.
+    public static func parseForwards(_ output: String, serial: String) -> [Int] {
+        output.components(separatedBy: "\n").compactMap { raw in
+            let fields = raw.split(whereSeparator: { $0 == " " || $0 == "\t" }).map(String.init)
+            guard fields.count >= 2, fields[0] == serial, fields[1].hasPrefix("tcp:") else { return nil }
+            return Int(fields[1].dropFirst(4))
+        }
+    }
+
+    public func removeForwards(serial: String) async throws {
+        for port in try await forwards(serial: serial) {
+            try await removeForward(serial: serial, localPort: port)
+        }
+    }
+
+    /// Blocks for `seconds`; screenrecord exits when its time limit elapses.
+    public func screenrecord(serial: String, remotePath: String, seconds: Int) async throws {
+        _ = try await execute(line(serial, "shell screenrecord --time-limit \(seconds) \(shellQuoted(remotePath))"))
+    }
+
+    public func pull(serial: String, remotePath: String, to localPath: String) async throws {
+        _ = try await execute(line(serial, "pull \(shellQuoted(remotePath)) \(shellQuoted(localPath))"))
+    }
+
+    public func removeFile(serial: String, remotePath: String) async throws {
+        _ = try await execute(line(serial, "shell rm -f \(shellQuoted(remotePath))"))
     }
 
     public func emuKill(serial: String) async throws {

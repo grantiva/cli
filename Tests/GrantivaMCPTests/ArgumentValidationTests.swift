@@ -17,44 +17,50 @@ final class ArgumentValidationTests: XCTestCase {
     // MARK: - Build tools
 
     func testBuildWithoutASchemeOrConfigIsRejectedBeforeBooting() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
         let result = try await BuildTools.build(
-            runner: buildRunner, config: nil, simManager: simManager, arguments: [:]
+            device: device, platform: .ios, config: nil, arguments: [:]
         )
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("no scheme specified"))
+        XCTAssertTrue(device.calls.isEmpty)
     }
 
     func testTestWithoutASchemeOrConfigIsRejectedBeforeBooting() async throws {
         let result = try await BuildTools.test(
-            runner: buildRunner, config: nil, simManager: simManager, arguments: [:]
+            runner: buildRunner, platform: .ios, config: nil, simManager: simManager, arguments: [:]
         )
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("no scheme specified"))
     }
 
     func testRunWithoutASchemeOrConfigIsRejectedBeforeBooting() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
         let result = try await BuildTools.run(
-            runner: buildRunner, config: nil, simManager: simManager, arguments: [:]
+            device: device, platform: .ios, config: nil, arguments: [:]
         )
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("no scheme specified"))
+        XCTAssertTrue(device.calls.isEmpty)
     }
 
     func testRunWithASchemeButNoBundleIdIsRejectedBeforeBooting() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
         let result = try await BuildTools.run(
-            runner: buildRunner,
+            device: device,
+            platform: .ios,
             config: GrantivaConfig(scheme: "App"),
-            simManager: simManager,
             arguments: [:]
         )
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("no bundle_id in grantiva.yml"))
+        XCTAssertTrue(device.calls.isEmpty)
     }
 
     func testASchemeOfTheWrongTypeFallsBackToConfigAndIsThenRejected() async throws {
         // A non-string "scheme" must not be coerced into a scheme name.
         let result = try await BuildTools.build(
-            runner: buildRunner, config: nil, simManager: simManager, arguments: ["scheme": .int(1)]
+            device: MCPFakeDevicePlatform(platform: .ios), platform: .ios, config: nil, arguments: ["scheme": .int(1)]
         )
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("no scheme specified"))

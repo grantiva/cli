@@ -4,7 +4,7 @@ The command-line tool for [Grantiva](https://grantiva.io) — the all-in-one pla
 
 Currently features visual regression testing and agent-native UI automation. Captures screenshots of your app's screens, diffs them against approved baselines, and posts the results as GitHub Check Runs. Also streams UI hierarchy and app logs so AI agents can read, diagnose, and self-heal broken flows. Catch visual regressions before they ship — and let your agents fix them.
 
-Android: see `docs/android.md`.
+Android: `init`, `doctor`, `build`, `run`, `diff`, `hierarchy`, `record`, `runner start/stop`, `emulator`, and the MCP server (`grantiva mcp`) work against an Android emulator. See `docs/android.md`.
 
 ## Install
 

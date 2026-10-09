@@ -25,10 +25,33 @@ extension RunnerManager {
     /// What the version file holds. Bump the suffix whenever the tarball
     /// layout changes without a runner rebuild, so `installIfNeeded` sees a
     /// mismatch and re-extracts.
-    public static let installStamp = runnerVersion + "+android-drivers"
+    public static let installStamp = runnerVersion + "+android-drivers-2"
 
     static func embeddedTarballURL(arch: String) -> URL? {
         Bundle.module.url(forResource: "grantiva-runner-\(arch)", withExtension: "tar.gz")
+    }
+
+    static func embeddedDriversTarballURL() -> URL? {
+        Bundle.module.url(forResource: "android-drivers", withExtension: "tar.gz")
+    }
+
+    /// Extracts the arch runner tarball, then the shared Android drivers,
+    /// into `destination`. Both unpack relative to `./`, so the result is
+    /// `grantiva-runner`, `drivers/ios/…`, `drivers/android/*.apk`.
+    static func extractEmbedded(into destination: String) throws {
+        guard let runner = embeddedTarballURL(arch: currentArch), let drivers = embeddedDriversTarballURL() else {
+            throw GrantivaError.runnerNotFound
+        }
+        for tarball in [runner, drivers] {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+            process.arguments = ["-xzf", tarball.path, "-C", destination]
+            try process.run()
+            process.waitUntilExit()
+            guard process.terminationStatus == 0 else {
+                throw GrantivaError.commandFailed("Failed to extract \(tarball.lastPathComponent)", process.terminationStatus)
+            }
+        }
     }
 
     static let baseDir: String = {
@@ -49,7 +72,7 @@ extension RunnerManager {
     }()
 
     /// Returns the tarball arch suffix for the current CPU architecture.
-    private static var currentArch: String {
+    static var currentArch: String {
         #if arch(arm64)
         return "arm64"
         #elseif arch(x86_64)
@@ -71,27 +94,14 @@ extension RunnerManager {
                 return
             }
 
-            // Extract from embedded resource (arch-specific)
-            guard let tarURL = embeddedTarballURL(arch: currentArch) else {
-                throw GrantivaError.runnerNotFound
-            }
-
             try installIfNeeded(
                 baseDir: baseDir,
                 binaryPath: binaryPath,
                 versionFilePath: versionFilePath,
                 cacheDir: cacheDir,
-                version: installStamp
-            ) { destination in
-                let process = Process()
-                process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
-                process.arguments = ["-xzf", tarURL.path, "-C", destination]
-                try process.run()
-                process.waitUntilExit()
-                guard process.terminationStatus == 0 else {
-                    throw GrantivaError.commandFailed("Failed to extract runner binary", process.terminationStatus)
-                }
-            }
+                version: installStamp,
+                extract: extractEmbedded
+            )
         },
         runnerPath: { binaryPath },
         runnerDir: { baseDir }

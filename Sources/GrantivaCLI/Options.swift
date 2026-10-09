@@ -120,14 +120,7 @@ struct PlatformOptions: ParsableArguments {
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
         environment: [String: String] = ProcessInfo.processInfo.environment
     ) throws -> Platform {
-        let resolver = PlatformResolver(directory: directory, environment: environment)
-        if platform == nil,
-           (environment[PlatformResolver.environmentKey] ?? "").isEmpty,
-           resolver.existingConfigFiles().isEmpty,
-           resolver.detectFromDirectory().isEmpty {
-            return .ios
-        }
-        return try resolver.resolve(flag: platform)
+        try PlatformResolver(directory: directory, environment: environment).resolveOrDefault(flag: platform)
     }
 
     /// Resolves the platform and loads its config file. A missing file yields

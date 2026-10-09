@@ -17,7 +17,7 @@ final class ToolDispatchTests: XCTestCase {
         hierarchyJSON: String = MCPTestSupport.emptyHierarchyJSON
     ) async throws -> CallTool.Result {
         let registry = MCPTestSupport.registry(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder, hierarchyJSON: hierarchyJSON)
+            driver: MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: hierarchyJSON)
         )
         return try await registry.call(
             name: name, arguments: arguments, server: MCPTestSupport.disconnectedServer()
@@ -129,7 +129,7 @@ final class ToolDispatchTests: XCTestCase {
 
     func testHierarchyResourceReturnsSortedPrettyJSON() async throws {
         let registry = MCPTestSupport.registry(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), hierarchyJSON: #"{"z":1,"a":2}"#)
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: #"{"z":1,"a":2}"#)
         )
         let contents = try await registry.readResource(uri: "grantiva://hierarchy")
         let content = try XCTUnwrap(contents.first)
@@ -145,7 +145,7 @@ final class ToolDispatchTests: XCTestCase {
 
     func testScreenshotResourceReturnsBinaryPNG() async throws {
         let registry = MCPTestSupport.registry(
-            wda: MCPTestSupport.fakeWDA(recorder: WDARecorder(), screenshotBytes: [1, 2, 3])
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), screenshotBytes: [1, 2, 3])
         )
         let contents = try await registry.readResource(uri: "grantiva://screenshot")
         let content = try XCTUnwrap(contents.first)
@@ -157,7 +157,7 @@ final class ToolDispatchTests: XCTestCase {
     }
 
     func testUnknownResourceURIThrowsAnInvalidRequest() async throws {
-        let registry = MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder()))
+        let registry = MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()))
         do {
             _ = try await registry.readResource(uri: "grantiva://nope")
             XCTFail("Expected an unknown URI to throw")
@@ -167,7 +167,7 @@ final class ToolDispatchTests: XCTestCase {
     }
 
     func testEveryAdvertisedResourceURIIsReadable() async throws {
-        let registry = MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder()))
+        let registry = MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()))
         for resource in registry.allResources() {
             let contents = try await registry.readResource(uri: resource.uri)
             XCTAssertFalse(contents.isEmpty, "\(resource.uri) returned no content")

@@ -11,7 +11,11 @@
 - `examples/android`, a three-screen Compose app with a `grantiva-android.yml`.
 - `--platform ios|android` on `run`, `ci run`, `build`, `build install`, `diff capture`, `diff compare`, `diff approve`, `doctor`, and `init`, plus the `GRANTIVA_PLATFORM` environment variable. A `--platform` or `GRANTIVA_PLATFORM` value whose config file is missing, while the other platform's config file exists, is an error naming the missing file.
 - `grantiva-android.yml` is recognised as the Android config file. A config file that exists but does not parse is now an error naming the file and the YAML position, instead of being silently ignored.
-- The embedded runner tarball ships the UIAutomator2 driver APKs. Existing installs re-extract it once on first use; the WebDriverAgent build cache is kept.
+- The UIAutomator2 driver APKs ship once, in a separate `android-drivers.tar.gz`; the per-arch runner tarballs do not carry them. Existing installs re-extract once on first use; the WebDriverAgent build cache is kept.
+- `grantiva hierarchy`, `runner dump-hierarchy`, `record`, `runner start`, `runner stop`, and the MCP server work on Android. The CLI forwards a local port to the emulator's UIAutomator2 server (`adb forward tcp:0 tcp:6790`) and reuses the runner's session; `hierarchy --format json` reports frames in dp.
+- `grantiva emulator ensure|delete|sessions|teardown`: create and boot AVDs (installing the system image first), list and kill the emulators Grantiva started, and delete the AVDs it created. `teardown --force` and `delete --force` act on emulators and AVDs Grantiva did not start or create.
+- MCP tools `grantiva_emulator_list`, `grantiva_emulator_boot`, `grantiva_emulator_ensure`, and `grantiva_emulator_delete`. `grantiva mcp --platform ios|android` picks the platform when both config files exist. `grantiva_build` and `grantiva_run` accept `module`, `variant`, and `emulator` on Android. `grantiva_tap` `x`/`y` and `grantiva_script` `tap_xy` are in the hierarchy's unit: points on iOS, dp on Android. `grantiva_a11y_check` keys Android rules on `class`, `content-desc`, and `clickable`, with a 48 dp minimum tap target.
+- `--logs-level` on Android without `--logs-tag` filters every tag at that priority.
 
 ### Changed
 - Android captures and baselines live in `.grantiva/captures/android/` and `.grantiva/baselines/android/`. iOS paths are unchanged.
@@ -22,6 +26,13 @@
 - Device, build, and runner-argument handling moved behind a `DevicePlatform` abstraction. iOS behaviour is unchanged.
 - An empty or comments-only config file loads as defaults, as before. A config file with a YAML error is reported with its file name and position.
 - A directory with both an Xcode project (or workspace) and a root `settings.gradle`/`settings.gradle.kts`, and no `grantiva.yml`, now needs `--platform ios` (or `GRANTIVA_PLATFORM=ios`). Before, it ran as iOS without asking. Kotlin Multiplatform and Compose Multiplatform repos with no config file are the likely case: a root `settings.gradle.kts` with the iOS app in a subdirectory. React Native and Flutter keep their projects under `ios/` and `android/`, so top-level detection still sees them as iOS.
+- `adb forward --remove-all` is no longer used; orphan cleanup removes only the serial's own forwards.
+- `--device` together with `--emulator` is rejected.
+- `grantiva_context` prints a `platform:` line under `[Config]`, and `grantiva_build` prints `Product:` with the built app's path, on both platforms.
+
+### Fixed
+- Every shell subprocess now gets `/dev/null` as stdin instead of inheriting Grantiva's. Android needs this (`adb shell` would otherwise read the MCP server's JSON-RPC requests), and it also keeps any subprocess the iOS MCP server starts from consuming its input.
+- `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
 
 ## 2.0.1 — 2026-10-07
 

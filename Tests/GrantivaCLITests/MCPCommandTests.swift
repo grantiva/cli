@@ -7,4 +7,9 @@ final class MCPCommandTests: XCTestCase {
         let command = try MCPCommand.parse(["--project-dir", "/tmp/example-project"])
         XCTAssertEqual(command.projectDir, "/tmp/example-project")
     }
+
+    func testPlatformFlagParses() throws {
+        let command = try MCPCommand.parse(["--platform", "android"])
+        XCTAssertEqual(command.platformOptions.platform, .android)
+    }
 }

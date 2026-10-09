@@ -28,6 +28,11 @@ final class ToolRegistrationTests: XCTestCase {
         "grantiva_sim_boot",
         "grantiva_sim_ensure",
         "grantiva_sim_delete",
+        // Emulator
+        "grantiva_emulator_list",
+        "grantiva_emulator_boot",
+        "grantiva_emulator_ensure",
+        "grantiva_emulator_delete",
         // Context
         "grantiva_context",
         // Script
@@ -39,7 +44,7 @@ final class ToolRegistrationTests: XCTestCase {
     ]
 
     private func allTools() -> [Tool] {
-        MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder())).allTools()
+        MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allTools()
     }
 
     func testRegistryExposesExactlyTheAdvertisedToolSet() {
@@ -51,8 +56,8 @@ final class ToolRegistrationTests: XCTestCase {
         )
     }
 
-    func testRegistryExposesEighteenTools() {
-        XCTAssertEqual(allTools().count, 18)
+    func testRegistryExposesTwentyTwoTools() {
+        XCTAssertEqual(allTools().count, 22)
     }
 
     func testToolNamesAreUniqueAndNamespaced() {
@@ -85,7 +90,7 @@ final class ToolRegistrationTests: XCTestCase {
     // MARK: - Resources
 
     func testRegistryExposesHierarchyAndScreenshotResources() {
-        let resources = MCPTestSupport.registry(wda: MCPTestSupport.fakeWDA(recorder: WDARecorder())).allResources()
+        let resources = MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allResources()
         XCTAssertEqual(resources.map(\.uri).sorted(), ["grantiva://hierarchy", "grantiva://screenshot"])
         XCTAssertEqual(
             Dictionary(uniqueKeysWithValues: resources.map { ($0.uri, $0.mimeType) }),
@@ -101,7 +106,7 @@ final class ToolRegistrationTests: XCTestCase {
         // <screen>_diff.png), so neither may claim readOnlyHint.
         let readOnly = [
             "grantiva_a11y_tree", "grantiva_a11y_check",
-            "grantiva_sim_list", "grantiva_context",
+            "grantiva_sim_list", "grantiva_emulator_list", "grantiva_context",
         ]
         let byName = Dictionary(uniqueKeysWithValues: allTools().map { ($0.name, $0) })
         for name in readOnly {
@@ -110,16 +115,18 @@ final class ToolRegistrationTests: XCTestCase {
     }
 
     func testMutatingToolsAreNotAnnotatedReadOnly() {
-        let mutating = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script", "grantiva_sim_boot", "grantiva_sim_delete"]
+        let mutating = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script", "grantiva_sim_boot", "grantiva_sim_delete",
+            "grantiva_emulator_boot", "grantiva_emulator_ensure", "grantiva_emulator_delete",
+        ]
         let byName = Dictionary(uniqueKeysWithValues: allTools().map { ($0.name, $0) })
         for name in mutating {
             XCTAssertNotEqual(byName[name]?.annotations.readOnlyHint, true, "\(name) must not claim readOnlyHint")
         }
     }
 
-    func testOnlySimDeleteIsMarkedDestructive() {
+    func testOnlyTheDeleteToolsAreMarkedDestructive() {
         let destructive = allTools().filter { $0.annotations.destructiveHint == true }.map(\.name)
-        XCTAssertEqual(destructive, ["grantiva_sim_delete"])
+        XCTAssertEqual(destructive, ["grantiva_sim_delete", "grantiva_emulator_delete"])
     }
 
     func testOnlyRemoteBaselineToolsClaimOpenWorldAccess() {

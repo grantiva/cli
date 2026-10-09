@@ -1,5 +1,10 @@
 import Foundation
 
+/// Runs `command` under `/bin/zsh -c` and returns its trimmed stdout.
+///
+/// The child's stdin is the null device, never Grantiva's own: `grantiva mcp`
+/// speaks JSON-RPC on stdin, and a child such as `adb shell` forwards whatever
+/// it inherits to the device, swallowing the client's queued requests.
 public func shell(_ command: String, environment: [String: String]? = nil) async throws -> String {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/bin/zsh")
@@ -9,6 +14,7 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     }
     let pipe = Pipe()
     let errorPipe = Pipe()
+    process.standardInput = FileHandle.nullDevice
     process.standardOutput = pipe
     process.standardError = errorPipe
 
@@ -55,10 +61,13 @@ public func shellQuoted(_ value: String) -> String {
     "'" + value.replacingOccurrences(of: "'", with: "'\\''") + "'"
 }
 
+/// Resolves `tool` on PATH. Like `shell`, the child gets a null stdin so it
+/// can never consume the MCP server's input.
 public func which(_ tool: String) -> String? {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/which")
     process.arguments = [tool]
+    process.standardInput = FileHandle.nullDevice
     let pipe = Pipe()
     process.standardOutput = pipe
     try? process.run()

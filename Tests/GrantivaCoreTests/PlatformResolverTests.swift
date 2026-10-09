@@ -95,4 +95,15 @@ final class PlatformResolverTests: XCTestCase {
             XCTAssertTrue(text.contains("grantiva.yml") && text.contains("grantiva-android.yml"), text)
         }
     }
+
+    func testResolveOrDefaultFallsBackToIOSWhenNothingPointsAnywhere() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("resolver-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let resolver = PlatformResolver(directory: dir, environment: [:])
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: nil), .ios)
+        XCTAssertThrowsError(try resolver.resolve(flag: nil))
+        try "platform: android\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(try resolver.resolveOrDefault(flag: nil), .android)
+    }
 }

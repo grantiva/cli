@@ -6,11 +6,14 @@ import MCP
 /// tool calls and resource reads to the appropriate handler.
 @available(macOS 15, *)
 struct ToolRegistry: Sendable {
-    let wda: WDAClient
+    let driver: DriverClient
+    let platform: Platform
+    let device: any DevicePlatform
     let config: GrantivaConfig?
     let session: RunnerSessionInfo
     let simulatorManager: SimulatorManager
     let buildRunner: XcodeBuildRunner
+    let emulators: EmulatorToolDependencies?
 
     // MARK: - Tool Definitions
 
@@ -18,6 +21,7 @@ struct ToolRegistry: Sendable {
         UITools.definitions
             + BuildTools.definitions
             + SimTools.definitions
+            + EmulatorTools.definitions
             + [ContextTool.definition]
             + ScriptTools.definitions
             + VRTTools.definitions
@@ -54,25 +58,25 @@ struct ToolRegistry: Sendable {
         switch name {
         // UI Tools
         case "grantiva_screenshot":
-            result = try await UITools.screenshot(wda: wda, session: session, arguments: arguments)
+            result = try await UITools.screenshot(driver: driver, device: device, session: session, arguments: arguments)
         case "grantiva_tap":
-            result = try await UITools.tap(wda: wda, arguments: arguments)
+            result = try await UITools.tap(driver: driver, arguments: arguments)
         case "grantiva_swipe":
-            result = try await UITools.swipe(wda: wda, arguments: arguments)
+            result = try await UITools.swipe(driver: driver, arguments: arguments)
         case "grantiva_type":
-            result = try await UITools.type(wda: wda, arguments: arguments)
+            result = try await UITools.type(driver: driver, arguments: arguments)
         case "grantiva_a11y_tree":
-            result = try await UITools.a11yTree(wda: wda)
+            result = try await UITools.a11yTree(driver: driver)
         case "grantiva_a11y_check":
-            result = try await UITools.a11yCheck(wda: wda, config: config)
+            result = try await UITools.a11yCheck(driver: driver, config: config, platform: platform)
 
         // Build Tools
         case "grantiva_build":
-            result = try await BuildTools.build(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments)
         case "grantiva_run":
-            result = try await BuildTools.run(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.run(device: device, platform: platform, config: config, arguments: arguments)
         case "grantiva_test":
-            result = try await BuildTools.test(runner: buildRunner, config: config, simManager: simulatorManager, arguments: arguments)
+            result = try await BuildTools.test(runner: buildRunner, platform: platform, config: config, simManager: simulatorManager, arguments: arguments)
 
         // Sim Tools
         case "grantiva_sim_list":
@@ -84,21 +88,31 @@ struct ToolRegistry: Sendable {
         case "grantiva_sim_delete":
             result = try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
 
+        // Emulator Tools
+        case "grantiva_emulator_list":
+            result = try await EmulatorTools.list(deps: emulators, arguments: arguments)
+        case "grantiva_emulator_boot":
+            result = try await EmulatorTools.boot(deps: emulators, config: config, arguments: arguments)
+        case "grantiva_emulator_ensure":
+            result = try await EmulatorTools.ensure(deps: emulators, arguments: arguments)
+        case "grantiva_emulator_delete":
+            result = try await EmulatorTools.delete(deps: emulators, arguments: arguments)
+
         // Context
         case "grantiva_context":
-            result = try await ContextTool.context(config: config, simManager: simulatorManager)
+            result = try await ContextTool.context(config: config, platform: platform, device: device, simManager: simulatorManager)
 
         // Script
         case "grantiva_script":
-            result = try await ScriptTools.script(wda: wda, arguments: arguments)
+            result = try await ScriptTools.script(driver: driver, arguments: arguments)
 
         // VRT Tools
         case "grantiva_vrt_capture":
-            result = try await VRTTools.capture(arguments: arguments)
+            result = try await VRTTools.capture(platform: platform, arguments: arguments)
         case "grantiva_vrt_compare":
-            result = try await VRTTools.compare(arguments: arguments)
+            result = try await VRTTools.compare(platform: platform, arguments: arguments)
         case "grantiva_vrt_approve":
-            result = try await VRTTools.approve(arguments: arguments)
+            result = try await VRTTools.approve(platform: platform, arguments: arguments)
 
         default:
             return CallTool.Result(
@@ -121,7 +135,7 @@ struct ToolRegistry: Sendable {
     func readResource(uri: String) async throws -> [Resource.Content] {
         switch uri {
         case "grantiva://hierarchy":
-            let tree = try await wda.hierarchy()
+            let tree = try await driver.hierarchy()
             let jsonData = try JSONSerialization.data(
                 withJSONObject: tree, options: [.prettyPrinted, .sortedKeys]
             )
@@ -129,7 +143,7 @@ struct ToolRegistry: Sendable {
             return [.text(jsonString, uri: uri, mimeType: "application/json")]
 
         case "grantiva://screenshot":
-            let imageData = try await wda.screenshot()
+            let imageData = try await driver.screenshot()
             return [.binary(imageData, uri: uri, mimeType: "image/png")]
 
         default:

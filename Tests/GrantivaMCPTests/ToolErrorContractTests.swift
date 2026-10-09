@@ -61,10 +61,23 @@ final class ToolErrorContractTests: XCTestCase {
 
     /// The tools that already honored the contract, kept here so the shape stays uniform.
     func testUIToolsReturnToolErrorsForInvalidArguments() async throws {
-        let wda = WDAClient.live(port: 8100)
-        assertToolError(try await UITools.tap(wda: wda, arguments: [:]), contains: "Error:")
-        assertToolError(try await UITools.swipe(wda: wda, arguments: [:]), contains: "'direction' is required")
-        assertToolError(try await UITools.type(wda: wda, arguments: [:]), contains: "'text' is required")
-        assertToolError(try await ScriptTools.script(wda: wda, arguments: [:]), contains: "'steps' array is required")
+        let driver = DriverClient.wda(port: 8100)
+        assertToolError(try await UITools.tap(driver: driver, arguments: [:]), contains: "Error:")
+        assertToolError(try await UITools.swipe(driver: driver, arguments: [:]), contains: "'direction' is required")
+        assertToolError(try await UITools.type(driver: driver, arguments: [:]), contains: "'text' is required")
+        assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' array is required")
+    }
+
+    func testEmulatorEnsureAndDeleteMissingNameReturnToolErrors() async throws {
+        let deps = EmulatorToolDependencies(
+            listAVDs: { [] }, listDevices: { [] }, avdName: { _ in "" },
+            boot: { _ in BootedDevice(udid: "", name: "") },
+            ensure: { _, _, _ in XCTFail("must not run"); return EmulatorProvisionResult(name: "", serial: nil, created: false, state: "") },
+            delete: { _, _ in XCTFail("must not run") }
+        )
+        let ensure = try await EmulatorTools.ensure(deps: deps, arguments: [:])
+        XCTAssertEqual(ensure.isError, true)
+        let delete = try await EmulatorTools.delete(deps: deps, arguments: ["name": .int(3)])
+        XCTAssertEqual(delete.isError, true)
     }
 }

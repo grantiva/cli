@@ -70,6 +70,8 @@ public enum RunnerSession {
 
         // Freeze status bar for deterministic screenshots
         await platform.prepareForCapture(deviceID: udid)
+        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+        defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
         // Run the runner
         let args = runnerArguments(
             runnerBin: runnerBin,
@@ -346,6 +348,8 @@ public enum RunnerSession {
         }
 
         await platform.prepareForCapture(deviceID: udid)
+        let restoreOnSignal = SignalRelay.shared.onTermination(Self.terminationCleanup(platform: platform, deviceID: udid))
+        defer { SignalRelay.shared.removeCleanup(restoreOnSignal) }
         let args = runnerArguments(
             runnerBin: runnerBin,
             platform: platform,
@@ -439,6 +443,21 @@ public enum RunnerSession {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    /// A synchronous cleanup for SignalRelay: the relay runs cleanups on its own
+    /// queue after reaping the runner group and then exits, so the async restore
+    /// is awaited here with a bounded wait.
+    static func terminationCleanup(platform: any DevicePlatform, deviceID: String, timeout: TimeInterval = 15) -> @Sendable () -> Void {
+        return {
+            let done = DispatchSemaphore(value: 0)
+            Task.detached {
+                await platform.restoreAfterCapture(deviceID: deviceID)
+                await platform.cleanupOrphans(deviceID: deviceID)
+                done.signal()
+            }
+            _ = done.wait(timeout: .now() + timeout)
+        }
     }
 
     static func runWithStatusBarCleanup<T>(

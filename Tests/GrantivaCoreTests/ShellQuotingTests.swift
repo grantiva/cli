@@ -8,6 +8,29 @@ final class ShellQuotingTests: XCTestCase {
         XCTAssertEqual(output, "done")
     }
 
+    func testSubprocessesDoNotInheritStandardInput() async throws {
+        // `grantiva mcp` speaks JSON-RPC on stdin; a child such as `adb shell`
+        // that inherited it would swallow queued requests. With a null stdin,
+        // `cat` sees EOF at once and prints nothing.
+        let output = try await withThrowingTaskGroup(of: String?.self) { group in
+            group.addTask { try await shell("cat") }
+            group.addTask {
+                try await Task.sleep(for: .seconds(5))
+                return nil
+            }
+            let first = try await group.next() ?? nil
+            group.cancelAll()
+            return first
+        }
+        guard let output else {
+            return XCTFail("shell(\"cat\") did not return within 5 seconds; it inherited stdin")
+        }
+        XCTAssertEqual(output, "")
+
+        let chained = try await shell("cat; echo done")
+        XCTAssertEqual(chained, "done")
+    }
+
     func testFailedCommandPreservesStdoutWhenStderrIsEmpty() async {
         do {
             _ = try await shell("printf '{\"passed\":false}'; exit 1")
