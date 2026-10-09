@@ -214,8 +214,17 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     /// Global flags, `test`, the platform's test flags, then the flow. On iOS
     /// this is byte-for-byte the argv `runner start` has always used.
+    ///
+    /// Android also gets `--keep-alive` before the flow. The keep-alive flow's
+    /// `waitForAnimationToEnd` holds the iOS runner for an hour, but on
+    /// Android it returns as soon as the screen settles, so the runner would
+    /// finish the flow and exit seconds after `runner start` reports success.
+    /// The runner's `--keep-alive` holds the session until SIGINT, which is
+    /// what `runner stop` sends.
     static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String) -> [String] {
-        platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments() + [flowPath]
+        let keepAlive = platform.platform == .android ? ["--keep-alive"] : []
+        return platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments()
+            + keepAlive + [flowPath]
     }
 
     /// Polls `attach` until the runner has opened its UIAutomator2 session.

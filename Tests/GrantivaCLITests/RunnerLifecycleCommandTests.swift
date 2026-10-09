@@ -118,7 +118,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             "test", "--wait-for-idle-timeout", "0", "/tmp/f.yaml",
         ])
         let android = RunnerStartCommand.runnerArguments(platform: FakeDevicePlatform(platform: .android), deviceID: "emulator-5554", flowPath: "/tmp/f.yaml")
-        XCTAssertEqual(android, ["--platform", "android", "--device", "emulator-5554", "test", "/tmp/f.yaml"])
+        XCTAssertEqual(android, ["--platform", "android", "--device", "emulator-5554", "test", "--keep-alive", "/tmp/f.yaml"])
     }
 
     func testAppIDAndTargetResolutionPerPlatform() throws {
