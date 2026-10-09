@@ -1,0 +1,83 @@
+{
+  "id": "flow-000",
+  "name": "07-deeplink",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-A3C510C1-597E-4468-9F72-DC20B08076D5/0/07-deeplink.yaml",
+  "device": {
+    "id": "4DAB1D26-5107-4B17-9093-AC2E19DE0403",
+    "name": "qa-ios-2",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:28:40.958248-07:00",
+  "endTime": "2026-10-09T14:28:41.727315-07:00",
+  "duration": 769,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "failed",
+      "startTime": "2026-10-09T14:28:40.959094-07:00",
+      "endTime": "2026-10-09T14:28:41.726807-07:00",
+      "duration": 767,
+      "error": {
+        "type": "unknown",
+        "message": "Failed to launch app: com.kylebrowning.Landmarks (cause: Post \"http://localhost:8607/session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/wda/apps/launch\": EOF)"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"landmarks://category/lakes\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "landmarks://category/lakes"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}

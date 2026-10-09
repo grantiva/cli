@@ -1,0 +1,57 @@
+14:29:33.839387 [INFO] === Test execution started ===
+14:29:33.839433 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a4
+14:29:33.839438 [INFO] Platform: ios
+14:29:33.839442 [INFO] Driver: uiautomator2
+14:29:33.839692 [INFO] Validated 1 flow(s)
+14:29:33.961765 [INFO] Single device execution mode
+14:29:33.961781 [INFO] Starting flow execution (parallel: false, devices: [])
+14:29:33.961787 [INFO] Creating driver for single device execution
+14:29:33.961790 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:29:34.078793 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:29:34.078878 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:29:34.316790 [INFO] WDA build completed successfully
+14:29:34.316811 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:29:36.584751 [INFO] WDA started successfully on port 8876
+14:29:37.010087 [DEBUG] WDA GET /window/size
+14:29:37.012067 [ERROR] WDA GET /window/size failed (1ms): Get "http://localhost:8876/window/size": dial tcp [::1]:8876: connect: connection refused
+14:29:37.012107 [INFO] Driver created: ios on qa-ios-1
+14:29:37.013870 [INFO] === Starting flow: 06-visit ===
+14:29:37.013879 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-13367A4B-790E-42E1-AA09-DE2638BBCB44/0/06-visit.yaml
+14:29:37.013887 [INFO] Total steps: 8
+14:29:37.014011 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:29:37.014491 [ERROR] WDA POST /appium/settings failed (0ms): Post "http://localhost:8876/appium/settings": dial tcp [::1]:8876: connect: connection refused
+14:29:37.014561 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:37.015005 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:37.015019 [DEBUG] WDA GET /status
+14:29:37.015401 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:29:37.516173 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:37.516915 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:37.516944 [DEBUG] WDA GET /status
+14:29:37.517431 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:29:38.518486 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:38.519132 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:38.519158 [WARN] failed to ensure session: failed to create WDA session: failed to create session: Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:38.519545 [DEBUG] Executing step 0: launchApp
+14:29:39.230084 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:29:39.230228 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:39.231080 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:39.231100 [DEBUG] WDA GET /status
+14:29:39.231822 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:29:39.732883 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:39.733773 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:39.733799 [DEBUG] WDA GET /status
+14:29:39.734147 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:29:40.735261 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:29:40.736302 [ERROR] WDA POST /session failed (1ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:40.736322 [WARN] [wda] createSession for com.kylebrowning.Landmarks failed: failed to create session: Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:29:40.736359 [ERROR] Step 0 failed (2216ms): launchApp - Error: Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused. Check that WebDriverAgent is still running on http://localhost:8876 and that no other run holds its port. (cause: failed to create session: Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused)
+14:29:40.736378 [DEBUG] WDA GET /screenshot
+14:29:40.736881 [ERROR] WDA GET /screenshot failed (0ms): Get "http://localhost:8876/screenshot": dial tcp [::1]:8876: connect: connection refused
+14:29:40.736891 [DEBUG] WDA GET /source
+14:29:40.737527 [ERROR] WDA GET /source failed (0ms): Get "http://localhost:8876/source": dial tcp [::1]:8876: connect: connection refused
+14:29:40.739476 [INFO] === Flow completed: 06-visit (status: failed, duration: 3725ms, passed: 0, failed: 1, skipped: 7) ===
+14:29:40.740413 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:29:40.740500 [INFO] Generating reports...
+14:29:40.741257 [INFO] Shutting down devices started by maestro-runner...
+14:29:40.741268 [INFO] Shutting down all tracked emulators
+14:29:40.741273 [INFO] Shutting down all tracked simulators

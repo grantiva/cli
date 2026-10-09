@@ -1,0 +1,79 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-ios-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-ios-1
+Simulator booted: qa-ios-1 (6EEDCB1A-E693-488A-B34C-5A0AB5DE9400)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/06-visit.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8876
+
+  [1/1] 06-visit (06-visit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Half Dome" (1.0s)
+    ✓ tapOn: text="Plan Visit" (885ms)
+    ✓ assertVisible: text="Visit Scheduled!" (189ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (247ms)
+    ✓ takeScreenshot (77ms)
+    ✓ tapOn: text="Done" (482ms)
+    ✓ assertVisible: text="Half Dome" (1.6s)
+✓ 06-visit 9.2s
+
+  [1/1] 06-visit (.maestro/06-visit.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.0s)
+    ✓ tapOn (885ms)
+    ✓ assertVisible (189ms)
+    ✓ assertVisible (247ms)
+    ✓ takeScreenshot (77ms)
+    ✓ tapOn (482ms)
+    ✓ assertVisible (1.6s)
+✓ 06-visit 6.5s
+
+  8 steps passing (9.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  06-visit                       ✓ PASS       8      8      0      0       9.2s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       9.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/a/allure-results
+
+  Built by Grantiva
+

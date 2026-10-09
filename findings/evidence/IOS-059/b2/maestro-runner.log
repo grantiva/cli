@@ -1,0 +1,43 @@
+14:28:35.064956 [INFO] === Test execution started ===
+14:28:35.065058 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-059/b2
+14:28:35.065070 [INFO] Platform: ios
+14:28:35.065081 [INFO] Driver: uiautomator2
+14:28:35.065370 [INFO] Validated 1 flow(s)
+14:28:35.185739 [INFO] Single device execution mode
+14:28:35.185757 [INFO] Starting flow execution (parallel: false, devices: [])
+14:28:35.185764 [INFO] Creating driver for single device execution
+14:28:35.185771 [INFO] Using specified iOS device: 4DAB1D26-5107-4B17-9093-AC2E19DE0403
+14:28:35.305636 [INFO] Device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 is a simulator
+14:28:35.305728 [INFO] Building WDA for device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (team ID: )
+14:28:35.546809 [INFO] WDA build completed successfully
+14:28:35.546825 [INFO] Starting WDA on device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (port: 8607)
+14:28:37.795621 [INFO] WDA started successfully on port 8607
+14:28:38.192657 [DEBUG] WDA GET /window/size
+14:28:38.269726 [DEBUG] WDA GET /window/size completed (77ms, status: 200)
+14:28:38.269790 [INFO] Driver created: ios on qa-ios-2
+14:28:38.271188 [INFO] === Starting flow: 07-deeplink ===
+14:28:38.271195 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-A3C510C1-597E-4468-9F72-DC20B08076D5/0/07-deeplink.yaml
+14:28:38.271200 [INFO] Total steps: 5
+14:28:38.271313 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:28:38.271786 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:28:38.271823 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:28:40.897389 [DEBUG] WDA POST /session completed (2625ms, status: 200)
+14:28:40.897540 [DEBUG] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:28:40.958119 [DEBUG] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/appium/settings completed (60ms, status: 200)
+14:28:40.959066 [DEBUG] Executing step 0: launchApp
+14:28:41.446461 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:28:41.446524 [DEBUG] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:28:41.447611 [DEBUG] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/appium/settings completed (1ms, status: 200)
+14:28:41.447685 [DEBUG] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:28:41.725083 [ERROR] WDA POST /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/wda/apps/launch failed (277ms): Post "http://localhost:8607/session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/wda/apps/launch": EOF
+14:28:41.725132 [ERROR] Step 0 failed (766ms): launchApp - Error: Failed to launch app: com.kylebrowning.Landmarks (cause: Post "http://localhost:8607/session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/wda/apps/launch": EOF)
+14:28:41.725139 [DEBUG] WDA GET /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/screenshot
+14:28:41.725950 [ERROR] WDA GET /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/screenshot failed (0ms): Get "http://localhost:8607/session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/screenshot": dial tcp [::1]:8607: connect: connection refused
+14:28:41.725965 [DEBUG] WDA GET /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/source
+14:28:41.726752 [ERROR] WDA GET /session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/source failed (0ms): Get "http://localhost:8607/session/DD95E8F5-9AD2-4DBA-8E6F-8800608F62E1/source": dial tcp [::1]:8607: connect: connection refused
+14:28:41.728739 [INFO] === Flow completed: 07-deeplink (status: failed, duration: 3457ms, passed: 0, failed: 1, skipped: 4) ===
+14:28:41.729768 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:28:41.729839 [INFO] Generating reports...
+14:28:41.730231 [INFO] Shutting down devices started by maestro-runner...
+14:28:41.730259 [INFO] Shutting down all tracked emulators
+14:28:41.730267 [INFO] Shutting down all tracked simulators

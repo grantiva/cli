@@ -1,0 +1,83 @@
+{
+  "id": "flow-000",
+  "name": "07-deeplink",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-1680E50C-0BFC-4B18-BCF6-DE7AEA522F02/0/07-deeplink.yaml",
+  "device": {
+    "id": "4DAB1D26-5107-4B17-9093-AC2E19DE0403",
+    "name": "qa-ios-2",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:28:18.360464-07:00",
+  "endTime": "2026-10-09T14:28:20.47069-07:00",
+  "duration": 2110,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "failed",
+      "startTime": "2026-10-09T14:28:18.360817-07:00",
+      "endTime": "2026-10-09T14:28:20.470233-07:00",
+      "duration": 2109,
+      "error": {
+        "type": "network",
+        "message": "Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post \"http://localhost:8607/session\": dial tcp [::1]:8607: connect: connection refused. Check that WebDriverAgent is still running on http://localhost:8607 and that no other run holds its port. (cause: failed to create session: Post \"http://localhost:8607/session\": dial tcp [::1]:8607: connect: connection refused)"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"landmarks://category/lakes\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "landmarks://category/lakes"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}

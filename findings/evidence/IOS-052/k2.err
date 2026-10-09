@@ -1,0 +1,83 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-ios-2 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-ios-2
+Simulator booted: qa-ios-2 (4DAB1D26-5107-4B17-9093-AC2E19DE0403)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/05-category.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-67B4B414-37BD-4810-B67C-9013AB6055BA
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8607
+
+  [1/1] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lakes" (1.9s)
+    ✓ assertVisible: text="Lake Tahoe" (200ms)
+    ✓ assertVisible: text="Mono Lake" (197ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (472ms)
+    ✓ takeScreenshot (69ms)
+✓ 05-category 6.5s
+
+  [1/1] 05-category (.maestro/05-category.yaml) - Device: qa-ios-2 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.9s)
+    ✓ assertVisible (200ms)
+    ✓ assertVisible (197ms)
+    ✓ assertNotVisible (472ms)
+    ✓ takeScreenshot (69ms)
+✓ 05-category 4.8s
+
+  6 steps passing (6.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-category                    ✓ PASS       6      6      0      0       6.5s  qa-ios-2 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       6.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-67B4B414-37BD-4810-B67C-9013AB6055BA
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-67B4B414-37BD-4810-B67C-9013AB6055BA/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-67B4B414-37BD-4810-B67C-9013AB6055BA/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-67B4B414-37BD-4810-B67C-9013AB6055BA/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8607 session=72280-1791581234949684000
+  /tmp/grantiva-sessions/72280-1791581234949684000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

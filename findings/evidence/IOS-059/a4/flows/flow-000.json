@@ -1,0 +1,125 @@
+{
+  "id": "flow-000",
+  "name": "06-visit",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-13367A4B-790E-42E1-AA09-DE2638BBCB44/0/06-visit.yaml",
+  "device": {
+    "id": "6EEDCB1A-E693-488A-B34C-5A0AB5DE9400",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:29:38.519176-07:00",
+  "endTime": "2026-10-09T14:29:40.738081-07:00",
+  "duration": 2218,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "failed",
+      "startTime": "2026-10-09T14:29:38.519552-07:00",
+      "endTime": "2026-10-09T14:29:40.737539-07:00",
+      "duration": 2217,
+      "error": {
+        "type": "network",
+        "message": "Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post \"http://localhost:8876/session\": dial tcp [::1]:8876: connect: connection refused. Check that WebDriverAgent is still running on http://localhost:8876 and that no other run holds its port. (cause: failed to create session: Post \"http://localhost:8876/session\": dial tcp [::1]:8876: connect: connection refused)"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Half Dome\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Half Dome"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Plan Visit\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Plan Visit"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Visit Scheduled!\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Visit Scheduled!"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"You're all set to visit Half Dome.\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "You're all set to visit Half Dome."
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Done\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Done"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Half Dome\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Half Dome"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}
