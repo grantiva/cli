@@ -1,0 +1,62 @@
+100	noargs	grantiva_screenshot	null
+101	noargs	grantiva_tap	null
+102	noargs	grantiva_swipe	null
+103	noargs	grantiva_type	null
+104	noargs	grantiva_a11y_tree	null
+105	noargs	grantiva_a11y_check	null
+106	noargs	grantiva_build	null
+107	noargs	grantiva_run	null
+108	noargs	grantiva_test	null
+109	noargs	grantiva_sim_list	null
+110	noargs	grantiva_sim_boot	null
+111	noargs	grantiva_sim_ensure	null
+112	noargs	grantiva_sim_delete	null
+113	noargs	grantiva_emulator_list	null
+114	noargs	grantiva_emulator_ensure	null
+115	noargs	grantiva_emulator_delete	null
+116	noargs	grantiva_context	null
+117	noargs	grantiva_script	null
+118	noargs	grantiva_vrt_capture	null
+119	noargs	grantiva_vrt_compare	null
+120	noargs	grantiva_vrt_approve	null
+121	wrongtype	grantiva_screenshot	{"format": 7}
+122	wrongtype	grantiva_tap	{"label": 123}
+123	wrongtype	grantiva_tap	{"x": "ten", "y": "twenty"}
+124	wrongtype	grantiva_swipe	{"direction": 5}
+125	wrongtype	grantiva_swipe	{"direction": "diagonal"}
+126	wrongtype	grantiva_type	{"text": true}
+127	wrongtype	grantiva_build	{"scheme": 42}
+128	wrongtype	grantiva_run	{"simulator": ["qa-cli-1"]}
+129	wrongtype	grantiva_test	{"scheme": {}}
+130	wrongtype	grantiva_sim_list	{"filter": []}
+131	wrongtype	grantiva_sim_boot	{"name": 5}
+132	wrongtype	grantiva_sim_ensure	{"name": 5}
+133	wrongtype	grantiva_sim_delete	{"name": false}
+134	wrongtype	grantiva_emulator_ensure	{"name": 1}
+135	wrongtype	grantiva_emulator_delete	{"name": 1, "force": "yes"}
+136	wrongtype	grantiva_script	{"steps": "tap Home"}
+137	wrongtype	grantiva_script	{"steps": [{"bogus": 1}, 5]}
+138	wrongtype	grantiva_vrt_approve	{"screens": "Home"}
+139	wrongtype	grantiva_a11y_tree	{"unexpected": 1}
+140	wrongtype	grantiva_context	{"x": []}
+141	wrongtype	grantiva_vrt_compare	{"x": 1}
+142	wrongtype	grantiva_vrt_capture	{"x": 1}
+143	wrongtype	grantiva_a11y_check	{"x": 1}
+144	wrongtype	grantiva_emulator_list	{"x": 1}
+145	valid	grantiva_screenshot	{}
+146	valid	grantiva_a11y_tree	{}
+147	valid	grantiva_a11y_check	{}
+148	valid	grantiva_context	{}
+149	valid	grantiva_tap	{"x": 200, "y": 400}
+150	valid	grantiva_tap	{"label": "No Such Label QA"}
+151	valid	grantiva_swipe	{"direction": "up"}
+152	valid	grantiva_type	{"text": "qa"}
+153	valid	grantiva_script	{"steps": [{"wait": 1}, {"tap_xy": {"x": 200, "y": 400}}]}
+154	valid	grantiva_sim_list	{"filter": "qa-cli"}
+155	valid	grantiva_sim_ensure	{"name": "qa-cli-mcp", "device_type": "iPhone 17 Pro", "runtime": "26.0", "boot": false}
+156	valid	grantiva_sim_delete	{"name": "qa-cli-mcp"}
+157	valid	grantiva_emulator_list	{}
+158	valid	grantiva_build	{"simulator": "qa-cli-1"}
+159	valid	grantiva_vrt_compare	{}
+160	valid	grantiva_vrt_approve	{"screens": ["NoSuchScreen"]}
+161	valid	grantiva_nonexistent_tool	{}

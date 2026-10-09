@@ -1,0 +1,18 @@
+== mcp --project-dir <scratch>/mcp-empty --platform -
+  Error: Invalid argument: No grantiva.yml or grantiva-android.yml found in project directory: /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/mcp-empty
+  exit=1
+== mcp --project-dir /nonexistent --platform -
+  Error: Invalid argument: Project directory does not exist: /nonexistent
+  exit=1
+== mcp --project-dir <scratch>/mcp-ios --platform -
+  Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/mcp-ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive`.
+  exit=1
+== mcp --project-dir <scratch>/mcp-both --platform -
+  Error: Invalid argument: Both grantiva.yml and grantiva-android.yml exist. Pass --platform ios|android or set GRANTIVA_PLATFORM.
+  exit=1
+== mcp --project-dir <scratch>/mcp-both --platform ios
+  Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/mcp-both/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive`.
+  exit=1
+== mcp --project-dir <scratch>/mcp-both --platform android
+  Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/mcp-both/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive`.
+  exit=1

@@ -1,0 +1,74 @@
+console alerts failure-rate get  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console alerts failure-rate history  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console alerts notifications get  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console alerts rules deliveries x | rc=64 stdout=0B | Error: Unexpected argument 'x'
+console alerts rules get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console alerts rules list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console analytics compliance  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console analytics device x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console analytics events  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console analytics export  | rc=64 stdout=0B | Error: Missing expected argument '--data <data>'
+console analytics overview  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console analytics risk  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console apps get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console apps list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console audit list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console claims get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console claims list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console devices get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console devices list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console envs list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console feedback get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console feedback list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console flags get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console flags history x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console flags list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console flags overrides list  | rc=64 stdout=0B | Error: Missing expected argument '<key>'
+console flags rules list  | rc=64 stdout=0B | Error: Missing expected argument '<key>'
+console keys get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console keys list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console org billing show x | rc=64 stdout=0B | Error: Unexpected argument 'x'
+console org settings get  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console org usage  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console releases get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console releases list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console support get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console support list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console team get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console team invites  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console team members  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console vrt runs get p r | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console vrt runs list  | rc=64 stdout=0B | Error: Missing expected argument '<project>'
+console webhooks deliveries x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console webhooks get x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console webhooks list  | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
+console alerts rules deliveries | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console org billing show | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console analytics export --data devices | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console flags overrides list x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console flags rules list x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console vrt runs list p | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console webhooks events | rc=64 stdout=0B | Error: Unexpected argument 'events' Usage: grantiva console webhooks <subcommand> 
+console flags delete x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console claims test --data = | rc=64 stdout=0B | Error: Missing expected argument '<key>' Help:  <key>  Claim key for the definition under test. 
+console claims test --data =value | rc=64 stdout=0B | Error: Missing expected argument '<key>' Help:  <key>  Claim key for the definition under test. 
+console analytics risk --range 2d | rc=64 stdout=0B | Error: The value '2d' is invalid for '--range <period>'. Please provide one of '1d', '7d', '30d' or '90d'. Help:  --range <period>  Window: 1d, 7d, 30d, or 90d. Default 7d. (--range is retained as an alias.) 
+console webhooks create https://x --event not.an.event | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+console apps delete x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+key=none console flags delete x | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+key=none console claims test k --data = | rc=64 stdout=0B | Error: Missing expected argument '--type <type>' Help:  --type <type>  Claim type: static, conditional, dynamic, or external. 
+key=none console claims test k --data =value | rc=64 stdout=0B | Error: Missing expected argument '--type <type>' Help:  --type <type>  Claim type: static, conditional, dynamic, or external. 
+key=none console webhooks create https://x --event not.an.event | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+key=none console analytics events --type bogus | rc=64 stdout=0B | Error: Unknown event type 'bogus'. Expected one of: challenge_generated, attestation_validated, attestation_failed, suspicious_activity, token_issued Usage: grantiva console analytics events [--json] [--verbose] [--quiet] [--page <page>] [--per <per>] [--from <from>] [--to <to>] [--device <device>] [--type <type>] 
+key=qa-invalid-key console flags delete x | rc=1 stdout=0B | Error: Invalid argument: refusing to delete flag 'x' without --yes (stdin is not a TTY) 
+key=qa-invalid-key console claims test k --data = | rc=64 stdout=0B | Error: Missing expected argument '--type <type>' Help:  --type <type>  Claim type: static, conditional, dynamic, or external. 
+key=qa-invalid-key console claims test k --data =value | rc=64 stdout=0B | Error: Missing expected argument '--type <type>' Help:  --type <type>  Claim type: static, conditional, dynamic, or external. 
+key=qa-invalid-key console webhooks create https://x --event not.an.event | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login 
+key=qa-invalid-key console analytics events --type bogus | rc=64 stdout=0B | Error: Unknown event type 'bogus'. Expected one of: challenge_generated, attestation_validated, attestation_failed, suspicious_activity, token_issued Usage: grantiva console analytics events [--json] [--verbose] [--quiet] [--page <page>] [--per <per>] [--from <from>] [--to <to>] [--device <device>] [--type <type>] 
+key=none console claims test k --type static --data = | rc=64 stdout=0B | Error: --type static needs --value. Usage: grantiva console claims test [<options>] <key> --type <type> 
+key=none console claims test k --type static --data =value | rc=64 stdout=0B | Error: --type static needs --value. Usage: grantiva console claims test [<options>] <key> --type <type> 
+key=qa-invalid-key console claims test k --type static --data = | rc=64 stdout=0B | Error: --type static needs --value. Usage: grantiva console claims test [<options>] <key> --type <type> 
+key=qa-invalid-key console claims test k --type static --data =value | rc=64 stdout=0B | Error: --type static needs --value. Usage: grantiva console claims test [<options>] <key> --type <type> 
+console claims test k --type static --value v --data = | rc=64 stdout=0B | Error: --data expects key=value, got '='.
+console claims test k --type static --value v --data =value | rc=64 stdout=0B | Error: --data expects key=value, got '=value'.
+console claims test k --type static --value v --data a=b | rc=1 stdout=0B | Error: Not authenticated. Run: grantiva auth login
