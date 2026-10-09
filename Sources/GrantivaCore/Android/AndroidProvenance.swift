@@ -73,27 +73,18 @@ public struct AndroidProvenance: Sendable {
 
     @discardableResult
     private func withCreatedLock<T>(_ body: (inout [String]) throws -> T) throws -> T {
-        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
-        let descriptor = Darwin.open("\(directory)/ledger.lock", O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)
-        guard descriptor >= 0 else {
-            throw GrantivaError.commandFailed("Could not open the emulator ledger lock: \(String(cString: strerror(errno)))", 1)
-        }
-        defer { Darwin.close(descriptor) }
-        guard flock(descriptor, LOCK_EX) == 0 else {
-            throw GrantivaError.commandFailed("Could not lock the emulator ledger: \(String(cString: strerror(errno)))", 1)
-        }
-        defer { flock(descriptor, LOCK_UN) }
-        var names: [String] = []
-        if let data = FileManager.default.contents(atPath: createdPath), !data.isEmpty {
-            names = try JSONDecoder().decode([String].self, from: data)
-        }
-        let result = try body(&names)
-        try JSONEncoder().encode(names).write(to: URL(fileURLWithPath: createdPath), options: .atomic)
-        return result
+        try withLockedJSON(at: createdPath, body)
     }
 
     @discardableResult
     private func withLedgerLock<T>(_ body: (inout [StartedEmulatorRecord]) throws -> T) throws -> T {
+        try withLockedJSON(at: ledgerPath, body)
+    }
+
+    /// Both ledgers serialise on the same `ledger.lock`, read the JSON array
+    /// at `path`, let `body` mutate it, and write it back atomically.
+    @discardableResult
+    private func withLockedJSON<E: Codable, T>(at path: String, _ body: (inout [E]) throws -> T) throws -> T {
         try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
         let descriptor = Darwin.open("\(directory)/ledger.lock", O_CREAT | O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)
         guard descriptor >= 0 else {
@@ -104,12 +95,12 @@ public struct AndroidProvenance: Sendable {
             throw GrantivaError.commandFailed("Could not lock the emulator ledger: \(String(cString: strerror(errno)))", 1)
         }
         defer { flock(descriptor, LOCK_UN) }
-        var records: [StartedEmulatorRecord] = []
-        if let data = FileManager.default.contents(atPath: ledgerPath), !data.isEmpty {
-            records = try JSONDecoder().decode([StartedEmulatorRecord].self, from: data)
+        var elements: [E] = []
+        if let data = FileManager.default.contents(atPath: path), !data.isEmpty {
+            elements = try JSONDecoder().decode([E].self, from: data)
         }
-        let result = try body(&records)
-        try JSONEncoder().encode(records).write(to: URL(fileURLWithPath: ledgerPath), options: .atomic)
+        let result = try body(&elements)
+        try JSONEncoder().encode(elements).write(to: URL(fileURLWithPath: path), options: .atomic)
         return result
     }
 }
