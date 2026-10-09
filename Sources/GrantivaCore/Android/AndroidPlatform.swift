@@ -231,10 +231,13 @@ public struct AndroidPlatform: DevicePlatform {
     public func attachDriver(deviceID: String, port: UInt16?, transport: UIAutomator2Transport) async throws -> DriverAttachment {
         let endpoint: UIAutomator2Endpoint
         let forwarded: Bool
-        if let port, port > 0 {
-            endpoint = try await UIAutomator2.endpoint(localPort: Int(port), serial: deviceID, transport: transport)
+        if let port, port > 0,
+           let recorded = try? await UIAutomator2.endpoint(localPort: Int(port), serial: deviceID, transport: transport) {
+            endpoint = recorded
             forwarded = false
         } else {
+            // No recorded port, or its forward is gone (an adb restart drops
+            // every forward): make a fresh one.
             endpoint = try await UIAutomator2.attach(adb: adb, serial: deviceID, transport: transport)
             forwarded = true
         }

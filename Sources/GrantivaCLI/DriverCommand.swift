@@ -117,7 +117,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     "bundle_id": existing.bundleId,
                 ]))
             } else {
-                Output.line("Runner already running (pid \(existing.pid), WDA port \(existing.wdaPort))")
+                let label = Self.portLabel(DeviceID.isAndroidSerial(existing.udid) ? .android : .ios)
+                Output.line("Runner already running (pid \(existing.pid), \(label) \(existing.wdaPort))")
                 Output.line("Use 'grantiva runner stop' to stop it first.")
             }
             return
@@ -269,6 +270,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         platform == .android ? "UIAutomator2 port" : "WDA port"
     }
 
+    /// The Android runner runs with `--keep-alive`, so it publishes a port-0
+    /// session file in /tmp/grantiva-sessions. The owner sidecar maps its pid
+    /// to the serial, which is what lets `grantiva hierarchy` and the MCP
+    /// server find the device. iOS `runner start` passes no `--keep-alive`.
+    private static func recordKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
+        guard launch.platform == .android else { return }
+        KeepAliveSessionStore().recordOwner(udid: launch.device.udid, runnerPid: runnerPid)
+    }
+
+    private static func removeKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
+        guard launch.platform == .android else { return }
+        KeepAliveSessionStore().removeOwner(runnerPid: runnerPid)
+    }
+
     // MARK: - Detached start
 
     private func startDetached(_ launch: Launch) async throws -> Int32 {
@@ -295,6 +310,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             throw error
         }
         let runnerPid = child.pid
+        Self.recordKeepAliveOwner(launch, runnerPid: runnerPid)
 
         let port: UInt16?
         if launch.platform == .android {
@@ -306,6 +322,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
         guard let port else {
             child.terminateGroup(gracePeriod: 1)
+            Self.removeKeepAliveOwner(launch, runnerPid: runnerPid)
             throw GrantivaError.commandFailed(
                 "Timed out waiting for \(launch.platform == .android ? "the UIAutomator2 session" : "WDA") to start. Log: \(logPath)", 1
             )
@@ -355,6 +372,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             stderr: FileHandle.standardError.fileDescriptor
         )
         try? stdoutPipe.fileHandleForWriting.close()
+        Self.recordKeepAliveOwner(launch, runnerPid: child.pid)
 
         let output = Self.outputStream(from: stdoutPipe.fileHandleForReading)
         let port: UInt16
@@ -364,6 +382,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Task { for await _ in output {} }
             guard let found = await Self.waitForUIAutomator2Port(launch) else {
                 child.terminateGroup(gracePeriod: 1)
+                Self.removeKeepAliveOwner(launch, runnerPid: child.pid)
                 RunnerSessionInfo.remove()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
             }
@@ -566,6 +585,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
         }
 
         dependencies.removeSession()
+        if DeviceID.isAndroidSerial(session.udid) {
+            dependencies.removeKeepAliveOwner(session.pid)
+        }
         // The session held the simulator lease by hand-off; free it now.
         dependencies.releaseLease(session.udid)
 
@@ -585,6 +607,9 @@ struct RunnerStopDependencies: Sendable {
     var removeSession: @Sendable () -> Void
     var releaseLease: @Sendable (String) -> Void
     var cleanupOrphans: @Sendable (String) async -> Void
+    /// Android `runner start` records a keep-alive owner sidecar for the
+    /// runner pid; stop removes it with the session.
+    var removeKeepAliveOwner: @Sendable (Int32) -> Void
 
     static let live = RunnerStopDependencies(
         loadSession: { try RunnerSessionInfo.load() },
@@ -596,7 +621,8 @@ struct RunnerStopDependencies: Sendable {
         cleanupOrphans: { serial in
             guard let platform = try? AndroidPlatform.live() else { return }
             await platform.cleanupOrphans(deviceID: serial)
-        }
+        },
+        removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) }
     )
 }
 

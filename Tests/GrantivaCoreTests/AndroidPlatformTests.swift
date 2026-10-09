@@ -241,6 +241,23 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(shell.commands.count, 2)
     }
 
+    /// An adb restart drops the forward `runner start` recorded; attach makes
+    /// a fresh one rather than fail.
+    func testAttachDriverFallsBackToAFreshForwardWhenTheRecordedPortIsDead() async throws {
+        let shell = ScriptedShell([
+            .success("61211"),                       // forward
+            .success("Physical size: 1080x2400"),    // wm size
+            .success("Physical density: 420"),       // wm density
+        ])
+        let transport = UIAutomator2Transport { request in
+            guard request.url?.port == 61211 else { throw URLError(.cannotConnectToHost) }
+            return (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200)
+        }
+        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+        XCTAssertEqual(attachment.port, 61211)
+        XCTAssertEqual(shell.commands.first, "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790")
+    }
+
     func testRecordVideoRecordsPullsAndRemoves() async throws {
         let shell = ScriptedShell()
         let out = scratch.appendingPathComponent("rec.mp4").path

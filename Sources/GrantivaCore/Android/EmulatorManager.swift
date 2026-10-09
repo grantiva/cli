@@ -355,7 +355,7 @@ public struct EmulatorManager: Sendable {
         }
         guard record != nil || force else {
             throw GrantivaError.invalidArgument(
-                "\(serial) was not started by Grantiva (see `grantiva emulator sessions`). Pass --force to kill it anyway."
+                "\(serial) \(Self.notStartedByGrantiva) (see `grantiva emulator sessions`). Pass --force to kill it anyway."
             )
         }
         for package in ADB.uiAutomator2Packages {
@@ -387,10 +387,18 @@ public struct EmulatorManager: Sendable {
         return EmulatorTeardownOutcome(serial: serial, avd: record?.avd, killed: killed, recorded: record != nil)
     }
 
+    static let notStartedByGrantiva = "was not started by Grantiva"
+
     public func teardownAll() async throws -> [EmulatorTeardownOutcome] {
         var outcomes: [EmulatorTeardownOutcome] = []
         for record in try provenance.all() {
-            outcomes.append(try await teardown(serial: record.serial, force: false))
+            do {
+                outcomes.append(try await teardown(serial: record.serial, force: false))
+            } catch GrantivaError.invalidArgument(let message) where message.contains(Self.notStartedByGrantiva) {
+                // `teardown` dropped the record: its serial now belongs to an
+                // emulator someone else started. Leave that one running.
+                continue
+            }
         }
         return outcomes
     }

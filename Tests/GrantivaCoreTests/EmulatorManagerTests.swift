@@ -505,6 +505,26 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(try ledger.all(), [])
     }
 
+    func testTeardownAllSkipsARecordWhoseSerialWasReusedByAForeignEmulator() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try deadPID()))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try deadPID()))
+        let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
+        let afterKill = "List of devices attached\nemulator-5554 device"
+        let shell = ScriptedShell([
+            // emulator-5554: its serial now runs someone else's AVD; refused and dropped
+            .success(both), .success("Foreign\nOK"),
+            // emulator-5556: ours, torn down
+            .success(both), .success("B\nOK"),
+            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+            .success(both), .success(""), .success(afterKill),           // listed, emu kill, gone
+        ])
+        let outcomes = try await manager(shell).teardownAll()
+        XCTAssertEqual(outcomes, [EmulatorTeardownOutcome(serial: "emulator-5556", avd: "B", killed: true, recorded: true)])
+        XCTAssertEqual(try ledger.all(), [])
+        XCTAssertEqual(shell.commands.filter { $0.hasSuffix("emu kill") }, ["'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill"])
+    }
+
     func testDeleteRefusesWhenARunningEmulatorsNameCannotBeRead() async {
         let shell = ScriptedShell([
             .success("List of devices attached\nemulator-5554 offline"),

@@ -253,6 +253,15 @@ enum UITools {
         return iosInteractiveTypes.contains(type) || androidInteractiveTypes.contains(type) || element["clickable"] as? Bool == true
     }
 
+    /// True when any descendant carries a non-empty `label` or `name`.
+    static func hasDescendantLabel(_ element: [String: Any]) -> Bool {
+        guard let children = element["children"] as? [[String: Any]] else { return false }
+        return children.contains { child in
+            !(child["label"] as? String ?? "").isEmpty || !(child["name"] as? String ?? "").isEmpty
+                || hasDescendantLabel(child)
+        }
+    }
+
     // MARK: - Private Helpers
 
     private static func fetchHierarchyJSON(driver: DriverClient) async throws -> String {
@@ -276,7 +285,12 @@ enum UITools {
         let isInteractive = Self.isInteractive(element)
 
         // Rule: missing_label
-        if rules.contains("missing_label") && isInteractive && enabled {
+        // On Android a clickable container (a Compose or View row) usually
+        // carries its text in a child, which TalkBack reads for the row.
+        // Known widget classes keep the strict own-label rule.
+        let labelledContainer = platform == .android && !androidInteractiveTypes.contains(type)
+            && !iosInteractiveTypes.contains(type) && hasDescendantLabel(element)
+        if rules.contains("missing_label") && isInteractive && enabled && !labelledContainer {
             if label.isEmpty && name.isEmpty {
                 violations.append([
                     "rule": "missing_label",

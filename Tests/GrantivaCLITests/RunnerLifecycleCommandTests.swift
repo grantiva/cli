@@ -108,7 +108,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession(udid: "emulator-5554")
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
         try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "terminate", "orphans", "remove", "release"])
+        XCTAssertEqual(events.value, ["snapshot", "terminate", "orphans", "remove", "owner", "release"])
     }
 
     func testRunnerArgumentsAreUnchangedOnIOSAndPlatformShapedOnAndroid() {
@@ -173,7 +173,8 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             terminateGroup: { _ in events.append("terminate") },
             removeSession: { events.append("remove") },
             releaseLease: { _ in events.append("release") },
-            cleanupOrphans: { _ in events.append("orphans") }
+            cleanupOrphans: { _ in events.append("orphans") },
+            removeKeepAliveOwner: { _ in events.append("owner") }
         )
     }
 }

@@ -287,6 +287,22 @@ final class UIToolsTests: XCTestCase {
         XCTAssertFalse(text.contains("small_tap_target"), text)
     }
 
+    /// Compose and View layouts put the text of a clickable row in a child.
+    func testA11yCheckDoesNotFlagAClickableContainerWhoseChildCarriesTheText() async throws {
+        let tree = #"{"type":"hierarchy","platform":"android","children":[{"type":"android.view.View","clickable":true,"enabled":true,"frame":{"x":"0","y":"0","width":"100","height":"100"},"children":[{"type":"android.widget.TextView","label":"Details","enabled":true,"frame":{"x":"0","y":"0","width":"100","height":"100"},"children":[]}]}]}"#
+        let result = try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: tree), config: nil, platform: .android)
+        let text = try textContent(of: result)
+        XCTAssertFalse(text.contains("missing_label"), text)
+    }
+
+    /// Known widget classes keep the strict own-label rule.
+    func testA11yCheckStillFlagsAnUnlabelledAndroidWidgetWhoseChildCarriesText() async throws {
+        let tree = #"{"type":"hierarchy","platform":"android","children":[{"type":"android.widget.Button","clickable":true,"enabled":true,"frame":{"x":"0","y":"0","width":"100","height":"100"},"children":[{"type":"android.widget.TextView","label":"Go","enabled":true,"frame":{"x":"0","y":"0","width":"100","height":"100"},"children":[]}]}]}"#
+        let result = try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: tree), config: nil, platform: .android)
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("missing_label"), text)
+    }
+
     func testA11yCheckUses48dpOnAndroidAnd44ptOnIOS() async throws {
         let android = #"{"type":"hierarchy","children":[{"type":"android.widget.Button","label":"Go","enabled":true,"frame":{"x":"0","y":"0","width":"46","height":"46"},"children":[]}]}"#
         let androidText = try textContent(of: try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: android), config: nil, platform: .android))

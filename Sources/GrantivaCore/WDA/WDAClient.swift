@@ -272,14 +272,14 @@ extension DriverClient {
 @available(macOS 15, *)
 extension DriverClient {
     public static let failing = DriverClient(
-        status: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        hierarchy: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        hierarchyXML: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        tapByLabel: { _ in throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        tapByCoordinate: { _, _ in throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        typeText: { _ in throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        swipe: { _ in throw GrantivaError.commandFailed("WDAClient.failing", 1) },
-        screenshot: { throw GrantivaError.commandFailed("WDAClient.failing", 1) }
+        status: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        hierarchy: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        hierarchyXML: { throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        tapByLabel: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        tapByCoordinate: { _, _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        typeText: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        swipe: { _ in throw GrantivaError.commandFailed("DriverClient.failing", 1) },
+        screenshot: { throw GrantivaError.commandFailed("DriverClient.failing", 1) }
     )
 }
 

@@ -66,6 +66,13 @@ struct HierarchyCommand: AsyncParsableCommand {
             try await runAndroid(serial: serial)
             return
         }
+        // An Android runner publishes port 0; without the owner sidecar there
+        // is neither a device to forward to nor a port to read from.
+        if session.port <= 0 {
+            throw GrantivaError.invalidArgument(
+                "The keep-alive session (pid \(session.pid)) records no device and no port. Pass --udid <serial> for an Android session, or use `grantiva runner dump-hierarchy`."
+            )
+        }
 
         // The runner's `sessionId` is its own keep-alive identifier, not a
         // WebDriverAgent session, so the session-scoped route 404s. The bare
