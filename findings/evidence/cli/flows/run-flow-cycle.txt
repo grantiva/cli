@@ -1,0 +1,6 @@
+== [run-flow-cycle.yml as grantiva.yml] timeout 200 $G run --no-build --simulator qa-cli-1 --bundle-id com.apple.Preferences --timeout 120 2>&1 | grep -E "^ +[✓✗⊘○-] |Error|error|Resolved|Invalid|cycle|not found|FAIL|PASS" | head -40
+ rc=0 stdout=918B
+ OUT| Resolved: scheme=Landmarks simulator=qa-cli-1 screens=1 flows=0
+ OUT| Error: Runner failed (exit 1):
+ OUT| Validation errors:
+ OUT|   - /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/work/cfg-run-flow-cycle-grantiva.yml/run-flow/a.yaml: circular dependency detected: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-08B2B134-7809-40BA-9E98-EDD06FB149E3/flow.yaml -> /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/work/cfg-run-flow-cycle-grantiva.yml/run-flow/a.yaml -> /tmp/claude-501/-Users-kyle-De

@@ -1,0 +1,5 @@
+== [maestro-yml] timeout 200 $G run --no-build --simulator qa-cli-1 --timeout 60 2>&1 | grep -E "Resolved|^ +[✓✗] (launch|tap|take|assert)|Error" | head
+ rc=0 stdout=3280B
+ OUT| Resolved: scheme=(none) simulator=qa-cli-1 screens=2 flows=0
+ OUT|     ✗ launchApp (2.0s)
+ OUT|       ╰─ Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: WDA error: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "The request to open "com.kylebrowning.Landmarks" failed." UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open "com.kylebrowning.Landmarks" failed., FBSOpenApplicationRequestID=0xf58f, NSUnderlyingError=0x600000cbd950 {Error Domain=FBSOpenApplicationErrorDomain Code=4 "Application info provider (FBSAp

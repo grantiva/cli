@@ -1,0 +1,14 @@
+== [every-step.yml as grantiva.yml] timeout 200 $G run --no-build --simulator qa-cli-1 --bundle-id com.apple.Preferences --timeout 120 2>&1 | grep -E "^ +[✓✗⊘○-] |Error|error|Resolved|Invalid|cycle|not found|FAIL|PASS" | head -40
+ rc=0 stdout=1777B
+ OUT| Resolved: scheme=Landmarks simulator=qa-cli-1 screens=2 flows=0
+ OUT|   ✓ Found 1 test flow(s)
+ OUT|   ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2776317-4529-4C0C-BBE9-5F9B9BDF36BF
+ OUT|   ✓ GrantivaAgent installed
+ OUT|   ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+ OUT|   ✓ GrantivaAgent built
+ OUT|   ✓ GrantivaAgent started
+ OUT|   ✓ GrantivaAgent port: 8400
+ OUT|     ✓ launchApp (2.1s)
+ OUT|     ✓ takeScreenshot (264ms)
+ OUT|     ✗ tapOn: text="Turtle Rock" (18.1s)
+ OUT|       ╰─ Element not found: text='Turtle Rock' (cause: context deadline exceeded: WDA error: unable to fin

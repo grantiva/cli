@@ -1,0 +1,16 @@
+== [swipe-diagonal.yml as grantiva.yml] timeout 200 $G run --no-build --simulator qa-cli-1 --bundle-id com.apple.Preferences --timeout 120 2>&1 | grep -E "^ +[✓✗⊘○-] |Error|error|Resolved|Invalid|cycle|not found|FAIL|PASS" | head -40
+ rc=0 stdout=799B
+ OUT| Resolved: scheme=Landmarks simulator=qa-cli-1 screens=1 flows=0
+ OUT|   ✓ Found 1 test flow(s)
+ OUT|   ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-0D8ADC3B-B88E-4537-848C-5EEC37109175
+ OUT|   ✓ GrantivaAgent installed
+ OUT|   ✓ GrantivaAgent built
+ OUT|   ✓ GrantivaAgent started
+ OUT|   ✓ GrantivaAgent port: 8400
+ OUT|     ✓ launchApp (2.1s)
+ OUT|     ✗ swipe: DIAGONAL (0ms)
+ OUT|       ╰─ Invalid swipe direction (cause: invalid direction: DIAGONAL)
+ OUT|     ✓ launchApp (2.1s)
+ OUT|     ✗ swipe (1.1s)
+ OUT|       ╰─ Invalid swipe direction (cause: invalid direction: DIAGONAL)
+ OUT|     ✗ takeScreens

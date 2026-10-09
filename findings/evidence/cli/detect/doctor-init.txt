@@ -1,0 +1,69 @@
+== [xcode-only] timeout 60 $G init; echo first=$?; cp grantiva.yml a; echo extra >> grantiva.yml; cp grantiva.yml b; timeout 60 $G init; echo second=$?; cmp b grantiva.yml && echo unchanged
+ rc=0 stdout=27B
+ OUT| first=0
+ OUT| second=0
+ OUT| unchanged
+ ERR| Created grantiva.yml
+ ERR| grantiva.yml already exists — skipping
+== [xcode-only] timeout 60 $G doctor --platform ios >/dev/null; echo rc=$?
+ rc=0 stdout=5B
+ OUT| rc=0
+== [xcode-only] DEVELOPER_DIR=/nonexistent timeout 60 $G doctor --platform ios | grep -A1 Xcode; echo rc=${PIPESTATUS[0]}
+ rc=0 stdout=351B
+ OUT|     ✗ Xcode             /nonexistent does not exist
+ OUT|                           Point at an installed Xcode: sudo xcode-select -s /Applications/Xcode.app (or unset DEVELOPER_DIR)
+ OUT|     ✗ Xcode Version     Could not determine Xcode version
+ OUT|                           Ensure Xcode is properly installed
+ OUT|     ● Booted Simulator  No simulator booted
+ OUT| rc=1
+== [xcode-only] DEVELOPER_DIR=/nonexistent timeout 60 $G doctor --platform ios --json | python3 -I -c "import json,sys;[print(c[\"name\"],c[\"status\"],c.get(\"message\"),c.get(\"fix\",\"\")) for c in json.load(sys.stdin) if c[\"section\"]==\"Required\"]"; echo rc=${PIPESTATUS[0]}
+ rc=0 stdout=376B
+ OUT| Xcode error /nonexistent does not exist Point at an installed Xcode: sudo xcode-select -s /Applications/Xcode.app (or unset DEVELOPER_DIR)
+ OUT| Xcode Version error Could not determine Xcode version Ensure Xcode is properly installed
+ OUT| Booted Simulator warning No simulator booted Run: xcrun simctl boot "iPhone 16"
+ OUT| Runner ok grantiva-runner 1.1.18-grantiva.7+android-drivers-2 
+ OUT| rc=1
+== [gradle-only] env -u ANDROID_HOME -u ANDROID_SDK_ROOT timeout 60 $G doctor --platform android --json | python3 -I -c "import json,sys;[print(c[\"name\"],c[\"status\"],c.get(\"message\"),c.get(\"fix\",\"\")) for c in json.load(sys.stdin) if c[\"section\"]==\"Required\"]"
+ rc=0 stdout=464B
+ OUT| Android SDK ok /Users/kyle/Library/Android/sdk 
+ OUT| adb ok Android Debug Bridge version 1.0.41 
+ OUT| Android Emulator ok /Users/kyle/Library/Android/sdk/emulator/emulator 
+ OUT| JDK error No JDK found (JAVA_HOME or /usr/libexec/java_home) Run: brew install openjdk@21 and set JAVA_HOME (see docs/android-environment.md)
+ OUT| Android AVDs ok Pixel_8_API_35, qa-android-1 
+ OUT| Running Emulator ok emulator-5554, emulator-5556 
+ OUT| Runner ok grantiva-runner 1.1.18-grantiva.7+android-drivers-2 
+== [gradle-only] env -u ANDROID_HOME ANDROID_SDK_ROOT=/Users/kyle/Library/Android/sdk timeout 60 $G doctor --platform android --json | python3 -I -c "import json,sys;[print(c[\"name\"],c[\"status\"],c.get(\"message\"),c.get(\"fix\",\"\")) for c in json.load(sys.stdin) if c[\"section\"]==\"Required\"]" | head -2
+ rc=0 stdout=92B
+ OUT| Android SDK ok /Users/kyle/Library/Android/sdk 
+ OUT| adb ok Android Debug Bridge version 1.0.41 
+== [gradle-only] env ANDROID_HOME=/nonexistent -u ANDROID_SDK_ROOT PATH=/usr/bin:/bin timeout 60 $G doctor --platform android --json | python3 -I -c "import json,sys;[print(c[\"name\"],c[\"status\"],c.get(\"message\"),c.get(\"fix\",\"\")) for c in json.load(sys.stdin) if c[\"section\"]==\"Required\"]"; echo rc=${PIPESTATUS[0]}
+ rc=0 stdout=7B
+ OUT| rc=127
+ ERR| env: -u: No such file or directory
+ ERR| Traceback (most recent call last):
+ ERR|   File "<string>", line 1, in <module>
+ ERR|     import json,sys;[print(c["name"],c["status"],c.get("message"),c.get("fix","")) for c in json.load(sys.stdin) if c["section"]=="Required"]
+ ERR|                                                                                             ~~~~~~~~~^^^^^^^^^^^
+ ERR|   File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 298, in load
+ ERR|     return loads(fp.read(),
+ ERR|         cls=cls, object_hook=object_hook,
+== [gradle-only] env ANDROID_HOME=/nonexistent -u ANDROID_SDK_ROOT PATH=/usr/bin:/bin timeout 60 $G doctor --platform android | tail -3; echo rc=${PIPESTATUS[0]}
+ rc=0 stdout=7B
+ OUT| rc=127
+ ERR| env: -u: No such file or directory
+ANDROID_HOME in my env: unset
+== [gradle-only] env -u ANDROID_SDK_ROOT ANDROID_HOME=/nonexistent PATH=/usr/bin:/bin timeout 60 $G doctor --platform android | sed -n "/Required/,/Project/p"; echo rc=${PIPESTATUS[0]}
+ rc=0 stdout=596B
+ OUT|   Required
+ OUT| 
+ OUT|     ✓ Android SDK       /Users/kyle/Library/Android/sdk
+ OUT|     ✓ adb               Android Debug Bridge version 1.0.41
+ OUT|     ✓ Android Emulator  /Users/kyle/Library/Android/sdk/emulator/emulator
+ OUT|     ✗ JDK               No JDK found (JAVA_HOME or /usr/libexec/java_home)
+ OUT|                           Run: brew install openjdk@21 and set JAVA_HOME (see docs/android-environment.md)
+ OUT|     ✓ Android AVDs      Pixel_8_API_35, qa-android-1
+ OUT|     ✓ Running Emulator  emulator-5554, emulator-5556
+ OUT|     ✓ Runner            grantiva-runner 1.1.18-grantiva.7+android-drivers-2
+ OUT| 
+ OUT|   Project
+ OUT| rc=1

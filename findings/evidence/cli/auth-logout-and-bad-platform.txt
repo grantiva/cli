@@ -1,0 +1,13 @@
+== [neither] ls ~/.grantiva/auth.json; $G auth logout; echo rc=$?
+ rc=0 stdout=64B
+ OUT| Logged out. Credentials removed from ~/.grantiva/auth.json
+ OUT| rc=0
+ ERR| ls: /Users/kyle/.grantiva/auth.json: No such file or directory
+== [neither] GRANTIVA_PLATFORM=windows $G init; echo rc=$?; ls
+ rc=0 stdout=18B
+ OUT| rc=0
+ OUT| grantiva.yml
+ ERR| Created grantiva.yml
+== [neither] GRANTIVA_PLATFORM=windows $G doctor >/dev/null; echo rc=$?
+ rc=0 stdout=5B
+ OUT| rc=0

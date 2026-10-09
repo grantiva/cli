@@ -1,0 +1,7 @@
+== [run-flow-missing.yml as grantiva.yml] timeout 200 $G run --no-build --simulator qa-cli-1 --bundle-id com.apple.Preferences --timeout 120 2>&1 | grep -E "^ +[✓✗⊘○-] |Error|error|Resolved|Invalid|cycle|not found|FAIL|PASS" | head -40
+ rc=0 stdout=584B
+ OUT| Resolved: scheme=Landmarks simulator=qa-cli-1 screens=1 flows=0
+ OUT| Error: Runner failed (exit 1):
+ OUT| Validation errors:
+ OUT|   - /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/work/cfg-run-flow-missing-grantiva.yml/run-flow/sub/does-not-exist.yaml: parse error: failed to read file: open /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/work/cfg-run-flow-missing-grantiva.yml/run-flow/sub/does-not-exist.yaml: no such file or directory
+ OUT| Error: validation failed with 1 error(s)

@@ -33,83 +33,83 @@ read-only root). IOS-034 records what happens with a parent that can be created.
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-001 | `grantiva --help`, `grantiva --version` | none | Exit 0. `--version` prints `2.0.1`; help lists build, run, record, simulator, emulator, hierarchy, ci, diff, auth, console, doctor, runner, init, mcp. | help: grantiva |  |
-| CLI-002 | `grantiva help <subcommand>` | e.g. `grantiva help run`, `grantiva help console flags` | Prints the same text as `<subcommand> --help` and exits 0 ("See 'grantiva help <subcommand>' for detailed help"). | help: grantiva |  |
-| CLI-003 | every command and subcommand `--help` | all 172 pages under `help/` | Each exits 0 and prints OVERVIEW (where an abstract exists), USAGE and OPTIONS; output matches the committed `help/*.txt` dump byte for byte. | help: all |  |
-| CLI-004 | `run --help` | none | Lists exactly the flags in `help/run.txt`; every flag README §Agent-Native Features and docs/android.md §Devices name is present, and none is undocumented elsewhere. | help: run; README §Agent-Native Features; docs/android.md §Devices |  |
-| CLI-005 | `build build --help`, `build install --help` | none | `build install` adds `--app-file`, `--no-build`, `--no-launch`; `build build` has none of the three. `build` with no subcommand defaults to `build build`. | help: build, build build, build install |  |
-| CLI-006 | `diff capture/compare/approve --help` | none | `compare` adds `--capture` ("runs full lifecycle"); `approve` takes `[<screen-names> ...]` and `--platform` only. | help: diff_* |  |
-| CLI-007 | `simulator <sub> --help`, `emulator <sub> --help` | ensure, delete, sessions, teardown, cleanup | Each exits 0 and documents its flags; `simulator ensure` shows `--boot/--no-boot (default: --boot)`; `emulator teardown` shows `--serial`, `--all`, `--force`. | help: simulator_*, emulator_* |  |
-| CLI-008 | `runner <sub> --help`, `hierarchy --help`, `record --help` | install, version, start, stop, dump-hierarchy | Each exits 0; `runner dump-hierarchy` shows `-p/--port`, `-f/--format` (tree, json, xml; default tree), `--udid`; `record` marks `--duration` required. | help: runner_*, hierarchy, record |  |
-| CLI-009 | `console --help` tree | all 17 groups | Lists flags (alias `featureflags`), envs, analytics, devices, apps, claims, vrt, releases, feedback, support, webhooks, alerts, keys, team, audit, org, open; `grantiva console featureflags --help` equals `console flags --help`. | help: console; CHANGELOG 1.9.0 |  |
-| CLI-010 | any command | unknown flag, e.g. `run --bogus` | Usage error on stderr, non-zero exit, stdout empty. | README §stdout is the result, stderr is the commentary |  |
+| CLI-001 | `grantiva --help`, `grantiva --version` | none | Exit 0. `--version` prints `2.0.1`; help lists build, run, record, simulator, emulator, hierarchy, ci, diff, auth, console, doctor, runner, init, mcp. | help: grantiva | pass |
+| CLI-002 | `grantiva help <subcommand>` | e.g. `grantiva help run`, `grantiva help console flags` | Prints the same text as `<subcommand> --help` and exits 0 ("See 'grantiva help <subcommand>' for detailed help"). | help: grantiva | pass |
+| CLI-003 | every command and subcommand `--help` | all 172 pages under `help/` | Each exits 0 and prints OVERVIEW (where an abstract exists), USAGE and OPTIONS; output matches the committed `help/*.txt` dump byte for byte. | help: all | pass |
+| CLI-004 | `run --help` | none | Lists exactly the flags in `help/run.txt`; every flag README §Agent-Native Features and docs/android.md §Devices name is present, and none is undocumented elsewhere. | help: run; README §Agent-Native Features; docs/android.md §Devices | fail CLI-F01 |
+| CLI-005 | `build build --help`, `build install --help` | none | `build install` adds `--app-file`, `--no-build`, `--no-launch`; `build build` has none of the three. `build` with no subcommand defaults to `build build`. | help: build, build build, build install | pass |
+| CLI-006 | `diff capture/compare/approve --help` | none | `compare` adds `--capture` ("runs full lifecycle"); `approve` takes `[<screen-names> ...]` and `--platform` only. | help: diff_* | pass |
+| CLI-007 | `simulator <sub> --help`, `emulator <sub> --help` | ensure, delete, sessions, teardown, cleanup | Each exits 0 and documents its flags; `simulator ensure` shows `--boot/--no-boot (default: --boot)`; `emulator teardown` shows `--serial`, `--all`, `--force`. | help: simulator_*, emulator_* | pass |
+| CLI-008 | `runner <sub> --help`, `hierarchy --help`, `record --help` | install, version, start, stop, dump-hierarchy | Each exits 0; `runner dump-hierarchy` shows `-p/--port`, `-f/--format` (tree, json, xml; default tree), `--udid`; `record` marks `--duration` required. | help: runner_*, hierarchy, record | pass |
+| CLI-009 | `console --help` tree | all 17 groups | Lists flags (alias `featureflags`), envs, analytics, devices, apps, claims, vrt, releases, feedback, support, webhooks, alerts, keys, team, audit, org, open; `grantiva console featureflags --help` equals `console flags --help`. | help: console; CHANGELOG 1.9.0 | pass |
+| CLI-010 | any command | unknown flag, e.g. `run --bogus` | Usage error on stderr, non-zero exit, stdout empty. | README §stdout is the result, stderr is the commentary | pass |
 
 **stdout / stderr contract**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-011 | `doctor --json` | none | stdout is valid JSON (an array of checks with `status`), so `grantiva doctor --json \| jq '.[] \| select(.status == "fail")'` works; narration absent from stdout. | README §stdout is the result |  |
-| CLI-012 | `doctor --json --quiet` | none | "`grantiva doctor --json --quiet \| jq` is still valid JSON." | README §stdout is the result; CHANGELOG 1.8.0 |  |
-| CLI-013 | `doctor --json --verbose` | none | stdout valid JSON; stderr gains timestamps, labels and every subprocess (`$ xcrun …` plus exit status). | README §stdout is the result; CHANGELOG 1.8.0 Added |  |
-| CLI-014 | `doctor` | `> out.txt`, and with `NO_COLOR=1` | No ANSI escapes in redirected stdout; `NO_COLOR` suppresses colour on a TTY. | CHANGELOG 1.8.0 Fixed |  |
-| CLI-015 | `simulator sessions --json` | neither, `--quiet`, `--verbose` | stdout valid JSON in all three modes; only diagnostics on stderr. | README §stdout is the result; help: simulator sessions |  |
-| CLI-016 | `emulator sessions --json` | neither, `--quiet`, `--verbose` | stdout valid JSON in all three modes. | help: emulator sessions |  |
-| CLI-017 | `runner version` | with and without `--json` | Prints the embedded runner version; `--json` output is valid JSON. | help: runner version; README §Commands |  |
-| CLI-018 | `auth status --json` | not logged in, `GRANTIVA_API_KEY` unset | stdout is valid JSON or empty; any error goes to stderr with a non-zero exit. | README §stdout is the result; help: auth status |  |
-| CLI-019 | every leaf command with `--json` | a forced failure (e.g. run in an empty dir) | Error printed to stderr prefixed `Error:`, exit non-zero, stdout empty (no partial JSON). | README §stdout is the result; CHANGELOG 1.8.0 Changed |  |
-| CLI-020 | any command | `--quiet` | Progress narration silenced; warnings (`Warning:`) and errors (`Error:`) still print on stderr; stdout unchanged. | README §stdout is the result; help: `--quiet` |  |
-| CLI-021 | any command | `--verbose` | "adds debug-level detail, with timestamps and labels"; stdout unchanged. | README §stdout is the result |  |
-| CLI-022 | `console open --json` | `flags` | Prints the dashboard URL instead of opening a browser; exit 0; nothing launched. | help: console open; CHANGELOG 1.9.0 |  |
+| CLI-011 | `doctor --json` | none | stdout is valid JSON (an array of checks with `status`), so `grantiva doctor --json \| jq '.[] \| select(.status == "fail")'` works; narration absent from stdout. | README §stdout is the result | pass |
+| CLI-012 | `doctor --json --quiet` | none | "`grantiva doctor --json --quiet \| jq` is still valid JSON." | README §stdout is the result; CHANGELOG 1.8.0 | pass |
+| CLI-013 | `doctor --json --verbose` | none | stdout valid JSON; stderr gains timestamps, labels and every subprocess (`$ xcrun …` plus exit status). | README §stdout is the result; CHANGELOG 1.8.0 Added | pass |
+| CLI-014 | `doctor` | `> out.txt`, and with `NO_COLOR=1` | No ANSI escapes in redirected stdout; `NO_COLOR` suppresses colour on a TTY. | CHANGELOG 1.8.0 Fixed | pass |
+| CLI-015 | `simulator sessions --json` | neither, `--quiet`, `--verbose` | stdout valid JSON in all three modes; only diagnostics on stderr. | README §stdout is the result; help: simulator sessions | pass |
+| CLI-016 | `emulator sessions --json` | neither, `--quiet`, `--verbose` | stdout valid JSON in all three modes. | help: emulator sessions | pass |
+| CLI-017 | `runner version` | with and without `--json` | Prints the embedded runner version; `--json` output is valid JSON. | help: runner version; README §Commands | pass |
+| CLI-018 | `auth status --json` | not logged in, `GRANTIVA_API_KEY` unset | stdout is valid JSON or empty; any error goes to stderr with a non-zero exit. | README §stdout is the result; help: auth status | pass |
+| CLI-019 | every leaf command with `--json` | a forced failure (e.g. run in an empty dir) | Error printed to stderr prefixed `Error:`, exit non-zero, stdout empty (no partial JSON). | README §stdout is the result; CHANGELOG 1.8.0 Changed | pass |
+| CLI-020 | any command | `--quiet` | Progress narration silenced; warnings (`Warning:`) and errors (`Error:`) still print on stderr; stdout unchanged. | README §stdout is the result; help: `--quiet` | pass |
+| CLI-021 | any command | `--verbose` | "adds debug-level detail, with timestamps and labels"; stdout unchanged. | README §stdout is the result | pass |
+| CLI-022 | `console open --json` | `flags` | Prints the dashboard URL instead of opening a browser; exit 0; nothing launched. | help: console open; CHANGELOG 1.9.0 | pass |
 
 **Project detection**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-023 | `doctor`, `init` | dir with only an `.xcodeproj` | Resolves to iOS ("an `.xcodeproj` or `.xcworkspace` means iOS"). | docs/android.md §Setup |  |
-| CLI-024 | `doctor`, `init` | dir with only `settings.gradle.kts` | Resolves to Android ("a `settings.gradle` or `settings.gradle.kts` means Android"). | docs/android.md §Setup |  |
-| CLI-025 | `run`, `doctor` | dir with both `.xcodeproj` and `settings.gradle.kts`, no config | Error asking for `--platform ios` (or `GRANTIVA_PLATFORM`); not silently iOS. | CHANGELOG Unreleased Changed |  |
-| CLI-026 | `doctor` | empty dir (neither) | Reports both toolchains as advice; missing project is advisory and does not fail the exit code. | CHANGELOG Unreleased Added; CHANGELOG 1.8.0 Fixed |  |
-| CLI-027 | `run`, `diff capture` | dir with only `.maestro/*.yaml` | Flows are auto-detected from `.maestro/` with no `grantiva.yml`. | README §Maestro Compatibility |  |
-| CLI-028 | `run`, `diff capture` | dir with empty `.maestro/` | Clear error that no flow files were found; non-zero exit. | README §Maestro Compatibility |  |
-| CLI-029 | `diff capture` | `grantiva.yml` in Maestro format (`appId:` + `---`) | Parsed as Maestro: each `takeScreenshot` is a screen, commands between are its navigation steps. | README §Maestro Compatibility |  |
-| CLI-030 | `run` | both `grantiva.yml` and `grantiva-android.yml`, no flag | Error telling the user to pass `--platform ios\|android` or set `GRANTIVA_PLATFORM`. | docs/android.md §Devices; CHANGELOG Unreleased Added |  |
-| CLI-031 | `run`, `doctor` | both config files plus `--platform android`, then `GRANTIVA_PLATFORM=ios` | Each selects the named platform's config. | help: run (`--platform`); docs/android.md §Devices |  |
-| CLI-032 | `doctor` | `--platform ios` with `GRANTIVA_PLATFORM=android` | The flag wins over the environment variable. | help: run ("GRANTIVA_PLATFORM also sets it") |  |
-| CLI-033 | `doctor` | `GRANTIVA_PLATFORM=windows` | Error naming the bad value and the accepted values ios, android; non-zero exit. | help: run (`values: ios, android`) |  |
-| CLI-034 | `run` | `--platform android` where only `grantiva.yml` exists | "an error naming the missing file" (`grantiva-android.yml`). | CHANGELOG Unreleased Added |  |
-| CLI-035 | `run` | `--platform macos` | Usage error listing values ios, android; non-zero exit. | help: run |  |
+| CLI-023 | `doctor`, `init` | dir with only an `.xcodeproj` | Resolves to iOS ("an `.xcodeproj` or `.xcworkspace` means iOS"). | docs/android.md §Setup | pass |
+| CLI-024 | `doctor`, `init` | dir with only `settings.gradle.kts` | Resolves to Android ("a `settings.gradle` or `settings.gradle.kts` means Android"). | docs/android.md §Setup | pass |
+| CLI-025 | `run`, `doctor` | dir with both `.xcodeproj` and `settings.gradle.kts`, no config | Error asking for `--platform ios` (or `GRANTIVA_PLATFORM`); not silently iOS. | CHANGELOG Unreleased Changed | fail CLI-F06 |
+| CLI-026 | `doctor` | empty dir (neither) | Reports both toolchains as advice; missing project is advisory and does not fail the exit code. | CHANGELOG Unreleased Added; CHANGELOG 1.8.0 Fixed | pass |
+| CLI-027 | `run`, `diff capture` | dir with only `.maestro/*.yaml` | Flows are auto-detected from `.maestro/` with no `grantiva.yml`. | README §Maestro Compatibility | pass |
+| CLI-028 | `run`, `diff capture` | dir with empty `.maestro/` | Clear error that no flow files were found; non-zero exit. | README §Maestro Compatibility | pass |
+| CLI-029 | `diff capture` | `grantiva.yml` in Maestro format (`appId:` + `---`) | Parsed as Maestro: each `takeScreenshot` is a screen, commands between are its navigation steps. | README §Maestro Compatibility | pass |
+| CLI-030 | `run` | both `grantiva.yml` and `grantiva-android.yml`, no flag | Error telling the user to pass `--platform ios\|android` or set `GRANTIVA_PLATFORM`. | docs/android.md §Devices; CHANGELOG Unreleased Added | pass |
+| CLI-031 | `run`, `doctor` | both config files plus `--platform android`, then `GRANTIVA_PLATFORM=ios` | Each selects the named platform's config. | help: run (`--platform`); docs/android.md §Devices | pass |
+| CLI-032 | `doctor` | `--platform ios` with `GRANTIVA_PLATFORM=android` | The flag wins over the environment variable. | help: run ("GRANTIVA_PLATFORM also sets it") | pass |
+| CLI-033 | `doctor` | `GRANTIVA_PLATFORM=windows` | Error naming the bad value and the accepted values ios, android; non-zero exit. | help: run (`values: ios, android`) | fail CLI-F11 |
+| CLI-034 | `run` | `--platform android` where only `grantiva.yml` exists | "an error naming the missing file" (`grantiva-android.yml`). | CHANGELOG Unreleased Added | pass |
+| CLI-035 | `run` | `--platform macos` | Usage error listing values ios, android; non-zero exit. | help: run | pass |
 
 **Config parsing**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-036 | `run` | `grantiva.yml` with a YAML syntax error | "an error naming the file and the YAML position", not silently ignored. | CHANGELOG Unreleased Added; CHANGELOG Unreleased Changed |  |
-| CLI-037 | `run --platform android` | `grantiva-android.yml` with a YAML syntax error | Error names `grantiva-android.yml` and the line/column. | CHANGELOG Unreleased Added |  |
-| CLI-038 | `run` | empty or comments-only `grantiva.yml` | "loads as defaults, as before" (then fails for missing scheme/flows, not for parsing). | CHANGELOG Unreleased Changed |  |
-| CLI-039 | `run` | `grantiva.yml` with an unknown key (e.g. `schem: Landmarks`) | Undocumented; record whether the key is rejected, warned about, or silently ignored. A silent ignore of a misspelled required key is a `ux` finding. | spec §2 Config parsing (no CLI doc) |  |
-| CLI-040 | `run` | `grantiva.yml` containing `platform: android` | Error that the file declares the other platform; the `platform:` key belongs in `grantiva-android.yml`. | docs/android.md §Config |  |
-| CLI-041 | `run` | Android project plus `--scheme X` | "iOS flags such as `--scheme` are rejected on Android", by name, before any build. | docs/android.md §Devices; CHANGELOG Unreleased Added |  |
-| CLI-042 | `run` | iOS project plus `--module app` | "A flag from the other platform is rejected by name." | CHANGELOG Unreleased Added |  |
-| CLI-043 | `run` | Android project plus `--logs-predicate x`; iOS project plus `--logs-tag x` | Each rejected by name ("`--logs-predicate` is iOS-only"). | docs/android.md §Logs; help: run |  |
-| CLI-044 | `run` | `grantiva.yml` with `flows: []` and no `screens`, plus `--report-dir out --ready-file out.ready` | Fails before any boot or runner work with an error that nothing is configured; non-zero exit. No `report.json` claiming a pass, and the ready file says `failed` ("a failure before the runner starts … records `failed`"). | README §Agent-Native Features (`--ready-file`); help: run |  |
-| CLI-045 | `run` | `--device emulator-5554 --emulator Pixel_8_API_35` | "`--device` together with `--emulator` is rejected." | CHANGELOG Unreleased Changed |  |
+| CLI-036 | `run` | `grantiva.yml` with a YAML syntax error | "an error naming the file and the YAML position", not silently ignored. | CHANGELOG Unreleased Added; CHANGELOG Unreleased Changed | pass |
+| CLI-037 | `run --platform android` | `grantiva-android.yml` with a YAML syntax error | Error names `grantiva-android.yml` and the line/column. | CHANGELOG Unreleased Added | pass |
+| CLI-038 | `run` | empty or comments-only `grantiva.yml` | "loads as defaults, as before" (then fails for missing scheme/flows, not for parsing). | CHANGELOG Unreleased Changed | pass |
+| CLI-039 | `run` | `grantiva.yml` with an unknown key (e.g. `schem: Landmarks`) | Undocumented; record whether the key is rejected, warned about, or silently ignored. A silent ignore of a misspelled required key is a `ux` finding. | spec §2 Config parsing (no CLI doc) | fail CLI-F09 |
+| CLI-040 | `run` | `grantiva.yml` containing `platform: android` | Error that the file declares the other platform; the `platform:` key belongs in `grantiva-android.yml`. | docs/android.md §Config | pass |
+| CLI-041 | `run` | Android project plus `--scheme X` | "iOS flags such as `--scheme` are rejected on Android", by name, before any build. | docs/android.md §Devices; CHANGELOG Unreleased Added | pass |
+| CLI-042 | `run` | iOS project plus `--module app` | "A flag from the other platform is rejected by name." | CHANGELOG Unreleased Added | pass |
+| CLI-043 | `run` | Android project plus `--logs-predicate x`; iOS project plus `--logs-tag x` | Each rejected by name ("`--logs-predicate` is iOS-only"). | docs/android.md §Logs; help: run | pass |
+| CLI-044 | `run` | `grantiva.yml` with `flows: []` and no `screens`, plus `--report-dir out --ready-file out.ready` | Fails before any boot or runner work with an error that nothing is configured; non-zero exit. No `report.json` claiming a pass, and the ready file says `failed` ("a failure before the runner starts … records `failed`"). | README §Agent-Native Features (`--ready-file`); help: run | pass |
+| CLI-045 | `run` | `--device emulator-5554 --emulator Pixel_8_API_35` | "`--device` together with `--emulator` is rejected." | CHANGELOG Unreleased Changed | pass |
 | CLI-046 | `diff capture` | `screens:` using every path step: `launch`, `tap`, `swipe` up/down/left/right, `type`, `wait`, `assert_visible`, `assert_not_visible`, `run_flow` | All steps parse; generated flow (inspect via `--report-dir` or staged flow) contains one step per entry in order. | README §Screens |  |
-| CLI-047 | `diff capture` | `- swipe: diagonal` | Rejected at parse time; README lists only `up`, `down`, `left`, `right`. | README §Screens |  |
-| CLI-048 | `diff capture` | `- run_flow: "sub/flow.yaml"` relative path, and a missing path | Resolves relative to the config's directory; a missing file is an error naming the path. | README §Screens |  |
-| CLI-049 | `diff capture` | `run_flow` cycle (A includes B includes A) | Error naming the cycle; does not hang or recurse until crash. | README §Screens; spec §2 (`run_flow` resolution) |  |
-| CLI-050 | `run` | `--env NOEQUALS`, `--env =v`, `--env 'A B=1'` | "A malformed pair is rejected with a clear error" for each, before any device work. | CHANGELOG 1.7.0 Added; help: run (`--env`) |  |
-| CLI-051 | `run` | `--ready-file <existing directory>` | "An unwritable or non-file `--ready-file` path is now rejected at startup." | CHANGELOG 1.8.0 Fixed |  |
-| CLI-052 | `run` | pre-existing `x.ready` containing `{"status":"passed"}`, run in a dir with no project | The stale file is deleted at startup, then rewritten with `failed`. | README §Agent-Native Features; CHANGELOG 1.8.0 |  |
-| CLI-053 | `run` | `--ready-file x.ready` in a dir with no project | File exists after exit with `"status":"failed"`; exit non-zero. | README §Agent-Native Features ("it is always written") |  |
-| CLI-054 | `run` | `--ready-file` in a read-only directory (`chmod 0500`) | "an unwritable path fails immediately rather than at the end of a long suite"; exit non-zero before project work. | README §Agent-Native Features |  |
-| CLI-055 | `run` | `--snapshot bogus` | Usage error naming failure, trailing, full. | help: run (`--snapshot`) |  |
-| CLI-056 | `run` | `--timeout abc`, `--timeout -1` | Rejected as a usage error; non-zero exit. | help: run (`--timeout`) |  |
-| CLI-057 | `run --platform android` | `--application-id "not valid"` | Rejected as an invalid Android application ID before any device work. | help: run (`--application-id`) |  |
-| CLI-058 | `simulator teardown` | `--udid "" --force` | Rejected; must not print `No processes were holding .` and exit 0. | CHANGELOG 1.8.0 Fixed |  |
-| CLI-059 | `simulator teardown` | `--udid not-a-udid-at-all --force`; `--session-id ""` | Both rejected (UDID shape 8-4-4-4-12 hex; blank session id). | CHANGELOG 1.8.0 Fixed |  |
-| CLI-060 | `simulator teardown` | `--session-id X --udid <valid UDID>` | "`--session-id` and `--udid` are mutually exclusive." | README §Reclaiming a simulator; CHANGELOG 1.7.0 |  |
+| CLI-047 | `diff capture` | `- swipe: diagonal` | Rejected at parse time; README lists only `up`, `down`, `left`, `right`. | README §Screens | fail CLI-F24 |
+| CLI-048 | `diff capture` | `- run_flow: "sub/flow.yaml"` relative path, and a missing path | Resolves relative to the config's directory; a missing file is an error naming the path. | README §Screens | pass |
+| CLI-049 | `diff capture` | `run_flow` cycle (A includes B includes A) | Error naming the cycle; does not hang or recurse until crash. | README §Screens; spec §2 (`run_flow` resolution) | pass |
+| CLI-050 | `run` | `--env NOEQUALS`, `--env =v`, `--env 'A B=1'` | "A malformed pair is rejected with a clear error" for each, before any device work. | CHANGELOG 1.7.0 Added; help: run (`--env`) | pass |
+| CLI-051 | `run` | `--ready-file <existing directory>` | "An unwritable or non-file `--ready-file` path is now rejected at startup." | CHANGELOG 1.8.0 Fixed | pass |
+| CLI-052 | `run` | pre-existing `x.ready` containing `{"status":"passed"}`, run in a dir with no project | The stale file is deleted at startup, then rewritten with `failed`. | README §Agent-Native Features; CHANGELOG 1.8.0 | pass |
+| CLI-053 | `run` | `--ready-file x.ready` in a dir with no project | File exists after exit with `"status":"failed"`; exit non-zero. | README §Agent-Native Features ("it is always written") | pass |
+| CLI-054 | `run` | `--ready-file` in a read-only directory (`chmod 0500`) | "an unwritable path fails immediately rather than at the end of a long suite"; exit non-zero before project work. | README §Agent-Native Features | pass |
+| CLI-055 | `run` | `--snapshot bogus` | Usage error naming failure, trailing, full. | help: run (`--snapshot`) | pass |
+| CLI-056 | `run` | `--timeout abc`, `--timeout -1` | Rejected as a usage error; non-zero exit. | help: run (`--timeout`) | pass |
+| CLI-057 | `run --platform android` | `--application-id "not valid"` | Rejected as an invalid Android application ID before any device work. | help: run (`--application-id`) | pass |
+| CLI-058 | `simulator teardown` | `--udid "" --force` | Rejected; must not print `No processes were holding .` and exit 0. | CHANGELOG 1.8.0 Fixed | pass |
+| CLI-059 | `simulator teardown` | `--udid not-a-udid-at-all --force`; `--session-id ""` | Both rejected (UDID shape 8-4-4-4-12 hex; blank session id). | CHANGELOG 1.8.0 Fixed | pass |
+| CLI-060 | `simulator teardown` | `--session-id X --udid <valid UDID>` | "`--session-id` and `--udid` are mutually exclusive." | README §Reclaiming a simulator; CHANGELOG 1.7.0 | pass |
 | CLI-061 | `diff capture` (flow generation only) | Maestro flow with `- tapOn: "Mount \"Denali\" 🏔️"` (double quote and emoji), inspected via the staged flow or `--report-dir` | Parses without error and the generated flow carries the label byte-for-byte (quote escaped correctly, emoji intact); no YAML re-escaping corruption. | README §Maestro Compatibility (`tapOn`) |  |
-| CLI-062 | `simulator teardown` | neither `--session-id` nor `--udid` | Error that one of them is required; non-zero exit. | help: simulator teardown |  |
+| CLI-062 | `simulator teardown` | neither `--session-id` nor `--udid` | Error that one of them is required; non-zero exit. | help: simulator teardown | pass |
 
 **Maestro compatibility**
 
@@ -126,71 +126,71 @@ read-only root). IOS-034 records what happens with a parent that can be created.
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-069 | `init` | Xcode-only dir | Writes `grantiva.yml` with the detected scheme; exit 0. | help: init; README §Quick Start |  |
-| CLI-070 | `init` | Gradle-only dir | Writes `grantiva-android.yml` ("or `init` in a Gradle project"). | CHANGELOG Unreleased Added; docs/android.md §Setup |  |
-| CLI-071 | `init` | dir with both Xcode and Gradle, no flag | Refuses and asks for `--platform` ("With both, pass `--platform`"). | docs/android.md §Setup |  |
-| CLI-072 | `init` | empty dir | Clear error that no project was found, or a documented default; record which. Never writes a half-filled config silently. | help: init |  |
-| CLI-073 | `init` | `--scheme Landmarks --bundle-id com.kylebrowning.Landmarks` | Written config contains exactly those values. | help: init |  |
-| CLI-074 | `init --platform android` | `--application-id com.kylebrowning.landmarks` | Writes `grantiva-android.yml` with `application_id`. | help: init; docs/android.md §Setup |  |
-| CLI-075 | `init` | run twice in the same dir | Second run refuses to overwrite; file unchanged, message on stderr. | spec §2 init; help: init |  |
-| CLI-076 | `init` | `--platform android --scheme X`; `--platform ios --application-id a.b` | Other-platform flag rejected by name. | CHANGELOG Unreleased Added ("A flag from the other platform is rejected by name") |  |
-| CLI-077 | `init` | `--json` | Usage error: `init` has no `--json`. | help: init |  |
+| CLI-069 | `init` | Xcode-only dir | Writes `grantiva.yml` with the detected scheme; exit 0. | help: init; README §Quick Start | pass |
+| CLI-070 | `init` | Gradle-only dir | Writes `grantiva-android.yml` ("or `init` in a Gradle project"). | CHANGELOG Unreleased Added; docs/android.md §Setup | pass |
+| CLI-071 | `init` | dir with both Xcode and Gradle, no flag | Refuses and asks for `--platform` ("With both, pass `--platform`"). | docs/android.md §Setup | pass |
+| CLI-072 | `init` | empty dir | Clear error that no project was found, or a documented default; record which. Never writes a half-filled config silently. | help: init | fail CLI-F07 |
+| CLI-073 | `init` | `--scheme Landmarks --bundle-id com.kylebrowning.Landmarks` | Written config contains exactly those values. | help: init | pass |
+| CLI-074 | `init --platform android` | `--application-id com.kylebrowning.landmarks` | Writes `grantiva-android.yml` with `application_id`. | help: init; docs/android.md §Setup | pass |
+| CLI-075 | `init` | run twice in the same dir | Second run refuses to overwrite; file unchanged, message on stderr. | spec §2 init; help: init | pass |
+| CLI-076 | `init` | `--platform android --scheme X`; `--platform ios --application-id a.b` | Other-platform flag rejected by name. | CHANGELOG Unreleased Added ("A flag from the other platform is rejected by name") | fail CLI-F12 |
+| CLI-077 | `init` | `--json` | Usage error: `init` has no `--json`. | help: init | pass |
 
 **doctor**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-078 | `doctor --platform ios` | healthy host | Checks Xcode and simulators; exit 0 when every required check passes. | help: doctor; README §Commands |  |
-| CLI-079 | `doctor --platform android` | toolchain per docs/android-environment.md | "checks the Android SDK, adb, emulator, JDK, and AVDs". | CHANGELOG Unreleased Added |  |
-| CLI-080 | `doctor --platform android` | `ANDROID_HOME` unset | Falls back to `ANDROID_SDK_ROOT`, then `~/Library/Android/sdk`; reports which SDK it found. | docs/android-environment.md |  |
-| CLI-081 | `doctor` | `DEVELOPER_DIR=/nonexistent` | Xcode check fails with a fix line and exit is non-zero, in both text and `--json` modes. | CHANGELOG 1.8.0 Fixed; README §Commands |  |
-| CLI-082 | `doctor --platform android` | `ANDROID_HOME=/nonexistent`, `ANDROID_SDK_ROOT` unset, no default SDK on `PATH` | Required SDK check fails; exit non-zero. | CHANGELOG 1.8.0 Fixed; docs/android-environment.md |  |
-| CLI-083 | `doctor` | no `grantiva.yml`, not authenticated, no booted simulator | Optional checks "stay advisory and do not affect the exit code". | CHANGELOG 1.8.0 Fixed |  |
+| CLI-078 | `doctor --platform ios` | healthy host | Checks Xcode and simulators; exit 0 when every required check passes. | help: doctor; README §Commands | pass |
+| CLI-079 | `doctor --platform android` | toolchain per docs/android-environment.md | "checks the Android SDK, adb, emulator, JDK, and AVDs". | CHANGELOG Unreleased Added | pass |
+| CLI-080 | `doctor --platform android` | `ANDROID_HOME` unset | Falls back to `ANDROID_SDK_ROOT`, then `~/Library/Android/sdk`; reports which SDK it found. | docs/android-environment.md | pass |
+| CLI-081 | `doctor` | `DEVELOPER_DIR=/nonexistent` | Xcode check fails with a fix line and exit is non-zero, in both text and `--json` modes. | CHANGELOG 1.8.0 Fixed; README §Commands | pass |
+| CLI-082 | `doctor --platform android` | `ANDROID_HOME=/nonexistent`, `ANDROID_SDK_ROOT` unset, no default SDK on `PATH` | Required SDK check fails; exit non-zero. | CHANGELOG 1.8.0 Fixed; docs/android-environment.md | blocked default SDK at ~/Library/Android/sdk cannot be hidden without breaking the Android slice; see CLI-F26 |
+| CLI-083 | `doctor` | no `grantiva.yml`, not authenticated, no booted simulator | Optional checks "stay advisory and do not affect the exit code". | CHANGELOG 1.8.0 Fixed | pass |
 
 **runner**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-084 | `runner install` | run twice | Idempotent: both exit 0, second reports already installed or re-extracts harmlessly. | README §Quick Start; help: runner install |  |
-| CLI-085 | `runner version` | none | Prints the embedded runner version (1.1.18-grantiva.N line) and exits 0. | help: runner version; CHANGELOG 1.0.0 |  |
-| CLI-086 | `runner stop` | no session running | Clear message, documented exit code, nothing on stdout. | help: runner stop |  |
-| CLI-087 | `runner dump-hierarchy` | no session running | Fails with a message naming `grantiva runner start` or `grantiva run --keep-alive`; non-zero exit. | docs/dump-hierarchy.md §Alternative |  |
-| CLI-088 | `hierarchy` | no keep-alive session | "fails with a clear message rather than trying to start one"; non-zero exit; stdout empty. | help: hierarchy; docs/dump-hierarchy.md |  |
+| CLI-084 | `runner install` | run twice | Idempotent: both exit 0, second reports already installed or re-extracts harmlessly. | README §Quick Start; help: runner install | pass |
+| CLI-085 | `runner version` | none | Prints the embedded runner version (1.1.18-grantiva.N line) and exits 0. | help: runner version; CHANGELOG 1.0.0 | pass |
+| CLI-086 | `runner stop` | no session running | Clear message, documented exit code, nothing on stdout. | help: runner stop | fail CLI-F02 |
+| CLI-087 | `runner dump-hierarchy` | no session running | Fails with a message naming `grantiva runner start` or `grantiva run --keep-alive`; non-zero exit. | docs/dump-hierarchy.md §Alternative | pass |
+| CLI-088 | `hierarchy` | no keep-alive session | "fails with a clear message rather than trying to start one"; non-zero exit; stdout empty. | help: hierarchy; docs/dump-hierarchy.md | pass |
 
 **auth, ci, console without credentials**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-089 | `auth status` | not logged in | Reports not authenticated; exit code recorded; nothing suggests a valid session. | help: auth status |  |
-| CLI-090 | `auth logout` | not logged in | Succeeds or reports nothing to remove; does not error noisily. | help: auth logout |  |
-| CLI-091 | `ci run` | no credentials, iOS project | Clear authentication error, non-zero exit, nothing on stdout. | spec §2; README §CI Integration |  |
-| CLI-092 | `console <group> list` (each read command) | flags list, envs list, analytics overview, devices list, apps list, claims list, vrt runs list, releases list, feedback list, support list, webhooks list, alerts rules list, keys list, team members, audit list, org usage | Each: clear auth error, non-zero exit, stdout empty. | spec §2; README §Dashboard commands |  |
-| CLI-093 | `console flags delete x` | non-TTY stdin, no `--yes` | "destructive verbs prompt on a TTY and require `--yes` otherwise": refuses before any request. | CHANGELOG 1.9.0 |  |
-| CLI-094 | `console claims test` | `--data '='`, `--data '=value'` | Both rejected with a validation error; no trap. | CHANGELOG 2.0.0 Fixed |  |
-| CLI-095 | `console analytics risk` | `--range 2d` | "Windows and event types the server would silently ignore are rejected up front." | CHANGELOG 1.9.0 |  |
-| CLI-096 | `console webhooks create https://x` | `--event not.an.event` | "Event names are validated before the request." | CHANGELOG 1.9.0 |  |
+| CLI-089 | `auth status` | not logged in | Reports not authenticated; exit code recorded; nothing suggests a valid session. | help: auth status | pass |
+| CLI-090 | `auth logout` | not logged in | Succeeds or reports nothing to remove; does not error noisily. | help: auth logout | fail CLI-F03 |
+| CLI-091 | `ci run` | no credentials, iOS project | Clear authentication error, non-zero exit, nothing on stdout. | spec §2; README §CI Integration | pass |
+| CLI-092 | `console <group> list` (each read command) | flags list, envs list, analytics overview, devices list, apps list, claims list, vrt runs list, releases list, feedback list, support list, webhooks list, alerts rules list, keys list, team members, audit list, org usage | Each: clear auth error, non-zero exit, stdout empty. | spec §2; README §Dashboard commands | pass |
+| CLI-093 | `console flags delete x` | non-TTY stdin, no `--yes` | "destructive verbs prompt on a TTY and require `--yes` otherwise": refuses before any request. | CHANGELOG 1.9.0 | pass |
+| CLI-094 | `console claims test` | `--data '='`, `--data '=value'` | Both rejected with a validation error; no trap. | CHANGELOG 2.0.0 Fixed | pass |
+| CLI-095 | `console analytics risk` | `--range 2d` | "Windows and event types the server would silently ignore are rejected up front." | CHANGELOG 1.9.0 | pass |
+| CLI-096 | `console webhooks create https://x` | `--event not.an.event` | "Event names are validated before the request." | CHANGELOG 1.9.0 | fail CLI-F17 |
 
 **MCP (device-free)**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-097 | `mcp` | `--project-dir /tmp` (no config) | Error naming the directory and the missing config file; exit non-zero; stdout carries no JSON-RPC garbage. | help: mcp (`--project-dir`) |  |
-| CLI-098 | `mcp` | `--project-dir /nonexistent` | Error that the directory does not exist; non-zero exit. | help: mcp |  |
-| CLI-099 | `mcp` | config present, no runner session, no device | Record behavior: currently refuses to start with "No active runner session … Start one with 'grantiva runner start'". Expected per spec: a clear error, no hang, non-zero exit. | help: mcp; docs/dump-hierarchy.md §Alternative; spec §2 |  |
-| CLI-100 | `mcp` | both config files, no `--platform`; then `--platform ios` | Without the flag: error asking for `--platform`; with it, proceeds to session lookup. | docs/android.md §Runner sessions and the MCP server |  |
+| CLI-097 | `mcp` | `--project-dir /tmp` (no config) | Error naming the directory and the missing config file; exit non-zero; stdout carries no JSON-RPC garbage. | help: mcp (`--project-dir`) | pass |
+| CLI-098 | `mcp` | `--project-dir /nonexistent` | Error that the directory does not exist; non-zero exit. | help: mcp | pass |
+| CLI-099 | `mcp` | config present, no runner session, no device | Record behavior: currently refuses to start with "No active runner session … Start one with 'grantiva runner start'". Expected per spec: a clear error, no hang, non-zero exit. | help: mcp; docs/dump-hierarchy.md §Alternative; spec §2 | fail CLI-F18 |
+| CLI-100 | `mcp` | both config files, no `--platform`; then `--platform ios` | Without the flag: error asking for `--platform`; with it, proceeds to session lookup. | docs/android.md §Runner sessions and the MCP server | pass |
 
 **record and device-command validation (no device needed)**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-101 | `record --platform android` | `--duration 200` | "Android caps a recording at 180 seconds; longer durations are refused", before any recording starts. | docs/android.md §Recording; help: record |  |
-| CLI-102 | `record` | `--duration 2 --frames-at a,b` | Usage error for non-numeric frame timestamps. | help: record (`--frames-at`) |  |
-| CLI-103 | `record` | no `--duration` | Usage error: missing required `--duration`. | help: record |  |
-| CLI-104 | `emulator teardown` | neither `--serial` nor `--all` | Error that one is required; non-zero exit. | help: emulator teardown |  |
-| CLI-105 | `simulator ensure` | no `--name` | Usage error: missing `--name`. | help: simulator ensure |  |
-| CLI-106 | `diff approve` | no captures present | Clear error that there is nothing to approve; non-zero exit. | help: diff approve |  |
-| CLI-107 | `build build --platform android` | `--derived-data-path x` | Rejected as an iOS option. | help: build build; docs/android.md §Devices |  |
-| CLI-108 | `ci run --platform android` | any Android project | Refuses with "Android baselines are local only until the Grantiva backend supports platforms; use local baselines". | docs/android.md §Captures and baselines; CHANGELOG Unreleased Changed |  |
+| CLI-101 | `record --platform android` | `--duration 200` | "Android caps a recording at 180 seconds; longer durations are refused", before any recording starts. | docs/android.md §Recording; help: record | pass |
+| CLI-102 | `record` | `--duration 2 --frames-at a,b` | Usage error for non-numeric frame timestamps. | help: record (`--frames-at`) | fail CLI-F14 |
+| CLI-103 | `record` | no `--duration` | Usage error: missing required `--duration`. | help: record | pass |
+| CLI-104 | `emulator teardown` | neither `--serial` nor `--all` | Error that one is required; non-zero exit. | help: emulator teardown | pass |
+| CLI-105 | `simulator ensure` | no `--name` | Usage error: missing `--name`. | help: simulator ensure | pass |
+| CLI-106 | `diff approve` | no captures present | Clear error that there is nothing to approve; non-zero exit. | help: diff approve | pass |
+| CLI-107 | `build build --platform android` | `--derived-data-path x` | Rejected as an iOS option. | help: build build; docs/android.md §Devices | pass |
+| CLI-108 | `ci run --platform android` | any Android project | Refuses with "Android baselines are local only until the Grantiva backend supports platforms; use local baselines". | docs/android.md §Captures and baselines; CHANGELOG Unreleased Changed | pass |
 
 **Cross-source consistency (Step 3; each row checked by reading sources)**
 
