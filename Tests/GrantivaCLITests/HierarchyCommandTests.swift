@@ -43,6 +43,40 @@ final class HierarchyCommandTests: XCTestCase {
         }
     }
 
+    func testExplicitSerialLoadsItsSession() throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "android", in: directory)
+        store.recordOwner(udid: "emulator-5554", runnerPid: 100)
+        let command = try HierarchyCommand.parse(["--udid", "emulator-5554"])
+        XCTAssertEqual(try command.locateSession(store: store).sessionId, "android")
+    }
+
+    func testAndroidSessionReadsTheHierarchyThroughThePlatformAndDetaches() async throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "android", in: directory)
+        store.recordOwner(udid: "emulator-5554", runnerPid: 100)
+        var command = try HierarchyCommand.parse(["--format", "json"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run(store: store)
+        XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,-)", "detach"])
+    }
+
+    func testAndroidSessionDetachesWhenTheReadFails() async throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "android", in: directory)
+        store.recordOwner(udid: "emulator-5554", runnerPid: 100)
+        var command = try HierarchyCommand.parse(["--format", "json"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.hierarchyXML = "<hierarchy><broken>"
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        await XCTAssertThrowsErrorAsync(try await command.run(store: store))
+        XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,-)", "detach"])
+    }
+
     private func writeRunnerSession(pid: Int, nanos: Int, sessionId: String, in directory: URL) throws {
         let data = try JSONSerialization.data(withJSONObject: [
             "version": 1, "sessionId": sessionId, "createdAt": "2026-10-07T10:00:00Z",
@@ -57,4 +91,11 @@ final class HierarchyCommandTests: XCTestCase {
         addTeardownBlock { try? FileManager.default.removeItem(at: url) }
         return url
     }
+}
+
+func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Void, file: StaticString = #filePath, line: UInt = #line) async {
+    do {
+        try await expression()
+        XCTFail("expected an error", file: file, line: line)
+    } catch {}
 }

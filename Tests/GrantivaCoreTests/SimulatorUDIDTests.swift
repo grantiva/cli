@@ -85,4 +85,13 @@ final class SimulatorUDIDTests: XCTestCase {
         XCTAssertFalse(DeviceID.isADBSerial("-5554"))
         XCTAssertFalse(DeviceID.isADBSerial("emu\nlator"))
     }
+
+    func testIsAndroidSerialExcludesSimulatorUDIDs() {
+        XCTAssertTrue(DeviceID.isAndroidSerial("emulator-5554"))
+        XCTAssertTrue(DeviceID.isAndroidSerial("R58M12ABCDE"))
+        XCTAssertTrue(DeviceID.isAndroidSerial("192.168.1.5:5555"))
+        XCTAssertFalse(DeviceID.isAndroidSerial("921A0945-7157-4533-BA1F-21E8132D3E40"))
+        XCTAssertFalse(DeviceID.isAndroidSerial(""))
+        XCTAssertFalse(DeviceID.isAndroidSerial("../auth"))
+    }
 }

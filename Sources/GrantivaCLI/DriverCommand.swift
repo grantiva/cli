@@ -509,29 +509,58 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
     @Option(name: .shortAndLong, help: "Output format: tree, json, or xml (default: tree)")
     var format: String = "tree"
 
-    @Option(name: .long, help: "Simulator UDID when falling back to a `grantiva run --keep-alive` session")
+    @Option(name: .long, help: "Simulator UDID or adb serial when falling back to a `grantiva run --keep-alive` session")
     var udid: String?
 
+    var devicePlatform = InjectedDevicePlatform()
+
     func validate() throws {
-        if let udid { _ = try SimulatorUDID.validate(udid) }
+        if let udid { _ = try DeviceID.validate(udid) }
+    }
+
+    struct Target: Equatable {
+        let udid: String
+        let port: UInt16?
+    }
+
+    /// Flag port, then a `runner start` session, then a keep-alive session.
+    /// A keep-alive port of 0 (Android) becomes nil: the platform forwards one.
+    static func resolveTarget(port: UInt16?, runnerSession: RunnerSessionInfo?, keepAlive: KeepAliveSession?) throws -> Target {
+        if let port { return Target(udid: "", port: port) }
+        if let runnerSession { return Target(udid: runnerSession.udid, port: runnerSession.wdaPort) }
+        if let keepAlive {
+            return Target(udid: keepAlive.udid ?? "", port: keepAlive.port > 0 ? UInt16(exactly: keepAlive.port) : nil)
+        }
+        throw GrantivaError.invalidArgument(
+            "No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port."
+        )
     }
 
     func run() async throws {
-        // Resolve port from flag, `runner start` session, or keep-alive session
-        let wdaPort: UInt16
-        if let flagPort = port {
-            wdaPort = flagPort
-        } else if let session = try? RunnerSessionInfo.load(), session.isAlive {
-            wdaPort = session.wdaPort
-        } else if let keepAlive = try? KeepAliveSessionStore().locate(udid: udid),
-                  let port = UInt16(exactly: keepAlive.port) {
-            // Same discovery as `grantiva hierarchy`: a held `grantiva run
-            // --keep-alive` session serves this command too.
-            wdaPort = port
-        } else {
-            throw GrantivaError.invalidArgument(
-                "No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port."
-            )
+        let runnerSession: RunnerSessionInfo? = {
+            guard let session = try? RunnerSessionInfo.load(), session.isAlive else { return nil }
+            return session
+        }()
+        let keepAlive = try? KeepAliveSessionStore().locate(udid: udid)
+        let target = try Self.resolveTarget(port: port, runnerSession: runnerSession, keepAlive: keepAlive)
+        try await dump(target: target)
+    }
+
+    func dump(target: Target) async throws {
+        if DeviceID.isAndroidSerial(target.udid) {
+            let device = try devicePlatform.make(.android)
+            let attachment = try await device.attachDriver(deviceID: target.udid, port: target.port)
+            do {
+                try await render(client: attachment.client)
+            } catch {
+                await attachment.detach()
+                throw error
+            }
+            await attachment.detach()
+            return
+        }
+        guard let wdaPort = target.port else {
+            throw GrantivaError.invalidArgument("No WebDriverAgent port for this session. Pass --port.")
         }
 
         // WDA uses the WebDriver protocol. The source endpoint returns the page hierarchy.
@@ -596,6 +625,20 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             let tree = try parser.parse()
             printTree(element: tree, indent: 0)
 
+        default:
+            throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
+        }
+    }
+
+    private func render(client: DriverClient) async throws {
+        switch format.lowercased() {
+        case "xml":
+            Output.line(try await client.hierarchyXML())
+        case "json":
+            let data = try JSONSerialization.data(withJSONObject: try await client.hierarchy(), options: [.prettyPrinted, .sortedKeys])
+            Output.line(String(data: data, encoding: .utf8) ?? "{}")
+        case "tree":
+            printTree(element: try await client.hierarchy(), indent: 0)
         default:
             throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
         }
