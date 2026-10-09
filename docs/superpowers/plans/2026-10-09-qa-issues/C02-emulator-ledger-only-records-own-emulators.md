@@ -55,3 +55,40 @@ guard in `teardown` (:350-355) drops a record only when the AVD differs.
 - `teardown` refuses a record whose pid is dead without `--force`, regardless of AVD name.
 - GrantivaCoreTests/EmulatorManagerTests: a fake adb answering `boot_completed=1` for a serial while the spawned pid is
   dead asserts `boot` throws and `started.json` has no record; a teardown test asserts a dead-pid record is not killed.
+
+## Android detail (AND-F03)
+Second path to the same stale record, reproduced on Android (evidence paths relative to the qa-android worktree): a
+Grantiva-booted AVD dies outside Grantiva and the user reboots the same AVD by hand on the same port. Teardown without
+`--force` kills the user's emulator:
+```
+$ grantiva emulator sessions
+Grantiva-started emulators (2):
+  emulator-5554 (Pixel_8_API_35) — pid 19482 exited, adb: device
+  emulator-5556 (qa-android-1) — pid 66219 exited, adb: device
+$ grantiva emulator teardown --serial emulator-5556   (no --force)
+Killed emulator-5556 (qa-android-1).
+exit 0
+```
+The shared host is in this state now: started.json holds emulator-5554/Pixel_8_API_35/pid 19482 (dead), while the live
+emulator-5554 is a hand-started qemu (pid 49817, no `-port`, which Grantiva always passes).
+
+Repro (uses a scratch AVD; never run teardown against an emulator you need):
+```
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$HOME/.grantiva-qa/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GRANTIVA_SESSION_ID=qa-android
+cd /Users/kyle/Developer/landmarks-demo/android
+grantiva emulator ensure --name qa-android-1
+adb -s emulator-5556 emu kill
+emulator -avd qa-android-1 -port 5556 -no-window &
+grantiva emulator sessions
+grantiva emulator teardown --serial emulator-5556      # kills the hand-started emulator, exit 0
+```
+Evidence: findings/evidence/AND-013/log.txt, AND-009/sessions.json, host/before.txt.
+Cause: Sources/GrantivaCore/Android/EmulatorManager.swift:347-352 keeps a dead-pid record whenever `adb emu avd name`
+still equals the recorded AVD; an AVD name does not identify who started the process.
+
+Extra acceptance criterion: in the repro above, `emulator sessions` no longer lists emulator-5556 as Grantiva-started
+once pid 66219 is gone, and `teardown --serial emulator-5556` without `--force` refuses (exit non-zero). An
+EmulatorManagerTests case covers "dead pid, same AVD name, live serial".

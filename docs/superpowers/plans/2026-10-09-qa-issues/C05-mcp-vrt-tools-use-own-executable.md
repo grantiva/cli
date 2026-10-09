@@ -43,3 +43,26 @@ Sources/GrantivaMCP/Tools/VRTTools.swift:55-68 build literal `"grantiva diff …
 - Prefer spawning the executable with an argument array instead of a shell string.
 - GrantivaMCPTests/VRTToolsTests: assert `captureCommand`/`compareCommand`/`approveCommand` start with the running
   executable's absolute path (quoted), not the bare word `grantiva`.
+
+## Android detail (AND-F16)
+Android adds `--platform android` to all three commands (Sources/GrantivaMCP/Tools/VRTTools.swift:55-64), so a
+pre-Android `grantiva` first on PATH rejects every call. With the 2.0.1 server in landmarks-demo/android and Homebrew
+2.0.0 first on PATH, `grantiva_vrt_capture`, `grantiva_vrt_compare` and `grantiva_vrt_approve {"screens":["Home"]}` all
+return `isError`:
+```
+Unknown option '--platform'
+Usage: grantiva diff capture [--json] [--verbose] [--quiet] [--app-file <app-file>] [--no-build] ... [--bundle-id <bundle-id>]
+```
+Repro: `which -a grantiva` lists /opt/homebrew/bin/grantiva (2.0.0) first; then
+```
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$HOME/.grantiva-qa/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GRANTIVA_SESSION_ID=qa-android
+cd /Users/kyle/Developer/landmarks-demo/android
+export PATH="/opt/homebrew/bin:$PATH"      # older grantiva first
+~/.grantiva-qa/bin/grantiva mcp             # tools/call grantiva_vrt_compare {}
+```
+Evidence (qa-android worktree): findings/evidence/AND-100/session3.log.
+Extra acceptance criterion: with an older `grantiva` first on PATH, the Android VRT tools read and write
+`.grantiva/captures/android/` and `.grantiva/baselines/android/` through the server's own binary.

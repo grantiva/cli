@@ -42,3 +42,20 @@ only (:41-42, :80, :101, :117). Sources/GrantivaCLI/DriverCommand.swift:694-700 
   `--format xml` is a usage error. Alternatively, hide `--json` on both and say so in help.
 - README.md:309-312 states that runner lifecycle commands support `--json`; docs/dump-hierarchy.md lists `--json`.
 - GrantivaCLITests/HierarchyCommandTests and DumpHierarchyCommandTests: parsing `--json` alone resolves to JSON output.
+
+## Android detail (AND-F08)
+Same on Android: during a keep-alive run on emulator-5554, `hierarchy --json` exits 0 and prints UIAutomator2 XML.
+```
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$HOME/.grantiva-qa/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GRANTIVA_SESSION_ID=qa-android
+cd /Users/kyle/Developer/landmarks-demo/android
+grantiva run --no-build --flow .maestro/05-category.yaml --device emulator-5554 --keep-alive --ready-file /tmp/d01.ready & pid=$!
+while [ ! -f /tmp/d01.ready ]; do sleep 0.2; done
+grantiva hierarchy --json | head -1
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+kill -INT $pid
+```
+Evidence (qa-android worktree): findings/evidence/AND-055/out.txt. Extra acceptance criterion: on Android,
+`hierarchy --json` returns the same JSON shape as `--format json` (parsed by UIAutomator2HierarchyParser).

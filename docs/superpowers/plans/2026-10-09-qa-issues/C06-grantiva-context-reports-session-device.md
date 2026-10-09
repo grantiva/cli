@@ -1,7 +1,7 @@
 # Report the session's device in grantiva_context
 
 Severity: wrong-result
-Platforms: cli, ios
+Platforms: cli, ios, android
 Found by: CLI-F20 (matrix rows: none; MCP Step 5)
 Binary: grantiva 2.0.1 (commit c8dc86d)
 
@@ -47,3 +47,39 @@ looking up `session.udid`, which the same tool already loads at :81.
 - Android: `[Emulator]` likewise names the session's serial.
 - GrantivaMCPTests/ContextToolTests: with a fake sim manager returning two booted devices and a session on the second,
   assert the output's `[Simulator]` udid is the session's.
+
+## Android detail (AND-F17)
+With emulator-5554 and emulator-5556 running and a live `runner start` session on emulator-5554, `grantiva_context`
+says no emulator is running while its own session block names one:
+```
+[Config]
+  platform: android
+  ...
+  emulator: Pixel_8_API_35
+[Emulator]
+  No emulator running.
+...
+[Runner Session]
+  pid: 55825
+  application_id: com.kylebrowning.landmarks
+  udid: emulator-5554
+```
+Repro (needs a second emulator; with one emulator the section is right):
+```
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$HOME/.grantiva-qa/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GRANTIVA_SESSION_ID=qa-android
+cd /Users/kyle/Developer/landmarks-demo/android
+grantiva emulator ensure --name qa-android-1            # second emulator, emulator-5556
+grantiva runner start --device emulator-5554 --detach
+grantiva mcp                                            # tools/call grantiva_context {}
+```
+Evidence (qa-android worktree): findings/evidence/AND-093/session1.log, AND-105/with-platform.log.
+Cause: Sources/GrantivaMCP/Tools/ContextTool.swift:69 calls `device.defaultDevice()` =
+`selectDevice(configured: nil)` (Sources/GrantivaCore/Android/AndroidPlatform.swift:87-88), which throws "Several
+emulators are running" for more than one; `try?` turns that into "No emulator running". It ignores both the config's
+`emulator:` and the session's serial.
+Extra acceptance criterion: on Android, `[Emulator]` shows the session's serial when a session exists, else the
+configured AVD's serial if running, else lists the running serials; an error from device selection is never reported as
+"No emulator running". ContextToolTests: a fake Android platform with two devices and a session on the first.

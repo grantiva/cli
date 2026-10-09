@@ -52,3 +52,33 @@ Sources/GrantivaCLI/RunCommand.swift:275-289: the `runScreens` closure calls `Ru
 - GrantivaCLITests/RunCommandTests: with an injected screens runner, assert the closure receives `reportDir`,
   `timeoutSeconds` and `failFast` from the flags.
 - GrantivaCoreTests/RunnerSessionCleanupTests: assert a supplied report dir is not deleted after `run(screens:)`.
+
+## Android detail (AND-F06)
+With both `screens:` and `flows:`, any failed screen makes the run exit before a single flow starts, even with
+`--continue-on-failure`. On Android the stock landmarks config (5 screens + 12 flows) therefore never runs its flows:
+screens fail at `tap: "Lakes"` (see A13), then
+```
+Running 13 flow(s)...
+Failure screenshot: .../AND-042/report/captures/failure-1791579560.png
+Error: Runner failed (exit 1):
+ exited with code 1
+```
+and `--report-dir` gets only `captures/`.
+
+Repro:
+```
+export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export PATH="$HOME/.grantiva-qa/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+export GRANTIVA_SESSION_ID=qa-android
+cd /Users/kyle/Developer/landmarks-demo/android
+grantiva run --device emulator-5554 --continue-on-failure --report-dir /tmp/c04-android; echo "exit $?"
+ls /tmp/c04-android              # captures only; no report.json, no flow results
+```
+Evidence: findings/evidence/AND-042/{stdout.txt,stderr.txt,report/}.
+Cause: Sources/GrantivaCLI/RunCommand.swift:404-410 (`runSuite`) throws `ExitCode.failure` after any failed screen step
+when flows exist, without consulting `--continue-on-failure`.
+
+Extra acceptance criterion: with `--continue-on-failure`, a failed screen is reported and every configured flow still
+runs and is reported (exit non-zero at the end); without it, the current fail-fast stays. RunCommandTests: `runSuite`
+with a failing screens closure and `continueOnFailure: true` still calls `runFlows`.
