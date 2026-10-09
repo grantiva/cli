@@ -1,0 +1,78 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=93DF5345-8494-4C57-B374-10224C07ED41 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 93DF5345-8494-4C57-B374-10224C07ED41
+Simulator booted: qa-ios-1 (93DF5345-8494-4C57-B374-10224C07ED41)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D0161067-0FC3-4478-B1BD-3F3541FF8B9A
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8485
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (2.0s)
+      ╰─ Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: WDA error: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "The request to open "com.kylebrowning.Landmarks" failed." UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open "com.kylebrowning.Landmarks" failed., FBSOpenApplicationRequestID=0x1119, NSUnderlyingError=0x600000cc4900 {Error Domain=FBSOpenApplicationErrorDomain Code=4 "Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"" UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"}}}. Check that WebDriverAgent is still running on http://localhost:8485 and that no other run holds its port. (cause: failed to create session: WDA error: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "The request to open "com.kylebrowning.Landmarks" failed." UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open "com.kylebrowning.Landmarks" failed., FBSOpenApplicationRequestID=0x1119, NSUnderlyingError=0x600000cc4900 {Error Domain=FBSOpenApplicationErrorDomain Code=4 "Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"" UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"}}})
+✗ 01-browse 5.1s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (3.5s)
+      ╰─ Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: WDA error: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "The request to open "com.kylebrowning.Landmarks" failed." UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open "com.kylebrowning.Landmarks" failed., FBSOpenApplicationRequestID=0x1119, NSUnderlyingError=0x600000cc4900 {Error Domain=FBSOpenApplicationErrorDomain Code=4 "Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"" UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"}}}. Check that WebDriverAgent is still running on http://localhost:8485 and that no other run holds its port. (cause: failed to create session: WDA error: Error Domain=FBSOpenApplicationServiceErrorDomain Code=4 "The request to open "com.kylebrowning.Landmarks" failed." UserInfo={BSErrorCodeDescription=InvalidRequest, NSLocalizedDescription=The request to open "com.kylebrowning.Landmarks" failed., FBSOpenApplicationRequestID=0x1119, NSUnderlyingError=0x600000cc4900 {Error Domain=FBSOpenApplicationErrorDomain Code=4 "Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"" UserInfo={BSErrorCodeDescription=NotFound, NSLocalizedFailureReason=Application info provider (FBSApplicationLibrary) returned nil for "com.kylebrowning.Landmarks"}}})
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 01-browse 3.6s
+
+  1 steps failing
+  7 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✗ FAIL       8      0      1      7       5.1s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       8      0      1      7       5.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D0161067-0FC3-4478-B1BD-3F3541FF8B9A
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D0161067-0FC3-4478-B1BD-3F3541FF8B9A/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D0161067-0FC3-4478-B1BD-3F3541FF8B9A/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D0161067-0FC3-4478-B1BD-3F3541FF8B9A/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791583236.png
+Error: Runner failed (exit 1):
+ exited with code 1

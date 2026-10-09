@@ -1,0 +1,127 @@
+{
+  "id": "flow-000",
+  "name": "07-deeplink",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-8D497EA7-3B6F-4706-9FBA-9A52C8C27B53/0/07-deeplink.yaml",
+  "device": {
+    "id": "0897A224-E85E-47D7-BC1B-EDA95DD34DC5",
+    "name": "qa-ios-2",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:59:28.501768-07:00",
+  "endTime": "2026-10-09T14:59:34.691531-07:00",
+  "duration": 6189,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:59:28.502674-07:00",
+      "endTime": "2026-10-09T14:59:30.529994-07:00",
+      "duration": 2027,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:59:30.530408-07:00",
+      "endTime": "2026-10-09T14:59:32.385222-07:00",
+      "duration": 1854,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-9571-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"landmarks://category/lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:59:32.385567-07:00",
+      "endTime": "2026-10-09T14:59:33.251588-07:00",
+      "duration": 866,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "landmarks://category/lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1D010000-0000-0000-9571-000000000000",
+        "text": "landmarks://category/lakes",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 487,
+          "width": 370,
+          "height": 52
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:59:33.251918-07:00",
+      "endTime": "2026-10-09T14:59:34.621907-07:00",
+      "duration": 1369,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Mono Lake",
+        "bounds": {
+          "x": 16,
+          "y": 250,
+          "width": 370,
+          "height": 82
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-09T14:59:34.62223-07:00",
+      "endTime": "2026-10-09T14:59:34.691302-07:00",
+      "duration": 69,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-Deep Link Lakes.png"
+      }
+    }
+  ],
+  "artifacts": {}
+}

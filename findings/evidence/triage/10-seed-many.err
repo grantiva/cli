@@ -1,0 +1,79 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=93DF5345-8494-4C57-B374-10224C07ED41 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 93DF5345-8494-4C57-B374-10224C07ED41
+Simulator booted: qa-ios-1 (93DF5345-8494-4C57-B374-10224C07ED41)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/10-seed-many.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8485
+
+  [1/1] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ scroll (0ms)
+      ╰─ Invalid scroll direction (cause: invalid direction: )
+✗ 10-seed-many 6.3s
+
+  [1/1] 10-seed-many (.maestro/10-seed-many.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ scroll (1.5s)
+      ╰─ Invalid scroll direction (cause: invalid direction: )
+    ✗ scroll (0ms)
+    ✗ scroll (0ms)
+    ✗ scroll (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 10-seed-many 3.6s
+
+  1 steps passing (6.3s)
+  1 steps failing
+  5 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-seed-many                   ✗ FAIL       7      1      1      5       6.3s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       7      1      1      5       6.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many/captures/failure-1791582631.png
+Error: Runner failed (exit 1):
+ exited with code 1

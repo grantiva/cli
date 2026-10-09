@@ -1,0 +1,100 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=93DF5345-8494-4C57-B374-10224C07ED41 screens=0 flows=2
+Preparing runner...
+Runner ready
+Booting simulator: 93DF5345-8494-4C57-B374-10224C07ED41
+Simulator booted: qa-ios-1 (93DF5345-8494-4C57-B374-10224C07ED41)
+Skipping build and install (--no-build)
+Running 2 flow(s)...
+Running 2 flow(s) in one GrantivaAgent session: qa/a/same.yaml, qa/b/same.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 2 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/F35
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8485
+
+  [1/2] same (same.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (1.1s)
+    ✓ assertVisible: text="Featured" (281ms)
+    ✓ takeScreenshot (78ms)
+    ✓ tapOn: text="Golden Gate Bridge" (826ms)
+    ✓ assertVisible: text="San Francisco, CA" (497ms)
+    ✓ assertVisible: text="Plan Visit" (208ms)
+    ✓ takeScreenshot (96ms)
+✓ same 8.0s
+
+  [2/2] same (same.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lakes" (980ms)
+    ✓ assertVisible: text="Lake Tahoe" (1.3s)
+    ✓ assertVisible: text="Mono Lake" (198ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (427ms)
+    ✓ takeScreenshot (67ms)
+✓ same 5.0s
+
+  [1/2] same (qa/a/same.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible (1.1s)
+    ✓ assertVisible (281ms)
+    ✓ takeScreenshot (78ms)
+    ✓ tapOn (826ms)
+    ✓ assertVisible (497ms)
+    ✓ assertVisible (208ms)
+    ✓ takeScreenshot (96ms)
+✓ same 5.1s
+
+  [2/2] same (qa/b/same.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (980ms)
+    ✓ assertVisible (1.3s)
+    ✓ assertVisible (198ms)
+    ✓ assertNotVisible (427ms)
+    ✓ takeScreenshot (67ms)
+✓ same 5.0s
+
+  14 steps passing (12.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  same                           ✓ PASS       8      8      0      0       8.0s  qa-ios-1 (ios 26.0 Simulator)
+  same                           ✓ PASS       8      8      0      0       8.0s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             2/2      14     14      0      0      12.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/F35
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/F35/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/F35/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/F35/allure-results
+
+  Built by Grantiva
+

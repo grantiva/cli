@@ -1,0 +1,45 @@
+14:50:21.901071 [INFO] === Test execution started ===
+14:50:21.901136 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/10-seed-many
+14:50:21.901141 [INFO] Platform: ios
+14:50:21.901146 [INFO] Driver: uiautomator2
+14:50:21.901400 [INFO] Validated 1 flow(s)
+14:50:22.020447 [INFO] Single device execution mode
+14:50:22.020474 [INFO] Starting flow execution (parallel: false, devices: [])
+14:50:22.020484 [INFO] Creating driver for single device execution
+14:50:22.020519 [INFO] Using specified iOS device: 93DF5345-8494-4C57-B374-10224C07ED41
+14:50:22.134965 [INFO] Device 93DF5345-8494-4C57-B374-10224C07ED41 is a simulator
+14:50:22.135065 [INFO] Building WDA for device 93DF5345-8494-4C57-B374-10224C07ED41 (team ID: )
+14:50:22.359874 [INFO] WDA build completed successfully
+14:50:22.359903 [INFO] Starting WDA on device 93DF5345-8494-4C57-B374-10224C07ED41 (port: 8485)
+14:50:24.599384 [INFO] WDA started successfully on port 8485
+14:50:24.964972 [DEBUG] WDA GET /window/size
+14:50:25.009228 [DEBUG] WDA GET /window/size completed (44ms, status: 200)
+14:50:25.009297 [INFO] Driver created: ios on qa-ios-1
+14:50:25.011102 [INFO] === Starting flow: 10-seed-many ===
+14:50:25.011108 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-EC9AE7A6-BE7E-4BEE-AB71-320E9A7269A0/0/10-seed-many.yaml
+14:50:25.011113 [INFO] Total steps: 7
+14:50:25.011241 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:50:25.013377 [DEBUG] WDA POST /appium/settings completed (2ms, status: 404)
+14:50:25.013446 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:50:27.595351 [DEBUG] WDA POST /session completed (2581ms, status: 200)
+14:50:27.595453 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:50:27.770853 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/appium/settings completed (175ms, status: 200)
+14:50:27.771253 [DEBUG] Executing step 0: launchApp
+14:50:28.280731 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:50:28.280779 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:50:28.281417 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/appium/settings completed (0ms, status: 200)
+14:50:28.281478 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:50:29.813084 [DEBUG] WDA POST /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/wda/apps/launch completed (1531ms, status: 200)
+14:50:29.813178 [DEBUG] Step 0 completed successfully (2041ms): launchApp
+14:50:29.813916 [DEBUG] Executing step 1: scroll
+14:50:29.814352 [ERROR] Step 1 failed (0ms): scroll - Error: Invalid scroll direction (cause: invalid direction: )
+14:50:29.814371 [DEBUG] WDA GET /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/screenshot
+14:50:30.038036 [DEBUG] WDA GET /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/screenshot completed (223ms, status: 200)
+14:50:30.042688 [DEBUG] WDA GET /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/source
+14:50:31.350676 [DEBUG] WDA GET /session/09B9BF53-5264-423B-8312-4F14BBFBF5CB/source completed (1307ms, status: 200)
+14:50:31.356833 [INFO] === Flow completed: 10-seed-many (status: failed, duration: 6345ms, passed: 1, failed: 1, skipped: 5) ===
+14:50:31.360048 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:50:31.360126 [INFO] Generating reports...
+14:50:31.361580 [INFO] Shutting down devices started by maestro-runner...
+14:50:31.361597 [INFO] Shutting down all tracked emulators
+14:50:31.361605 [INFO] Shutting down all tracked simulators

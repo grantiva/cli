@@ -1,0 +1,1288 @@
+14:15:28.764055 [INFO] === Test execution started ===
+14:15:28.764118 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-039/rep
+14:15:28.764122 [INFO] Platform: ios
+14:15:28.764125 [INFO] Driver: uiautomator2
+14:15:28.764449 [INFO] Validated 1 flow(s)
+14:15:28.873794 [INFO] Single device execution mode
+14:15:28.873813 [INFO] Starting flow execution (parallel: false, devices: [])
+14:15:28.873819 [INFO] Creating driver for single device execution
+14:15:28.873822 [INFO] Using specified iOS device: 4DAB1D26-5107-4B17-9093-AC2E19DE0403
+14:15:28.983300 [INFO] Device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 is a simulator
+14:15:28.983407 [INFO] Building WDA for device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (team ID: )
+14:15:29.240220 [INFO] WDA build completed successfully
+14:15:29.240975 [INFO] Starting WDA on device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (port: 8607)
+14:15:31.492015 [INFO] WDA started successfully on port 8607
+14:15:31.848878 [DEBUG] WDA GET /window/size
+14:15:31.889605 [DEBUG] WDA GET /window/size completed (40ms, status: 200)
+14:15:31.889674 [INFO] Driver created: ios on qa-ios-2
+14:15:31.891047 [INFO] === Starting flow: 99-crash ===
+14:15:31.891051 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-921A21F6-7812-43C2-AE22-F3ED1664006C/0/99-crash.yaml
+14:15:31.891054 [INFO] Total steps: 4
+14:15:31.891194 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:15:31.891746 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:15:31.891794 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:15:34.453213 [DEBUG] WDA POST /session completed (2561ms, status: 200)
+14:15:34.453279 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:15:34.610377 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/appium/settings completed (157ms, status: 200)
+14:15:34.610859 [DEBUG] Executing step 0: launchApp
+14:15:35.089331 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+14:15:35.089406 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:15:35.090165 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/appium/settings completed (0ms, status: 200)
+14:15:35.090268 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+14:15:35.090618 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/wda/apps/terminate completed (0ms, status: 200)
+14:15:35.090651 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+14:15:36.625924 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/wda/apps/launch completed (1535ms, status: 200)
+14:15:36.626310 [DEBUG] Step 0 completed successfully (2015ms): launchApp
+14:15:36.626794 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:15:36.627176 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:15:36.627262 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.676423 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (49ms, status: 400)
+14:15:36.676599 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.678372 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:36.728830 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.732304 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:36.732376 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.734249 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:36.785727 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.790130 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:36.790217 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.792060 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:36.844287 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.848973 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:36.849241 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.851384 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:36.903525 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.905492 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:36.905576 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.907112 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:36.957466 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:36.959264 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:36.959340 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:36.960862 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.013044 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.014839 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.014935 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.016457 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.068584 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.070374 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.070479 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.072035 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.122952 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.124736 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.124835 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.126378 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.178755 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.180542 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.180639 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.182076 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.234208 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.236015 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.236101 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.237613 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.287972 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.289722 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.289799 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.291359 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.342474 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.345225 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:37.345355 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.347014 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.399143 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.401060 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.401131 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.402685 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.453613 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.455609 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:37.455700 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.457969 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:37.510085 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.512064 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.512172 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.513827 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.565977 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.567753 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.567849 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.569308 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.621526 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.623481 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.623681 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.625208 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.677516 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.679582 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:37.679741 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.681307 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.733525 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.735383 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.735627 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.737228 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.762979 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:37.789060 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.791099 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:37.791214 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.792895 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.845027 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.846924 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.847001 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.848407 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.900540 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.902503 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.902591 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.904295 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:37.955477 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:37.957358 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:37.957448 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:37.958956 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.009752 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.011636 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:38.011734 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.013288 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.065423 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.067206 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:38.067550 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.069109 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.119454 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.121371 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:38.121501 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.123172 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.173851 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.175973 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:38.176068 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.177817 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.228252 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.231736 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:38.231936 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.234554 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:38.285893 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.290769 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:38.290943 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.294253 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:38.345595 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.349370 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:38.350180 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.356361 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (6ms, status: 400)
+14:15:38.408624 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.411716 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:38.411789 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.414369 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:38.464810 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.468498 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:38.468594 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.471850 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:38.522377 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.526756 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:38.526832 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.529812 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:38.580882 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.583221 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:38.583322 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.585332 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:38.636701 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.638699 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:38.638852 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.640370 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.692603 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.724842 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (32ms, status: 400)
+14:15:38.724998 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.726549 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.778790 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.780771 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:38.781036 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.782575 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.833256 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.835364 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:38.835641 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.837405 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.839054 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:38.889668 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.891562 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:38.891679 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.893146 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:38.944931 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:38.946837 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:38.946941 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:38.948429 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.000605 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.002474 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.002568 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.004130 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.055275 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.057096 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.057206 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.058738 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.110866 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.112733 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.112848 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.114312 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.166472 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.168513 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:39.168611 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.170475 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.221645 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.223512 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.223613 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.225820 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:39.277967 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.279741 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.279833 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.281268 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.333480 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.337012 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:39.337181 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.340200 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:39.391087 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.396609 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:39.396706 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.399762 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:39.450305 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.455065 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:39.455160 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.458087 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:39.510217 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.513266 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:39.513349 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.516100 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:39.567918 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.573408 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:39.573477 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.576155 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:39.627975 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.632648 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:39.632732 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.635663 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:39.687823 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.689704 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.689789 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.691399 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.742572 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.744346 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.744452 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.745871 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.798057 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.800005 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.800099 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.801791 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.853669 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.855504 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.855587 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.857056 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.890160 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:39.908190 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.910281 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:39.910401 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.911991 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:39.964116 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:39.965922 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:39.966028 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:39.967511 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.019845 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.021756 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.021873 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.023392 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.075533 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.077368 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.077455 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.078909 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.130224 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.132019 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.132110 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.133549 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.185675 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.187430 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.187529 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.189037 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.239964 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.242293 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:40.242463 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.244433 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.295777 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.298640 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:40.298941 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.301264 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:40.354281 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.358324 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:40.358596 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.361794 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.412383 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.416841 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:40.416957 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.419995 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.472239 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.477519 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:40.477681 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.481084 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.533482 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.538997 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:40.539248 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.542690 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.593632 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.599742 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:40.600032 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.603645 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.655842 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.661935 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:40.662213 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.665872 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:40.717264 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.720206 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:40.720485 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.723470 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:40.776359 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.803848 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (27ms, status: 400)
+14:15:40.804038 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.805564 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.857250 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.858895 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.859047 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.860535 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.912725 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.914579 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.914862 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.916423 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:40.962823 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:40.967480 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:40.969364 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:40.969468 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:40.970983 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.023146 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.025162 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:41.025268 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.027044 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.079171 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.080910 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.080983 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.082426 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.134548 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.136468 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.136569 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.138198 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.190351 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.192348 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:41.192469 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.194424 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.246614 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.248402 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.248502 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.250079 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.301851 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.303792 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.303879 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.305357 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.356381 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.358425 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:41.358575 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.360203 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.412424 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.415873 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:41.416078 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.418213 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:41.470589 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.474055 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:41.474218 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.475807 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.528011 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.531532 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:41.531701 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.536419 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (4ms, status: 400)
+14:15:41.588622 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.593854 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:41.593955 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.597105 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:41.649241 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.653058 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:41.653141 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.656046 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:41.708321 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.712534 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:41.712787 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.716446 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:41.767162 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.772765 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:41.773007 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.776250 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:41.828603 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.831945 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:41.832187 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.833910 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.886130 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.887935 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.888039 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.889493 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.941701 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.943473 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.943714 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:41.945225 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:41.997394 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:41.999128 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:41.999375 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.000879 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.038107 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:42.052512 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.054291 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.054394 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.055854 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.107985 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.110340 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:42.110425 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.112075 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.164220 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.166036 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.166130 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.167682 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.219807 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.221573 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.221677 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.223233 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.275375 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.277123 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.277209 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.278644 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.330773 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.332420 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.332508 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.333950 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.386175 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.388277 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:42.388456 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.390280 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.442509 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.444988 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:42.445276 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.447151 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.499515 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.501559 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:42.502518 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.504386 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.556763 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.561979 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:42.562171 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.565127 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:42.617361 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.623129 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:42.623447 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.626878 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:42.679126 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.685154 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:42.685429 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.689536 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (4ms, status: 400)
+14:15:42.741841 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.746539 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:42.746727 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.750014 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:42.801600 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.806993 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:42.807146 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.845922 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (38ms, status: 400)
+14:15:42.897629 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.899492 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.899586 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.901063 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:42.953182 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:42.954899 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:42.954993 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:42.956392 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.008504 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.010234 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.010320 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.011802 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.063973 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.065848 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.066008 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.067494 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.086411 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:43.119754 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.121792 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.121916 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.123600 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.175758 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.177578 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.177891 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.179600 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.231731 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.233767 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.233854 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.235875 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.288004 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.289798 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.289889 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.291354 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.343484 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.345205 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.345294 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.346674 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.398811 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.400583 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:43.400677 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.402121 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.453290 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.455626 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.455738 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.457646 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.509881 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.512633 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.512788 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.515234 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.567545 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.571019 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:43.571330 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.574077 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.624524 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.627625 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:43.627766 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.631111 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:43.682721 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.688251 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:43.688378 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.691180 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.742830 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.746833 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:43.747015 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.750071 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:43.802317 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.807102 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:43.807257 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.810121 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.861988 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.867560 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:43.867676 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.870655 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:43.921963 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.924417 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.924631 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.926555 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:43.979192 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:43.981191 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:43.981448 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:43.982936 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.033694 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.035660 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.035928 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.037572 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.089886 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.091666 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.091844 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.093270 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.145508 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.147461 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.147604 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.149065 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.157455 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:44.200458 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.202581 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:44.202746 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.204586 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.255804 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.257678 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.257775 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.259409 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.310840 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.312723 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.312817 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.314524 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.364811 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.366656 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.366795 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.368261 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.419261 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.421084 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.421186 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.422693 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.474839 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.476750 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.476858 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.478287 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.528947 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.531055 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:44.531148 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.532821 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.583076 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.584927 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.585040 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.586526 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.638586 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.640389 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:44.640485 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.641871 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.694007 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.698635 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:44.698725 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.702066 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:44.753897 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.758250 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:44.758339 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.761415 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:44.813377 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.818983 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:44.819060 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.823549 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (4ms, status: 400)
+14:15:44.875784 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.892353 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (16ms, status: 400)
+14:15:44.892496 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.894325 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:44.946502 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:44.949009 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:44.949126 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:44.951373 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:45.003527 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.005466 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.005580 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.007192 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.059385 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.061135 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.061267 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.062663 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.115465 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.117590 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:45.117856 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.119353 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.169679 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.171548 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.171825 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.173394 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.217584 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:45.225269 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.227159 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.227253 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.228641 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.280805 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.282656 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.282762 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.284275 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.334741 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.336516 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.336591 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.337980 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.388877 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.390756 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.390864 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.392428 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.444575 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.446260 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.446369 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.447750 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.499889 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.501791 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.501896 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.503476 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.554926 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.556765 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.556872 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.558259 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.609838 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.611695 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.611774 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.613245 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.665376 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.667185 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:45.667286 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.668739 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:45.720918 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.727177 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:45.727256 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.730051 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:45.782206 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.788258 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:45.788354 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.791493 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:45.843656 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.848364 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:45.848518 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.851912 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:45.904148 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.908908 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:45.909207 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.912746 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:45.963611 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:45.966479 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:45.966587 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:45.969330 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:46.021104 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.022967 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.023038 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.024634 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.075246 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.077058 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.077124 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.078573 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.129217 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.130967 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.131072 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.132628 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.184752 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.186605 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.186689 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.188126 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.240260 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.242053 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.242137 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.243606 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.278537 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:46.293763 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.295617 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.295712 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.297248 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.349411 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.355221 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:46.355313 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.357088 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.408207 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.410042 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.410315 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.411800 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.463915 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.465828 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.465913 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.467482 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.517679 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.519488 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.519570 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.521008 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.572809 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.574575 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.574644 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.576116 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.628234 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.630083 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.630157 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.631641 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.683764 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.685536 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.685593 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.687004 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.737979 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.739837 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:46.739913 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.741395 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:46.793516 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.799187 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:46.799272 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.802049 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:46.853093 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.858771 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:46.858905 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.862023 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:46.912880 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:46.969076 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (56ms, status: 400)
+14:15:46.969177 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:46.970923 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.023108 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.025188 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.025273 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.027183 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.078082 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.080890 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.081002 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.083388 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:47.135549 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.137456 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.137549 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.139063 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.191192 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.192922 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.193011 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.194597 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.245825 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.247659 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.247739 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.249188 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.301322 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.303133 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.303228 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.304743 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.340620 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:47.356611 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.358471 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.358588 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.360154 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.412306 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.414151 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.414265 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.415803 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.466285 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.468098 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.468229 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.469771 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.520819 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.522674 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.522758 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.524260 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.576375 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.578224 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:47.578320 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.579902 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.631874 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.633866 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.633991 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.635664 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.687851 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.690003 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.690100 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.691657 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.743137 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.745252 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.745357 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.747245 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:47.799105 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.801729 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:47.801833 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.804455 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:47.856596 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.861276 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:47.861403 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.864459 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:47.914642 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.919306 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:47.919489 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.922850 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:47.975015 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:47.979642 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:47.979810 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:47.982601 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:48.034602 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.039448 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:48.039738 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.043270 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:48.095342 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.101080 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:48.101295 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.104947 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:48.156758 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.159232 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:48.159319 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.161477 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:48.212596 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.214450 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.214535 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.216011 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.268151 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.269938 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.270020 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.271449 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.322835 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.324696 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.324781 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.326343 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.378756 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.381351 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:48.381436 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.383190 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.418944 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:48.433806 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.437504 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:48.437605 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.440022 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:48.491106 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.493047 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.493132 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.494707 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.546040 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.547882 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.547968 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.549467 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.601613 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.603391 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.603544 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.605178 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.655505 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.657390 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.657469 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.659123 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.710715 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.712613 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.712689 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.714188 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.766313 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.768076 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.768163 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.769550 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.821696 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.823495 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.823578 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.825023 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.877136 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.878992 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:48.879073 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.880550 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:48.932503 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:48.940964 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (8ms, status: 400)
+14:15:48.941054 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:48.943816 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:48.996167 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.037208 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (41ms, status: 400)
+14:15:49.037374 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.040138 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:49.092357 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.094283 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.094371 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.096086 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.148222 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.151387 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:49.151667 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.154060 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:49.206182 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.209157 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:49.209241 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.211770 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:49.263322 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.265173 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.265249 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.266765 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.318895 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.320707 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.320807 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.322365 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.372794 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.374583 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.374664 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.376142 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.427128 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.429950 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:49.430041 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.431660 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.482353 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.484198 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.484266 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.485394 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:49.486087 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.538488 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.540376 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.540473 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.541967 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.593234 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.595231 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:49.595349 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.596907 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.648481 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.651457 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:49.651549 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.653766 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:49.705746 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.707716 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.707806 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.709347 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.761489 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.763342 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.763444 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.764979 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.816780 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.818657 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:49.818766 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.820412 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.872622 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.874920 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:49.875012 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.876568 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:49.929010 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.932180 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:49.932312 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.934436 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:49.986596 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:49.990462 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:49.990541 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:49.993370 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:50.044580 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.048702 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:50.048782 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.051615 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:50.103649 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.108128 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:50.108204 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.110748 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:50.161476 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.166807 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:50.166874 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.169735 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:50.221605 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.224698 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:50.224789 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.227561 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:50.278346 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.286182 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (7ms, status: 400)
+14:15:50.286264 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.287926 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.340056 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.341837 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.341935 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.343452 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.395597 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.397432 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.397502 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.398957 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.450252 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.451982 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.452079 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.453480 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.505039 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.506847 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.506913 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.508375 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.536292 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:50.560535 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.562379 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.562498 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.564071 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.616143 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.618026 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.618120 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.619536 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.671690 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.673569 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.673689 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.675150 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.726152 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.728376 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:50.728485 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.729971 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.781227 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.782962 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.783053 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.784450 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.836578 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.838372 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.838477 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.839996 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.890150 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.891929 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.892025 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.893588 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:50.945733 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:50.947632 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:50.947724 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:50.949229 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.001609 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.004995 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:51.005087 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.006809 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.059009 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.104616 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (45ms, status: 400)
+14:15:51.104714 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.106357 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.158503 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.160704 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:51.160810 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.162800 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.214939 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.218100 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:51.218219 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.221121 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:51.273292 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.278055 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:51.278192 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.283079 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (4ms, status: 400)
+14:15:51.334493 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.336964 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:51.337072 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.339372 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:51.391567 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.393413 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.393561 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.395100 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.446303 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.448102 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.448289 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.449788 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.502014 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.503590 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.503730 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.505160 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.555703 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.557436 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.557523 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.558925 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.576983 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:51.611083 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.613055 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.613209 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.614875 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.667247 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.669001 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.669089 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.670536 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.722644 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.724564 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.724657 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.726124 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.778255 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.780026 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.780139 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.781714 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.832714 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.834527 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.834620 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.836044 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.888244 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.890159 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:51.890250 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.891727 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.942366 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:51.944474 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:51.944571 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:51.946361 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:51.998535 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.001121 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:52.001262 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.003077 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.055207 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.058551 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:52.058638 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.061329 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:52.111765 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.118688 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:52.118851 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.121914 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:52.172453 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.177814 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:52.178130 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.181322 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:52.232792 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.240032 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (7ms, status: 400)
+14:15:52.240295 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.243657 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:52.295544 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.300337 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:52.300602 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.304405 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:52.356013 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.360724 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:52.360936 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.364397 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:52.416693 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.419176 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:52.419484 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.421368 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.472601 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.474317 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.474745 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.476189 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.528298 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.529842 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.529992 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.531497 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.583952 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.585668 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.585937 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.587372 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.638197 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.638854 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:52.640373 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:52.641190 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.643353 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:52.695798 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.697802 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:52.697890 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.699540 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.751754 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.753573 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.753641 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.755097 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.805913 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.807860 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.807966 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.809587 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.861715 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.863436 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.863512 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.865015 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.917132 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.918914 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.918994 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.920389 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:52.972531 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:52.974453 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:52.974561 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:52.976259 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.028557 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.030451 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.030547 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.032048 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.084222 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.086130 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.086244 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.087921 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.140096 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.144840 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (4ms, status: 400)
+14:15:53.144926 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.146457 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.197863 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.199713 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.199791 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.201383 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.252484 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.255450 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:53.255537 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.257085 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.309218 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.314823 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:53.314956 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.317949 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:53.370454 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.375654 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:53.375730 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.378834 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:53.430997 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.436244 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:53.436324 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.439681 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:53.491819 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.493747 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.493838 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.495465 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.547598 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.549283 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.549367 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.550771 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.602944 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.604817 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.605070 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.606551 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.657270 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.658930 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (1ms, status: 400)
+14:15:53.659100 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.660534 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.702490 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:53.712464 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.714438 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:53.714565 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.716166 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:53.767134 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.769690 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (2ms, status: 400)
+14:15:53.769961 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.772077 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:53.824798 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.827872 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:53.828015 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.830511 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:53.882370 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.885619 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (3ms, status: 400)
+14:15:53.885742 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.888506 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:53.940706 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:53.946751 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (6ms, status: 400)
+14:15:53.947023 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:53.950317 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:54.002614 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:54.008108 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:54.008247 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:54.011594 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:54.063952 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:54.069112 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:54.069337 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:54.073118 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:54.124570 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:54.130336 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:54.130490 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:54.133569 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (3ms, status: 400)
+14:15:54.185529 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:54.190538 [DEBUG] WDA POST /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/element completed (5ms, status: 400)
+14:15:54.190677 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:54.193431 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (2ms, status: 400)
+14:15:54.243704 [ERROR] Step 1 failed (17616ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+14:15:54.243750 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/screenshot
+14:15:54.422568 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/screenshot completed (178ms, status: 200)
+14:15:54.444571 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source
+14:15:54.446385 [DEBUG] WDA GET /session/DF8D3C67-7FAA-4AE0-B8C4-1104B87E5AE2/source completed (1ms, status: 400)
+14:15:54.449076 [INFO] === Flow completed: 99-crash (status: failed, duration: 22557ms, passed: 1, failed: 1, skipped: 2) ===
+14:15:54.450503 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:15:54.450609 [INFO] Generating reports...
+14:15:54.451223 [INFO] Shutting down devices started by maestro-runner...
+14:15:54.451233 [INFO] Shutting down all tracked emulators
+14:15:54.451239 [INFO] Shutting down all tracked simulators

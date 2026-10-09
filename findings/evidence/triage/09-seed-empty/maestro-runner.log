@@ -1,0 +1,137 @@
+14:49:22.502116 [INFO] === Test execution started ===
+14:49:22.502205 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/triage/09-seed-empty
+14:49:22.502213 [INFO] Platform: ios
+14:49:22.502217 [INFO] Driver: uiautomator2
+14:49:22.503798 [INFO] Validated 1 flow(s)
+14:49:22.649443 [INFO] Single device execution mode
+14:49:22.649480 [INFO] Starting flow execution (parallel: false, devices: [])
+14:49:22.649486 [INFO] Creating driver for single device execution
+14:49:22.649492 [INFO] Using specified iOS device: 93DF5345-8494-4C57-B374-10224C07ED41
+14:49:22.839510 [INFO] Device 93DF5345-8494-4C57-B374-10224C07ED41 is a simulator
+14:49:22.839640 [INFO] Building WDA for device 93DF5345-8494-4C57-B374-10224C07ED41 (team ID: )
+14:49:23.094440 [INFO] WDA build completed successfully
+14:49:23.094462 [INFO] Starting WDA on device 93DF5345-8494-4C57-B374-10224C07ED41 (port: 8485)
+14:49:26.868411 [INFO] WDA started successfully on port 8485
+14:49:27.245854 [DEBUG] WDA GET /window/size
+14:49:27.402731 [DEBUG] WDA GET /window/size completed (156ms, status: 200)
+14:49:27.403185 [INFO] Driver created: ios on qa-ios-1
+14:49:27.404698 [INFO] === Starting flow: 09-seed-empty ===
+14:49:27.404704 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-F1B3040D-31E1-4AB9-BC6C-CDF100336177/0/09-seed-empty.yaml
+14:49:27.404708 [INFO] Total steps: 3
+14:49:27.406653 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:49:27.407311 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:49:27.407408 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:49:28.986590 [DEBUG] WDA POST /session completed (1579ms, status: 200)
+14:49:28.986740 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:49:29.177233 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/appium/settings completed (190ms, status: 200)
+14:49:29.177774 [DEBUG] Executing step 0: launchApp
+14:49:29.626661 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:49:29.626734 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:49:29.627321 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/appium/settings completed (0ms, status: 200)
+14:49:29.627410 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:49:31.244707 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/wda/apps/launch completed (1617ms, status: 200)
+14:49:31.245027 [DEBUG] Step 0 completed successfully (2067ms): launchApp
+14:49:31.245701 [DEBUG] Executing step 1: assertVisible: text="No landmarks yet"
+14:49:31.246688 [DEBUG] Flutter: parallel search (text="No landmarks yet", id="")
+14:49:31.246738 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:31.469067 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (222ms, status: 404)
+14:49:31.469373 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:32.733920 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (1264ms, status: 200)
+14:49:32.789115 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:32.840390 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:32.840581 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:33.487107 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (646ms, status: 200)
+14:49:33.542218 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:33.590935 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (48ms, status: 404)
+14:49:33.591944 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:33.922293 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:34.247251 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (655ms, status: 200)
+14:49:34.300365 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:34.352886 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (52ms, status: 404)
+14:49:34.352992 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:35.022322 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (669ms, status: 200)
+14:49:35.075701 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:35.124410 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (48ms, status: 404)
+14:49:35.124575 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:35.766506 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (641ms, status: 200)
+14:49:35.819789 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:35.871381 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:35.871531 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:36.297013 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:36.553985 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (682ms, status: 200)
+14:49:36.607033 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:36.657030 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (50ms, status: 404)
+14:49:36.657141 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:37.327328 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (670ms, status: 200)
+14:49:37.382555 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:37.431935 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:37.432097 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:38.101131 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (669ms, status: 200)
+14:49:38.154735 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:38.203758 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:38.204435 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:38.709754 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:38.886082 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (681ms, status: 200)
+14:49:38.939178 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:38.990523 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:38.990643 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:39.664289 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (673ms, status: 200)
+14:49:39.717402 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:39.766356 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (48ms, status: 404)
+14:49:39.766521 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:40.422966 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (656ms, status: 200)
+14:49:40.476444 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:40.525710 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:40.525874 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:41.118945 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:41.214365 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (688ms, status: 200)
+14:49:41.266297 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:41.316198 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:41.316296 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:41.991720 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (675ms, status: 200)
+14:49:42.046466 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:42.096106 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:42.096326 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:42.785208 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (688ms, status: 200)
+14:49:42.838089 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:42.889457 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:42.889543 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:43.573129 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:43.635067 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (745ms, status: 200)
+14:49:43.686527 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:43.737126 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (50ms, status: 404)
+14:49:43.737217 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:44.406322 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (669ms, status: 200)
+14:49:44.458998 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:44.509234 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (50ms, status: 404)
+14:49:44.509313 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:45.202200 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (692ms, status: 200)
+14:49:45.255486 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:45.304568 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (49ms, status: 404)
+14:49:45.304815 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:45.977174 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (672ms, status: 200)
+14:49:46.013546 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:46.030242 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:46.081817 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:46.081930 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:46.816664 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (734ms, status: 200)
+14:49:46.869915 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:46.919911 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (50ms, status: 404)
+14:49:46.920081 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:47.628871 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (708ms, status: 200)
+14:49:47.683342 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element body={"using":"predicate string","value":"(label CONTAINS[c] 'No landmarks yet' OR name CONTAINS[c] 'No l...
+14:49:47.734491 [DEBUG] WDA POST /session/908E556F-064F-4976-9F5D-92433527B862/element completed (51ms, status: 404)
+14:49:47.734623 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:48.428020 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (693ms, status: 200)
+14:49:48.471999 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:49:48.481598 [ERROR] Step 1 failed (17235ms): assertVisible: text="No landmarks yet" - Error: Element not visible: text='No landmarks yet' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Landmarks", "All Landmarks", "road.lanes")
+14:49:48.481649 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/screenshot
+14:49:48.571035 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/screenshot completed (89ms, status: 200)
+14:49:48.576197 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source
+14:49:49.259647 [DEBUG] WDA GET /session/908E556F-064F-4976-9F5D-92433527B862/source completed (683ms, status: 200)
+14:49:49.262275 [INFO] === Flow completed: 09-seed-empty (status: failed, duration: 21857ms, passed: 1, failed: 1, skipped: 1) ===
+14:49:49.263315 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:49:49.263531 [INFO] Generating reports...
+14:49:49.263883 [INFO] Shutting down devices started by maestro-runner...
+14:49:49.263893 [INFO] Shutting down all tracked emulators
+14:49:49.263898 [INFO] Shutting down all tracked simulators

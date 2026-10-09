@@ -1,0 +1,80 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-921A21F6-7812-43C2-AE22-F3ED1664006C/0/99-crash.yaml",
+  "device": {
+    "id": "4DAB1D26-5107-4B17-9093-AC2E19DE0403",
+    "name": "qa-ios-2",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:15:34.61047-07:00",
+  "endTime": "2026-10-09T14:15:54.446969-07:00",
+  "duration": 19836,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:15:34.610866-07:00",
+      "endTime": "2026-10-09T14:15:36.626318-07:00",
+      "duration": 2015,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-09T14:15:36.626837-07:00",
+      "endTime": "2026-10-09T14:15:54.446475-07:00",
+      "duration": 17819,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}

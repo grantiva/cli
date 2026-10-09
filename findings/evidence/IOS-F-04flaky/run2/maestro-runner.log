@@ -1,0 +1,267 @@
+14:40:53.001445 [INFO] === Test execution started ===
+14:40:53.001505 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-F-04flaky/run2
+14:40:53.001510 [INFO] Platform: ios
+14:40:53.001514 [INFO] Driver: uiautomator2
+14:40:53.001748 [INFO] Validated 1 flow(s)
+14:40:53.105430 [INFO] Single device execution mode
+14:40:53.105442 [INFO] Starting flow execution (parallel: false, devices: [])
+14:40:53.105447 [INFO] Creating driver for single device execution
+14:40:53.105450 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:40:53.209143 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:40:53.209249 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:40:53.413978 [INFO] WDA build completed successfully
+14:40:53.414001 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:40:55.631126 [INFO] WDA started successfully on port 8876
+14:40:55.971299 [DEBUG] WDA GET /window/size
+14:40:56.057222 [DEBUG] WDA GET /window/size completed (85ms, status: 200)
+14:40:56.057285 [INFO] Driver created: ios on qa-ios-1
+14:40:56.058884 [INFO] === Starting flow: 04-discard ===
+14:40:56.058890 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-A104332E-AA94-4093-A716-D0C3BB24078C/0/04-discard.yaml
+14:40:56.058894 [INFO] Total steps: 13
+14:40:56.059023 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:40:56.059565 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:40:56.059618 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:40:58.650235 [DEBUG] WDA POST /session completed (2590ms, status: 200)
+14:40:58.650360 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:40:58.801604 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/appium/settings completed (151ms, status: 200)
+14:40:58.802126 [DEBUG] Executing step 0: launchApp
+14:40:59.234005 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:40:59.234212 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:40:59.235134 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/appium/settings completed (1ms, status: 200)
+14:40:59.235212 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:41:00.750730 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/apps/launch completed (1515ms, status: 200)
+14:41:00.750834 [DEBUG] Step 0 completed successfully (1948ms): launchApp
+14:41:00.751715 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:41:00.752441 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:41:00.752518 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:41:00.752549 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Deep Links' OR valu...
+14:41:00.752594 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Deep Links' O...
+14:41:00.752659 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links' OR name ==[c] 'D...
+14:41:00.971225 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (218ms, status: 200)
+14:41:01.090404 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (337ms, status: 200)
+14:41:01.134016 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (381ms, status: 404)
+14:41:01.177807 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (425ms, status: 404)
+14:41:01.177958 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/name
+14:41:01.178008 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/rect
+14:41:01.178036 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/displayed
+14:41:01.178064 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/text
+14:41:01.222583 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/name completed (44ms, status: 200)
+14:41:01.265387 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/rect completed (87ms, status: 200)
+14:41:01.311986 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/displayed completed (134ms, status: 200)
+14:41:01.353304 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/text completed (175ms, status: 200)
+14:41:01.353382 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/click body=
+14:41:01.733333 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/1E000000-0000-0000-A61B-000000000000/click completed (379ms, status: 200)
+14:41:01.757816 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:41:01.757888 [DEBUG] Step 1 completed successfully (1006ms): tapOn: text="Deep Links"
+14:41:01.758824 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+14:41:01.759408 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:41:01.759433 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Edit Landmark' OR v...
+14:41:01.759469 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Edit Landmark...
+14:41:01.759550 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Edit Landmark' OR name ==[c]...
+14:41:01.819219 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (59ms, status: 404)
+14:41:01.864815 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (105ms, status: 404)
+14:41:01.910446 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (151ms, status: 404)
+14:41:01.955288 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (195ms, status: 404)
+14:41:01.955652 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label == 'Edit Landmark' OR name == 'Edit Landmark' OR value =...
+14:41:02.054028 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (98ms, status: 200)
+14:41:02.054225 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/rect
+14:41:02.054290 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/name
+14:41:02.054555 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/displayed
+14:41:02.054617 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/text
+14:41:02.102371 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/rect completed (48ms, status: 200)
+14:41:02.149826 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/name completed (95ms, status: 200)
+14:41:02.194065 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/text completed (139ms, status: 200)
+14:41:02.244699 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/displayed completed (190ms, status: 200)
+14:41:02.244792 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/click body=
+14:41:02.636514 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/38010000-0000-0000-A61B-000000000000/click completed (391ms, status: 200)
+14:41:02.636573 [DEBUG] Step 2 completed successfully (877ms): tapOn: text="Edit Landmark"
+14:41:02.637023 [DEBUG] Executing step 3: tapOn: text="Location"
+14:41:02.637424 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:41:02.637443 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Location' OR ...
+14:41:02.637463 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Location' OR value ...
+14:41:02.637484 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Location' OR name ==[c] 'Loc...
+14:41:02.681355 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (43ms, status: 404)
+14:41:02.715924 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (78ms, status: 404)
+14:41:02.781908 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (144ms, status: 200)
+14:41:02.815108 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (177ms, status: 404)
+14:41:02.815256 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/text
+14:41:02.815294 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/name
+14:41:02.815335 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/rect
+14:41:02.815369 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/displayed
+14:41:02.849870 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/name completed (34ms, status: 200)
+14:41:02.880820 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/text completed (65ms, status: 200)
+14:41:02.916515 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/displayed completed (101ms, status: 200)
+14:41:02.948846 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/rect completed (133ms, status: 200)
+14:41:02.948901 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/click body=
+14:41:03.304209 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/6F010000-0000-0000-A61B-000000000000/click completed (355ms, status: 200)
+14:41:03.405532 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/active
+14:41:03.472514 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/active completed (66ms, status: 200)
+14:41:03.472580 [DEBUG] Step 3 completed successfully (835ms): tapOn: text="Location"
+14:41:03.473516 [DEBUG] Executing step 4: inputText: "X"
+14:41:03.474157 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/active
+14:41:03.533388 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/active completed (59ms, status: 200)
+14:41:03.533469 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/keys body={"frequency":30,"value":["X"]}
+14:41:03.752347 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/keys completed (218ms, status: 200)
+14:41:03.752499 [DEBUG] Step 4 completed successfully (278ms): inputText: "X"
+14:41:03.753858 [DEBUG] Executing step 5: tapOn: text="Cancel"
+14:41:03.755003 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:41:03.755038 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Cancel' OR name ==[c] 'Cance...
+14:41:03.755107 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Cancel' OR value CO...
+14:41:03.755201 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Cancel' OR va...
+14:41:03.854015 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (99ms, status: 200)
+14:41:03.941537 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (186ms, status: 200)
+14:41:03.986414 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (231ms, status: 404)
+14:41:04.030714 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (275ms, status: 404)
+14:41:04.031132 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/name
+14:41:04.031154 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/displayed
+14:41:04.031187 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/rect
+14:41:04.031273 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/text
+14:41:04.077821 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/name completed (46ms, status: 200)
+14:41:04.130895 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/displayed completed (99ms, status: 200)
+14:41:04.174596 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/text completed (143ms, status: 200)
+14:41:04.219877 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/rect completed (188ms, status: 200)
+14:41:04.220078 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/click body=
+14:41:04.608467 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/4D010000-0000-0000-A61B-000000000000/click completed (388ms, status: 200)
+14:41:04.608531 [DEBUG] Step 5 completed successfully (854ms): tapOn: text="Cancel"
+14:41:04.609641 [DEBUG] Executing step 6: assertVisible: text="You have unsaved changes that will be lost."
+14:41:04.610226 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'You have unsaved changes that will be lost....
+14:41:04.706810 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (96ms, status: 200)
+14:41:04.706911 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/name
+14:41:04.706938 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/rect
+14:41:04.706973 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/text
+14:41:04.707044 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/displayed
+14:41:04.751200 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/name completed (44ms, status: 200)
+14:41:04.796154 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/rect completed (89ms, status: 200)
+14:41:04.841005 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/displayed completed (134ms, status: 200)
+14:41:04.883417 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/C9010000-0000-0000-A61B-000000000000/text completed (176ms, status: 200)
+14:41:04.883469 [DEBUG] Step 6 completed successfully (273ms): assertVisible: text="You have unsaved changes that will be lost."
+14:41:04.883887 [DEBUG] Executing step 7: takeScreenshot
+14:41:04.884080 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/screenshot
+14:41:04.952344 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/screenshot completed (68ms, status: 200)
+14:41:04.953794 [DEBUG] Step 7 completed successfully (69ms): takeScreenshot
+14:41:04.954060 [DEBUG] Executing step 8: tapOn: text="Keep Editing"
+14:41:04.954298 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:41:04.954309 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:41:04.954319 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:41:04.954332 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:41:04.996804 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (42ms, status: 404)
+14:41:05.083078 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (128ms, status: 200)
+14:41:05.168880 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (214ms, status: 200)
+14:41:05.211261 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (256ms, status: 404)
+14:41:05.211444 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/rect
+14:41:05.211485 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/name
+14:41:05.211533 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/displayed
+14:41:05.211562 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/text
+14:41:05.254299 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/rect completed (42ms, status: 200)
+14:41:05.295295 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/name completed (83ms, status: 200)
+14:41:05.336406 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/text completed (124ms, status: 200)
+14:41:05.380697 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/displayed completed (169ms, status: 200)
+14:41:05.380757 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/click body=
+14:41:08.047212 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element/D0010000-0000-0000-A61B-000000000000/click completed (2666ms, status: 404)
+14:41:08.047439 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/tap body={"x":127,"y":497}
+14:41:08.465964 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/wda/tap completed (418ms, status: 200)
+14:41:08.466048 [DEBUG] Step 8 completed successfully (3511ms): tapOn: text="Keep Editing"
+14:41:08.467130 [DEBUG] Executing step 9: assertVisible: text="Edit Landmark"
+14:41:08.467942 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:08.533054 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (65ms, status: 404)
+14:41:08.533301 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:09.767198 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (1233ms, status: 200)
+14:41:09.820131 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:09.857083 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:09.857315 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:10.272037 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (414ms, status: 200)
+14:41:10.324472 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:10.359104 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (34ms, status: 404)
+14:41:10.359244 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:10.840605 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (481ms, status: 200)
+14:41:10.893128 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:10.929972 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:10.930069 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:11.333164 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (403ms, status: 200)
+14:41:11.388425 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:11.426197 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (37ms, status: 404)
+14:41:11.426559 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:11.837720 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (411ms, status: 200)
+14:41:11.888809 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:11.925205 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:11.925408 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:12.322783 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (397ms, status: 200)
+14:41:12.376706 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:12.410582 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (33ms, status: 404)
+14:41:12.410793 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:12.809231 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (398ms, status: 200)
+14:41:12.862015 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:12.898402 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:12.898564 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:13.340278 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (441ms, status: 200)
+14:41:13.391597 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:13.428297 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:13.428393 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:13.858482 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (430ms, status: 200)
+14:41:13.909850 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:13.945546 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (35ms, status: 404)
+14:41:13.945855 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:14.344842 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (398ms, status: 200)
+14:41:14.398912 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:14.434824 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (35ms, status: 404)
+14:41:14.435085 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:14.842450 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (407ms, status: 200)
+14:41:14.896171 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:14.933129 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:14.933559 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:15.327841 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (394ms, status: 200)
+14:41:15.383191 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:15.419563 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:15.419835 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:15.828947 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (409ms, status: 200)
+14:41:15.881440 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:15.915276 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (33ms, status: 404)
+14:41:15.915493 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:16.313773 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (398ms, status: 200)
+14:41:16.366700 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:16.423220 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (56ms, status: 404)
+14:41:16.423377 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:16.818895 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (395ms, status: 200)
+14:41:16.872789 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:16.909644 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:16.909855 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:17.305903 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (396ms, status: 200)
+14:41:17.359833 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:17.393016 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (33ms, status: 404)
+14:41:17.393196 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:17.835071 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (441ms, status: 200)
+14:41:17.888874 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:17.926041 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (37ms, status: 404)
+14:41:17.926251 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:18.317159 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (390ms, status: 200)
+14:41:18.370992 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:18.407784 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:18.408016 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:18.818247 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (410ms, status: 200)
+14:41:18.870933 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:18.907309 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:18.907820 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:19.288534 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (380ms, status: 200)
+14:41:19.341523 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:19.379299 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (37ms, status: 404)
+14:41:19.379435 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:19.768555 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (389ms, status: 200)
+14:41:19.820704 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:19.856846 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (36ms, status: 404)
+14:41:19.856976 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:20.226395 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (369ms, status: 200)
+14:41:20.280266 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Edit Landmark' OR name CONTAINS[c] 'Edit La...
+14:41:20.315801 [DEBUG] WDA POST /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/element completed (35ms, status: 404)
+14:41:20.315975 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:20.689626 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (373ms, status: 200)
+14:41:20.743135 [ERROR] Step 9 failed (12275ms): assertVisible: text="Edit Landmark" - Error: Element not visible: text='Edit Landmark' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Landmarks", "Mono Lake", "Crater Lake")
+14:41:20.743289 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/screenshot
+14:41:20.813363 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/screenshot completed (70ms, status: 200)
+14:41:20.817354 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source
+14:41:21.196725 [DEBUG] WDA GET /session/603BB7FF-EFBB-4509-AA2F-8801F0A01A28/source completed (379ms, status: 200)
+14:41:21.203603 [INFO] === Flow completed: 04-discard (status: failed, duration: 25144ms, passed: 9, failed: 1, skipped: 3) ===
+14:41:21.206585 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:41:21.206951 [INFO] Generating reports...
+14:41:21.208171 [INFO] Shutting down devices started by maestro-runner...
+14:41:21.208190 [INFO] Shutting down all tracked emulators
+14:41:21.208199 [INFO] Shutting down all tracked simulators

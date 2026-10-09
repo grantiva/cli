@@ -1,0 +1,131 @@
+14:14:58.547412 [INFO] === Test execution started ===
+14:14:58.547475 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/99-crash
+14:14:58.547480 [INFO] Platform: ios
+14:14:58.547486 [INFO] Driver: uiautomator2
+14:14:58.547788 [INFO] Validated 1 flow(s)
+14:14:58.667280 [INFO] Single device execution mode
+14:14:58.667301 [INFO] Starting flow execution (parallel: false, devices: [])
+14:14:58.667307 [INFO] Creating driver for single device execution
+14:14:58.667310 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:14:58.789470 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:14:58.789599 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:14:59.016584 [INFO] WDA build completed successfully
+14:14:59.016601 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:15:01.271194 [INFO] WDA started successfully on port 8876
+14:15:01.633669 [DEBUG] WDA GET /window/size
+14:15:01.690669 [DEBUG] WDA GET /window/size completed (56ms, status: 200)
+14:15:01.690740 [INFO] Driver created: ios on qa-ios-1
+14:15:01.692256 [INFO] === Starting flow: 99-crash ===
+14:15:01.692263 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-674450F3-B02C-435D-839A-1E101013C2A6/0/99-crash.yaml
+14:15:01.692267 [INFO] Total steps: 4
+14:15:01.692405 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:15:01.695342 [DEBUG] WDA POST /appium/settings completed (2ms, status: 404)
+14:15:01.695465 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:15:04.311770 [DEBUG] WDA POST /session completed (2616ms, status: 200)
+14:15:04.311840 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:15:04.372362 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/appium/settings completed (60ms, status: 200)
+14:15:04.375950 [DEBUG] Executing step 0: launchApp
+14:15:05.143330 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:15:05.143404 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:15:05.144146 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/appium/settings completed (0ms, status: 200)
+14:15:05.144236 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:15:06.702332 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/wda/apps/launch completed (1558ms, status: 200)
+14:15:06.702391 [DEBUG] Step 0 completed successfully (2326ms): launchApp
+14:15:06.702794 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:15:06.703264 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:15:06.703283 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Landmarks' OR name CONTAINS[c] 'Landmarks' ...
+14:15:06.976792 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (273ms, status: 200)
+14:15:06.977009 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/rect
+14:15:06.977046 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/displayed
+14:15:06.977105 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/text
+14:15:06.977170 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/name
+14:15:07.037930 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/rect completed (60ms, status: 200)
+14:15:07.067173 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/text completed (90ms, status: 200)
+14:15:07.130944 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/name completed (153ms, status: 200)
+14:15:07.193490 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/01000000-0000-0000-4D9B-000000000000/displayed completed (216ms, status: 200)
+14:15:08.239842 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:15:08.239905 [DEBUG] Step 1 completed successfully (1537ms): assertVisible: text="Landmarks"
+14:15:08.240472 [DEBUG] Executing step 2: assertVisible: text="Featured"
+14:15:08.240762 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Featured' OR name CONTAINS[c] 'Featured' OR...
+14:15:08.365910 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (125ms, status: 200)
+14:15:08.365960 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/name
+14:15:08.366015 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/text
+14:15:08.366039 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/rect
+14:15:08.366682 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/displayed
+14:15:08.428426 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/name completed (62ms, status: 200)
+14:15:08.477136 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/text completed (111ms, status: 200)
+14:15:08.534247 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/displayed completed (167ms, status: 200)
+14:15:08.584156 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/element/87000000-0000-0000-4D9B-000000000000/rect completed (218ms, status: 200)
+14:15:08.584214 [DEBUG] Step 2 completed successfully (343ms): assertVisible: text="Featured"
+14:15:08.584551 [DEBUG] Executing step 3: assertVisible: text="This never appears"
+14:15:08.584804 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:08.637125 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (52ms, status: 404)
+14:15:08.637362 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:09.424117 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (786ms, status: 200)
+14:15:09.478230 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:09.531746 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (53ms, status: 404)
+14:15:09.531859 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:10.456334 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (924ms, status: 200)
+14:15:10.509302 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:10.565961 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (56ms, status: 404)
+14:15:10.566706 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:11.331463 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (764ms, status: 200)
+14:15:11.384562 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:11.434922 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:11.435099 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:12.195513 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (760ms, status: 200)
+14:15:12.248518 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:12.300414 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (51ms, status: 404)
+14:15:12.300568 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:12.991447 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (690ms, status: 200)
+14:15:13.044852 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:13.095888 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (51ms, status: 404)
+14:15:13.096007 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:13.855436 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (759ms, status: 200)
+14:15:13.908811 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:13.960157 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (51ms, status: 404)
+14:15:13.960233 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:14.716750 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (756ms, status: 200)
+14:15:14.769621 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:14.820188 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:14.820272 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:15.495095 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (674ms, status: 200)
+14:15:15.546946 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:15.597024 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:15.597100 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:16.252167 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (655ms, status: 200)
+14:15:16.307970 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:16.360234 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (52ms, status: 404)
+14:15:16.362315 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:17.006005 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (643ms, status: 200)
+14:15:17.058964 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:17.108570 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (49ms, status: 404)
+14:15:17.108671 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:17.825604 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (716ms, status: 200)
+14:15:17.878579 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:17.929702 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (51ms, status: 404)
+14:15:17.929789 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:18.620170 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (690ms, status: 200)
+14:15:18.673135 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:18.723314 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:18.723407 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:19.414524 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (691ms, status: 200)
+14:15:19.467381 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:19.517511 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:19.517588 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:20.371536 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (853ms, status: 200)
+14:15:20.423042 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element body={"using":"predicate string","value":"(label CONTAINS[c] 'This never appears' OR name CONTAINS[c] 'Th...
+14:15:20.473413 [DEBUG] WDA POST /session/FB51D458-DF87-482E-9790-375E33E34E9A/element completed (50ms, status: 404)
+14:15:20.473503 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:21.210054 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (736ms, status: 200)
+14:15:21.262938 [ERROR] Step 3 failed (12678ms): assertVisible: text="This never appears" - Error: Element not visible: text='This never appears' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Sierra Nevada, CA", "heart", "Lake Tahoe, Sierra Nevada, CA")
+14:15:21.262960 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/screenshot
+14:15:21.345965 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/screenshot completed (83ms, status: 200)
+14:15:21.347917 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source
+14:15:22.161344 [DEBUG] WDA GET /session/FB51D458-DF87-482E-9790-375E33E34E9A/source completed (813ms, status: 200)
+14:15:22.165672 [INFO] === Flow completed: 99-crash (status: failed, duration: 20473ms, passed: 3, failed: 1, skipped: 0) ===
+14:15:22.166818 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:15:22.166901 [INFO] Generating reports...
+14:15:22.168404 [INFO] Shutting down devices started by maestro-runner...
+14:15:22.168467 [INFO] Shutting down all tracked emulators
+14:15:22.168473 [INFO] Shutting down all tracked simulators

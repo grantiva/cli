@@ -1,0 +1,92 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=93DF5345-8494-4C57-B374-10224C07ED41 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 93DF5345-8494-4C57-B374-10224C07ED41
+Simulator booted: qa-ios-1 (93DF5345-8494-4C57-B374-10224C07ED41)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/04-discard.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5793CE3B-9E87-450A-9BE2-77CFBDC80F7D
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8485
+
+  [1/1] 04-discard (04-discard.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (1.6s)
+    ✓ tapOn: text="Edit Landmark" (853ms)
+    ✓ tapOn: text="Location" (869ms)
+    ✓ inputText: "X" (278ms)
+    ✓ tapOn: text="Cancel" (856ms)
+    ⚠ assertVisible: text="You have unsaved changes that will be lost." (7.3s)
+    ✓ takeScreenshot (110ms)
+    ✗ tapOn: text="Keep Editing" (12.6s)
+      ╰─ Element not found: text='Keep Editing' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Editing' OR value CONTAINS[c] 'Keep Editing')'; page source: no elements match selector; closest on-screen texts: "Deep Links", "AdditionalDimmingOverlay", "link")
+✗ 04-discard 30.0s
+
+  [1/1] 04-discard (.maestro/04-discard.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.6s)
+    ✓ tapOn (853ms)
+    ✓ tapOn (869ms)
+    ✓ inputText (278ms)
+    ✓ tapOn (856ms)
+    ⚠ assertVisible (7.3s)
+    ✓ takeScreenshot (110ms)
+    ✗ tapOn (13.3s)
+      ╰─ Element not found: text='Keep Editing' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Editing' OR value CONTAINS[c] 'Keep Editing')'; page source: no elements match selector; closest on-screen texts: "Deep Links", "AdditionalDimmingOverlay", "link")
+    ✗ assertVisible (0ms)
+    ✗ tapOn (0ms)
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+✗ 04-discard 27.2s
+
+  8 steps passing (30.0s)
+  1 steps failing
+  4 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  04-discard                     ✗ FAIL      13      8      1      4      30.0s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      8      1      4      30.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5793CE3B-9E87-450A-9BE2-77CFBDC80F7D
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5793CE3B-9E87-450A-9BE2-77CFBDC80F7D/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5793CE3B-9E87-450A-9BE2-77CFBDC80F7D/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5793CE3B-9E87-450A-9BE2-77CFBDC80F7D/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791582777.png
+Error: Runner failed (exit 1):
+ exited with code 1

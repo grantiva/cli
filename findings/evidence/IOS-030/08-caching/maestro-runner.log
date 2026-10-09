@@ -1,0 +1,138 @@
+14:13:36.941855 [INFO] === Test execution started ===
+14:13:36.941927 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/08-caching
+14:13:36.941932 [INFO] Platform: ios
+14:13:36.941936 [INFO] Driver: uiautomator2
+14:13:36.942254 [INFO] Validated 1 flow(s)
+14:13:37.058801 [INFO] Single device execution mode
+14:13:37.058836 [INFO] Starting flow execution (parallel: false, devices: [])
+14:13:37.058845 [INFO] Creating driver for single device execution
+14:13:37.058849 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:13:37.181273 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:13:37.181369 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:13:37.423450 [INFO] WDA build completed successfully
+14:13:37.423487 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:13:39.678949 [INFO] WDA started successfully on port 8876
+14:13:40.046395 [DEBUG] WDA GET /window/size
+14:13:40.102212 [DEBUG] WDA GET /window/size completed (55ms, status: 200)
+14:13:40.102283 [INFO] Driver created: ios on qa-ios-1
+14:13:40.103661 [INFO] === Starting flow: 08-caching ===
+14:13:40.103666 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-F3B8842B-CC7A-41C1-863E-20E1AE136C55/0/08-caching.yaml
+14:13:40.103669 [INFO] Total steps: 7
+14:13:40.103797 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:13:40.105991 [DEBUG] WDA POST /appium/settings completed (2ms, status: 404)
+14:13:40.106049 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:13:42.728066 [DEBUG] WDA POST /session completed (2622ms, status: 200)
+14:13:42.728117 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:13:42.897666 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/appium/settings completed (169ms, status: 200)
+14:13:42.898138 [DEBUG] Executing step 0: launchApp
+14:13:43.394473 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:13:43.394530 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:13:43.395230 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/appium/settings completed (0ms, status: 200)
+14:13:43.395322 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:13:44.944060 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/wda/apps/launch completed (1548ms, status: 200)
+14:13:44.944105 [DEBUG] Step 0 completed successfully (2045ms): launchApp
+14:13:44.944426 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:13:44.944613 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:13:44.944650 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:44.944685 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Deep Links' OR valu...
+14:13:44.944718 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Deep Links' O...
+14:13:44.944746 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links' OR name ==[c] 'D...
+14:13:45.194669 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (250ms, status: 200)
+14:13:45.239674 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (295ms, status: 404)
+14:13:45.283971 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (339ms, status: 404)
+14:13:45.377738 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (433ms, status: 200)
+14:13:45.377803 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/text
+14:13:45.377837 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/name
+14:13:45.377880 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/rect
+14:13:45.377910 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/displayed
+14:13:45.426552 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/name completed (48ms, status: 200)
+14:13:45.469816 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/text completed (92ms, status: 200)
+14:13:45.516584 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/rect completed (138ms, status: 200)
+14:13:45.569819 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/displayed completed (192ms, status: 200)
+14:13:45.569877 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/click body=
+14:13:45.963952 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/1E000000-0000-0000-6A7E-000000000000/click completed (394ms, status: 200)
+14:13:46.286664 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:13:46.286739 [DEBUG] Step 1 completed successfully (1342ms): tapOn: text="Deep Links"
+14:13:46.287470 [DEBUG] Executing step 2: tapOn: text="Caching Demo"
+14:13:46.288010 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:46.288030 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Caching Demo' OR name ==[c] ...
+14:13:46.288060 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Caching Demo' OR va...
+14:13:46.288080 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Caching Demo'...
+14:13:46.401506 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (113ms, status: 200)
+14:13:46.497833 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (209ms, status: 200)
+14:13:46.556007 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (267ms, status: 404)
+14:13:46.603708 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (315ms, status: 404)
+14:13:46.603827 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/name
+14:13:46.603865 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/rect
+14:13:46.603884 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/text
+14:13:46.603905 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/displayed
+14:13:46.652247 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/name completed (48ms, status: 200)
+14:13:46.699519 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/rect completed (95ms, status: 200)
+14:13:46.748920 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/displayed completed (145ms, status: 200)
+14:13:46.793006 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/text completed (189ms, status: 200)
+14:13:46.793050 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/click body=
+14:13:47.174198 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/29010000-0000-0000-6A7E-000000000000/click completed (381ms, status: 200)
+14:13:47.174254 [DEBUG] Step 2 completed successfully (886ms): tapOn: text="Caching Demo"
+14:13:47.174649 [DEBUG] Executing step 3: assertVisible: text="Cache Policy"
+14:13:47.174890 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Cache Policy' OR name CONTAINS[c] 'Cache Po...
+14:13:47.432466 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (257ms, status: 200)
+14:13:47.432516 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/name
+14:13:47.432540 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/text
+14:13:47.432564 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/rect
+14:13:47.432592 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/displayed
+14:13:47.523143 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/text completed (90ms, status: 200)
+14:13:47.624478 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/name completed (191ms, status: 200)
+14:13:47.683754 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/rect completed (251ms, status: 200)
+14:13:47.763205 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C7010000-0000-0000-6A7E-000000000000/displayed completed (330ms, status: 200)
+14:13:47.763311 [INFO] [wda] elemID=C7010000-0000-0000-6A7E-000000000000 — XCUITest displayed=false but bounds (32,542 99x21) within viewport 402x874 — proceeding
+14:13:47.763346 [DEBUG] Step 3 completed successfully (588ms): assertVisible: text="Cache Policy"
+14:13:47.764207 [DEBUG] Executing step 4: tapOn: text="Fetch with Policy"
+14:13:47.764750 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:47.764792 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Fetch with Po...
+14:13:47.764822 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Fetch with Policy' ...
+14:13:47.764858 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Fetch with Policy' OR name =...
+14:13:47.819173 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (54ms, status: 404)
+14:13:47.932409 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (167ms, status: 200)
+14:13:47.986168 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (221ms, status: 404)
+14:13:48.095097 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (330ms, status: 200)
+14:13:48.095197 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/name
+14:13:48.095253 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/text
+14:13:48.095305 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/rect
+14:13:48.095353 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/displayed
+14:13:48.149622 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/name completed (54ms, status: 200)
+14:13:48.201662 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/text completed (106ms, status: 200)
+14:13:48.258368 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/rect completed (163ms, status: 200)
+14:13:48.316110 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/displayed completed (220ms, status: 200)
+14:13:48.316162 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/click body=
+14:13:48.719394 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/C9010000-0000-0000-6A7E-000000000000/click completed (403ms, status: 200)
+14:13:48.719439 [DEBUG] Step 4 completed successfully (955ms): tapOn: text="Fetch with Policy"
+14:13:48.719760 [DEBUG] Executing step 5: takeScreenshot
+14:13:48.719932 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/screenshot
+14:13:48.792942 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/screenshot completed (73ms, status: 200)
+14:13:48.794740 [DEBUG] Step 5 completed successfully (74ms): takeScreenshot
+14:13:48.794977 [DEBUG] Executing step 6: tapOn: text="Clear Cache"
+14:13:48.795290 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:48.795427 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Clear Cache' OR val...
+14:13:48.795491 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Clear Cache' OR name ==[c] '...
+14:13:48.795519 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Clear Cache' ...
+14:13:48.919198 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (123ms, status: 200)
+14:13:49.041812 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (246ms, status: 200)
+14:13:49.100440 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (305ms, status: 404)
+14:13:49.158763 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element completed (363ms, status: 404)
+14:13:49.158871 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/name
+14:13:49.158893 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/rect
+14:13:49.158927 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/text
+14:13:49.158952 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/displayed
+14:13:49.220157 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/name completed (61ms, status: 200)
+14:13:49.281796 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/rect completed (122ms, status: 200)
+14:13:49.386326 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/displayed completed (227ms, status: 200)
+14:13:49.442397 [DEBUG] WDA GET /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/text completed (283ms, status: 200)
+14:13:49.442457 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/click body=
+14:13:49.862590 [DEBUG] WDA POST /session/21F29128-4D5B-4EE7-8360-2A529550414F/element/CC010000-0000-0000-6A7E-000000000000/click completed (420ms, status: 200)
+14:13:49.862726 [DEBUG] Step 6 completed successfully (1067ms): tapOn: text="Clear Cache"
+14:13:49.864491 [INFO] === Flow completed: 08-caching (status: passed, duration: 9760ms, passed: 7, failed: 0, skipped: 0) ===
+14:13:49.865753 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:13:49.865830 [INFO] Generating reports...
+14:13:49.866283 [INFO] Shutting down devices started by maestro-runner...
+14:13:49.866298 [INFO] Shutting down all tracked emulators
+14:13:49.866304 [INFO] Shutting down all tracked simulators

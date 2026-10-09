@@ -1,0 +1,82 @@
+{
+  "id": "flow-000",
+  "name": "exact",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-25D142EE-3F83-4205-BAB9-F65F4B504D29/0/exact.yaml",
+  "device": {
+    "id": "6EEDCB1A-E693-488A-B34C-5A0AB5DE9400",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:25:23.815014-07:00",
+  "endTime": "2026-10-09T14:25:40.102412-07:00",
+  "duration": 16287,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:25:23.815341-07:00",
+      "endTime": "2026-10-09T14:25:25.975425-07:00",
+      "duration": 2160,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:25:25.975793-07:00",
+      "endTime": "2026-10-09T14:25:27.36437-07:00",
+      "duration": 1388,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "8C000000-0000-0000-110C-010000000000",
+        "text": "Lakes",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 482,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Lake\", exact=true",
+      "status": "failed",
+      "startTime": "2026-10-09T14:25:27.365362-07:00",
+      "endTime": "2026-10-09T14:25:40.102034-07:00",
+      "duration": 12736,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Lake' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Lakes\", \"Mono Lake\", \"Lake Tahoe\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "artifacts": {}
+}
