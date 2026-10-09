@@ -1,0 +1,84 @@
+Resolved: scheme=(none) simulator=qa-cli-1 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: qa-cli-1
+Simulator booted: qa-cli-1 (D3E7E498-2E80-469C-A465-4757C8995ACC)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-86ED8183-9CC3-48B6-BD9D-337ADC85B19E
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8400
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Mountains" (1.5s)
+    ✓ tapOn: text="Mount "Denali"" (745ms)
+    ✓ assertVisible: text="Alaska" (370ms)
+    ✓ assertNotVisible: text="Mount "Denali" 🏔️" (498ms)
+    ✓ takeScreenshot (95ms)
+✓ flow 8.0s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-2D94EC33-C6D7-4636-8AE1-377F31C074E2/flow.yaml) - Device: qa-cli-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.5s)
+    ✓ tapOn (745ms)
+    ✓ assertVisible (370ms)
+    ✓ assertNotVisible (498ms)
+    ✓ takeScreenshot (95ms)
+✓ flow 5.3s
+
+  6 steps passing (8.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✓ PASS       6      6      0      0       8.0s  qa-cli-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       8.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-86ED8183-9CC3-48B6-BD9D-337ADC85B19E
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-86ED8183-9CC3-48B6-BD9D-337ADC85B19E/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-86ED8183-9CC3-48B6-BD9D-337ADC85B19E/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-86ED8183-9CC3-48B6-BD9D-337ADC85B19E/allure-results
+
+  Built by Grantiva
+
+
+  Mount "Denali" 🏔️
+    ✓ Tap on "Mountains"
+    ✓ Tap on "Mount "Denali""
+    ✓ Assert visible "Alaska"
+    ✓ Assert not visible "Mount "Denali" 🏔️"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/
+

@@ -1,0 +1,17 @@
+== [every-step-landmarks.yml as grantiva.yml] timeout 200 $G run --no-build --simulator qa-cli-1 --timeout 120 2>&1 | grep -E "Resolved|^    [✓✗] |╰─|^Error" | head -20
+ rc=0 stdout=854B
+ OUT| Resolved: scheme=Landmarks simulator=qa-cli-1 screens=2 flows=0
+ OUT|     ✓ launchApp (2.1s)
+ OUT|     ✓ takeScreenshot (115ms)
+ OUT|     ✓ tapOn: text="Deep Links" (1.3s)
+ OUT|     ✓ tapOn: text="Edit Landmark" (927ms)
+ OUT|     ✓ tapOn: text="Name" (991ms)
+ OUT|     ✓ inputText: " QA" (401ms)
+ OUT|     ✓ waitForAnimationToEnd (275ms)
+ OUT|     ✓ assertVisible: text="Edit Landmark" (408ms)
+ OUT|     ✓ assertNotVisible: text="No Such Label QA" (925ms)
+ OUT|     ✓ swipe: UP (1.9s)
+ OUT|     ✓ swipe: DOWN (1.8s)
+ OUT|     ✓ swipe: LEFT (1.2s)
+ OUT|     ✓ swipe: RIGHT (1.3s)
+ OUT|     ✓ runFlow: /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91

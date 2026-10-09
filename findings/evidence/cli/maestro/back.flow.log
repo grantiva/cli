@@ -1,0 +1,77 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-cli-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-cli-1
+Simulator booted: qa-cli-1 (D3E7E498-2E80-469C-A465-4757C8995ACC)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-cli/fixtures/maestro/back.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8400
+
+  [1/1] back (back.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn: text="Golden Gate Bridge" (1.1s)
+    ✗ back (0ms)
+      ╰─ iOS doesn't have a back button (cause: back not supported on iOS)
+✗ back 7.4s
+
+  [1/1] back (/Users/kyle/Developer/grantiva-cli/.worktrees/qa-cli/fixtures/maestro/back.yaml) - Device: qa-cli-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn (1.1s)
+    ✗ back (1.4s)
+      ╰─ iOS doesn't have a back button (cause: back not supported on iOS)
+    ✗ takeScreenshot (0ms)
+✗ back 4.6s
+
+  2 steps passing (7.4s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  back                           ✗ FAIL       4      2      1      1       7.4s  qa-cli-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      2      1      1       7.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/back/captures/failure-1791579732.png
+Error: Runner failed (exit 1):
+ exited with code 1

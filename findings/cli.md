@@ -254,3 +254,58 @@ Expected: the check fails, or at least warns that `ANDROID_HOME` points nowhere 
 Actual: `✓ Android SDK /Users/kyle/Library/Android/sdk`, no mention that `ANDROID_HOME` was set and ignored. The documented fallback order (ANDROID_HOME, ANDROID_SDK_ROOT, ~/Library/Android/sdk) explains it, but a user whose shell exports a stale `ANDROID_HOME` is not told. The row's own case (no SDK anywhere) could not be set up without hiding the shared SDK.
 Repro: as above
 Evidence: detect/doctor-init.txt
+
+## Step 3: Maestro parsing on the installed iOS Landmarks app (qa-cli-1)
+
+Each `fixtures/maestro/<cmd>.yaml` ran two ways against `com.kylebrowning.Landmarks` (installed once with `build install
+--no-launch`): `flow` = `run --flow <file> --no-build --report-dir …` (the runner executes the file natively), and `parsed` =
+the same file as a Maestro-format `grantiva.yml` (Grantiva's `MaestroFlowParser` turns it into screens, the path the
+README's Maestro Compatibility section describes and the one `.maestro/` auto-detection uses). Logs: `maestro/<cmd>.flow.log`,
+`maestro/<cmd>.flow.report.json`, `maestro/<cmd>.parsed.log`.
+
+### CLI-F27: Grantiva's Maestro parser rejects three README-supported commands: directional `swipe`, `extendedWaitUntil: {visible:}`, and bare `waitForAnimationToEnd`
+Matrix IDs: CLI-063
+Severity: wrong-result
+Command: grantiva run --no-build --simulator qa-cli-1 (cwd holds `fixtures/maestro/swipe.yaml` as grantiva.yml; same for extendedWaitUntil.yaml, waitForAnimationToEnd.yaml)
+Expected: "Supported Maestro commands: tapOn, inputText, assertVisible, assertNotVisible, swipe, scroll, runFlow, extendedWaitUntil, waitForAnimationToEnd, and takeScreenshot." (source: README §Maestro Compatibility)
+Actual: each fails before any device work with `Error: Invalid argument: grantiva.yml could not be parsed: invalidArgument("Unsupported Maestro command 'swipe' at <input>:4")` (likewise `extendedWaitUntil`, `waitForAnimationToEnd`). These are the standard Maestro forms: `swipe: {direction: UP}` (the very form Grantiva's own FlowGenerator emits), `extendedWaitUntil: {visible: "Featured", timeout: 5000}`, and `- waitForAnimationToEnd`. The same files pass under `--flow`. The error text also leaks the Swift enum (`invalidArgument("…")`) inside the message, and `<input>` instead of the file name.
+Repro: as above
+Evidence: maestro/swipe.parsed.log, maestro/extendedWaitUntil.parsed.log, maestro/waitForAnimationToEnd.parsed.log (and the passing .flow.log files)
+Suspected cause: Sources/GrantivaCore/Config/MaestroFlowParser.swift:291-308 handles only `swipe: {start:, end:}`; :340-344 reads `text`/`id` but Maestro's key is `visible` (string or `{text:/id:}`); :232-238 has no `waitForAnimationToEnd` case for the bare-string form, which falls to `.unsupported`.
+
+### CLI-F28: `tapOn: {id: …}` is parsed as a tap on visible text, not on the accessibility identifier
+Matrix IDs: CLI-064
+Severity: wrong-result
+Command: grantiva run --no-build --simulator qa-cli-1 with fixtures/maestro/tapOn-id.yaml as grantiva.yml
+Expected: `tapOn: {id: …}` maps to a tap on that identifier (source: README §Maestro Compatibility; matrix CLI-064)
+Actual: the generated step is `tapOn: text="clock"`, searched as `label CONTAINS[c] 'clock' OR name CONTAINS[c] …`. Under `--flow` the runner does `tapOn: id="clock"`. An id that happens to be a substring of some label taps the wrong element. (`assertVisible`/`assertNotVisible`/`scrollUntilVisible`/`extendedWaitUntil` have the same `text ?? id` merge.)
+Repro: as above
+Evidence: maestro/tapOn-id.parsed.log vs maestro/tapOn-id.flow.log
+Suspected cause: Sources/GrantivaCore/Config/MaestroFlowParser.swift:380-390 (`obj["text"] ?? obj["id"]` into `tap:`); GrantivaConfig.Screen.Step has no id field.
+
+### CLI-F29: `wait: N` in `screens:` does not wait N seconds
+Matrix IDs: CLI-046 (observed; parsing passes)
+Severity: wrong-result
+Command: grantiva run --no-build --simulator qa-cli-1 with fixtures/config/every-step-landmarks.yml (`- wait: 1`)
+Expected: "`- wait: 2` — wait N seconds" (source: README §Screens)
+Actual: the step is emitted as `waitForAnimationToEnd: {timeout: 1000}` and finished in 275 ms, because it returns as soon as the screen settles (the runner 1.1.18 behaviour the CHANGELOG Unreleased "Fixed" entry already notes for `runner start`). Any flow that uses `wait` to let a network call or animation finish is not waiting.
+Repro: as above; compare step durations in the log
+Evidence: flows/every-step-landmarks.txt
+Suspected cause: Sources/GrantivaCore/Runner/FlowGenerator.swift:46-50 (and MaestroFlowParser's `waitForAnimationToEnd` → `wait`, which round-trips into the same thing).
+
+### CLI-F30: Under `run --flow`, plain Maestro `scroll` and `setPermissions` fail in the runner
+Matrix IDs: CLI-063, CLI-065 (observed in `flow` mode)
+Severity: contract
+Command: grantiva run --flow fixtures/maestro/scroll.yaml --platform ios --simulator qa-cli-1 --no-build; same for setPermissions.yaml
+Expected: `scroll` is supported (README §Maestro Compatibility; Maestro's bare `scroll` scrolls down). `setPermissions` is supported by the runner or skipped.
+Actual: `✗ scroll — Invalid scroll direction (cause: invalid direction: )`. `✗ setPermissions — No app ID for permissions (cause: no appId specified)` although the flow header has `appId: com.kylebrowning.Landmarks`. (`back` fails with "iOS doesn't have a back button", which is reasonable for iOS. `evalScript`, `openLink`, `pressKey` run.) The same `scroll` file passes in parsed mode, where Grantiva turns it into `swipe: UP`.
+Repro: as above
+Evidence: maestro/scroll.flow.log, maestro/setPermissions.flow.log, maestro/back.flow.log
+Suspected cause: embedded grantiva-runner 1.1.18-grantiva.7 command handlers (outside Sources/).
+
+Other Step 3 results: `tapOn`, `tapOn: {text:}`, `inputText`, `assertVisible`, `assertNotVisible`, `runFlow: sub.yaml`,
+`runFlow: {file: sub.yaml}`, `scroll` (→ `swipe: UP`), `scroll: {direction: up}` (→ `swipe: DOWN`), and two `takeScreenshot`
+points (→ 2 screens) all parse and pass in both modes. The quoted label `Mount "Denali"` taps correctly, and
+`Mount "Denali" 🏔️` reaches the runner byte for byte in both modes (CLI-061). Unsupported commands (`back`,
+`setPermissions`, `evalScript`, `pressKey`, `openLink`) are not skipped in parsed mode; each fails the whole file with
+`Unsupported Maestro command '<cmd>' at <input>:<line>`, which is CLI-DOCS-F04.

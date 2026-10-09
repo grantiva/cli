@@ -1,0 +1,75 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-cli-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-cli-1
+Simulator booted: qa-cli-1 (D3E7E498-2E80-469C-A465-4757C8995ACC)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-cli/fixtures/maestro/scroll.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8400
+
+  [1/1] scroll (scroll.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.3s)
+    ✗ scroll (0ms)
+      ╰─ Invalid scroll direction (cause: invalid direction: )
+✗ scroll 6.6s
+
+  [1/1] scroll (/Users/kyle/Developer/grantiva-cli/.worktrees/qa-cli/fixtures/maestro/scroll.yaml) - Device: qa-cli-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.3s)
+    ✗ scroll (1.5s)
+      ╰─ Invalid scroll direction (cause: invalid direction: )
+    ✗ takeScreenshot (0ms)
+✗ scroll 3.8s
+
+  1 steps passing (6.6s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  scroll                         ✗ FAIL       3      1      1      1       6.6s  qa-cli-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      1      1      1       6.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/out/scroll/captures/failure-1791579904.png
+Error: Runner failed (exit 1):
+ exited with code 1

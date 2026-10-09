@@ -1,0 +1,83 @@
+Resolved: scheme=(none) simulator=qa-cli-1 screens=2 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: qa-cli-1
+Simulator booted: qa-cli-1 (D3E7E498-2E80-469C-A465-4757C8995ACC)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5F92A489-FA5A-47E8-B480-FC263F5F623A
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8400
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.3s)
+    ✓ takeScreenshot (115ms)
+    ✓ tapOn: text="Golden Gate Bridge" (1.5s)
+    ✓ assertVisible: text="Plan Visit" (260ms)
+    ✓ takeScreenshot (106ms)
+✓ flow 7.1s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-61E9DC8E-14CF-40D5-BDE8-B1CBD6A779E0/flow.yaml) - Device: qa-cli-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.3s)
+    ✓ takeScreenshot (115ms)
+    ✓ tapOn (1.5s)
+    ✓ assertVisible (260ms)
+    ✓ takeScreenshot (106ms)
+✓ flow 4.3s
+
+  5 steps passing (7.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✓ PASS       5      5      0      0       7.1s  qa-cli-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       5      5      0      0       7.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5F92A489-FA5A-47E8-B480-FC263F5F623A
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5F92A489-FA5A-47E8-B480-FC263F5F623A/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5F92A489-FA5A-47E8-B480-FC263F5F623A/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-5F92A489-FA5A-47E8-B480-FC263F5F623A/allure-results
+
+  Built by Grantiva
+
+
+  First
+    ✓ Launch app
+
+  Second
+    ✓ Tap on "Golden Gate Bridge"
+    ✓ Assert visible "Plan Visit"
+
+  Screens: 2 total, 2 passed, 0 failed
+  Screenshots: .grantiva/captures/
+

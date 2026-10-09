@@ -93,7 +93,7 @@ read-only root). IOS-034 records what happens with a parent that can be created.
 | CLI-043 | `run` | Android project plus `--logs-predicate x`; iOS project plus `--logs-tag x` | Each rejected by name ("`--logs-predicate` is iOS-only"). | docs/android.md §Logs; help: run | pass |
 | CLI-044 | `run` | `grantiva.yml` with `flows: []` and no `screens`, plus `--report-dir out --ready-file out.ready` | Fails before any boot or runner work with an error that nothing is configured; non-zero exit. No `report.json` claiming a pass, and the ready file says `failed` ("a failure before the runner starts … records `failed`"). | README §Agent-Native Features (`--ready-file`); help: run | pass |
 | CLI-045 | `run` | `--device emulator-5554 --emulator Pixel_8_API_35` | "`--device` together with `--emulator` is rejected." | CHANGELOG Unreleased Changed | pass |
-| CLI-046 | `diff capture` | `screens:` using every path step: `launch`, `tap`, `swipe` up/down/left/right, `type`, `wait`, `assert_visible`, `assert_not_visible`, `run_flow` | All steps parse; generated flow (inspect via `--report-dir` or staged flow) contains one step per entry in order. | README §Screens |  |
+| CLI-046 | `diff capture` | `screens:` using every path step: `launch`, `tap`, `swipe` up/down/left/right, `type`, `wait`, `assert_visible`, `assert_not_visible`, `run_flow` | All steps parse; generated flow (inspect via `--report-dir` or staged flow) contains one step per entry in order. | README §Screens | pass |
 | CLI-047 | `diff capture` | `- swipe: diagonal` | Rejected at parse time; README lists only `up`, `down`, `left`, `right`. | README §Screens | fail CLI-F24 |
 | CLI-048 | `diff capture` | `- run_flow: "sub/flow.yaml"` relative path, and a missing path | Resolves relative to the config's directory; a missing file is an error naming the path. | README §Screens | pass |
 | CLI-049 | `diff capture` | `run_flow` cycle (A includes B includes A) | Error naming the cycle; does not hang or recurse until crash. | README §Screens; spec §2 (`run_flow` resolution) | pass |
@@ -108,19 +108,19 @@ read-only root). IOS-034 records what happens with a parent that can be created.
 | CLI-058 | `simulator teardown` | `--udid "" --force` | Rejected; must not print `No processes were holding .` and exit 0. | CHANGELOG 1.8.0 Fixed | pass |
 | CLI-059 | `simulator teardown` | `--udid not-a-udid-at-all --force`; `--session-id ""` | Both rejected (UDID shape 8-4-4-4-12 hex; blank session id). | CHANGELOG 1.8.0 Fixed | pass |
 | CLI-060 | `simulator teardown` | `--session-id X --udid <valid UDID>` | "`--session-id` and `--udid` are mutually exclusive." | README §Reclaiming a simulator; CHANGELOG 1.7.0 | pass |
-| CLI-061 | `diff capture` (flow generation only) | Maestro flow with `- tapOn: "Mount \"Denali\" 🏔️"` (double quote and emoji), inspected via the staged flow or `--report-dir` | Parses without error and the generated flow carries the label byte-for-byte (quote escaped correctly, emoji intact); no YAML re-escaping corruption. | README §Maestro Compatibility (`tapOn`) |  |
+| CLI-061 | `diff capture` (flow generation only) | Maestro flow with `- tapOn: "Mount \"Denali\" 🏔️"` (double quote and emoji), inspected via the staged flow or `--report-dir` | Parses without error and the generated flow carries the label byte-for-byte (quote escaped correctly, emoji intact); no YAML re-escaping corruption. | README §Maestro Compatibility (`tapOn`) | pass |
 | CLI-062 | `simulator teardown` | neither `--session-id` nor `--udid` | Error that one of them is required; non-zero exit. | help: simulator teardown | pass |
 
 **Maestro compatibility**
 
 | ID | Command | Flags/inputs | Expected | Source | Result |
 |---|---|---|---|---|---|
-| CLI-063 | `diff capture` (parse) | one fixture per supported command: `tapOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe`, `scroll`, `runFlow`, `extendedWaitUntil`, `waitForAnimationToEnd`, `takeScreenshot` | Each parses into a navigation step or capture point. | README §Maestro Compatibility |  |
-| CLI-064 | `diff capture` (parse) | `tapOn: {text: …}` and `tapOn: {id: …}` | Both map to a tap step on that label or identifier. | README §Maestro Compatibility |  |
-| CLI-065 | `diff capture` (parse) | one fixture per unsupported command: `back`, `setPermissions`, `evalScript`, `pressKey`, `openLink` | "Unsupported commands (scripting, permissions, etc.) are silently skipped." | README §Maestro Compatibility |  |
-| CLI-066 | `diff capture` (parse) | `- scroll` and `- scroll: {direction: up}` | Mapped to a swipe in the opposite finger direction (scroll down = swipe up). | README §Maestro Compatibility |  |
-| CLI-067 | `diff capture` (parse) | flow with two `takeScreenshot` points | Two named screens; commands before each become its path. | README §Maestro Compatibility |  |
-| CLI-068 | `diff capture` (parse) | `runFlow: sub.yaml` and `runFlow: {file: sub.yaml}` | Both include the sub-flow's steps. | README §Maestro Compatibility |  |
+| CLI-063 | `diff capture` (parse) | one fixture per supported command: `tapOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe`, `scroll`, `runFlow`, `extendedWaitUntil`, `waitForAnimationToEnd`, `takeScreenshot` | Each parses into a navigation step or capture point. | README §Maestro Compatibility | fail CLI-F27 |
+| CLI-064 | `diff capture` (parse) | `tapOn: {text: …}` and `tapOn: {id: …}` | Both map to a tap step on that label or identifier. | README §Maestro Compatibility | fail CLI-F28 |
+| CLI-065 | `diff capture` (parse) | one fixture per unsupported command: `back`, `setPermissions`, `evalScript`, `pressKey`, `openLink` | "Unsupported commands (scripting, permissions, etc.) are silently skipped." | README §Maestro Compatibility | fail CLI-DOCS-F04 |
+| CLI-066 | `diff capture` (parse) | `- scroll` and `- scroll: {direction: up}` | Mapped to a swipe in the opposite finger direction (scroll down = swipe up). | README §Maestro Compatibility | pass |
+| CLI-067 | `diff capture` (parse) | flow with two `takeScreenshot` points | Two named screens; commands before each become its path. | README §Maestro Compatibility | pass |
+| CLI-068 | `diff capture` (parse) | `runFlow: sub.yaml` and `runFlow: {file: sub.yaml}` | Both include the sub-flow's steps. | README §Maestro Compatibility | pass |
 
 **init**
 

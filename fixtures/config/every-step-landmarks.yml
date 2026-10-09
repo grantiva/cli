@@ -1,0 +1,20 @@
+scheme: Landmarks
+simulator: qa-cli-1
+bundle_id: com.kylebrowning.Landmarks
+screens:
+  - name: Launch
+    path: launch
+  - name: AllSteps
+    path:
+      - tap: "Deep Links"
+      - tap: "Edit Landmark"
+      - tap: "Name"
+      - type: " QA"
+      - wait: 1
+      - assert_visible: "Edit Landmark"
+      - assert_not_visible: "No Such Label QA"
+      - swipe: up
+      - swipe: down
+      - swipe: left
+      - swipe: right
+      - run_flow: "run-flow/sub/landmarks-ok.yaml"
