@@ -71,8 +71,38 @@ final class IOSPlatformTests: XCTestCase {
         XCTAssertFalse(none.arguments.contains("--predicate"))
     }
 
-    func testRunnerEnvironmentIsEmptyOnIOS() {
-        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/r"), [:])
+    func testRunnerEnvironmentPointsXcodebuildAtGrantivasXcconfig() throws {
+        let home = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-ios-platform-\(UUID().uuidString)").path
+        try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(atPath: home) }
+
+        let env = IOSPlatform().runnerEnvironment(runnerHome: home)
+        let xcconfig = "\(home)/\(WDABuildConfig.fileName)"
+        XCTAssertEqual(env, ["XCODE_XCCONFIG_FILE": xcconfig])
+        let contents = try String(contentsOfFile: xcconfig, encoding: .utf8)
+        XCTAssertTrue(contents.contains("WARNING_CFLAGS = $(inherited) -Wno-poison-system-directories"), contents)
+    }
+
+    func testRunnerEnvironmentFallsBackWhenTheXcconfigCannotBeWritten() {
+        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)"), [:])
+    }
+
+    func testWDABuildConfigRewritesAStaleFileAndLeavesACurrentOne() throws {
+        let home = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-wda-config-\(UUID().uuidString)").path
+        try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(atPath: home) }
+        let path = "\(home)/\(WDABuildConfig.fileName)"
+
+        try "WARNING_CFLAGS = -Wold".write(toFile: path, atomically: true, encoding: .utf8)
+        XCTAssertEqual(WDABuildConfig.install(in: home), path)
+        XCTAssertEqual(try String(contentsOfFile: path, encoding: .utf8), WDABuildConfig.contents)
+
+        let before = try FileManager.default.attributesOfItem(atPath: path)[.modificationDate] as? Date
+        XCTAssertEqual(WDABuildConfig.install(in: home), path)
+        let after = try FileManager.default.attributesOfItem(atPath: path)[.modificationDate] as? Date
+        XCTAssertEqual(before, after, "a current file is left untouched")
     }
 
     func testResolveBinaryRejectsAnAPK() async {

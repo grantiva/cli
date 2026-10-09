@@ -48,6 +48,8 @@ grantiva runner stop
 
 This path is preserved for backward compatibility and MCP integration. New flows should prefer `grantiva run --keep-alive` + `grantiva hierarchy`, which integrate natively with flow execution.
 
+`runner start` holds the session with the runner's `--keep-alive` until `runner stop`. The first start on an iOS runtime the runner tarball has no prebuilt GrantivaAgent for (it ships 26.2, 26.4, and 27.0) builds the agent from source, which takes several minutes; `runner start` waits up to ten minutes for that build and reports "WebDriverAgent failed to build" with the log path if it fails. Later starts on that runtime reuse the cached build.
+
 `grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--keep-alive` session (`dump-hierarchy --udid <UDID>` selects a specific simulator).
 
 ## Agent integration

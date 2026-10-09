@@ -109,7 +109,13 @@ public struct IOSPlatform: DevicePlatform {
         return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
     }
 
-    public func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+    /// Points xcodebuild at grantiva's xcconfig so the runner's WebDriverAgent
+    /// build survives Xcode 27 (see `WDABuildConfig`). Falls back to the stock
+    /// build when the file cannot be written.
+    public func runnerEnvironment(runnerHome: String) -> [String: String] {
+        guard let xcconfig = WDABuildConfig.install(in: runnerHome) else { return [:] }
+        return ["XCODE_XCCONFIG_FILE": xcconfig]
+    }
 
     public func cleanupOrphans(deviceID: String) async {}
 
