@@ -1,0 +1,56 @@
+== run --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== run --json --quiet
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== diff capture --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== diff compare --json
+ rc=1 stdout=0B
+ ERR| Error: No captures found in .grantiva/captures. Run: grantiva diff capture
+== diff approve --json
+ rc=1 stdout=0B
+ ERR| Error: No captures found in .grantiva/captures. Run: grantiva diff capture
+== build build --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== build install --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== hierarchy --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No keep-alive session found. Start one with `grantiva run --keep-alive` first.
+== runner dump-hierarchy --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port.
+== runner stop --json
+ rc=0 stdout=31B
+ OUT| {
+ OUT|   "status" : "not_running"
+ OUT| }
+== ci run --json
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No .xcworkspace or .xcodeproj found in current directory
+== record --json --duration 1
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No simulator named. Pass --simulator or set simulator in grantiva.yml.
+== simulator teardown --json
+ rc=64 stdout=0B
+ ERR| Error: Pass --session-id <id> or --udid <UDID>.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== emulator teardown --json
+ rc=64 stdout=0B
+ ERR| Error: Pass --serial <serial> or --all.
+ ERR| Usage: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
+ ERR|   See 'grantiva emulator teardown --help' for more information.
+== console flags list --json
+ rc=1 stdout=0B
+ ERR| Error: Not authenticated. Run: grantiva auth login
+== console open flags --json
+ rc=0 stdout=64B
+ OUT| {
+ OUT|   "url" : "https:\/\/grantiva.io\/dashboard\/feature-flags"
+ OUT| }

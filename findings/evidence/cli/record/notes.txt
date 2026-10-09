@@ -1,0 +1,7 @@
+record --duration 2 --frames-at a,b --simulator qa-cli-1 --output <scratch>/rec
+  -> records the full 2 s first, then: "Error: Invalid argument: --frames-at must contain non-negative integer milliseconds", rc=1
+record --duration 2 --frames-at 1,5 --simulator qa-cli-1 --output <scratch>/rec2   (no extension)
+  -> records, writes QuickTime file at rec2, then "Error: Cannot Open", rc=1
+record --duration 2 --frames-at 500,1500 --simulator qa-cli-1 --output <scratch>/rec3.mp4
+  -> rc=0; stdout (record-valid.stdout) begins with simctl's "Recording completed. Writing to disk." / "Wrote video to:" narration
+  -> rec3.json: both frames actualMilliseconds 0; ffprobe: nb_frames=1 duration=0.066667 (static screen)

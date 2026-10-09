@@ -1,0 +1,41 @@
+== [malformed.yml as grantiva.yml] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: grantiva.yml could not be parsed: 7:7: error: parser: while parsing a flow node in line 7, column 7
+ ERR| did not find expected node content:
+ ERR|       - tap: "x"
+ ERR|       ^
+== [malformed-android.yml as grantiva-android.yml] timeout 120 $G run --no-build --platform android
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: grantiva-android.yml could not be parsed: 5:3: error: parser: while parsing a block collection in line 3, column 3
+ ERR| did not find expected '-' indicator:
+ ERR|   bad: : :
+ ERR|   ^
+== [malformed-android.yml as grantiva-android.yml] timeout 120 $G doctor --platform android | grep -i yml
+ rc=0 stdout=36B
+ OUT|     ✓ grantiva-android.yml  Found
+== [empty.yml as grantiva.yml] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No screens or flows configured in grantiva.yml
+== [comments-only.yml as grantiva.yml] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No screens or flows configured in grantiva.yml
+== [unknown-keys.yml as grantiva.yml] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No screens or flows configured in grantiva.yml
+== [platform-android-in-ios.yml as grantiva.yml] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: grantiva.yml declares `platform: android` but it is the iOS config file.
+== [flows-empty.yml as grantiva.yml] timeout 120 $G run --no-build --report-dir out --ready-file out.ready; ls out 2>&1; cat out.ready
+ rc=0 stdout=144B
+ OUT| ls: out: No such file or directory
+ OUT| {
+ OUT|   "finishedAt" : "2026-10-09T20:47:18Z",
+ OUT|   "flows" : [
+ OUT| 
+ OUT|   ],
+ OUT|   "reportDir" : "out",
+ OUT|   "status" : "failed"
+ OUT| } ERR| Error: Invalid argument: No screens or flows configured in grantiva.yml
+== [flows-empty.yml as grantiva.yml] timeout 120 $G run --no-build --platform android
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --platform android was given but grantiva-android.yml does not exist here. Found grantiva.yml. Create grantiva-android.yml with grantiva init --platform android.

@@ -1,0 +1,71 @@
+== [neither] timeout 30 $G simulator teardown --udid "" --force
+ rc=64 stdout=0B
+ ERR| Error: Invalid argument: --udid is empty. Pass a simulator UDID — if this came from a shell variable, it was unset.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator teardown --udid not-a-udid-at-all --force
+ rc=64 stdout=0B
+ ERR| Error: Invalid argument: --udid not-a-udid-at-all is not a simulator UDID. Expected the 8-4-4-4-12 hex form simctl prints, for example 921A0945-7157-4533-BA1F-21E8132D3E40.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator teardown --session-id ""
+ rc=64 stdout=0B
+ ERR| Error: Invalid argument: --session-id is empty. Pass a session identifier — if this came from a shell variable, it was unset.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator teardown --session-id "   "
+ rc=64 stdout=0B
+ ERR| Error: Invalid argument: --session-id is empty. Pass a session identifier — if this came from a shell variable, it was unset.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator teardown --session-id X --udid 00000000-0000-0000-0000-000000000000
+ rc=64 stdout=0B
+ ERR| Error: --session-id and --udid are mutually exclusive; pass one.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator teardown
+ rc=64 stdout=0B
+ ERR| Error: Pass --session-id <id> or --udid <UDID>.
+ ERR| Usage: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ ERR|   See 'grantiva simulator teardown --help' for more information.
+== [neither] timeout 30 $G record --duration 2 --frames-at a,b
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No simulator named. Pass --simulator or set simulator in grantiva.yml.
+== [neither] timeout 30 $G record
+ rc=64 stdout=0B
+ ERR| Error: Missing expected argument '--duration <duration>'
+ ERR| Help:  --duration <duration>  Recording duration in seconds (Android caps a recording at 180)
+ ERR| Usage: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+ ERR|   See 'grantiva record --help' for more information.
+== [neither] timeout 30 $G record --duration 2 --frames-at 5 --simulator qa-nonexistent
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Simulator not found: "qa-nonexistent"
+== [neither] timeout 30 $G emulator teardown
+ rc=64 stdout=0B
+ ERR| Error: Pass --serial <serial> or --all.
+ ERR| Usage: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
+ ERR|   See 'grantiva emulator teardown --help' for more information.
+== [neither] timeout 30 $G simulator ensure
+ rc=64 stdout=0B
+ ERR| Error: Missing expected argument '--name <name>'
+ ERR| Help:  --name <name>  Simulator name. Also the source of the device type when --device-type is omitted, so `--name "iPhone 17"` works on its own.
+ ERR| Usage: grantiva simulator ensure [--json] [--verbose] [--quiet] --name <name> [--device-type <device-type>] [--runtime <runtime>] [--boot] [--no-boot]
+ ERR|   See 'grantiva simulator ensure --help' for more information.
+== [neither] timeout 30 $G diff approve
+ rc=1 stdout=0B
+ ERR| Error: No captures found in .grantiva/captures. Run: grantiva diff capture
+== [neither] timeout 30 $G diff approve --platform android
+ rc=1 stdout=0B
+ ERR| Error: No captures found in .grantiva/captures/android. Run: grantiva diff capture
+== [neither] timeout 30 $G runner stop
+ rc=0 stdout=25B
+ OUT| No active session found.
+== [neither] timeout 30 $G runner dump-hierarchy
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port.
+== [neither] timeout 30 $G hierarchy
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No keep-alive session found. Start one with `grantiva run --keep-alive` first.
+== [neither] timeout 30 $G hierarchy --udid 00000000-0000-0000-0000-000000000000
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: No keep-alive session found. Start one with `grantiva run --keep-alive` first.

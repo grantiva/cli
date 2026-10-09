@@ -1,0 +1,18 @@
+== [maestro-dir] timeout 180 $G run --no-build --simulator qa-cli-1 --report-dir out --timeout 60; ls -R out | head -20
+ rc=0 stdout=47B
+ OUT| captures
+ OUT| 
+ OUT| out/captures:
+ OUT| failure-1791578775.png
+ ERR| Resolved: scheme=(none) simulator=qa-cli-1 screens=1 flows=0
+ ERR| Preparing runner...
+ ERR| Runner ready
+ ERR| Booting simulator: qa-cli-1
+ ERR| Simulator booted: qa-cli-1 (D3E7E498-2E80-469C-A465-4757C8995ACC)
+ ERR| Skipping build and install (--no-build)
+ ERR| Running 1 flow(s)...
+ ERR| 
+== [maestro-empty] timeout 180 $G run --no-build --simulator qa-cli-1 --report-dir out --timeout 60; ls -R out | head -20
+ rc=0 stdout=0B
+ ERR| Error: Invalid argument: No flow files found in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/work/maestro-empty/.maestro
+ ERR| ls: out: No such file or directory

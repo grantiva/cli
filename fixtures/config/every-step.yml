@@ -1,0 +1,18 @@
+scheme: Landmarks
+simulator: qa-cli-1
+bundle_id: com.kylebrowning.Landmarks
+screens:
+  - name: Launch
+    path: launch
+  - name: AllSteps
+    path:
+      - tap: "Turtle Rock"
+      - swipe: up
+      - swipe: down
+      - swipe: left
+      - swipe: right
+      - type: "hello"
+      - wait: 1
+      - assert_visible: "Turtle Rock"
+      - assert_not_visible: "Nope"
+      - run_flow: "run-flow/sub/flow.yaml"

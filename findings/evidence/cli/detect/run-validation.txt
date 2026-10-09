@@ -1,0 +1,59 @@
+== [neither] timeout 60 $G run --no-build --env NOEQUALS
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Invalid --env "NOEQUALS": expected KEY=VALUE.
+== [neither] timeout 60 $G run --no-build --env =v
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Invalid --env "=v": the key before `=` is empty.
+== [neither] timeout 60 $G run --no-build --env 'A B=1'
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Invalid --env "A B=1": the key must not contain whitespace.
+== [neither] mkdir d.ready; timeout 60 $G run --no-build --ready-file d.ready; ls -la d.ready
+ rc=0 stdout=101B
+ OUT| total 0
+ OUT| drwxr-xr-x@ 2 kyle  wheel   64 Oct  9 13:47 .
+ OUT| drwxr-xr-x@ 4 kyle  wheel  128 Oct  9 13:47 ..
+ ERR| Error: Invalid argument: --ready-file d.ready is a directory, not a file.
+== [neither] echo "{\"status\":\"passed\"}" > x.ready; timeout 60 $G run --no-build --ready-file x.ready; cat x.ready
+ rc=0 stdout=86B
+ OUT| {
+ OUT|   "finishedAt" : "2026-10-09T20:47:54Z",
+ OUT|   "flows" : [
+ OUT| 
+ OUT|   ],
+ OUT|   "status" : "failed"
+ OUT| } ERR| Error: Invalid argument: No screens or flows configured in grantiva.yml
+== [neither] timeout 60 $G run --no-build --ready-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/ro/x.ready; ls /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/ro
+ rc=0 stdout=0B
+ ERR| Error: Invalid argument: --ready-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/ro/x.ready is not writable.
+== [neither] timeout 60 $G run --snapshot bogus
+ rc=64 stdout=0B
+ ERR| Error: The value 'bogus' is invalid for '--snapshot <snapshot>'
+ ERR| Help:  --snapshot <snapshot>  Snapshot policy: failure (default — one shot after failure), trailing (last-good step + failure step), full (every step).
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [neither] timeout 60 $G run --timeout abc
+ rc=64 stdout=0B
+ ERR| Error: The value 'abc' is invalid for '--timeout <timeout>'
+ ERR| Help:  --timeout <timeout>  Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Bump this for long multi-flow suites.
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [neither] timeout 60 $G run --timeout -1
+ rc=64 stdout=0B
+ ERR| Error: Missing value for '--timeout <timeout>'
+ ERR| Help:  --timeout <timeout>  Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Bump this for long multi-flow suites.
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [neither] timeout 60 $G run --timeout=-1 --no-build; echo
+ rc=0 stdout=1B
+ OUT| 
+ ERR| Error: --timeout must be at least 30 seconds.
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [neither] timeout 60 $G run --timeout 0 --no-build
+ rc=64 stdout=0B
+ ERR| Error: --timeout must be at least 30 seconds.
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [every-step.yml as grantiva.yml] timeout 60 $G run --no-build --env NOEQUALS
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Invalid --env "NOEQUALS": expected KEY=VALUE.

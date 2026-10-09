@@ -1,0 +1,165 @@
+== [both-configs] timeout 120 $G run --no-build
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Both grantiva.yml and grantiva-android.yml exist. Pass --platform ios|android or set GRANTIVA_PLATFORM.
+== [both-configs] timeout 120 $G doctor; echo rc=$?
+ rc=0 stdout=1568B
+ OUT| 
+ OUT|   Grantiva Doctor
+ OUT|   ──────────────────────────────────────────────────
+ OUT| 
+ OUT|   Required
+ OUT| 
+ OUT|     ✓ Xcode             /Applications/Xcode-27.0.0.app/Contents/Developer
+ OUT|     ✓ Xcode Version     Xcode 27.0
+ OUT|     ✓ Booted Simulator  iPhone 17 Pro — iOS-26-0
+ OUT|     ✓ Android SDK       /Users/kyle/Library/Android/sdk
+ OUT|     ✓ adb               Android Debug Bridge version 1.0.41
+ OUT|     ✓ Android Emulator  /Users/kyle/Library/Android/sdk/emulator/emulator
+ OUT|     ✗ JDK               No JDK found (JAVA_HOME or == [both-configs] timeout 60 $G run --no-build --platform android --application-id com.x.y --device bogus-serial
+ rc=1 stdout=0B
+ ERR| Resolved: scheme=(none) simulator=bogus-serial screens=1 flows=0
+ ERR| Preparing runner...
+ ERR| Runner ready
+ ERR| Booting emulator: bogus-serial
+ ERR| Error: Invalid argument: No attached device has the serial "bogus-serial" (see `adb devices`) and no AVD has that name (see `emulator -list-avds`). AVDs: Pixel_8_API_35.
+== [both-configs] GRANTIVA_PLATFORM=ios timeout 60 $G run --no-build --simulator does-not-exist-qa
+ rc=1 stdout=0B
+ ERR| Resolved: scheme=Landmarks simulator=does-not-exist-qa screens=1 flows=0
+ ERR| Preparing runner...
+ ERR| Runner ready
+ ERR| Booting simulator: does-not-exist-qa
+ ERR| Error: Invalid argument: Simulator not found: "does-not-exist-qa"
+== [both-configs] timeout 60 $G doctor --platform android --json | grep -o "grantiva[-a-z]*.yml" | sort -u
+ rc=0 stdout=21B
+ OUT| grantiva-android.yml
+== [both-configs] GRANTIVA_PLATFORM=ios timeout 60 $G doctor --json | grep -o "grantiva[-a-z]*.yml" | sort -u
+ rc=0 stdout=13B
+ OUT| grantiva.yml
+== [both-configs] GRANTIVA_PLATFORM=android timeout 60 $G doctor --platform ios --json | grep -o "\"name\" : \"[A-Za-z ]*\"" | head -4
+ rc=0 stdout=88B
+ OUT| "name" : "Xcode"
+ OUT| "name" : "Xcode Version"
+ OUT| "name" : "Booted Simulator"
+ OUT| "name" : "Runner"
+== [both-configs] GRANTIVA_PLATFORM=windows timeout 60 $G doctor
+ rc=1 stdout=1563B
+ OUT| 
+ OUT|   Grantiva Doctor
+ OUT|   ──────────────────────────────────────────────────
+ OUT| 
+ OUT|   Required
+ OUT| 
+ OUT|     ✓ Xcode             /Applications/Xcode-27.0.0.app/Contents/Developer
+ OUT|     ✓ Xcode Version     Xcode 27.0
+ OUT|     ✓ Booted Simulator  iPhone 17 Pro — iOS-26-0
+ OUT|     ✓ Android SDK       /Users/kyle/Library/Android/sdk
+ OUT|     ✓ adb               Android Debug Bridge version 1.0.41
+ OUT|     ✓ Android Emulator  /Users/kyle/Library/Android/sdk/emulator/emulator
+ OUT|     ✗ JDK               No JDK found (JAVA_HOME or == [both-configs] GRANTIVA_PLATFORM=windows timeout 60 $G run
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: GRANTIVA_PLATFORM is "windows"; expected ios or android.
+== [both-configs] timeout 60 $G run --platform macos
+ rc=64 stdout=0B
+ ERR| Error: The value 'macos' is invalid for '--platform <platform>'. Please provide one of 'ios' and 'android'.
+ ERR| Help:  --platform <platform>  Target platform: ios or android. Defaults to whichever of grantiva.yml / grantiva-android.yml exists, else the project files in this directory. GRANTIVA_PLATFORM also sets it.
+ ERR| Usage: grantiva run <options>
+ ERR|   See 'grantiva run --help' for more information.
+== [gradle-only] timeout 60 $G run --no-build --scheme X
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --scheme is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G run --no-build --logs-predicate x
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --logs-predicate is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G run --no-build --simulator foo
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --simulator is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G run --no-build --bundle-id a.b
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --bundle-id is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G run --no-build --derived-data-path x
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --derived-data-path is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G run --no-build --device emulator-5554 --emulator Pixel_8_API_35
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --device and --emulator are mutually exclusive; pass one.
+== [gradle-only] timeout 60 $G run --no-build --application-id "not valid"
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Application ID "not valid" is not a valid Android application ID (letters, digits, underscores, at least one dot).
+== [gradle-only] timeout 60 $G build build --platform android --derived-data-path x
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --derived-data-path is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [gradle-only] timeout 60 $G ci run --platform android
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Android baselines are local only until the Grantiva backend supports platforms; use local baselines
+== [gradle-only] timeout 60 $G record --platform android --duration 200
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: Android recordings are capped at 180 seconds per file (screenrecord --time-limit); --duration 200.0 is too long.
+== [gradle-only] timeout 60 $G init --platform android --scheme X; ls
+ rc=0 stdout=41B
+ OUT| grantiva-android.yml
+ OUT| settings.gradle.kts
+ ERR| Created grantiva-android.yml
+== [gradle-only] timeout 60 $G init --platform android --application-id com.kylebrowning.landmarks; cat grantiva-android.yml
+ rc=0 stdout=483B
+ OUT| # Generated by grantiva init — commit this file
+ OUT| platform: android
+ OUT| module: app
+ OUT| variant: debug
+ OUT| application_id: com.kylebrowning.landmarks
+ OUT| emulator: Pixel_8_API_35
+ OUT| system_image: "system-images;android-35;google_apis;arm64-v8a"
+ OUT| # Intel Macs: use "system-images;android-35;google_apis;x86_64"
+ OUT| # build_args: ["-PsomeFlag=1"]
+ OUT| 
+ OUT| screens:
+ OUT|   - name: Home
+ OUT|     path: launch
+ OUT| 
+ OUT| diff:
+ OUT|   threshold: 0.02
+ OUT|   perceptual_threshold: 5.0
+ OUT| 
+ OUT| # a11y:
+ OUT| #   rules:
+ OUT| #     - missing_label
+ OUT| #     - small_tap_target
+ ERR| Created grantiva-android.yml
+== [xcode-only] timeout 60 $G run --no-build --module app
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --module is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --logs-tag x
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --logs-tag is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --variant debug
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --variant is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --emulator X
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --emulator is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --device X
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --device is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --headless
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --headless is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G run --no-build --allow-device-settings
+ rc=1 stdout=0B
+ ERR| Error: Invalid argument: --allow-device-settings is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).
+== [xcode-only] timeout 60 $G init --platform ios --application-id a.b; ls
+ rc=0 stdout=27B
+ OUT| App.xcodeproj
+ OUT| grantiva.yml
+ ERR| Created grantiva.yml
+== [xcode-only] timeout 60 $G init --scheme Landmarks --bundle-id com.kylebrowning.Landmarks; grep -v "^#" grantiva.yml | head -5
+ rc=0 stdout=87B
+ OUT| scheme: Landmarks
+ OUT| simulator: iPhone 16
+ OUT| bundle_id: com.kylebrowning.Landmarks
+ OUT| 
+ OUT| screens:
+ ERR| Created grantiva.yml
+== [xcode-only] timeout 60 $G init --json
+ rc=64 stdout=0B
+ ERR| Error: Unknown option '--json'
+ ERR| Usage: grantiva init [--verbose] [--quiet] [--platform <platform>] [--scheme <scheme>] [--bundle-id <bundle-id>] [--application-id <application-id>]
+ ERR|   See 'grantiva init --help' for more information.
