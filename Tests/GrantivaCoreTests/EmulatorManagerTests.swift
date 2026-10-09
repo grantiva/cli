@@ -21,17 +21,28 @@ final class EmulatorManagerTests: XCTestCase {
         }
     }
 
-    private func manager(_ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true) -> EmulatorManager {
+    private func manager(_ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true, sdkRoot: String = "/sdk") -> EmulatorManager {
         EmulatorManager(
-            sdk: AndroidSDK(root: "/sdk"),
-            adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute),
+            sdk: AndroidSDK(root: sdkRoot),
+            adb: ADB(path: "\(sdkRoot)/platform-tools/adb", execute: shell.execute),
             execute: shell.execute,
             spawn: spawn.spawn,
             provenance: AndroidProvenance(directory: scratch.path),
             headless: headless,
             bootTimeout: 1,
-            pollInterval: 0.01
+            pollInterval: 0.01,
+            environment: [:],
+            killTimeout: 1
         )
+    }
+
+    /// A pid that no longer exists: a child that ran and was reaped.
+    private func deadPID() throws -> Int32 {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+        try process.run()
+        process.waitUntilExit()
+        return process.processIdentifier
     }
 
     func testChoosePortSkipsSerialsInUse() {
@@ -235,5 +246,205 @@ final class EmulatorManagerTests: XCTestCase {
         }
         XCTAssertLessThan(Date().timeIntervalSince(started), 0.5, "must not wait for the boot timeout")
         XCTAssertFalse(try provenance.contains(serial: "emulator-5558"))
+    }
+
+    func testEnsureCreatesAMissingAVDAndBootsIt() async throws {
+        let shell = ScriptedShell([
+            .success(""),                                  // emulator -list-avds: none
+            .success("/jdk"),                              // java_home
+            .success(""),                                  // sdkmanager
+            .success(""),                                  // avdmanager create
+            .success("List of devices attached"),          // selectDevice: adb devices
+            .success("Pixel_8_API_35"),                    // selectDevice: list-avds
+            .success("List of devices attached"),          // boot: adb devices (port choice)
+            .success("1"),                                 // boot_completed
+            .success("package:/system/framework/framework-res.apk"),
+            .success(""),                                  // dismiss-keyguard
+        ])
+        let result = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: true)
+        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5554", created: true, state: "Booted"))
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/emulator/emulator' -list-avds",
+            "/usr/libexec/java_home",
+            "yes 2>/dev/null | JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/sdkmanager' --sdk_root='/sdk' 'system-images;android-35;google_apis;arm64-v8a'",
+            "echo no | JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/avdmanager' create avd -n 'Pixel_8_API_35' -k 'system-images;android-35;google_apis;arm64-v8a' -d pixel_8",
+            "'/sdk/platform-tools/adb' devices -l",
+            "'/sdk/emulator/emulator' -list-avds",
+            "'/sdk/platform-tools/adb' devices -l",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell getprop 'sys.boot_completed'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'pm path android'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm dismiss-keyguard'",
+        ])
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), ["Pixel_8_API_35"])
+    }
+
+    func testEnsureReusesAnExistingAVDWithoutBootingWhenAsked() async throws {
+        let shell = ScriptedShell([.success("Pixel_8_API_35")])
+        let result = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
+        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: nil, created: false, state: "Shutdown"))
+        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds"])
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), [])
+    }
+
+    func testEnsureSkipsSdkmanagerWhenTheImageIsInstalled() async throws {
+        let root = scratch.appendingPathComponent("sdk").path
+        try FileManager.default.createDirectory(atPath: "\(root)/system-images/android-34/google_apis/arm64-v8a", withIntermediateDirectories: true)
+        let shell = ScriptedShell([.success(""), .success("/jdk"), .success("")])
+        let result = try await manager(shell, sdkRoot: root).ensure(avd: "Pixel_7_API_34", systemImage: "system-images;android-34;google_apis;arm64-v8a", boot: false)
+        XCTAssertTrue(result.created)
+        XCTAssertEqual(shell.commands, [
+            "'\(root)/emulator/emulator' -list-avds",
+            "/usr/libexec/java_home",
+            "echo no | JAVA_HOME='/jdk' '\(root)/cmdline-tools/latest/bin/avdmanager' create avd -n 'Pixel_7_API_34' -k 'system-images;android-34;google_apis;arm64-v8a' -d pixel_8",
+        ])
+    }
+
+    func testSystemImagePathReplacesSemicolons() {
+        XCTAssertEqual(
+            EmulatorManager.systemImagePath(root: "/sdk", image: "system-images;android-35;google_apis;arm64-v8a"),
+            "/sdk/system-images/android-35/google_apis/arm64-v8a"
+        )
+    }
+
+    func testDeleteRefusesARunningAVD() async {
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5554 device"), .success("Pixel_8_API_35\nOK")])
+        do {
+            try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("running as emulator-5554"), "\(error)")
+            XCTAssertTrue("\(error)".contains("grantiva emulator teardown --serial emulator-5554"), "\(error)")
+        }
+    }
+
+    func testDeleteRefusesAForeignAVDWithoutForce() async {
+        let shell = ScriptedShell([.success("List of devices attached"), .success("Pixel_8_API_35")])
+        do {
+            try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not created by Grantiva"), "\(error)")
+            XCTAssertTrue("\(error)".contains("--force"), "\(error)")
+        }
+        XCTAssertEqual(shell.commands.count, 2)
+    }
+
+    func testDeleteWithForceRemovesAForeignAVD() async throws {
+        let shell = ScriptedShell([.success("List of devices attached"), .success("Pixel_8_API_35"), .success("/jdk"), .success("")])
+        try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: true)
+        XCTAssertEqual(shell.commands.last, "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/avdmanager' delete avd -n 'Pixel_8_API_35'")
+    }
+
+    func testDeleteRemovesACreatedAVDAndItsLedgerEntry() async throws {
+        try AndroidProvenance(directory: scratch.path).registerCreatedAVD("Pixel_8_API_35")
+        let shell = ScriptedShell([.success("List of devices attached"), .success("Pixel_8_API_35"), .success("/jdk"), .success("")])
+        try await manager(shell).deleteAVD(name: "Pixel_8_API_35", force: false)
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), [])
+    }
+
+    func testDeleteOfAnUnknownAVDListsTheOnesThatExist() async {
+        let shell = ScriptedShell([.success("List of devices attached"), .success("Pixel_7_API_34")])
+        do {
+            try await manager(shell).deleteAVD(name: "Nope", force: true)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("No AVD named \"Nope\""), "\(error)")
+            XCTAssertTrue("\(error)".contains("Pixel_7_API_34"), "\(error)")
+        }
+    }
+
+    func testSessionsReportLivenessAndPruneDeadAbsentRecords() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Live", pid: getpid()))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "Gone", pid: try deadPID()))
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5554 device")])
+        let sessions = try await manager(shell).sessions()
+        XCTAssertEqual(sessions.map(\.serial), ["emulator-5554"])
+        XCTAssertEqual(sessions.first?.processAlive, true)
+        XCTAssertEqual(sessions.first?.adbState, "device")
+        XCTAssertEqual(try ledger.all().map(\.serial), ["emulator-5554"], "the dead, absent record is pruned")
+    }
+
+    /// Review Focus 4.
+    func testTeardownRefusesAForeignSerialWithoutForce() async {
+        let shell = ScriptedShell()
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5556", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+            XCTAssertTrue("\(error)".contains("--force"), "\(error)")
+        }
+        XCTAssertTrue(shell.commands.isEmpty)
+    }
+
+    /// Review Focus 4.
+    func testTeardownWithForceKillsAForeignSerial() async throws {
+        let shell = ScriptedShell([
+            .success(""), .success(""),                              // force-stop x2
+            .success(""),                                            // forward --list
+            .success("List of devices attached\nemulator-5556 device"),
+            .success(""),                                            // emu kill
+            .success("List of devices attached"),                    // gone
+        ])
+        let outcome = try await manager(shell).teardown(serial: "emulator-5556", force: true)
+        XCTAssertEqual(outcome, EmulatorTeardownOutcome(serial: "emulator-5556", avd: nil, killed: true, recorded: false))
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5556' shell am force-stop 'io.appium.uiautomator2.server'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5556' shell am force-stop 'io.appium.uiautomator2.server.test'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5556' forward --list",
+            "'/sdk/platform-tools/adb' devices -l",
+            "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill",
+            "'/sdk/platform-tools/adb' devices -l",
+        ])
+    }
+
+    func testTeardownKillsARecordedEmulatorAndRemovesTheRecord() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+        let shell = ScriptedShell([
+            .success(""), .success(""), .success(""),
+            .success("List of devices attached\nemulator-5554 device"),
+            .success(""),
+            .success("List of devices attached"),
+        ])
+        let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+        XCTAssertEqual(outcome, EmulatorTeardownOutcome(serial: "emulator-5554", avd: "Pixel_8_API_35", killed: true, recorded: true))
+        XCTAssertEqual(try ledger.all(), [])
+    }
+
+    func testTeardownOfARecordedEmulatorThatIsAlreadyGoneJustDropsTheRecord() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+        let shell = ScriptedShell([.success(""), .success(""), .success(""), .success("List of devices attached")])
+        let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+        XCTAssertEqual(outcome.killed, false)
+        XCTAssertEqual(try ledger.all(), [])
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+    }
+
+    func testTeardownTimesOutWhenTheEmulatorKeepsRunning() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid()))
+        let shell = ScriptedShell([.success(""), .success(""), .success(""), .success("List of devices attached\nemulator-5554 device"), .success("")])
+        shell.fallback = "List of devices attached\nemulator-5554 device"
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("did not exit within 1s"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.all().count, 1, "a record whose emulator is still up stays")
+    }
+
+    func testTeardownAllCoversEveryRecordedEmulator() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try deadPID()))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try deadPID()))
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5554 device\nemulator-5556 device")])
+        shell.fallback = "List of devices attached"
+        let outcomes = try await manager(shell).teardownAll()
+        XCTAssertEqual(outcomes.map(\.serial), ["emulator-5554", "emulator-5556"])
+        XCTAssertEqual(try ledger.all(), [])
     }
 }
