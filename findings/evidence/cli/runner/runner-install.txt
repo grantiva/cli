@@ -1,0 +1,67 @@
+== install #1
+Extracting runner...
+Runner installed at /Users/kyle/.grantiva/runner/grantiva-runner
+Version: 1.1.18-grantiva.7
+real 0.01
+user 0.00
+sys 0.00
+rc=0
+== install #2
+Extracting runner...
+Runner installed at /Users/kyle/.grantiva/runner/grantiva-runner
+Version: 1.1.18-grantiva.7
+real 0.01
+user 0.00
+sys 0.00
+rc=0
+ls: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner: No such file or directory
+cat: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/version: No such file or directory
+version file: 
+grantiva-runner 1.1.18-grantiva.7
+== tamper
+(eval):1: no such file or directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/version
+grantiva-runner 1.1.18-grantiva.7
+Extracting runner...
+Runner installed at /Users/kyle/.grantiva/runner/grantiva-runner
+Version: 1.1.18-grantiva.7
+real 0.02
+user 0.00
+sys 0.00
+rc=0
+cat: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/version: No such file or directory
+version file: 
+== delete binary
+rm: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/grantiva-runner: No such file or directory
+Extracting runner...
+Runner installed at /Users/kyle/.grantiva/runner/grantiva-runner
+Version: 1.1.18-grantiva.7
+rc=0
+ls: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/grantiva-runner: No such file or directory
+== doctor with tampered version
+(eval):1: no such file or directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/c5a91483-47ed-4cad-9873-13c9d52cfa6e/scratchpad/fakehome/.grantiva/runner/version
+{'message': 'grantiva-runner 1.1.18-grantiva.7+android-drivers-2', 'name': 'Runner', 'section': 'Required', 'status': 'ok'}
+== real home: version before: 1.1.18-grantiva.7+android-drivers-2
+-rwxr-xr-x@ 1 kyle  staff  35065026 Aug 29 07:55 /Users/kyle/.grantiva/runner/grantiva-runner
+== runner version after tamper:
+grantiva-runner 1.1.18-grantiva.7
+== runner install after tamper
+Extracting runner...
+GrantivaCore/resource_bundle_accessor.swift:44: Fatal error: unable to find bundle named grantiva_GrantivaCore
+time: command terminated abnormally
+real 0.05
+user 0.00
+sys 0.03
+rc=133
+cat: /Users/kyle/.grantiva/runner/version: No such file or directory
+version after: 
+ls: /Users/kyle/.grantiva/runner/grantiva-runner: No such file or directory
+
+== aftermath (13:55)
+The tamper run with ~/.grantiva-qa/bin/grantiva (no grantiva_GrantivaCore.bundle beside it) crashed (SIGTRAP, rc=133)
+after RunnerManager.installIfNeeded had already removed ~/.grantiva/runner. Lost: grantiva-runner, version, drivers/,
+locks/, reports/, grantiva-wda.xcconfig (cache/ was moved aside and restored by the defer).
+Repaired with the identical 2.0.1 build that has its bundle:
+  /Users/kyle/Developer/grantiva-cli/.build/out/Products/Release/grantiva runner install
+  -> grantiva-runner, version (1.1.18-grantiva.7+android-drivers-2), drivers/ restored; xcconfig is rewritten on each runner spawn;
+     locks/ and reports/ contents are gone (recreated on demand).
+HOME=<scratch>/fakehome is ignored by the CLI (installs/reads the real ~/.grantiva), so a sandboxed test was not possible.
