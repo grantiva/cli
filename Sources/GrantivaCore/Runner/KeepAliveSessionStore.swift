@@ -171,12 +171,15 @@ public struct KeepAliveSessionStore: Sendable {
     }
 
     /// Decoded leniently: the runner is a separate binary and only the three
-    /// fields we route on are required.
+    /// fields we route on are required. A `port` of 0 is what the runner
+    /// publishes on Android, where it does not proxy UIAutomator2 and the CLI
+    /// finds the device from the owner sidecar instead; negative ports are
+    /// rejected.
     static func loadRunnerSession(path: String) -> RunnerSessionFile? {
         guard let data = FileManager.default.contents(atPath: path),
               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let sessionId = object["sessionId"] as? String, !sessionId.isEmpty,
-              let port = Self.integer(object["port"]), port > 0,
+              let port = Self.integer(object["port"]), port >= 0,
               let pid = Self.integer(object["pid"]), pid > 0, pid <= Int(Int32.max)
         else { return nil }
         return RunnerSessionFile(sessionId: sessionId, port: port, pid: Int32(pid))

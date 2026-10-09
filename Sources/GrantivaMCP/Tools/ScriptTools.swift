@@ -31,7 +31,7 @@ enum ScriptTools {
                                 ]),
                                 "tap_xy": .object([
                                     "type": .string("object"),
-                                    "description": .string("Coordinates to tap: {x, y}"),
+                                    "description": .string("Coordinates to tap: {x, y}, in the same unit as the hierarchy frames (points on iOS, dp on Android)"),
                                     "properties": .object([
                                         "x": .object(["type": .string("number")]),
                                         "y": .object(["type": .string("number")]),
@@ -61,7 +61,7 @@ enum ScriptTools {
 
     // MARK: - Handler
 
-    static func script(wda: WDAClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func script(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let stepsValue = arguments["steps"]?.arrayValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'steps' array is required.", annotations: nil, _meta: nil)],
@@ -80,21 +80,21 @@ enum ScriptTools {
             let stepNum = index + 1
 
             if let label = step["tap"]?.stringValue {
-                try await wda.tapByLabel(label)
+                try await driver.tapByLabel(label)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): tapped \"\(label)\"")
             } else if let tapXY = step["tap_xy"]?.objectValue,
                       let x = tapXY["x"]?.doubleValue,
                       let y = tapXY["y"]?.doubleValue {
-                try await wda.tapByCoordinate(x, y)
+                try await driver.tapByCoordinate(x, y)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): tapped at (\(Int(x)), \(Int(y)))")
             } else if let direction = step["swipe"]?.stringValue {
-                try await wda.swipe(direction)
+                try await driver.swipe(direction)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): swiped \(direction)")
             } else if let text = step["type"]?.stringValue {
-                try await wda.typeText(text)
+                try await driver.typeText(text)
                 try await Task.sleep(nanoseconds: 300_000_000)
                 log.append("Step \(stepNum): typed \"\(text)\"")
             } else if let seconds = step["wait"]?.doubleValue {
@@ -107,7 +107,7 @@ enum ScriptTools {
         }
 
         // Fetch final hierarchy
-        let tree = try await wda.hierarchy()
+        let tree = try await driver.hierarchy()
         let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
         let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
 

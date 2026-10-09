@@ -25,4 +25,11 @@ final class VRTToolsTests: XCTestCase {
             XCTAssertEqual(VRTTools.compareFailureResult(message: message).isError, true)
         }
     }
+
+    func testCommandsCarryThePlatform() {
+        XCTAssertEqual(VRTTools.captureCommand(platform: .ios), "grantiva diff capture --no-build --json --platform ios")
+        XCTAssertEqual(VRTTools.compareCommand(platform: .android), "grantiva diff compare --json --platform android")
+        XCTAssertEqual(VRTTools.approveCommand(platform: .android, screens: ["Home", "It's"]), "grantiva diff approve --json --platform android 'Home' 'It'\\''s'")
+        XCTAssertEqual(VRTTools.approveCommand(platform: .ios, screens: []), "grantiva diff approve --json --platform ios")
+    }
 }

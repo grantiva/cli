@@ -94,4 +94,11 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertTrue(TargetOptions.appIDMessage(for: .android).contains("--application-id"))
         XCTAssertTrue(TargetOptions.appIDMessage(for: .android).contains("grantiva-android.yml"))
     }
+
+    func testDeviceAndEmulatorTogetherAreRejected() throws {
+        let target = try TargetOptions.parse(["--device", "emulator-5554", "--emulator", "Pixel_8_API_35"])
+        XCTAssertThrowsError(try target.checkFlags(for: .android, derivedDataPath: nil)) { error in
+            XCTAssertTrue("\(error)".contains("--device and --emulator are mutually exclusive"), "\(error)")
+        }
+    }
 }

@@ -12,7 +12,7 @@ final class ScriptToolsTests: XCTestCase {
     func testStepsAreExecutedInOrderAcrossEveryActionKind() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: [
                 "steps": .array([
                     .object(["tap": .string("Login")]),
@@ -45,7 +45,7 @@ final class ScriptToolsTests: XCTestCase {
 
     func testMissingStepsArrayIsReportedAsAToolErrorWithoutTouchingWDA() async throws {
         let recorder = WDARecorder()
-        let result = try await ScriptTools.script(wda: MCPTestSupport.fakeWDA(recorder: recorder), arguments: [:])
+        let result = try await ScriptTools.script(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("'steps' array is required"))
         XCTAssertTrue(recorder.calls.isEmpty)
@@ -54,7 +54,7 @@ final class ScriptToolsTests: XCTestCase {
     func testStepsOfTheWrongTypeAreRejected() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .string("tap Login")]
         )
         XCTAssertEqual(result.isError, true)
@@ -64,7 +64,7 @@ final class ScriptToolsTests: XCTestCase {
     func testAnEmptyStepListStillReturnsTheHierarchy() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([])]
         )
         XCTAssertNil(result.isError)
@@ -75,7 +75,7 @@ final class ScriptToolsTests: XCTestCase {
     func testNonObjectStepsAreSkippedAndReported() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.string("tap"), .object(["swipe": .string("down")])])]
         )
         XCTAssertNil(result.isError)
@@ -87,7 +87,7 @@ final class ScriptToolsTests: XCTestCase {
     func testUnknownActionKeysAreSkippedAndReported() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["frobnicate": .string("x")])])]
         )
         XCTAssertNil(result.isError)
@@ -98,7 +98,7 @@ final class ScriptToolsTests: XCTestCase {
     func testTapXYMissingAnAxisFallsThroughRatherThanTappingWithGarbage() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["tap_xy": .object(["x": .double(10)])])])]
         )
         XCTAssertEqual(recorder.calls, ["hierarchy"], "A half-specified tap_xy must not be sent to WDA")
@@ -108,7 +108,7 @@ final class ScriptToolsTests: XCTestCase {
     func testTapXYAcceptsIntegerCoordinates() async throws {
         let recorder = WDARecorder()
         _ = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["tap_xy": .object(["x": .int(5), "y": .int(6)])])])]
         )
         XCTAssertEqual(recorder.calls.first, "tapByCoordinate(5.0,6.0)")
@@ -117,7 +117,7 @@ final class ScriptToolsTests: XCTestCase {
     func testTapTakesPrecedenceWhenAStepDeclaresSeveralActions() async throws {
         let recorder = WDARecorder()
         _ = try await ScriptTools.script(
-            wda: MCPTestSupport.fakeWDA(recorder: recorder),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["tap": .string("A"), "swipe": .string("up"), "type": .string("B")])])]
         )
         XCTAssertEqual(recorder.calls, ["tapByLabel(A)", "hierarchy"])

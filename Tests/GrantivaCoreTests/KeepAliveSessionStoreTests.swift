@@ -116,6 +116,20 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: path))
     }
 
+    func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: 0, sessionId: "android")
+
+        let sessions = store(live: [100]).liveSessions()
+        XCTAssertEqual(sessions.map(\.sessionId), ["android"])
+        XCTAssertEqual(sessions.first?.port, 0)
+    }
+
+    func testANegativePortIsStillRejected() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: -1, sessionId: "bad")
+
+        XCTAssertTrue(store(live: [100]).liveSessions().isEmpty)
+    }
+
     func testOrderFallsBackToModificationDateForUnexpectedNames() throws {
         let old = directory.appendingPathComponent("old.grantiva")
         let new = directory.appendingPathComponent("new.grantiva")

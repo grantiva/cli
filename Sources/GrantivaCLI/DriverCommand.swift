@@ -78,14 +78,31 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     @OptionGroup var options: GlobalOptions
 
-    @Option(name: .long, help: "App bundle identifier (reads from grantiva.yml if omitted)")
+    @OptionGroup var platformOptions: PlatformOptions
+
+    @Option(name: .long, help: "App bundle identifier (iOS; reads from grantiva.yml if omitted)")
     var bundleId: String?
 
-    @Option(name: .long, help: "Simulator name or UDID (reads from grantiva.yml if omitted)")
+    @Option(name: .long, help: "Simulator name or UDID (iOS; reads from grantiva.yml if omitted)")
     var simulator: String?
+
+    @Option(name: .long, help: "Application ID (Android; reads from grantiva-android.yml if omitted)")
+    var applicationId: String?
+
+    @Option(name: .long, help: "AVD name to use, booting it if needed (Android)")
+    var emulator: String?
+
+    @Option(name: .long, help: "adb serial of an attached emulator or device (Android)")
+    var device: String?
+
+    @Flag(name: .long, help: "Boot an emulator without a window (Android)")
+    var headless = false
 
     @Flag(name: .long, help: "Detach the runner process from this terminal. Prints the log file path on start.")
     var detach: Bool = false
+
+    /// Empty means "make one from the resolved platform"; tests inject a fake.
+    var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
         // Check for existing session
@@ -100,44 +117,50 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     "bundle_id": existing.bundleId,
                 ]))
             } else {
-                Output.line("Runner already running (pid \(existing.pid), WDA port \(existing.wdaPort))")
+                let label = Self.portLabel(DeviceID.isAndroidSerial(existing.udid) ? .android : .ios)
+                Output.line("Runner already running (pid \(existing.pid), \(label) \(existing.wdaPort))")
                 Output.line("Use 'grantiva runner stop' to stop it first.")
             }
             return
         }
 
-        // Resolve config
-        let config = try GrantivaConfig.loadIfPresent(platform: .ios)
-        let resolvedBundleId = bundleId ?? config?.bundleId
-        guard let resolvedBundleId else {
-            throw GrantivaError.invalidArgument(
-                "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."
-            )
+        let (platform, config) = try platformOptions.loadConfig()
+        if platform == .ios {
+            if emulator != nil { throw GrantivaError.invalidArgument("--emulator is an Android option, but this is an iOS project.") }
+            if device != nil { throw GrantivaError.invalidArgument("--device is an Android option, but this is an iOS project.") }
+            if headless { throw GrantivaError.invalidArgument("--headless is an Android option, but this is an iOS project.") }
         }
+        if platform == .android, simulator != nil {
+            throw GrantivaError.invalidArgument("--simulator is an iOS option, but this is an Android project.")
+        }
+        if device != nil, emulator != nil {
+            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
+        }
+        if let device { _ = try DeviceID.validate(device, flag: "--device") }
+        let resolvedAppID = try Self.appID(platform: platform, bundleId: bundleId, applicationId: applicationId, config: config)
+        let targetName = Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
 
-        let simName = simulator ?? config?.simulator ?? "iPhone 16"
-        let simManager = SimulatorManager.live
-        let device = try await simManager.boot(nameOrUDID: simName)
+        let platformDevice = try devicePlatform.make(platform, android: .init(headless: headless))
+        let booted = try await platformDevice.bootDevice(named: targetName)
         // Held until the runner is up, then handed to the runner process: this
         // command returns immediately, but the session it started still owns
-        // the simulator until `runner stop`.
-        let simulatorLease = try SimulatorLease.acquire(udid: device.udid)
+        // the device until `runner stop`.
+        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid)
         var handedOff = false
         defer { if !handedOff { simulatorLease.release() } }
 
+        let deviceNoun = platform == .ios ? "Simulator" : "Device"
         options.note("Starting runner...")
-        options.note("  Bundle ID: \(resolvedBundleId)")
-        options.note("  Simulator: \(device.name) (\(device.udid))")
+        options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
+        options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")
 
-        // Ensure runner binary is available
         let runner = RunnerManager.live
         try await runner.ensureAvailable()
         let runnerBin = runner.runnerPath()
         let runnerDir = runner.runnerDir()
 
-        // Create a flow that launches the app and waits a long time (1 hour)
         let flowYaml = """
-        appId: \(resolvedBundleId)
+        appId: \(resolvedAppID)
         ---
         - launchApp
         - waitForAnimationToEnd:
@@ -149,47 +172,119 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let flowPath = tempDir.appendingPathComponent("session-flow.yaml").path
         try flowYaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
 
-        let runnerArgs = [
-            "--platform", "ios",
-            "--device", device.udid,
-            "--no-ansi",
-            "--no-app-install",
-            "test",
-            "--wait-for-idle-timeout", "0",
-            flowPath,
-        ]
-
+        let runnerArgs = Self.runnerArguments(platform: platformDevice, deviceID: booted.udid, flowPath: flowPath)
+        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir)
+        let launch = Launch(
+            runnerBin: runnerBin, runnerDir: runnerDir, runnerArgs: runnerArgs,
+            environment: environment.isEmpty ? nil : environment,
+            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice
+        )
         let runnerPid: Int32
         if detach {
-            runnerPid = try await startDetached(
-                runnerBin: runnerBin,
-                runnerDir: runnerDir,
-                runnerArgs: runnerArgs,
-                resolvedBundleId: resolvedBundleId,
-                device: device
-            )
+            runnerPid = try await startDetached(launch)
         } else {
-            runnerPid = try await startForeground(
-                runnerBin: runnerBin,
-                runnerDir: runnerDir,
-                runnerArgs: runnerArgs,
-                resolvedBundleId: resolvedBundleId,
-                device: device
-            )
+            runnerPid = try await startForeground(launch)
         }
         simulatorLease.handOff(to: runnerPid)
         handedOff = true
     }
 
+    static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
+        switch platform {
+        case .ios:
+            if applicationId != nil { throw GrantivaError.invalidArgument("--application-id is an Android option, but this is an iOS project.") }
+            guard let id = bundleId ?? config?.bundleId else {
+                throw GrantivaError.invalidArgument("No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml.")
+            }
+            return id
+        case .android:
+            if bundleId != nil { throw GrantivaError.invalidArgument("--bundle-id is an iOS option, but this is an Android project.") }
+            guard let id = applicationId ?? config?.android?.applicationId else {
+                throw GrantivaError.invalidArgument("No application ID. Pass --application-id or set application_id in grantiva-android.yml.")
+            }
+            return id
+        }
+    }
+
+    static func target(platform: Platform, simulator: String?, emulator: String?, device: String?, config: GrantivaConfig?) -> String {
+        switch platform {
+        case .ios: return simulator ?? config?.simulator ?? "iPhone 16"
+        case .android: return device ?? emulator ?? config?.android?.emulator ?? ""
+        }
+    }
+
+    /// Global flags, `test`, the platform's test flags, `--keep-alive`, then
+    /// the flow.
+    ///
+    /// The session flow's `waitForAnimationToEnd` was meant to hold the runner
+    /// for an hour, but runner 1.1.18 returns from it as soon as the screen
+    /// settles on either platform, so without `--keep-alive` the runner
+    /// finishes the flow and exits seconds after `runner start` reports
+    /// success. `--keep-alive` holds the session until SIGINT, which is what
+    /// `runner stop` sends.
+    static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String) -> [String] {
+        platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments()
+            + ["--keep-alive", flowPath]
+    }
+
+    /// Polls `attach` until the runner has opened its UIAutomator2 session.
+    /// The successful attachment is returned un-detached: its forward is the
+    /// port `session.json` records and `dump-hierarchy` and the MCP server use.
+    static func waitForUIAutomator2(
+        attach: @Sendable () async throws -> DriverAttachment,
+        timeout: TimeInterval,
+        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+    ) async -> DriverAttachment? {
+        let deadline = Date().addingTimeInterval(timeout)
+        repeat {
+            if let attachment = try? await attach() { return attachment }
+            await sleep()
+        } while Date() < deadline
+        return nil
+    }
+
+    struct Launch {
+        let runnerBin: String
+        let runnerDir: String
+        let runnerArgs: [String]
+        let environment: [String: String]?
+        let appID: String
+        let device: BootedDevice
+        let platform: Platform
+        let platformDevice: any DevicePlatform
+    }
+
+    /// The local end of the forward to the runner's UIAutomator2 session. The
+    /// forward is left in place: it is the port the session records.
+    private static func waitForUIAutomator2Port(_ launch: Launch) async -> UInt16? {
+        let device = launch.platformDevice
+        let serial = launch.device.udid
+        let attachment = await Self.waitForUIAutomator2(
+            attach: { try await device.attachDriver(deviceID: serial, port: nil) }, timeout: 90
+        )
+        return attachment.map { UInt16(clamping: $0.port) }
+    }
+
+    private static func portLabel(_ platform: Platform) -> String {
+        platform == .android ? "UIAutomator2 port" : "WDA port"
+    }
+
+    /// The runner runs with `--keep-alive`, so it publishes a session file in
+    /// /tmp/grantiva-sessions that carries no device (and, on Android, port
+    /// 0). The owner sidecar maps its pid to the UDID or serial, which is what
+    /// lets `grantiva hierarchy` and the MCP server find the device, exactly
+    /// as `grantiva run --keep-alive` does.
+    private static func recordKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
+        KeepAliveSessionStore().recordOwner(udid: launch.device.udid, runnerPid: runnerPid)
+    }
+
+    private static func removeKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
+        KeepAliveSessionStore().removeOwner(runnerPid: runnerPid)
+    }
+
     // MARK: - Detached start
 
-    private func startDetached(
-        runnerBin: String,
-        runnerDir: String,
-        runnerArgs: [String],
-        resolvedBundleId: String,
-        device: SimulatorDevice
-    ) async throws -> Int32 {
+    private func startDetached(_ launch: Launch) async throws -> Int32 {
         let logPath = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-runner-\(Int(Date().timeIntervalSince1970)).log")
             .path
@@ -201,8 +296,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
         do {
             child = try ChildProcess.spawn(
                 executable: "/usr/bin/nohup",
-                arguments: [runnerBin] + runnerArgs,
-                workingDirectory: runnerDir,
+                arguments: [launch.runnerBin] + launch.runnerArgs,
+                workingDirectory: launch.runnerDir,
+                environment: launch.environment,
                 stdout: log.fileDescriptor,
                 stderr: log.fileDescriptor
             )
@@ -212,22 +308,31 @@ struct RunnerStartCommand: AsyncParsableCommand {
             throw error
         }
         let runnerPid = child.pid
+        Self.recordKeepAliveOwner(launch, runnerPid: runnerPid)
 
-        // Poll the log file for WDA port
-        let port = try await waitForWDAPort(logFile: logPath, timeout: 60)
-
-        guard let port else {
-            child.terminateGroup(gracePeriod: 1)
-            throw GrantivaError.commandFailed(
-                "Timed out waiting for WDA to start. Log: \(logPath)", 1
-            )
+        let port: UInt16
+        if launch.platform == .android {
+            guard let found = await Self.waitForUIAutomator2Port(launch) else {
+                child.terminateGroup(gracePeriod: 1)
+                Self.removeKeepAliveOwner(launch, runnerPid: runnerPid)
+                throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
+            }
+            port = found
+        } else {
+            // Poll the log file for WDA's port or a failed build.
+            let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
+            guard case .port(let found)? = startup else {
+                child.terminateGroup(gracePeriod: 1)
+                throw Self.wdaStartupError(startup, logPath: logPath)
+            }
+            port = found
         }
 
         let session = RunnerSessionInfo(
             pid: runnerPid,
             wdaPort: port,
-            bundleId: resolvedBundleId,
-            udid: device.udid,
+            bundleId: launch.appID,
+            udid: launch.device.udid,
             startedAt: Date()
         )
         try Self.record(session: session)
@@ -237,13 +342,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(runnerPid)",
-                "bundle_id": resolvedBundleId,
-                "udid": device.udid,
+                "bundle_id": launch.appID,
+                "udid": launch.device.udid,
                 "log": logPath,
             ]))
         } else {
             Output.line("Runner started (detached)")
-            Output.line("  WDA port: \(port)")
+            Output.line("  \(Self.portLabel(launch.platform)): \(port)")
             Output.line("  PID:      \(runnerPid)")
             Output.line("  Log:      \(logPath)")
             Output.line("  Session:  \(RunnerSessionInfo.path)")
@@ -256,41 +361,51 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     // MARK: - Foreground start
 
-    private func startForeground(
-        runnerBin: String,
-        runnerDir: String,
-        runnerArgs: [String],
-        resolvedBundleId: String,
-        device: SimulatorDevice
-    ) async throws -> Int32 {
+    private func startForeground(_ launch: Launch) async throws -> Int32 {
         let stdoutPipe = Pipe()
         let child = try ChildProcess.spawn(
-            executable: runnerBin,
-            arguments: runnerArgs,
-            workingDirectory: runnerDir,
+            executable: launch.runnerBin,
+            arguments: launch.runnerArgs,
+            workingDirectory: launch.runnerDir,
+            environment: launch.environment,
             stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
             stderr: FileHandle.standardError.fileDescriptor
         )
         try? stdoutPipe.fileHandleForWriting.close()
+        Self.recordKeepAliveOwner(launch, runnerPid: child.pid)
 
         let output = Self.outputStream(from: stdoutPipe.fileHandleForReading)
-        guard let port = await Self.waitForForegroundWDAPort(
-            chunks: output,
-            timeout: {
-                try? await Task.sleep(for: .seconds(60))
-            },
-            probe: Self.probeKnownWDAPorts
-        ) else {
-            child.terminateGroup(gracePeriod: 1)
-            RunnerSessionInfo.remove()
-            throw GrantivaError.commandFailed("Timed out waiting for WDA to start", 1)
+        let port: UInt16
+        if launch.platform == .android {
+            // The port comes from the forward, not the output; keep draining
+            // the pipe so the runner never blocks on a full one.
+            Task { for await _ in output {} }
+            guard let found = await Self.waitForUIAutomator2Port(launch) else {
+                child.terminateGroup(gracePeriod: 1)
+                Self.removeKeepAliveOwner(launch, runnerPid: child.pid)
+                RunnerSessionInfo.remove()
+                throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
+            }
+            port = found
+        } else {
+            let startup = await Self.waitForForegroundWDAPort(
+                chunks: output,
+                timeout: Self.foregroundWDATimeout,
+                probe: Self.probeKnownWDAPorts
+            )
+            guard case .port(let found)? = startup else {
+                child.terminateGroup(gracePeriod: 1)
+                RunnerSessionInfo.remove()
+                throw Self.wdaStartupError(startup, logPath: nil)
+            }
+            port = found
         }
 
         let session = RunnerSessionInfo(
             pid: child.pid,
             wdaPort: port,
-            bundleId: resolvedBundleId,
-            udid: device.udid,
+            bundleId: launch.appID,
+            udid: launch.device.udid,
             startedAt: Date()
         )
         try Self.record(session: session)
@@ -300,12 +415,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 "status": "started",
                 "port": "\(port)",
                 "pid": "\(child.pid)",
-                "bundle_id": resolvedBundleId,
-                "udid": device.udid,
+                "bundle_id": launch.appID,
+                "udid": launch.device.udid,
             ]))
         } else {
             Output.line("Runner started")
-            Output.line("  WDA port: \(port)")
+            Output.line("  \(Self.portLabel(launch.platform)): \(port)")
             Output.line("  PID:      \(child.pid)")
             Output.line("  Session:  \(RunnerSessionInfo.path)")
             Output.line("")
@@ -338,29 +453,55 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
     }
 
+    /// What the runner's output says about WebDriverAgent so far.
+    enum WDAStartup: Equatable {
+        case port(UInt16)
+        case buildFailed
+    }
+
+    /// How long `runner start` waits for WDA once the runner reports that it
+    /// is building it from source (no cached build for this iOS runtime). A
+    /// cached build comes up within the ordinary 60 s.
+    static let wdaBuildTimeout: TimeInterval = 600
+
+    static func isBuildingWDA(_ text: String) -> Bool {
+        text.contains("Building WDA") || text.contains("Building GrantivaAgent")
+    }
+
+    /// The production `timeout` for `waitForForegroundWDAPort`: 60 s, or
+    /// `wdaBuildTimeout` once the runner has started a WDA build.
+    static func foregroundWDATimeout(isBuilding: @escaping @Sendable () -> Bool) async {
+        try? await Task.sleep(for: .seconds(60))
+        if isBuilding() {
+            try? await Task.sleep(for: .seconds(wdaBuildTimeout - 60))
+        }
+    }
+
     static func waitForForegroundWDAPort(
         chunks: AsyncStream<Data>,
-        timeout: @escaping @Sendable () async -> Void,
+        timeout: @escaping @Sendable (_ isBuilding: @escaping @Sendable () -> Bool) async -> Void,
         probe: @escaping @Sendable () async -> UInt16?
-    ) async -> UInt16? {
-        await withTaskGroup(of: UInt16?.self) { group in
+    ) async -> WDAStartup? {
+        let building = BuildFlag()
+        return await withTaskGroup(of: WDAStartup?.self) { group in
             group.addTask {
                 var accumulated = Data()
                 for await chunk in chunks {
                     accumulated.append(chunk)
                     let text = String(decoding: accumulated, as: UTF8.self)
-                    if let port = extractWDAPort(from: text) {
-                        return port
+                    if let startup = parseWDAStartup(text) {
+                        return startup
                     }
+                    if isBuildingWDA(text) { building.set() }
                     if text.contains("launchApp"), text.contains("✓"),
                        let port = await probe() {
-                        return port
+                        return .port(port)
                     }
                 }
                 return nil
             }
             group.addTask {
-                await timeout()
+                await timeout { building.isSet }
                 return nil
             }
 
@@ -368,6 +509,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
             group.cancelAll()
             return result
         }
+    }
+
+    private final class BuildFlag: @unchecked Sendable {
+        private let lock = NSLock()
+        private var value = false
+        var isSet: Bool { lock.withLock { value } }
+        func set() { lock.withLock { value = true } }
     }
 
     private static func probeKnownWDAPorts() async -> UInt16? {
@@ -394,36 +542,62 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
     }
 
-    /// Poll a log file until a WDA port appears or the timeout elapses.
-    private func waitForWDAPort(logFile: String, timeout: TimeInterval) async throws -> UInt16? {
-        let deadline = Date().addingTimeInterval(timeout)
+    /// Poll a log file until the runner reports WDA's port or a failed WDA
+    /// build, or the timeout elapses.
+    private func waitForWDAPort(logFile: String, timeout: TimeInterval) async throws -> WDAStartup? {
+        let started = Date()
+        var deadline = started.addingTimeInterval(timeout)
+        var extendedForBuild = false
         while Date() < deadline {
             try await Task.sleep(nanoseconds: 500_000_000) // 500ms
             guard let content = try? String(contentsOfFile: logFile, encoding: .utf8) else { continue }
-            if let p = Self.extractWDAPort(from: content) { return p }
-            if content.contains("launchApp") && content.contains("✓") {
-                for candidate: UInt16 in [8430, 8100, 8200] {
-                    let url = URL(string: "http://localhost:\(candidate)/status")!
-                    if let (_, resp) = try? await URLSession.shared.data(from: url),
-                       let http = resp as? HTTPURLResponse, http.statusCode == 200 {
-                        return candidate
-                    }
-                }
+            if let startup = Self.parseWDAStartup(content) { return startup }
+            if !extendedForBuild, Self.isBuildingWDA(content) {
+                extendedForBuild = true
+                deadline = started.addingTimeInterval(Self.wdaBuildTimeout)
+            }
+            if content.contains("launchApp") && content.contains("✓"),
+               let port = await Self.probeKnownWDAPorts() {
+                return .port(port)
             }
         }
         return nil
     }
 
-    /// Extract a WDA port number from a string of runner output.
-    private static func extractWDAPort(from text: String) -> UInt16? {
-        let patterns = ["port[: ]+([0-9]+)", "localhost:([0-9]+)", "WDA.*?([0-9]{4,5})"]
-        for pattern in patterns {
+    /// The error `runner start` throws when WDA never came up.
+    static func wdaStartupError(_ startup: WDAStartup?, logPath: String?) -> GrantivaError {
+        let log = logPath.map { " Log: \($0)" } ?? ""
+        if startup == .buildFailed {
+            return .commandFailed("WebDriverAgent failed to build. Check that Xcode is installed and the simulator runtime is available.\(log)", 1)
+        }
+        return .commandFailed("Timed out waiting for WDA to start.\(log)", 1)
+    }
+
+    /// Reads the runner's output for WDA's state. A port wins over an earlier
+    /// build failure because the runner retries the build. Only the runner's
+    /// own announcements count: the WDA build log it echoes contains
+    /// "WebDriverAgent" and plenty of digits, which is how an earlier loose
+    /// pattern once reported a clang response-file hash as the port.
+    static func parseWDAStartup(_ text: String) -> WDAStartup? {
+        let portPatterns = [
+            "WDA started successfully on port ([0-9]+)",
+            "localhost:([0-9]+)",
+            "\\bport[: ]+([0-9]+)",
+        ]
+        for pattern in portPatterns {
             if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
                let match = regex.firstMatch(in: text, range: NSRange(text.startIndex..., in: text)),
                let range = Range(match.range(at: 1), in: text),
-               let p = UInt16(text[range]), p > 1024 {
-                return p
+               let port = UInt16(text[range]), port > 1024 {
+                return .port(port)
             }
+        }
+        let failureMarkers = [
+            "WDA build failed", "GrantivaAgent setup failed", "xcodebuild failed",
+            "** TEST BUILD FAILED **", "** BUILD FAILED **",
+        ]
+        if failureMarkers.contains(where: text.contains) {
+            return .buildFailed
         }
         return nil
     }
@@ -462,7 +636,14 @@ struct RunnerStopCommand: AsyncParsableCommand {
             }
         }
 
+        // The runner's own teardown clears its forwards and the UIA2 server
+        // when it exits cleanly; after a kill they may still be there.
+        if DeviceID.isAndroidSerial(session.udid) {
+            await dependencies.cleanupOrphans(session.udid)
+        }
+
         dependencies.removeSession()
+        dependencies.removeKeepAliveOwner(session.pid)
         // The session held the simulator lease by hand-off; free it now.
         dependencies.releaseLease(session.udid)
 
@@ -481,6 +662,10 @@ struct RunnerStopDependencies: Sendable {
     var terminateGroup: @Sendable (Int32) -> Void
     var removeSession: @Sendable () -> Void
     var releaseLease: @Sendable (String) -> Void
+    var cleanupOrphans: @Sendable (String) async -> Void
+    /// `runner start` records a keep-alive owner sidecar for the runner pid
+    /// on both platforms; stop removes it with the session.
+    var removeKeepAliveOwner: @Sendable (Int32) -> Void
 
     static let live = RunnerStopDependencies(
         loadSession: { try RunnerSessionInfo.load() },
@@ -488,7 +673,12 @@ struct RunnerStopDependencies: Sendable {
         processSnapshot: { try await SimulatorReaper.processSnapshot() },
         terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 1) },
         removeSession: { RunnerSessionInfo.remove() },
-        releaseLease: { SimulatorLease.forceRelease(udid: $0) }
+        releaseLease: { SimulatorLease.forceRelease(udid: $0) },
+        cleanupOrphans: { serial in
+            guard let platform = try? AndroidPlatform.live() else { return }
+            await platform.cleanupOrphans(deviceID: serial)
+        },
+        removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) }
     )
 }
 
@@ -509,29 +699,58 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
     @Option(name: .shortAndLong, help: "Output format: tree, json, or xml (default: tree)")
     var format: String = "tree"
 
-    @Option(name: .long, help: "Simulator UDID when falling back to a `grantiva run --keep-alive` session")
+    @Option(name: .long, help: "Simulator UDID or adb serial when falling back to a `grantiva run --keep-alive` session")
     var udid: String?
 
+    var devicePlatform = InjectedDevicePlatform()
+
     func validate() throws {
-        if let udid { _ = try SimulatorUDID.validate(udid) }
+        if let udid { _ = try DeviceID.validate(udid) }
+    }
+
+    struct Target: Equatable {
+        let udid: String
+        let port: UInt16?
+    }
+
+    /// Flag port, then a `runner start` session, then a keep-alive session.
+    /// A keep-alive port of 0 (Android) becomes nil: the platform forwards one.
+    static func resolveTarget(port: UInt16?, runnerSession: RunnerSessionInfo?, keepAlive: KeepAliveSession?) throws -> Target {
+        if let port { return Target(udid: "", port: port) }
+        if let runnerSession { return Target(udid: runnerSession.udid, port: runnerSession.wdaPort) }
+        if let keepAlive {
+            return Target(udid: keepAlive.udid ?? "", port: keepAlive.port > 0 ? UInt16(exactly: keepAlive.port) : nil)
+        }
+        throw GrantivaError.invalidArgument(
+            "No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port."
+        )
     }
 
     func run() async throws {
-        // Resolve port from flag, `runner start` session, or keep-alive session
-        let wdaPort: UInt16
-        if let flagPort = port {
-            wdaPort = flagPort
-        } else if let session = try? RunnerSessionInfo.load(), session.isAlive {
-            wdaPort = session.wdaPort
-        } else if let keepAlive = try? KeepAliveSessionStore().locate(udid: udid),
-                  let port = UInt16(exactly: keepAlive.port) {
-            // Same discovery as `grantiva hierarchy`: a held `grantiva run
-            // --keep-alive` session serves this command too.
-            wdaPort = port
-        } else {
-            throw GrantivaError.invalidArgument(
-                "No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port."
-            )
+        let runnerSession: RunnerSessionInfo? = {
+            guard let session = try? RunnerSessionInfo.load(), session.isAlive else { return nil }
+            return session
+        }()
+        let keepAlive = try? KeepAliveSessionStore().locate(udid: udid)
+        let target = try Self.resolveTarget(port: port, runnerSession: runnerSession, keepAlive: keepAlive)
+        try await dump(target: target)
+    }
+
+    func dump(target: Target) async throws {
+        if DeviceID.isAndroidSerial(target.udid) {
+            let device = try devicePlatform.make(.android)
+            let attachment = try await device.attachDriver(deviceID: target.udid, port: target.port)
+            do {
+                try await render(client: attachment.client)
+            } catch {
+                await attachment.detach()
+                throw error
+            }
+            await attachment.detach()
+            return
+        }
+        guard let wdaPort = target.port else {
+            throw GrantivaError.invalidArgument("No WebDriverAgent port for this session. Pass --port.")
         }
 
         // WDA uses the WebDriver protocol. The source endpoint returns the page hierarchy.
@@ -596,6 +815,20 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             let tree = try parser.parse()
             printTree(element: tree, indent: 0)
 
+        default:
+            throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
+        }
+    }
+
+    private func render(client: DriverClient) async throws {
+        switch format.lowercased() {
+        case "xml":
+            Output.line(try await client.hierarchyXML())
+        case "json":
+            let data = try JSONSerialization.data(withJSONObject: try await client.hierarchy(), options: [.prettyPrinted, .sortedKeys])
+            Output.line(String(data: data, encoding: .utf8) ?? "{}")
+        case "tree":
+            printTree(element: try await client.hierarchy(), indent: 0)
         default:
             throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
         }

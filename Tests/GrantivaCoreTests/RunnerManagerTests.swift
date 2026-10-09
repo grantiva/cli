@@ -52,19 +52,40 @@ final class RunnerManagerTests: XCTestCase {
         return paths
     }
 
-    func testEmbeddedTarballContainsTheUIAutomator2APKs() throws {
+    func testArchTarballsNoLongerCarryTheAndroidDrivers() throws {
         for arch in ["arm64", "amd64"] {
             let url = try XCTUnwrap(RunnerManager.embeddedTarballURL(arch: arch))
             let listing = try listTarball(url)
-            XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-v9.11.1.apk"), arch)
-            XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-debug-androidTest.apk"), arch)
-            XCTAssertFalse(listing.contains { $0.hasPrefix("./drivers/android/devicelab") }, "only the UIA2 APKs ship: \(arch)")
+            XCTAssertTrue(listing.contains("./grantiva-runner"), arch)
+            XCTAssertFalse(listing.contains { $0.hasPrefix("./drivers/android/") }, "APKs ship once, in android-drivers.tar.gz: \(arch)")
+            XCTAssertFalse(listing.contains { $0.contains("/._") }, "no AppleDouble entries: \(arch)")
         }
     }
 
-    func testInstallStampChangesWhenDriversChangeButRunnerVersionDoesNot() {
+    func testEmbeddedDriversTarballContainsTheUIAutomator2APKs() throws {
+        let url = try XCTUnwrap(RunnerManager.embeddedDriversTarballURL())
+        let listing = try listTarball(url)
+        XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-v9.11.1.apk"))
+        XCTAssertTrue(listing.contains("./drivers/android/appium-uiautomator2-server-debug-androidTest.apk"))
+        XCTAssertEqual(listing.filter { $0.hasSuffix(".apk") }.count, 2, "only the two UIA2 APKs ship")
+        XCTAssertFalse(listing.contains { $0.contains("/._") })
+    }
+
+    func testInstallStampChangesWhenDriversMoveButRunnerVersionDoesNot() {
         XCTAssertEqual(RunnerManager.runnerVersion, "1.1.18-grantiva.7")
-        XCTAssertEqual(RunnerManager.installStamp, "1.1.18-grantiva.7+android-drivers")
+        XCTAssertEqual(RunnerManager.installStamp, "1.1.18-grantiva.7+android-drivers-2")
+    }
+
+    func testLiveExtractionLaysOutBothTarballs() throws {
+        let base = FileManager.default.temporaryDirectory.appendingPathComponent("runner-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: base) }
+        try RunnerManager.installIfNeeded(
+            baseDir: base, binaryPath: "\(base)/grantiva-runner", versionFilePath: "\(base)/version",
+            cacheDir: "\(base)/cache", version: RunnerManager.installStamp, extract: RunnerManager.extractEmbedded
+        )
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(base)/grantiva-runner"))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(base)/drivers/android/appium-uiautomator2-server-v9.11.1.apk"))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(base)/drivers/ios/WebDriverAgent/package.json"))
     }
 
     private func listTarball(_ url: URL) throws -> [String] {

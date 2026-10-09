@@ -59,6 +59,9 @@ struct TargetOptions: ParsableArguments {
                     + "(resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory)."
             )
         }
+        if device != nil, emulator != nil {
+            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
+        }
         if let device {
             _ = try DeviceID.validate(device, flag: "--device")
         }

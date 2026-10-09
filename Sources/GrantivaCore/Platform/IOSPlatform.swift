@@ -109,7 +109,49 @@ public struct IOSPlatform: DevicePlatform {
         return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
     }
 
-    public func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+    /// Points xcodebuild at grantiva's xcconfig so the runner's WebDriverAgent
+    /// build survives Xcode 27 (see `WDABuildConfig`). Falls back to the stock
+    /// build when the file cannot be written.
+    public func runnerEnvironment(runnerHome: String) -> [String: String] {
+        guard let xcconfig = WDABuildConfig.install(in: runnerHome) else { return [:] }
+        return ["XCODE_XCCONFIG_FILE": xcconfig]
+    }
 
     public func cleanupOrphans(deviceID: String) async {}
+
+    public func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {
+        guard let port, port > 0 else {
+            throw GrantivaError.invalidArgument("A WebDriverAgent port is required to attach to an iOS session.")
+        }
+        return DriverAttachment(client: .wda(port: port), port: Int(port), detach: {})
+    }
+
+    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
+    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+        let outputURL = URL(fileURLWithPath: path)
+        let recorder = Process()
+        recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+        recorder.arguments = ["simctl", "io", deviceID, "recordVideo", "--codec=h264", path]
+        let stderrURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-record-\(UUID().uuidString).log")
+        FileManager.default.createFile(atPath: stderrURL.path, contents: nil)
+        defer { try? FileManager.default.removeItem(at: stderrURL) }
+        let stderr = try FileHandle(forWritingTo: stderrURL)
+        recorder.standardError = stderr
+        do {
+            try recorder.run()
+            try await RecorderLifecycle.withCleanup(for: recorder) {
+                try await RecorderLifecycle.waitForStart(of: outputURL)
+                try await Task.sleep(for: .seconds(seconds))
+            }
+            try stderr.close()
+        } catch {
+            try? stderr.close()
+            throw error
+        }
+        guard FileManager.default.fileExists(atPath: path) else {
+            let message = (try? String(contentsOf: stderrURL, encoding: .utf8)) ?? ""
+            throw GrantivaError.commandFailed("Grantiva recording produced no video: \(message)", recorder.terminationStatus)
+        }
+    }
 }

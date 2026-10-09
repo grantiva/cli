@@ -34,7 +34,6 @@ final class ADBTests: XCTestCase {
         try await adb.forceStop(serial: serial, applicationId: "com.example.app")
         try await adb.uninstall(serial: serial, applicationId: "com.example.app")
         try await adb.screenshot(serial: serial, to: "/tmp/shot's.png")
-        try await adb.removeAllForwards(serial: serial)
         try await adb.emuKill(serial: serial)
         XCTAssertEqual(shell.commands, [
             "'/sdk/platform-tools/adb' devices -l",
@@ -44,7 +43,6 @@ final class ADBTests: XCTestCase {
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell pm uninstall 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' exec-out screencap -p > '/tmp/shot'\\''s.png'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove-all",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' emu kill",
         ])
     }
@@ -102,5 +100,58 @@ final class ADBTests: XCTestCase {
         let shell = ScriptedShell([.success("")])
         _ = try await ADB(path: adbPath, execute: shell.execute).shell(serial: "emulator-5554", "settings put global window_animation_scale 0")
         XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'settings put global window_animation_scale 0'"])
+    }
+
+    func testForwardAllocatesALocalPortAndParsesIt() async throws {
+        let shell = ScriptedShell([.success("61211\n")])
+        let adb = ADB(path: "/sdk/platform-tools/adb", execute: shell.execute)
+        let port = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+        XCTAssertEqual(port, 61211)
+        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790"])
+    }
+
+    func testForwardRejectsAnUnparseablePort() async {
+        let shell = ScriptedShell([.success("error: device offline")])
+        let adb = ADB(path: "/sdk/platform-tools/adb", execute: shell.execute)
+        do {
+            _ = try await adb.forward(serial: "emulator-5554", devicePort: 6790)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Could not forward a local port to emulator-5554:6790"), "\(error)")
+        }
+    }
+
+    func testParseForwardsKeepsOnlyThisSerial() {
+        let output = """
+        emulator-5554 tcp:61211 tcp:6790
+        emulator-5556 tcp:61212 tcp:6790
+        emulator-5554 tcp:7000 localabstract:uia2
+        """
+        XCTAssertEqual(ADB.parseForwards(output, serial: "emulator-5554"), [61211, 7000])
+        XCTAssertEqual(ADB.parseForwards("", serial: "emulator-5554"), [])
+    }
+
+    func testRemoveForwardsListsThenRemovesEachOfThisSerial() async throws {
+        let shell = ScriptedShell([.success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790\nemulator-5554 tcp:7000 tcp:7000")])
+        let adb = ADB(path: "/sdk/platform-tools/adb", execute: shell.execute)
+        try await adb.removeForwards(serial: "emulator-5554")
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:7000",
+        ])
+    }
+
+    func testScreenrecordPullAndRemoveCommandLines() async throws {
+        let shell = ScriptedShell()
+        let adb = ADB(path: "/sdk/platform-tools/adb", execute: shell.execute)
+        try await adb.screenrecord(serial: "emulator-5554", remotePath: "/sdcard/grantiva-record.mp4", seconds: 5)
+        try await adb.pull(serial: "emulator-5554", remotePath: "/sdcard/grantiva-record.mp4", to: "/tmp/out dir/rec.mp4")
+        try await adb.removeFile(serial: "emulator-5554", remotePath: "/sdcard/grantiva-record.mp4")
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell screenrecord --time-limit 5 '/sdcard/grantiva-record.mp4'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' pull '/sdcard/grantiva-record.mp4' '/tmp/out dir/rec.mp4'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell rm -f '/sdcard/grantiva-record.mp4'",
+        ])
     }
 }

@@ -47,4 +47,21 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     }
     func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
     func cleanupOrphans(deviceID: String) async { record("cleanupOrphans") }
+    var hierarchyXML = "<hierarchy><android.view.View class=\"android.view.View\" text=\"Fake\" bounds=\"[0,0][10,10]\"/></hierarchy>"
+    func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {
+        record("attachDriver(\(deviceID),\(port.map(String.init) ?? "-"))")
+        let xml = hierarchyXML
+        let client = DriverClient(
+            status: { WDAStatus(sessionId: "fake", ready: true) },
+            hierarchy: { try UIAutomator2HierarchyXMLParser(xml: xml, scale: 1).parse() },
+            hierarchyXML: { xml },
+            tapByLabel: { _ in }, tapByCoordinate: { _, _ in }, typeText: { _ in }, swipe: { _ in },
+            screenshot: { Data([0x89, 0x50, 0x4E, 0x47]) }
+        )
+        return DriverAttachment(client: client, port: Int(port ?? 7000), detach: { self.record("detach") })
+    }
+    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+        record("recordVideo(\(deviceID),\(seconds))")
+        FileManager.default.createFile(atPath: path, contents: Data())
+    }
 }

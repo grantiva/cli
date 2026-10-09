@@ -64,7 +64,54 @@ one tag. `--logs-predicate` is iOS-only.
 GitHub-hosted macOS runners cannot boot the emulator. Use a self-hosted Mac or a developer
 machine. `GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS` (default 180) bounds the boot wait.
 
-## Not yet
+## Hierarchy and keep-alive
 
-`hierarchy`, `record`, `runner start`, the MCP server, and the `emulator` subcommand arrive
-in the next release.
+    grantiva run --keep-alive            # terminal 1, holds the UIAutomator2 session
+    grantiva hierarchy                   # terminal 2: the UIAutomator2 page source (XML)
+    grantiva hierarchy --format json     # the same tree as JSON, frames in dp
+
+The runner does not proxy UIAutomator2, so Grantiva forwards a local port to the
+emulator's port 6790 (`adb forward tcp:0 tcp:6790`) for the duration of the command and
+reads the session the runner holds. `--udid <serial>` picks a session when several are
+live. `runner dump-hierarchy` reads the same tree and prints it as a tree, JSON, or XML.
+
+## Recording
+
+    grantiva record --duration 5 --frames-at 0,1000,3000
+
+Records with `screenrecord` to `.grantiva/recordings/recording.mp4` and extracts frames
+as PNGs. Android caps a recording at 180 seconds; longer durations are refused.
+`--device <serial>` or `--emulator <AVD>` pick the target; the config's `emulator` is the
+default.
+
+## Runner sessions and the MCP server
+
+    grantiva runner start --detach       # boots the emulator, holds a UIAutomator2 session
+    grantiva runner dump-hierarchy --format tree
+    grantiva mcp                         # in another terminal, or from an agent config
+    grantiva runner stop
+
+`runner start` records the forwarded local port in `.grantiva/session.json`; `runner stop`
+kills the runner, stops the UIAutomator2 server, and removes the serial's forwards. The MCP
+server resolves the platform like every command (a directory with only
+`grantiva-android.yml` is Android; `grantiva mcp --platform ios|android` chooses when both
+config files exist) and drives the emulator through the same tools as iOS:
+`grantiva_tap` takes `x`/`y` in dp, the same unit the hierarchy reports,
+`grantiva_a11y_check` uses 48 dp as the minimum tap target, and
+`grantiva_emulator_list|boot|ensure|delete` mirror the `grantiva_sim_*` tools.
+`grantiva_test` is iOS-only.
+
+## Emulator subcommand
+
+    grantiva emulator ensure --name Pixel_8_API_35          # create if missing, boot, print the serial
+    grantiva emulator ensure --name Pixel_8_API_35 --no-boot
+    grantiva emulator sessions                              # emulators Grantiva started
+    grantiva emulator teardown --serial emulator-5554       # only emulators Grantiva started; --force for others
+    grantiva emulator teardown --all
+    grantiva emulator delete --name Pixel_8_API_35          # only AVDs Grantiva created; --force for others
+
+`ensure` installs the system image with `sdkmanager` when it is missing and creates the AVD
+with `avdmanager create avd -d pixel_8`. The system image comes from `--system-image`, then
+`system_image` in the config, then `system-images;android-35;google_apis;arm64-v8a`.
+`teardown` checks a recorded emulator whose pid is gone by its AVD name before killing
+anything, and `delete` refuses while a running emulator's AVD name cannot be read.

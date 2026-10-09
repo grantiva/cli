@@ -66,6 +66,20 @@ public struct PlatformResolver: Sendable {
         }
     }
 
+    /// `resolve(flag:)`, except that when nothing at all points anywhere (no
+    /// flag, no GRANTIVA_PLATFORM, no config file, no project files) the
+    /// answer is iOS: before Android support every command was iOS and ran
+    /// fine without a project here.
+    public func resolveOrDefault(flag: Platform?) throws -> Platform {
+        if flag == nil,
+           (environment[Self.environmentKey] ?? "").isEmpty,
+           existingConfigFiles().isEmpty,
+           detectFromDirectory().isEmpty {
+            return .ios
+        }
+        return try resolve(flag: flag)
+    }
+
     /// Platforms whose config file exists, in `Platform.allCases` order.
     public func existingConfigFiles() -> [Platform] {
         Platform.allCases.filter {

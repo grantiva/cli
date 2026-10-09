@@ -9,11 +9,13 @@ struct MCPCommand: AsyncParsableCommand {
         abstract: "Start the Grantiva MCP server for AI agent integration."
     )
 
-    @Option(name: .long, help: "Project directory containing grantiva.yml and .grantiva/session.json.")
+    @Option(name: .long, help: "Project directory containing grantiva.yml or grantiva-android.yml and .grantiva/session.json.")
     var projectDir: String?
+
+    @OptionGroup var platformOptions: PlatformOptions
 
     func run() async throws {
         let directory = projectDir.map { URL(fileURLWithPath: $0) }
-        try await GrantivaMCPServer(projectDirectory: directory).run()
+        try await GrantivaMCPServer(projectDirectory: directory, platform: platformOptions.platform).run()
     }
 }

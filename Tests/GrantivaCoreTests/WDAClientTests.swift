@@ -3,9 +3,9 @@ import XCTest
 
 final class WDAClientTests: XCTestCase {
     func testElementIDSupportsLegacyAndW3CKeys() {
-        XCTAssertEqual(WDAClient.elementID(from: ["ELEMENT": "legacy-id"]), "legacy-id")
+        XCTAssertEqual(DriverClient.elementID(from: ["ELEMENT": "legacy-id"]), "legacy-id")
         XCTAssertEqual(
-            WDAClient.elementID(from: [
+            DriverClient.elementID(from: [
                 "element-6066-11e4-a52e-4f735466cecf": "w3c-id",
                 "label": "must-not-be-used",
             ]),
@@ -14,7 +14,7 @@ final class WDAClientTests: XCTestCase {
     }
 
     func testElementIDDoesNotUseAnArbitraryStringValue() {
-        XCTAssertNil(WDAClient.elementID(from: ["label": "not-an-element-id"]))
+        XCTAssertNil(DriverClient.elementID(from: ["label": "not-an-element-id"]))
     }
 
     func testHierarchyParserThrowsForMalformedXML() {
