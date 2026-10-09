@@ -131,7 +131,9 @@ public struct AndroidPlatform: DevicePlatform {
         guard FileManager.default.fileExists(atPath: absolute) else {
             throw GrantivaError.appNotFound(absolute)
         }
-        let id = try? await execute("\(shellQuoted(sdk.apkanalyzer)) manifest application-id \(shellQuoted(absolute))")
+        let javaHome = await AndroidSDK.javaHome(environment: environment, execute: execute)
+        let prefix = javaHome.map { "JAVA_HOME=\(shellQuoted($0)) " } ?? ""
+        let id = try? await execute("\(prefix)\(shellQuoted(sdk.apkanalyzer)) manifest application-id \(shellQuoted(absolute))")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         return ResolvedBinary(appPath: absolute, tempDir: nil, appID: (id?.isEmpty ?? true) ? nil : id)
     }
@@ -184,6 +186,8 @@ public struct AndroidPlatform: DevicePlatform {
             } else {
                 args += ["-s", filter]
             }
+        } else if let level, let priority = level.first {
+            args += ["-s", "*:\(priority.uppercased())"]
         }
         return LogStreamCommand(executable: adb.path, arguments: args)
     }

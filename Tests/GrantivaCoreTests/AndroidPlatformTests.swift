@@ -103,11 +103,14 @@ final class AndroidPlatformTests: XCTestCase {
     func testResolveBinaryRequiresAnExistingAPKAndReadsItsID() async throws {
         let apk = scratch.appendingPathComponent("app.apk").path
         try Data().write(to: URL(fileURLWithPath: apk))
-        let shell = ScriptedShell([.success("com.example.app\n")])
+        let shell = ScriptedShell([.success(""), .success("com.example.app\n")])
         let resolved = try await platform(shell).resolveBinary(apk)
         XCTAssertEqual(resolved.appPath, apk)
         XCTAssertEqual(resolved.appID, "com.example.app")
-        XCTAssertEqual(shell.commands, ["'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))"])
+        XCTAssertEqual(shell.commands, [
+            "/usr/libexec/java_home",
+            "'/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+        ])
 
         do {
             _ = try await platform(ScriptedShell()).resolveBinary(scratch.appendingPathComponent("Demo.app").path)
@@ -180,5 +183,32 @@ final class AndroidPlatformTests: XCTestCase {
         } else {
             XCTAssertEqual(try DevicePlatformFactory.make(.android).platform, .android)
         }
+    }
+
+    func testLogStreamWithALevelAndNoTagFiltersEveryTagAtThatPriority() async throws {
+        let shell = ScriptedShell([.success(""), .success("package:com.example uid:10123")])
+        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: "warning")
+        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-s", "*:W"])
+    }
+
+    func testResolveBinaryRunsApkanalyzerWithJavaHomeWhenKnown() async throws {
+        let apk = scratch.appendingPathComponent("app.apk").path
+        FileManager.default.createFile(atPath: apk, contents: Data())
+        let shell = ScriptedShell([.success("/jdk\n"), .success("com.example.app\n")])
+        let sdk = AndroidSDK(root: "/sdk")
+        let adb = ADB(path: sdk.adb, execute: shell.execute)
+        let p = AndroidPlatform(
+            sdk: sdk, adb: adb, gradle: GradleBuildRunner(execute: shell.execute),
+            emulators: EmulatorManager(sdk: sdk, adb: adb, execute: shell.execute, spawn: { _, _ in 1 },
+                                       provenance: AndroidProvenance(directory: scratch.path), bootTimeout: 1, pollInterval: 0.01),
+            captureSettings: AndroidCaptureSettings(adb: adb, stateDirectory: scratch.path),
+            execute: shell.execute, environment: ["PATH": "/usr/bin"]
+        )
+        let resolved = try await p.resolveBinary(apk)
+        XCTAssertEqual(resolved.appID, "com.example.app")
+        XCTAssertEqual(shell.commands, [
+            "/usr/libexec/java_home",
+            "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
+        ])
     }
 }
