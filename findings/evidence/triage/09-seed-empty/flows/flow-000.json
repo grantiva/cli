@@ -1,0 +1,61 @@
+{
+  "id": "flow-000",
+  "name": "09-seed-empty",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-F1B3040D-31E1-4AB9-BC6C-CDF100336177/0/09-seed-empty.yaml",
+  "device": {
+    "id": "93DF5345-8494-4C57-B374-10224C07ED41",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:49:29.177357-07:00",
+  "endTime": "2026-10-09T14:49:49.260647-07:00",
+  "duration": 20083,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:49:29.177786-07:00",
+      "endTime": "2026-10-09T14:49:31.245053-07:00",
+      "duration": 2067,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "failed",
+      "startTime": "2026-10-09T14:49:31.245719-07:00",
+      "endTime": "2026-10-09T14:49:49.259995-07:00",
+      "duration": 18014,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='No landmarks yet' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Landmarks\", \"All Landmarks\", \"road.lanes\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}
