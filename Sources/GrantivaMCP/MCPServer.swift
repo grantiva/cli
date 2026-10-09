@@ -23,7 +23,7 @@ public struct GrantivaMCPServer: Sendable {
 
         let session = try Self.loadActiveSession(projectDirectory: projectDirectory)
 
-        let wda = WDAClient.live(port: session.wdaPort)
+        let wda = DriverClient.wda(port: session.wdaPort)
         let simManager = SimulatorManager.live
         let buildRunner = XcodeBuildRunner()
 

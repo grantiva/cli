@@ -103,7 +103,7 @@ enum UITools {
     // MARK: - Handlers
 
     static func screenshot(
-        wda: WDAClient,
+        wda: DriverClient,
         session: RunnerSessionInfo,
         arguments: [String: Value]
     ) async throws -> CallTool.Result {
@@ -138,7 +138,7 @@ enum UITools {
         )
     }
 
-    static func tap(wda: WDAClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func tap(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         if let label = arguments["label"]?.stringValue {
             try await wda.tapByLabel(label)
             // Brief settle time for animations
@@ -166,7 +166,7 @@ enum UITools {
         }
     }
 
-    static func swipe(wda: WDAClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func swipe(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let direction = arguments["direction"]?.stringValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'direction' is required.", annotations: nil, _meta: nil)],
@@ -183,7 +183,7 @@ enum UITools {
         )
     }
 
-    static func type(wda: WDAClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func type(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let text = arguments["text"]?.stringValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'text' is required.", annotations: nil, _meta: nil)],
@@ -200,14 +200,14 @@ enum UITools {
         )
     }
 
-    static func a11yTree(wda: WDAClient) async throws -> CallTool.Result {
+    static func a11yTree(wda: DriverClient) async throws -> CallTool.Result {
         let tree = try await fetchHierarchyJSON(wda: wda)
         return CallTool.Result(
             content: [.text(text: tree, annotations: nil, _meta: nil)]
         )
     }
 
-    static func a11yCheck(wda: WDAClient, config: GrantivaConfig?) async throws -> CallTool.Result {
+    static func a11yCheck(wda: DriverClient, config: GrantivaConfig?) async throws -> CallTool.Result {
         let hierarchy = try await wda.hierarchy()
         let rules = config?.a11y.rules ?? ["missing_label", "small_tap_target"]
 
@@ -234,7 +234,7 @@ enum UITools {
 
     // MARK: - Private Helpers
 
-    private static func fetchHierarchyJSON(wda: WDAClient) async throws -> String {
+    private static func fetchHierarchyJSON(wda: DriverClient) async throws -> String {
         let tree = try await wda.hierarchy()
         let data = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
         return String(data: data, encoding: .utf8) ?? "{}"

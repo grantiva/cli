@@ -6,7 +6,7 @@ import MCP
 /// tool calls and resource reads to the appropriate handler.
 @available(macOS 15, *)
 struct ToolRegistry: Sendable {
-    let wda: WDAClient
+    let wda: DriverClient
     let config: GrantivaConfig?
     let session: RunnerSessionInfo
     let simulatorManager: SimulatorManager

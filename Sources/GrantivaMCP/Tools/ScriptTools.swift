@@ -61,7 +61,7 @@ enum ScriptTools {
 
     // MARK: - Handler
 
-    static func script(wda: WDAClient, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func script(wda: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let stepsValue = arguments["steps"]?.arrayValue else {
             return CallTool.Result(
                 content: [.text(text: "Error: 'steps' array is required.", annotations: nil, _meta: nil)],

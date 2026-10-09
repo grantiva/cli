@@ -1,8 +1,9 @@
 import Foundation
 
-/// HTTP client for communicating with WebDriverAgent via the W3C WebDriver protocol.
+/// HTTP client for a WebDriver-speaking UI driver: WebDriverAgent on iOS, the
+/// UIAutomator2 server on Android. Built from closures so tests substitute fakes.
 @available(macOS 15, *)
-public struct WDAClient: Sendable {
+public struct DriverClient: Sendable {
     public var status: @Sendable () async throws -> WDAStatus
     public var hierarchy: @Sendable () async throws -> [String: Any]
     public var hierarchyXML: @Sendable () async throws -> String
@@ -33,6 +34,9 @@ public struct WDAClient: Sendable {
     }
 }
 
+@available(macOS 15, *)
+public typealias WDAClient = DriverClient
+
 // MARK: - Supporting Types
 
 public struct WDAStatus: Sendable {
@@ -48,11 +52,11 @@ public struct WDAStatus: Sendable {
 // MARK: - Live Implementation
 
 @available(macOS 15, *)
-extension WDAClient {
-    public static func live(port: UInt16) -> WDAClient {
+extension DriverClient {
+    public static func wda(port: UInt16) -> DriverClient {
         let base = "http://localhost:\(port)"
 
-        return WDAClient(
+        return DriverClient(
             status: {
                 let url = URL(string: "\(base)/status")!
                 let (data, response) = try await URLSession.shared.data(from: url)
@@ -221,6 +225,9 @@ extension WDAClient {
         )
     }
 
+    /// Kept for callers written against the old name.
+    public static func live(port: UInt16) -> DriverClient { wda(port: port) }
+
     // MARK: - Helpers
 
     static func elementID(from element: [String: Any]) -> String? {
@@ -263,8 +270,8 @@ extension WDAClient {
 // MARK: - Failing (Test) Implementation
 
 @available(macOS 15, *)
-extension WDAClient {
-    public static let failing = WDAClient(
+extension DriverClient {
+    public static let failing = DriverClient(
         status: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },
         hierarchy: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },
         hierarchyXML: { throw GrantivaError.commandFailed("WDAClient.failing", 1) },

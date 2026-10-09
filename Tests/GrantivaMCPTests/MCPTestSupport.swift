@@ -5,7 +5,7 @@ import XCTest
 
 @testable import GrantivaMCP
 
-/// Thread-safe recorder for calls made against the fake `WDAClient`.
+/// Thread-safe recorder for calls made against the fake `DriverClient`.
 final class WDARecorder: @unchecked Sendable {
     private let lock = NSLock()
     private var storage: [String] = []
@@ -27,14 +27,14 @@ enum MCPTestSupport {
     /// An empty-but-valid hierarchy payload.
     static let emptyHierarchyJSON = #"{"type":"XCUIElementTypeApplication","children":[]}"#
 
-    /// Builds a `WDAClient` whose every call is recorded and whose responses are fixtures.
+    /// Builds a `DriverClient` whose every call is recorded and whose responses are fixtures.
     /// Nothing here touches the network, a simulator, or the filesystem.
     static func fakeWDA(
         recorder: WDARecorder,
         hierarchyJSON: String = emptyHierarchyJSON,
         screenshotBytes: [UInt8] = [0x89, 0x50, 0x4E, 0x47]
-    ) -> WDAClient {
-        WDAClient(
+    ) -> DriverClient {
+        DriverClient(
             status: { WDAStatus(sessionId: "test-session", ready: true) },
             hierarchy: {
                 recorder.record("hierarchy")
@@ -63,7 +63,7 @@ enum MCPTestSupport {
     }
 
     static func registry(
-        wda: WDAClient,
+        wda: DriverClient,
         config: GrantivaConfig? = nil,
         session: RunnerSessionInfo? = nil
     ) -> ToolRegistry {
