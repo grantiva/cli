@@ -256,12 +256,12 @@ public struct AndroidPlatform: DevicePlatform {
     /// `screenrecord` caps every file at 180 s; longer requests are refused
     /// up front rather than silently truncated.
     public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
-        let whole = Int(seconds.rounded(.up))
-        guard whole <= Self.maximumRecordingSeconds else {
+        guard seconds.isFinite, seconds <= Double(Self.maximumRecordingSeconds) else {
             throw GrantivaError.invalidArgument(
-                "Android recordings are capped at \(Self.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(Int(seconds)) is too long."
+                "Android recordings are capped at \(Self.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(seconds) is too long."
             )
         }
+        let whole = Int(seconds.rounded(.up))
         try await adb.screenrecord(serial: deviceID, remotePath: Self.remoteRecordingPath, seconds: max(whole, 1))
         try await adb.pull(serial: deviceID, remotePath: Self.remoteRecordingPath, to: path)
         _ = try? await adb.removeFile(serial: deviceID, remotePath: Self.remoteRecordingPath)

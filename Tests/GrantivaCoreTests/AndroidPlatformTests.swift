@@ -263,4 +263,15 @@ final class AndroidPlatformTests: XCTestCase {
         }
         XCTAssertTrue(shell.commands.isEmpty)
     }
+
+    func testRecordVideoRefusesAnInfiniteDuration() async {
+        let shell = ScriptedShell()
+        do {
+            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: .infinity)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("capped at 180 seconds"), "\(error)")
+        }
+        XCTAssertTrue(shell.commands.isEmpty)
+    }
 }
