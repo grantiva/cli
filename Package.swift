@@ -40,6 +40,7 @@ let package = Package(
             resources: [
                 .copy("Resources/grantiva-runner-arm64.tar.gz"),
                 .copy("Resources/grantiva-runner-amd64.tar.gz"),
+                .copy("Resources/android-drivers.tar.gz"),
             ]
         ),
         .target(name: "GrantivaAPI", dependencies: ["GrantivaCore"]),
