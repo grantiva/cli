@@ -237,6 +237,47 @@ Error: Invalid argument: Android recordings are capped at 180 seconds per file (
 
 ## 7. Runner session and MCP — PASSED (after 7a7588d)
 
+### Re-check after the final review fix (8f5bbe7)
+
+The final review found that `runner start` on Android passes `--keep-alive` but never wrote the
+owner sidecar, so `grantiva hierarchy` took the runner's port-0 session file for an iOS one and
+requested `http://127.0.0.1:0/source`. 8f5bbe7 records the sidecar right after the runner is
+spawned and `runner stop` removes it. Re-checked from `examples/android` with `emulator-5554`
+already running, `ANDROID_HOME=/Users/kyle/Library/Android/sdk`, and
+`JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`.
+
+`$G runner start --detach` exited 0:
+
+```
+Runner started (detached)
+  UIAutomator2 port: 60905
+  PID:      67497
+```
+
+The session directory, with the session held:
+
+```
+$ ls -la /tmp/grantiva-sessions
+67497-1791516424453666000.grantiva
+67497.owner.json
+$ cat /tmp/grantiva-sessions/67497.owner.json
+{"createdAt":"2026-10-09T03:27:00Z","grantivaPid":67492,"runnerPid":67497,"udid":"emulator-5554"}
+```
+
+`$G hierarchy | head -3` exited 0 and printed XML:
+
+```
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy index="0" class="hierarchy" rotation="0" width="1080" height="2400">
+  <android.widget.FrameLayout index="0" package="com.android.systemui" class="android.widget.FrameLayout" ...
+```
+
+`$G runner stop` exited 0 and printed `Runner stopped (pid 67497)`. After it:
+- `/tmp/grantiva-sessions` was empty: no `.owner.json` and no `.grantiva` file.
+- `adb forward --list` was empty.
+- `.grantiva/session.json` was gone.
+- `adb devices` still listed `emulator-5554	device`.
+
 ### Fourth pass (7a7588d)
 
 `$G runner start --detach` exited 0:
@@ -520,10 +561,87 @@ Test Suite 'All tests' passed ...
 	 Executed 434 tests, with 0 failures (0 unexpected) in 23.177 (23.207) seconds
 ```
 
-## 11. iOS smoke — NOT APPLICABLE
+Re-run after the final review fixes, at 8f5bbe7. Exit status: 0. **986 tests, 0 failures:**
+GrantivaMCPTests 118, GrantivaCoreTests 436, GrantivaCLITests 331, GrantivaAPITests 101. That is
+the five new tests on top of 981. The table above swaps the MCP and API counts: at 7a7588d,
+GrantivaMCPTests had 116 tests and GrantivaAPITests had 101.
 
-There is no iOS example in this worktree (`examples/` holds only `android`), so `run --no-build`
-on iOS was not exercised.
+## 11. iOS smoke (final review) — PARTIAL: `record` PASSED; runner and MCP HOST-CAUSED
+
+There is no iOS example in this worktree, so the smoke used the Settings app
+(`com.apple.Preferences`) on the booted simulator `iPhone 17 Pro`
+(`B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C`; the host has a second, shut-down simulator with the same
+name, so every command passed the UDID). Binary: `swift build` at 8f5bbe7. Scratch directory:
+`/private/tmp/claude-501/grantiva-plan3-ios-smoke/`, with this `grantiva.yml`:
+
+```
+bundle_id: com.apple.Preferences
+simulator: B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C
+```
+
+### `$G record --simulator B27D7D31-… --duration 3 --frames-at 0,1000` — PASSED
+
+Exit status 0:
+
+```
+Wrote video to: /private/tmp/claude-501/grantiva-plan3-ios-smoke/.grantiva/recordings/recording.mov
+Recording: .grantiva/recordings/recording.mov
+Frame report: /private/tmp/claude-501/grantiva-plan3-ios-smoke/.grantiva/recordings/recording.json
+  0ms -> 0ms: .../recording-frames/000000ms.png
+  1000ms -> 0ms: .../recording-frames/001000ms.png
+```
+
+`recording.mov` and both PNGs exist. The 1000 ms frame resolved to 0 ms because the screen did not
+change: `simctl io recordVideo` writes frames only on change, so `ffprobe` reports one h264 frame
+(duration 0.067 s) for this idle Settings screen. That is `simctl` behaviour, not a regression.
+Afterwards `xcrun simctl status_bar … list` showed no overrides.
+
+### `$G runner start --detach --bundle-id com.apple.Preferences --simulator B27D7D31-…` — HOST-CAUSED
+
+WebDriverAgent does not build under this host's Xcode 27.0, as Plan 1 recorded. The runner's WDA
+build log (`~/.grantiva/runner/cache/wda-builds/sim-ios26.0-iphone/logs/build.log`) fails with:
+
+```
+error: include location '/usr/local/include' is unsafe for cross-compilation [-Werror,-Wpoison-system-directories]
+** TEST BUILD FAILED **
+	CompileC .../WebDriverAgentRunner.build/Objects-normal/arm64/UITestingUITests.o .../WebDriverAgentRunner/UITestingUITests.m ...
+```
+
+`runner start` nevertheless exited 0 and printed `WDA port: 6072`:
+
+```
+Runner started (detached)
+  WDA port: 6072
+  PID:      68387
+```
+
+No WDA was listening. 6072 is a false match in the build log: `extractWDAPort` falls back to the
+pattern `WDA.*?([0-9]{4,5})`, which matched the `6072` in the clang response-file name
+`e6072d4f65d7061329687fe24e3d63a7-common-args.resp`, on a line that names the WebDriverAgent build
+directory. That pattern dates from v0.8.3 (`ce6fd75`), so it is not a regression from this branch.
+It is left for a separate fix.
+
+The runner process (68387) had already exited, so:
+- `$G runner dump-hierarchy --format tree` exited 1:
+
+  ```
+  Error: Invalid argument: No active runner session. Start one with 'grantiva runner start' or `grantiva run --keep-alive`, or pass --port.
+  ```
+
+- The MCP probe (the step-7 script with `grantiva_context`, `grantiva_screenshot` as a file, and
+  `grantiva_tap` on "General") never got to `initialize`. `grantiva mcp` exited at startup with
+  `Error: Invalid argument: No active runner session at /tmp/claude-501/grantiva-plan3-ios-smoke/.grantiva/session.json.`
+  So `tools/list`, `grantiva_screenshot`, `grantiva_tap`, and `grantiva_context` were not exercised
+  on iOS.
+
+`$G runner stop` exited 0 and printed `Runner stopped (pid 68387)`.
+
+### Host state after the smoke
+
+- `/tmp/grantiva-sessions` was empty. iOS `runner start` wrote no owner sidecar, as intended.
+- `.grantiva/session.json` was gone; `.grantiva/` held only `recordings`.
+- No `grantiva-runner` process was left.
+- `iPhone 17 Pro (B27D7D31-…)` was still Booted, and the other `iPhone 17 Pro` was still Shutdown.
 
 ## 12. Host state at the end — PASSED
 
