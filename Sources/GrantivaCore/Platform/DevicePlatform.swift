@@ -50,6 +50,21 @@ public struct LogStreamCommand: Sendable, Equatable {
     }
 }
 
+/// A driver client bound to a live session, plus how to let go of whatever
+/// the platform set up to reach it (a port forward on Android, nothing on iOS).
+public struct DriverAttachment: Sendable {
+    public let client: DriverClient
+    /// The local port the client talks to.
+    public let port: Int
+    public let detach: @Sendable () async -> Void
+
+    public init(client: DriverClient, port: Int, detach: @escaping @Sendable () async -> Void) {
+        self.client = client
+        self.port = port
+        self.detach = detach
+    }
+}
+
 /// Everything a command needs from a device that differs between iOS and
 /// Android. Commands hold one of these and never call simctl, xcodebuild,
 /// adb, or gradle themselves.
@@ -88,6 +103,12 @@ public protocol DevicePlatform: Sendable {
     func runnerEnvironment(runnerHome: String) -> [String: String]
     /// Kills driver processes a crashed runner may have left on the device.
     func cleanupOrphans(deviceID: String) async
+    /// A driver client for the session held on `deviceID`. `port` is the
+    /// local port a previous attach (or `runner start`) recorded; nil or 0
+    /// means "find it", which on Android forwards a new one.
+    func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment
+    /// Records the screen for `seconds` and leaves a video file at `path`.
+    func recordVideo(deviceID: String, to path: String, seconds: Double) async throws
 }
 
 public enum DevicePlatformFactory {

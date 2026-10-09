@@ -211,4 +211,56 @@ final class AndroidPlatformTests: XCTestCase {
             "JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/apkanalyzer' manifest application-id \(shellQuoted(apk))",
         ])
     }
+
+    func testAttachDriverWithoutAPortForwardsAndDetachRemovesIt() async throws {
+        let shell = ScriptedShell([
+            .success("61211"),                       // forward
+            .success("Physical size: 1080x2400"),    // wm size
+            .success("Physical density: 420"),       // wm density
+            .success(""),                            // forward --remove
+        ])
+        let transport = UIAutomator2Transport { _ in (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200) }
+        let p = platform(shell)
+        let attachment = try await p.attachDriver(deviceID: "emulator-5554", port: nil, transport: transport)
+        XCTAssertEqual(attachment.port, 61211)
+        await attachment.detach()
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward tcp:0 tcp:6790",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm size'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm density'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+        ])
+    }
+
+    func testAttachDriverWithAKnownPortDoesNotForwardAndDetachIsANoOp() async throws {
+        let shell = ScriptedShell([.success("Physical size: 1080x2400"), .success("Physical density: 420")])
+        let transport = UIAutomator2Transport { _ in (Data(#"{"value":[{"id":"s1"}]}"#.utf8), 200) }
+        let attachment = try await platform(shell).attachDriver(deviceID: "emulator-5554", port: 7000, transport: transport)
+        XCTAssertEqual(attachment.port, 7000)
+        await attachment.detach()
+        XCTAssertEqual(shell.commands.count, 2)
+    }
+
+    func testRecordVideoRecordsPullsAndRemoves() async throws {
+        let shell = ScriptedShell()
+        let out = scratch.appendingPathComponent("rec.mp4").path
+        try await platform(shell).recordVideo(deviceID: "emulator-5554", to: out, seconds: 4.2)
+        XCTAssertEqual(shell.commands, [
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell screenrecord --time-limit 5 '/sdcard/grantiva-record.mp4'",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' pull '/sdcard/grantiva-record.mp4' \(shellQuoted(out))",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell rm -f '/sdcard/grantiva-record.mp4'",
+        ])
+    }
+
+    /// Review Focus 3.
+    func testRecordVideoOver180SecondsIsRefusedBeforeTouchingTheDevice() async {
+        let shell = ScriptedShell()
+        do {
+            try await platform(shell).recordVideo(deviceID: "emulator-5554", to: "/tmp/x.mp4", seconds: 200)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Android recordings are capped at 180 seconds"), "\(error)")
+        }
+        XCTAssertTrue(shell.commands.isEmpty)
+    }
 }

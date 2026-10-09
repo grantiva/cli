@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 @testable import GrantivaCLI
+import GrantivaCore
 
 final class RecordCommandTests: XCTestCase {
     func testWaitForStartRecognizesSimulatorStagingMovie() async throws {

@@ -13,9 +13,9 @@ public struct AndroidPlatform: DevicePlatform {
 
     public let platform: Platform = .android
     private let sdk: AndroidSDK
-    private let adb: ADB
+    public let adb: ADB
     private let gradle: GradleBuildRunner
-    private let emulators: EmulatorManager
+    public let emulators: EmulatorManager
     private let captureSettings: AndroidCaptureSettings
     private let execute: @Sendable (String) async throws -> String
     private let options: Options
@@ -216,5 +216,54 @@ public struct AndroidPlatform: DevicePlatform {
             _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
         }
         _ = try? await adb.removeForwards(serial: deviceID)
+    }
+
+    // MARK: Driver and recording
+
+    public static let maximumRecordingSeconds = 180
+    static let remoteRecordingPath = "/sdcard/grantiva-record.mp4"
+
+    public func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {
+        try await attachDriver(deviceID: deviceID, port: port, transport: .live)
+    }
+
+    /// `transport` is the seam for tests; the protocol entry point uses the live one.
+    public func attachDriver(deviceID: String, port: UInt16?, transport: UIAutomator2Transport) async throws -> DriverAttachment {
+        let endpoint: UIAutomator2Endpoint
+        let forwarded: Bool
+        if let port, port > 0 {
+            endpoint = try await UIAutomator2.endpoint(localPort: Int(port), serial: deviceID, transport: transport)
+            forwarded = false
+        } else {
+            endpoint = try await UIAutomator2.attach(adb: adb, serial: deviceID, transport: transport)
+            forwarded = true
+        }
+        let geometry: DeviceGeometry
+        do {
+            geometry = try await displayGeometry(deviceID: deviceID)
+        } catch {
+            if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) }
+            throw error
+        }
+        let adb = self.adb
+        return DriverAttachment(
+            client: .uiAutomator2(endpoint: endpoint, scale: geometry.scale, transport: transport),
+            port: endpoint.localPort,
+            detach: { if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) } }
+        )
+    }
+
+    /// `screenrecord` caps every file at 180 s; longer requests are refused
+    /// up front rather than silently truncated.
+    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+        let whole = Int(seconds.rounded(.up))
+        guard whole <= Self.maximumRecordingSeconds else {
+            throw GrantivaError.invalidArgument(
+                "Android recordings are capped at \(Self.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(Int(seconds)) is too long."
+            )
+        }
+        try await adb.screenrecord(serial: deviceID, remotePath: Self.remoteRecordingPath, seconds: max(whole, 1))
+        try await adb.pull(serial: deviceID, remotePath: Self.remoteRecordingPath, to: path)
+        _ = try? await adb.removeFile(serial: deviceID, remotePath: Self.remoteRecordingPath)
     }
 }
