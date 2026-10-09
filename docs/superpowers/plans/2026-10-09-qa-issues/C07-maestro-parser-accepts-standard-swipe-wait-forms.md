@@ -50,3 +50,25 @@ Sources/GrantivaCore/Config/MaestroFlowParser.swift:291-308 handles only `swipe:
 - Errors read `grantiva.yml:4: unsupported Maestro command 'back'` (file name, no enum text).
 - GrantivaCoreTests: a MaestroFlowParser test per form (`swipe: {direction: UP}` → swipe up, `extendedWaitUntil:
   {visible: "X"}` → assertVisible X, bare `waitForAnimationToEnd` → wait step) and one asserting the error message format.
+
+## iOS detail (IOS-F12)
+With no grantiva.yml, `GrantivaConfig.loadIfPresent` parses every `.maestro/*.yaml` into screens, so a standard
+`swipe: {direction: LEFT, from: ...}` in 02-favorite.yaml aborts a `--flow` run of a different file before any device
+work (exit 1):
+```
+Error: Invalid argument: Unsupported Maestro command 'swipe' at /private/tmp/qa-ios/app12/.maestro/02-favorite.yaml:11
+```
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+app=$(cd /tmp/qa-ios-app && grantiva build build --simulator qa-ios-1 --json | jq -r .productPath)
+rm -rf /tmp/qa-ios-noconf && mkdir /tmp/qa-ios-noconf && cp -R /Users/kyle/Developer/landmarks-demo/ios/.maestro /tmp/qa-ios-noconf/
+cd /tmp/qa-ios-noconf
+grantiva run --app-file "$app" --flow .maestro/01-browse.yaml --simulator qa-ios-1; echo "exit $?"
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F12.err, IOS-F-maestrodir/noconf-run.err. Cause:
+Sources/GrantivaCore/Config/GrantivaConfig.swift:175-180 (the `.maestro/` fallback) runs even when `--flow` is given.
+Extra acceptance criterion: `run --flow X` never parses unrelated `.maestro/` files; a GrantivaConfigTests case with a
+`.maestro/` dir holding one unparsable file and `--flow` naming another loads without error.

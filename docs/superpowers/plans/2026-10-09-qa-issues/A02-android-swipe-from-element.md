@@ -1,7 +1,7 @@
 # Start Android swipes on the `from:` element, and fail when it cannot be found
 
 Severity: wrong-result
-Platforms: android
+Platforms: ios, android
 Found by: AND-F02 (matrix rows AND-043, 02-favorite green for the wrong reason; gate Defect 2)
 Binary: grantiva 2.0.1 (commit c8dc86d), runner 1.1.18-grantiva.7+android-drivers-2, emulator-5554 (Pixel_8_API_35, API 35)
 
@@ -51,3 +51,24 @@ for screens mode; the `--flow` path passes the YAML through unchanged (RunnerSes
 - Runner test: parsing `swipe: {direction: LEFT, from: X}` yields a non-empty selector; a driver test with a fake page
   source asserts the swipe start point is inside X's bounds. GrantivaCoreTests: if the CLI pre-validates flows, a
   MaestroFlowParser test that `from:` is kept, not discarded.
+
+## iOS detail (IOS-F02)
+The iOS runner (1.1.18-grantiva.7) drops `from:` too. Flow 02's `swipe: {direction: LEFT, from: "Lake Tahoe"}` becomes
+a drag across the vertical centre of the 874-pt screen while the row sits near y≈210:
+```
+WDA POST /session/C64A131B-.../wda/dragfromtoforduration body={"duration":0.1,"fromX":361.8,"fromY":437,"toX":40.2,"toY":437}
+```
+On iOS the flow then fails at `tapOn "Remove"` rather than passing by accident.
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-1
+grantiva run --no-build --flow .maestro/02-favorite.yaml --simulator qa-ios-1 --report-dir out
+grep dragfromtoforduration out/maestro-runner.log
+```
+Evidence (qa-ios worktree): findings/evidence/triage/02-favorite.err, IOS-029/rep/maestro-runner.log (line 240),
+IOS-030/02-favorite.err.
+Extra acceptance criterion: on iOS the drag starts inside the "Lake Tahoe" cell's frame and flow 02 passes; a runner
+test for the WDA driver asserts the drag origin lies within the `from:` element's rect.

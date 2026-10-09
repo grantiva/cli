@@ -43,3 +43,23 @@ e.g. via FlowReferenceResolver, and take the bundle ID from the header when `--b
 - `run --flow` with no config and no `--bundle-id` uses the flow's `appId:` header.
 - A runner-side test (or a GrantivaCoreTests case on the flow normaliser) asserts bare `scroll` gets direction DOWN and
   `setPermissions` gets the header appId.
+
+## iOS detail (IOS-F03)
+landmarks-demo flow 10 fails at its first bare `- scroll` (with or without `--env LANDMARKS_SEED=many`):
+```
+    ✗ scroll (0ms)
+      ╰─ Invalid scroll direction (cause: invalid direction: )
+```
+Grantiva's own parser maps `scroll` to a swipe up (Sources/GrantivaCore/Config/MaestroFlowParser.swift:237), but
+`run --flow` passes the step to the runner unchanged.
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-1
+grantiva run --no-build --flow .maestro/10-seed-many.yaml --simulator qa-ios-1 --env LANDMARKS_SEED=many
+```
+Evidence (qa-ios worktree): findings/evidence/triage/10-seed-many.err, IOS-030/10-seed-many.err.
+Extra acceptance criterion: flow 10 with `--env LANDMARKS_SEED=many` passes on iOS (bare `scroll` scrolls down and
+`Landmark 30` becomes visible).

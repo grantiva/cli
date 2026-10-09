@@ -1,7 +1,7 @@
 # Deliver `--env`, flow `env:` and `launchApp.environment` to Android apps as intent extras
 
 Severity: wrong-result
-Platforms: android
+Platforms: ios, android
 Found by: AND-F01 (matrix rows AND-035, AND-037, AND-038, AND-039, AND-040, AND-043; gate Defect 1)
 Binary: grantiva 2.0.1 (commit c8dc86d), runner 1.1.18-grantiva.7+android-drivers-2, emulator-5554 (Pixel_8_API_35, API 35)
 
@@ -56,3 +56,30 @@ pkg/driver/uiautomator2/commands.go:849-852 forwards only `step.Arguments` to `L
 - Decide flow-header `env:`: deliver it the same way or document that it is only for `${VAR}` substitution on Android.
 - GrantivaCoreTests/FlowEnvironmentTests: an Android-platform injection into bare, scalar and mapping `launchApp` forms
   yields `arguments:` entries (values with `=` and spaces quoted); FlowGeneratorTests: same for the screens flow.
+
+## iOS detail (IOS-F01)
+On iOS `--env` already reaches the app (FlowEnvironment.inject rewrites `launchApp` into `launchApp: environment:`),
+but the flow header `env:` block is never read, so flows that rely on it run with the default seed. Flow 09 without
+`--env` (exit 1):
+```
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="No landmarks yet" (18.0s)
+      ╰─ Element not visible: ... closest on-screen texts: "Landmarks", "All Landmarks", "road.lanes"
+```
+It passes with `--env LANDMARKS_SEED=empty`; 99-crash fails on its last assert instead of crashing.
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-1
+grantiva run --no-build --flow .maestro/09-seed-empty.yaml --simulator qa-ios-1; echo "exit $?"        # 1
+grantiva run --no-build --flow .maestro/09-seed-empty.yaml --simulator qa-ios-1 --env LANDMARKS_SEED=empty   # 0
+```
+Evidence (qa-ios worktree): findings/evidence/triage/09-seed-empty.err, IOS-030/09-seed-empty.err, IOS-030/99-crash.err,
+IOS-038/out.txt. Cause: Sources/GrantivaCore/Runner/FlowEnvironment.swift:43 (`inject`) takes only the `--env` map;
+RunnerSession.swift:292-300 never parses the header `env:`.
+Extra acceptance criterion: the header-`env:` decision applies to iOS too. Either merge header `env:` into
+`launchApp.environment` (`--env` wins on conflicts) so 09, 10 and 99 behave on iOS without `--env`, or state in README
+§Maestro Compatibility that header `env:` only defines `${VAR}` values. FlowEnvironmentTests: a flow with header
+`env: {A: b}` and a bare `launchApp` yields `environment: {A: b}` (if merging is chosen).

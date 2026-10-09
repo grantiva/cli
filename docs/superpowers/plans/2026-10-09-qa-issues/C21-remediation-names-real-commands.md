@@ -38,3 +38,13 @@ hardcodes "iPhone 16".
 - Note `grantiva_tap` returned this as a JSON-RPC internal error (rpc-error), not an `isError` result; return `isError`.
 - GrantivaCoreTests: a test parses every "Run: grantiva …" string in GrantivaError and asserts the subcommand path exists
   in the CLI command tree (or a fixed allowlist).
+
+## iOS detail (IOS-F30)
+On iOS, MCP `grantiva_tap` by label hits this string whenever WDA's name differs from the label (I05), e.g.:
+```
+<< {"error": {"code": -32603, "message": "Internal error: Element not found: \"Favorites\". Run grantiva ui a11y to inspect the tree."}}
+```
+`grantiva ui` does not exist. Repro: the I05 repro (`grantiva_tap {"label":"Favorites"}` against a keep-alive session
+on qa-ios-2 in a copy of /Users/kyle/Developer/landmarks-demo/ios).
+Evidence (qa-ios worktree): findings/evidence/IOS-mcp/phase1/transcript.txt (ids 7, 10).
+Extra acceptance criterion: none beyond the existing ones; verify the iOS error text after I05 lands.

@@ -49,3 +49,25 @@ Sources/GrantivaCore/Platform/IOSPlatform.swift:130-139: the `simctl io recordVi
 - Set the recorder's `standardOutput` to the same log file (or `/dev/null`).
 - GrantivaCLITests/OutputStreamContractTests: assert `runner stop` with no session writes nothing to stdout.
 - GrantivaCoreTests/IOSPlatformTests: assert the recordVideo process has a non-inherited `standardOutput`.
+
+## iOS detail (IOS-F26)
+`record --json` on iOS puts simctl's narration ahead of the JSON, so `json.load` fails at char 0:
+```
+Recording completed. Writing to disk.
+
+Wrote video to: /private/tmp/qa-ios/rec.mp4
+{
+  "frames" : [ { "actualMilliseconds" : 0, "path" : "/private/tmp/qa-ios/rec-frames/000500ms.png", ...
+```
+Also, `--output rec.mp4` produces a QuickTime MOV container (`file rec.mp4`), not MPEG-4.
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+grantiva record --simulator qa-ios-1 --duration 4 --output /tmp/rec.mp4 --frames-at 500,1500,3500 --json 2>/dev/null \
+  | python3 -c 'import json,sys; json.load(sys.stdin)'; file /tmp/rec.mp4
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F26.json, F26.err; IOS-083/out.json, IOS-079/out.txt.
+Extra acceptance criteria: on iOS, `record --json 2>/dev/null` stdout is a single JSON document; for a `.mp4` output
+either pass `--codec=h264` with an MP4 container (e.g. record to `.mov` and remux with `avconvert`/AVFoundation) or
+reject `.mp4` with a message suggesting `.mov` (ties in with C14's extension validation).

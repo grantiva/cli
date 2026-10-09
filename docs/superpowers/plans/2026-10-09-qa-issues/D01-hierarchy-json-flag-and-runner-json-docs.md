@@ -59,3 +59,22 @@ kill -INT $pid
 ```
 Evidence (qa-android worktree): findings/evidence/AND-055/out.txt. Extra acceptance criterion: on Android,
 `hierarchy --json` returns the same JSON shape as `--format json` (parsed by UIAutomator2HierarchyParser).
+
+## iOS detail (IOS-F14)
+Same on a device: during a keep-alive run, `hierarchy --udid <udid> --json` exits 0 and prints XML:
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Landmarks" label="Landmarks" ...
+```
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+udid=$(grantiva simulator ensure --name qa-ios-2 --device-type "iPhone 17" --runtime 26.0)
+grantiva build install --simulator qa-ios-2
+grantiva run --no-build --flow .maestro/01-browse.yaml --simulator qa-ios-2 --keep-alive --ready-file /tmp/d01.ready &
+while [ ! -f /tmp/d01.ready ]; do sleep 0.2; done
+grantiva hierarchy --udid "$udid" --json | head -1; kill -INT %1
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F14.out, IOS-050/out.txt.
+Extra acceptance criterion: on iOS, `--json` output parses with `json.load` (the same tree as `--format json`).

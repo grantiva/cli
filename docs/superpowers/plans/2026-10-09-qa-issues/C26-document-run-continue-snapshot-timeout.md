@@ -1,7 +1,7 @@
 # Document run's --continue-on-failure, --snapshot, and --timeout minimum
 
 Severity: docs
-Platforms: cli, android
+Platforms: cli, ios, android
 Found by: CLI-F01 (matrix rows CLI-004)
 Binary: grantiva 2.0.1 (commit c8dc86d)
 
@@ -59,3 +59,17 @@ With `--timeout 30` and a 90 s wait the runner is killed after 30 s as described
 Evidence (qa-android worktree): findings/evidence/AND-049/{stderr.txt,stderr-30.txt}. Cause:
 Sources/GrantivaCLI/RunCommand.swift:63-67 (`validate`). No extra acceptance criterion; docs/android.md need not
 repeat it if help and README state the minimum.
+
+## iOS detail (IOS-F21)
+The same 30 s minimum applies on iOS: `--timeout 5` exits 64 with `Error: --timeout must be at least 30 seconds.` and
+the usage line. With `--timeout 30` the runner is killed at 31 s and the run records `failed`, which is correct.
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-1
+grantiva run --no-build --flow .maestro/11-slow.yaml --simulator qa-ios-1 --timeout 5; echo "exit $?"    # 64
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F21.err, IOS-073/err.txt, IOS-073/err30.txt, IOS-073/r30.ready.
+No extra acceptance criterion beyond the help/README text; the missing ready file on this usage error is covered by A06.

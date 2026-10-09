@@ -83,3 +83,37 @@ emulators are running" for more than one; `try?` turns that into "No emulator ru
 Extra acceptance criterion: on Android, `[Emulator]` shows the session's serial when a session exists, else the
 configured AVD's serial if running, else lists the running serials; an error from device selection is never reported as
 "No emulator running". ContextToolTests: a fake Android platform with two devices and a session on the first.
+
+## iOS detail (IOS-F32)
+With config `simulator: qa-ios-1` and a runner session on qa-ios-2, `[Simulator]` names the user's iPhone 17 Pro, the
+first booted device, which is neither:
+```
+[Config]
+  platform: ios
+  simulator: qa-ios-1
+[Simulator]
+  name: iPhone 17 Pro
+  udid: B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C
+...
+[Runner Session]
+  pid: 84412
+  wda_port: 8607
+  udid: 4DAB1D26-5107-4B17-9093-AC2E19DE0403
+```
+In the triage re-run `[Runner Session]` said "No active session." although `grantiva_tap` acted on the live qa-ios-2
+keep-alive session (C03's machine-wide fallback).
+Repro (needs another simulator booted first):
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios QA=/Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name "QA iPhone 17 Pro" --runtime 26.0
+grantiva simulator ensure --name qa-ios-2 --device-type "iPhone 17" --runtime 26.0 && grantiva build install --simulator qa-ios-2
+grantiva run --no-build --flow .maestro/01-browse.yaml --simulator qa-ios-2 --keep-alive --ready-file /tmp/c06.ready &
+while [ ! -f /tmp/c06.ready ]; do sleep 0.2; done
+python3 $QA/findings/evidence/IOS-mcp/client.py $QA/findings/evidence/IOS-mcp/phase1.json /tmp/c06 /tmp/qa-ios-app -- grantiva mcp
+grep -o '\[Simulator\][^\[]*' /tmp/c06/transcript.txt | head -1; kill -INT %1
+```
+Evidence (qa-ios worktree): findings/evidence/IOS-mcp/phase1/transcript.txt (id 3).
+Extra acceptance criterion: on iOS, with no session, `[Simulator]` shows the configured `simulator:` device (or says it
+is not booted) rather than the first booted one; with a session, `[Runner Session]` is reported whenever the UI tools
+would use it, so the two sections never disagree.

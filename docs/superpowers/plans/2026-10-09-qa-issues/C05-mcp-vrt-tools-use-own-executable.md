@@ -66,3 +66,24 @@ export PATH="/opt/homebrew/bin:$PATH"      # older grantiva first
 Evidence (qa-android worktree): findings/evidence/AND-100/session3.log.
 Extra acceptance criterion: with an older `grantiva` first on PATH, the Android VRT tools read and write
 `.grantiva/captures/android/` and `.grantiva/baselines/android/` through the server's own binary.
+
+## iOS detail (IOS-F33)
+On iOS, with the 2.0.1 server and Homebrew 2.0.0 first on PATH, `grantiva_vrt_compare {}` and
+`grantiva_vrt_approve {"screens":["Home"]}` fail:
+```
+{"text": "Error: Unknown option '--platform'\nUsage: grantiva diff compare [--json] [--verbose] [--quiet] ..."}
+{"text": "Approve failed:\nError: Unknown option '--platform'\nUsage: grantiva diff approve ..."}
+```
+Both work when a PATH entry for 2.0.1 comes first (approve Home succeeds, compare returns the JSON).
+Repro:
+```
+export GRANTIVA_SESSION_ID=qa-ios QA=/Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+export PATH="/opt/homebrew/bin:$PATH"; which -a grantiva | head -1     # 2.0.0 first
+python3 $QA/findings/evidence/IOS-mcp/client.py $QA/findings/evidence/IOS-mcp/phase7.json /tmp/c05 /tmp/qa-ios-app \
+  -- ~/.grantiva-qa/bin/grantiva mcp --project-dir /tmp/qa-ios-app
+grep -o "Unknown option[^\\]*" /tmp/c05/transcript.txt
+```
+Evidence (qa-ios worktree): findings/evidence/IOS-mcp/phase7/transcript.txt (ids 2-3), IOS-mcp/phase8/transcript.txt.
+This also re-extracted the runner under 2.0.0 and set up C01's iOS trap (see C01 iOS detail).
+Extra acceptance criterion: on iOS, the repro's compare returns JSON and approve succeeds through the server's binary.

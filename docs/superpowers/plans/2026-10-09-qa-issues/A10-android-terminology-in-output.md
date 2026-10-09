@@ -1,7 +1,7 @@
 # Use Android terminology in Android output, JSON keys and ownership remediation, and drop the stray " exited with code 1" suffix
 
 Severity: ux
-Platforms: android
+Platforms: ios, android
 Found by: AND-F21, AND-F09 (matrix rows AND-021, AND-031, AND-024, AND-063)
 Binary: grantiva 2.0.1 (commit c8dc86d), runner 1.1.18-grantiva.7+android-drivers-2, emulator-5554 (Pixel_8_API_35, API 35)
 
@@ -64,3 +64,28 @@ grantiva build build --variant noSuchVariant | grep Scheme
 - `.commandFailed` gains a message-only form (or the suffix is only added for real subprocess names).
 - Tests: SimulatorLeaseTests asserts the Android message names `grantiva emulator`; InstallCommandTests asserts the
   Android JSON keys; TableFormatterTests asserts no `Scheme:` for a failed Android build.
+
+## iOS detail (IOS-F13, IOS-F36)
+The stray " exited with code 1" suffix is not Android-specific. On iOS it follows capacity timeouts, runner failures,
+the ownership error and record errors:
+```
+Error: Timed out after 5s waiting for a Grantiva simulator slot (limit 2). Active: ... Release one with
+`grantiva simulator teardown --session-id <id>`. exited with code 1
+Error: Runner failed (exit 1):
+ exited with code 1
+Error: ... requested frame 5000ms exited with code 1
+```
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+grantiva simulator ensure --name qa-ios-1 --device-type "iPhone 17" --runtime 26.0
+GRANTIVA_MAX_SIMULATORS=1 GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS=5 \
+  grantiva simulator ensure --name qa-ios-2 --device-type "iPhone 17" --runtime 26.0 2>&1 | tail -1
+grantiva record --simulator qa-ios-1 --duration 2 --output /tmp/a10.mov --frames-at 5000 2>&1 | tail -1
+grantiva simulator delete --name qa-ios-2
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F13.err, F36-cap.err; IOS-012/err.txt, IOS-029/err.txt,
+IOS-060/err.txt, IOS-082/err.txt. Cause: Sources/GrantivaCore/GrantivaError.swift:44-45 (shared by both platforms).
+The "Runner failed" case comes from RunnerSession.swift:116-124, where the runner's stderr suffix is often empty.
+Extra acceptance criteria: no iOS error ends in ` exited with code N` unless it names a subprocess; an empty runner
+stderr yields "Runner failed (exit 1); see the runner output above." GrantivaErrorTests covers a sentence message.

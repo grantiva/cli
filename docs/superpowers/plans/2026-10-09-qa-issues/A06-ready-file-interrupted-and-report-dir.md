@@ -52,3 +52,33 @@ afterwards and is dropped by the write-once ReadyFileSignal (ReadyFile.swift:188
   the ready-file cleanup first).
 - GrantivaCoreTests/ReadyFileTests and RunnerExecutionTests: a simulated SIGINT during a running flow yields
   `interrupted`; RunnerSessionCleanupTests: an ephemeral report dir is not written to the ready file.
+
+## iOS detail (IOS-F16, IOS-F17, IOS-F21)
+iOS behaves the same way. `kill -INT` during 11-slow in a keep-alive run gives exit 130 and:
+```
+{ "finishedAt" : "2026-10-09T21:54:13Z", "flows" : [ { "name" : "11-slow", "status" : "running" } ],
+  "reportDir" : "/var/folders/.../T/grantiva-report-5CE3DC97-...", "status" : "failed" }
+```
+Without `--report-dir`, a passing 01-browse run's `reportDir` no longer exists when the waiter reads it. Also, a usage
+error writes no ready file at all: `--timeout 5 --ready-file F21.ready` exits 64 with `Error: --timeout must be at least
+30 seconds.`, so the README's `while [ ! -f ... ]` waiter spins forever, although README.md:85 and the `--ready-file`
+help (Sources/GrantivaCLI/RunCommand.swift:53) say it is "always written".
+Repro:
+```
+export PATH="$HOME/.grantiva-qa/bin:$PATH" GRANTIVA_SESSION_ID=qa-ios
+rm -rf /tmp/qa-ios-app && cp -R /Users/kyle/Developer/landmarks-demo/ios /tmp/qa-ios-app && cd /tmp/qa-ios-app
+grantiva simulator ensure --name qa-ios-2 --device-type "iPhone 17" --runtime 26.0
+grantiva build install --simulator qa-ios-2
+grantiva run --no-build --flow .maestro/11-slow.yaml --simulator qa-ios-2 --keep-alive --ready-file /tmp/a06-int.ready & pid=$!
+sleep 12; kill -INT $pid; wait $pid; echo "exit $?"; cat /tmp/a06-int.ready                  # 130, failed/running
+grantiva run --no-build --flow .maestro/01-browse.yaml --simulator qa-ios-2 --ready-file /tmp/a06-ok.ready
+ls "$(jq -r .reportDir /tmp/a06-ok.ready)"                                                   # No such file
+grantiva run --no-build --flow .maestro/11-slow.yaml --simulator qa-ios-2 --timeout 5 --ready-file /tmp/a06-val.ready
+echo "exit $?"; ls /tmp/a06-val.ready                                                        # 64, missing
+```
+Evidence (qa-ios worktree): findings/evidence/triage/F16.ready, F16.err, F17.ready, F21.err; IOS-058/r058.ready,
+IOS-034/x.ready, IOS-073/err.txt. Cause of the usage-error case: `validate()` (RunCommand.swift:63-67) throws in
+ArgumentParser before `run()` reaches the ready-file handling.
+Extra acceptance criteria: on iOS, the SIGINT case writes `interrupted` with no `running` flow; a validation failure
+with `--ready-file` given writes `{"status":"failed", "error": "..."}` (move the check into `run()` after the ready
+file is armed, or write it from `validate()`). RunCommandTests: `--timeout 5 --ready-file X` leaves X with `failed`.

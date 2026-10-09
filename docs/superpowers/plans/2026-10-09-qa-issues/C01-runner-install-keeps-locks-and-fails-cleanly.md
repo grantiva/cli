@@ -56,3 +56,23 @@ Sources/GrantivaCore/Runner/RunnerManager.swift:138 removes the whole `baseDir` 
 - GrantivaCoreTests/RunnerManagerTests: a test with a fake `extract` and a seeded `locks/lease` file asserts the lock
   survives `installIfNeeded`, and a test with a throwing `extract` asserts the previous install is intact.
 - Resolve resources with `Bundle(url:)`/a lookup that returns nil instead of `Bundle.module`, so a missing bundle throws.
+
+## iOS detail (IOS-F05)
+The iOS gate hit the trap on every `run` while `--version` still worked:
+```
+GrantivaCore/resource_bundle_accessor.swift:44: Fatal error: unable to find bundle named grantiva_GrantivaCore
+```
+(exit 133, SIGTRAP). The trigger was two installed versions: Homebrew 2.0.0 and the 2.0.1 QA binary share
+`~/.grantiva/runner/version` (one `installStamp`), so each re-extracts after the other has run, and the MCP VRT tools
+shell out to the PATH 2.0.0 (C05), so ordinary MCP use flips the stamp. Not re-run in triage (it needs a runner
+re-extract on a shared host; `HOME=` is ignored because the code uses `homeDirectoryForCurrentUser`).
+Repro (on a disposable host or user account only):
+```
+cp ~/.grantiva-qa/bin/grantiva /tmp/lone-grantiva        # binary without grantiva_GrantivaCore.bundle beside it
+echo stale > ~/.grantiva/runner/version
+cd /Users/kyle/Developer/landmarks-demo/ios && /tmp/lone-grantiva run --no-build --flow .maestro/01-browse.yaml; echo "exit $?"   # 133
+```
+Evidence (qa-ios worktree): findings/ios-gate.md ("Environment breakage"), findings/evidence/IOS-F-bundle/.
+Extra acceptance criterion: two grantiva versions on one host do not force each other to re-extract (version the
+install dir, e.g. `~/.grantiva/runner/<installStamp>/`, or compare stamps without reinstalling an older runner over a
+newer one). RunnerManagerTests: installing stamp B after A leaves A's install usable.
