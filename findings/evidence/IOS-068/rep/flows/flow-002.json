@@ -1,0 +1,146 @@
+{
+  "id": "flow-002",
+  "name": "05-category",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-73362784-C62F-4DD7-BA6E-9F00555367F5/2/05-category.yaml",
+  "device": {
+    "id": "6EEDCB1A-E693-488A-B34C-5A0AB5DE9400",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:20:43.910665-07:00",
+  "endTime": "2026-10-09T14:20:48.291968-07:00",
+  "duration": 4381,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:43.910884-07:00",
+      "endTime": "2026-10-09T14:20:45.908079-07:00",
+      "duration": 1997,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:45.908812-07:00",
+      "endTime": "2026-10-09T14:20:46.888305-07:00",
+      "duration": 979,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "8C000000-0000-0000-3CD0-000000000000",
+        "text": "Lakes",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 482,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Lake Tahoe\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:46.889442-07:00",
+      "endTime": "2026-10-09T14:20:47.282012-07:00",
+      "duration": 392,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake Tahoe"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "90000000-0000-0000-3CD0-000000000000",
+        "text": "Lake Tahoe, Sierra Nevada, CA",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": -105,
+          "y": 726,
+          "width": 370,
+          "height": 82
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:47.282805-07:00",
+      "endTime": "2026-10-09T14:20:47.473701-07:00",
+      "duration": 190,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "DD000000-0000-0000-3CD0-000000000000",
+        "text": "Mono Lake, Lee Vining, CA",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 250,
+          "width": 370,
+          "height": 82
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:47.474579-07:00",
+      "endTime": "2026-10-09T14:20:48.208847-07:00",
+      "duration": 734,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-09T14:20:48.209182-07:00",
+      "endTime": "2026-10-09T14:20:48.291744-07:00",
+      "duration": 82,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-002/cmd-005-Lakes.png"
+      }
+    }
+  ],
+  "artifacts": {}
+}

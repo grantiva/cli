@@ -1,0 +1,55 @@
+14:25:07.566476 [INFO] === Test execution started ===
+14:25:07.566545 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-077/rep-args
+14:25:07.566551 [INFO] Platform: ios
+14:25:07.566556 [INFO] Driver: uiautomator2
+14:25:07.566861 [INFO] Validated 1 flow(s)
+14:25:07.685149 [INFO] Single device execution mode
+14:25:07.685172 [INFO] Starting flow execution (parallel: false, devices: [])
+14:25:07.685179 [INFO] Creating driver for single device execution
+14:25:07.685183 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:25:07.806458 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:25:07.806574 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:25:08.044768 [INFO] WDA build completed successfully
+14:25:08.044792 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:25:10.285509 [INFO] WDA started successfully on port 8876
+14:25:10.661950 [DEBUG] WDA GET /window/size
+14:25:10.735048 [DEBUG] WDA GET /window/size completed (73ms, status: 200)
+14:25:10.735120 [INFO] Driver created: ios on qa-ios-1
+14:25:10.736952 [INFO] === Starting flow: args ===
+14:25:10.736960 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-EAED9C52-6E5E-45EC-B6F6-05CE40EDCA89/0/args.yaml
+14:25:10.736965 [INFO] Total steps: 2
+14:25:10.737157 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:25:10.737957 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:25:10.738034 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:25:13.369161 [DEBUG] WDA POST /session completed (2631ms, status: 200)
+14:25:13.369272 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:25:13.423838 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/appium/settings completed (54ms, status: 200)
+14:25:13.425129 [DEBUG] Executing step 0: launchApp
+14:25:14.005547 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=["--flag" "true"] env=map[--flag:true]
+14:25:14.005608 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:25:14.006426 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/appium/settings completed (0ms, status: 200)
+14:25:14.006500 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+14:25:14.006928 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/wda/apps/terminate completed (0ms, status: 200)
+14:25:14.006951 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/wda/apps/launch body={"arguments":["--flag","true"],"bundleId":"com.kylebrowning.Landmarks","environment":{"--flag":"true...
+14:25:15.564310 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/wda/apps/launch completed (1557ms, status: 200)
+14:25:15.564412 [DEBUG] Step 0 completed successfully (2139ms): launchApp
+14:25:15.564928 [DEBUG] Executing step 1: assertVisible: text="Featured"
+14:25:15.565176 [DEBUG] Flutter: parallel search (text="Featured", id="")
+14:25:15.565199 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Featured' OR name CONTAINS[c] 'Featured' OR...
+14:25:15.815903 [DEBUG] WDA POST /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element completed (250ms, status: 200)
+14:25:15.816002 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/name
+14:25:15.816125 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/text
+14:25:15.816226 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/rect
+14:25:15.816328 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/displayed
+14:25:15.871633 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/name completed (55ms, status: 200)
+14:25:15.925904 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/displayed completed (109ms, status: 200)
+14:25:15.974620 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/text completed (158ms, status: 200)
+14:25:16.024368 [DEBUG] WDA GET /session/22BF0D8C-DBAF-482E-B0F7-198CEC32A188/element/8B000000-0000-0000-FD09-010000000000/rect completed (208ms, status: 200)
+14:25:16.856395 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:25:16.856448 [DEBUG] Step 1 completed successfully (1291ms): assertVisible: text="Featured"
+14:25:16.857616 [INFO] === Flow completed: args (status: passed, duration: 6120ms, passed: 2, failed: 0, skipped: 0) ===
+14:25:16.858772 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:25:16.858847 [INFO] Generating reports...
+14:25:16.859245 [INFO] Shutting down devices started by maestro-runner...
+14:25:16.859259 [INFO] Shutting down all tracked emulators
+14:25:16.859265 [INFO] Shutting down all tracked simulators

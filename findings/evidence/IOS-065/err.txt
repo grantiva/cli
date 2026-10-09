@@ -1,0 +1,93 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-ios-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-ios-1
+Simulator booted: qa-ios-1 (6EEDCB1A-E693-488A-B34C-5A0AB5DE9400)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8876
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (1.2s)
+    ✓ tapOn: text="Favorite" (784ms)
+    ✓ assertVisible: text="Unfavorite" (693ms)
+    ✓ tapOn: text="Landmarks" (670ms)
+    ✓ tapOn: text="Favorites" (1.7s)
+    ✓ assertVisible: text="Lake Tahoe" (178ms)
+    ✓ takeScreenshot (71ms)
+    ✓ swipe: LEFT (1.1s)
+    ✗ tapOn: text="Remove" (12.0s)
+      ╰─ Element not found: text='Remove' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR value CONTAINS[c] 'Remove')'; page source: no elements match selector; closest on-screen texts: "love", "water.waves", "Vertical scroll bar, 1 page")
+✗ 02-favorite 23.5s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.2s)
+    ✓ tapOn (784ms)
+    ✓ assertVisible (693ms)
+    ✓ tapOn (670ms)
+    ✓ tapOn (1.7s)
+    ✓ assertVisible (178ms)
+    ✓ takeScreenshot (71ms)
+    ✓ swipe (1.1s)
+    ✗ tapOn (12.3s)
+      ╰─ Element not found: text='Remove' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR value CONTAINS[c] 'Remove')'; page source: no elements match selector; closest on-screen texts: "love", "water.waves", "Vertical scroll bar, 1 page")
+    ✗ assertNotVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 02-favorite 20.8s
+
+  9 steps passing (23.5s)
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✗ FAIL      13      9      1      3      23.5s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      9      1      3      23.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-failure/rep/captures/failure-1791580736.png
+Error: Runner failed (exit 1):
+ exited with code 1

@@ -1,0 +1,152 @@
+{
+  "id": "flow-000",
+  "name": "11-slow",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-EFECFD62-37EE-4ECF-9369-ECA0DDC0E4E7/0/11-slow.yaml",
+  "device": {
+    "id": "6EEDCB1A-E693-488A-B34C-5A0AB5DE9400",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:14:37.658492-07:00",
+  "endTime": "2026-10-09T14:14:45.587303-07:00",
+  "duration": 7928,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:37.658875-07:00",
+      "endTime": "2026-10-09T14:14:39.867177-07:00",
+      "duration": 2208,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:39.867576-07:00",
+      "endTime": "2026-10-09T14:14:41.314397-07:00",
+      "duration": 1446,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-1C91-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:41.31475-07:00",
+      "endTime": "2026-10-09T14:14:42.315207-07:00",
+      "duration": 1000,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "2B010000-0000-0000-1C91-000000000000",
+        "text": "Slow Screen",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 325,
+          "width": 370,
+          "height": 52
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:42.315524-07:00",
+      "endTime": "2026-10-09T14:14:42.742909-07:00",
+      "duration": 427,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "58010000-0000-0000-1C91-000000000000",
+        "text": "1",
+        "class": "XCUIElementTypeActivityIndicator",
+        "bounds": {
+          "x": 164,
+          "y": 456,
+          "width": 74,
+          "height": 47
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Loaded after delay\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:42.743415-07:00",
+      "endTime": "2026-10-09T14:14:45.52172-07:00",
+      "duration": 2778,
+      "element": {
+        "found": true,
+        "id": "5E010000-0000-0000-1C91-000000000000",
+        "text": "Loaded after delay",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 130,
+          "y": 469,
+          "width": 142,
+          "height": 21
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:45.522041-07:00",
+      "endTime": "2026-10-09T14:14:45.587061-07:00",
+      "duration": 65,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-005-Slow Loaded.png"
+      }
+    }
+  ],
+  "artifacts": {}
+}

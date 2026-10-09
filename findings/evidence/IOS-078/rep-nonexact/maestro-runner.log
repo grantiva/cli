@@ -1,0 +1,73 @@
+14:25:41.466810 [INFO] === Test execution started ===
+14:25:41.466894 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-078/rep-nonexact
+14:25:41.466901 [INFO] Platform: ios
+14:25:41.466905 [INFO] Driver: uiautomator2
+14:25:41.467218 [INFO] Validated 1 flow(s)
+14:25:41.583345 [INFO] Single device execution mode
+14:25:41.583377 [INFO] Starting flow execution (parallel: false, devices: [])
+14:25:41.583384 [INFO] Creating driver for single device execution
+14:25:41.583389 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:25:41.695192 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:25:41.695289 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:25:41.915532 [INFO] WDA build completed successfully
+14:25:41.915556 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:25:44.148491 [INFO] WDA started successfully on port 8876
+14:25:44.628120 [DEBUG] WDA GET /window/size
+14:25:44.684054 [DEBUG] WDA GET /window/size completed (55ms, status: 200)
+14:25:44.684135 [INFO] Driver created: ios on qa-ios-1
+14:25:44.685507 [INFO] === Starting flow: nonexact ===
+14:25:44.685514 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-7060A60D-B40F-4A4E-A39A-5ABE6057EEF2/0/nonexact.yaml
+14:25:44.685517 [INFO] Total steps: 3
+14:25:44.685637 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:25:44.686374 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:25:44.686466 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:25:47.325079 [DEBUG] WDA POST /session completed (2638ms, status: 200)
+14:25:47.325150 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:25:47.385247 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/appium/settings completed (60ms, status: 200)
+14:25:47.385620 [DEBUG] Executing step 0: launchApp
+14:25:47.888279 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:25:47.888337 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:25:47.889047 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/appium/settings completed (0ms, status: 200)
+14:25:47.889118 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:25:49.424268 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/wda/apps/launch completed (1535ms, status: 200)
+14:25:49.424324 [DEBUG] Step 0 completed successfully (2038ms): launchApp
+14:25:49.424695 [DEBUG] Executing step 1: tapOn: text="Lakes"
+14:25:49.424895 [DEBUG] Flutter: parallel search (text="Lakes", id="")
+14:25:49.424932 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:25:49.424948 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Lakes' OR value CON...
+14:25:49.424976 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Lakes' OR val...
+14:25:49.424997 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Lakes' OR name ==[c] 'Lakes'...
+14:25:49.712042 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element completed (287ms, status: 200)
+14:25:49.807910 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element completed (382ms, status: 200)
+14:25:49.854686 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element completed (429ms, status: 404)
+14:25:49.900603 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element completed (475ms, status: 404)
+14:25:49.900746 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/rect
+14:25:49.900778 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/displayed
+14:25:49.900832 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/text
+14:25:49.900899 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/name
+14:25:49.948823 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/rect completed (48ms, status: 200)
+14:25:50.001371 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/displayed completed (100ms, status: 200)
+14:25:50.047359 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/text completed (146ms, status: 200)
+14:25:50.096651 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/name completed (195ms, status: 200)
+14:25:50.096715 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/click body=
+14:25:50.483011 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/8C000000-0000-0000-F80E-010000000000/click completed (386ms, status: 200)
+14:25:50.778058 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:25:50.778091 [DEBUG] Step 1 completed successfully (1353ms): tapOn: text="Lakes"
+14:25:50.778491 [DEBUG] Executing step 2: assertVisible: text="Lake"
+14:25:50.778716 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Lake' OR name CONTAINS[c] 'Lake' OR value C...
+14:25:50.935745 [DEBUG] WDA POST /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element completed (157ms, status: 200)
+14:25:50.935808 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/name
+14:25:50.935843 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/rect
+14:25:50.935866 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/text
+14:25:50.935920 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/displayed
+14:25:50.975814 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/rect completed (39ms, status: 200)
+14:25:51.015323 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/name completed (79ms, status: 200)
+14:25:51.047832 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/text completed (112ms, status: 200)
+14:25:51.094572 [DEBUG] WDA GET /session/60946D11-1BF2-4F15-9112-AA6B597F80E7/element/22000000-0000-0000-F80E-010000000000/displayed completed (158ms, status: 200)
+14:25:51.094628 [DEBUG] Step 2 completed successfully (316ms): assertVisible: text="Lake"
+14:25:51.095851 [INFO] === Flow completed: nonexact (status: passed, duration: 6410ms, passed: 3, failed: 0, skipped: 0) ===
+14:25:51.096972 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:25:51.097040 [INFO] Generating reports...
+14:25:51.097419 [INFO] Shutting down devices started by maestro-runner...
+14:25:51.097425 [INFO] Shutting down all tracked emulators
+14:25:51.097429 [INFO] Shutting down all tracked simulators

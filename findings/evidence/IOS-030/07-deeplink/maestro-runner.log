@@ -1,0 +1,99 @@
+14:13:23.006581 [INFO] === Test execution started ===
+14:13:23.006652 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/07-deeplink
+14:13:23.006659 [INFO] Platform: ios
+14:13:23.006663 [INFO] Driver: uiautomator2
+14:13:23.007129 [INFO] Validated 1 flow(s)
+14:13:23.503475 [INFO] Single device execution mode
+14:13:23.503507 [INFO] Starting flow execution (parallel: false, devices: [])
+14:13:23.503514 [INFO] Creating driver for single device execution
+14:13:23.503519 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:13:23.780665 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:13:23.780771 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:13:24.133402 [INFO] WDA build completed successfully
+14:13:24.133422 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:13:25.029963 [INFO] WDA started successfully on port 8876
+14:13:25.703862 [DEBUG] WDA GET /window/size
+14:13:25.706132 [ERROR] WDA GET /window/size failed (2ms): Get "http://localhost:8876/window/size": dial tcp [::1]:8876: connect: connection refused
+14:13:25.706213 [INFO] Driver created: ios on qa-ios-1
+14:13:25.707613 [INFO] === Starting flow: 07-deeplink ===
+14:13:25.707619 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-9C6C50B0-42AF-4828-87BA-4D790C1E21D4/0/07-deeplink.yaml
+14:13:25.707623 [INFO] Total steps: 5
+14:13:25.707772 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:13:25.708620 [ERROR] WDA POST /appium/settings failed (0ms): Post "http://localhost:8876/appium/settings": dial tcp [::1]:8876: connect: connection refused
+14:13:25.708993 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:13:25.709548 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:13:25.709559 [DEBUG] WDA GET /status
+14:13:25.709932 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:13:26.211773 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:13:26.212574 [ERROR] WDA POST /session failed (0ms): Post "http://localhost:8876/session": dial tcp [::1]:8876: connect: connection refused
+14:13:26.212607 [DEBUG] WDA GET /status
+14:13:26.213221 [ERROR] WDA GET /status failed (0ms): Get "http://localhost:8876/status": dial tcp [::1]:8876: connect: connection refused
+14:13:27.214481 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:13:29.901489 [DEBUG] WDA POST /session completed (2687ms, status: 200)
+14:13:29.901661 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:13:30.050965 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/appium/settings completed (149ms, status: 200)
+14:13:30.051749 [DEBUG] Executing step 0: launchApp
+14:13:30.580882 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:13:30.580955 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:13:30.581733 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/appium/settings completed (0ms, status: 200)
+14:13:30.581848 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:13:32.140773 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/wda/apps/launch completed (1558ms, status: 200)
+14:13:32.140857 [DEBUG] Step 0 completed successfully (2089ms): launchApp
+14:13:32.141451 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:13:32.141897 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:13:32.141965 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:32.142023 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Deep Links' O...
+14:13:32.142061 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links' OR name ==[c] 'D...
+14:13:32.142116 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Deep Links' OR valu...
+14:13:32.413417 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (271ms, status: 200)
+14:13:32.504276 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (362ms, status: 200)
+14:13:32.548937 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (406ms, status: 404)
+14:13:32.592924 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (450ms, status: 404)
+14:13:32.593686 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/name
+14:13:32.593843 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/text
+14:13:32.593913 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/rect
+14:13:32.593969 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/displayed
+14:13:32.638237 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/name completed (44ms, status: 200)
+14:13:32.680933 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/text completed (87ms, status: 200)
+14:13:32.730710 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/displayed completed (136ms, status: 200)
+14:13:32.775077 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/rect completed (181ms, status: 200)
+14:13:32.775254 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/click body=
+14:13:33.153232 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/1E000000-0000-0000-2F7A-000000000000/click completed (377ms, status: 200)
+14:13:33.520077 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:13:33.520125 [DEBUG] Step 1 completed successfully (1378ms): tapOn: text="Deep Links"
+14:13:33.520535 [DEBUG] Executing step 2: tapOn: text="landmarks://category/lakes"
+14:13:33.520752 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:13:33.520769 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'landmarks://category/lakes' ...
+14:13:33.520796 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'landmarks://categor...
+14:13:33.520822 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'landmarks://c...
+14:13:33.630728 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (109ms, status: 200)
+14:13:33.747568 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (226ms, status: 200)
+14:13:33.794125 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (273ms, status: 404)
+14:13:33.841704 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (320ms, status: 404)
+14:13:33.841826 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/name
+14:13:33.841851 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/rect
+14:13:33.841869 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/text
+14:13:33.841917 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/displayed
+14:13:33.892649 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/name completed (50ms, status: 200)
+14:13:33.941257 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/rect completed (99ms, status: 200)
+14:13:33.992297 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/displayed completed (150ms, status: 200)
+14:13:34.037081 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/text completed (195ms, status: 200)
+14:13:34.037138 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/click body=
+14:13:34.420951 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element/2E010000-0000-0000-2F7A-000000000000/click completed (383ms, status: 200)
+14:13:34.420995 [DEBUG] Step 2 completed successfully (900ms): tapOn: text="landmarks://category/lakes"
+14:13:34.421387 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+14:13:34.421615 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Mono Lake' OR name CONTAINS[c] 'Mono Lake' ...
+14:13:34.466611 [DEBUG] WDA POST /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/element completed (44ms, status: 404)
+14:13:34.466708 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/source
+14:13:35.817808 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/source completed (1351ms, status: 200)
+14:13:35.818466 [DEBUG] Step 3 completed successfully (1397ms): assertVisible: text="Mono Lake"
+14:13:35.819053 [DEBUG] Executing step 4: takeScreenshot
+14:13:35.819512 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/screenshot
+14:13:35.889720 [DEBUG] WDA GET /session/6DD78BDF-71F1-40AE-9048-1449B01A655F/screenshot completed (70ms, status: 200)
+14:13:35.890801 [DEBUG] Step 4 completed successfully (71ms): takeScreenshot
+14:13:35.891933 [INFO] === Flow completed: 07-deeplink (status: passed, duration: 10184ms, passed: 5, failed: 0, skipped: 0) ===
+14:13:35.893279 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:13:35.893355 [INFO] Generating reports...
+14:13:35.893741 [INFO] Shutting down devices started by maestro-runner...
+14:13:35.893756 [INFO] Shutting down all tracked emulators
+14:13:35.893762 [INFO] Shutting down all tracked simulators

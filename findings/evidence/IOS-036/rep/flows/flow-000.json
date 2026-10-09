@@ -1,0 +1,100 @@
+{
+  "id": "flow-000",
+  "name": "note-hello",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-47E6E3E7-26AF-4DF9-92B9-C8B8AF57EEBB/0/note-hello.yaml",
+  "device": {
+    "id": "4DAB1D26-5107-4B17-9093-AC2E19DE0403",
+    "name": "qa-ios-2",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:14:47.078682-07:00",
+  "endTime": "2026-10-09T14:14:50.591468-07:00",
+  "duration": 3512,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:47.079038-07:00",
+      "endTime": "2026-10-09T14:14:49.149648-07:00",
+      "duration": 2070,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:49.149928-07:00",
+      "endTime": "2026-10-09T14:14:50.220381-07:00",
+      "duration": 1070,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-9995-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"hello\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:50.220999-07:00",
+      "endTime": "2026-10-09T14:14:50.512937-07:00",
+      "duration": 291,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "hello"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "22010000-0000-0000-9995-000000000000",
+        "text": "hello",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 16,
+          "y": 168,
+          "width": 370,
+          "height": 52
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-09T14:14:50.513661-07:00",
+      "endTime": "2026-10-09T14:14:50.591113-07:00",
+      "duration": 77,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-Note.png"
+      }
+    }
+  ],
+  "artifacts": {}
+}

@@ -1,0 +1,80 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-ios-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-ios-1
+Simulator booted: qa-ios-1 (6EEDCB1A-E693-488A-B34C-5A0AB5DE9400)
+Streaming simulator logs (predicate: subsystem == "com.kylebrowning.Landmarks")
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-216424DA-AB3A-44A5-B466-A294711A5C70
+
+Execution
+────────────────────────────────────────
+[log] getpwuid_r did not find a match for uid 501
+[log] Filtering the log data using "subsystem == "com.kylebrowning.Landmarks""
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8876
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (1.1s)
+    ✓ tapOn: text="Caching Demo" (876ms)
+    ✓ assertVisible: text="Cache Policy" (552ms)
+    ✓ tapOn: text="Fetch with Policy" (1.1s)
+    ✓ takeScreenshot (92ms)
+    ✓ tapOn: text="Clear Cache" (980ms)
+✓ 08-caching 9.4s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.1s)
+    ✓ tapOn (876ms)
+    ✓ assertVisible (552ms)
+    ✓ tapOn (1.1s)
+    ✓ takeScreenshot (92ms)
+    ✓ tapOn (980ms)
+✓ 08-caching 6.6s
+
+  7 steps passing (9.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       9.4s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       9.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-216424DA-AB3A-44A5-B466-A294711A5C70
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-216424DA-AB3A-44A5-B466-A294711A5C70/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-216424DA-AB3A-44A5-B466-A294711A5C70/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-216424DA-AB3A-44A5-B466-A294711A5C70/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,81 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=qa-ios-1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: qa-ios-1
+Simulator booted: qa-ios-1 (6EEDCB1A-E693-488A-B34C-5A0AB5DE9400)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/03-edit.yaml
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8876
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn: text="Deep Links" (1.3s)
+    ✓ tapOn: text="Edit Landmark" (903ms)
+    ✓ assertVisible: text="Edit Landmark" (307ms)
+    ✓ tapOn: text="Name" (1.1s)
+    ✓ inputText: " Renamed" (610ms)
+    ✓ tapOn: text="Done" (1.0s)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (607ms)
+    ✓ takeScreenshot (91ms)
+✓ 03-edit 11.3s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn (1.3s)
+    ✓ tapOn (903ms)
+    ✓ assertVisible (307ms)
+    ✓ tapOn (1.1s)
+    ✓ inputText (610ms)
+    ✓ tapOn (1.0s)
+    ✓ assertVisible (607ms)
+    ✓ takeScreenshot (91ms)
+✓ 03-edit 8.0s
+
+  9 steps passing (11.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✓ PASS       9      9      0      0      11.3s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0      11.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-030/03-edit/allure-results
+
+  Built by Grantiva
+

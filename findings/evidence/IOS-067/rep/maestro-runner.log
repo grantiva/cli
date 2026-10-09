@@ -1,0 +1,665 @@
+14:19:33.433595 [INFO] === Test execution started ===
+14:19:33.433655 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-snap-full/rep
+14:19:33.433659 [INFO] Platform: ios
+14:19:33.433663 [INFO] Driver: uiautomator2
+14:19:33.433941 [INFO] Validated 1 flow(s)
+14:19:33.540737 [INFO] Single device execution mode
+14:19:33.540750 [INFO] Starting flow execution (parallel: false, devices: [])
+14:19:33.540754 [INFO] Creating driver for single device execution
+14:19:33.540757 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:19:33.644777 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:19:33.644865 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:19:33.856471 [INFO] WDA build completed successfully
+14:19:33.856494 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:19:36.079213 [INFO] WDA started successfully on port 8876
+14:19:36.431411 [DEBUG] WDA GET /window/size
+14:19:36.483242 [DEBUG] WDA GET /window/size completed (51ms, status: 200)
+14:19:36.483301 [INFO] Driver created: ios on qa-ios-1
+14:19:36.484907 [INFO] === Starting flow: 02-favorite ===
+14:19:36.484913 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-58EB4DE3-CCBD-4337-BAE0-82064A8CD49E/0/02-favorite.yaml
+14:19:36.484918 [INFO] Total steps: 13
+14:19:36.485037 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:19:36.485603 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:19:36.485659 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:19:39.066613 [DEBUG] WDA POST /session completed (2580ms, status: 200)
+14:19:39.066745 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:19:39.219046 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/appium/settings completed (152ms, status: 200)
+14:19:39.219548 [DEBUG] Executing step 0: launchApp
+14:19:39.219720 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:39.295025 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (75ms, status: 200)
+14:19:39.810209 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:19:39.810316 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:19:39.811220 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/appium/settings completed (0ms, status: 200)
+14:19:39.811303 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:19:41.347712 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/wda/apps/launch completed (1536ms, status: 200)
+14:19:41.347973 [DEBUG] Step 0 completed successfully (2128ms): launchApp
+14:19:41.348035 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:41.572894 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (224ms, status: 200)
+14:19:41.578959 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:42.836321 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (1257ms, status: 200)
+14:19:42.837336 [DEBUG] Executing step 1: tapOn: text="Lake Tahoe"
+14:19:42.837504 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:42.908089 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (70ms, status: 200)
+14:19:42.913296 [DEBUG] Flutter: parallel search (text="Lake Tahoe", id="")
+14:19:42.913369 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:42.913579 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Lake Tahoe' O...
+14:19:42.913698 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Lake Tahoe' OR valu...
+14:19:42.913781 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Lake Tahoe' OR name ==[c] 'L...
+14:19:42.963476 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (50ms, status: 404)
+14:19:43.008598 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (95ms, status: 404)
+14:19:43.053129 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (139ms, status: 404)
+14:19:43.097314 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (183ms, status: 404)
+14:19:43.097415 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Lake Tahoe' OR name == 'Lake Tahoe' OR value == 'Lak...
+14:19:43.192906 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (95ms, status: 200)
+14:19:43.192971 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/rect
+14:19:43.192977 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/name
+14:19:43.193005 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/text
+14:19:43.193024 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/displayed
+14:19:43.239196 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/rect completed (46ms, status: 200)
+14:19:43.285186 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/name completed (92ms, status: 200)
+14:19:43.329961 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/text completed (136ms, status: 200)
+14:19:43.378954 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/displayed completed (185ms, status: 200)
+14:19:43.379014 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/click body=
+14:19:43.765152 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/AB000000-0000-0000-EAC8-000000000000/click completed (386ms, status: 200)
+14:19:44.117303 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:19:44.117365 [DEBUG] Step 1 completed successfully (1280ms): tapOn: text="Lake Tahoe"
+14:19:44.117382 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:44.203292 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (85ms, status: 200)
+14:19:44.213728 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:45.103084 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (889ms, status: 200)
+14:19:45.105569 [DEBUG] Executing step 2: tapOn: text="Favorite"
+14:19:45.106074 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:45.187831 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (81ms, status: 200)
+14:19:45.197780 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:45.197809 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Favorite' OR name ==[c] 'Fav...
+14:19:45.197837 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Favorite' OR ...
+14:19:45.197892 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Favorite' OR value ...
+14:19:45.262999 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (65ms, status: 200)
+14:19:45.325589 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (127ms, status: 200)
+14:19:45.357106 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (159ms, status: 404)
+14:19:45.389653 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (191ms, status: 404)
+14:19:45.389754 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/name
+14:19:45.389818 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/rect
+14:19:45.389880 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/text
+14:19:45.389916 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/displayed
+14:19:45.422219 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/name completed (32ms, status: 200)
+14:19:45.453134 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/rect completed (63ms, status: 200)
+14:19:45.490669 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/displayed completed (100ms, status: 200)
+14:19:45.519142 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/text completed (129ms, status: 200)
+14:19:45.519238 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/click body=
+14:19:45.880354 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/BE000000-0000-0000-EAC8-000000000000/click completed (361ms, status: 200)
+14:19:45.880489 [DEBUG] Step 2 completed successfully (774ms): tapOn: text="Favorite"
+14:19:45.880506 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:46.026348 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (145ms, status: 200)
+14:19:46.035741 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:47.074842 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (1039ms, status: 200)
+14:19:47.076982 [DEBUG] Executing step 3: assertVisible: text="Unfavorite"
+14:19:47.077690 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:47.160544 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (82ms, status: 200)
+14:19:47.165003 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Unfavorite' OR name CONTAINS[c] 'Unfavorite...
+14:19:47.234449 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 200)
+14:19:47.234527 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/name
+14:19:47.234670 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/rect
+14:19:47.234682 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/text
+14:19:47.234716 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/displayed
+14:19:47.268015 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/rect completed (33ms, status: 200)
+14:19:47.301211 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/name completed (66ms, status: 200)
+14:19:47.341575 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/displayed completed (106ms, status: 200)
+14:19:47.371889 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B8000000-0000-0000-EAC8-000000000000/text completed (137ms, status: 200)
+14:19:47.371942 [DEBUG] Step 3 completed successfully (294ms): assertVisible: text="Unfavorite"
+14:19:47.371949 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:47.455757 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (83ms, status: 200)
+14:19:47.461123 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:47.852221 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (391ms, status: 200)
+14:19:47.853004 [DEBUG] Executing step 4: tapOn: text="Landmarks"
+14:19:47.853245 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:47.939063 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (85ms, status: 200)
+14:19:47.944348 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:47.944366 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Landmarks' OR name ==[c] 'La...
+14:19:47.944381 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Landmarks' OR...
+14:19:47.944506 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Landmarks' OR value...
+14:19:48.050371 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (106ms, status: 200)
+14:19:48.115197 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (170ms, status: 200)
+14:19:48.146142 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (201ms, status: 404)
+14:19:48.176877 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (232ms, status: 404)
+14:19:48.176953 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/name
+14:19:48.176958 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/text
+14:19:48.176989 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/rect
+14:19:48.177032 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/displayed
+14:19:48.208266 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/name completed (31ms, status: 200)
+14:19:48.238067 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/text completed (61ms, status: 200)
+14:19:48.270444 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/rect completed (93ms, status: 200)
+14:19:48.308939 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/displayed completed (131ms, status: 200)
+14:19:48.309028 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/click body=
+14:19:48.666287 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/B7000000-0000-0000-EAC8-000000000000/click completed (357ms, status: 200)
+14:19:48.666384 [DEBUG] Step 4 completed successfully (813ms): tapOn: text="Landmarks"
+14:19:48.666397 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:48.760743 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (94ms, status: 200)
+14:19:48.767657 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:49.999186 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (1231ms, status: 200)
+14:19:50.000923 [DEBUG] Executing step 5: tapOn: text="Favorites"
+14:19:50.001622 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:50.095144 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (93ms, status: 200)
+14:19:50.101178 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:50.101231 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Favorites' OR name ==[c] 'Fa...
+14:19:50.101291 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Favorites' OR...
+14:19:50.101377 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Favorites' OR value...
+14:19:50.194573 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 200)
+14:19:50.283967 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (182ms, status: 200)
+14:19:50.328024 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (226ms, status: 404)
+14:19:50.371882 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (270ms, status: 404)
+14:19:50.372078 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/name
+14:19:50.372111 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/displayed
+14:19:50.372149 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/rect
+14:19:50.372183 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/text
+14:19:50.417483 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/displayed completed (45ms, status: 200)
+14:19:50.461649 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/rect completed (89ms, status: 200)
+14:19:50.506146 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/name completed (134ms, status: 200)
+14:19:50.548715 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/text completed (176ms, status: 200)
+14:19:50.548805 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/click body=
+14:19:50.927378 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element/1D000000-0000-0000-EAC8-000000000000/click completed (378ms, status: 200)
+14:19:50.927539 [DEBUG] Step 5 completed successfully (926ms): tapOn: text="Favorites"
+14:19:50.927568 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:51.001266 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (73ms, status: 200)
+14:19:51.006022 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:52.505584 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (1499ms, status: 200)
+14:19:52.506859 [DEBUG] Executing step 6: assertVisible: text="Lake Tahoe"
+14:19:52.507304 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:52.588183 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (80ms, status: 200)
+14:19:52.591356 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Lake Tahoe' OR name CONTAINS[c] 'Lake Tahoe...
+14:19:52.642426 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (51ms, status: 200)
+14:19:52.642510 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/name
+14:19:52.642561 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/rect
+14:19:52.642594 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/text
+14:19:52.642642 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/displayed
+14:19:52.665566 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/name completed (23ms, status: 200)
+14:19:52.688569 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/rect completed (46ms, status: 200)
+14:19:52.709622 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/text completed (67ms, status: 200)
+14:19:52.735653 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/element/F7000000-0000-0000-EAC8-000000000000/displayed completed (93ms, status: 200)
+14:19:52.735744 [DEBUG] Step 6 completed successfully (228ms): assertVisible: text="Lake Tahoe"
+14:19:52.735761 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:52.801601 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (65ms, status: 200)
+14:19:52.803811 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:53.010273 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (206ms, status: 200)
+14:19:53.012975 [DEBUG] Executing step 7: takeScreenshot
+14:19:53.013671 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:53.072991 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (59ms, status: 200)
+14:19:53.077978 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:53.140432 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (62ms, status: 200)
+14:19:53.141804 [DEBUG] Step 7 completed successfully (128ms): takeScreenshot
+14:19:53.141822 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:53.200660 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (58ms, status: 200)
+14:19:53.201899 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:53.424060 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (222ms, status: 200)
+14:19:53.425302 [DEBUG] Executing step 8: swipe: LEFT
+14:19:53.425823 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:53.487269 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (61ms, status: 200)
+14:19:53.490078 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/wda/dragfromtoforduration body={"duration":0.1,"fromX":361.8,"fromY":437,"toX":40.2,"toY":437}
+14:19:54.577371 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/wda/dragfromtoforduration completed (1087ms, status: 200)
+14:19:54.577458 [DEBUG] Step 8 completed successfully (1152ms): swipe: LEFT
+14:19:54.577473 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:54.665429 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (87ms, status: 200)
+14:19:54.667554 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:54.881217 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (213ms, status: 200)
+14:19:54.882106 [DEBUG] Executing step 9: tapOn: text="Remove"
+14:19:54.882339 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:19:54.950383 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (68ms, status: 200)
+14:19:54.951069 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:54.951087 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:54.951114 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:54.951138 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:54.975846 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:54.999963 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:19:55.023171 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (72ms, status: 404)
+14:19:55.046294 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (95ms, status: 404)
+14:19:55.046403 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:55.071358 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:55.071468 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:55.095965 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:55.096059 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:55.315763 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (219ms, status: 200)
+14:19:55.316150 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:55.316157 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:55.316166 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:55.316189 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:55.339812 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:19:55.364247 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:19:55.386628 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (70ms, status: 404)
+14:19:55.409461 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:19:55.409548 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:55.434618 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:55.434713 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:55.459859 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:55.459953 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:55.702964 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (243ms, status: 200)
+14:19:55.703661 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:55.703688 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:55.703715 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:55.703739 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:55.728898 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:55.753077 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (49ms, status: 404)
+14:19:55.779817 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (76ms, status: 404)
+14:19:55.803897 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (100ms, status: 404)
+14:19:55.804050 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:55.829874 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:55.829953 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:55.856293 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:19:55.856526 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:56.092950 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (236ms, status: 200)
+14:19:56.093347 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:56.093356 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:56.093369 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:56.093402 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:56.116559 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:19:56.139444 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:19:56.161375 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (68ms, status: 404)
+14:19:56.185573 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (92ms, status: 404)
+14:19:56.185666 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:56.210397 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:56.210472 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:56.235711 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:56.235788 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:56.464177 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (228ms, status: 200)
+14:19:56.464553 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:56.464564 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:56.464581 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:56.464605 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:56.489012 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:56.511676 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:19:56.534152 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:19:56.557340 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (92ms, status: 404)
+14:19:56.557426 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:56.583101 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:56.583178 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:56.609313 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:19:56.609385 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:56.860327 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (250ms, status: 200)
+14:19:56.861014 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:56.861032 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:56.861041 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:56.861065 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:56.886144 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:56.909346 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:19:56.932986 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (71ms, status: 404)
+14:19:56.956270 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (95ms, status: 404)
+14:19:56.956360 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:56.982266 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:56.982339 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:57.007320 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:57.007385 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:57.227065 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (219ms, status: 200)
+14:19:57.227414 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:57.227422 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:57.227432 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:57.227442 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:57.250461 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:19:57.272104 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (44ms, status: 404)
+14:19:57.294002 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (66ms, status: 404)
+14:19:57.316956 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (89ms, status: 404)
+14:19:57.317054 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:57.341979 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:57.342048 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:57.366755 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:57.366832 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:57.601276 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (234ms, status: 200)
+14:19:57.602012 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:57.602031 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:57.602055 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:57.602078 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:57.628167 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:19:57.659581 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (57ms, status: 404)
+14:19:57.682608 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (80ms, status: 404)
+14:19:57.707629 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (105ms, status: 404)
+14:19:57.707930 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:57.736342 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (28ms, status: 404)
+14:19:57.736430 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:57.761938 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:57.762046 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:57.991202 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (229ms, status: 200)
+14:19:57.991574 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:57.991581 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:57.991593 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:57.991600 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:58.015106 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:19:58.037702 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:19:58.060145 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (68ms, status: 404)
+14:19:58.082540 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (90ms, status: 404)
+14:19:58.082621 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:58.107607 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:58.107706 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:58.132352 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:58.132536 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:58.378116 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (245ms, status: 200)
+14:19:58.378507 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:58.378519 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:58.378531 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:58.378553 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:58.403065 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:58.425690 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:19:58.447895 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:19:58.470403 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (91ms, status: 404)
+14:19:58.470497 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:58.496356 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:58.496433 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:58.522166 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:58.522238 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:58.755149 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (232ms, status: 200)
+14:19:58.755534 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:58.755541 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:58.755572 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:58.755603 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:58.795310 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (39ms, status: 404)
+14:19:58.819066 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (63ms, status: 404)
+14:19:58.841935 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (86ms, status: 404)
+14:19:58.865449 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (109ms, status: 404)
+14:19:58.865655 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:58.893373 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (27ms, status: 404)
+14:19:58.893453 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:58.921390 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (27ms, status: 404)
+14:19:58.921474 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:59.161431 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (239ms, status: 200)
+14:19:59.161814 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:59.161822 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:59.161833 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:59.161841 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:59.183965 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (22ms, status: 404)
+14:19:59.205541 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (43ms, status: 404)
+14:19:59.228435 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (66ms, status: 404)
+14:19:59.250920 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (89ms, status: 404)
+14:19:59.250997 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:59.276271 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:59.276361 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:59.301788 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:19:59.301879 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:59.530099 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (228ms, status: 200)
+14:19:59.530830 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:59.530858 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:59.530877 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:59.530911 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:59.557843 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:19:59.578381 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:19:59.601502 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (70ms, status: 404)
+14:19:59.625186 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (94ms, status: 404)
+14:19:59.625269 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:19:59.650067 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:59.650169 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:19:59.674912 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:19:59.675006 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:19:59.906812 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (231ms, status: 200)
+14:19:59.907174 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:19:59.907181 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:19:59.907193 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:19:59.907220 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:19:59.929695 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (22ms, status: 404)
+14:19:59.953668 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:19:59.976931 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:19:59.999238 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (92ms, status: 404)
+14:19:59.999366 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:00.024363 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:00.024451 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:00.049818 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:00.049890 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:00.286513 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (236ms, status: 200)
+14:20:00.286930 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:00.286938 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:00.286953 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:00.286972 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:00.312769 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:00.338128 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (51ms, status: 404)
+14:20:00.364230 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (77ms, status: 404)
+14:20:00.392112 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (105ms, status: 404)
+14:20:00.392427 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:00.424531 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (32ms, status: 404)
+14:20:00.424613 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:00.450577 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:00.450658 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:00.693689 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (243ms, status: 200)
+14:20:00.694057 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:00.694077 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:00.694088 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:00.694115 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:00.718255 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:00.741081 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:20:00.764434 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (70ms, status: 404)
+14:20:00.787941 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:20:00.788038 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:00.830681 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (42ms, status: 404)
+14:20:00.830770 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:00.855916 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:00.855989 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:01.190379 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (334ms, status: 200)
+14:20:01.190726 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:01.190741 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:01.190749 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:01.190759 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:01.215119 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:01.236733 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (45ms, status: 404)
+14:20:01.258388 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (67ms, status: 404)
+14:20:01.280022 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (89ms, status: 404)
+14:20:01.280088 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:01.304100 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:01.304176 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:01.328887 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:01.328950 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:01.543505 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (214ms, status: 200)
+14:20:01.543854 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:01.543861 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:01.543870 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:01.543884 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:01.567051 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:01.588843 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (44ms, status: 404)
+14:20:01.611474 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (67ms, status: 404)
+14:20:01.634695 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (90ms, status: 404)
+14:20:01.634904 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:01.661962 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (27ms, status: 404)
+14:20:01.662045 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:01.688881 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:20:01.688946 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:01.917708 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (228ms, status: 200)
+14:20:01.918063 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:01.918073 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:01.918090 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:01.918108 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:01.940494 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (22ms, status: 404)
+14:20:01.962058 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (43ms, status: 404)
+14:20:01.983736 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (65ms, status: 404)
+14:20:02.006067 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (88ms, status: 404)
+14:20:02.006135 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:02.029945 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:02.030014 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:02.053896 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:02.053964 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:02.268163 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (214ms, status: 200)
+14:20:02.268996 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:02.269147 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:02.269188 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:02.269217 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:02.292055 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:02.313664 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (44ms, status: 404)
+14:20:02.337371 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (68ms, status: 404)
+14:20:02.360943 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (91ms, status: 404)
+14:20:02.361025 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:02.386713 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:02.386779 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:02.412133 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:02.412209 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:02.644143 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (231ms, status: 200)
+14:20:02.644501 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:02.644506 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:02.644533 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:02.644565 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:02.668569 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:02.691252 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:20:02.714627 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (70ms, status: 404)
+14:20:02.738355 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:20:02.738540 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:02.764863 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:20:02.764939 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:02.790718 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:02.790780 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:03.030590 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (239ms, status: 200)
+14:20:03.030965 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:03.030972 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:03.030986 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:03.031004 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:03.071248 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (40ms, status: 404)
+14:20:03.093757 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (62ms, status: 404)
+14:20:03.116883 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (85ms, status: 404)
+14:20:03.140574 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (109ms, status: 404)
+14:20:03.140651 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:03.165770 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:03.165840 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:03.191156 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:03.191217 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:03.426356 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (235ms, status: 200)
+14:20:03.426964 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:03.426974 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:03.426989 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:03.427003 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:03.450948 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:03.473821 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:20:03.497544 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (70ms, status: 404)
+14:20:03.520479 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:20:03.520560 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:03.546202 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:03.546276 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:03.571263 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:03.571325 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:03.809222 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (237ms, status: 200)
+14:20:03.809577 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:03.809583 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:03.809602 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:03.809620 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:03.832328 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (22ms, status: 404)
+14:20:03.855972 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:20:03.879083 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:20:03.902588 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (92ms, status: 404)
+14:20:03.902768 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:03.928572 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:03.928645 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:03.953852 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:03.953922 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:04.196660 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (242ms, status: 200)
+14:20:04.197035 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:04.197044 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:04.197071 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:04.197096 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:04.220316 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:04.244018 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:20:04.268267 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (71ms, status: 404)
+14:20:04.291460 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (94ms, status: 404)
+14:20:04.291561 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:04.318049 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (26ms, status: 404)
+14:20:04.318137 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:04.345216 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (27ms, status: 404)
+14:20:04.345304 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:04.584976 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (239ms, status: 200)
+14:20:04.585338 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:04.585349 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:04.585366 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:04.585378 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:04.609863 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:04.633708 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:20:04.658113 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (72ms, status: 404)
+14:20:04.683626 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (98ms, status: 404)
+14:20:04.683734 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:04.714033 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (30ms, status: 404)
+14:20:04.714200 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:04.745463 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (31ms, status: 404)
+14:20:04.745560 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:04.979151 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (233ms, status: 200)
+14:20:04.979501 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:04.979507 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:04.979515 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:04.979534 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:05.002381 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (22ms, status: 404)
+14:20:05.026091 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (46ms, status: 404)
+14:20:05.049171 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:20:05.089609 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (110ms, status: 404)
+14:20:05.089689 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:05.115396 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:05.115467 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:05.140648 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:05.140713 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:05.369637 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (228ms, status: 200)
+14:20:05.370142 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:05.370177 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:05.370201 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:05.370252 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:05.393211 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:05.416030 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (45ms, status: 404)
+14:20:05.439537 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:20:05.463442 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:20:05.463532 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:05.488350 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:05.488409 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:05.513952 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:05.514014 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:05.758121 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (244ms, status: 200)
+14:20:05.758474 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:05.758487 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:05.758499 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:05.758513 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:05.782835 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:05.805517 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:20:05.828317 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (69ms, status: 404)
+14:20:05.851525 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (93ms, status: 404)
+14:20:05.851631 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:05.877182 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:05.877245 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:05.902630 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:05.902696 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:06.135106 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (232ms, status: 200)
+14:20:06.135468 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:06.135483 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:06.135510 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:06.135539 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:06.160158 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (24ms, status: 404)
+14:20:06.183790 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:20:06.207227 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (71ms, status: 404)
+14:20:06.230366 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (94ms, status: 404)
+14:20:06.230462 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:06.256275 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:06.256346 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:06.282279 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:06.282355 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:06.528725 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (246ms, status: 200)
+14:20:06.529095 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:06.529107 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:06.529124 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:06.529147 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:06.553080 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:06.576350 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (47ms, status: 404)
+14:20:06.600423 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (71ms, status: 404)
+14:20:06.624005 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (94ms, status: 404)
+14:20:06.624084 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:06.649585 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:06.649668 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:06.675460 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:06.675525 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:06.914890 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (239ms, status: 200)
+14:20:06.915590 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:20:06.915605 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Remove' OR value CO...
+14:20:06.915614 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Remove' OR va...
+14:20:06.915642 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Remove' OR name ==[c] 'Remov...
+14:20:06.939219 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (23ms, status: 404)
+14:20:06.963951 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (48ms, status: 404)
+14:20:06.987798 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (72ms, status: 404)
+14:20:07.010987 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (95ms, status: 404)
+14:20:07.011083 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label == 'Remove' OR name == 'Remove' OR value == 'Remove')"}
+14:20:07.036752 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:07.036910 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR val...
+14:20:07.062767 [DEBUG] WDA POST /session/3143B63A-0164-43A2-824B-956A14762C49/element completed (25ms, status: 404)
+14:20:07.062852 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:07.303503 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (240ms, status: 200)
+14:20:07.304049 [ERROR] Step 9 failed (12421ms): tapOn: text="Remove" - Error: Element not found: text='Remove' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Remove' OR name CONTAINS[c] 'Remove' OR value CONTAINS[c] 'Remove')'; page source: no elements match selector; closest on-screen texts: "love", "water.waves", "Vertical scroll bar, 1 page")
+14:20:07.304085 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot
+14:20:07.394752 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/screenshot completed (90ms, status: 200)
+14:20:07.395410 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source
+14:20:07.643674 [DEBUG] WDA GET /session/3143B63A-0164-43A2-824B-956A14762C49/source completed (248ms, status: 200)
+14:20:07.646552 [INFO] === Flow completed: 02-favorite (status: failed, duration: 31161ms, passed: 9, failed: 1, skipped: 3) ===
+14:20:07.647760 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:20:07.647858 [INFO] Generating reports...
+14:20:07.648338 [INFO] Shutting down devices started by maestro-runner...
+14:20:07.648350 [INFO] Shutting down all tracked emulators
+14:20:07.648357 [INFO] Shutting down all tracked simulators

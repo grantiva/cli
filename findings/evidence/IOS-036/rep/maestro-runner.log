@@ -1,0 +1,79 @@
+14:14:40.753281 [INFO] === Test execution started ===
+14:14:40.758652 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-036/rep
+14:14:40.759091 [INFO] Platform: ios
+14:14:40.759452 [INFO] Driver: uiautomator2
+14:14:40.760828 [INFO] Validated 1 flow(s)
+14:14:40.937435 [INFO] Single device execution mode
+14:14:40.937465 [INFO] Starting flow execution (parallel: false, devices: [])
+14:14:40.937473 [INFO] Creating driver for single device execution
+14:14:40.937477 [INFO] Using specified iOS device: 4DAB1D26-5107-4B17-9093-AC2E19DE0403
+14:14:41.064729 [INFO] Device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 is a simulator
+14:14:41.064833 [INFO] Building WDA for device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (team ID: )
+14:14:41.398719 [INFO] WDA build completed successfully
+14:14:41.398736 [INFO] Starting WDA on device 4DAB1D26-5107-4B17-9093-AC2E19DE0403 (port: 8607)
+14:14:43.756288 [INFO] WDA started successfully on port 8607
+14:14:44.220613 [DEBUG] WDA GET /window/size
+14:14:44.269512 [DEBUG] WDA GET /window/size completed (48ms, status: 200)
+14:14:44.269609 [INFO] Driver created: ios on qa-ios-2
+14:14:44.271117 [INFO] === Starting flow: note-hello ===
+14:14:44.271123 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-47E6E3E7-26AF-4DF9-92B9-C8B8AF57EEBB/0/note-hello.yaml
+14:14:44.271127 [INFO] Total steps: 4
+14:14:44.271261 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:14:44.272084 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:14:44.272160 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:14:46.929917 [DEBUG] WDA POST /session completed (2657ms, status: 200)
+14:14:46.929986 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:14:47.078578 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/appium/settings completed (148ms, status: 200)
+14:14:47.079031 [DEBUG] Executing step 0: launchApp
+14:14:47.606434 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_NOTE:hello]
+14:14:47.606505 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:14:47.607102 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/appium/settings completed (0ms, status: 200)
+14:14:47.607180 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+14:14:47.607526 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/wda/apps/terminate completed (0ms, status: 200)
+14:14:47.607551 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_NOTE":"hello"}}
+14:14:49.149591 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/wda/apps/launch completed (1542ms, status: 200)
+14:14:49.149640 [DEBUG] Step 0 completed successfully (2070ms): launchApp
+14:14:49.149922 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:14:49.150147 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:14:49.150192 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:14:49.150238 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Deep Links' O...
+14:14:49.150264 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links' OR name ==[c] 'D...
+14:14:49.150288 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Deep Links' OR valu...
+14:14:49.407921 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element completed (257ms, status: 200)
+14:14:49.498475 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element completed (348ms, status: 200)
+14:14:49.543874 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element completed (393ms, status: 404)
+14:14:49.587847 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element completed (437ms, status: 404)
+14:14:49.587969 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/name
+14:14:49.588016 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/rect
+14:14:49.588039 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/text
+14:14:49.588066 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/displayed
+14:14:49.633294 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/name completed (45ms, status: 200)
+14:14:49.677347 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/rect completed (89ms, status: 200)
+14:14:49.720092 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/text completed (132ms, status: 200)
+14:14:49.770942 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/displayed completed (182ms, status: 200)
+14:14:49.771001 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/click body=
+14:14:50.147638 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/1E000000-0000-0000-9995-000000000000/click completed (376ms, status: 200)
+14:14:50.220310 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:14:50.220368 [DEBUG] Step 1 completed successfully (1070ms): tapOn: text="Deep Links"
+14:14:50.220988 [DEBUG] Executing step 2: assertVisible: text="hello"
+14:14:50.221324 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element body={"using":"predicate string","value":"(label CONTAINS[c] 'hello' OR name CONTAINS[c] 'hello' OR value...
+14:14:50.329391 [DEBUG] WDA POST /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element completed (108ms, status: 200)
+14:14:50.329449 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/name
+14:14:50.329466 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/displayed
+14:14:50.329482 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/text
+14:14:50.329511 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/rect
+14:14:50.377732 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/displayed completed (48ms, status: 200)
+14:14:50.422520 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/name completed (93ms, status: 200)
+14:14:50.469437 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/rect completed (139ms, status: 200)
+14:14:50.512731 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/element/22010000-0000-0000-9995-000000000000/text completed (183ms, status: 200)
+14:14:50.512915 [DEBUG] Step 2 completed successfully (291ms): assertVisible: text="hello"
+14:14:50.513650 [DEBUG] Executing step 3: takeScreenshot
+14:14:50.514537 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/screenshot
+14:14:50.589006 [DEBUG] WDA GET /session/9FFBC09D-4137-4F0A-93F4-1445D385BA47/screenshot completed (74ms, status: 200)
+14:14:50.591098 [DEBUG] Step 3 completed successfully (77ms): takeScreenshot
+14:14:50.592396 [INFO] === Flow completed: note-hello (status: passed, duration: 6321ms, passed: 4, failed: 0, skipped: 0) ===
+14:14:50.593663 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:14:50.593747 [INFO] Generating reports...
+14:14:50.594241 [INFO] Shutting down devices started by maestro-runner...
+14:14:50.594248 [INFO] Shutting down all tracked emulators
+14:14:50.594254 [INFO] Shutting down all tracked simulators

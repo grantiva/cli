@@ -1,0 +1,111 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-674450F3-B02C-435D-839A-1E101013C2A6/0/99-crash.yaml",
+  "device": {
+    "id": "6EEDCB1A-E693-488A-B34C-5A0AB5DE9400",
+    "name": "qa-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-09T14:15:04.375547-07:00",
+  "endTime": "2026-10-09T14:15:22.164167-07:00",
+  "duration": 17788,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-09T14:15:04.375961-07:00",
+      "endTime": "2026-10-09T14:15:06.702398-07:00",
+      "duration": 2326,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:15:06.7028-07:00",
+      "endTime": "2026-10-09T14:15:08.239912-07:00",
+      "duration": 1537,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "01000000-0000-0000-4D9B-000000000000",
+        "text": "Landmarks",
+        "class": "XCUIElementTypeApplication",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 402,
+          "height": 874
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-09T14:15:08.240479-07:00",
+      "endTime": "2026-10-09T14:15:08.584222-07:00",
+      "duration": 343,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "87000000-0000-0000-4D9B-000000000000",
+        "text": "Featured",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 16,
+          "y": 168,
+          "width": 370,
+          "height": 41
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "failed",
+      "startTime": "2026-10-09T14:15:08.584558-07:00",
+      "endTime": "2026-10-09T14:15:22.163115-07:00",
+      "duration": 13578,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='This never appears' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Sierra Nevada, CA\", \"heart\", \"Lake Tahoe, Sierra Nevada, CA\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    }
+  ],
+  "artifacts": {}
+}
