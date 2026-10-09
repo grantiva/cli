@@ -1,0 +1,335 @@
+14:42:26.116129 [INFO] === Test execution started ===
+14:42:26.116203 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/qa-ios/findings/evidence/IOS-F-04flaky/run5
+14:42:26.116209 [INFO] Platform: ios
+14:42:26.116213 [INFO] Driver: uiautomator2
+14:42:26.116451 [INFO] Validated 1 flow(s)
+14:42:26.228374 [INFO] Single device execution mode
+14:42:26.228409 [INFO] Starting flow execution (parallel: false, devices: [])
+14:42:26.228415 [INFO] Creating driver for single device execution
+14:42:26.228419 [INFO] Using specified iOS device: 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400
+14:42:26.338351 [INFO] Device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 is a simulator
+14:42:26.338471 [INFO] Building WDA for device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (team ID: )
+14:42:26.562817 [INFO] WDA build completed successfully
+14:42:26.562840 [INFO] Starting WDA on device 6EEDCB1A-E693-488A-B34C-5A0AB5DE9400 (port: 8876)
+14:42:28.802163 [INFO] WDA started successfully on port 8876
+14:42:29.138004 [DEBUG] WDA GET /window/size
+14:42:29.210231 [DEBUG] WDA GET /window/size completed (72ms, status: 200)
+14:42:29.210305 [INFO] Driver created: ios on qa-ios-1
+14:42:29.211768 [INFO] === Starting flow: 04-discard ===
+14:42:29.211772 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-4B226765-80C3-4F55-8FB3-D7F112DDAD0F/0/04-discard.yaml
+14:42:29.211775 [INFO] Total steps: 13
+14:42:29.211892 [DEBUG] WDA POST /appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:42:29.214115 [DEBUG] WDA POST /appium/settings completed (2ms, status: 404)
+14:42:29.214176 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","defaultAlertAction":"accept...
+14:42:31.858259 [DEBUG] WDA POST /session completed (2644ms, status: 200)
+14:42:31.858419 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/appium/settings body={"settings":{"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:42:32.051616 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/appium/settings completed (193ms, status: 200)
+14:42:32.052536 [DEBUG] Executing step 0: launchApp
+14:42:32.576914 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:42:32.576985 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/appium/settings body={"settings":{"acceptAlertButtonSelector":"**/XCUIElementTypeButton[`label BEGINSWITH[c] 'Allow' OR l...
+14:42:32.577645 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/appium/settings completed (0ms, status: 200)
+14:42:32.577721 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:42:34.106306 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/wda/apps/launch completed (1528ms, status: 200)
+14:42:34.106372 [DEBUG] Step 0 completed successfully (2053ms): launchApp
+14:42:34.106836 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+14:42:34.107149 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+14:42:34.107197 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:34.107236 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Deep Links' OR valu...
+14:42:34.107298 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Deep Links' O...
+14:42:34.107372 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Deep Links' OR name ==[c] 'D...
+14:42:34.358132 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (250ms, status: 200)
+14:42:34.402179 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (294ms, status: 404)
+14:42:34.497358 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (390ms, status: 200)
+14:42:34.544320 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (437ms, status: 404)
+14:42:34.544433 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/name
+14:42:34.544449 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/displayed
+14:42:34.544472 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/text
+14:42:34.544500 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/rect
+14:42:34.593491 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/displayed completed (49ms, status: 200)
+14:42:34.636955 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/name completed (92ms, status: 200)
+14:42:34.679748 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/text completed (135ms, status: 200)
+14:42:34.724378 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/rect completed (179ms, status: 200)
+14:42:34.724512 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/click body=
+14:42:35.103206 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/1E000000-0000-0000-2A23-000000000000/click completed (378ms, status: 200)
+14:42:35.450509 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:42:35.450598 [DEBUG] Step 1 completed successfully (1343ms): tapOn: text="Deep Links"
+14:42:35.451827 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+14:42:35.452897 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:35.453011 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Edit Landmark...
+14:42:35.453067 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Edit Landmark' OR v...
+14:42:35.453129 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Edit Landmark' OR name ==[c]...
+14:42:35.514042 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (61ms, status: 404)
+14:42:35.560060 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (107ms, status: 404)
+14:42:35.605484 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (152ms, status: 404)
+14:42:35.654569 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (201ms, status: 404)
+14:42:35.654779 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Edit Landmark' OR name == 'Edit Landmark' OR value =...
+14:42:35.750721 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (95ms, status: 200)
+14:42:35.750981 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/name
+14:42:35.751216 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/text
+14:42:35.751308 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/rect
+14:42:35.751359 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/displayed
+14:42:35.797998 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/name completed (47ms, status: 200)
+14:42:35.842657 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/text completed (91ms, status: 200)
+14:42:35.892611 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/displayed completed (141ms, status: 200)
+14:42:35.935951 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/rect completed (184ms, status: 200)
+14:42:35.936057 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/click body=
+14:42:36.318760 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/38010000-0000-0000-2A23-000000000000/click completed (382ms, status: 200)
+14:42:36.318943 [DEBUG] Step 2 completed successfully (867ms): tapOn: text="Edit Landmark"
+14:42:36.319888 [DEBUG] Executing step 3: tapOn: text="Location"
+14:42:36.320468 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Location' OR ...
+14:42:36.320605 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:36.320647 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Location' OR name ==[c] 'Loc...
+14:42:36.320713 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Location' OR value ...
+14:42:36.385879 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (65ms, status: 404)
+14:42:36.419943 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (99ms, status: 404)
+14:42:36.454417 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (133ms, status: 404)
+14:42:36.521408 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (200ms, status: 200)
+14:42:36.521494 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/name
+14:42:36.521505 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/displayed
+14:42:36.521522 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/rect
+14:42:36.521580 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/text
+14:42:36.556384 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/name completed (34ms, status: 200)
+14:42:36.589471 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/rect completed (67ms, status: 200)
+14:42:36.624860 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/displayed completed (103ms, status: 200)
+14:42:36.655496 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/text completed (133ms, status: 200)
+14:42:36.655592 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/click body=
+14:42:37.013893 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/6F010000-0000-0000-2A23-000000000000/click completed (358ms, status: 200)
+14:42:37.116103 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/active
+14:42:37.188666 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/active completed (72ms, status: 200)
+14:42:37.188709 [DEBUG] Step 3 completed successfully (868ms): tapOn: text="Location"
+14:42:37.189083 [DEBUG] Executing step 4: inputText: "X"
+14:42:37.189302 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/active
+14:42:37.256462 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/active completed (67ms, status: 200)
+14:42:37.256508 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/wda/keys body={"frequency":30,"value":["X"]}
+14:42:37.475265 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/wda/keys completed (218ms, status: 200)
+14:42:37.475317 [DEBUG] Step 4 completed successfully (286ms): inputText: "X"
+14:42:37.475658 [DEBUG] Executing step 5: tapOn: text="Cancel"
+14:42:37.475886 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:37.475914 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Cancel' OR va...
+14:42:37.475939 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Cancel' OR value CO...
+14:42:37.475984 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Cancel' OR name ==[c] 'Cance...
+14:42:37.578707 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (102ms, status: 200)
+14:42:37.624393 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (148ms, status: 404)
+14:42:37.670130 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (194ms, status: 404)
+14:42:37.763964 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (288ms, status: 200)
+14:42:37.764093 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/name
+14:42:37.764131 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/rect
+14:42:37.764170 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/text
+14:42:37.764200 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/displayed
+14:42:37.808534 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/name completed (44ms, status: 200)
+14:42:37.851347 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/text completed (87ms, status: 200)
+14:42:37.897031 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/rect completed (132ms, status: 200)
+14:42:37.948581 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/displayed completed (184ms, status: 200)
+14:42:37.948687 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/click body=
+14:42:38.338313 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/4D010000-0000-0000-2A23-000000000000/click completed (389ms, status: 200)
+14:42:38.338365 [DEBUG] Step 5 completed successfully (862ms): tapOn: text="Cancel"
+14:42:38.338864 [DEBUG] Executing step 6: assertVisible: text="You have unsaved changes that will be lost."
+14:42:38.339154 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'You have unsaved changes that will be lost....
+14:42:38.441891 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (102ms, status: 200)
+14:42:38.441928 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/name
+14:42:38.441947 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/displayed
+14:42:38.441966 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/text
+14:42:38.441996 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/rect
+14:42:41.111640 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/name completed (2669ms, status: 404)
+14:42:43.351661 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/displayed completed (4909ms, status: 404)
+14:42:43.424543 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/text completed (4982ms, status: 404)
+14:42:45.590010 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element/C9010000-0000-0000-2A23-000000000000/rect completed (7148ms, status: 404)
+14:42:45.590705 [DEBUG] Step 6 completed successfully (7251ms): assertVisible: text="You have unsaved changes that will be lost."
+14:42:45.591626 [DEBUG] Executing step 7: takeScreenshot
+14:42:45.591982 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/screenshot
+14:42:45.698294 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/screenshot completed (106ms, status: 200)
+14:42:45.701750 [DEBUG] Step 7 completed successfully (110ms): takeScreenshot
+14:42:45.702098 [DEBUG] Executing step 8: tapOn: text="Keep Editing"
+14:42:45.702323 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:45.702343 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:45.702372 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:45.702403 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:45.750140 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:45.793407 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (91ms, status: 404)
+14:42:45.836356 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (134ms, status: 404)
+14:42:45.879479 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (177ms, status: 404)
+14:42:45.879662 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:45.926167 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (46ms, status: 404)
+14:42:45.926441 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:45.973895 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:45.974081 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:46.652090 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (678ms, status: 200)
+14:42:46.655665 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:46.655718 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:46.655752 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:46.655784 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:46.702333 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (46ms, status: 404)
+14:42:46.746283 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (90ms, status: 404)
+14:42:46.789490 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (133ms, status: 404)
+14:42:46.832751 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (177ms, status: 404)
+14:42:46.832961 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:46.881001 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:46.881252 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:46.931209 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:46.931286 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:47.649713 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (718ms, status: 200)
+14:42:47.650613 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:47.650619 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:47.650630 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:47.650664 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:47.725217 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (74ms, status: 404)
+14:42:47.772868 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (122ms, status: 404)
+14:42:47.819425 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (168ms, status: 404)
+14:42:47.865450 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (214ms, status: 404)
+14:42:47.865574 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:47.915466 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:47.915566 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:47.967513 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (51ms, status: 404)
+14:42:47.967588 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:48.675266 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (707ms, status: 200)
+14:42:48.679142 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:48.679173 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:48.679239 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:48.679306 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:48.727094 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:48.771816 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (92ms, status: 404)
+14:42:48.817759 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (138ms, status: 404)
+14:42:48.861507 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (182ms, status: 404)
+14:42:48.861848 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:48.910817 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:48.911021 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:48.959482 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:48.959557 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:49.649826 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (690ms, status: 200)
+14:42:49.653476 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:49.653525 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:49.653568 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:49.653642 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:49.701189 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:49.778083 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (124ms, status: 404)
+14:42:49.824833 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (171ms, status: 404)
+14:42:49.870570 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (217ms, status: 404)
+14:42:49.870777 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:49.920402 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:49.920500 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:49.970879 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (50ms, status: 404)
+14:42:49.971049 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:50.666785 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (695ms, status: 200)
+14:42:50.667615 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:50.667634 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:50.667656 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:50.667697 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:50.717547 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:50.770200 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (102ms, status: 404)
+14:42:50.814960 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (147ms, status: 404)
+14:42:50.860671 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (193ms, status: 404)
+14:42:50.860764 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:50.910529 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:50.910608 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:50.960496 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:50.960569 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:51.707324 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (746ms, status: 200)
+14:42:51.708142 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:51.708149 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:51.708158 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:51.708168 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:51.753857 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (45ms, status: 404)
+14:42:51.831081 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (122ms, status: 404)
+14:42:51.876944 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (168ms, status: 404)
+14:42:51.921395 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (213ms, status: 404)
+14:42:51.921540 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:51.971228 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:51.971319 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:52.020167 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:52.020425 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:52.745046 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (724ms, status: 200)
+14:42:52.746847 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:52.746905 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:52.746984 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:52.747020 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:52.798741 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (51ms, status: 404)
+14:42:52.847694 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (100ms, status: 404)
+14:42:52.893611 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (146ms, status: 404)
+14:42:52.940240 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (193ms, status: 404)
+14:42:52.940462 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:52.990885 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (50ms, status: 404)
+14:42:52.991771 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:53.042116 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (50ms, status: 404)
+14:42:53.042270 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:53.714936 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (672ms, status: 200)
+14:42:53.715796 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:53.715815 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:53.715823 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:53.715849 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:53.761563 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (45ms, status: 404)
+14:42:53.809189 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (93ms, status: 404)
+14:42:53.883320 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (167ms, status: 404)
+14:42:53.927852 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (212ms, status: 404)
+14:42:53.928194 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:53.976321 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:53.976511 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:54.024753 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:54.024933 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:54.718269 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (693ms, status: 200)
+14:42:54.721597 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:54.721624 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:54.721675 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:54.721713 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:54.766551 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (44ms, status: 404)
+14:42:54.811177 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (89ms, status: 404)
+14:42:54.854736 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (133ms, status: 404)
+14:42:54.901993 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (180ms, status: 404)
+14:42:54.902342 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:54.949891 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:54.950065 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:54.998977 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:54.999119 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:55.688373 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (689ms, status: 200)
+14:42:55.689973 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:55.689998 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:55.690025 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:55.690054 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:55.735838 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (45ms, status: 404)
+14:42:55.780759 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (90ms, status: 404)
+14:42:55.828400 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (138ms, status: 404)
+14:42:55.873023 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (183ms, status: 404)
+14:42:55.873800 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:55.949947 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (76ms, status: 404)
+14:42:55.950217 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:55.999042 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:55.999190 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:56.687096 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (687ms, status: 200)
+14:42:56.688699 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:56.688718 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:56.688763 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:56.688808 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:56.736152 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:56.780922 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (92ms, status: 404)
+14:42:56.825580 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (136ms, status: 404)
+14:42:56.868822 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (180ms, status: 404)
+14:42:56.869032 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:56.918074 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (49ms, status: 404)
+14:42:56.918247 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:56.967089 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (48ms, status: 404)
+14:42:56.967344 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:57.623228 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (655ms, status: 200)
+14:42:57.625259 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+14:42:57.625285 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label CONTAINS[c] 'Keep Editing' OR va...
+14:42:57.625307 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label CONTAINS[c] 'Keep Editing'...
+14:42:57.625365 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Keep Editing' OR name ==[c] ...
+14:42:57.672602 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (47ms, status: 404)
+14:42:57.715503 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (90ms, status: 404)
+14:42:57.759455 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (134ms, status: 404)
+14:42:57.803758 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (178ms, status: 404)
+14:42:57.804076 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label == 'Keep Editing' OR name == 'Keep Editing' OR value == ...
+14:42:57.855392 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (51ms, status: 404)
+14:42:57.855531 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element body={"using":"predicate string","value":"(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Edi...
+14:42:57.907271 [DEBUG] WDA POST /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/element completed (51ms, status: 404)
+14:42:57.907417 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:58.647772 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (740ms, status: 200)
+14:42:58.651150 [ERROR] Step 8 failed (12948ms): tapOn: text="Keep Editing" - Error: Element not found: text='Keep Editing' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Keep Editing' OR name CONTAINS[c] 'Keep Editing' OR value CONTAINS[c] 'Keep Editing')'; page source: no elements match selector; closest on-screen texts: "Deep Links", "AdditionalDimmingOverlay", "link")
+14:42:58.651225 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/screenshot
+14:42:58.750637 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/screenshot completed (99ms, status: 200)
+14:42:58.755125 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source
+14:42:59.491950 [DEBUG] WDA GET /session/CF50E84F-3BA6-45FF-B681-D378BAAEE71E/source completed (736ms, status: 200)
+14:42:59.494171 [INFO] === Flow completed: 04-discard (status: failed, duration: 30282ms, passed: 8, failed: 1, skipped: 4) ===
+14:42:59.495149 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:42:59.495239 [INFO] Generating reports...
+14:42:59.495735 [INFO] Shutting down devices started by maestro-runner...
+14:42:59.495752 [INFO] Shutting down all tracked emulators
+14:42:59.495759 [INFO] Shutting down all tracked simulators

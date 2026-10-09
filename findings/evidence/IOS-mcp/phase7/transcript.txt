@@ -1,0 +1,17 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.0.1"}}}
+>> {"method": "notifications/initialized", "jsonrpc": "2.0"}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_compare", "arguments": {}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Unknown option '--platform'\nUsage: grantiva diff compare [--json] [--verbose] [--quiet] [--app-file <app-file>] [--no-build] [--derived-data-path <derived-data-path>] [--scheme <scheme>] [--simulator <simulator>] [--bundle-id <bundle-id>] [--capture]\n  See 'grantiva diff compare --help' for more information.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {"screens": ["Home"]}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Approve failed:\nError: Unknown option '--platform'\nUsage: grantiva diff approve [--json] [--verbose] [--quiet] [<screen-names> ...]\n  See 'grantiva diff approve --help' for more information.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {"screens": ["Home; touch /tmp/pwn"]}}, "id": 4, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Approve failed:\nError: Unknown option '--platform'\nUsage: grantiva diff approve [--json] [--verbose] [--quiet] [<screen-names> ...]\n  See 'grantiva diff approve --help' for more information.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_build", "arguments": {"scheme": "Landmarks (UI Testing)", "simulator": "qa-ios-2"}}, "id": 5, "jsonrpc": "2.0"}
+<< [7.0s] {"id": 5, "jsonrpc": "2.0", "result": {"content": [{"text": "Build succeeded\nScheme: Landmarks (UI Testing)\nDuration: 5.8s\nWarnings: 117\nErrors: 0\nProduct: /Users/kyle/Library/Developer/Xcode/DerivedData/Landmarks-hizkatlxeijsyadxcbawlsfstefe/Build/Products/UITesting-iphonesimulator/Landmarks.app", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_run", "arguments": {"scheme": "Landmarks (UI Testing)", "simulator": "qa-ios-2"}}, "id": 6, "jsonrpc": "2.0"}
+<< [2.6s] {"id": 6, "jsonrpc": "2.0", "result": {"content": [{"text": "App built and launched.\nScheme: Landmarks (UI Testing)\nBundle ID: com.kylebrowning.Landmarks\nSimulator: qa-ios-2", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_test", "arguments": {"scheme": "Landmarks", "simulator": "qa-ios-2"}}, "id": 7, "jsonrpc": "2.0"}
+<< [1.0s] {"id": 7, "jsonrpc": "2.0", "result": {"content": [{"text": "Tests FAILED\nScheme: Landmarks\nDuration: 0.6s\nPassed: 0\nFailed: 0", "type": "text"}], "isError": true}}
+nonjson_lines=0 server_alive=True
+exit=0

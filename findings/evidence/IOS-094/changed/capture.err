@@ -1,0 +1,82 @@
+
+  grantiva-runner 1.1.18-grantiva.7 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2B70042-99C7-4800-993B-478BD75B76DC
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8876
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ takeScreenshot (80ms)
+    ✓ tapOn: text="Favorites" (983ms)
+    ✓ takeScreenshot (73ms)
+    ✓ tapOn: text="Deep Links" (569ms)
+    ✓ takeScreenshot (83ms)
+    ✓ tapOn: text="Landmarks" (887ms)
+    ✗ tapOn: text="Lakes" (12.1s)
+      ╰─ Element not found: text='Lakes' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Lakes' OR name CONTAINS[c] 'Lakes' OR value CONTAINS[c] 'Lakes')'; page source: no elements match selector; closest on-screen texts: "Landmarks", "Favorites", "No landmarks yet")
+✗ flow 19.7s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-3ABE8DFD-14BB-460D-8F91-CD691C49D6D9/flow.yaml) - Device: qa-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ takeScreenshot (80ms)
+    ✓ tapOn (983ms)
+    ✓ takeScreenshot (73ms)
+    ✓ tapOn (569ms)
+    ✓ takeScreenshot (83ms)
+    ✓ tapOn (887ms)
+    ✗ tapOn (12.3s)
+      ╰─ Element not found: text='Lakes' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label CONTAINS[c] 'Lakes' OR name CONTAINS[c] 'Lakes' OR value CONTAINS[c] 'Lakes')'; page source: no elements match selector; closest on-screen texts: "Landmarks", "Favorites", "No landmarks yet")
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 17.0s
+
+  7 steps passing (19.7s)
+  1 steps failing
+  5 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL      13      7      1      5      19.7s  qa-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      7      1      5      19.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2B70042-99C7-4800-993B-478BD75B76DC
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2B70042-99C7-4800-993B-478BD75B76DC/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2B70042-99C7-4800-993B-478BD75B76DC/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D2B70042-99C7-4800-993B-478BD75B76DC/allure-results
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1):
+ exited with code 1
