@@ -195,7 +195,7 @@ Severity: docs
 Command: `grantiva emulator ensure --name qa-android-1 --system-image "system-images;android-35;google_apis;arm64-v8a" > out.txt`
 Expected: `--headless  Boot without a window` (help/emulator_ensure.txt; docs/android.md §Devices), implying a window by default.
 Actual: without `--headless` the qemu command line has `-no-window` (`qemu-system-aarch64-headless ... -no-window`). The usual scripted form `serial=$(grantiva emulator ensure ...)` therefore never shows a window. Not mentioned in any doc.
-Evidence: findings/evidence/AND-001/stdout.txt (process listing in the report), AND-013/log.txt
+Evidence: findings/evidence/AND-017/log.txt (pid 67271, booted by `emulator ensure` without `--headless`, runs `qemu-system-aarch64-headless ... -no-window`), AND-005/log.txt (with `--headless`, identical command line)
 Suspected cause: `Sources/GrantivaCore/Android/EmulatorManager.swift:216` (`headless || isatty(STDOUT_FILENO) == 0`).
 
 ### AND-F21: iOS wording and small output defects in Android output
