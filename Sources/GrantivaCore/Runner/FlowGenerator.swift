@@ -66,6 +66,8 @@ public enum FlowGenerator {
                         lines.append("    label: \(FlowEnvironment.quoted(waitLabel(seconds: seconds)))")
                     }
                     if let seconds = step.settle {
+                        // An explicit settle replaces the generated one before it.
+                        if lines.suffix(2).first == "- waitForAnimationToEnd:" { lines.removeLast(2) }
                         lines.append("- waitForAnimationToEnd:")
                         lines.append("    timeout: \(Int(seconds * 1000))")
                     }

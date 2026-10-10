@@ -302,6 +302,9 @@ final class MaestroStandardFormsTests: XCTestCase {
         - takeScreenshot: "After"
         """)
         let yaml = FlowGenerator.generate(screens: config.screens, bundleId: try XCTUnwrap(config.bundleId))
+        // The generator settles after each interaction and before each
+        // screenshot (A04); the source's own waitForAnimationToEnd replaces
+        // the generated settle after the tap rather than doubling it.
         XCTAssertEqual(yaml, """
         appId: "com.kylebrowning.Landmarks"
         ---
@@ -311,14 +314,22 @@ final class MaestroStandardFormsTests: XCTestCase {
         - waitForAnimationToEnd:
             timeout: 5000
         - assertVisible: "Featured"
+        - waitForAnimationToEnd:
+            timeout: 5000
         - takeScreenshot: "Detail"
         - swipe:
             direction: LEFT
             from: "Lake Tahoe"
+        - waitForAnimationToEnd:
+            timeout: 5000
         - swipe:
             direction: UP
+        - waitForAnimationToEnd:
+            timeout: 5000
         - assertNotVisible:
             id: "spinner"
+        - waitForAnimationToEnd:
+            timeout: 5000
         - takeScreenshot: "After"
 
         """)

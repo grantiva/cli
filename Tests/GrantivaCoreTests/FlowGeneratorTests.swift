@@ -177,4 +177,10 @@ final class FlowGeneratorTests: XCTestCase {
         XCTAssertTrue(yaml.contains("- tapOn: \"Lakes\"\n"), yaml)
         XCTAssertEqual(try Array(Yams.compose_all(yaml: yaml)).count, 2)
     }
+
+    func testExplicitSettleReplacesTheGeneratedOne() {
+        let screens = [GrantivaConfig.Screen(name: "S", path: .steps([.init(tap: "Go"), .init(settle: 2)]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+        XCTAssertTrue(yaml.hasSuffix("- tapOn: \"Go\"\n- waitForAnimationToEnd:\n    timeout: 2000\n- takeScreenshot: \"S\"\n"), yaml)
+    }
 }
