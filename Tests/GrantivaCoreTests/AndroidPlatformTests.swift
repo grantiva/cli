@@ -142,10 +142,17 @@ final class AndroidPlatformTests: XCTestCase {
         }
     }
 
-    func testLogStreamFallsBackToTheLastLineWhenTheDeviceClockCannotBeRead() async throws {
+    func testLogStreamFallsBackToHostTimeWhenTheDeviceClockCannotBeRead() async throws {
         let shell = ScriptedShell([.success("package:com.example uid:10123"), .failure(GrantivaError.commandFailed("offline", 1))])
         let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: "T", level: .debug)
-        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-T", "1", "-s", "T:D"])
+        XCTAssertEqual(Array(stream.arguments.prefix(7)), ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-T"])
+        XCTAssertNotNil(stream.arguments[7].wholeMatch(of: /[0-1][0-9]-[0-3][0-9] [0-2][0-9]:[0-5][0-9]:[0-5][0-9]\.000/), stream.arguments[7])
+        XCTAssertEqual(Array(stream.arguments.suffix(2)), ["-s", "T:D"])
+    }
+
+    func testLogcatTimeUsesLogcatsMonthDayForm() {
+        let date = Date(timeIntervalSince1970: 1_791_592_382.75) // 2026-10-10 00:33:02.75 UTC
+        XCTAssertEqual(AndroidPlatform.logcatTime(date, timeZone: TimeZone(identifier: "UTC")!), "10-10 00:33:02.000")
     }
 
     func testLogStreamWithoutAnInstalledAppFails() async {

@@ -181,12 +181,26 @@ public struct AndroidPlatform: DevicePlatform {
         guard let uid = try await adb.packageUID(serial: deviceID, applicationId: appID) else {
             throw GrantivaError.invalidArgument("\(appID) is not installed on \(deviceID), so its logs cannot be streamed.")
         }
+        // Whole seconds: up to one second of the app uid's lines from before
+        // the stream started may be replayed. The device clock is preferred;
+        // when it cannot be read, the host's local time (the emulator follows
+        // the host's clock and time zone) in logcat's MM-DD form.
         let now = (try? await adb.shell(serial: deviceID, "date +%s"))?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let since = now.flatMap { $0.wholeMatch(of: /[0-9]+/) != nil ? "\($0).000" : nil } ?? "1"
+        let since = now.flatMap { $0.wholeMatch(of: /[0-9]+/) != nil ? "\($0).000" : nil } ?? Self.logcatTime(Date())
         let priority = (level ?? .default).logcatPriority
         let tag = filter.flatMap { $0.isEmpty ? nil : $0 } ?? "*"
         let args = ["-s", deviceID, "logcat", "--uid=\(uid)", "-v", "time", "-T", since, "-s", "\(tag):\(priority)"]
         return LogStreamCommand(executable: adb.path, arguments: args)
+    }
+
+    /// `date` in logcat's `-T 'MM-DD hh:mm:ss.mmm'` form, in local time,
+    /// truncated to the second.
+    static func logcatTime(_ date: Date, timeZone: TimeZone = .current) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = timeZone
+        formatter.dateFormat = "MM-dd HH:mm:ss.000"
+        return formatter.string(from: date)
     }
 
     // MARK: Runner

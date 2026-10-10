@@ -101,6 +101,23 @@ final class GradleBuildRunnerTests: XCTestCase {
         XCTAssertFalse(result.errors.contains { $0.contains("Run gradlew tasks") }, "the Try block is not an error: \(result.errors)")
     }
 
+    /// A09: `--module nosuch` (captured from AND-025).
+    func testAnUnknownModuleKeepsGradlesReasonAndTheHint() {
+        let lines = """
+        FAILURE: Build failed with an exception.
+
+        * What went wrong:
+        Cannot locate tasks that match ':nosuch:assembleFreeDebug' as project 'nosuch' not found in root project 'Landmarks'.
+
+        * Try:
+        > Run gradlew projects to get a list of available projects.
+        """.components(separatedBy: "\n")
+        let errors = GradleBuildRunner.errorLines(lines)
+        XCTAssertEqual(errors.count, 3, "\(errors)")
+        XCTAssertEqual(errors[1], "Cannot locate tasks that match ':nosuch:assembleFreeDebug' as project 'nosuch' not found in root project 'Landmarks'.")
+        XCTAssertTrue(errors[2].contains("--module"), "\(errors)")
+    }
+
     func testWhatWentWrongBlocksOfSeveralFailuresAreAllKept() {
         let lines = """
         FAILURE: Build completed with 2 failures.
