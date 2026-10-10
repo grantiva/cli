@@ -15,6 +15,10 @@ actor RunnerConnection {
     private let resolveSession: @Sendable () throws -> RunnerSessionInfo
     private let attach: @Sendable (RunnerSessionInfo) async throws -> DriverAttachment
     private var attached: (session: RunnerSessionInfo, attachment: DriverAttachment)?
+    /// The attach in progress. The server handles requests concurrently and
+    /// this actor suspends while attaching, so concurrent first calls share
+    /// one attach instead of each attaching (and leaking an adb forward).
+    private var inFlight: (session: RunnerSessionInfo, task: Task<DriverAttachment, Error>)?
 
     init(
         resolveSession: @escaping @Sendable () throws -> RunnerSessionInfo,
@@ -50,9 +54,24 @@ actor RunnerConnection {
         if let attached, Self.isSame(attached.session, session) {
             return Current(driver: attached.attachment.client, session: attached.session)
         }
-        await detach()
-        let attachment = try await attach(session)
+        if let inFlight, Self.isSame(inFlight.session, session) {
+            return Current(driver: try await inFlight.task.value.client, session: session)
+        }
+
+        let attach = self.attach
+        let task = Task { try await attach(session) }
+        inFlight = (session, task)
+        let attachment: DriverAttachment
+        do {
+            attachment = try await task.value
+        } catch {
+            if inFlight?.task == task { inFlight = nil }
+            throw error
+        }
+        if inFlight?.task == task { inFlight = nil }
+        let stale = attached
         attached = (session, attachment)
+        if let stale { await stale.attachment.detach() }
         return Current(driver: attachment.client, session: session)
     }
 

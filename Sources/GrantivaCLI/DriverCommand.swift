@@ -333,7 +333,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             wdaPort: port,
             bundleId: launch.appID,
             udid: launch.device.udid,
-            startedAt: Date()
+            startedAt: Date(),
+            platform: launch.platform
         )
         try Self.record(session: session)
 
@@ -406,7 +407,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
             wdaPort: port,
             bundleId: launch.appID,
             udid: launch.device.udid,
-            startedAt: Date()
+            startedAt: Date(),
+            platform: launch.platform
         )
         try Self.record(session: session)
 

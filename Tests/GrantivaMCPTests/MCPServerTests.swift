@@ -212,7 +212,7 @@ final class MCPServerTests: XCTestCase {
         let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
         try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
         try JSONEncoder().encode(session).write(to: sessionURL)
-        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore())
+        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore())
         XCTAssertEqual(loaded.udid, "emulator-5554")
         XCTAssertEqual(loaded.wdaPort, 61211)
     }
@@ -305,6 +305,55 @@ final class MCPServerTests: XCTestCase {
     }
 
     // MARK: - Lazy attachment (C11)
+
+    /// Concurrent first calls share one attach; nothing is left attached
+    /// after detach.
+    func testConcurrentFirstCallsAttachOnce() async throws {
+        final class Counter: @unchecked Sendable {
+            let lock = NSLock()
+            var attaches = 0
+            var detaches = 0
+        }
+        let counter = Counter()
+        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+        let connection = RunnerConnection(
+            resolveSession: { session },
+            attach: { _ in
+                counter.lock.withLock { counter.attaches += 1 }
+                try await Task.sleep(nanoseconds: 50_000_000)
+                return DriverAttachment(client: .failing, port: 8100, detach: {
+                    counter.lock.withLock { counter.detaches += 1 }
+                })
+            }
+        )
+        async let first = connection.current()
+        async let second = connection.current()
+        async let third = connection.current()
+        _ = try await (first, second, third)
+        XCTAssertEqual(counter.attaches, 1)
+        await connection.detach()
+        XCTAssertEqual(counter.detaches, 1)
+    }
+
+    /// C03 review: in a directory with both config files, a session.json
+    /// written for the other platform is skipped.
+    func testSessionFileForTheOtherPlatformIsSkipped() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
+        try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+
+        let recorded = RunnerSessionInfo(pid: getpid(), wdaPort: 8201, bundleId: "a", udid: "921A0945-7157-4533-BA1F-21E8132D3E40", startedAt: Date(), platform: .ios)
+        try JSONEncoder().encode(recorded).write(to: sessionURL)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore()))
+        XCTAssertEqual(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore()).wdaPort, 8201)
+
+        // A file from an earlier version (no platform) is judged by the device ID's shape.
+        let legacy = #"{"pid":\#(getpid()),"wdaPort":8201,"bundleId":"a","udid":"emulator-5554","startedAt":0}"#
+        try Data(legacy.utf8).write(to: sessionURL)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: emptyKeepAliveStore()))
+        XCTAssertEqual(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: emptyKeepAliveStore()).udid, "emulator-5554")
+    }
 
     func testConnectionAttachesOnFirstUseAndPicksUpASessionStartedLater() async throws {
         final class State: @unchecked Sendable {

@@ -140,12 +140,25 @@ final class ScriptToolsTests: XCTestCase {
         XCTAssertEqual(recorder.calls.first, "tapByCoordinate(5.0,6.0)")
     }
 
-    func testTapTakesPrecedenceWhenAStepDeclaresSeveralActions() async throws {
+    func testAStepWithSeveralActionsIsRejected() async throws {
         let recorder = WDARecorder()
-        _ = try await ScriptTools.script(
+        let result = try await ScriptTools.script(
             driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["tap": .string("A"), "swipe": .string("up"), "type": .string("B")])])]
         )
-        XCTAssertEqual(recorder.calls, ["tapByLabel(A)", "hierarchy"])
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty)
+        XCTAssertTrue(try textContent(of: result).contains("Step 1: more than one action (tap, swipe, type)"))
+    }
+
+    func testANonStringTapIsRejectedByName() async throws {
+        let recorder = WDARecorder()
+        let result = try await ScriptTools.script(
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
+            arguments: ["steps": .array([.object(["tap": .int(5)])])]
+        )
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty)
+        XCTAssertTrue(try textContent(of: result).contains("Step 1: 'tap' must be a string"))
     }
 }

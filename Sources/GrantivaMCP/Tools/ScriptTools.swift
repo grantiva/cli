@@ -136,33 +136,48 @@ enum ScriptTools {
 
         struct Invalid: Error { let message: String }
 
-        /// The first recognised action wins, in the order tap, tap_xy, swipe,
-        /// type, wait.
+        static let actions = ["tap", "tap_xy", "swipe", "type", "wait"]
+
+        /// A step has exactly one action key, and nothing else.
         static func parse(_ value: Value) -> Result<Step, Invalid> {
             guard let step = value.objectValue else {
                 return .failure(Invalid(message: "not an object"))
             }
-            if let label = step["tap"]?.stringValue { return .success(.tap(label)) }
-            if let tapXY = step["tap_xy"] {
-                guard let point = tapXY.objectValue,
+            let unknown = step.keys.filter { !actions.contains($0) }.sorted()
+            guard unknown.isEmpty else {
+                return .failure(Invalid(message: "unknown action \(unknown.map { "'\($0)'" }.joined(separator: ", "))"))
+            }
+            let present = actions.filter { step[$0] != nil }
+            guard let action = present.first else {
+                return .failure(Invalid(message: "no action"))
+            }
+            guard present.count == 1 else {
+                return .failure(Invalid(message: "more than one action (\(present.joined(separator: ", "))); use one action per step"))
+            }
+            let argument = step[action]!
+            func string() -> Result<String, Invalid> {
+                argument.stringValue.map { .success($0) } ?? .failure(Invalid(message: "'\(action)' must be a string"))
+            }
+            switch action {
+            case "tap":
+                return string().map(Step.tap)
+            case "swipe":
+                return string().map(Step.swipe)
+            case "type":
+                return string().map(Step.type)
+            case "tap_xy":
+                guard let point = argument.objectValue,
                       let x = point["x"]?.doubleValue,
                       let y = point["y"]?.doubleValue else {
                     return .failure(Invalid(message: "tap_xy needs numeric x and y"))
                 }
                 return .success(.tapXY(x, y))
-            }
-            if let direction = step["swipe"]?.stringValue { return .success(.swipe(direction)) }
-            if let text = step["type"]?.stringValue { return .success(.type(text)) }
-            if let seconds = step["wait"]?.doubleValue {
-                guard seconds >= 0, seconds.isFinite else {
+            default: // wait
+                guard let seconds = argument.doubleValue, seconds >= 0, seconds.isFinite else {
                     return .failure(Invalid(message: "wait must be a non-negative number of seconds"))
                 }
                 return .success(.wait(seconds))
             }
-            let keys = step.keys.sorted()
-            return .failure(Invalid(message: keys.isEmpty
-                ? "no action"
-                : "unknown action \(keys.map { "'\($0)'" }.joined(separator: ", "))"))
         }
     }
 }

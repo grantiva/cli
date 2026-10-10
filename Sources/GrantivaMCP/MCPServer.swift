@@ -151,7 +151,9 @@ public struct GrantivaMCPServer: Sendable {
         session.wdaPort > 0 ? session.wdaPort : nil
     }
 
-    /// A live `grantiva runner start` session in the project wins. Otherwise
+    /// A live `grantiva runner start` session in the project for this
+    /// platform wins (one for the other platform, in a directory with both
+    /// config files, is skipped). Otherwise
     /// a `grantiva run --keep-alive` (or `runner start`) session is used only
     /// when its owner sidecar records this project directory and platform;
     /// sessions started elsewhere, for the other platform, or by a Grantiva
@@ -164,7 +166,7 @@ public struct GrantivaMCPServer: Sendable {
         let sessionURL = projectDirectory.appendingPathComponent(RunnerSessionInfo.path)
         if let data = try? Data(contentsOf: sessionURL),
            let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
-           session.isAlive {
+           session.isAlive, session.drivesPlatform(platform) {
             _ = try DeviceID.validate(session.udid, flag: "session UDID")
             return session
         }

@@ -54,6 +54,7 @@ struct ToolRegistry: Sendable {
         "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
         "grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_script",
     ]
+    static let uiMutatingTools: Set<String> = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script"]
 
     func call(
         name: String,
@@ -62,8 +63,8 @@ struct ToolRegistry: Sendable {
     ) async throws -> CallTool.Result {
         let result: CallTool.Result
 
-        var current: RunnerConnection.Current?
         if Self.sessionTools.contains(name) {
+            let current: RunnerConnection.Current
             do {
                 current = try await connection.current()
             } catch {
@@ -72,23 +73,15 @@ struct ToolRegistry: Sendable {
                     isError: true
                 )
             }
+            result = try await callSessionTool(name: name, current: current, arguments: arguments)
+            // After UI-mutating actions, notify resource subscribers about hierarchy change
+            if Self.uiMutatingTools.contains(name) {
+                try? await notifyHierarchyUpdate(server: server)
+            }
+            return result
         }
 
         switch name {
-        // UI Tools
-        case "grantiva_screenshot":
-            result = try await UITools.screenshot(driver: current!.driver, device: device, session: current!.session, arguments: arguments)
-        case "grantiva_tap":
-            result = try await UITools.tap(driver: current!.driver, arguments: arguments)
-        case "grantiva_swipe":
-            result = try await UITools.swipe(driver: current!.driver, arguments: arguments)
-        case "grantiva_type":
-            result = try await UITools.type(driver: current!.driver, arguments: arguments)
-        case "grantiva_a11y_tree":
-            result = try await UITools.a11yTree(driver: current!.driver)
-        case "grantiva_a11y_check":
-            result = try await UITools.a11yCheck(driver: current!.driver, config: config, platform: platform)
-
         // Build Tools
         case "grantiva_build":
             result = try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments)
@@ -125,10 +118,6 @@ struct ToolRegistry: Sendable {
                 emulators: emulators
             )
 
-        // Script
-        case "grantiva_script":
-            result = try await ScriptTools.script(driver: current!.driver, arguments: arguments)
-
         // VRT Tools
         case "grantiva_vrt_capture":
             result = try await VRTTools.capture(platform: platform, arguments: arguments)
@@ -144,13 +133,31 @@ struct ToolRegistry: Sendable {
             )
         }
 
-        // After UI-mutating actions, notify resource subscribers about hierarchy change
-        let uiMutatingTools = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script"]
-        if uiMutatingTools.contains(name) {
-            try? await notifyHierarchyUpdate(server: server)
-        }
-
         return result
+    }
+
+    private func callSessionTool(
+        name: String,
+        current: RunnerConnection.Current,
+        arguments: [String: Value]
+    ) async throws -> CallTool.Result {
+        let driver = current.driver
+        switch name {
+        case "grantiva_screenshot":
+            return try await UITools.screenshot(driver: driver, device: device, session: current.session, arguments: arguments)
+        case "grantiva_tap":
+            return try await UITools.tap(driver: driver, arguments: arguments)
+        case "grantiva_swipe":
+            return try await UITools.swipe(driver: driver, arguments: arguments)
+        case "grantiva_type":
+            return try await UITools.type(driver: driver, arguments: arguments)
+        case "grantiva_a11y_tree":
+            return try await UITools.a11yTree(driver: driver)
+        case "grantiva_a11y_check":
+            return try await UITools.a11yCheck(driver: driver, config: config, platform: platform)
+        default: // grantiva_script
+            return try await ScriptTools.script(driver: driver, arguments: arguments)
+        }
     }
 
     // MARK: - Resource Read
