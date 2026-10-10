@@ -5,7 +5,7 @@ import GrantivaCore
 struct RunCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "run",
-        abstract: "Run Maestro flows against a simulator. No visual regression — reports step pass/fail and captures a screenshot on failure."
+        abstract: "Run Maestro flows against a simulator or emulator. No visual regression — reports step pass/fail and captures a screenshot on failure."
     )
 
     @OptionGroup var options: GlobalOptions
@@ -47,10 +47,10 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write the runner's report.json + assets to this directory (workspace-relative). Survives grantiva's cleanup so CI can upload it. Default: ephemeral tmp dir.")
     var reportDir: String?
 
-    @Option(name: .long, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Bump this for long multi-flow suites.")
+    @Option(name: .long, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Minimum 30. Ignored under --keep-alive. Bump this for long multi-flow suites.")
     var timeout: Int = 600
 
-    @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
+    @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Missing parent directories are created. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
     var readyFile: String?
 
     @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp environment.")

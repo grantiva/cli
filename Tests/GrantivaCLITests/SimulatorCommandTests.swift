@@ -4,6 +4,39 @@ import XCTest
 import GrantivaCore
 
 final class SimulatorCommandTests: XCTestCase {
+    // `simulator --help` listed `delete` and `sessions` with empty descriptions.
+    func testEverySimulatorSubcommandHasAnAbstract() {
+        for command in SimulatorCommand.configuration.subcommands {
+            XCTAssertFalse(
+                command.configuration.abstract.isEmpty,
+                "simulator \(command.configuration.commandName ?? String(describing: command)) has no abstract"
+            )
+        }
+        XCTAssertEqual(SimulatorCommand.Delete.configuration.abstract, "Explicitly delete a named simulator.")
+        XCTAssertEqual(SimulatorCommand.Sessions.configuration.abstract, "List Grantiva-managed simulator capacity slots.")
+    }
+
+    // Commands whose platform options include Android must not describe
+    // themselves as simulator-only.
+    func testAndroidCapableCommandAbstractsMentionEmulator() {
+        let abstracts: [(String, String)] = [
+            ("grantiva", GrantivaCommand.configuration.abstract),
+            ("run", RunCommand.configuration.abstract),
+            ("build", BuildCommand.configuration.abstract),
+            ("build build", BuildOnlyCommand.configuration.abstract),
+            ("build install", InstallCommand.configuration.abstract),
+            ("record", RecordCommand.configuration.abstract),
+            ("hierarchy", HierarchyCommand.configuration.abstract),
+        ]
+        for (name, abstract) in abstracts where abstract.localizedCaseInsensitiveContains("simulator") {
+            XCTAssertTrue(
+                abstract.localizedCaseInsensitiveContains("emulator"),
+                "\(name) abstract mentions simulator but not emulator: \(abstract)"
+            )
+        }
+        XCTAssertTrue(GrantivaCommand.configuration.abstract.contains("Android"))
+    }
+
     func testEnsureParsesExactProvisioningTarget() throws {
         let command = try SimulatorCommand.Ensure.parse([
             "--name", "APP-302 iPhone 393x852",

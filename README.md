@@ -1,6 +1,6 @@
 # Grantiva CLI
 
-The command-line tool for [Grantiva](https://grantiva.io) — the all-in-one platform for iOS developers.
+The command-line tool for [Grantiva](https://grantiva.io) — the all-in-one platform for iOS and Android developers.
 
 Currently features visual regression testing and agent-native UI automation. Captures screenshots of your app's screens, diffs them against approved baselines, and posts the results as GitHub Check Runs. Also streams UI hierarchy and app logs so AI agents can read, diagnose, and self-heal broken flows. Catch visual regressions before they ship — and let your agents fix them.
 
@@ -83,11 +83,18 @@ grantiva hierarchy > state.xml
   ```
 
   Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit.
+
+  Missing parent directories of the path are created (`--ready-file out/ci/x.ready` creates `out/ci/`), so a typo in the directory part makes a new directory rather than failing; only an uncreatable or unwritable location is an error.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` environment, so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific simulator's with `--udid <UDID>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
 - **`--logs`** — Streams simulator app logs (`xcrun simctl spawn log stream`) prefixed with `[log]` interleaved with the flow output. Auto-scopes the predicate to your app's bundle ID.
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter for narrowing to specific subsystems, categories, or processes.
+- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step.
+- **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
+- **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). Ignored under `--keep-alive`, where the session is held until you release it.
+
+  `--continue-on-failure` and `--timeout` apply to flow files (`flows:` in the config, or `--flow`). A suite that runs only the configured `screens:` does not read these two flags: it uses a fixed 300 s timeout.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
 - **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory. Nothing is written to `./.grantiva/captures` when it is given.
 
@@ -112,6 +119,13 @@ diff:
   threshold: 0.02
   perceptual_threshold: 5.0
 ```
+
+`diff.threshold` and `diff.perceptual_threshold` are two separate checks, and a screen passes only when **both** hold:
+
+- `threshold` is a 0-1 fraction of pixels that differ (`0.02` = 2 %; the messages print percent). `1.0` means any share of changed pixels is fine.
+- `perceptual_threshold` is the mean CIE76 color distance (delta E) over the differing pixels only, not over the whole image. It is 0 when the images are identical and about 2.3 is a just-noticeable difference. A handful of strongly changed pixels therefore fails a screen no matter how high `threshold` is.
+
+To loosen a flaky screen, raise both. Raising only `threshold` still fails the screen on `perceptual_threshold` (for example `pixel=7.97% perceptual=6.4` against a limit of 5).
 
 ### Screens
 
@@ -261,10 +275,10 @@ Results upload to the [Grantiva](https://grantiva.io) dashboard and post as GitH
 ## Commands
 
 ```
-grantiva run                Run Maestro flows against a simulator (supports --keep-alive, --logs, --flow)
-grantiva record             Record a simulator and extract PNG frames at requested timestamps
+grantiva run                Run Maestro flows against a simulator or emulator (supports --keep-alive, --logs, --flow)
+grantiva record             Record a simulator or emulator and extract PNG frames at requested timestamps
 grantiva hierarchy          Dump the live UI hierarchy of a keep-alive session
-grantiva build              Build the app via xcodebuild for a simulator
+grantiva build              Build the app for a simulator (xcodebuild) or emulator (Gradle)
 grantiva build install      Build and install the app; use --no-launch to stop before launch
 grantiva ci run             Run full CI pipeline (build -> capture -> diff -> upload)
 grantiva diff capture       Capture screenshots for all configured screens
@@ -274,7 +288,12 @@ grantiva simulator ensure   Create or reuse a named simulator and boot it (--nam
 grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
 grantiva simulator teardown End a session, or reclaim one simulator with --udid <UDID> --force
-grantiva simulator cleanup  Delete unavailable and stale Grantiva-managed simulators
+grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
+grantiva emulator ensure    Create the AVD if missing and boot it; prints the serial
+grantiva emulator delete    Delete an AVD Grantiva created (--force for others)
+grantiva emulator sessions  List the emulators Grantiva started
+grantiva emulator teardown  Kill emulators Grantiva started (one by --serial, or --all)
+grantiva console            Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
 grantiva auth login         Authenticate with Grantiva
 grantiva auth status        Show current authentication
 grantiva auth logout        Remove stored credentials
@@ -283,7 +302,8 @@ grantiva runner install     Extract the embedded GrantivaAgent runner
 grantiva runner version     Show the embedded runner version
 grantiva runner start       Start an interactive GrantivaAgent session
 grantiva runner stop        Stop a running interactive session
-grantiva mcp                Start the MCP server for AI agent integration
+grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
+grantiva mcp                Start the MCP server for AI agent integration (tool list: docs/mcp.md)
 grantiva init               Generate grantiva.yml
 ```
 
@@ -350,7 +370,7 @@ directly:
 
 ```bash
 udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
-grantiva run --device "$udid" flows/
+grantiva run --simulator "$udid" --flow flows/login.yaml
 ```
 
 The human-readable line (`Reused iPhone 17 Pro (…) — Booted`) goes to stderr, so

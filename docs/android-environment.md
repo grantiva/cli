@@ -17,8 +17,14 @@ Grantiva finds the SDK through `ANDROID_HOME`, then `ANDROID_SDK_ROOT`, then
 
 ## CI
 
-GitHub-hosted macOS runners cannot boot the Android emulator (no nested virtualization),
-and Grantiva does not run on Linux. Android `ci run` needs a self-hosted Mac runner or a
-developer machine.
+`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+are local only until the Grantiva backend supports platforms ("Android baselines are local
+only until the Grantiva backend supports platforms; use local baselines"). Use the local
+commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+`grantiva diff approve`.
+
+Once `ci run` supports Android, note that GitHub-hosted macOS runners cannot boot the
+Android emulator (no nested virtualization) and Grantiva does not run on Linux, so it will
+need a self-hosted Mac runner or a developer machine.
 
 See docs/android.md for using Grantiva with an Android project.
