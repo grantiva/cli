@@ -163,10 +163,10 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         let config = try GrantivaConfig.load(platform: .android, from: dir)
         XCTAssertEqual(config.warnings, [
             #"grantiva-android.yml:2: unknown key "modul" (did you mean "module"?)"#,
-            #"grantiva-android.yml:14: unknown key "tolerance""#,
             #"grantiva-android.yml:6: unknown key "titel""#,
             #"grantiva-android.yml:9: unknown key "tpa" (did you mean "tap"?)"#,
             #"grantiva-android.yml:10: unknown key "exakt" (did you mean "exact"?)"#,
+            #"grantiva-android.yml:14: unknown key "tolerance""#,
         ])
     }
 
@@ -182,6 +182,24 @@ final class GrantivaConfigPlatformTests: XCTestCase {
                 error.localizedDescription
             )
         }
+    }
+
+    func testNullLabelsDecodeAsAbsent() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Home
+                path:
+                  - tap:
+                    assert_visible: ~
+                    swipe: up
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertNil(steps[0].tap)
+        XCTAssertFalse(steps[0].tapExact)
+        XCTAssertNil(steps[0].assertVisible)
+        XCTAssertEqual(steps[0].swipe, "up")
     }
 
     func testKnownKeysProduceNoWarnings() throws {

@@ -42,6 +42,32 @@ final class OutputStreamContractTests: XCTestCase {
         }
     }
 
+    func testUnknownConfigKeyWarningGoesToStderrUnderJSON() throws {
+        // `diff compare` loads the config and needs no device. No API key and
+        // an empty HOME keep it on the local baseline store, off the network.
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let captures = dir.appendingPathComponent(".grantiva/captures")
+        let home = dir.appendingPathComponent("home")
+        try FileManager.default.createDirectory(at: captures, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: home, withIntermediateDirectories: true)
+        try "schem: App\nbundle_id: com.example\n".write(
+            to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8
+        )
+        // A 1x1 RGB PNG.
+        let png = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC")!
+        try png.write(to: captures.appendingPathComponent("Home.png"))
+
+        let run = try grantiva(
+            ["diff", "compare", "--json"], in: dir,
+            environment: ["GRANTIVA_API_KEY": nil, "HOME": home.path]
+        )
+        XCTAssertEqual(run.status, 0, run.stderr)
+        XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(run.stdout.utf8)), run.stdout)
+        XCTAssertFalse(run.stdout.contains("unknown key"), run.stdout)
+        XCTAssertTrue(run.stderr.contains(#"unknown key "schem""#), run.stderr)
+    }
+
     func testDiagnosticsNeverReachStdout() throws {
         // `runner version` has a fixed, complete result: the version line and
         // nothing else. Anything informational appearing here would show up as
@@ -281,16 +307,24 @@ final class OutputStreamContractTests: XCTestCase {
         let status: Int32
     }
 
-    private func grantiva(_ arguments: [String], file: StaticString = #filePath, line: UInt = #line) throws -> Run {
+    private func grantiva(
+        _ arguments: [String],
+        in directory: URL? = nil,
+        environment overrides: [String: String?] = [:],
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws -> Run {
         let binary = try XCTUnwrap(Self.binaryURL, "could not locate the built grantiva binary", file: file, line: line)
 
         let process = Process()
         process.executableURL = binary
         process.arguments = arguments
+        if let directory { process.currentDirectoryURL = directory }
         // Deterministic auth: `auth status` reads the environment first, so the
         // developer's own ~/.grantiva/auth.json cannot change the result.
         var environment = ProcessInfo.processInfo.environment
         environment["GRANTIVA_API_KEY"] = "gpat_streamcontracttest"
+        for (key, value) in overrides { environment[key] = value }
         process.environment = environment
 
         let out = Pipe()

@@ -10,9 +10,9 @@ enum ConfigKeyValidator {
         if platform == .android {
             top += AndroidProject.CodingKeys.allCases.map(\.rawValue)
         }
-        var warnings: [String] = []
+        var warnings: [Warning] = []
         check(root, known: top, fileName: fileName, into: &warnings)
-        guard let mapping = root.mapping else { return warnings }
+        guard let mapping = root.mapping else { return sorted(warnings) }
 
         if let diff = mapping["diff"] {
             check(diff, known: GrantivaConfig.DiffConfig.CodingKeys.allCases.map(\.rawValue), fileName: fileName, into: &warnings)
@@ -33,10 +33,22 @@ enum ConfigKeyValidator {
                 }
             }
         }
-        return warnings
+        return sorted(warnings)
     }
 
-    private static func check(_ node: Node, known: [String], fileName: String, into warnings: inout [String]) {
+    private struct Warning {
+        var line: Int
+        var message: String
+    }
+
+    /// In file order, so the output reads top to bottom.
+    private static func sorted(_ warnings: [Warning]) -> [String] {
+        warnings.enumerated()
+            .sorted { ($0.element.line, $0.offset) < ($1.element.line, $1.offset) }
+            .map(\.element.message)
+    }
+
+    private static func check(_ node: Node, known: [String], fileName: String, into warnings: inout [Warning]) {
         guard let mapping = node.mapping else { return }
         for (keyNode, _) in mapping {
             guard let key = keyNode.string, !known.contains(key) else { continue }
@@ -45,7 +57,7 @@ enum ConfigKeyValidator {
             if let suggestion = suggestion(for: key, among: known) {
                 message += " (did you mean \"\(suggestion)\"?)"
             }
-            warnings.append(message)
+            warnings.append(Warning(line: keyNode.mark?.line ?? 0, message: message))
         }
     }
 

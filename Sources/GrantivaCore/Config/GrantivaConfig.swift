@@ -112,7 +112,7 @@ public struct GrantivaConfig: Sendable, Codable {
             public init(from decoder: Decoder) throws {
                 let c = try decoder.container(keyedBy: CodingKeys.self)
                 func label(_ key: CodingKeys) throws -> (String?, Bool) {
-                    guard c.contains(key) else { return (nil, false) }
+                    guard c.contains(key), try !c.decodeNil(forKey: key) else { return (nil, false) }
                     if let text = try? c.decode(String.self, forKey: key) { return (text, false) }
                     let mapped = try c.decode(Label.self, forKey: key)
                     return (mapped.text, mapped.exact ?? false)

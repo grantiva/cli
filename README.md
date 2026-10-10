@@ -144,8 +144,8 @@ A label matches any element whose text *contains* it, case-insensitively, so `ta
 `landmarks://…` link before the tab called "Landmarks". `tap`, `assert_visible`, and `assert_not_visible` also take
 `{text: "Landmarks", exact: true}` to require the element's full text to equal the label.
 
-Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`,
-and `type`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
+Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
+and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
 the screen it is leaving. Unknown keys in the config file are reported as warnings with their line number.
 
 ### Maestro Compatibility
