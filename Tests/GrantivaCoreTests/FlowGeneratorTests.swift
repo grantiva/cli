@@ -38,4 +38,18 @@ final class FlowGeneratorTests: XCTestCase {
         XCTAssertTrue(yaml.contains(#"inputText: "line one\nline two""#))
         XCTAssertTrue(yaml.contains(#"takeScreenshot: "Result: \"final\"""#))
     }
+
+    func testAndroidScreensFlowDeliversEnvironmentAsLaunchArguments() throws {
+        let yaml = FlowGenerator.generate(
+            screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
+            bundleId: "com.example.app",
+            environment: ["LANDMARKS_NOTE": "a=b c", "LANDMARKS_SEED": "empty"],
+            platform: .android
+        )
+        let body = try XCTUnwrap(yaml.components(separatedBy: "\n---\n").last)
+        let steps = try XCTUnwrap(Yams.load(yaml: body) as? [Any])
+        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+        XCTAssertEqual(launch["arguments"] as? [String: String], ["LANDMARKS_NOTE": "a=b c", "LANDMARKS_SEED": "empty"])
+        XCTAssertNil(launch["environment"])
+    }
 }

@@ -46,7 +46,7 @@ public enum RunnerSession {
 
         // Generate Maestro flow YAML
         let flowPath = try FlowGenerator.writeTemp(
-            screens: screens, bundleId: bundleId, environment: environment
+            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
         )
         defer {
             try? FileManager.default.removeItem(
@@ -339,14 +339,16 @@ public enum RunnerSession {
                 in: injectedContent,
                 relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent
             )
-            if !environment.isEmpty {
-                let result = FlowEnvironment.inject(injectedContent, environment: environment)
-                injectedContent = result.yaml
-                if !result.injected {
-                    FileHandle.standardError.write(Data(
-                        "[grantiva] --env had no effect on \(flowPaths[index]): the flow has no launchApp step.\n".utf8
-                    ))
-                }
+            // Header `env:` and `--env` go into launchApp for the platform's channel.
+            let launchData = FlowEnvironment.apply(to: injectedContent, environment: environment, platform: platform.platform)
+            injectedContent = launchData.yaml
+            if !environment.isEmpty, !launchData.injected {
+                FileHandle.standardError.write(Data(
+                    "[grantiva] --env had no effect on \(flowPaths[index]): the flow has no launchApp step.\n".utf8
+                ))
+            }
+            for warning in FlowEnvironment.headerKeyWarnings(injectedContent) {
+                FileHandle.standardError.write(Data("[grantiva] \(flowPaths[index]): \(warning)\n".utf8))
             }
             // Stage each flow in its own numbered directory: the basename is kept
             // for readable runner output, but smoke/login.yaml and

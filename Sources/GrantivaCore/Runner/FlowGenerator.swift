@@ -6,7 +6,8 @@ public enum FlowGenerator {
     public static func generate(
         screens: [GrantivaConfig.Screen],
         bundleId: String,
-        environment: [String: String] = [:]
+        environment: [String: String] = [:],
+        platform: Platform = .ios
     ) -> String {
         var lines: [String] = []
 
@@ -15,13 +16,13 @@ public enum FlowGenerator {
         lines.append("---")
 
         // launchApp creates the WDA session — required before any interaction.
-        // `--env` values ride the runner's existing launchApp `environment:`
-        // field rather than a second mechanism.
+        // `--env` values ride the runner's existing launchApp field for the
+        // platform: `environment:` on iOS, `arguments:` (intent extras) on Android.
         if environment.isEmpty {
             lines.append("- launchApp")
         } else {
             lines.append("- launchApp:")
-            lines.append("    environment:")
+            lines.append("    \(FlowEnvironment.launchField(for: platform)):")
             for key in environment.keys.sorted() {
                 lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
             }
@@ -91,10 +92,11 @@ public enum FlowGenerator {
         screens: [GrantivaConfig.Screen],
         bundleId: String,
         environment: [String: String] = [:],
+        platform: Platform = .ios,
         runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath
     ) throws -> String {
         let yaml = try FlowReferenceResolver.resolve(
-            in: generate(screens: screens, bundleId: bundleId, environment: environment),
+            in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
             relativeTo: runFlowBaseDirectory
         )
         // One directory per call: concurrent runs against different simulators

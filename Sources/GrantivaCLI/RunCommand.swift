@@ -53,7 +53,7 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Missing parent directories are created. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
     var readyFile: String?
 
-    @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp environment.")
+    @Option(name: .long, parsing: .unconditionalSingleValue, help: "Environment variable for the app under test, as KEY=VALUE. Repeatable. Forwarded through the flow's launchApp (environment on iOS, string intent extras on Android).")
     var env: [String] = []
 
     /// Empty means "make one from the resolved platform"; tests inject a fake.
