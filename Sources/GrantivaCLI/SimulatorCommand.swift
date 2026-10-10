@@ -190,6 +190,12 @@ struct SimulatorCommand: AsyncParsableCommand {
                 if result.capacityRecordsCleared > 0 {
                     Output.line("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
                 }
+                for kept in result.capacityRecordsKept {
+                    Output.line("Kept the session record for \(kept.udid) under \(kept.sessionId): \(kept.reason).")
+                }
+                if !result.sessionFilesRemoved.isEmpty {
+                    Output.line("Removed \(result.sessionFilesRemoved.count) keep-alive session file(s) for \(result.udid).")
+                }
             }
         }
 

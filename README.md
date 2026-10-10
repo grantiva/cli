@@ -423,8 +423,13 @@ by UDID:
 grantiva simulator teardown --udid "$UDID" --force
 ```
 
-This kills whatever is holding that simulator, releases the lease, and clears any
-stale capacity record. `--session-id` and `--udid` are mutually exclusive.
+This kills whatever is holding that simulator (including a `simctl diagnose` the
+dying runner starts), releases the lease, removes the killed runner's keep-alive
+session files, and clears any stale capacity record: a pending reservation, or a
+record whose owner process is dead and whose session holds no other simulator. A
+record whose session is still active on another simulator is kept, so
+`teardown --session-id` still finds the device; `--json` lists it under
+`capacityRecordsKept` with the reason. `--session-id` and `--udid` are mutually exclusive.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count

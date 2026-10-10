@@ -139,6 +139,32 @@ public struct KeepAliveSessionStore: Sendable {
         try? FileManager.default.removeItem(atPath: ownerPath(runnerPid: runnerPid))
     }
 
+    /// Deletes the session files of keep-alive runners that held `udid` and are
+    /// no longer running: their `<pid>.owner.json` sidecar and the runner's own
+    /// `<pid>-<timestamp>.grantiva` file. `runnerPids` adds runners known to
+    /// have held the device (for example ones just killed) whose sidecar is
+    /// missing. Live runners are left alone. Returns the removed paths.
+    @discardableResult
+    public func removeSessions(udid: String, runnerPids: [Int32] = []) -> [String] {
+        let fm = FileManager.default
+        guard let contents = try? fm.contentsOfDirectory(atPath: directory) else { return [] }
+        let owners = contents
+            .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
+            .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
+            .filter { $0.udid.caseInsensitiveCompare(udid) == .orderedSame }
+            .map(\.runnerPid)
+        let pids = Set(owners + runnerPids).filter { !isProcessAlive($0) }
+        var removed: [String] = []
+        for name in contents.sorted() {
+            let isOwner = pids.contains { name == "\($0).\(Self.ownerExtension)" }
+            let isRunner = name.hasSuffix(".\(Self.runnerExtension)") && pids.contains { name.hasPrefix("\($0)-") }
+            guard isOwner || isRunner else { continue }
+            let path = "\(directory)/\(name)"
+            if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
+        }
+        return removed
+    }
+
     // MARK: - Reading
 
     /// Every session whose runner process is still alive, newest first.

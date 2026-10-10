@@ -145,4 +145,136 @@ final class SimulatorReaperTests: XCTestCase {
         )
         XCTAssertEqual(object["reclaimed"] as? Bool, false)
     }
+
+    // MARK: - I09: keep live records, remove the killed runner's files
+
+    private func temporaryDirectory() -> String {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-reaper-tests-\(UUID().uuidString)").path
+        addTeardownBlock { try? FileManager.default.removeItem(atPath: directory) }
+        return directory
+    }
+
+    private func writeRecords(_ records: [ManagedSimulatorSession], to directory: String) throws {
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode(records).write(to: URL(fileURLWithPath: "\(directory)/sessions.json"))
+    }
+
+    private func record(_ udid: String, session: String, state: ManagedSimulatorSession.State = .active) -> ManagedSimulatorSession {
+        ManagedSimulatorSession(udid: udid, name: "Sim \(udid.prefix(4))", sessionId: session, ownerPID: 4242, acquiredAt: Date(), state: state)
+    }
+
+    private func booted(_ udids: String...) -> [SimulatorDevice] {
+        udids.map { SimulatorDevice(name: "Sim", udid: $0, state: "Booted", runtime: "iOS-26-0", isAvailable: true) }
+    }
+
+    private func forceTeardown(directory: String, sessionDirectory: String? = nil) async throws -> ForceTeardownResult {
+        try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            sessions: KeepAliveSessionStore(directory: sessionDirectory ?? "\(directory)/sessions", isProcessAlive: { _ in false }),
+            snapshot: { "" },
+            gracePeriod: 0,
+            isProcessAlive: { _ in false }
+        )
+    }
+
+    func testForceTeardownKeepsTheRecordOfASessionStillActiveOnAnotherDevice() async throws {
+        let directory = temporaryDirectory()
+        let other = "B0B0B0B0-1111-2222-3333-444455556666"
+        try writeRecords([record(udid, session: "qa-ios"), record(other, session: "qa-ios")], to: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.capacityRecordsCleared, 0)
+        XCTAssertEqual(result.capacityRecordsKept.map(\.sessionId), ["qa-ios"])
+        XCTAssertTrue(result.capacityRecordsKept[0].reason.contains(other), result.capacityRecordsKept[0].reason)
+        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid, other))
+        XCTAssertEqual(remaining.filter { $0.sessionId == "qa-ios" }.map(\.udid).sorted(), [udid, other].sorted())
+
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
+        XCTAssertNotNil(object["capacityRecordsKept"])
+    }
+
+    func testForceTeardownClearsADeadSingleDeviceRecordAndAPendingOne() async throws {
+        let directory = temporaryDirectory()
+        try writeRecords([record(udid, session: "solo")], to: directory)
+        var result = try await forceTeardown(directory: directory)
+        XCTAssertEqual(result.capacityRecordsCleared, 1)
+        XCTAssertEqual(result.capacityRecordsKept, [])
+
+        let other = "B0B0B0B0-1111-2222-3333-444455556666"
+        try writeRecords([record(udid, session: "qa-ios", state: .pending), record(other, session: "qa-ios")], to: directory)
+        result = try await forceTeardown(directory: directory)
+        XCTAssertEqual(result.capacityRecordsCleared, 1)
+    }
+
+    func testForceTeardownRemovesTheKilledRunnersSessionFiles() async throws {
+        let directory = temporaryDirectory()
+        let sessionDirectory = "\(directory)/grantiva-sessions"
+        let store = KeepAliveSessionStore(directory: sessionDirectory, isProcessAlive: { _ in false })
+        store.recordOwner(udid: udid, runnerPid: 31830)
+        store.recordOwner(udid: "OTHER-UDID", runnerPid: 999)
+        let runnerFile = "\(sessionDirectory)/31830-1791583257475743000.grantiva"
+        let otherRunnerFile = "\(sessionDirectory)/999-1791583257475743000.grantiva"
+        try Data(#"{"sessionId":"s","port":8100,"pid":31830}"#.utf8).write(to: URL(fileURLWithPath: runnerFile))
+        try Data(#"{"sessionId":"t","port":8101,"pid":999}"#.utf8).write(to: URL(fileURLWithPath: otherRunnerFile))
+
+        let result = try await forceTeardown(directory: directory, sessionDirectory: sessionDirectory)
+
+        let left = try FileManager.default.contentsOfDirectory(atPath: sessionDirectory).sorted()
+        XCTAssertEqual(left, ["999-1791583257475743000.grantiva", "999.owner.json"])
+        XCTAssertEqual(result.sessionFilesRemoved.count, 2)
+    }
+
+    func testForceTeardownReapsADiagnoseThatAppearsAfterTheFirstKill() async throws {
+        let directory = temporaryDirectory()
+        func sleeper() throws -> Process {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+            process.arguments = ["30"]
+            try process.run()
+            return process
+        }
+        let runner = try sleeper()
+        let late = try sleeper()
+        defer {
+            for process in [runner, late] {
+                if process.isRunning { process.terminate() }
+                process.waitUntilExit()
+            }
+        }
+        let runnerLine = "  \(runner.processIdentifier)  \(runner.processIdentifier) /x/grantiva-runner --platform ios --device \(udid) test"
+        let pid = late.processIdentifier
+        let snapshots = SnapshotSequence([
+            runnerLine,
+            runnerLine + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive",
+        ])
+
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions"),
+            snapshot: { snapshots.next() },
+            gracePeriod: 1
+        )
+
+        late.waitUntilExit()
+        XCTAssertFalse(late.isRunning)
+        XCTAssertEqual(result.processes.first { $0.pid == pid }?.kind, .diagnose)
+    }
+}
+
+/// Hands out a different `ps` snapshot on each call.
+private final class SnapshotSequence: @unchecked Sendable {
+    private let lock = NSLock()
+    private var outputs: [String]
+
+    init(_ outputs: [String]) { self.outputs = outputs }
+
+    func next() -> String {
+        lock.withLock { outputs.count > 1 ? outputs.removeFirst() : (outputs.first ?? "") }
+    }
 }

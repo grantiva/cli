@@ -24,6 +24,19 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
     var isSessionless: Bool { sessionId == SimulatorCapacity.sessionlessOwner(udid: udid) }
 }
 
+/// A capacity record that `teardown --udid --force` left in place, and why.
+public struct KeptCapacityRecord: Codable, Equatable, Sendable {
+    public let udid: String
+    public let sessionId: String
+    public let reason: String
+
+    public init(udid: String, sessionId: String, reason: String) {
+        self.udid = udid
+        self.sessionId = sessionId
+        self.reason = reason
+    }
+}
+
 /// Host-wide admission control for simulators booted by Grantiva.
 ///
 /// Records persist after an individual CLI process exits because a simulator is
@@ -142,6 +155,48 @@ public struct SimulatorCapacity: Sendable {
             records.removeAll { $0.udid == udid }
             return before - records.count
         }
+    }
+
+    /// Removes the records for `udid` that are stale after a forced reclaim,
+    /// and reports the ones kept and why. A record is stale when it is still
+    /// `pending` (a reservation whose boot never finished), or when its owner
+    /// process is dead and its session holds no other device. A session that
+    /// still owns other simulators is live, so its record survives and
+    /// `teardown --session-id` can still find the device.
+    public func removeStale(
+        udid: String,
+        isProcessAlive: (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+    ) throws -> (cleared: Int, kept: [KeptCapacityRecord]) {
+        try withRegistryLock { records in
+            var kept: [KeptCapacityRecord] = []
+            let before = records.count
+            let snapshot = records
+            records.removeAll { record in
+                guard record.udid == udid else { return false }
+                guard let reason = Self.keepReason(for: record, among: snapshot, isProcessAlive: isProcessAlive) else {
+                    return true
+                }
+                kept.append(KeptCapacityRecord(udid: record.udid, sessionId: record.sessionId, reason: reason))
+                return false
+            }
+            return (before - records.count, kept)
+        }
+    }
+
+    /// Why a forced reclaim must keep `record`, or nil when it is stale.
+    static func keepReason(
+        for record: ManagedSimulatorSession,
+        among records: [ManagedSimulatorSession],
+        isProcessAlive: (Int32) -> Bool
+    ) -> String? {
+        if record.state == .pending { return nil }
+        if isProcessAlive(record.ownerPID) {
+            return "owner pid \(record.ownerPID) is still running"
+        }
+        let others = records.filter { $0.sessionId == record.sessionId && $0.udid != record.udid }
+        guard !others.isEmpty else { return nil }
+        let names = others.map { "\($0.name) (\($0.udid))" }.joined(separator: ", ")
+        return "session \(record.sessionId) is still active on \(names)"
     }
 
     public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
