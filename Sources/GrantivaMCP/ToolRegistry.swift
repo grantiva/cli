@@ -119,7 +119,11 @@ struct ToolRegistry: Sendable {
 
         // Context
         case "grantiva_context":
-            result = try await ContextTool.context(config: config, platform: platform, device: device, simManager: simulatorManager)
+            result = try await ContextTool.context(
+                config: config, platform: platform, session: await connection.session(),
+                listSimulators: { [simulatorManager] in try await simulatorManager.listDevices() },
+                emulators: emulators
+            )
 
         // Script
         case "grantiva_script":
