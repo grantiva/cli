@@ -9,35 +9,47 @@ import Foundation
 /// `mdhd`/`tkhd`/`mvhd`/`elst` durations) so the last frame stays on screen
 /// until the requested length. No frame is re-encoded.
 public enum MP4LastFrameHold {
-    /// Rewrites the file in place. Returns false when the file already lasts
-    /// `seconds` or is not an MP4 this understands (it is then left untouched).
-    @discardableResult
-    public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Bool {
-        let url = URL(fileURLWithPath: path)
-        let data = try Data(contentsOf: url)
-        guard let held = hold(data, toSeconds: seconds) else { return false }
-        try held.write(to: url, options: .atomic)
-        return true
+    public struct Held: Sendable {
+        /// The rewritten file.
+        public let data: Data
+        /// How long the video ran before the hold (its last frame's end).
+        public let recordedSeconds: Double
     }
 
-    /// The rewritten file, or nil when nothing needs to change.
-    public static func hold(_ data: Data, toSeconds seconds: Double) -> Data? {
-        guard seconds.isFinite, seconds > 0 else { return nil }
+    /// Rewrites the file in place. Returns the recording's length before the
+    /// hold, or nil when the file already lasts `seconds` or is not an MP4
+    /// this understands (it is then left untouched).
+    @discardableResult
+    public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Double? {
+        let url = URL(fileURLWithPath: path)
+        let data = try Data(contentsOf: url)
+        guard let held = hold(data, toSeconds: seconds) else { return nil }
+        try held.data.write(to: url, options: .atomic)
+        return held.recordedSeconds
+    }
+
+    /// The rewritten file, or nil when nothing needs to change or the file is
+    /// malformed. Never traps on bad input.
+    public static func hold(_ data: Data, toSeconds seconds: Double) -> Held? {
+        // screenrecord caps a file at 180 s; this bound only keeps the
+        // timescale arithmetic far from overflow.
+        guard seconds.isFinite, seconds > 0, seconds < 1_000_000 else { return nil }
         let bytes = [UInt8](data)
         guard let top = try? parseBoxes(bytes, 0, bytes.count),
               let moovIndex = top.firstIndex(where: { $0.type == "moov" }) else { return nil }
         var moov = top[moovIndex]
-        guard var mvhd = moov.child("mvhd"), let movieScale = mvhd.timescale(), movieScale > 0 else { return nil }
+        guard var mvhd = moov.child("mvhd"), let movieScale = mvhd.timescale(), movieScale > 0,
+              let movieDuration = mvhd.duration() else { return nil }
         let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
 
-        var changed = false
+        var recorded: Double?
         for index in moov.children.indices where moov.children[index].type == "trak" {
-            if holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
-                changed = true
+            if let trackRecorded = holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
+                recorded = max(recorded ?? 0, trackRecorded)
             }
         }
-        guard changed else { return nil }
-        if (mvhd.duration() ?? 0) < movieTarget { mvhd.setDuration(movieTarget) }
+        guard let recorded else { return nil }
+        if movieDuration < movieTarget { mvhd.setDuration(movieTarget) }
         moov.replaceChild(mvhd)
 
         let oldSize = top[moovIndex].end - top[moovIndex].start
@@ -45,7 +57,7 @@ public enum MP4LastFrameHold {
         let growth = Int64(newMoov.count) - Int64(oldSize)
         if growth != 0 {
             // Chunk offsets that point past the moov move with it.
-            moov.shiftChunkOffsets(after: UInt64(top[moovIndex].start), by: growth)
+            guard (try? moov.shiftChunkOffsets(after: UInt64(top[moovIndex].start), by: growth)) != nil else { return nil }
             newMoov = moov.serialized()
         }
         var output = [UInt8]()
@@ -53,22 +65,31 @@ public enum MP4LastFrameHold {
         output += bytes[0..<top[moovIndex].start]
         output += newMoov
         output += bytes[top[moovIndex].end..<bytes.count]
-        return Data(output)
+        return Held(data: Data(output), recordedSeconds: recorded)
     }
 
-    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Bool {
+    /// The track's length in seconds before the hold, or nil when the track
+    /// is not video, already long enough, or malformed.
+    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Double? {
         guard var mdia = trak.child("mdia"),
               mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true,
               var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0,
+              mdhd.duration() != nil,
+              var tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration(),
               var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
               var entries = stts.sttsEntries(), !entries.isEmpty
-        else { return false }
+        else { return nil }
         let mediaTarget = UInt64((seconds * Double(mediaScale)).rounded())
-        let current = entries.reduce(UInt64(0)) { $0 + UInt64($1.count) * UInt64($1.delta) }
-        guard current < mediaTarget else { return false }
+        var current: UInt64 = 0
+        for entry in entries {
+            let (sum, overflow) = current.addingReportingOverflow(UInt64(entry.count) * UInt64(entry.delta))
+            guard !overflow else { return nil }
+            current = sum
+        }
+        guard current < mediaTarget else { return nil }
         let last = entries.removeLast()
         let heldDelta = UInt64(last.delta) + (mediaTarget - current)
-        guard heldDelta <= UInt64(UInt32.max) else { return false }
+        guard heldDelta <= UInt64(UInt32.max) else { return nil }
         if last.count > 1 { entries.append((last.count - 1, last.delta)) }
         entries.append((1, UInt32(heldDelta)))
         stts.setSttsEntries(entries)
@@ -76,17 +97,14 @@ public enum MP4LastFrameHold {
         mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
         trak.replaceChild(mdia)
 
-        if var tkhd = trak.child("tkhd") {
-            let previous = tkhd.trackDuration() ?? 0
-            if previous < movieTarget {
-                tkhd.setTrackDuration(movieTarget); trak.replaceChild(tkhd)
-                if var edts = trak.child("edts"), var elst = edts.child("elst") {
-                    elst.extendLastEdit(by: movieTarget - previous)
-                    edts.replaceChild(elst); trak.replaceChild(edts)
-                }
+        if previous < movieTarget {
+            tkhd.setTrackDuration(movieTarget); trak.replaceChild(tkhd)
+            if var edts = trak.child("edts"), var elst = edts.child("elst") {
+                elst.extendLastEdit(by: movieTarget - previous)
+                edts.replaceChild(elst); trak.replaceChild(edts)
             }
         }
-        return true
+        return Double(current) / Double(mediaScale)
     }
 
     // MARK: - Boxes
@@ -163,15 +181,16 @@ public enum MP4LastFrameHold {
             let offset = 8 + (count - 1) * entrySize
             guard payload.count >= offset + entrySize else { return }
             if version == 1 {
-                write64(&payload, offset, read64(payload, offset) + amount)
+                let (sum, overflow) = read64(payload, offset).addingReportingOverflow(amount)
+                write64(&payload, offset, overflow ? .max : sum)
             } else {
                 write32(&payload, offset, UInt32(min(UInt64(read32(payload, offset)) + amount, UInt64(UInt32.max))))
             }
         }
 
-        mutating func shiftChunkOffsets(after position: UInt64, by delta: Int64) {
+        mutating func shiftChunkOffsets(after position: UInt64, by delta: Int64) throws {
             if isContainer {
-                for index in children.indices { children[index].shiftChunkOffsets(after: position, by: delta) }
+                for index in children.indices { try children[index].shiftChunkOffsets(after: position, by: delta) }
                 return
             }
             guard type == "stco" || type == "co64", payload.count >= 8 else { return }
@@ -180,12 +199,18 @@ public enum MP4LastFrameHold {
             guard payload.count >= 8 + count * width else { return }
             for index in 0..<count {
                 let offset = 8 + index * width
+                let value = width == 8 ? read64(payload, offset) : UInt64(read32(payload, offset))
+                guard value > position else { continue }
+                // Offsets are positive and the moov grows by a few bytes, so a
+                // shifted offset only leaves its range in a corrupt file.
+                guard value <= UInt64(Int64.max) else { throw Malformed() }
+                let (shifted, overflow) = Int64(value).addingReportingOverflow(delta)
+                guard !overflow, shifted >= 0 else { throw Malformed() }
                 if width == 8 {
-                    let value = read64(payload, offset)
-                    if value > position { write64(&payload, offset, UInt64(Int64(value) + delta)) }
+                    write64(&payload, offset, UInt64(shifted))
                 } else {
-                    let value = UInt64(read32(payload, offset))
-                    if value > position { write32(&payload, offset, UInt32(Int64(value) + delta)) }
+                    guard shifted <= Int64(UInt32.max) else { throw Malformed() }
+                    write32(&payload, offset, UInt32(shifted))
                 }
             }
         }
@@ -197,16 +222,18 @@ public enum MP4LastFrameHold {
         var boxes: [Box] = []
         var offset = start
         while offset + 8 <= end {
-            var size = Int(read32(bytes, offset))
+            var declared = UInt64(read32(bytes, offset))
             let type = String(decoding: bytes[(offset + 4)..<(offset + 8)], as: UTF8.self)
             var header = 8
-            if size == 1 {
+            if declared == 1 {
                 guard offset + 16 <= end else { throw Malformed() }
-                size = Int(read64(bytes, offset + 8)); header = 16
-            } else if size == 0 {
-                size = end - offset
+                declared = read64(bytes, offset + 8); header = 16
+            } else if declared == 0 {
+                declared = UInt64(end - offset)
             }
-            guard size >= header, offset + size <= end else { throw Malformed() }
+            // Compare in UInt64 before converting: a corrupt size must not trap.
+            guard declared >= UInt64(header), declared <= UInt64(end - offset) else { throw Malformed() }
+            let size = Int(declared)
             let isContainer = containers.contains(type)
             let children = isContainer ? try parseBoxes(bytes, offset + header, offset + size) : []
             let payload = isContainer ? [] : Array(bytes[(offset + header)..<(offset + size)])

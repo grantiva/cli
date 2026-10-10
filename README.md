@@ -338,6 +338,12 @@ grantiva mcp                Start the MCP server for AI agent integration (tool 
 grantiva init               Generate grantiva.yml
 ```
 
+`grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
+timestamp, with a JSON report of the frame actually shown at each. On Android,
+`screenrecord` writes frames only when the screen changes, so Grantiva holds the last
+frame to `--duration`; if more than half the recording was held, it prints a note on
+stderr, since a device that disconnected mid-recording looks the same as an idle screen.
+
 ### Dashboard commands
 
 `grantiva console` brings the Grantiva dashboard into scripts and terminal
