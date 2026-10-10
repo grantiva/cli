@@ -412,11 +412,13 @@ struct RunCommand: AsyncParsableCommand {
 
     /// `--flow` without `--bundle-id`/`--application-id` or a configured ID
     /// launches the app named by the flow's own `appId:` header, ahead of IDs
-    /// guessed from project detection.
+    /// guessed from project detection. A header that is a variable reference
+    /// (`appId: ${APP_ID}`) names no app here and is ignored.
     static func flowBundleId(flowPath: String, resolved: String?, explicit: String?) -> String? {
         if explicit != nil { return resolved }
         let header = (try? String(contentsOfFile: flowPath, encoding: .utf8)).flatMap(MaestroFlowParser.appId(in:))
-        return header ?? resolved
+        guard let header, !header.contains("${") else { return resolved }
+        return header
     }
 
     /// Only the final session owns suite readiness and the post-run hold.

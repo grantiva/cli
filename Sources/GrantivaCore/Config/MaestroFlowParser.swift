@@ -294,6 +294,7 @@ public struct MaestroFlowParser {
                     return .unsupported("swipe")
                 }
                 var step = GrantivaConfig.Screen.Step(swipe: direction)
+                step.swipeDuration = asInt(val["duration"])
                 if val["from"] != nil {
                     guard let (label, byId) = selector(val["from"]) else { return .unsupported("swipe") }
                     step.swipeFrom = label
@@ -310,7 +311,16 @@ public struct MaestroFlowParser {
                 } else {
                     direction = dy > 0 ? "down" : "up"
                 }
-                return .step(.init(swipe: direction))
+                var step = GrantivaConfig.Screen.Step(swipe: direction)
+                step.swipeDuration = asInt(val["duration"])
+                // Maestro's `"x%, y%"` points are kept so the generated flow
+                // swipes exactly there; the legacy `{x:, y:}` maps keep
+                // swiping by direction only.
+                if let start = val["start"] as? String, let end = val["end"] as? String {
+                    step.swipeStart = start
+                    step.swipeEnd = end
+                }
+                return .step(step)
             }
             return .unsupported("swipe")
         }
@@ -447,13 +457,18 @@ public struct MaestroFlowParser {
     /// Invert scroll direction to swipe direction.
     /// Maestro "scroll down" = see content below = finger swipe up.
     private static func invertDirection(_ scrollDir: String) -> String {
-        switch scrollDir {
+        switch scrollDir.lowercased() {
         case "down": return "up"
         case "up": return "down"
         case "left": return "right"
         case "right": return "left"
         default: return "up"
         }
+    }
+
+    /// Coerce a YAML number to whole milliseconds.
+    private static func asInt(_ value: Any?) -> Int? {
+        asDouble(value).map { Int($0) }
     }
 
     /// Coerce YAML number (Int or Double) to Double.

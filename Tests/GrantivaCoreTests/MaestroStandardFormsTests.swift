@@ -38,6 +38,40 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertEqual(steps[0].swipe, "left")
     }
 
+    func testSwipePercentagePointsAndDurationReachTheGeneratedFlow() throws {
+        let steps = try steps("""
+        - swipe:
+            start: 60%, 17%
+            end: 5%, 17%
+            duration: 400
+        - swipe:
+            direction: LEFT
+            duration: 250
+        """)
+        XCTAssertEqual(steps[0].swipeStart, "60%, 17%")
+        XCTAssertEqual(steps[0].swipeEnd, "5%, 17%")
+        XCTAssertEqual(steps[0].swipeDuration, 400)
+        XCTAssertEqual(steps[1].swipeDuration, 250)
+
+        let yaml = FlowGenerator.generate(screens: [.init(name: "S", path: .steps(steps))], bundleId: "a.b")
+        XCTAssertTrue(yaml.contains("- swipe:\n    start: \"60%, 17%\"\n    end: \"5%, 17%\"\n    duration: 400\n"), yaml)
+        XCTAssertTrue(yaml.contains("- swipe:\n    direction: LEFT\n    duration: 250\n"), yaml)
+    }
+
+    func testScrollDirectionIsCaseInsensitive() throws {
+        let steps = try steps("""
+        - scroll:
+            direction: UP
+        - scroll:
+            direction: DOWN
+        - scroll:
+            direction: LEFT
+        - scroll:
+            direction: RIGHT
+        """)
+        XCTAssertEqual(steps.map(\.swipe), ["down", "up", "right", "left"])
+    }
+
     func testSwipeWithUnknownDirectionIsRejected() {
         XCTAssertThrowsError(try MaestroFlowParser.parse("- swipe:\n    direction: SIDEWAYS", sourceName: "f.yaml")) {
             XCTAssertEqual($0.localizedDescription, "Invalid argument: f.yaml:1: unsupported Maestro command 'swipe'")
@@ -231,6 +265,49 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertEqual(swipe["selector"] as? String, "Lake Tahoe")
         XCTAssertEqual(swipe["direction"] as? String, "LEFT")
         XCTAssertNil(swipe["from"])
+    }
+
+    func testGoldenMaestroFileToGeneratedFlow() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: com.kylebrowning.Landmarks
+        ---
+        - launchApp
+        - tapOn:
+            id: "landmark-row"
+        - waitForAnimationToEnd
+        - extendedWaitUntil:
+            visible: "Featured"
+            timeout: 5000
+        - takeScreenshot: "Detail"
+        - swipe:
+            direction: LEFT
+            from: "Lake Tahoe"
+        - scroll
+        - assertNotVisible:
+            id: "spinner"
+        - takeScreenshot: "After"
+        """)
+        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: try XCTUnwrap(config.bundleId))
+        XCTAssertEqual(yaml, """
+        appId: "com.kylebrowning.Landmarks"
+        ---
+        - launchApp
+        - tapOn:
+            id: "landmark-row"
+        - waitForAnimationToEnd:
+            timeout: 5000
+        - assertVisible: "Featured"
+        - takeScreenshot: "Detail"
+        - swipe:
+            direction: LEFT
+            from: "Lake Tahoe"
+        - swipe:
+            direction: UP
+        - assertNotVisible:
+            id: "spinner"
+        - takeScreenshot: "After"
+
+        """)
     }
 
     func testFlowHeaderAppId() {

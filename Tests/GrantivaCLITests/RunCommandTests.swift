@@ -320,6 +320,15 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(RunCommand.flowBundleId(flowPath: path, resolved: "com.flag", explicit: "com.flag"), "com.flag")
     }
 
+    func testFlowRunIgnoresVariableAppIdHeader() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
+        try "appId: ${APP_ID}\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(atPath: path) }
+
+        XCTAssertEqual(RunCommand.flowBundleId(flowPath: path, resolved: "com.detected", explicit: nil), "com.detected")
+        XCTAssertNil(RunCommand.flowBundleId(flowPath: path, resolved: nil, explicit: nil))
+    }
+
     func testFlowRunDoesNotParseUnrelatedMaestroFiles() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)

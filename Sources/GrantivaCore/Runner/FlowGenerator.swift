@@ -39,7 +39,15 @@ public enum FlowGenerator {
                     }
                     if let direction = step.swipe {
                         lines.append("- swipe:")
-                        lines.append("    direction: \(maestroSwipeDirection(direction))")
+                        if let start = step.swipeStart, let end = step.swipeEnd {
+                            lines.append("    start: \(FlowEnvironment.quoted(start))")
+                            lines.append("    end: \(FlowEnvironment.quoted(end))")
+                        } else {
+                            lines.append("    direction: \(maestroSwipeDirection(direction))")
+                        }
+                        if let duration = step.swipeDuration {
+                            lines.append("    duration: \(duration)")
+                        }
                         if let from = step.swipeFrom {
                             if step.swipeFromById {
                                 lines.append("    from:")

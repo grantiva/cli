@@ -40,6 +40,12 @@ public struct GrantivaConfig: Sendable, Codable {
             /// Maestro `swipe: {from: ...}`: the element the swipe starts on.
             public var swipeFrom: String? = nil
             public var swipeFromById: Bool = false
+            /// Maestro `swipe: {start: "x%, y%", end: "x%, y%"}`: exact points,
+            /// emitted instead of `direction`.
+            public var swipeStart: String? = nil
+            public var swipeEnd: String? = nil
+            /// Maestro `swipe: {duration: ms}`.
+            public var swipeDuration: Int? = nil
             /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
             /// for at most this many seconds. Unlike `wait`, it returns early.
             public var settle: Double? = nil
