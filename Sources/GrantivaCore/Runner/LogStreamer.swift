@@ -117,6 +117,9 @@ public final class LogStreamer: @unchecked Sendable {
         defer { lock.unlock() }
 
         guard process == nil else { return }
+        // Started after the relay snapshotted its cleanups, a stream would
+        // never be stopped and would outlive the exit.
+        guard !SignalRelay.shared.isTerminating else { return }
 
         let p = Process()
         p.executableURL = URL(fileURLWithPath: executable)

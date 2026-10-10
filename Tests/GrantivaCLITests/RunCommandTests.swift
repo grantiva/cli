@@ -312,6 +312,62 @@ final class RunCommandTests: XCTestCase {
         XCTAssertNil(json["reportDir"])
     }
 
+    func testJSONBuildFailureIsARunResult() async throws {
+        try await withFailingRunnerProject { _, runner in
+            var command = try RunCommand.parse(["--json", "--application-id", "com.fake", "--timeout", "30"])
+            let fake = FakeDevicePlatform(platform: .android)
+            fake.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["e: Main.kt:3 unresolved"], productPath: nil, applicationId: nil)
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            command.runnerManager = runner
+            let stdout = CapturedLines()
+            command.resultOutput = ResultOutput { stdout.append($0) }
+
+            _ = try? await command.run()
+
+            XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+            let json = try XCTUnwrap(
+                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+            )
+            XCTAssertEqual(json["allPassed"] as? Bool, false)
+            XCTAssertEqual((json["screens"] as? [Any])?.count, 0)
+            XCTAssertEqual(json["error"] as? String, "Build failed\ne: Main.kt:3 unresolved")
+        }
+    }
+
+    /// Releasing a --keep-alive session with Ctrl-C after every flow passed
+    /// is a passing run, matching the `passed` ready file.
+    func testAnInterruptAfterAllFlowsPassedIsAPassingDocument() {
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "smoke", path: "", sizeBytes: 0, steps: [StepResult(action: "launchApp", status: .passed, duration: 0)]),
+        ])
+        let error = GrantivaError.commandFailed("Runner interrupted:\n", 0)
+
+        let released = RunCommand.failureResult(error: error, report: report, interrupted: true)
+        XCTAssertTrue(released.allPassed)
+        XCTAssertNil(released.error)
+
+        let failed = RunCommand.failureResult(error: error, report: report, interrupted: false)
+        XCTAssertFalse(failed.allPassed)
+        XCTAssertNotNil(failed.error)
+
+        let empty = RunCommand.failureResult(error: error, report: RunnerFailureReport(), interrupted: true)
+        XCTAssertFalse(empty.allPassed, "an interrupt with nothing finished is not a pass")
+    }
+
+    /// A failed screens session stops the suite before the flows; the
+    /// document keeps the screens it captured instead of `screens: []`.
+    func testEarlierScreenCapturesAreReported() {
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "Home", path: "", sizeBytes: 0, steps: [StepResult(action: "Capture Home", status: .failed, duration: 0, message: "missing")]),
+        ])
+        let result = RunCommand.failureResult(error: ExitCode.failure, report: report, interrupted: false)
+        XCTAssertEqual(result.screens.map(\.name), ["Home"])
+        XCTAssertEqual(result.screens.first?.steps.first?.message, "missing")
+        XCTAssertEqual(result.error, "Run failed (exit 1)")
+    }
+
     func testWithoutJSONAFailurePrintsNoResultDocument() async throws {
         var command = try RunCommand.parse([])
         let stdout = CapturedLines()

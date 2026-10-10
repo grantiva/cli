@@ -145,10 +145,10 @@ struct RunCommand: AsyncParsableCommand {
     /// error while SignalRelay is still running its cleanups (lease, capture
     /// settings, log stream). Exiting here with that error's code would cut
     /// them short and report exit 1 instead of 130; the relay exits for us.
-    static func awaitSignalRelayExit() async -> Never {
-        while true {
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
-        }
+    static func awaitSignalRelayExit(timeout: TimeInterval = 30) async -> Never {
+        // Bounded: a hung cleanup must not wedge the process forever.
+        try? await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
+        Darwin.exit(130)
     }
 
     private func execute() async throws {
@@ -272,7 +272,9 @@ struct RunCommand: AsyncParsableCommand {
 
             guard buildResult.success else {
                 if options.json {
-                    try resultOutput.emit(buildResult)
+                    try resultOutput.emit(RunResult(
+                        screens: [], allPassed: false, error: Self.buildFailureMessage(buildResult)
+                    ))
                 } else {
                     Output.line(TableFormatter().formatBuild(buildResult))
                 }
@@ -311,7 +313,7 @@ struct RunCommand: AsyncParsableCommand {
                 readyFile: readyFile,
                 options: sessionOptions,
                 runScreens: { keepAlive, readyFile, session in
-                    try await RunnerSession.run(
+                    let screenCaptures = try await RunnerSession.run(
                         screens: resolved.screens,
                         bundleId: bid,
                         udid: booted.udid,
@@ -329,6 +331,10 @@ struct RunCommand: AsyncParsableCommand {
                         timeoutSeconds: session.timeoutSeconds,
                         autoAcceptAlerts: !noAutoAcceptAlerts
                     )
+                    // A failed screen stops the suite before the flows run;
+                    // --json still reports what was captured.
+                    failureReport.recordEarlierCaptures(screenCaptures)
+                    return screenCaptures
                 },
                 runFlows: { keepAlive, readyFile, session in
                     log("Running \(resolved.flows.count) flow(s) in one GrantivaAgent session: \(resolved.flows.joined(separator: ", "))")
@@ -365,11 +371,8 @@ struct RunCommand: AsyncParsableCommand {
                 log("Failure screenshot: \(failurePath)")
             }
             if options.json {
-                try? resultOutput.emit(RunResult(
-                    screens: failureReport.captures.map(RunResult.ScreenResult.init),
-                    allPassed: false,
-                    error: Self.failureMessage(error),
-                    reportDir: failureReport.reportDir
+                try? resultOutput.emit(Self.failureResult(
+                    error: error, report: failureReport, interrupted: SignalRelay.shared.isTerminating
                 ))
             }
             // The --ready-file waiter is released by `run`, which covers this
@@ -459,6 +462,24 @@ struct RunCommand: AsyncParsableCommand {
                 }
             }
         }
+    }
+
+    /// The document for a suite that threw. Ctrl-C is how a `--keep-alive`
+    /// session is released after its flows finish, so an interrupt whose
+    /// flows all passed is a passing run (the ready file says `passed` too),
+    /// not a failure.
+    static func failureResult(error: Error, report: RunnerFailureReport, interrupted: Bool) -> RunResult {
+        let screens = report.captures.map(RunResult.ScreenResult.init)
+        if interrupted, !screens.isEmpty, screens.allSatisfy(\.passed) {
+            return RunResult(screens: screens, allPassed: true)
+        }
+        return RunResult(
+            screens: screens, allPassed: false, error: failureMessage(error), reportDir: report.reportDir
+        )
+    }
+
+    static func buildFailureMessage(_ result: BuildResult) -> String {
+        (["Build failed"] + result.errors.prefix(5)).joined(separator: "\n")
     }
 
     static func failureMessage(_ error: Error) -> String {

@@ -132,7 +132,9 @@ public final class SignalRelay: @unchecked Sendable {
     }
 
     private func handle(_ signalNumber: Int32) {
-        guard terminate(announcing: signalNumber == SIGINT ? "SIGINT" : "SIGTERM") else { return }
+        // A repeat signal while cleanups run means "stop now": exit at once
+        // rather than swallow it behind a cleanup that may be hung.
+        terminate(announcing: signalNumber == SIGINT ? "SIGINT" : "SIGTERM")
         exit(128 + signalNumber)
     }
 

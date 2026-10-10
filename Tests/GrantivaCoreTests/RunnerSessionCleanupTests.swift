@@ -67,6 +67,62 @@ final class RunnerSessionCleanupTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
     }
 
+    // MARK: - Interrupt (A06)
+
+    /// The session's own interrupted branch: the runner dies because the relay
+    /// reaped it, and the session must publish `interrupted`, not `failed`.
+    func testAnInterruptDuringARunningFlowPublishesInterruptedFromTheSession() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let report = RunnerFailureReport()
+
+        let interrupter = Task.detached {
+            try await Task.sleep(nanoseconds: 1_500_000_000)
+            SignalRelay.shared.simulateTerminationForTesting()
+        }
+        do {
+            _ = try await scratch.runFlows(
+                reportDir: nil,
+                reportJSON: #"{"status":"running","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"running"}]}"#,
+                sleepSeconds: 30,
+                failureReport: report
+            )
+            XCTFail("an interrupted run must not return captures")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Runner interrupted"), "\(error)")
+        }
+        _ = try? await interrupter.value
+
+        let state = try ReadyFile.read(scratch.readyFile)
+        XCTAssertEqual(state.status, "interrupted")
+        XCTAssertEqual(state.flows, [RunReadyState.Flow(name: "smoke", status: "interrupted")])
+        XCTAssertNil(state.reportDir)
+        XCTAssertEqual(report.captures.first?.steps.last?.status, .failed)
+    }
+
+    /// Ctrl-C after every flow passed (how a --keep-alive session is
+    /// released): the verdict already published stays `passed`, and the
+    /// failure report shows the passed flow.
+    func testAnInterruptAfterTheFlowsPassedKeepsThePassedVerdict() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let report = RunnerFailureReport()
+
+        let interrupter = Task.detached {
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+            SignalRelay.shared.simulateTerminationForTesting()
+        }
+        _ = try? await scratch.runFlows(reportDir: nil, sleepSeconds: 30, failureReport: report)
+        _ = try? await interrupter.value
+
+        XCTAssertEqual(try ReadyFile.read(scratch.readyFile).status, "passed")
+        let captures = report.captures
+        XCTAssertFalse(captures.isEmpty)
+        XCTAssertTrue(captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } })
+    }
+
     // MARK: - Failure report (I12)
 
     static let failedReport = #"{"status":"failed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","dataFile":"flows/flow-000.json","status":"failed","error":"Element not found: text='Remove'"}]}"#
@@ -204,6 +260,7 @@ struct FakeRunnerScratch {
         reportJSON: String = #"{"status":"passed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"passed"}]}"#,
         flowFiles: [String: String] = [:],
         exitStatus: Int32 = 0,
+        sleepSeconds: Int = 0,
         failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         var script = """
@@ -228,6 +285,7 @@ struct FakeRunnerScratch {
 
             """
         }
+        if sleepSeconds > 0 { script += "sleep \(sleepSeconds)\n" }
         script += "exit \(exitStatus)\n"
         let runner = root.appendingPathComponent("fake-runner").path
         try script.write(toFile: runner, atomically: true, encoding: .utf8)

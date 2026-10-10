@@ -9,6 +9,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
     private let lock = NSLock()
     private var storedCaptures: [ScreenCapture] = []
     private var storedReportDir: String?
+    private var earlierCaptures: [ScreenCapture] = []
 
     public init() {}
 
@@ -17,7 +18,15 @@ public final class RunnerFailureReport: @unchecked Sendable {
     public var captures: [ScreenCapture] {
         lock.lock()
         defer { lock.unlock() }
-        return storedCaptures
+        return earlierCaptures + storedCaptures
+    }
+
+    /// Captures from an earlier session of the same suite (the screens
+    /// session before the flows), reported ahead of the failed session's.
+    public func recordEarlierCaptures(_ captures: [ScreenCapture]) {
+        lock.lock()
+        defer { lock.unlock() }
+        earlierCaptures += captures
     }
 
     /// The preserved `--report-dir`, or nil for an ephemeral one.
