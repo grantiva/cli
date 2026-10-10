@@ -1,0 +1,85 @@
+# command: $GRANTIVA run --no-build --device emulator-5554 --flow $EV/A02/probes/d-prefix-only.yaml --report-dir $SCRATCH/p-e
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/d-prefix-only.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] d-prefix-only (d-prefix-only.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn: text="Lake Tahoe" (922ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (62ms)
+    ✓ tapOn: text="Landmarks" (165ms)
+    ✓ tapOn: text="Favorites" (762ms)
+    ✓ assertVisible: text="Lake Tahoe" (488ms)
+    ✓ takeScreenshot (153ms)
+✓ d-prefix-only 5.8s
+
+  [1/1] d-prefix-only (/Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/d-prefix-only.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ tapOn (922ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (62ms)
+    ✓ tapOn (165ms)
+    ✓ tapOn (762ms)
+    ✓ assertVisible (488ms)
+    ✓ takeScreenshot (153ms)
+✓ d-prefix-only 5.8s
+
+  8 steps passing (5.8s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  d-prefix-only                  ✓ PASS       8      8      0      0       5.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       5.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e/allure-results
+
+  Built by Grantiva
+
+
+  d-prefix-only-cmd-007-Before
+    ✓ Run flow "d-prefix-only"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-e/captures/
+
+exit 0

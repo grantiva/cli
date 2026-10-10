@@ -1,0 +1,5 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA runner start --device emulator-5554 --detach > runner-start.txt
+(initialize; notifications/initialized; tools/call grantiva_tap {"label":"Deep Links"}; sleep; tools/call grantiva_a11y_check {}) | $GRANTIVA mcp > mcp-attempt1.jsonl (first), mcp.jsonl (retry with 2 s pause after initialize), stderr > mcp.stderr
+adb -s emulator-5554 shell uiautomator dump /sdcard/u.xml; adb -s emulator-5554 shell cat /sdcard/u.xml | tr '>' '\n' | grep -B1 -A1 'Caching Demo'   > hierarchy-caching-demo.txt
+$GRANTIVA runner stop > runner-stop.txt

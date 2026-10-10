@@ -1,0 +1,99 @@
+# command (cwd $APP = scratch copy of landmarks-demo/android): $GRANTIVA run --no-build --flow qa/a02-probe.yaml --device emulator-5554 --report-dir $SCRATCH/a02p
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: qa/a02-probe.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] a02-probe (a02-probe.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn: text="Lake Tahoe" (922ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (48ms)
+    ✓ tapOn: text="Landmarks" (144ms)
+    ✓ tapOn: text="Favorites" (747ms)
+    ✓ assertVisible: text="Lake Tahoe" (488ms)
+    ✓ takeScreenshot (155ms)
+    ✓ swipe: LEFT (373ms)
+    ✓ takeScreenshot (139ms)
+    ✓ swipe (323ms)
+    ✓ takeScreenshot (125ms)
+✓ a02-probe 6.5s
+
+  [1/1] a02-probe (qa/a02-probe.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn (922ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (48ms)
+    ✓ tapOn (144ms)
+    ✓ tapOn (747ms)
+    ✓ assertVisible (488ms)
+    ✓ takeScreenshot (155ms)
+    ✓ swipe (373ms)
+    ✓ takeScreenshot (139ms)
+    ✓ swipe (323ms)
+    ✓ takeScreenshot (125ms)
+✓ a02-probe 6.5s
+
+  12 steps passing (6.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  a02-probe                      ✓ PASS      12     12      0      0       6.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      12     12      0      0       6.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p/allure-results
+
+  Built by Grantiva
+
+
+  a02-probe-cmd-007-Favorites With Item
+    ✓ Run flow "a02-probe"
+
+  a02-probe-cmd-009-AfterFromSwipe
+    ✓ Run flow "a02-probe"
+
+  a02-probe-cmd-011-AfterCoordSwipe
+    ✓ Run flow "a02-probe"
+
+  Screens: 3 total, 3 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p/captures/
+
+exit 0

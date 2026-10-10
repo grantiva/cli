@@ -1,0 +1,4 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+git init $SCRATCH/a12root; mkdir $SCRATCH/a12root/android; cp grantiva-android.yml settings.gradle.kts build.gradle.kts $SCRATCH/a12root/android/
+cd $SCRATCH/a12root/android && git rev-parse --show-toplevel && $GRANTIVA doctor --platform android   > doctor-subdir.txt
+cd $SCRATCH/a12nogit (grantiva-android.yml only, no ancestor .git) && $GRANTIVA doctor --platform android   > doctor-nogit.txt

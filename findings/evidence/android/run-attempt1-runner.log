@@ -1,0 +1,35 @@
+14:29:00.554732 [INFO] === Test execution started ===
+14:29:00.554825 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/run-full/screens
+14:29:00.554834 [INFO] Platform: android
+14:29:00.554846 [INFO] Driver: 
+14:29:00.556024 [INFO] Validated 1 flow(s)
+14:29:00.556073 [INFO] Single device execution mode
+14:29:00.556081 [INFO] Starting flow execution (parallel: false, devices: [])
+14:29:00.556087 [INFO] Creating driver for single device execution
+14:29:00.556092 [INFO] Connecting to Android device: emulator-5554
+14:29:00.778554 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:29:02.496931 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:29:03.158556 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:29:03.173389 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:29:05.831818 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:29:05.906839 [INFO] Session created successfully: 82871331-29f4-4501-8e5d-1b1c222c61b2
+14:29:06.068064 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:29:06.071208 [INFO] === Starting flow: flow ===
+14:29:06.071227 [INFO] Flow file: screens
+14:29:06.071234 [INFO] Total steps: 21
+14:29:06.092214 [DEBUG] Executing step 0: launchApp
+14:29:08.913599 [DEBUG] Step 0 completed successfully (2821ms): launchApp
+14:29:08.914072 [DEBUG] Executing step 1: waitForAnimationToEnd
+14:29:10.201369 [ERROR] Step 1 failed (1287ms): waitForAnimationToEnd - Error: Failed to take screenshot: send request: Get "http://localhost/session/82871331-29f4-4501-8e5d-1b1c222c61b2/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused (cause: send request: Get "http://localhost/session/82871331-29f4-4501-8e5d-1b1c222c61b2/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused)
+14:29:10.227377 [INFO] === Flow completed: flow (status: failed, duration: 4156ms, passed: 1, failed: 1, skipped: 19) ===
+14:29:10.228657 [DEBUG] failed to close client during cleanup: send request: Delete "http://localhost/session/82871331-29f4-4501-8e5d-1b1c222c61b2": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused
+14:29:10.254994 [WARN] failed to force-stop io.appium.uiautomator2.server: adb shell am force-stop io.appium.uiautomator2.server: exit status 1: adb: device offline
+14:29:10.280877 [WARN] failed to force-stop io.appium.uiautomator2.server.test: adb shell am force-stop io.appium.uiautomator2.server.test: exit status 1: adb: device offline
+14:29:10.607168 [WARN] failed to remove socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:29:10.624012 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:29:10.641200 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:29:10.641292 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:29:10.641831 [INFO] Generating reports...
+14:29:10.643153 [INFO] Shutting down devices started by maestro-runner...
+14:29:10.643169 [INFO] Shutting down all tracked emulators
+14:29:10.643178 [INFO] Shutting down all tracked simulators

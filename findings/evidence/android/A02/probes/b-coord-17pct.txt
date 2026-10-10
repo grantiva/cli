@@ -1,0 +1,91 @@
+# command: /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --device emulator-5554 --flow /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b-coord-17pct.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b-coord-17pct.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] b-coord-17pct (b-coord-17pct.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (1.0s)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (55ms)
+    ✓ tapOn: text="Landmarks" (196ms)
+    ✓ tapOn: text="Favorites" (748ms)
+    ✓ assertVisible: text="Lake Tahoe" (481ms)
+    ✓ takeScreenshot (136ms)
+    ✓ swipe (342ms)
+    ✓ waitForAnimationToEnd (335ms)
+    ✓ takeScreenshot (130ms)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+      ╰─ Element should not be visible but was found (cause: element is visible)
+✗ b-coord-17pct 11.9s
+
+  [1/1] b-coord-17pct (/Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b-coord-17pct.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.0s)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (55ms)
+    ✓ tapOn (196ms)
+    ✓ tapOn (748ms)
+    ✓ assertVisible (481ms)
+    ✓ takeScreenshot (136ms)
+    ✓ swipe (342ms)
+    ✓ waitForAnimationToEnd (335ms)
+    ✓ takeScreenshot (130ms)
+    ✗ assertNotVisible (5.3s)
+      ╰─ Element should not be visible but was found (cause: element is visible)
+✗ b-coord-17pct 11.9s
+
+  11 steps passing (11.9s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  b-coord-17pct                  ✗ FAIL      12     11      1      0      11.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      12     11      1      0      11.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b-coord-17pct/captures/failure-1791669338.png
+Error: Runner failed (exit 1); see the runner output above.
+exit 1

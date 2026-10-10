@@ -1,0 +1,55 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: qa/qa-longwait.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4DDAC357-985B-4398-9FF6-3000324AD085
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] qa-longwait (qa-longwait.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-10 14:43:23.818 I/wning.landmarks(28854): Late-enabling -Xcheck:jni
+[log] 10-10 14:43:23.836 I/wning.landmarks(28854): Using CollectorTypeCMC GC.
+[log] 10-10 14:43:23.894 W/ziparchive(28854): Unable to open '/data/app/~~yjsaT4pcq2DLdnZHqLCm3A==/com.kylebrowning.landmarks-t43jzX5Hs8D22lv-qacsNw==/base.dm': No such file or directory
+[log] 10-10 14:43:23.894 W/ziparchive(28854): Unable to open '/data/app/~~yjsaT4pcq2DLdnZHqLCm3A==/com.kylebrowning.landmarks-t43jzX5Hs8D22lv-qacsNw==/base.dm': No such file or directory
+[log] 10-10 14:43:24.080 I/Landmarks(28854): launch action=android.intent.action.MAIN data=null extras=[none] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Common causes for lock verification issues are non-optimized dex code
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): and incorrect proguard optimizations.
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-10 14:43:24.081 W/wning.landmarks(28854): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-10 14:43:24.108 W/HWUI    (28854): Unknown dataspace 0
+[log] 10-10 14:43:24.253 I/wning.landmarks(28854): Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals()
+[log] 10-10 14:43:24.403 I/EGL_emulation(28854): Opening libGLESv1_CM_emulation.so
+[log] 10-10 14:43:24.403 I/EGL_emulation(28854): Opening libGLESv2_emulation.so
+[log] 10-10 14:43:24.414 W/HWUI    (28854): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+[log] 10-10 14:43:24.414 W/HWUI    (28854): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+[log] 10-10 14:43:24.430 I/Gralloc4(28854): mapper 4.x is not supported
+    ✓ launchApp (1.8s)
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+exit 130

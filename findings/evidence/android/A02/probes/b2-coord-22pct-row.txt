@@ -1,0 +1,96 @@
+# command: /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --device emulator-5554 --flow /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b2-coord-22pct-row.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b2-coord-22pct-row.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] b2-coord-22pct-row (b2-coord-22pct-row.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (985ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (52ms)
+    ✓ tapOn: text="Landmarks" (197ms)
+    ✓ tapOn: text="Favorites" (761ms)
+    ✓ assertVisible: text="Lake Tahoe" (489ms)
+    ✓ takeScreenshot (148ms)
+    ✓ swipe (348ms)
+    ✓ waitForAnimationToEnd (353ms)
+    ✓ takeScreenshot (145ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (108ms)
+✓ b2-coord-22pct-row 6.6s
+
+  [1/1] b2-coord-22pct-row (/Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/b2-coord-22pct-row.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (985ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (52ms)
+    ✓ tapOn (197ms)
+    ✓ tapOn (761ms)
+    ✓ assertVisible (489ms)
+    ✓ takeScreenshot (148ms)
+    ✓ swipe (348ms)
+    ✓ waitForAnimationToEnd (353ms)
+    ✓ takeScreenshot (145ms)
+    ✓ assertNotVisible (108ms)
+✓ b2-coord-22pct-row 6.6s
+
+  12 steps passing (6.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  b2-coord-22pct-row             ✓ PASS      12     12      0      0       6.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      12     12      0      0       6.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row/allure-results
+
+  Built by Grantiva
+
+
+  b2-coord-22pct-row-cmd-007-Before
+    ✓ Run flow "b2-coord-22pct-row"
+
+  b2-coord-22pct-row-cmd-010-After
+    ✓ Run flow "b2-coord-22pct-row"
+
+  Screens: 2 total, 2 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-b2-coord-22pct-row/captures/
+
+exit 0

@@ -1,0 +1,8 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA build build --variant paidDebug                                           > build-paid.txt   (no --device: this booted Pixel_8_API_35, see EV/incident-5556)
+$GRANTIVA run --app-file app/build/outputs/apk/paid/debug/app-paid-debug.apk --flow .maestro/01-browse.yaml --device emulator-5554 --report-dir $SCRATCH/a03   > app-file.txt
+jq -r .app.id $SCRATCH/a03/report.json > app-file-report-app-id.txt; adb -s emulator-5554 shell pm list packages | grep landmarks > packages-after-app-file.txt
+adb -s emulator-5554 uninstall com.kylebrowning.landmarks.paid
+$GRANTIVA run --variant paidDebug --flow .maestro/01-browse.yaml --device emulator-5554 --report-dir $SCRATCH/a03v   > variant.txt; jq -r .app.id ... > variant-report-app-id.txt
+$GRANTIVA build install --variant paidDebug --device emulator-5554 --no-launch --json > build-install-variant.json 2> build-install-variant.stderr
+$GRANTIVA run --app-file app/build/outputs/apk/paid/debug/app-paid-debug.apk --application-id com.kylebrowning.landmarks --flow .maestro/05-category.yaml --device emulator-5554   > explicit-override.txt

@@ -1,0 +1,3 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+ps -axo pid,ppid,command | grep "[a]db.*logcat"  (before)
+$GRANTIVA run --no-build --flow qa/qa-longwait.yaml --device emulator-5554 --logs > run.txt & pid=$!; sleep 12; ps ... (during); kill -INT $pid; wait $pid; sleep 5; ps ... (after)   > ps.txt

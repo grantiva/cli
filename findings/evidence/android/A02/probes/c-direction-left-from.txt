@@ -1,0 +1,91 @@
+# command: /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --device emulator-5554 --flow /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/c-direction-left-from.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/c-direction-left-from.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] c-direction-left-from (c-direction-left-from.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (951ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (67ms)
+    ✓ tapOn: text="Landmarks" (171ms)
+    ✓ tapOn: text="Favorites" (761ms)
+    ✓ assertVisible: text="Lake Tahoe" (489ms)
+    ✓ takeScreenshot (133ms)
+    ✓ swipe: LEFT (358ms)
+    ✓ waitForAnimationToEnd (350ms)
+    ✓ takeScreenshot (125ms)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.5s)
+      ╰─ Element should not be visible but was found (cause: element is visible)
+✗ c-direction-left-from 12.4s
+
+  [1/1] c-direction-left-from (/Users/kyle/Developer/grantiva-cli/.worktrees/reg-android/findings/evidence/android/A02/probes/c-direction-left-from.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (951ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (66ms)
+    ✓ tapOn (171ms)
+    ✓ tapOn (761ms)
+    ✓ assertVisible (489ms)
+    ✓ takeScreenshot (133ms)
+    ✓ swipe (358ms)
+    ✓ waitForAnimationToEnd (350ms)
+    ✓ takeScreenshot (125ms)
+    ✗ assertNotVisible (5.8s)
+      ╰─ Element should not be visible but was found (cause: element is visible)
+✗ c-direction-left-from 12.4s
+
+  11 steps passing (12.4s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  c-direction-left-from          ✗ FAIL      12     11      1      0      12.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      12     11      1      0      12.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-c-direction-left-from/captures/failure-1791669364.png
+Error: Runner failed (exit 1); see the runner output above.
+exit 1

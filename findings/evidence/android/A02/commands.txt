@@ -1,0 +1,14 @@
+# Environment for every command: GRANTIVA=$HOME/.grantiva-qa/bin/grantiva, GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner,
+# GRANTIVA_SESSION_ID=reg-android, GRANTIVA_API_KEY unset, JAVA_HOME=openjdk@21, Android SDK tools on PATH.
+# SCRATCH=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android
+# APP=$SCRATCH/android (copy of landmarks-demo/android); EV=findings/evidence/android. Commands run with cwd=$APP unless noted.
+# Each output file holds stdout+stderr; "exit N" lines were appended with: echo "exit $?" >> FILE
+# First device session (flows in EV/flows/)
+sed 's/from: "Lake Tahoe"/from: "No Such Row"/' .maestro/02-favorite.yaml > qa/02-nosuch.yaml
+$GRANTIVA run --no-build --flow .maestro/02-favorite.yaml --device emulator-5554 --snapshot full --report-dir $SCRATCH/a02   > 02-favorite.txt
+start=$(date +%s); $GRANTIVA run --no-build --flow qa/02-nosuch.yaml --device emulator-5554 --report-dir $SCRATCH/a02n   > 02-nosuch.txt; echo "exit $? elapsed ..s"
+md5 -q $SCRATCH/a02/captures/02-favorite-cmd-008-{before,after}.png   (both dab5f51f8c3db30bac2b3ba97d41f79b; PNGs in captures/)
+$GRANTIVA run --no-build --flow qa/a02-probe.yaml --device emulator-5554 --report-dir $SCRATCH/a02p    > probe.txt   (superseded by probes/; its coordinate swipe 60%,17% lies above the row)
+$GRANTIVA run --no-build --flow qa/a02-probe2.yaml --device emulator-5554 --report-dir $SCRATCH/a02p2  > probe2.txt  (superseded by probes/)
+cp $SCRATCH/a02/client.log 02-favorite-client.log; cp $SCRATCH/a02n/client.log 02-nosuch-client.log
+# Second device session: see probes/commands.txt

@@ -1,0 +1,28 @@
+A02 device re-check (fix round, 2026-10-10 14:55-14:57, fresh qa-reg-android emulator-5554, 1080x2400).
+Pointer-location overlay was on (settings put system pointer_location 1), so every capture shows the touch trace.
+Favorites row bounds (d-hierarchy-before.xml): row [0,432][1080,621]; "Lake Tahoe" text [42,469][269,532].
+Each probe flow: launch, favorite Lake Tahoe, open Favorites, "Before" capture, the swipe, waitForAnimationToEnd,
+"After" capture, then assertNotVisible "Lake Tahoe" (text is gone from the hierarchy once the row is swiped open).
+
+probe                         swipe step                               result    what the capture shows
+(a) 02-favorite as-is         direction LEFT, from "Lake Tahoe"        pass*     cmd-008-after: short trace on the "Lake Tahoe" text only, row not opened (*flow passes through the visible Remove button)
+(b) b-coord-17pct             start 60%,17%  end 5%,17%  (y=408)      FAIL      full-length trace at y~408, ABOVE the row (row starts at y=432); row not opened
+(b2) b2-coord-22pct-row       start 60%,22%  end 5%,22%  (y=528)      PASS      full-length trace across the row; row opened (red background, swipe Remove)
+(c) c-direction-left-from     direction LEFT, from "Lake Tahoe"        FAIL      short trace on the text only; row not opened
+(c2) c2-abs-px-row            start 900, 520  end 100, 520             FAIL      no trace on screen; overlay header reads dX -8640.0 dY 0.0
+(d) manual control            adb shell input swipe 648 528 54 528 300 opened    d-manual-after.png: row opened; hierarchy "Lake Tahoe" count 1 -> 0
+
+Findings:
+- Runner coordinate swipes do take effect: (b2) opens the row. The earlier 60%,17% probe missed because 17% of 2400 = 408,
+  which lies above this row; that row position came from the original finding's device.
+- The direction+from swipe is short. Direct evidence: the trace in (a) and (c) covers only part of the 227 px wide text
+  element. Hypothesis, from the grantiva-runner source on grantiva/runner main 2f2ee31 (pkg/core/gesture.go
+  SwipeCoordsToScreenEdge): it runs from the element centre (155,500) to 10% of the screen width (108,500), 47 px,
+  which is below the row's dismiss threshold. Supporting control (e-manual-short-swipes.txt): a hand
+  `input swipe 155 500 108 500 300` leaves the row closed ("Lake Tahoe" nodes 1 -> 1), while `155 500 0 500 300`
+  opens it (1 -> 0).
+- Absolute-pixel coordinates without `%` (c2) never reach the row. Hypothesis: they are scaled as percentages
+  (dX = -(900-100)% x 1080 = -8640, which matches the overlay).
+
+hashes.txt: md5 of every PNG in png/. With the overlay on, 02-favorite cmd-008-after differs from -before only
+by the touch trace, not by the row state. Before captures share md5 6e6517df... with d-prefix-only Before.

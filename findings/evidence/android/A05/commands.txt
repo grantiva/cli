@@ -1,0 +1,3 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA record --device emulator-5554 --duration 2 --frames-at 1000 --output $SCRATCH/a05.mp4 --json > record.json 2> record.stderr; ls -la $SCRATCH/a05-frames >> record.stderr
+ffprobe -v error -show_entries format=duration -of csv $SCRATCH/a05.mp4; ffprobe -v error -show_entries packet=pts_time -of csv $SCRATCH/a05.mp4   > ffprobe.txt

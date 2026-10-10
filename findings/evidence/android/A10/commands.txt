@@ -1,0 +1,7 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA build install --no-launch --json --device emulator-5554 > build-install.json 2> build-install.stderr
+ls .grantiva/captures/android > captures-before.txt
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml --device emulator-5554 --keep-alive --ready-file $SCRATCH/a10.ready > keepalive.txt & pid=$!; wait for ready file
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml --device emulator-5554 > refused.txt; kill -INT $pid; ls .grantiva/captures/android > captures-after.txt
+Repeat with timestamps: keepalive2.txt, refused2.txt, failure-shot-timeline.txt (ls of failure-*.png before refused run, after refused run + 4 s, after SIGINT of keep-alive run)
+$GRANTIVA record --device emulator-5554 --duration 2 --frames-at 5000 --output $SCRATCH/a10.mp4 > record-error.txt

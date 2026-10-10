@@ -1,0 +1,90 @@
+# command (cwd $APP = scratch copy of landmarks-demo/android): $GRANTIVA run --no-build --flow qa/02-nosuch.yaml --device emulator-5554 --report-dir $SCRATCH/a02n
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: qa/02-nosuch.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-nosuch (02-nosuch.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (882ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (52ms)
+    ✓ tapOn: text="Landmarks" (153ms)
+    ✓ tapOn: text="Favorites" (769ms)
+    ✓ assertVisible: text="Lake Tahoe" (493ms)
+    ✓ takeScreenshot (125ms)
+    ✗ swipe: LEFT (17.0s)
+      ╰─ Element not found for swipe: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 02-nosuch 22.7s
+
+  [1/1] 02-nosuch (qa/02-nosuch.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (882ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (52ms)
+    ✓ tapOn (153ms)
+    ✓ tapOn (769ms)
+    ✓ assertVisible (493ms)
+    ✓ takeScreenshot (125ms)
+    ✗ swipe (17.2s)
+      ╰─ Element not found for swipe: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+    ✗ tapOn (0ms)
+    ✗ assertNotVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 02-nosuch 22.7s
+
+  8 steps passing (22.7s)
+  1 steps failing
+  4 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-nosuch                      ✗ FAIL      13      8      1      4      22.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      8      1      4      22.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02n/captures/failure-1791668153.png
+Error: Runner failed (exit 1); see the runner output above.
+exit 1 elapsed 25s
