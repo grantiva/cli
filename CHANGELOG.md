@@ -38,6 +38,7 @@
 - `run --report-dir` now names the flow file you passed in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log`, instead of the deleted temp copy, whether the run passes, fails, or times out.
 - Flows with the same file name in different directories (`a/same.yaml`, `b/same.yaml`) are now reported under distinct names (`a/same`, `b/same`), each with its own steps and duration, instead of two `same` rows showing the first flow's numbers.
 - `diff capture` (and `run` with `screens:`) removes each configured screen's previous capture before capturing, so a failed capture leaves those screens missing and `diff compare` fails instead of passing against last run's images.
+- `run --report-dir`, `--timeout`, and `--continue-on-failure` now apply to `screens:` (including a Maestro-format config or `.maestro/` directory). With both screens and flows, the screens report goes to `<report-dir>/screens/`, and with `--continue-on-failure` a failed screens session no longer stops the flows from running; the run still exits non-zero.
 - `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
 
 ## 2.0.1 — 2026-10-07

@@ -143,6 +143,46 @@ final class RunnerSessionReportTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: unrelated.path))
     }
 
+    // MARK: - C04: screens runs honour --report-dir, --timeout, --continue-on-failure
+
+    func testScreensRunWritesToASuppliedReportDirAndKeepsIt() async throws {
+        let runner = try makeRunner(exitCode: 1)
+        _ = try? await RunnerSession.run(
+            screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
+            bundleId: "com.example", udid: udid(), platform: StubPlatform(),
+            runner: runner, outputDir: "out/captures",
+            failFast: true, reportDir: "out", timeoutSeconds: 30
+        )
+        let reportDir = "\(scratch.path)/out"
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"), "report dir must survive the run")
+        let report = try String(contentsOfFile: "\(reportDir)/report.json", encoding: .utf8)
+        XCTAssertFalse(report.contains("grantiva-flows-"), report)
+        let argv = try String(contentsOfFile: "\(scratch.path)/seen/argv", encoding: .utf8)
+            .split(separator: "\n").map(String.init)
+        let output = try XCTUnwrap(argv.firstIndex(of: "--output"))
+        XCTAssertEqual(
+            URL(fileURLWithPath: argv[output + 1]).resolvingSymlinksInPath().path,
+            URL(fileURLWithPath: reportDir).resolvingSymlinksInPath().path
+        )
+        XCTAssertTrue(argv.contains("--fail-fast"))
+    }
+
+    func testScreensRunIsKilledAtTheSuppliedTimeout() async throws {
+        let runner = try makeRunner(exitCode: 0, sleepSeconds: 30)
+        let start = Date()
+        do {
+            _ = try await RunnerSession.run(
+                screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
+                bundleId: "com.example", udid: udid(), platform: StubPlatform(),
+                runner: runner, outputDir: "captures", timeoutSeconds: 1
+            )
+            XCTFail("expected a timeout")
+        } catch {
+            XCTAssertTrue("\(error)".contains("timed out after 1s"), "\(error)")
+        }
+        XCTAssertLessThan(Date().timeIntervalSince(start), 20)
+    }
+
     // MARK: - Helpers
 
     private func udid() -> String { "TEST-REPORT-\(UUID().uuidString)" }

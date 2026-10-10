@@ -26,7 +26,10 @@ public enum RunnerSession {
         snapshot: String = "failure",
         environment: [String: String] = [:],
         readyFile: String? = nil,
-        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
+        failFast: Bool = false,
+        reportDir overrideReportDir: String? = nil,
+        timeoutSeconds: UInt64 = 300
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -51,17 +54,37 @@ public enum RunnerSession {
             )
         }
 
-        // Create a temp directory for runner reports
-        let reportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
-            .path
-        try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+        // `--report-dir` is written to directly and survives the run so CI can
+        // upload it; otherwise reports go to a temp dir wiped on return.
+        let reportDir: String
+        let preserveReportDir: Bool
+        if let overrideReportDir, !overrideReportDir.isEmpty {
+            reportDir = overrideReportDir.hasPrefix("/")
+                ? overrideReportDir
+                : FileManager.default.currentDirectoryPath + "/" + overrideReportDir
+            preserveReportDir = true
+        } else {
+            reportDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
+                .path
+            preserveReportDir = false
+        }
+        try RunnerReportWorkspace.prepare(at: reportDir)
         // A capture that does not happen this run must not leave last run's
         // image behind for `diff compare` to pass against.
         try invalidateCaptures(of: screens, in: outputDir)
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
-        defer { try? FileManager.default.removeItem(atPath: reportDir) }
+        defer {
+            if !preserveReportDir {
+                try? FileManager.default.removeItem(atPath: reportDir)
+            }
+        }
+        defer {
+            if preserveReportDir {
+                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: [flowPath: "screens"])
+            }
+        }
         defer {
             exportTraceArtifacts(
                 reportDir: reportDir, outputDir: outputDir,
@@ -83,14 +106,14 @@ public enum RunnerSession {
             appFile: appFile,
             reportDir: reportDir,
             snapshot: snapshot,
+            failFast: failFast,
             keepAlive: keepAlive,
             flowPaths: [flowPath]
         )
 
-        // Timeout: kill the runner if it takes longer than 5 minutes
-        // Keep-alive sessions block waiting for SIGINT; a normal 5-minute cap
-        // would kill them prematurely. Use an effectively-infinite timeout then.
-        let timeoutSeconds: UInt64 = keepAlive ? 60 * 60 * 24 : 300
+        // Keep-alive sessions block waiting for SIGINT; a normal cap would
+        // kill them prematurely. Use an effectively-infinite timeout then.
+        let timeoutSeconds: UInt64 = keepAlive ? 60 * 60 * 24 : timeoutSeconds
 
         // stdout is relayed to stderr so CI sees runner progress in real time;
         // stderr is captured for error reporting.
