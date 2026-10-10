@@ -62,6 +62,8 @@ struct RunCommand: AsyncParsableCommand {
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
     var runnerManager: RunnerManager = .live
+    /// Where `--json` result documents go; tests capture them.
+    var resultOutput = ResultOutput()
 
     func validate() throws {
         guard timeout >= 30 else {
@@ -111,6 +113,13 @@ struct RunCommand: AsyncParsableCommand {
         do {
             try await execute()
         } catch {
+            // "stdout is the result": under --json every outcome prints a
+            // document. A runner failure prints its own (with the report's
+            // steps) in `execute`; anything else that failed before a result
+            // existed prints the error alone.
+            if options.json, !resultOutput.emitted {
+                try? resultOutput.emit(RunResult(screens: [], allPassed: false, error: Self.failureMessage(error)))
+            }
             // `execute` writes the real verdict when the runner produced one;
             // the file existing here means that already happened and must not
             // be overwritten with this coarser status. Startup deleted the
@@ -263,7 +272,7 @@ struct RunCommand: AsyncParsableCommand {
 
             guard buildResult.success else {
                 if options.json {
-                    Output.line(try JSONOutput.string(buildResult))
+                    try resultOutput.emit(buildResult)
                 } else {
                     Output.line(TableFormatter().formatBuild(buildResult))
                 }
@@ -293,6 +302,7 @@ struct RunCommand: AsyncParsableCommand {
         log("Running \(totalFlows) flow(s)...")
 
         var captures: [ScreenCapture] = []
+        let failureReport = RunnerFailureReport()
         do {
             captures = try await Self.runSuite(
                 hasScreens: !resolved.screens.isEmpty,
@@ -338,7 +348,8 @@ struct RunCommand: AsyncParsableCommand {
                         environment: launchEnvironment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
-                        autoAcceptAlerts: !noAutoAcceptAlerts
+                        autoAcceptAlerts: !noAutoAcceptAlerts,
+                        failureReport: failureReport
                     )
                 }
             )
@@ -352,6 +363,14 @@ struct RunCommand: AsyncParsableCommand {
             try? await device.screenshot(deviceID: booted.udid, to: failurePath)
             if fm.fileExists(atPath: failurePath) {
                 log("Failure screenshot: \(failurePath)")
+            }
+            if options.json {
+                try? resultOutput.emit(RunResult(
+                    screens: failureReport.captures.map(RunResult.ScreenResult.init),
+                    allPassed: false,
+                    error: Self.failureMessage(error),
+                    reportDir: failureReport.reportDir
+                ))
             }
             // The --ready-file waiter is released by `run`, which covers this
             // path and every setup failure that never reaches the runner.
@@ -381,42 +400,9 @@ struct RunCommand: AsyncParsableCommand {
             Output.line("  Screenshots: \(captureDir)/")
             Output.line("")
         } else {
-            struct RunResult: Codable, Sendable {
-                let screens: [ScreenResult]
-                let allPassed: Bool
-
-                struct ScreenResult: Codable, Sendable {
-                    let name: String
-                    let passed: Bool
-                    let steps: [StepResult]
-
-                    struct StepResult: Codable, Sendable {
-                        let action: String
-                        let status: String
-                        let message: String?
-                    }
-                }
-            }
-
-            let result = RunResult(
-                screens: captures.map { capture in
-                    let passed = capture.steps.allSatisfy { $0.status == .passed }
-                    if !passed { allPassed = false }
-                    return RunResult.ScreenResult(
-                        name: capture.screenName,
-                        passed: passed,
-                        steps: capture.steps.map { step in
-                            RunResult.ScreenResult.StepResult(
-                                action: step.action,
-                                status: step.status.rawValue,
-                                message: step.message
-                            )
-                        }
-                    )
-                },
-                allPassed: allPassed
-            )
-            Output.line(try JSONOutput.string(result))
+            let screens = captures.map(RunResult.ScreenResult.init)
+            allPassed = screens.allSatisfy(\.passed)
+            try resultOutput.emit(RunResult(screens: screens, allPassed: allPassed))
         }
 
         if !allPassed {
@@ -444,6 +430,42 @@ struct RunCommand: AsyncParsableCommand {
         let header = (try? String(contentsOfFile: flowPath, encoding: .utf8)).flatMap(MaestroFlowParser.appId(in:))
         guard let header, !header.contains("${") else { return resolved }
         return header
+    }
+
+    /// The `--json` result. A failed run has the same shape plus `error` and,
+    /// with `--report-dir`, `reportDir`; both are omitted on success.
+    struct RunResult: Codable, Sendable {
+        let screens: [ScreenResult]
+        let allPassed: Bool
+        var error: String?
+        var reportDir: String?
+
+        struct ScreenResult: Codable, Sendable {
+            let name: String
+            let passed: Bool
+            let steps: [StepResult]
+
+            struct StepResult: Codable, Sendable {
+                let action: String
+                let status: String
+                let message: String?
+            }
+
+            init(_ capture: ScreenCapture) {
+                name = capture.screenName
+                passed = capture.steps.allSatisfy { $0.status == .passed }
+                steps = capture.steps.map { step in
+                    StepResult(action: step.action, status: step.status.rawValue, message: step.message)
+                }
+            }
+        }
+    }
+
+    static func failureMessage(_ error: Error) -> String {
+        if let exit = error as? ExitCode {
+            return "Run failed (exit \(exit.rawValue))"
+        }
+        return (error as? LocalizedError)?.errorDescription ?? "\(error)"
     }
 
     /// Only the final session owns suite readiness and the post-run hold.
@@ -505,5 +527,29 @@ struct RunCommand: AsyncParsableCommand {
     /// results go to stdout via `Output`.
     private func log(_ message: String) {
         options.note(message)
+    }
+}
+
+/// Writes `run --json` documents to stdout (through `Output`) and remembers
+/// that one was written, so a failure never prints a second document.
+final class ResultOutput: Decodable, @unchecked Sendable {
+    private let write: @Sendable (String) -> Void
+    private let lock = NSLock()
+    private var wrote = false
+
+    init(_ write: @escaping @Sendable (String) -> Void = { Output.line($0) }) {
+        self.write = write
+    }
+
+    required convenience init(from decoder: Decoder) throws {
+        self.init()
+    }
+
+    var emitted: Bool { lock.withLock { wrote } }
+
+    func emit<T: Encodable>(_ value: T) throws {
+        let text = try JSONOutput.string(value)
+        lock.withLock { wrote = true }
+        write(text)
     }
 }

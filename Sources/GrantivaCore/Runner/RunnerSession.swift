@@ -312,7 +312,8 @@ public enum RunnerSession {
         environment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
-        autoAcceptAlerts: Bool = true
+        autoAcceptAlerts: Bool = true,
+        failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -501,6 +502,8 @@ public enum RunnerSession {
                 flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
                 reportDir: readyReportDir
             ))
+            // Read before the ephemeral report dir is deleted on the way out.
+            failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir)
             throw GrantivaError.commandFailed(
                 "\(reason):\n\(stderr.suffix(2000))",
                 outcome.terminationStatus

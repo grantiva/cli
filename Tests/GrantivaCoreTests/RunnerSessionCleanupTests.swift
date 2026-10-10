@@ -66,6 +66,58 @@ final class RunnerSessionCleanupTests: XCTestCase {
         XCTAssertEqual(state.reportDir, reportDir)
         XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
     }
+
+    // MARK: - Failure report (I12)
+
+    static let failedReport = #"{"status":"failed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","dataFile":"flows/flow-000.json","status":"failed","error":"Element not found: text='Remove'"}]}"#
+    static let failedFlow = #"{"id":"flow-000","name":"smoke","commands":[{"id":"cmd-000","type":"launchApp","yaml":"launchApp","status":"passed"},{"id":"cmd-001","type":"tapOn","yaml":"tapOn: text=\"Remove\"","status":"failed","error":{"type":"element_not_found","message":"Element not found: text='Remove'"}},{"id":"cmd-002","type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]}"#
+
+    /// I12: the runner's report is read before the ephemeral report dir is
+    /// deleted, so `run --json` can still print the failed step.
+    func testARunnerFailureRecordsTheFailedStepBeforeThrowing() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        let report = RunnerFailureReport()
+
+        do {
+            _ = try await scratch.runFlows(
+                reportDir: nil,
+                reportJSON: Self.failedReport,
+                flowFiles: ["flow-000.json": Self.failedFlow],
+                exitStatus: 1,
+                failureReport: report
+            )
+            XCTFail("a runner that exits 1 must fail the run")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Runner failed (exit 1)"), "\(error)")
+        }
+
+        XCTAssertNil(report.reportDir, "an ephemeral report dir is gone and must not be named")
+        let captures = report.captures
+        XCTAssertEqual(captures.map(\.screenName), ["smoke"])
+        let steps = try XCTUnwrap(captures.first?.steps)
+        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Remove\""])
+        XCTAssertEqual(steps.map(\.status), [.passed, .failed])
+        XCTAssertEqual(steps.last?.message, "Element not found: text='Remove'")
+    }
+
+    func testARunnerFailureNamesAPreservedReportDir() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        let report = RunnerFailureReport()
+        let reportDir = scratch.root.appendingPathComponent("report").path
+
+        _ = try? await scratch.runFlows(
+            reportDir: reportDir, reportJSON: Self.failedReport, exitStatus: 1, failureReport: report
+        )
+
+        XCTAssertEqual(report.reportDir, reportDir)
+        // No per-flow data file: the flow's own status and error still say
+        // which flow failed and why.
+        let step = try XCTUnwrap(report.captures.first?.steps.first)
+        XCTAssertEqual(step.status, .failed)
+        XCTAssertEqual(step.message, "Element not found: text='Remove'")
+    }
 }
 
 private final class LockedCalls: @unchecked Sendable {
@@ -151,7 +203,8 @@ struct FakeRunnerScratch {
         reportDir: String?,
         reportJSON: String = #"{"status":"passed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"passed"}]}"#,
         flowFiles: [String: String] = [:],
-        exitStatus: Int32 = 0
+        exitStatus: Int32 = 0,
+        failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         var script = """
         #!/bin/sh
@@ -191,7 +244,8 @@ struct FakeRunnerScratch {
             outputDir: root.appendingPathComponent("captures").path,
             reportDir: reportDir,
             timeoutSeconds: 30,
-            readyFile: readyFile
+            readyFile: readyFile,
+            failureReport: failureReport
         )
     }
 }

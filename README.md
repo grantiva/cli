@@ -372,6 +372,11 @@ udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
 grantiva doctor --json | jq '.[] | select(.status == "fail")'
 ```
 
+A failing `run --json` still prints its document, with `"allPassed": false`, the
+failed step and its message, an `error` field, and `reportDir` when
+`--report-dir` was given; a failure before any flow ran prints
+`{"allPassed": false, "screens": [], "error": "..."}`. The exit status stays non-zero.
+
 Two flags adjust the stderr side only; neither changes stdout:
 
 - **`--verbose`** — adds debug-level detail, with timestamps and labels, including every subprocess Grantiva runs and its exit status.

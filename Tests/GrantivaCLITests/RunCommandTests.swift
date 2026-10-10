@@ -223,6 +223,103 @@ final class RunCommandTests: XCTestCase {
         XCTAssertNil(command.reportDir)
     }
 
+    // MARK: - run --json on failure (I12)
+
+    /// A project with one flow and a stand-in runner that writes a failed
+    /// report and exits 1, run from inside it.
+    private func withFailingRunnerProject(_ body: (URL, RunnerManager) async throws -> Void) async throws {
+        let fileManager = FileManager.default
+        let dir = fileManager.temporaryDirectory.appendingPathComponent("grantiva-json-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = fileManager.currentDirectoryPath
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: dir)
+        }
+        try "module: app\nemulator: Pixel_8_API_35\nflows:\n  - smoke.yaml\n"
+            .write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        try "appId: com.placeholder\n---\n- launchApp\n"
+            .write(to: dir.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
+        let runner = dir.appendingPathComponent("fake-runner").path
+        try #"""
+        #!/bin/sh
+        while [ $# -gt 0 ]; do
+          if [ "$1" = "--output" ]; then out="$2"; shift; fi
+          flow="$1"
+          shift
+        done
+        mkdir -p "$out/flows"
+        printf '{"status":"failed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"%s","assetsDir":"assets/flow-000","dataFile":"flows/flow-000.json","status":"failed","error":"Element not found: text=Remove"}]}' "$flow" > "$out/report.json"
+        printf '{"commands":[{"yaml":"launchApp","status":"passed"},{"yaml":"tapOn: Remove","status":"failed","error":{"message":"Element not found: text=Remove"}}]}' > "$out/flows/flow-000.json"
+        echo "flow smoke failed" >&2
+        exit 1
+        """#.write(toFile: runner, atomically: true, encoding: .utf8)
+        chmod(runner, 0o755)
+        fileManager.changeCurrentDirectoryPath(dir.path)
+        unsetenv("GRANTIVA_PLATFORM")
+        try await body(dir, RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path }))
+    }
+
+    func testJSONRunnerFailureStillPrintsTheResultWithTheFailedStep() async throws {
+        try await withFailingRunnerProject { _, runner in
+            var command = try RunCommand.parse([
+                "--json", "--no-build", "--application-id", "com.fake", "--timeout", "30", "--report-dir", "rep",
+            ])
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .android))
+            command.runnerManager = runner
+            let stdout = CapturedLines()
+            command.resultOutput = ResultOutput { stdout.append($0) }
+
+            do {
+                try await command.run()
+                XCTFail("a failed flow must fail the run")
+            } catch {
+                XCTAssertTrue("\(error)".contains("Runner failed (exit 1)"), "\(error)")
+            }
+
+            XCTAssertEqual(stdout.values.count, 1, "exactly one JSON document: \(stdout.values)")
+            let json = try XCTUnwrap(
+                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+            )
+            XCTAssertEqual(json["allPassed"] as? Bool, false)
+            XCTAssertTrue((json["error"] as? String)?.contains("Runner failed (exit 1)") == true, "\(json)")
+            XCTAssertTrue((json["reportDir"] as? String)?.hasSuffix("/rep") == true, "\(json)")
+            let screens = try XCTUnwrap(json["screens"] as? [[String: Any]])
+            XCTAssertEqual(screens.first?["name"] as? String, "smoke")
+            XCTAssertEqual(screens.first?["passed"] as? Bool, false)
+            let steps = try XCTUnwrap(screens.first?["steps"] as? [[String: Any]])
+            let failed = try XCTUnwrap(steps.first { $0["status"] as? String == "failed" })
+            XCTAssertEqual(failed["action"] as? String, "tapOn: Remove")
+            XCTAssertEqual(failed["message"] as? String, "Element not found: text=Remove")
+        }
+    }
+
+    func testJSONSetupFailurePrintsAnErrorDocument() async throws {
+        var command = try RunCommand.parse(["--json"])
+        let stdout = CapturedLines()
+        command.resultOutput = ResultOutput { stdout.append($0) }
+
+        let error = await runInADirectoryWithNoProject(command)
+
+        XCTAssertNotNil(error)
+        XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+        let json = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+        )
+        XCTAssertEqual(json["allPassed"] as? Bool, false)
+        XCTAssertEqual((json["screens"] as? [Any])?.count, 0)
+        XCTAssertFalse((json["error"] as? String ?? "").isEmpty, "\(json)")
+        XCTAssertNil(json["reportDir"])
+    }
+
+    func testWithoutJSONAFailurePrintsNoResultDocument() async throws {
+        var command = try RunCommand.parse([])
+        let stdout = CapturedLines()
+        command.resultOutput = ResultOutput { stdout.append($0) }
+        _ = await runInADirectoryWithNoProject(command)
+        XCTAssertEqual(stdout.values, [])
+    }
+
     // MARK: - --ready-file contract
 
     /// Runs `command` from an empty directory, where project resolution fails
@@ -350,4 +447,12 @@ final class RunCommandTests: XCTestCase {
         let (_, config) = try options.loadConfig(directory: dir, environment: [:], includeMaestroDirectory: false)
         XCTAssertNil(config)
     }
+}
+
+private final class CapturedLines: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [String] = []
+
+    func append(_ line: String) { lock.withLock { storage.append(line) } }
+    var values: [String] { lock.withLock { storage } }
 }
