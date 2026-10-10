@@ -96,18 +96,22 @@ public enum FlowGenerator {
         runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
         disableAlertAutoAccept: Bool = false
     ) throws -> String {
-        var yaml = try FlowReferenceResolver.resolve(
-            in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
-            relativeTo: runFlowBaseDirectory
-        )
-        if disableAlertAutoAccept {
-            yaml = FlowAlertPolicy.disableAutoAccept(in: yaml)
-        }
         // One directory per call: concurrent runs against different simulators
         // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-flows-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let stager = disableAlertAutoAccept
+            ? FlowAlertStager(directory: tempDir.appendingPathComponent("subflows").path)
+            : nil
+        var yaml = try FlowReferenceResolver.resolve(
+            in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
+            relativeTo: runFlowBaseDirectory,
+            mapFile: stager.map { $0.stage }
+        )
+        if disableAlertAutoAccept {
+            yaml = FlowAlertPolicy.disableAutoAccept(in: yaml)
+        }
         let flowPath = tempDir.appendingPathComponent("flow.yaml").path
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
         return flowPath

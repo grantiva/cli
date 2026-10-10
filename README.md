@@ -87,7 +87,7 @@ grantiva hierarchy > state.xml
   Missing parent directories of the path are created (`--ready-file out/ci/x.ready` creates `out/ci/`), so a typo in the directory part makes a new directory rather than failing; only an uncreatable or unwritable location is an error.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific simulator's with `--udid <UDID>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
-- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`~/.grantiva/runner/devices/<udid>`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
+- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`~/.grantiva/runner/devices/<udid>`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` and `simulator delete` remove the device's home, and homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
 - **`--logs`** — Streams simulator app logs (`xcrun simctl spawn log stream`) prefixed with `[log]` interleaved with the flow output. Auto-scopes the predicate to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`). Override with `--logs-predicate`.
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter for narrowing to specific subsystems, categories, or processes.
 - **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
@@ -146,6 +146,8 @@ Grantiva navigates to each screen in order, captures a screenshot, then moves to
 
 Grantiva can read [Maestro](https://maestro.mobile.dev) flow files as a drop-in replacement. If you have existing Maestro flows, Grantiva will auto-detect and parse them — no rewrite needed.
 
+Alerts on iOS: a `launchApp` pre-grants the app's permissions on the simulator, and WebDriverAgent auto-accepts alerts that appear during the flow, so system prompts that cannot be pre-granted (notifications, tracking, local network, Bluetooth) don't block it. That auto-accept can also catch the app's own alerts: an alert whose buttons aren't "Allow" or "OK" gets its default button pressed. If your app's alerts ("Discard changes?") disappear mid-flow, pass `grantiva run --no-auto-accept-alerts`: alerts then stay up until a flow step answers them, including in `runFlow` subflows, and your flows must tap through any system prompt the simulator cannot pre-grant. The proper fix, accepting only system alerts, belongs in grantiva-runner. The flag applies to `grantiva run`; `runner start` and the MCP session keep auto-accept.
+
 Place your flows in a `.maestro/` directory, or write `grantiva.yml` in Maestro format:
 
 ```yaml
@@ -176,7 +178,6 @@ A flow header `env:` block defines `${VAR}` values and is also passed to the app
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
 | `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`. A relative path is resolved against the current directory. |
 
-Alerts: on iOS, Grantiva never answers the app's own alerts for you, as in Maestro. A `launchApp` pre-grants the app's permissions on the simulator (all allowed unless the step's `permissions:` say otherwise), and any alert the app shows stays up until a flow step taps one of its buttons. Pass `grantiva run --auto-accept-alerts` to let WebDriverAgent accept every alert instead, including the app's.
 
 ## CI Integration
 

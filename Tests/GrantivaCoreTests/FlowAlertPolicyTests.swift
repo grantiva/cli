@@ -119,9 +119,45 @@ final class FlowAlertPolicyTests: XCTestCase {
         XCTAssertEqual(runnerAlertAction((launch["permissions"] as? [String: Any])?.mapValues { "\($0)" }), "")
     }
 
-    func testThePolicyAppliesToIOSUnlessOptedBackIn() {
-        XCTAssertTrue(RunnerSession.disablesAlertAutoAccept(platform: IOSPlatform(), autoAcceptAlerts: false))
+    func testAutoAcceptStaysOnUnlessTheCallerOptsOut() {
         XCTAssertFalse(RunnerSession.disablesAlertAutoAccept(platform: IOSPlatform(), autoAcceptAlerts: true))
+        XCTAssertTrue(RunnerSession.disablesAlertAutoAccept(platform: IOSPlatform(), autoAcceptAlerts: false))
+    }
+
+    func testTheRewriteSurvivesTheReferenceResolversYamlDump() throws {
+        // runFlowFiles resolves runFlow references (which re-dumps the YAML)
+        // before the policy runs, so the policy must handle Yams' layout.
+        let flow = "appId: a\n---\n- launchApp:\n    clearState: true\n    permissions:\n      all: deny\n- launchApp\n- tapOn: x"
+        let dumped = try FlowReferenceResolver.resolve(in: flow, relativeTo: "/tmp")
+        try assertNoMonitorSameGrants(dumped)
+    }
+
+    func testRunFlowFilesAreStagedWithThePolicy() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("grantiva-alert-stager-\(UUID().uuidString)").path
+        defer { try? fm.removeItem(atPath: root) }
+        try fm.createDirectory(atPath: "\(root)/src/shared", withIntermediateDirectories: true)
+        try "appId: a\n---\n- launchApp\n- runFlow: ../setup-tail.yaml".write(toFile: "\(root)/src/shared/setup.yaml", atomically: true, encoding: .utf8)
+        // A cycle back to setup.yaml must not loop forever.
+        try "- launchApp:\n    clearState: true\n- runFlow:\n    file: shared/setup.yaml".write(toFile: "\(root)/src/setup-tail.yaml", atomically: true, encoding: .utf8)
+        let main = "appId: a\n---\n- runFlow: shared/setup.yaml\n- tapOn: x"
+
+        let stager = FlowAlertStager(directory: "\(root)/stage")
+        let staged = try FlowReferenceResolver.resolve(in: main, relativeTo: "\(root)/src", mapFile: stager.stage)
+        XCTAssertFalse(staged.contains("\(root)/src/shared/setup.yaml"), "main flow still points at the original:\n\(staged)")
+        XCTAssertEqual(Set(stager.pathMap.values), ["\(root)/src/shared/setup.yaml", "\(root)/src/setup-tail.yaml"])
+        for (copy, original) in stager.pathMap {
+            XCTAssertTrue(staged.contains(copy) || original.hasSuffix("setup-tail.yaml"))
+            let content = try String(contentsOfFile: copy, encoding: .utf8)
+            let permissions = try launchPermissions(in: content)
+            XCTAssertFalse(permissions.isEmpty, content)
+            for entry in permissions {
+                XCTAssertEqual(runnerAlertAction(entry), "", "\(original) still auto-accepts:\n\(content)")
+                XCTAssertEqual(runnerGrants(entry), ["all": "allow"])
+            }
+        }
+        // The user's files are untouched.
+        XCTAssertEqual(try String(contentsOfFile: "\(root)/src/shared/setup.yaml", encoding: .utf8), "appId: a\n---\n- launchApp\n- runFlow: ../setup-tail.yaml")
     }
 
     func testGeneratedScreenFlowsCarryThePolicy() throws {

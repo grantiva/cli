@@ -32,8 +32,8 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default` (warnings/errors/default).")
     var logsLevel: String?
 
-    @Flag(name: .long, help: "iOS: let WebDriverAgent auto-accept every alert during flows, including the app's own (the runner's old behavior). By default only permissions are pre-granted and app alerts stay up until the flow answers them.")
-    var autoAcceptAlerts: Bool = false
+    @Flag(name: .customLong("no-auto-accept-alerts"), help: "iOS: turn off WebDriverAgent's alert auto-accept, so alerts stay up until a flow step answers them. For apps whose own alerts (\"Discard changes?\") were being dismissed mid-flow. Permissions are still pre-granted on the simulator, but prompts simctl cannot grant (notifications, tracking, local network, Bluetooth) are no longer accepted for you.")
+    var noAutoAcceptAlerts: Bool = false
 
     @Option(name: .long, help: "Snapshot policy: failure (default — one shot after failure), trailing (last-good step + failure step), full (every step).")
     var snapshot: SnapshotMode = .failure
@@ -80,7 +80,6 @@ struct RunCommand: AsyncParsableCommand {
     ///   failures (missing project, bad scheme, build failure, no simulator)
     ///   that never reach the runner and used to leave the waiter hanging until
     ///   CI's global timeout.
-    static let unfilteredLogsWarning = "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
 
     /// The value after `--predicate` in a log stream command, if any.
     static func predicateArgument(in arguments: [String]) -> String? {
@@ -193,13 +192,9 @@ struct RunCommand: AsyncParsableCommand {
         // app's executable, both of which exist only once the app is
         // installed. The app ID may also come from the build.
         let wantsLogs = logs || logsPredicate != nil || logsTag != nil
-        func startLogStream(appID: String?) async -> LogStreamer? {
+        func startLogStream(appID: String) async -> LogStreamer? {
             // iOS names the predicate it streams with: the explicit one or the
-            // default derived from the app. Without either, it streams
-            // unfiltered and says so first.
-            if platform == .ios, logsPredicate == nil, appID == nil {
-                log(Self.unfilteredLogsWarning)
-            }
+            // default derived from the app.
             let streamer = LogStreamer()
             do {
                 let stream = try await device.logStream(
@@ -301,7 +296,7 @@ struct RunCommand: AsyncParsableCommand {
                         failFast: session.failFast,
                         reportDir: session.reportDir,
                         timeoutSeconds: session.timeoutSeconds,
-                        autoAcceptAlerts: autoAcceptAlerts
+                        autoAcceptAlerts: !noAutoAcceptAlerts
                     )
                 },
                 runFlows: { keepAlive, readyFile, session in
@@ -322,7 +317,7 @@ struct RunCommand: AsyncParsableCommand {
                         environment: launchEnvironment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
-                        autoAcceptAlerts: autoAcceptAlerts
+                        autoAcceptAlerts: !noAutoAcceptAlerts
                     )
                 }
             )

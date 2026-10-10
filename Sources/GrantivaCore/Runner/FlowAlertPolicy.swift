@@ -1,6 +1,7 @@
 import Foundation
 
-/// Keeps the runner from auto-accepting the app's own alerts on iOS.
+/// Opt-out (`--no-auto-accept-alerts`) from the runner's alert auto-accept
+/// on iOS, for apps whose own alerts were being dismissed mid-flow.
 ///
 /// The runner turns every `launchApp` whose permissions are all `allow`
 /// (including the default, no `permissions:` at all) into a WebDriverAgent
@@ -10,14 +11,14 @@ import Foundation
 /// alert's default button. An app's "Discard changes?" alert can vanish before
 /// the flow reaches its `tapOn: "Keep Editing"`.
 ///
-/// On a simulator the runner already grants permissions up front through
-/// `simctl privacy` (the same `all: allow` default), so the monitor is not
-/// what answers permission prompts. Grantiva therefore adds one `unset` entry
-/// to each `launchApp`'s permissions in the staged copy of the flow: the
-/// runner skips `unset` entries when it grants permissions, so the grants are
-/// unchanged, but a map with mixed values registers no alert monitor. App
-/// alerts stay up until the flow answers them. `--auto-accept-alerts` skips
-/// this rewrite and restores the runner's accept monitor.
+/// The monitor stays on by default: it is the only thing that answers system
+/// prompts `simctl privacy` cannot pre-grant (notifications, tracking, local
+/// network, Bluetooth). With the opt-out, Grantiva adds one `unset` entry to
+/// each `launchApp`'s permissions in the staged copy of the flow (and of every
+/// `runFlow` file it references): the runner skips `unset` entries when it
+/// grants permissions, so the simulator grants are unchanged, but a map with
+/// mixed values registers no alert monitor. The proper fix, accepting only
+/// SpringBoard (system) alerts, belongs in grantiva-runner.
 public enum FlowAlertPolicy {
     /// The permission entry Grantiva adds. Not a real permission service:
     /// the runner ignores `unset` entries when granting.
@@ -128,5 +129,42 @@ public enum FlowAlertPolicy {
         let inner = value.dropFirst().dropLast().trimmingCharacters(in: .whitespaces)
         if inner.isEmpty { return "{ all: allow, \(sentinelEntry) }" }
         return "{ \(sentinelEntry), \(inner) }"
+    }
+}
+
+/// Stages rewritten copies of the `runFlow` files a flow references, so a
+/// shared `setup.yaml`'s `launchApp` gets the same alert policy as the flow
+/// that calls it. Pass `stage` as `FlowReferenceResolver.resolve`'s
+/// `mapFile`. Each file is staged once; cycles reuse the first copy.
+final class FlowAlertStager {
+    let directory: String
+    private var staged: [String: String] = [:]
+    /// Staged copy → the original file, for rewriting runner output.
+    private(set) var pathMap: [String: String] = [:]
+
+    init(directory: String) {
+        self.directory = directory
+    }
+
+    func stage(_ absolutePath: String) throws -> String {
+        if let existing = staged[absolutePath] { return existing }
+        let fm = FileManager.default
+        // A missing file is left for the runner to report against the
+        // path the user wrote.
+        guard fm.fileExists(atPath: absolutePath) else { return absolutePath }
+        let stageDir = "\(directory)/\(staged.count)"
+        try fm.createDirectory(atPath: stageDir, withIntermediateDirectories: true)
+        let target = "\(stageDir)/\((absolutePath as NSString).lastPathComponent)"
+        staged[absolutePath] = target
+        pathMap[target] = absolutePath
+
+        let content = try String(contentsOfFile: absolutePath, encoding: .utf8)
+        let resolved = try FlowReferenceResolver.resolve(
+            in: content,
+            relativeTo: (absolutePath as NSString).deletingLastPathComponent,
+            mapFile: stage
+        )
+        try FlowAlertPolicy.disableAutoAccept(in: resolved).write(toFile: target, atomically: true, encoding: .utf8)
+        return target
     }
 }
