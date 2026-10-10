@@ -57,6 +57,8 @@
 - `doctor` warns when `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set to a directory without `platform-tools/adb`, instead of silently reporting the SDK it fell back to.
 - `doctor`'s Git Repository check passes in any subdirectory of a work tree (e.g. the `android/` project of a mono-repo), instead of advising `git init` there.
 - `grantiva init` (iOS) writes the newest iPhone simulator type an installed runtime supports instead of `iPhone 16`, and warns on stderr when the scheme (`MyApp`, no Xcode project found) or the simulator is a placeholder.
+- MCP `grantiva_tap {"label": …}` and `grantiva_script` `tap` steps on iOS now match the accessibility label (what `grantiva_a11y_tree` shows as `label`), falling back to the element name. They used WebDriverAgent's "link text" strategy, which matches only the name, so a tab labelled "Favorites" whose name is "heart" was "not found".
+- MCP `grantiva_type` works on iOS: keystrokes go to the agent's `/session/{id}/wda/keys` endpoint (falling back to `/keys` only on a 404) instead of `/keys`, which GrantivaAgent does not serve, and a failure names the HTTP status instead of "exited with code 1".
 
 ## 2.0.1 — 2026-10-07
 
