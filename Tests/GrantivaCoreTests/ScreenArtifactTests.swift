@@ -91,4 +91,17 @@ final class ScreenArtifactTests: XCTestCase {
         try await BaselineStore.local(directory: root.path).delete("Deep Links")
         XCTAssertFalse(FileManager.default.fileExists(atPath: legacy.path))
     }
+
+    // A capture run removes the screen's previous capture under either name,
+    // so a legacy file cannot pass for this run's capture.
+    func testInvalidatingCapturesRemovesLegacyNamesToo() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-artifact-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        try Data("old".utf8).write(to: root.appendingPathComponent("Deep%20Links.png"))
+        try Data("new".utf8).write(to: root.appendingPathComponent("Deep Links.png"))
+        try Data("keep".utf8).write(to: root.appendingPathComponent("Other.png"))
+        try RunnerSession.invalidateCaptures(of: [GrantivaConfig.Screen(name: "Deep Links", path: .launch)], in: root.path)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: root.path), ["Other.png"])
+    }
 }

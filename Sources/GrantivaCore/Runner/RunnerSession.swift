@@ -241,9 +241,14 @@ public enum RunnerSession {
     static func invalidateCaptures(of screens: [GrantivaConfig.Screen], in outputDir: String) throws {
         let fileManager = FileManager.default
         for screen in screens {
-            let path = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
-            if fileManager.fileExists(atPath: path) {
-                try fileManager.removeItem(atPath: path)
+            // The legacy (percent-encoded) name too: diff compare still reads
+            // it, so a stale one would stand in for a failed capture.
+            let names = Set([ScreenArtifact.fileName(for: screen.name), ScreenArtifact.legacyFileName(for: screen.name)])
+            for name in names {
+                let path = "\(outputDir)/\(name)"
+                if fileManager.fileExists(atPath: path) {
+                    try fileManager.removeItem(atPath: path)
+                }
             }
         }
     }
