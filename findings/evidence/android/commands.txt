@@ -1,0 +1,19 @@
+# Environment for every command: GRANTIVA=$HOME/.grantiva-qa/bin/grantiva, GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner,
+# GRANTIVA_SESSION_ID=reg-android, GRANTIVA_API_KEY unset, JAVA_HOME=openjdk@21, Android SDK tools on PATH.
+# SCRATCH=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android
+# APP=$SCRATCH/android (copy of landmarks-demo/android); EV=findings/evidence/android. Commands run with cwd=$APP unless noted.
+# Each output file holds stdout+stderr; "exit N" lines were appended with: echo "exit $?" >> FILE
+adb devices; emulator -list-avds                                                    > EV/host-before.txt (with date)
+$GRANTIVA emulator ensure --name qa-reg-android                                       > EV/emulator-ensure.txt
+$GRANTIVA build install --device emulator-5554                                        > EV/build-install.txt
+$GRANTIVA run --device emulator-5554 --no-build --report-dir $SCRATCH/run-full       > EV/run-attempt1-device-offline.txt (runner log copied to run-attempt1-runner.log)
+$GRANTIVA run --device emulator-5554 --no-build --report-dir $SCRATCH/run-full       > EV/run-attempt2-03edit-fail.txt (failure PNG in captures-attempt2/)
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/03-edit.yaml --snapshot full --report-dir $SCRATCH/r03   > EV/flow03-rerun.txt (client log copied to flow03-client.log)
+$GRANTIVA run --device emulator-5554 --no-build --report-dir $SCRATCH/run-full       > EV/run.txt (captures/ = $SCRATCH/run-full/captures)
+$GRANTIVA run --device emulator-5554 --no-build --continue-on-failure --report-dir $SCRATCH/run-cof   > EV/run-continue-on-failure.txt (captures-continue-on-failure/)
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --report-dir $SCRATCH/run-99   > EV/run-99.txt (captures-99/)
+$GRANTIVA emulator teardown --serial emulator-5554 && avdmanager delete avd -n qa-reg-android   > EV/teardown.txt  (first teardown, 14:49:07; file mtime)
+date; adb devices; emulator -list-avds; cat ~/.grantiva/android/started.json; ps | grep qemu   > EV/host-after.txt
+cat ~/.grantiva/android/created-avds.json                                          > EV/created-avds-after.json
+cp $APP/qa/*.yaml $APP/.maestro/99-crash.yaml EV/flows/   (probe flows used by A01/A02/A06/A07/A13; qa-* copied from the previous round's flows dir)
+Fix round (second device session, 14:54 onward): see EV/fix-round-commands.txt

@@ -1,0 +1,5 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --device emulator-5554 --logs --verbose                       > none.txt
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --device emulator-5554 --logs --logs-level <default|info|debug> --verbose   > <level>.txt
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --device emulator-5554 --logs --logs-level warning           > warning.txt
+summary.txt is computed from those files (formula inside).

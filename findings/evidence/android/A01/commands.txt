@@ -1,0 +1,14 @@
+# Environment for every command: GRANTIVA=$HOME/.grantiva-qa/bin/grantiva, GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner,
+# GRANTIVA_SESSION_ID=reg-android, GRANTIVA_API_KEY unset, JAVA_HOME=openjdk@21, Android SDK tools on PATH.
+# SCRATCH=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android
+# APP=$SCRATCH/android (copy of landmarks-demo/android); EV=findings/evidence/android. Commands run with cwd=$APP unless noted.
+# Each output file holds stdout+stderr; "exit N" lines were appended with: echo "exit $?" >> FILE
+adb -s emulator-5554 logcat -c
+$GRANTIVA run --no-build --flow qa/qa-note.yaml --device emulator-5554 --env 'LANDMARKS_NOTE=a=b c' --report-dir $SCRATCH/a01-note   > note.txt
+adb -s emulator-5554 logcat -d | grep -i extras                                     > note-logcat-extras.txt
+adb -s emulator-5554 logcat -c
+$GRANTIVA run --no-build --flow qa/qa-q.yaml --device emulator-5554 --env "Q=it's" --report-dir $SCRATCH/a01-q   > q.txt
+adb -s emulator-5554 logcat -d | grep -i extras                                     > q-logcat-extras.txt
+$GRANTIVA run --no-build --flow .maestro/09-seed-empty.yaml --device emulator-5554  > 09-seed-empty.txt
+$GRANTIVA run --no-build --flow .maestro/10-seed-many.yaml --device emulator-5554   > 10-seed-many.txt
+cp $SCRATCH/a01-note/client.log note-client.log; cp $SCRATCH/a01-q/client.log q-client.log; cp $SCRATCH/a01-note/captures/qa-note-cmd-003-Note.png .

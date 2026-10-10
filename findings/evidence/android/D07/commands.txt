@@ -1,0 +1,8 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+cd <worktree> && sed -n 28,42p docs/android.md   > android-devices-section.txt
+adb devices > adb-before.txt
+grantiva-android.yml temporarily without the emulator: line (restored after):
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml   > run-no-device.txt (two running: 5554 and the accidental 5556 Pixel_8_API_35)
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml   > run-no-device-two-running.txt (5554 and qa-reg-android-2)
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml   > run-no-device-one-running.txt (5554 only)
+(no --device on purpose: these test device selection)

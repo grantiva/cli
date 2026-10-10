@@ -1,0 +1,5 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA run --no-build --flow qa/qa-tab-landmarks.yaml --device emulator-5554 --snapshot full --report-dir $SCRATCH/a13   > qa-tab-landmarks.txt
+$GRANTIVA diff capture --no-build --device emulator-5554                            > diff-capture.txt (captures/ = .grantiva/captures/android/*.png)
+grantiva-android.yml temporarily replaced by a single screen ExactLakes (tap "Deep Links"; tap {text: "Landmarks", exact: true}; tap "Lakes"; assert_visible {text: "Mono Lake", exact: true}), then restored:
+$GRANTIVA diff capture --no-build --device emulator-5554 --verbose                  > exact-mapping.txt

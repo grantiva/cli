@@ -1,0 +1,5 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA build build --variant noSuchVariant          > nosuch.txt
+$GRANTIVA build build --variant noSuchVariant --json   > nosuch.json 2> nosuch-json.stderr
+$GRANTIVA build build --module nosuch                  > module-nosuch.txt
+(no --device on these three; emulator-5554 was the only device running then, and Gradle failed before any install)

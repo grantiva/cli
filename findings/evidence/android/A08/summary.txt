@@ -1,4 +1,8 @@
-none:    7 I    1 o   14 W  | logcat args: 
-default:    7 I    1 o   14 W  | logcat args: 
-info:    7 I    1 o   14 W  | logcat args: 
-debug:    7 D    7 I    1 o   14 W  | logcat args: 
+# count of [log] lines by priority letter (column 4, first char); 'o' = the '--------- beginning of main' banner
+# count() { grep '\[log\]' FILE | awk '{print substr($4,1,1)}' | sort | uniq -c; }
+none:    7 I    1 o   14 W 
+default:    7 I    1 o   14 W 
+info:    7 I    1 o   14 W 
+debug:    7 D    7 I    1 o   14 W 
+warning: exit 64
+# logcat argv seen during a --logs run (A07/ps.txt): adb -s emulator-5554 logcat --uid=10207 -v time -T <epoch> -s *:I

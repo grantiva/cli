@@ -1,0 +1,8 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA emulator ensure --name qa-reg-android-2 --headless   > ensure.txt;  $GRANTIVA emulator sessions > sessions-1.txt
+adb -s emulator-5556 emu kill > emu-kill.txt   (wait for pid 29443 to exit)
+emulator -avd qa-reg-android-2 -port 5556 -no-window -no-snapshot-save -no-boot-anim &   (hand start, pid 29938) > hand-start.txt
+$GRANTIVA emulator sessions > sessions-2.txt; $GRANTIVA emulator sessions --json > sessions-2.json
+$GRANTIVA emulator teardown --serial emulator-5556 > teardown-no-force.txt
+$GRANTIVA emulator ensure --name qa-reg-android-2 > ensure-on-hand-started.txt; cat ~/.grantiva/android/started.json > started-after-ensure.json
+(after D07) adb -s emulator-5556 emu kill; avdmanager delete avd -n qa-reg-android-2 > avd-delete.txt

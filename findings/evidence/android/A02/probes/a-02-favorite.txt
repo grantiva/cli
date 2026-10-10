@@ -1,0 +1,178 @@
+# command: /Users/kyle/.grantiva-qa/bin/grantiva run --no-build --device emulator-5554 --flow .maestro/02-favorite.yaml --snapshot full --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.6s)
+    ✓ tapOn: text="Lake Tahoe" (1.2s)
+    ✓ tapOn: text="Favorite" (1.1s)
+    ✓ assertVisible: text="Unfavorite" (293ms)
+    ✓ tapOn: text="Landmarks" (387ms)
+    ✓ tapOn: text="Favorites" (431ms)
+    ✓ assertVisible: text="Lake Tahoe" (265ms)
+    ✓ takeScreenshot (282ms)
+    ✓ swipe: LEFT (514ms)
+    ✓ tapOn: text="Remove" (335ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (484ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (157ms)
+    ✓ takeScreenshot (276ms)
+✓ 02-favorite 11.1s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.9s)
+    ✓ tapOn (1.4s)
+    ✓ tapOn (1.3s)
+    ✓ assertVisible (477ms)
+    ✓ tapOn (887ms)
+    ✓ tapOn (659ms)
+    ✓ assertVisible (463ms)
+    ✓ takeScreenshot (413ms)
+    ✓ swipe (671ms)
+    ✓ tapOn (479ms)
+    ✓ assertNotVisible (618ms)
+    ✓ assertVisible (290ms)
+    ✓ takeScreenshot (435ms)
+✓ 02-favorite 11.0s
+
+  13 steps passing (11.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      11.1s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      11.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a/allure-results
+
+  Built by Grantiva
+
+
+  02-favorite-cmd-000-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-000-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-001-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-001-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-002-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-002-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-003-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-003-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-004-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-004-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-005-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-005-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-006-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-006-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-007-Favorites With Item
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-007-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-007-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-008-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-008-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-009-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-009-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-010-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-010-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-011-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-011-before
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-012-Favorites Empty
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-012-after
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-012-before
+    ✓ Run flow "02-favorite"
+
+  Screens: 28 total, 28 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/p-a/captures/
+
+exit 0

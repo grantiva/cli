@@ -1,0 +1,5 @@
+# Env as in EV/commands.txt; cwd $APP (scratch copy of landmarks-demo/android) unless noted; output files = stdout+stderr with "exit N" appended.
+$GRANTIVA run --no-build --flow qa/qa-longwait.yaml --device emulator-5554 --keep-alive --ready-file $SCRATCH/int.ready > int.txt & pid=$!; sleep 15; kill -INT $pid; wait $pid   (int.ready)
+$GRANTIVA run --no-build --flow qa/qa-longwait.yaml --device emulator-5554 --timeout 30 --ready-file $SCRATCH/to.ready > timeout.txt   (timeout.ready)
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml --device emulator-5554 --ready-file $SCRATCH/x.ready > x.txt   (x.ready)
+$GRANTIVA run --no-build --flow .maestro/05-category.yaml --device emulator-5554 --timeout 5 --ready-file $SCRATCH/val.ready > val.txt   (val.ready)

@@ -13,7 +13,7 @@ landmarks-demo/android, variant freeDebug. Evidence paths are relative to `findi
 | screens (Home, Favorites, Deep Links, Lakes, Detail) | pass | run.txt, captures/ | 21/21 steps; Lakes and Detail captured correctly |
 | 01-browse | pass | run.txt, run-continue-on-failure.txt | |
 | 02-favorite | pass | run.txt, A02/02-favorite.txt | passes via the row's visible `Remove` button; the swipe itself reveals nothing (see A02) |
-| 03-edit | regressed | run.txt, run-continue-on-failure.txt, flow03-rerun.txt, flow03-client.log, captures/failure-*.png | Expected `assertVisible "Golden Gate Bridge Renamed"` after `inputText: " Renamed"` (passed in the last round, where the runner typed with W3C key actions). Actual: fails 3 of 3 runs. The runner now sends `POST /element/<id>/value {"text":...}`, which replaces the field: the Name field holds ` Renamed` and the assert times out (17.8s). |
+| 03-edit | regressed | run.txt, run-attempt2-03edit-fail.txt, run-continue-on-failure.txt, flow03-rerun.txt, flow03-client.log, flow03-prior-round-comparison.txt, captures/failure-*.png | Expected `assertVisible "Golden Gate Bridge Renamed"` after `inputText: " Renamed"`. The previous round passed: its client.log line 23 typed with `POST /actions` keyDown/keyUp, and report.json says `passed` (flow03-prior-round-comparison.txt). Actual: fails 4 of 4 runs (run-attempt2, run.txt, continue-on-failure, rerun). grantiva-runner now sends `POST /element/<id>/value {"text":...}` (flow03-client.log:31), and the Name field ends up holding ` Renamed` (failure PNG). Then `tapOn "Done"` clicks (994,2196), the keyboard's Done key (flow03-client.log:42), not the toolbar button, so the sheet stays open and the assert times out (17.8s). |
 | 04-discard | pass | run-continue-on-failure.txt | |
 | 05-category | pass | run-continue-on-failure.txt | |
 | 06-visit | pass | run-continue-on-failure.txt | |
@@ -27,7 +27,7 @@ landmarks-demo/android, variant freeDebug. Evidence paths are relative to `findi
 
 Totals: flows 11/12 (03-edit regressed); screens pass. The plan's `run` is fail-fast, so run.txt stops after 03-edit
 (2/12, rest SKIP); run-continue-on-failure.txt is the same run with `--continue-on-failure` (11/12).
-run-attempt1-device-offline.txt: the first `run`, 30 s after boot, lost the device (`adb: device offline`) at the
+run-attempt1-device-offline.txt (runner log: run-attempt1-runner.log): the first `run`, 30 s after boot, lost the device (`adb: device offline`) at the
 first screens step; an infrastructure transient on a freshly booted AVD, not counted. run-attempt2-03edit-fail.txt
 is the second attempt, with the same 03-edit failure.
 
@@ -36,7 +36,7 @@ is the second attempt, with the same 03-edit failure.
 | ID | verdict | evidence path | note |
 |---|---|---|---|
 | A01 | pass | A01/ | `--env 'LANDMARKS_NOTE=a=b c'`: logcat `extras=[LANDMARKS_NOTE=a=b c]`, qa-note passes, note shown verbatim (A01/qa-note-cmd-003-Note.png). `--env "Q=it's"`: launches, `extras=[Q=it's]`, no shell error. 09/10 pass without `--env`; 99 fails at launchApp. docs/android.md:55 and README:177 document extras plus header `env:` delivery. |
-| A02 | regressed | A02/ | Partly met: the runner looks up "Lake Tahoe" (`/element` + `/rect` in 02-favorite-client.log), and `from: "No Such Row"` fails with `Element not found for swipe: ... no such element` after 17.2s (02-nosuch.txt, exit 1). Not met: "cmd-008-after.png shows the revealed swipe action". `02-favorite-cmd-008-before.png` and `-after.png` are byte-identical (md5 dab5f51f...), and probe2 adds a settle wait and is still unchanged. The runner swipes from the element centre to 10% of the screen width: (155,500) to (108,500), 47 px. A hand `adb shell input swipe 155 500 108 500 300` does not reveal either; `155 500 0 500 300` does. The flow still passes only through the visible `Remove` button, as in the original finding. |
+| A02 | regressed | A02/, A02/probes/ (summary.txt, commands.txt, hashes.txt, png/) | Met: the runner looks up "Lake Tahoe" (`/element` + `/rect`, A02/02-favorite-client.log), and `from: "No Such Row"` fails with `Element not found for swipe` after 17.2s (A02/02-nosuch.txt, exit 1). Not met: "cmd-008-after.png shows the revealed swipe action". In the fix-round device re-check with touch traces on, the `direction: LEFT, from: "Lake Tahoe"` swipe draws only a short trace inside the text element and the row stays closed, both in flow 02 (a) and in a one-step probe (c). A full-length runner coordinate swipe across the row, `60%,22%` to `5%,22%` (b2), does open it, as does the hand `adb shell input swipe 648 528 54 528 300` control (d). So runner swipes work in general; the from-element swipe is too short. The first-session probe `60%,17%` (b) missed because y=408 lies above this row (row [0,432][1080,621]). Hypothesis, from the grantiva-runner source rather than shown on device: the from-swipe runs from the element centre to 10% of the screen width, (155,500) to (108,500) = 47 px. A hand swipe over exactly those coordinates leaves the row closed, while 155 to 0 opens it (probes/e-manual-short-swipes.txt). Flow 02 still passes only through the visible `Remove` button. Separate: an absolute-pixel `start: 900, 520 / end: 100, 520` swipe (c2) never touches the row; the overlay reads dX -8640, which suggests the numbers are taken as percentages (hypothesis). |
 | A03 | pass | A03/ | `--app-file app-paid-debug.apk` with config `application_id` free: warns, installs and tests `.paid`, report `app.id` = `com.kylebrowning.landmarks.paid`. Same for `run --variant paidDebug` and `build install --variant paidDebug --json` (`applicationId` .paid). An explicit `--application-id` override warns. |
 | A04 | pass | A04/hashes.txt | 10 of 10 `diff capture` runs: Deep Links hash never equals Home's. The generated flow has `waitForAnimationToEnd` after each tap. |
 | A05 | pass | A05/ | Idle screen `record --duration 2 --frames-at 1000 --json`: exit 0, 001000ms.png written, `actualMilliseconds: 0` (the held frame), mp4 duration 2.000000. |
@@ -47,20 +47,21 @@ is the second attempt, with the same 03-edit failure.
 | A10 | pass | A10/ | Refusal: `Emulator emulator-5554 is already owned ... grantiva emulator teardown --serial emulator-5554 --force ... grantiva emulator ensure --name <unique-name>.`, with no ` exited with code` suffix. The refused run wrote no failure screenshot (failure-shot-timeline.txt; the one PNG comes from the keep-alive run's own Ctrl-C). `build install --json` has `applicationId` and `device{name,serial}`; `Resolved: module=app variant=freeDebug device=...`; the record error has no suffix. |
 | A11 | pass | A11/mcp.jsonl | Over MCP, after `grantiva_tap "Deep Links"`, `grantiva_a11y_check` reports no violations (0 `missing_label`). mcp-attempt1.jsonl: the first tap returned element-not-found while the app was on the Landmarks tab with Deep Links visible, and a retry 2 s later worked (not counted). |
 | A12 | pass | A12/ | `doctor --platform android` in `<git root>/android`: `✓ Git Repository Detected`; a dir with no ancestor `.git` still warns. |
-| A13 | pass | A13/ | qa-tab-landmarks: tapping "Landmarks" on Deep Links lands on the Landmarks tab (`text("Landmarks")` exact selector), not Golden Gate. Stock `diff capture` captures Lakes and Detail. The mapping form `tap: {text: "Landmarks", exact: true}` and `assert_visible: {text:..., exact: true}` works (exact-mapping.txt). |
-| C02 | pass | C02/ | Android-detail path: `qa-reg-android-2` was booted by grantiva, then `adb emu kill`, then hand-started on 5556. `emulator sessions` no longer lists 5556, `teardown --serial emulator-5556` without `--force` refuses (exit 1), the hand-started emulator survives, and `emulator ensure` on it reuses it without recording it. Not run: the `adb kill-server` repro path (restarts the shared adb server and needs the user's AVD) and `teardown --all` (forbidden here). |
+| A13 | pass | A13/ | Criteria: (1) "`tap:` ... accept a mapping form `{text: \"Landmarks\", exact: true}` that FlowGenerator emits as `tapOn: {text: ..., exact: true}`; and/or the runner prefers a node whose full text equals the query before falling back to substring matches"; (2) "With either change, the stock landmarks `screens:` config captures Lakes and Detail on Android." (2) holds: stock `run` and `diff capture` capture Lakes and Detail (run.txt, diff-capture.txt, captures/). (1) holds through the runner's preference, not the mapping form. In qa-tab-landmarks, tapping "Landmarks" on Deep Links resolves `new UiSelector().text("Landmarks")` and lands on the Landmarks tab, not the Golden Gate link. grantiva accepts the mapping form and emits `exact=true` (exact-mapping.txt:74), but grantiva-runner prints `⚠ "exact" is not supported on android — will be ignored` (exact-mapping.txt:55), so `exact:` has no effect on Android. |
+| C02 | pass (partial) | C02/ | Exercised (Android-detail path): grantiva booted `qa-reg-android-2`, then `adb emu kill`, then it was hand-started on 5556. `emulator sessions` no longer lists 5556; `teardown --serial emulator-5556` without `--force` refuses (exit 1) and the hand-started emulator survives; `emulator ensure` on it reuses it without writing a record. |
+| C02 (not exercised) | not-verifiable-here | — | Criterion 1 via the brief's primary repro ("Re-running the repro leaves no record for emulator-5554, and `emulator teardown --all` does not kill it") was not run: it needs `adb kill-server` on the shared adb server and booting the user's `Pixel_8_API_35`, and `teardown --all` is forbidden in this pass. The `choosePort` console-port criterion was not exercised directly either. |
 | D06 | pass | D06/ | docs/android-environment.md §CI says `ci run` refuses Android, points to local `diff capture/compare/approve`, and keeps the self-hosted-Mac note. `ci run --platform android` gives rc=1 with "Android baselines are local only ...". |
 | D07 | pass | D07/ | docs/android.md §Devices states the order with no "Only running emulators" sentence; the EmulatorManager.swift doc comment matches. Behaviour without `emulator:`: two running gives an error listing both; one running is used (05-category passes). |
 
-Counts: 16 briefs checked: 15 pass, 1 regressed (A02), 0 not-verifiable. Flows: 11/12 (03-edit regressed).
+Counts: 16 briefs checked: 15 pass (C02 partial; one C02 sub-criterion not-verifiable-here), 1 regressed (A02). Flows: 11/12 (03-edit regressed, 4/4 runs).
 99-crash fails as expected.
 
 ## Other observations (not brief criteria)
 
 - `grantiva build build` (no `--device`) boots the config's `emulator:` AVD when it is not running. During A03,
-  `build build --variant paidDebug` booted the user's AVD `Pixel_8_API_35` headless as emulator-5556 (ledger
-  record with `GRANTIVA_SESSION_ID=reg-android`, incident-5556/). This slice started it, so this slice tore it
-  down with `emulator teardown --serial emulator-5556`. A build needs no device; booting one is surprising.
+  `$GRANTIVA build build --variant paidDebug` (cwd scratch app, no `--device`) booted the user's AVD `Pixel_8_API_35` headless as emulator-5556 (ledger
+  record with `GRANTIVA_SESSION_ID=reg-android`, qemu started 14:39:10, incident-5556/). This slice started it, so
+  this slice tore it down at 14:47:26 with `$GRANTIVA emulator teardown --serial emulator-5556`. A build needs no device; booting one is surprising.
 - `Resolved: ... device= ` and `Booting emulator: ` print an empty serial when no device is configured or passed
   (D07/run-no-device-*.txt).
 - `diff capture` prints `Simulator: qa-reg-android (emulator-5554)`; `record --json` uses the keys `simulator`
@@ -69,3 +70,10 @@ Counts: 16 briefs checked: 15 pass, 1 regressed (A02), 0 not-verifiable. Flows: 
 - `~/.grantiva/android/created-avds.json` still lists `qa-reg-android` and `qa-reg-android-2` after
   `avdmanager delete avd` (and older `qa-runner-*` and `qa-repack` names that no longer exist).
 - A Ctrl-C of a `--keep-alive` run whose flow passed writes `failure-<ts>.png` (A10/failure-shot-timeline.txt).
+- Absolute-pixel swipe coordinates (`start: 900, 520`) never reach the screen point; the overlay suggests they are
+  scaled as percentages (A02/probes, c2; hypothesis).
+- README documents the `{text: ..., exact: true}` screens form, but grantiva-runner ignores `exact` on Android with
+  a warning (A13/exact-mapping.txt:55).
+
+Each evidence directory has a `commands.txt` with the exact commands; the top-level list is `commands.txt`, and the
+fix round is `fix-round-commands.txt`.

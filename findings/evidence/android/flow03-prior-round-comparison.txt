@@ -1,0 +1,13 @@
+# Previous round (grantiva 2.0.1, grantiva-runner 1.1.18-grantiva.7), qa-android worktree findings/evidence/AND-043/03-edit/
+$ grep -n "/actions\|/value" client.log | cut -c1-200
+23:14:07:59.543073 POST /session/64f5cd03-3d05-440c-9c37-e39fcd02f270/actions [770.134791ms] OK body={"actions":[{"actions":[{"type":"keyDown","value":" "},{"type":"keyUp","value":" "},{"type":"keyDow
+$ jq -c '[.. | objects | select(has("status")) | .status] | .[0:3]' report.json
+["passed","passed"]
+
+# This round (grantiva 2.1.0, grantiva-runner 1.1.28-grantiva.8), EV/flow03-client.log
+$ grep -n "/actions\|/value\|gestures/click" flow03-client.log | grep -v ERR
+13:14:31:11.149325 POST /session/5b41287a-a0e1-4d26-8d5b-7cf5b6ec223d/appium/gestures/click [45.253125ms] OK body={"offset":{"x":907,"y":2232}}
+20:14:31:11.946214 POST /session/5b41287a-a0e1-4d26-8d5b-7cf5b6ec223d/appium/gestures/click [49.985792ms] OK body={"offset":{"x":540,"y":685}}
+28:14:31:13.165711 POST /session/5b41287a-a0e1-4d26-8d5b-7cf5b6ec223d/appium/gestures/click [62.760375ms] OK body={"offset":{"x":540,"y":558}}
+31:14:31:14.763345 POST /session/5b41287a-a0e1-4d26-8d5b-7cf5b6ec223d/element/00000000-0000-0034-0000-00ca00000004/value [73.353625ms] OK body={"text":"<redacted>"}
+42:14:31:15.965312 POST /session/5b41287a-a0e1-4d26-8d5b-7cf5b6ec223d/appium/gestures/click [73.332417ms] OK body={"offset":{"x":994,"y":2196}}
