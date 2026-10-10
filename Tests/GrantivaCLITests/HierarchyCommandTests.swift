@@ -114,4 +114,18 @@ func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Voi
         try await expression()
         XCTFail("expected an error", file: file, line: line)
     } catch {}
+
+    // `--json` was advertised (GlobalOptions) but never read, so it printed XML.
+    func testJSONFlagSelectsJSONOutput() throws {
+        XCTAssertEqual(try HierarchyCommand.parse(["--json"]).outputFormat, .json)
+        XCTAssertEqual(try HierarchyCommand.parse(["--json", "--format", "json"]).outputFormat, .json)
+        XCTAssertEqual(try HierarchyCommand.parse([]).outputFormat, .xml)
+        XCTAssertEqual(try HierarchyCommand.parse(["--format", "json"]).outputFormat, .json)
+    }
+
+    func testJSONFlagWithXMLFormatIsAUsageError() {
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--json", "--format", "xml"])) { error in
+            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+        }
+    }
 }

@@ -699,8 +699,13 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
     @Option(name: .shortAndLong, help: "WDA port (auto-detected from active session if omitted)")
     var port: UInt16?
 
-    @Option(name: .shortAndLong, help: "Output format: tree, json, or xml (default: tree)")
-    var format: String = "tree"
+    @Option(name: .shortAndLong, help: "Output format: tree, json, or xml (default: tree). --json is the same as --format json.")
+    var format: String?
+
+    /// `--json` selects JSON, as it does on every command that offers it.
+    var outputFormat: String {
+        options.json ? "json" : (format ?? "tree").lowercased()
+    }
 
     @Option(name: .long, help: "Simulator UDID or adb serial when falling back to a `grantiva run --keep-alive` session")
     var udid: String?
@@ -709,6 +714,9 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
 
     func validate() throws {
         if let udid { _ = try DeviceID.validate(udid) }
+        if options.json, let format, format.lowercased() != "json" {
+            throw ValidationError("--json and --format \(format) conflict; pass one.")
+        }
     }
 
     struct Target: Equatable {
@@ -801,7 +809,7 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             throw GrantivaError.commandFailed("Empty hierarchy response", 1)
         }
 
-        switch format.lowercased() {
+        switch outputFormat {
         case "xml":
             Output.line(xmlSource)
 
@@ -819,12 +827,12 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             printTree(element: tree, indent: 0)
 
         default:
-            throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
+            throw GrantivaError.invalidArgument("Invalid format '\(outputFormat)'. Use: tree, json, or xml")
         }
     }
 
     private func render(client: DriverClient) async throws {
-        switch format.lowercased() {
+        switch outputFormat {
         case "xml":
             Output.line(try await client.hierarchyXML())
         case "json":
@@ -833,7 +841,7 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
         case "tree":
             printTree(element: try await client.hierarchy(), indent: 0)
         default:
-            throw GrantivaError.invalidArgument("Invalid format '\(format)'. Use: tree, json, or xml")
+            throw GrantivaError.invalidArgument("Invalid format '\(outputFormat)'. Use: tree, json, or xml")
         }
     }
 

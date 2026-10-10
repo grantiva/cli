@@ -38,8 +38,13 @@ struct HierarchyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
     var timeout: Double = 60
 
-    @Option(name: .long, help: "Output format: xml or json")
-    var format: OutputFormat = .xml
+    @Option(name: .long, help: "Output format: xml (default) or json. --json is the same as --format json.")
+    var format: OutputFormat?
+
+    /// `--json` selects JSON, as it does on every command that offers it.
+    var outputFormat: OutputFormat {
+        options.json ? .json : (format ?? .xml)
+    }
 
     var devicePlatform = InjectedDevicePlatform()
 
@@ -53,6 +58,9 @@ struct HierarchyCommand: AsyncParsableCommand {
             throw ValidationError("--timeout must be greater than zero")
         }
         if let udid { _ = try DeviceID.validate(udid) }
+        if options.json, format == .xml {
+            throw ValidationError("--json and --format xml conflict; pass one.")
+        }
     }
 
     func run() async throws {
@@ -77,7 +85,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         // The runner's `sessionId` is its own keep-alive identifier, not a
         // WebDriverAgent session, so the session-scoped route 404s. The bare
         // /source route serves the current application's tree.
-        let path = format == .json ? "/source?format=json" : "/source"
+        let path = outputFormat == .json ? "/source?format=json" : "/source"
 
         guard let url = URL(string: "http://127.0.0.1:\(session.port)\(path)") else {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
@@ -98,7 +106,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
 
         // WDA wraps /source in {"value": "<xml>"}. Unwrap for cleanliness.
-        if format == .xml, let wrapped = unwrapWDASource(data) {
+        if outputFormat == .xml, let wrapped = unwrapWDASource(data) {
             Output.line(wrapped)
         } else {
             Output.write(data)
@@ -114,7 +122,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         let attachment = try await device.attachDriver(deviceID: serial, port: nil)
         let text: String
         do {
-            switch format {
+            switch outputFormat {
             case .xml:
                 text = try await attachment.client.hierarchyXML()
             case .json:

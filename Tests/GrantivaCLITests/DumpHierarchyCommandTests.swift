@@ -53,4 +53,16 @@ final class DumpHierarchyCommandTests: XCTestCase {
         XCTAssertNoThrow(try DumpHierarchyCommand.parse(["--udid", "emulator-5554"]))
         XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--udid", "../x"]))
     }
+
+    func testJSONFlagSelectsJSONOutput() throws {
+        XCTAssertEqual(try DumpHierarchyCommand.parse(["--json"]).outputFormat, "json")
+        XCTAssertEqual(try DumpHierarchyCommand.parse([]).outputFormat, "tree")
+        XCTAssertEqual(try DumpHierarchyCommand.parse(["--format", "XML"]).outputFormat, "xml")
+        XCTAssertEqual(try DumpHierarchyCommand.parse(["--json", "--format", "json"]).outputFormat, "json")
+        for other in ["xml", "tree"] {
+            XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--json", "--format", other])) { error in
+                XCTAssertEqual(DumpHierarchyCommand.exitCode(for: error), .validationFailure)
+            }
+        }
+    }
 }

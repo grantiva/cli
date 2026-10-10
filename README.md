@@ -355,8 +355,9 @@ grantiva console webhooks list
 
 Commands that advertise `--json` emit structured output. Consult
 `grantiva <command> --help` for the output modes supported by a specific command;
-for example, `hierarchy` emits XML by default, while runner lifecycle commands
-do not have a JSON result.
+for example, `hierarchy` emits XML by default and JSON with `--json` (the same
+as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
+`install`, `version`) print a JSON result with `--json`.
 
 ### stdout is the result, stderr is the commentary
 
