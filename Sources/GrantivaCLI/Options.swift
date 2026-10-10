@@ -128,9 +128,13 @@ struct PlatformOptions: ParsableArguments {
     /// GRANTIVA_PLATFORM) whose config file is missing while the other
     /// platform's file is present also throws: that is a wrong directory or a
     /// skipped `init`, not a config-less run.
+    ///
+    /// `includeMaestroDirectory: false` (a run given `--flow`) skips the
+    /// `.maestro/` fallback so unrelated flow files are never parsed.
     func loadConfig(
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
-        environment: [String: String] = ProcessInfo.processInfo.environment
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        includeMaestroDirectory: Bool = true
     ) throws -> (Platform, GrantivaConfig?) {
         let resolver = PlatformResolver(directory: directory, environment: environment)
         let resolved = try resolve(directory: directory, environment: environment)
@@ -148,7 +152,9 @@ struct PlatformOptions: ParsableArguments {
                 )
             }
         }
-        let config = try GrantivaConfig.loadIfPresent(platform: resolved, from: directory)
+        let config = try GrantivaConfig.loadIfPresent(
+            platform: resolved, from: directory, includeMaestroDirectory: includeMaestroDirectory
+        )
         return (resolved, config)
     }
 }
