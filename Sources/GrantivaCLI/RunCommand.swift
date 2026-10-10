@@ -272,7 +272,8 @@ struct RunCommand: AsyncParsableCommand {
                 hasFlows: !resolved.flows.isEmpty,
                 keepAlive: keepAlive,
                 readyFile: readyFile,
-                runScreens: { keepAlive, readyFile in
+                options: sessionOptions,
+                runScreens: { keepAlive, readyFile, session in
                     try await RunnerSession.run(
                         screens: resolved.screens,
                         bundleId: bid,
@@ -285,10 +286,13 @@ struct RunCommand: AsyncParsableCommand {
                         snapshot: snapshot.rawValue,
                         environment: launchEnvironment,
                         readyFile: readyFile,
-                        expectedPixels: expectedPixels
+                        expectedPixels: expectedPixels,
+                        failFast: session.failFast,
+                        reportDir: session.reportDir,
+                        timeoutSeconds: session.timeoutSeconds
                     )
                 },
-                runFlows: { keepAlive, readyFile in
+                runFlows: { keepAlive, readyFile, session in
                     log("Running \(resolved.flows.count) flow(s) in one GrantivaAgent session: \(resolved.flows.joined(separator: ", "))")
                     return try await RunnerSession.runFlowFiles(
                         at: resolved.flows,
@@ -300,9 +304,9 @@ struct RunCommand: AsyncParsableCommand {
                         appFile: productPath,
                         keepAlive: keepAlive,
                         snapshot: snapshot.rawValue,
-                        failFast: !continueOnFailure,
-                        reportDir: reportDir,
-                        timeoutSeconds: UInt64(timeout),
+                        failFast: session.failFast,
+                        reportDir: session.reportDir,
+                        timeoutSeconds: session.timeoutSeconds,
                         environment: launchEnvironment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels
@@ -391,26 +395,68 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// The runner flags every session of the suite honours.
+    struct SessionOptions: Equatable {
+        var reportDir: String?
+        var timeoutSeconds: UInt64
+        var failFast: Bool
+    }
+
+    var sessionOptions: SessionOptions {
+        SessionOptions(reportDir: reportDir, timeoutSeconds: UInt64(timeout), failFast: !continueOnFailure)
+    }
+
     /// Only the final session owns suite readiness and the post-run hold.
+    ///
+    /// When screens and flows both run, the screens session reports into
+    /// `<report-dir>/screens` so the flows session does not replace its
+    /// report.json. A failed screens session stops the suite unless
+    /// `--continue-on-failure`; then a runner failure becomes a failed row,
+    /// the flows still run, and the ready file records `failed`.
     static func runSuite(
         hasScreens: Bool,
         hasFlows: Bool,
         keepAlive: Bool,
         readyFile: String?,
-        runScreens: (Bool, String?) async throws -> [ScreenCapture],
-        runFlows: (Bool, String?) async throws -> [ScreenCapture]
+        options: SessionOptions,
+        runScreens: (Bool, String?, SessionOptions) async throws -> [ScreenCapture],
+        runFlows: (Bool, String?, SessionOptions) async throws -> [ScreenCapture]
     ) async throws -> [ScreenCapture] {
         var captures: [ScreenCapture] = []
+        var screensFailed = false
         if hasScreens {
-            captures += try await runScreens(keepAlive && !hasFlows, hasFlows ? nil : readyFile)
+            var screenOptions = options
+            if hasFlows {
+                screenOptions.reportDir = options.reportDir.map { ($0 as NSString).appendingPathComponent("screens") }
+            }
+            do {
+                captures += try await runScreens(keepAlive && !hasFlows, hasFlows ? nil : readyFile, screenOptions)
+            } catch where hasFlows && !options.failFast && RunnerSession.isRunnerOutcomeFailure(error) {
+                // Only the runner's own failure becomes a row; setup errors
+                // and cancellation still stop the suite.
+                let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+                captures.append(ScreenCapture(screenName: "screens", path: "", sizeBytes: 0, steps: [
+                    StepResult(action: "Capture screens", status: .failed, duration: 0, message: message),
+                ]))
+            }
             // Missing captures are returned as failed steps rather than thrown.
             // Do not let the later session publish success for a failed suite.
             if hasFlows, captures.contains(where: { $0.steps.contains(where: { $0.status != .passed }) }) {
-                throw ExitCode.failure
+                if options.failFast {
+                    throw ExitCode.failure
+                }
+                screensFailed = true
             }
         }
         if hasFlows {
-            captures += try await runFlows(keepAlive, readyFile)
+            captures += try await runFlows(keepAlive, readyFile, options)
+            if screensFailed, let readyFile {
+                let flowsState = try? ReadyFile.read(readyFile)
+                try? ReadyFile.write(
+                    RunReadyState(status: "failed", flows: flowsState?.flows ?? [], reportDir: flowsState?.reportDir),
+                    to: readyFile
+                )
+            }
         }
         return captures
     }

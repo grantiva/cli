@@ -26,7 +26,10 @@ public enum RunnerSession {
         snapshot: String = "failure",
         environment: [String: String] = [:],
         readyFile: String? = nil,
-        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
+        failFast: Bool = false,
+        reportDir overrideReportDir: String? = nil,
+        timeoutSeconds: UInt64 = 300
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -51,14 +54,38 @@ public enum RunnerSession {
             )
         }
 
-        // Create a temp directory for runner reports
-        let reportDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
-            .path
-        try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+        // `--report-dir` is written to directly and survives the run so CI can
+        // upload it; otherwise reports go to a temp dir wiped on return.
+        let reportDir: String
+        let preserveReportDir: Bool
+        if let overrideReportDir, !overrideReportDir.isEmpty {
+            reportDir = overrideReportDir.hasPrefix("/")
+                ? overrideReportDir
+                : FileManager.default.currentDirectoryPath + "/" + overrideReportDir
+            preserveReportDir = true
+        } else {
+            reportDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
+                .path
+            preserveReportDir = false
+        }
+        // A capture that does not happen this run must not leave last run's
+        // image behind for `diff compare` to pass against. Before the report
+        // dir exists, so a throw here leaves nothing to clean up.
+        try invalidateCaptures(of: screens, in: outputDir)
+        try RunnerReportWorkspace.prepare(at: reportDir)
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
-        defer { try? FileManager.default.removeItem(atPath: reportDir) }
+        defer {
+            if !preserveReportDir {
+                try? FileManager.default.removeItem(atPath: reportDir)
+            }
+        }
+        defer {
+            if preserveReportDir {
+                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: [flowPath: "screens"])
+            }
+        }
         defer {
             exportTraceArtifacts(
                 reportDir: reportDir, outputDir: outputDir,
@@ -80,14 +107,14 @@ public enum RunnerSession {
             appFile: appFile,
             reportDir: reportDir,
             snapshot: snapshot,
+            failFast: failFast,
             keepAlive: keepAlive,
             flowPaths: [flowPath]
         )
 
-        // Timeout: kill the runner if it takes longer than 5 minutes
-        // Keep-alive sessions block waiting for SIGINT; a normal 5-minute cap
-        // would kill them prematurely. Use an effectively-infinite timeout then.
-        let timeoutSeconds: UInt64 = keepAlive ? 60 * 60 * 24 : 300
+        // Keep-alive sessions block waiting for SIGINT; a normal cap would
+        // kill them prematurely. Use an effectively-infinite timeout then.
+        let timeoutSeconds: UInt64 = keepAlive ? 60 * 60 * 24 : timeoutSeconds
 
         // stdout is relayed to stderr so CI sees runner progress in real time;
         // stderr is captured for error reporting.
@@ -194,6 +221,28 @@ public enum RunnerSession {
         return captures
     }
 
+    /// True for the errors `run(screens:)` throws once the runner itself has
+    /// run and failed (non-zero exit, timeout, no screenshots), as opposed to
+    /// setup failures such as a simulator lease conflict or a runner that
+    /// could not be extracted. The prefixes match the messages thrown above.
+    public static func isRunnerOutcomeFailure(_ error: Error) -> Bool {
+        guard case .commandFailed(let message, _) = error as? GrantivaError else { return false }
+        return ["Runner failed", "Runner timed out", "Runner completed"].contains { message.hasPrefix($0) }
+    }
+
+    /// Removes the configured screens' previous captures before a capture run,
+    /// so a failed or partial run leaves those screens missing rather than
+    /// stale. Other files in the directory are left alone.
+    static func invalidateCaptures(of screens: [GrantivaConfig.Screen], in outputDir: String) throws {
+        let fileManager = FileManager.default
+        for screen in screens {
+            let path = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
+            if fileManager.fileExists(atPath: path) {
+                try fileManager.removeItem(atPath: path)
+            }
+        }
+    }
+
     /// Runner artifacts are cmd-<step>-<screenshot name>.png. Match the entire
     /// name, preserving hyphens, so a shorter name cannot claim another screen.
     static func screenshotName(in file: String) -> String? {
@@ -279,6 +328,7 @@ public enum RunnerSession {
         defer { try? FileManager.default.removeItem(atPath: tempFlowDir) }
 
         var tempFlowPaths: [String] = []
+        let uniqueFlowNames = uniqueFlowNames(for: flowPaths)
         // Maps every staged copy back to the path the user actually passed, so
         // runner output and error messages never name a /var/folders temp file.
         var stagedPathMap: [String: String] = [:]
@@ -305,6 +355,9 @@ public enum RunnerSession {
             let stageDir = "\(tempFlowDir)/\(index)"
             try FileManager.default.createDirectory(atPath: stageDir, withIntermediateDirectories: true)
             let tempFlowPath = "\(stageDir)/\(originalFilename)"
+            if let name = uniqueFlowNames[index] {
+                injectedContent = injectFlowName(injectedContent, name: name)
+            }
             try injectedContent.write(toFile: tempFlowPath, atomically: true, encoding: .utf8)
             tempFlowPaths.append(tempFlowPath)
             stagedPathMap[tempFlowPath] = flowPaths[index]
@@ -338,6 +391,13 @@ public enum RunnerSession {
         defer {
             if !preserveReportDir {
                 try? FileManager.default.removeItem(atPath: reportDir)
+            }
+        }
+        // Runs after capture collection and trace export, which both read the
+        // staged paths from report.json, and on every exit path.
+        defer {
+            if preserveReportDir {
+                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: stagedPathMap)
             }
         }
         defer {
@@ -662,6 +722,39 @@ public enum RunnerSession {
             // No separator: prepend header and separator before the command list
             return "appId: \(bundleId)\n---\n\(content)"
         }
+    }
+
+    /// The runner names a flow after its file's basename and keys its summary
+    /// table by that name, so `a/same.yaml` and `b/same.yaml` were reported as
+    /// two rows called `same` sharing one flow's numbers. Flows whose basenames
+    /// collide get the path the user passed (without extension) as their
+    /// name; every other flow keeps the runner's default (nil).
+    static func uniqueFlowNames(for flowPaths: [String]) -> [String?] {
+        func key(_ name: String) -> String { name.precomposedStringWithCanonicalMapping.lowercased() }
+        let baseNames = flowPaths.map { URL(fileURLWithPath: $0).deletingPathExtension().lastPathComponent }
+        let baseCounts = Dictionary(grouping: baseNames, by: key).mapValues(\.count)
+        let stems = flowPaths.map { ($0 as NSString).deletingPathExtension }
+        let stemCounts = Dictionary(grouping: stems, by: key).mapValues(\.count)
+        return flowPaths.indices.map { index in
+            guard baseCounts[key(baseNames[index]), default: 0] > 1 else { return nil }
+            // `flows/login.yaml` beside `flows/login.yml`: keep the extension.
+            return stemCounts[key(stems[index]), default: 0] > 1 ? flowPaths[index] : stems[index]
+        }
+    }
+
+    /// Adds a `name:` to the flow's config header (which `injectAppId` has
+    /// already guaranteed) unless the flow names itself.
+    static func injectFlowName(_ content: String, name: String) -> String {
+        var lines = content.components(separatedBy: "\n")
+        guard let separator = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "---" }) else {
+            return content
+        }
+        let header = lines[0..<separator]
+        if header.contains(where: { $0.hasPrefix("name:") }) {
+            return content
+        }
+        lines.insert("name: \(FlowEnvironment.quoted(name))", at: separator)
+        return lines.joined(separator: "\n")
     }
 
     /// Build synthetic step results from the screen config.

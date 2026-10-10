@@ -96,7 +96,7 @@ grantiva hierarchy > state.xml
 
   `--continue-on-failure` and `--timeout` apply to flow files (`flows:` in the config, or `--flow`). A suite that runs only the configured `screens:` does not read these two flags: it uses a fixed 300 s timeout.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
-- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory. Nothing is written to `./.grantiva/captures` when it is given.
+- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
 
 ## Configuration
 
