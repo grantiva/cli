@@ -32,6 +32,9 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default` (warnings/errors/default).")
     var logsLevel: String?
 
+    @Flag(name: .long, help: "iOS: let WebDriverAgent auto-accept every alert during flows, including the app's own (the runner's old behavior). By default only permissions are pre-granted and app alerts stay up until the flow answers them.")
+    var autoAcceptAlerts: Bool = false
+
     @Option(name: .long, help: "Snapshot policy: failure (default — one shot after failure), trailing (last-good step + failure step), full (every step).")
     var snapshot: SnapshotMode = .failure
 
@@ -293,7 +296,8 @@ struct RunCommand: AsyncParsableCommand {
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,
                         reportDir: session.reportDir,
-                        timeoutSeconds: session.timeoutSeconds
+                        timeoutSeconds: session.timeoutSeconds,
+                        autoAcceptAlerts: autoAcceptAlerts
                     )
                 },
                 runFlows: { keepAlive, readyFile, session in
@@ -313,7 +317,8 @@ struct RunCommand: AsyncParsableCommand {
                         timeoutSeconds: session.timeoutSeconds,
                         environment: launchEnvironment,
                         readyFile: readyFile,
-                        expectedPixels: expectedPixels
+                        expectedPixels: expectedPixels,
+                        autoAcceptAlerts: autoAcceptAlerts
                     )
                 }
             )

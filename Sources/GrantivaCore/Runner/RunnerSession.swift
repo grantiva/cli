@@ -29,7 +29,8 @@ public enum RunnerSession {
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 300
+        timeoutSeconds: UInt64 = 300,
+        autoAcceptAlerts: Bool = false
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -46,7 +47,8 @@ public enum RunnerSession {
 
         // Generate Maestro flow YAML
         let flowPath = try FlowGenerator.writeTemp(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            disableAlertAutoAccept: disablesAlertAutoAccept(platform: platform, autoAcceptAlerts: autoAcceptAlerts)
         )
         defer {
             try? FileManager.default.removeItem(
@@ -300,7 +302,8 @@ public enum RunnerSession {
         timeoutSeconds: UInt64 = 600,
         environment: [String: String] = [:],
         readyFile: String? = nil,
-        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
+        autoAcceptAlerts: Bool = false
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -340,6 +343,9 @@ public enum RunnerSession {
                 in: injectedContent,
                 relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent
             )
+            if disablesAlertAutoAccept(platform: platform, autoAcceptAlerts: autoAcceptAlerts) {
+                injectedContent = FlowAlertPolicy.disableAutoAccept(in: injectedContent)
+            }
             // Header `env:` and `--env` go into launchApp for the platform's channel.
             let launchData = FlowEnvironment.apply(to: injectedContent, environment: environment, platform: platform.platform)
             injectedContent = launchData.yaml
@@ -532,6 +538,13 @@ public enum RunnerSession {
         let result = await operation()
         await clear(udid)
         return result
+    }
+
+    /// Whether staged flows get `FlowAlertPolicy`'s rewrite: on iOS, unless the
+    /// caller opted back into the runner's alert auto-accept. Android's runner
+    /// has no WDA alert monitor, so its flows are left alone.
+    static func disablesAlertAutoAccept(platform: any DevicePlatform, autoAcceptAlerts: Bool) -> Bool {
+        platform.platform == .ios && !autoAcceptAlerts
     }
 
     /// Extra environment for the runner process, supplied by the platform.

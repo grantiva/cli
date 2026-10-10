@@ -176,6 +176,8 @@ A flow header `env:` block defines `${VAR}` values and is also passed to the app
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
 | `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`. A relative path is resolved against the current directory. |
 
+Alerts: on iOS, Grantiva never answers the app's own alerts for you, as in Maestro. A `launchApp` pre-grants the app's permissions on the simulator (all allowed unless the step's `permissions:` say otherwise), and any alert the app shows stays up until a flow step taps one of its buttons. Pass `grantiva run --auto-accept-alerts` to let WebDriverAgent accept every alert instead, including the app's.
+
 ## CI Integration
 
 Add to your GitHub Actions workflow:

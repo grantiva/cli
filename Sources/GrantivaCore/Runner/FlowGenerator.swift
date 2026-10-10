@@ -93,12 +93,16 @@ public enum FlowGenerator {
         bundleId: String,
         environment: [String: String] = [:],
         platform: Platform = .ios,
-        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath
+        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
+        disableAlertAutoAccept: Bool = false
     ) throws -> String {
-        let yaml = try FlowReferenceResolver.resolve(
+        var yaml = try FlowReferenceResolver.resolve(
             in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
             relativeTo: runFlowBaseDirectory
         )
+        if disableAlertAutoAccept {
+            yaml = FlowAlertPolicy.disableAutoAccept(in: yaml)
+        }
         // One directory per call: concurrent runs against different simulators
         // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
