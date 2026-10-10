@@ -85,4 +85,14 @@ Criteria not checkable at run time: the unit-test and CHANGELOG items. Unit test
 
 - README:92 path for per-simulator runner homes (`~/.grantiva/runner/devices/<udid>`) does not match the on-disk layout (`<runner home>/versions/<runner version>/devices/<udid>`).
 - After `teardown --udid --force` followed by `teardown --session-id reg-ios-i09`, the home of the force-reclaimed device (0BE596F4…) was still present, while the other device's home was removed; it was pruned on the next `grantiva run` (I09/device-homes-after-next-run.txt). README:92 says teardown removes the home.
+- Step 6 confirms the mismatch for a plain teardown. `simulator teardown --udid` deleted qa-reg-ios-1 and qa-reg-ios-2, yet both `<runner home>/versions/1.1.28-grantiva.8+android-drivers-2/devices/{4278E141…,D65CAFEF…}` dirs remained (teardown/teardown.txt, listings before and after). README:92 says `simulator teardown` and `simulator delete` remove the device's home. In the I09 case, `teardown --session-id` did remove qa-reg-ios-4's home. Pruning on the next run was not re-checked here, because no runner was started after teardown.
 - `run --flow X --no-build` on an already-booted simulator prints `Booting simulator: …` before `Simulator booted:` (I15/not-installed.txt). This is cosmetic.
+
+## Step 6: teardown
+
+| Check | verdict | evidence | note |
+|---|---|---|---|
+| teardown qa-reg-ios-1 / -2 | pass | teardown/teardown.txt | both `Deleted Grantiva-created … and released session reg-ios`, exit 0 |
+| `simctl list devices \| grep -c qa-reg-` | pass | teardown/teardown.txt | 0 |
+| `simulator sessions --json` | pass | teardown/teardown.txt | `[]`, no reg-ios leases |
+| device homes removed by teardown | observation | teardown/teardown.txt | both per-UDID homes still present after teardown (see Observations) |
