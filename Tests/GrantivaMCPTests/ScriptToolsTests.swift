@@ -72,37 +72,63 @@ final class ScriptToolsTests: XCTestCase {
         XCTAssertTrue(try textContent(of: result).contains("Final hierarchy:"))
     }
 
-    func testNonObjectStepsAreSkippedAndReported() async throws {
+    /// C17: invalid steps are rejected before any step runs, as an error result.
+    func testInvalidStepsAreRejectedAsAToolErrorBeforeAnyStepRuns() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
             driver: MCPTestSupport.fakeDriver(recorder: recorder),
-            arguments: ["steps": .array([.string("tap"), .object(["swipe": .string("down")])])]
+            arguments: ["steps": .array([.object(["bogus": .int(1)]), .int(5)])]
         )
-        XCTAssertNil(result.isError)
-        XCTAssertEqual(recorder.calls, ["swipe(down)", "hierarchy"])
-        XCTAssertTrue(try textContent(of: result).contains("Step 1: skipped (not an object)"))
-        XCTAssertTrue(try textContent(of: result).contains("Step 2: swiped down"))
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty, "No step may run, and no hierarchy is fetched: \(recorder.calls)")
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Step 1: unknown action 'bogus'"), text)
+        XCTAssertTrue(text.contains("Step 2: not an object"), text)
     }
 
-    func testUnknownActionKeysAreSkippedAndReported() async throws {
+    func testOneInvalidStepStopsTheValidOnesFromRunning() async throws {
+        let recorder = WDARecorder()
+        let result = try await ScriptTools.script(
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
+            arguments: ["steps": .array([.object(["swipe": .string("down")]), .string("tap")])]
+        )
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty, "\(recorder.calls)")
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Step 2: not an object"), text)
+        XCTAssertFalse(text.contains("Step 1:"), text)
+    }
+
+    func testUnknownActionKeysAreRejected() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
             driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["frobnicate": .string("x")])])]
         )
-        XCTAssertNil(result.isError)
-        XCTAssertEqual(recorder.calls, ["hierarchy"])
-        XCTAssertTrue(try textContent(of: result).contains("Step 1: unknown action, skipped"))
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty)
+        XCTAssertTrue(try textContent(of: result).contains("Step 1: unknown action 'frobnicate'"))
     }
 
-    func testTapXYMissingAnAxisFallsThroughRatherThanTappingWithGarbage() async throws {
+    func testTapXYMissingAnAxisIsRejectedRatherThanTappingWithGarbage() async throws {
         let recorder = WDARecorder()
         let result = try await ScriptTools.script(
             driver: MCPTestSupport.fakeDriver(recorder: recorder),
             arguments: ["steps": .array([.object(["tap_xy": .object(["x": .double(10)])])])]
         )
-        XCTAssertEqual(recorder.calls, ["hierarchy"], "A half-specified tap_xy must not be sent to WDA")
-        XCTAssertTrue(try textContent(of: result).contains("Step 1: unknown action, skipped"))
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty, "A half-specified tap_xy must not be sent to WDA")
+        XCTAssertTrue(try textContent(of: result).contains("Step 1: tap_xy needs numeric x and y"))
+    }
+
+    func testNegativeWaitIsRejected() async throws {
+        let recorder = WDARecorder()
+        let result = try await ScriptTools.script(
+            driver: MCPTestSupport.fakeDriver(recorder: recorder),
+            arguments: ["steps": .array([.object(["wait": .double(-1)])])]
+        )
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(recorder.calls.isEmpty)
     }
 
     func testTapXYAcceptsIntegerCoordinates() async throws {

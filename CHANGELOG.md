@@ -57,6 +57,7 @@
 - `doctor` warns when `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set to a directory without `platform-tools/adb`, instead of silently reporting the SDK it fell back to.
 - `doctor`'s Git Repository check passes in any subdirectory of a work tree (e.g. the `android/` project of a mono-repo), instead of advising `git init` there.
 - `grantiva init` (iOS) writes the newest iPhone simulator type an installed runtime supports instead of `iPhone 16`, and warns on stderr when the scheme (`MyApp`, no Xcode project found) or the simulator is a placeholder.
+- MCP `grantiva_script` validates every step before running any: a step that is not an object, has no known action, has a `tap_xy` without numeric `x` and `y`, or has a negative `wait` makes the call return `isError` naming each bad step, and no step runs. Before, such steps were skipped and the call reported success.
 
 ## 2.0.1 — 2026-10-07
 
