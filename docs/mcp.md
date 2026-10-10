@@ -6,8 +6,8 @@ like every other command (`grantiva.yml` is iOS, `grantiva-android.yml` is Andro
 `grantiva mcp --platform ios|android` chooses when both exist). See [android.md](android.md) for the
 Android specifics.
 
-The server exposes 22 tools. `tools/list` returns exactly this set; a test fails if this page and the
-registered tools drift apart.
+The server exposes 22 tools. `tools/list` returns exactly this set; a test fails if the tool names on this page and
+the registered tool names drift apart.
 
 ## Runner session
 

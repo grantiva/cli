@@ -63,6 +63,7 @@ struct InitCommand: AsyncParsableCommand {
                 path: launch
 
             diff:
+              # both must pass: threshold is a 0-1 fraction of differing pixels, perceptual_threshold is the mean CIE76 distance over differing pixels
               threshold: 0.02
               perceptual_threshold: 5.0
 
@@ -112,6 +113,7 @@ struct InitCommand: AsyncParsableCommand {
             path: launch
 
         diff:
+          # both must pass: threshold is a 0-1 fraction of differing pixels, perceptual_threshold is the mean CIE76 distance over differing pixels
           threshold: 0.02
           perceptual_threshold: 5.0
 
