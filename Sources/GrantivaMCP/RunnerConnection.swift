@@ -19,6 +19,9 @@ actor RunnerConnection {
     /// this actor suspends while attaching, so concurrent first calls share
     /// one attach instead of each attaching (and leaking an adb forward).
     private var inFlight: (session: RunnerSessionInfo, task: Task<DriverAttachment, Error>)?
+    /// Attaches that `detach()` took over while they were in flight; their
+    /// callers must not store the result.
+    private var claimed: Set<Task<DriverAttachment, Error>> = []
 
     init(
         resolveSession: @escaping @Sendable () throws -> RunnerSessionInfo,
@@ -66,16 +69,29 @@ actor RunnerConnection {
             attachment = try await task.value
         } catch {
             if inFlight?.task == task { inFlight = nil }
+            claimed.remove(task)
             throw error
         }
         if inFlight?.task == task { inFlight = nil }
+        if claimed.remove(task) != nil {
+            // detach() ran while this attach was in flight and released it.
+            throw GrantivaError.invalidArgument("The runner connection was closed while attaching.")
+        }
         let stale = attached
         attached = (session, attachment)
         if let stale { await stale.attachment.detach() }
         return Current(driver: attachment.client, session: session)
     }
 
+    /// Releases the attachment, including one still being attached.
     func detach() async {
+        if let pending = inFlight {
+            inFlight = nil
+            claimed.insert(pending.task)
+            if let attachment = try? await pending.task.value {
+                await attachment.detach()
+            }
+        }
         guard let attached else { return }
         self.attached = nil
         await attached.attachment.detach()

@@ -335,6 +335,68 @@ final class MCPServerTests: XCTestCase {
         XCTAssertEqual(counter.detaches, 1)
     }
 
+    /// Shutdown while an attach is in flight releases that attachment.
+    func testDetachReleasesAnAttachStillInFlight() async throws {
+        final class Counter: @unchecked Sendable {
+            let lock = NSLock()
+            var attaches = 0
+            var detaches = 0
+        }
+        let counter = Counter()
+        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+        let connection = RunnerConnection(
+            resolveSession: { session },
+            attach: { _ in
+                counter.lock.withLock { counter.attaches += 1 }
+                try await Task.sleep(nanoseconds: 100_000_000)
+                return DriverAttachment(client: .failing, port: 8100, detach: {
+                    counter.lock.withLock { counter.detaches += 1 }
+                })
+            }
+        )
+        let call = Task { try await connection.current() }
+        while counter.lock.withLock({ counter.attaches }) == 0 { await Task.yield() }
+        await connection.detach()
+        XCTAssertEqual(counter.detaches, 1, "The in-flight attachment is released by detach()")
+        do {
+            _ = try await call.value
+            XCTFail("expected the closed-connection error")
+        } catch {
+            XCTAssertTrue(String(describing: error).contains("closed"), "\(error)")
+        }
+        await connection.detach()
+        XCTAssertEqual(counter.detaches, 1, "Nothing is detached twice")
+    }
+
+    /// A failed attach is not cached: the next call attaches again.
+    func testAFailedAttachIsRetriedOnTheNextCall() async throws {
+        final class Counter: @unchecked Sendable {
+            let lock = NSLock()
+            var attaches = 0
+        }
+        let counter = Counter()
+        let session = RunnerSessionInfo(pid: 10, wdaPort: 8100, bundleId: "", udid: "emulator-5554", startedAt: Date())
+        let connection = RunnerConnection(
+            resolveSession: { session },
+            attach: { _ in
+                let n = counter.lock.withLock { counter.attaches += 1; return counter.attaches }
+                if n == 1 { throw GrantivaError.commandFailed("adb forward", 1) }
+                return DriverAttachment(client: .failing, port: 8100, detach: {})
+            }
+        )
+        do {
+            _ = try await connection.current()
+            XCTFail("expected the first attach to fail")
+        } catch {
+            XCTAssertTrue(String(describing: error).contains("adb forward"), "\(error)")
+        }
+        let current = try await connection.current()
+        XCTAssertEqual(current.session.pid, 10)
+        XCTAssertEqual(counter.attaches, 2)
+        _ = try await connection.current()
+        XCTAssertEqual(counter.attaches, 2, "The successful attachment is reused")
+    }
+
     /// C03 review: in a directory with both config files, a session.json
     /// written for the other platform is skipped.
     func testSessionFileForTheOtherPlatformIsSkipped() throws {
