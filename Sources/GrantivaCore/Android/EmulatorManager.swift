@@ -63,6 +63,8 @@ public struct EmulatorManager: Sendable {
     private let environment: [String: String]
     nonisolated(unsafe) private let fileManager: FileManager
     private let killTimeout: TimeInterval
+    private let consolePortBound: @Sendable (Int) -> Bool
+    private let consolePortOwners: @Sendable (Int) async -> [Int32]?
 
     public static let bootTimeoutVariable = "GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS"
 
@@ -77,7 +79,9 @@ public struct EmulatorManager: Sendable {
         pollInterval: TimeInterval = 1,
         environment: [String: String] = ProcessInfo.processInfo.environment,
         fileManager: FileManager = .default,
-        killTimeout: TimeInterval = 30
+        killTimeout: TimeInterval = 30,
+        consolePortBound: @escaping @Sendable (Int) -> Bool = EmulatorManager.isLocalPortBound,
+        consolePortOwners: @escaping @Sendable (Int) async -> [Int32]? = EmulatorManager.listeningPIDs
     ) {
         self.sdk = sdk
         self.adb = adb
@@ -90,6 +94,35 @@ public struct EmulatorManager: Sendable {
         self.environment = environment
         self.fileManager = fileManager
         self.killTimeout = killTimeout
+        self.consolePortBound = consolePortBound
+        self.consolePortOwners = consolePortOwners
+    }
+
+    /// True when something already listens on `127.0.0.1:port`. adb can
+    /// briefly miss an emulator (adb server restarting), but its console
+    /// port stays bound, so a port is only free when both agree.
+    public static let isLocalPortBound: @Sendable (Int) -> Bool = { port in
+        let fd = socket(AF_INET, SOCK_STREAM, 0)
+        guard fd >= 0 else { return false }
+        defer { Darwin.close(fd) }
+        var address = sockaddr_in()
+        address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_port = in_port_t(UInt16(port).bigEndian)
+        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+        let result = withUnsafePointer(to: &address) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                Darwin.connect(fd, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+            }
+        }
+        return result == 0
+    }
+
+    /// The pids listening on a TCP port (`lsof`), or nil when that cannot be
+    /// read.
+    public static let listeningPIDs: @Sendable (Int) async -> [Int32]? = { port in
+        guard let output = try? await GrantivaCore.shell("/usr/sbin/lsof -nP -iTCP:\(port) -sTCP:LISTEN -t") else { return nil }
+        return output.split(whereSeparator: \.isNewline).compactMap { Int32($0.trimmingCharacters(in: .whitespaces)) }
     }
 
     public static func configuredBootTimeout(environment: [String: String] = ProcessInfo.processInfo.environment) -> TimeInterval {
@@ -124,8 +157,8 @@ public struct EmulatorManager: Sendable {
             .filter { !$0.isEmpty && !$0.hasPrefix("INFO") && !$0.hasPrefix("WARNING") && !$0.hasPrefix("ERROR") }
     }
 
-    public static func choosePort(used: [String]) -> Int? {
-        stride(from: 5554, through: 5584, by: 2).first { !used.contains("emulator-\($0)") }
+    public static func choosePort(used: [String], isBound: (Int) -> Bool = { _ in false }) -> Int? {
+        stride(from: 5554, through: 5584, by: 2).first { !used.contains("emulator-\($0)") && !isBound($0) && !isBound($0 + 1) }
     }
 
     public static func bootArguments(avd: String, port: Int, headless: Bool) -> [String] {
@@ -209,7 +242,7 @@ public struct EmulatorManager: Sendable {
     /// Boots `avd` on the first free even port and waits for it.
     public func boot(avd: String) async throws -> BootedDevice {
         let used = try await adb.devices().map(\.serial)
-        guard let port = Self.choosePort(used: used) else {
+        guard let port = Self.choosePort(used: used, isBound: consolePortBound) else {
             throw GrantivaError.invalidArgument("No free emulator port between 5554 and 5584; shut one down first.")
         }
         let serial = "emulator-\(port)"
@@ -223,20 +256,38 @@ public struct EmulatorManager: Sendable {
 
     /// Done when `sys.boot_completed` is 1, `pm path android` answers, and the
     /// keyguard has been dismissed. With `pid` (an emulator Grantiva spawned),
-    /// a process that exits early fails at once and its ledger record is removed.
+    /// a process that exits early fails at once and its ledger record is
+    /// removed, even when something else answers on the serial: the boot only
+    /// counts when `pid` is still alive and is the process on the console port.
     public func waitForBoot(serial: String, pid: Int32? = nil) async throws {
-        let log = "\(provenance.directory)/emulator-\(serial.replacingOccurrences(of: "emulator-", with: "")).log"
+        let port = serial.replacingOccurrences(of: "emulator-", with: "")
+        let log = "\(provenance.directory)/emulator-\(port).log"
+        let exited: (Int32) -> GrantivaError = { pid in
+            try? provenance.remove(serial: serial)
+            return GrantivaError.commandFailed(
+                "The emulator process for \(serial) (pid \(pid)) exited before it finished booting. See \(log).",
+                1
+            )
+        }
         let deadline = Date().addingTimeInterval(bootTimeout)
         while Date() < deadline {
             if let pid, !Self.isAlive(pid) {
-                try? provenance.remove(serial: serial)
-                throw GrantivaError.commandFailed(
-                    "The emulator process for \(serial) (pid \(pid)) exited before it finished booting. See \(log).",
-                    1
-                )
+                throw exited(pid)
             }
             if (try? await adb.getprop(serial: serial, "sys.boot_completed")) == "1",
                let path = try? await adb.shell(serial: serial, "pm path android"), path.contains("package:") {
+                if let pid {
+                    guard Self.isAlive(pid) else { throw exited(pid) }
+                    if let consolePort = Int(port), let owners = await consolePortOwners(consolePort),
+                       !owners.isEmpty, !owners.contains(pid) {
+                        try? provenance.remove(serial: serial)
+                        throw GrantivaError.commandFailed(
+                            "\(serial) is answered by another emulator (pid \(owners.map(String.init).joined(separator: ", "))), "
+                                + "not the one Grantiva started (pid \(pid)). See \(log).",
+                            1
+                        )
+                    }
+                }
                 _ = try? await adb.shell(serial: serial, "wm dismiss-keyguard")
                 return
             }
@@ -320,15 +371,16 @@ public struct EmulatorManager: Sendable {
         try provenance.removeCreatedAVD(name)
     }
 
-    /// Ledger records with their liveness. A record whose process is gone
-    /// and whose serial adb no longer lists is pruned on the way out.
+    /// Ledger records with their liveness. A record whose process is gone is
+    /// pruned on the way out: whatever now answers on its serial was started
+    /// by someone else.
     public func sessions() async throws -> [EmulatorSessionRecord] {
         let devices = try await adb.devices()
         var records: [EmulatorSessionRecord] = []
         for record in try provenance.all() {
             let alive = Self.isAlive(record.pid)
             let state = devices.first { $0.serial == record.serial }?.state ?? "absent"
-            if !alive, state == "absent" {
+            if !alive {
                 try provenance.remove(serial: record.serial)
                 continue
             }
@@ -345,11 +397,10 @@ public struct EmulatorManager: Sendable {
     public func teardown(serial: String, force: Bool) async throws -> EmulatorTeardownOutcome {
         var record = try provenance.all().first { $0.serial == serial }
         // A record whose process is gone proves nothing about the serial: the
-        // port may now belong to someone else's emulator. Keep it only when
-        // the listed emulator still runs the recorded AVD.
+        // port may now belong to someone else's emulator, even one running the
+        // same AVD (an AVD name does not say who started it). Drop it.
         if let stale = record, !Self.isAlive(stale.pid),
-           try await adb.devices().contains(where: { $0.serial == serial }),
-           (try? await adb.avdName(serial: serial)) != stale.avd {
+           try await adb.devices().contains(where: { $0.serial == serial }) {
             try provenance.remove(serial: serial)
             record = nil
         }
