@@ -5,7 +5,7 @@ import GrantivaCore
 struct BuildCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "build",
-        abstract: "Build and optionally install the app to a simulator.",
+        abstract: "Build and optionally install the app to a simulator or emulator.",
         subcommands: [BuildOnlyCommand.self, InstallCommand.self],
         defaultSubcommand: BuildOnlyCommand.self
     )
@@ -16,7 +16,7 @@ struct BuildCommand: AsyncParsableCommand {
 struct BuildOnlyCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "build",
-        abstract: "Build the app for a simulator using xcodebuild."
+        abstract: "Build the app for a simulator (xcodebuild) or emulator (Gradle)."
     )
 
     @OptionGroup var options: GlobalOptions
@@ -76,7 +76,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
 struct InstallCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "install",
-        abstract: "Build and install the app on a simulator, then optionally launch it."
+        abstract: "Build and install the app on a simulator or emulator, then optionally launch it."
     )
 
     @OptionGroup var options: GlobalOptions

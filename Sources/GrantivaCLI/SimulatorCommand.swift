@@ -67,6 +67,7 @@ struct SimulatorCommand: AsyncParsableCommand {
     }
 
     struct Delete: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(abstract: "Explicitly delete a named simulator.")
         @OptionGroup var options: GlobalOptions
         @Option(name: .long, help: "Name of the simulator to delete.")
         var name: String
@@ -78,6 +79,7 @@ struct SimulatorCommand: AsyncParsableCommand {
     }
 
     struct Sessions: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(abstract: "List Grantiva-managed simulator capacity slots.")
         @OptionGroup var options: GlobalOptions
 
         func run() async throws {

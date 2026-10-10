@@ -29,6 +29,7 @@
 - `adb forward --remove-all` is no longer used; orphan cleanup removes only the serial's own forwards.
 - `--device` together with `--emulator` is rejected.
 - `grantiva_context` prints a `platform:` line under `[Config]`, and `grantiva_build` prints `Product:` with the built app's path, on both platforms.
+- Help text: the overviews of `grantiva`, `run`, `build`, and `build install` and the `--no-build` description now cover Android; `--timeout` states its 30 s minimum (still validated under `--keep-alive`, which ignores the timeout itself); `--ready-file` states that missing parent directories are created; `simulator delete` and `simulator sessions` have descriptions.
 
 ### Fixed
 - **WebDriverAgent builds again under Xcode 27.** Its clang enables `-Wpoison-system-directories`, which fires on clang's own implicit `/usr/local/include` search path, and WebDriverAgent compiles with `-Weverything` and warnings-as-errors, so every from-source build (any iOS runtime without a prebuilt agent in the runner tarball: 26.2, 26.4, and 27.0 ship prebuilt) ended in `** TEST BUILD FAILED **`. The CLI now hands xcodebuild `~/.grantiva/runner/grantiva-wda.xcconfig` through `XCODE_XCCONFIG_FILE`, which adds `-Wno-poison-system-directories` to the inherited warning flags and nothing else.

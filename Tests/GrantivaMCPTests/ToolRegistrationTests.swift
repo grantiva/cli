@@ -60,6 +60,25 @@ final class ToolRegistrationTests: XCTestCase {
         XCTAssertEqual(allTools().count, 22)
     }
 
+    /// docs/mcp.md is the published tool list. It must name exactly the registered tools.
+    func testPublishedToolListMatchesRegisteredTools() throws {
+        let repoRoot = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+        let doc = try String(contentsOf: repoRoot.appendingPathComponent("docs/mcp.md"), encoding: .utf8)
+        let regex = try NSRegularExpression(pattern: "^\\| `(grantiva_[a-z0-9_]+)` \\|", options: [.anchorsMatchLines])
+        let range = NSRange(doc.startIndex..., in: doc)
+        let documented = regex.matches(in: doc, range: range).compactMap { match -> String? in
+            Range(match.range(at: 1), in: doc).map { String(doc[$0]) }
+        }
+        XCTAssertEqual(documented.count, Set(documented).count, "docs/mcp.md lists a tool twice: \(documented)")
+        let registered = Set(allTools().map(\.name))
+        XCTAssertEqual(
+            Set(documented), registered,
+            "docs/mcp.md is out of date. Missing: \(registered.subtracting(documented).sorted()). "
+                + "Unknown: \(Set(documented).subtracting(registered).sorted())."
+        )
+    }
+
     func testToolNamesAreUniqueAndNamespaced() {
         let names = allTools().map(\.name)
         XCTAssertEqual(names.count, Set(names).count, "Duplicate tool names: \(names)")
