@@ -30,25 +30,47 @@ extension RunnerManager {
     static let resourceBundleName = "grantiva_GrantivaCore"
 
     /// The resource bundle that carries the runner tarballs, or nil when it is
-    /// missing (a binary copied away from its `.bundle`). Mirrors the
-    /// SwiftPM-generated `Bundle.module` lookup, which traps instead of
-    /// returning nil, so a missing bundle can surface as a `GrantivaError`.
+    /// missing (a binary copied away from its `.bundle`). `Bundle.module`
+    /// cannot be tried first: its generated accessor traps instead of
+    /// returning nil. So this checks the places the SwiftPM accessors look
+    /// (the `PACKAGE_RESOURCE_BUNDLE_PATH` override, the main and module
+    /// bundles' resource dirs, the executable's directory) plus the directory
+    /// holding the module's own bundle, which is where `swift build` puts the
+    /// resource bundle beside a test bundle (the older accessor finds it there
+    /// through a compiled-in build path).
     static let resourceBundle: Bundle? = {
         final class BundleFinder {}
-        let candidates: [URL?] = [
+        let environment = ProcessInfo.processInfo.environment
+        let override = (environment["PACKAGE_RESOURCE_BUNDLE_PATH"] ?? environment["PACKAGE_RESOURCE_BUNDLE_URL"])
+            .map { URL(fileURLWithPath: $0) }
+        let moduleBundle = Bundle(for: BundleFinder.self)
+        return findResourceBundle(in: [
+            override,
             Bundle.main.resourceURL,
-            Bundle(for: BundleFinder.self).resourceURL,
+            moduleBundle.resourceURL,
             Bundle.main.bundleURL,
             Bundle.main.executableURL?.resolvingSymlinksInPath().deletingLastPathComponent(),
-        ]
-        for candidate in candidates {
-            if let url = candidate?.appendingPathComponent(resourceBundleName + ".bundle"),
-               let bundle = Bundle(url: url) {
-                return bundle
+            moduleBundle.bundleURL.deletingLastPathComponent(),
+        ])
+    }()
+
+    /// The first `<candidate>/grantiva_GrantivaCore.bundle` that exists, the
+    /// override path itself counting when it names the bundle directly.
+    static func findResourceBundle(in candidates: [URL?]) -> Bundle? {
+        for candidate in candidates.compactMap({ $0 }) {
+            let urls = candidate.lastPathComponent == resourceBundleName + ".bundle"
+                ? [candidate]
+                : [candidate.appendingPathComponent(resourceBundleName + ".bundle")]
+            for url in urls {
+                var isDirectory: ObjCBool = false
+                if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue,
+                   let bundle = Bundle(url: url) {
+                    return bundle
+                }
             }
         }
         return nil
-    }()
+    }
 
     static func embeddedTarballURL(arch: String) -> URL? {
         resourceBundle?.url(forResource: "grantiva-runner-\(arch)", withExtension: "tar.gz")

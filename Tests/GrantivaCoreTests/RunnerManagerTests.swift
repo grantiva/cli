@@ -139,6 +139,25 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/wda-builds/sim-b/build", encoding: .utf8), "prebuilt")
     }
 
+    func testResourceBundleLookupFallsBackToLaterCandidates() throws {
+        let root = try makePaths().base
+        let besideExecutable = URL(fileURLWithPath: "\(root)/bin")
+        let bundleURL = besideExecutable.appendingPathComponent("grantiva_GrantivaCore.bundle")
+        try FileManager.default.createDirectory(at: bundleURL, withIntermediateDirectories: true)
+        let found = RunnerManager.findResourceBundle(in: [
+            nil,
+            URL(fileURLWithPath: "\(root)/missing-module-resources"),
+            besideExecutable,
+        ])
+        XCTAssertEqual(found?.bundleURL.standardizedFileURL.path, bundleURL.standardizedFileURL.path)
+        XCTAssertNil(RunnerManager.findResourceBundle(in: [URL(fileURLWithPath: "\(root)/nowhere")]))
+        XCTAssertNotNil(RunnerManager.findResourceBundle(in: [bundleURL]), "an override naming the bundle itself")
+    }
+
+    func testResourceBundleIsFoundInTheTestProcess() {
+        XCTAssertNotNil(RunnerManager.resourceBundle)
+    }
+
     func testRunnerHomeOverrideIsMadeAbsolute() {
         let cwd = FileManager.default.currentDirectoryPath
         XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh/../runner"]), "\(cwd)/runner")
