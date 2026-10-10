@@ -133,14 +133,20 @@ Each screen has a `name` and a `path`. The path describes how to navigate there:
 
 - `launch` — screenshot immediately after app launch
 - `- tap: "Label"` — tap a button or element by accessibility label
-- `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`)
+- `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`, any case); any other value is a config error
 - `- type: "text"` — type text into the focused field
-- `- wait: 2` — wait N seconds
+- `- wait: 2` — wait N seconds (always the full N seconds, even if the screen is already still)
 - `- assert_visible: "Label"` — verify an element is visible (fails if not)
 - `- assert_not_visible: "Label"` — verify an element is hidden
 - `- run_flow: "path/to/flow.yaml"` — include steps from another YAML file
 
-Grantiva navigates to each screen in order, captures a screenshot, then moves to the next.
+A label matches any element whose text *contains* it, case-insensitively, so `tap: "Landmarks"` can hit a
+`landmarks://…` link before the tab called "Landmarks". `tap`, `assert_visible`, and `assert_not_visible` also take
+`{text: "Landmarks", exact: true}` to require the element's full text to equal the label.
+
+Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`,
+and `type`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
+the screen it is leaving. Unknown keys in the config file are reported as warnings with their line number.
 
 ### Maestro Compatibility
 

@@ -16,6 +16,7 @@
 - `grantiva emulator ensure|delete|sessions|teardown`: create and boot AVDs (installing the system image first), list and kill the emulators Grantiva started, and delete the AVDs it created. `teardown --force` and `delete --force` act on emulators and AVDs Grantiva did not start or create.
 - MCP tools `grantiva_emulator_list`, `grantiva_emulator_boot`, `grantiva_emulator_ensure`, and `grantiva_emulator_delete`. `grantiva mcp --platform ios|android` picks the platform when both config files exist. `grantiva_build` and `grantiva_run` accept `module`, `variant`, and `emulator` on Android. `grantiva_tap` `x`/`y` and `grantiva_script` `tap_xy` are in the hierarchy's unit: points on iOS, dp on Android. `grantiva_a11y_check` keys Android rules on `class`, `content-desc`, and `clickable`, with a 48 dp minimum tap target.
 - `--logs-level` on Android without `--logs-tag` filters every tag at that priority.
+- `screens:` `tap`, `assert_visible`, and `assert_not_visible` accept `{text: "Label", exact: true}`, emitted as a selector with `exact: true`, so a label that is a substring of an earlier element (`tap: "Landmarks"` vs. a `landmarks://` link) can target the element whose full text matches.
 
 ### Changed
 - Android captures and baselines live in `.grantiva/captures/android/` and `.grantiva/baselines/android/`. iOS paths are unchanged.
@@ -57,6 +58,10 @@
 - `doctor` warns when `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set to a directory without `platform-tools/adb`, instead of silently reporting the SDK it fell back to.
 - `doctor`'s Git Repository check passes in any subdirectory of a work tree (e.g. the `android/` project of a mono-repo), instead of advising `git init` there.
 - `grantiva init` (iOS) writes the newest iPhone simulator type an installed runtime supports instead of `iPhone 16`, and warns on stderr when the scheme (`MyApp`, no Xcode project found) or the simulator is a placeholder.
+- `screens:` `wait: N` now waits N seconds. It was generated as `waitForAnimationToEnd` with an N-second timeout, which returns as soon as the screen is still, so `wait: 3` took well under a second. It now runs a sleep of exactly N seconds.
+- `screens:` `swipe:` with a direction other than `up`, `down`, `left`, or `right` (any case) is rejected when the config is loaded, naming the file, the screen, and the value, instead of failing on the device after the app has launched.
+- Unknown keys in `grantiva.yml` and `grantiva-android.yml` (top level, `screens`, steps, `diff`, `a11y`) are reported as warnings on stderr with their line number and a "did you mean" suggestion, instead of being dropped silently; a file that fails to decode lists them with the error. `doctor` reports them as a Project warning. Maestro-format files are not checked.
+- Screens flows wait for the screen to settle (`waitForAnimationToEnd`, at most 5 s) after every `tap`, `swipe`, and `type` and before every screenshot, so `diff capture` no longer saves the previous screen under the next screen's name. This adds roughly the time of two screenshots per step, more while the screen is still animating.
 
 ## 2.0.1 — 2026-10-07
 
