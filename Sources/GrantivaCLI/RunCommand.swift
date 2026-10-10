@@ -115,7 +115,7 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     private func execute() async throws {
-        let (platform, config) = try platformOptions.loadConfig()
+        let (platform, config) = try platformOptions.loadConfig(includeMaestroDirectory: flow == nil)
         try target.checkFlags(
             for: platform, derivedDataPath: buildOptions.derivedDataPath,
             logsPredicate: logsPredicate, logsTag: logsTag
@@ -145,7 +145,11 @@ struct RunCommand: AsyncParsableCommand {
                 scheme: resolved.scheme,
                 project: resolved.project,
                 workspace: resolved.workspace,
-                bundleId: resolved.bundleId,
+                bundleId: Self.flowBundleId(
+                    flowPath: flow, resolved: resolved.bundleId,
+                    explicit: target.bundleId ?? target.applicationId ?? config?.bundleId ?? config?.android?.applicationId
+                        ?? appBundleId
+                ),
                 buildSettings: resolved.buildSettings,
                 simulator: resolved.simulator,
                 screens: [],
@@ -404,6 +408,15 @@ struct RunCommand: AsyncParsableCommand {
 
     var sessionOptions: SessionOptions {
         SessionOptions(reportDir: reportDir, timeoutSeconds: UInt64(timeout), failFast: !continueOnFailure)
+    }
+
+    /// `--flow` without `--bundle-id`/`--application-id` or a configured ID
+    /// launches the app named by the flow's own `appId:` header, ahead of IDs
+    /// guessed from project detection.
+    static func flowBundleId(flowPath: String, resolved: String?, explicit: String?) -> String? {
+        if explicit != nil { return resolved }
+        let header = (try? String(contentsOfFile: flowPath, encoding: .utf8)).flatMap(MaestroFlowParser.appId(in:))
+        return header ?? resolved
     }
 
     /// Only the final session owns suite readiness and the post-run hold.

@@ -306,4 +306,30 @@ final class RunCommandTests: XCTestCase {
             "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
         )
     }
+
+    func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
+        let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
+        try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(atPath: path) }
+
+        XCTAssertEqual(RunCommand.flowBundleId(flowPath: path, resolved: nil, explicit: nil), "com.kylebrowning.Landmarks")
+        XCTAssertEqual(
+            RunCommand.flowBundleId(flowPath: path, resolved: "com.detected", explicit: nil), "com.kylebrowning.Landmarks",
+            "the flow names its app; a detected ID is only a guess"
+        )
+        XCTAssertEqual(RunCommand.flowBundleId(flowPath: path, resolved: "com.flag", explicit: "com.flag"), "com.flag")
+    }
+
+    func testFlowRunDoesNotParseUnrelatedMaestroFiles() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        try "appId: a.b\n---\n- back\n".write(
+            to: dir.appendingPathComponent(".maestro/02-bad.yaml"), atomically: true, encoding: .utf8
+        )
+        let options = try PlatformOptions.parse(["--platform", "ios"])
+        XCTAssertThrowsError(try options.loadConfig(directory: dir, environment: [:]))
+        let (_, config) = try options.loadConfig(directory: dir, environment: [:], includeMaestroDirectory: false)
+        XCTAssertNil(config)
+    }
 }

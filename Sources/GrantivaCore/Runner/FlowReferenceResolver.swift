@@ -4,6 +4,7 @@ import Yams
 /// Rewrites `runFlow` references before a flow is moved to a temporary directory.
 /// Maestro resolves relative references from the containing flow, so staging a
 /// flow without doing this would silently change what its paths mean.
+/// Every command it walks is also passed through `FlowNormalizer`.
 enum FlowReferenceResolver {
     static func resolve(in content: String, relativeTo baseDirectory: String) throws -> String {
         let documents = MaestroFlowParser.splitDocuments(content)
@@ -20,7 +21,9 @@ enum FlowReferenceResolver {
         guard let commandList = loaded as? [Any] else {
             throw GrantivaError.invalidArgument("Flow commands must be a YAML list")
         }
-        let rewritten = try rewriteCommands(commandList, baseDirectory: baseDirectory)
+        let headerAppId = documents.config
+            .flatMap { try? Yams.load(yaml: $0) as? [String: Any] }?["appId"] as? String
+        let rewritten = try rewriteCommands(commandList, baseDirectory: baseDirectory, headerAppId: headerAppId)
         let emitted: String
         do {
             emitted = try Yams.dump(object: rewritten)
@@ -35,9 +38,10 @@ enum FlowReferenceResolver {
     }
 
     private static func rewriteCommands(
-        _ commands: [Any], baseDirectory: String
+        _ commands: [Any], baseDirectory: String, headerAppId: String?
     ) throws -> [Any] {
         try commands.map { command in
+            let command = FlowNormalizer.normalize(command, headerAppId: headerAppId)
             guard var dictionary = command as? [String: Any] else { return command }
             if let runFlow = dictionary["runFlow"] {
                 dictionary["runFlow"] = try rewriteRunFlow(
@@ -45,7 +49,7 @@ enum FlowReferenceResolver {
                 )
             }
             dictionary = try rewriteNestedCommandLists(
-                dictionary, baseDirectory: baseDirectory
+                dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId
             )
             return dictionary
         }
@@ -54,26 +58,26 @@ enum FlowReferenceResolver {
     /// Maestro control-flow commands can contain further command lists. Only
     /// values under a `commands` key are command syntax; arbitrary dictionaries
     /// such as launch environment values may legitimately use a `runFlow` key.
-    private static func rewriteNestedValue(_ value: Any, baseDirectory: String) throws -> Any {
+    private static func rewriteNestedValue(_ value: Any, baseDirectory: String, headerAppId: String?) throws -> Any {
         if let values = value as? [Any] {
             return try values.map {
-                try rewriteNestedValue($0, baseDirectory: baseDirectory)
+                try rewriteNestedValue($0, baseDirectory: baseDirectory, headerAppId: headerAppId)
             }
         }
         guard let dictionary = value as? [String: Any] else { return value }
-        return try rewriteNestedCommandLists(dictionary, baseDirectory: baseDirectory)
+        return try rewriteNestedCommandLists(dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId)
     }
 
     private static func rewriteNestedCommandLists(
-        _ dictionary: [String: Any], baseDirectory: String
+        _ dictionary: [String: Any], baseDirectory: String, headerAppId: String?
     ) throws -> [String: Any] {
         var result: [String: Any] = [:]
         for (key, child) in dictionary {
             if key == "commands", let commands = child as? [Any] {
-                result[key] = try rewriteCommands(commands, baseDirectory: baseDirectory)
+                result[key] = try rewriteCommands(commands, baseDirectory: baseDirectory, headerAppId: headerAppId)
             } else {
                 result[key] = try rewriteNestedValue(
-                    child, baseDirectory: baseDirectory
+                    child, baseDirectory: baseDirectory, headerAppId: headerAppId
                 )
             }
         }

@@ -18,6 +18,12 @@
 - `--logs-level` on Android without `--logs-tag` filters every tag at that priority.
 
 ### Changed
+- Maestro flows read as screens (a Maestro-format `grantiva.yml` or `.maestro/`) accept the standard `swipe: {direction: UP}` and `swipe: {direction: LEFT, from: ...}`, `extendedWaitUntil: {visible: ...}` / `{notVisible: ...}`, `scrollUntilVisible: {element: ...}`, and bare `- waitForAnimationToEnd`. `waitForAnimationToEnd` is a settle (returns once the screen is still) rather than a fixed wait.
+- `tapOn`, `assertVisible`, `assertNotVisible`, `scrollUntilVisible`, and `extendedWaitUntil` with `{id: ...}` select by accessibility identifier in screens mode, as they do under `run --flow`, instead of searching for the id as text.
+- An unsupported Maestro command in screens mode is reported as `grantiva.yml:5: unsupported Maestro command 'back'` (file name and line, no internal error text). README now says these commands are rejected, not skipped.
+- `run --flow` no longer parses the `.maestro/` directory when there is no `grantiva.yml`, so an unrelated flow there cannot abort the run.
+- `run --flow` without `--bundle-id` (or `--application-id`) or a configured ID launches the app named by the flow's `appId:` header.
+- `run --flow`: bare `- scroll` scrolls down, `setPermissions` without its own `appId` uses the flow header's `appId`, and `swipe: {from: ...}` looks the element up and swipes within it (failing with "Element not found" when it is missing) instead of swiping across the screen centre.
 - Android captures and baselines live in `.grantiva/captures/android/` and `.grantiva/baselines/android/`. iOS paths are unchanged.
 - Android baselines are local only. `ci run` on Android, and remote baselines for Android, fail with "Android baselines are local only until the Grantiva backend supports platforms; use local baselines". `diff compare` and `diff approve` use the local store and print that line once when you are logged in.
 - `--app-file` accepts an `.apk` on Android; the application ID is read with `apkanalyzer`.
