@@ -320,7 +320,7 @@ public enum FlowEnvironment {
     }
 
     /// A recognized `- launchApp` line and the YAML shape it uses.
-    private struct LaunchAppStep {
+    struct LaunchAppStep {
         enum Form {
             case bare
             case scalar(String)

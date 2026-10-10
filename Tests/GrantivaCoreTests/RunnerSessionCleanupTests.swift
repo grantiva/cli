@@ -83,7 +83,7 @@ private struct RecordingPlatform: DevicePlatform {
     func defaultDevice() async throws -> BootedDevice { fatalError() }
     func screenshot(deviceID: String, to path: String) async throws {}
     func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand { fatalError() }
-    func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
     func cleanupOrphans(deviceID: String) async {
         calls.append("cleanupOrphans(\(deviceID))")
     }

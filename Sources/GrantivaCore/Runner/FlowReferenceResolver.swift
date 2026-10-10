@@ -6,7 +6,14 @@ import Yams
 /// flow without doing this would silently change what its paths mean.
 /// Every command it walks is also passed through `FlowNormalizer`.
 enum FlowReferenceResolver {
-    static func resolve(in content: String, relativeTo baseDirectory: String) throws -> String {
+    /// `mapFile`, when given, receives each resolved absolute `runFlow` path
+    /// and returns the path to reference instead (for example a staged,
+    /// rewritten copy of that file).
+    static func resolve(
+        in content: String,
+        relativeTo baseDirectory: String,
+        mapFile: ((String) throws -> String)? = nil
+    ) throws -> String {
         let documents = MaestroFlowParser.splitDocuments(content)
         guard let commands = documents.commands else { return content }
 
@@ -23,7 +30,7 @@ enum FlowReferenceResolver {
         }
         let headerAppId = documents.config
             .flatMap { try? Yams.load(yaml: $0) as? [String: Any] }?["appId"] as? String
-        let rewritten = try rewriteCommands(commandList, baseDirectory: baseDirectory, headerAppId: headerAppId)
+        let rewritten = try rewriteCommands(commandList, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile)
         let emitted: String
         do {
             emitted = try Yams.dump(object: rewritten)
@@ -38,18 +45,18 @@ enum FlowReferenceResolver {
     }
 
     private static func rewriteCommands(
-        _ commands: [Any], baseDirectory: String, headerAppId: String?
+        _ commands: [Any], baseDirectory: String, headerAppId: String?, mapFile: ((String) throws -> String)?
     ) throws -> [Any] {
         try commands.map { command in
             let command = FlowNormalizer.normalize(command, headerAppId: headerAppId)
             guard var dictionary = command as? [String: Any] else { return command }
             if let runFlow = dictionary["runFlow"] {
                 dictionary["runFlow"] = try rewriteRunFlow(
-                    runFlow, baseDirectory: baseDirectory
+                    runFlow, baseDirectory: baseDirectory, mapFile: mapFile
                 )
             }
             dictionary = try rewriteNestedCommandLists(
-                dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId
+                dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile
             )
             return dictionary
         }
@@ -58,41 +65,45 @@ enum FlowReferenceResolver {
     /// Maestro control-flow commands can contain further command lists. Only
     /// values under a `commands` key are command syntax; arbitrary dictionaries
     /// such as launch environment values may legitimately use a `runFlow` key.
-    private static func rewriteNestedValue(_ value: Any, baseDirectory: String, headerAppId: String?) throws -> Any {
+    private static func rewriteNestedValue(_ value: Any, baseDirectory: String, headerAppId: String?, mapFile: ((String) throws -> String)?) throws -> Any {
         if let values = value as? [Any] {
             return try values.map {
-                try rewriteNestedValue($0, baseDirectory: baseDirectory, headerAppId: headerAppId)
+                try rewriteNestedValue($0, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile)
             }
         }
         guard let dictionary = value as? [String: Any] else { return value }
-        return try rewriteNestedCommandLists(dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId)
+        return try rewriteNestedCommandLists(dictionary, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile)
     }
 
     private static func rewriteNestedCommandLists(
-        _ dictionary: [String: Any], baseDirectory: String, headerAppId: String?
+        _ dictionary: [String: Any], baseDirectory: String, headerAppId: String?, mapFile: ((String) throws -> String)?
     ) throws -> [String: Any] {
         var result: [String: Any] = [:]
         for (key, child) in dictionary {
             if key == "commands", let commands = child as? [Any] {
-                result[key] = try rewriteCommands(commands, baseDirectory: baseDirectory, headerAppId: headerAppId)
+                result[key] = try rewriteCommands(commands, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile)
             } else {
                 result[key] = try rewriteNestedValue(
-                    child, baseDirectory: baseDirectory, headerAppId: headerAppId
+                    child, baseDirectory: baseDirectory, headerAppId: headerAppId, mapFile: mapFile
                 )
             }
         }
         return result
     }
 
-    private static func rewriteRunFlow(_ value: Any, baseDirectory: String) throws -> Any {
+    private static func rewriteRunFlow(_ value: Any, baseDirectory: String, mapFile: ((String) throws -> String)?) throws -> Any {
+        func resolved(_ path: String) throws -> String {
+            let absolute = try resolvePath(path, baseDirectory: baseDirectory)
+            return try mapFile?(absolute) ?? absolute
+        }
         if let path = value as? String {
-            return try resolvePath(path, baseDirectory: baseDirectory)
+            return try resolved(path)
         }
         if var options = value as? [String: Any] {
             guard let file = options["file"] as? String else {
                 throw invalidRunFlow("object form requires a string 'file' field")
             }
-            options["file"] = try resolvePath(file, baseDirectory: baseDirectory)
+            options["file"] = try resolved(file)
             return options
         }
         throw invalidRunFlow("expected a path string or an object with a string 'file' field")

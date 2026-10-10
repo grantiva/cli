@@ -29,7 +29,8 @@ public enum RunnerSession {
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 300
+        timeoutSeconds: UInt64 = 300,
+        autoAcceptAlerts: Bool = true
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -45,8 +46,9 @@ public enum RunnerSession {
         let runnerDir = runner.runnerDir()
 
         // Generate Maestro flow YAML
-        let flowPath = try FlowGenerator.writeTemp(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+        let (flowPath, subflowPathMap) = try FlowGenerator.writeTempStaged(
+            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            disableAlertAutoAccept: disablesAlertAutoAccept(platform: platform, autoAcceptAlerts: autoAcceptAlerts)
         )
         defer {
             try? FileManager.default.removeItem(
@@ -123,6 +125,7 @@ public enum RunnerSession {
             clear: { id in
                 await platform.restoreAfterCapture(deviceID: id)
                 await platform.cleanupOrphans(deviceID: id)
+                platform.runnerFinished(runnerHome: runnerDir, deviceID: id)
             }
         ) {
             await RunnerExecution.run(RunnerExecution.Request(
@@ -132,10 +135,10 @@ public enum RunnerSession {
                 lease: simulatorLease,
                 keepAlive: keepAlive,
                 timeoutSeconds: timeoutSeconds,
-                pathMap: [:],
+                pathMap: subflowPathMap,
                 reportDir: reportDir,
                 expectedFlows: 1,
-                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform
             ))
@@ -146,8 +149,9 @@ public enum RunnerSession {
                 ? "Runner timed out after \(timeoutSeconds)s"
                 : "Runner failed (exit \(outcome.terminationStatus))"
             readySignal.write(RunReadyState(status: "failed", flows: [], reportDir: reportDir))
+            let stderr = OutputRewriter(replacements: subflowPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
-                "\(reason):\n\(outcome.stderr.suffix(2000))",
+                "\(reason):\n\(stderr.suffix(2000))",
                 outcome.terminationStatus
             )
         }
@@ -300,7 +304,8 @@ public enum RunnerSession {
         timeoutSeconds: UInt64 = 600,
         environment: [String: String] = [:],
         readyFile: String? = nil,
-        expectedPixels: SimulatorProvisionResult.Dimensions? = nil
+        expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
+        autoAcceptAlerts: Bool = true
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -333,13 +338,22 @@ public enum RunnerSession {
         // Maps every staged copy back to the path the user actually passed, so
         // runner output and error messages never name a /var/folders temp file.
         var stagedPathMap: [String: String] = [:]
+        // With alert auto-accept off, every runFlow file a flow references is
+        // staged as a rewritten copy too, so its launchApp gets the policy.
+        let subflowStager = disablesAlertAutoAccept(platform: platform, autoAcceptAlerts: autoAcceptAlerts)
+            ? FlowAlertStager(directory: "\(tempFlowDir)/subflows")
+            : nil
         for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
             var injectedContent = injectAppId(originalContent, bundleId: bundleId)
             injectedContent = try FlowReferenceResolver.resolve(
                 in: injectedContent,
-                relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent
+                relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent,
+                mapFile: subflowStager.map { $0.stage }
             )
+            if subflowStager != nil {
+                injectedContent = FlowAlertPolicy.disableAutoAccept(in: injectedContent)
+            }
             // Header `env:` and `--env` go into launchApp for the platform's channel.
             let launchData = FlowEnvironment.apply(to: injectedContent, environment: environment, platform: platform.platform)
             injectedContent = launchData.yaml
@@ -365,6 +379,9 @@ public enum RunnerSession {
             tempFlowPaths.append(tempFlowPath)
             stagedPathMap[tempFlowPath] = flowPaths[index]
         }
+
+        // Runner output names staged subflow copies too; map them back.
+        let outputPathMap = stagedPathMap.merging(subflowStager?.pathMap ?? [:]) { flow, _ in flow }
 
         // If the caller passed --report-dir, write reports straight to it and
         // preserve on exit so CI can upload them. Otherwise fall back to an
@@ -434,6 +451,7 @@ public enum RunnerSession {
             clear: { id in
                 await platform.restoreAfterCapture(deviceID: id)
                 await platform.cleanupOrphans(deviceID: id)
+                platform.runnerFinished(runnerHome: runnerDir, deviceID: id)
             }
         ) {
             await RunnerExecution.run(RunnerExecution.Request(
@@ -443,16 +461,16 @@ public enum RunnerSession {
                 lease: simulatorLease,
                 keepAlive: keepAlive,
                 timeoutSeconds: effectiveTimeout,
-                pathMap: stagedPathMap,
+                pathMap: outputPathMap,
                 reportDir: reportDir,
                 expectedFlows: flowPaths.count,
-                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform
             ))
         }
 
-        let pathRewriter = OutputRewriter(replacements: stagedPathMap)
+        let pathRewriter = OutputRewriter(replacements: outputPathMap)
         let stderr = pathRewriter.rewrite(outcome.stderr)
 
         guard outcome.terminationStatus == 0 else {
@@ -534,9 +552,17 @@ public enum RunnerSession {
         return result
     }
 
+    /// Whether staged flows get `FlowAlertPolicy`'s rewrite: on iOS, when the
+    /// caller opted out of the runner's alert auto-accept
+    /// (`--no-auto-accept-alerts`). Android's runner has no WDA alert monitor,
+    /// so its flows are left alone.
+    static func disablesAlertAutoAccept(platform: any DevicePlatform, autoAcceptAlerts: Bool) -> Bool {
+        platform.platform == .ios && !autoAcceptAlerts
+    }
+
     /// Extra environment for the runner process, supplied by the platform.
-    static func runnerEnvironment(platform: any DevicePlatform, runnerDir: String) -> [String: String] {
-        platform.runnerEnvironment(runnerHome: runnerDir)
+    static func runnerEnvironment(platform: any DevicePlatform, runnerDir: String, deviceID: String) -> [String: String] {
+        platform.runnerEnvironment(runnerHome: runnerDir, deviceID: deviceID)
     }
 
     /// Builds the full runner argv (binary path first). Global flags go before

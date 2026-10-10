@@ -99,7 +99,11 @@ public struct IOSPlatform: DevicePlatform {
 
     public func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
         var args = ["simctl", "spawn", deviceID, "log", "stream", "--style", "compact"]
-        let predicate = filter ?? appID.map(defaultLogPredicate(forBundleID:))
+        var predicate = filter
+        if predicate == nil, let appID {
+            let executable = await installedExecutable(appID: appID, deviceID: deviceID)
+            predicate = defaultLogPredicate(forBundleID: appID, executable: executable)
+        }
         if let predicate, !predicate.isEmpty {
             args += ["--predicate", predicate]
         }
@@ -109,12 +113,42 @@ public struct IOSPlatform: DevicePlatform {
         return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
     }
 
+    /// The installed app's `CFBundleExecutable`, or nil when the app is not
+    /// installed on the simulator or its Info.plist cannot be read.
+    func installedExecutable(appID: String, deviceID: String) async -> String? {
+        guard let container = try? await execute(
+            "xcrun simctl get_app_container \(shellQuoted(deviceID)) \(shellQuoted(appID)) app"
+        ).trimmingCharacters(in: .whitespacesAndNewlines), !container.isEmpty else { return nil }
+        let executable = try? await execute(
+            "/usr/bin/plutil -extract CFBundleExecutable raw -o - \(shellQuoted(container + "/Info.plist"))"
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+        return executable?.isEmpty == false ? executable : nil
+    }
+
     /// Points xcodebuild at grantiva's xcconfig so the runner's WebDriverAgent
-    /// build survives Xcode 27 (see `WDABuildConfig`). Falls back to the stock
-    /// build when the file cannot be written.
-    public func runnerEnvironment(runnerHome: String) -> [String: String] {
-        guard let xcconfig = WDABuildConfig.install(in: runnerHome) else { return [:] }
-        return ["XCODE_XCCONFIG_FILE": xcconfig]
+    /// build survives Xcode 27 (see `WDABuildConfig`), and gives the runner a
+    /// per-simulator home so concurrent runs on different simulators each
+    /// launch WDA from their own xctestrun, port, and DerivedData (see
+    /// `WDADeviceHome`). Each piece falls back to the stock behavior when its
+    /// files cannot be written.
+    public func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] {
+        var environment: [String: String] = [:]
+        if let xcconfig = WDABuildConfig.install(in: runnerHome) {
+            environment["XCODE_XCCONFIG_FILE"] = xcconfig
+        }
+        if let deviceHome = WDADeviceHome.prepare(runnerHome: runnerHome, deviceID: deviceID) {
+            environment["MAESTRO_RUNNER_HOME"] = deviceHome
+        }
+        return environment
+    }
+
+    /// Promotes a WebDriverAgent build the runner produced in this
+    /// simulator's home into the shared cache (see `WDADeviceHome.promote`).
+    /// A build is complete once its xctestrun exists, so this runs whatever
+    /// the flows' verdict was: a failing first flow must not throw away a
+    /// fresh multi-minute WDA build.
+    public func runnerFinished(runnerHome: String, deviceID: String) {
+        WDADeviceHome.promote(runnerHome: runnerHome, deviceID: deviceID)
     }
 
     public func cleanupOrphans(deviceID: String) async {}

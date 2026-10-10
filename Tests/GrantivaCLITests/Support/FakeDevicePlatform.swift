@@ -45,7 +45,7 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
         record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
     }
-    func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
     func cleanupOrphans(deviceID: String) async { record("cleanupOrphans") }
     var hierarchyXML = "<hierarchy><android.view.View class=\"android.view.View\" text=\"Fake\" bounds=\"[0,0][10,10]\"/></hierarchy>"
     func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {

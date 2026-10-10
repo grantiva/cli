@@ -59,16 +59,32 @@ final class IOSPlatformTests: XCTestCase {
     }
 
     func testLogStreamBuildsTheSimctlSpawnCommand() async throws {
-        let command = try await IOSPlatform().logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
+        let executor = ScriptedExecutor([
+            .success("/sims/ABC/Containers/Bundle/Application/X/Example.app\n"),
+            .success("Example\n"),
+        ])
+        let platform = IOSPlatform(execute: executor.execute)
+        let command = try await platform.logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
         XCTAssertEqual(command.executable, "/usr/bin/xcrun")
         XCTAssertEqual(command.arguments, [
             "simctl", "spawn", "ABC", "log", "stream", "--style", "compact",
-            "--predicate", defaultLogPredicate(forBundleID: "com.example"), "--level", "debug",
+            "--predicate", defaultLogPredicate(forBundleID: "com.example", executable: "Example"), "--level", "debug",
         ])
-        let explicit = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
+        XCTAssertEqual(executor.commands, [
+            "xcrun simctl get_app_container 'ABC' 'com.example' app",
+            "/usr/bin/plutil -extract CFBundleExecutable raw -o - '/sims/ABC/Containers/Bundle/Application/X/Example.app/Info.plist'",
+        ])
+        let explicit = try await platform.logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
         XCTAssertEqual(explicit.arguments.suffix(2), ["--predicate", "subsystem == \"x\""])
-        let none = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
+        let none = try await platform.logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
         XCTAssertFalse(none.arguments.contains("--predicate"))
+    }
+
+    func testLogStreamFallsBackToTheBundlePredicateWhenTheAppIsNotInstalled() async throws {
+        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed("No such app", 2))])
+        let command = try await IOSPlatform(execute: executor.execute)
+            .logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: nil)
+        XCTAssertEqual(command.arguments.suffix(2), ["--predicate", defaultLogPredicate(forBundleID: "com.example")])
     }
 
     func testRunnerEnvironmentPointsXcodebuildAtGrantivasXcconfig() throws {
@@ -77,15 +93,15 @@ final class IOSPlatformTests: XCTestCase {
         try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(atPath: home) }
 
-        let env = IOSPlatform().runnerEnvironment(runnerHome: home)
+        let env = IOSPlatform().runnerEnvironment(runnerHome: home, deviceID: "SIM-1")
         let xcconfig = "\(home)/\(WDABuildConfig.fileName)"
-        XCTAssertEqual(env, ["XCODE_XCCONFIG_FILE": xcconfig])
+        XCTAssertEqual(env["XCODE_XCCONFIG_FILE"], xcconfig)
         let contents = try String(contentsOfFile: xcconfig, encoding: .utf8)
         XCTAssertTrue(contents.contains("WARNING_CFLAGS = $(inherited) -Wno-poison-system-directories"), contents)
     }
 
     func testRunnerEnvironmentFallsBackWhenTheXcconfigCannotBeWritten() {
-        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)"), [:])
+        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)", deviceID: "SIM-1"), [:])
     }
 
     func testWDABuildConfigRewritesAStaleFileAndLeavesACurrentOne() throws {

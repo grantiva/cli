@@ -36,7 +36,7 @@ final class AndroidPlatformTests: XCTestCase {
             ["--platform", "android", "--device", "emulator-5554", "--no-ansi", "--no-app-install", "--app-file", "/b/app.apk"]
         )
         XCTAssertEqual(p.runnerTestArguments(), [])
-        let env = p.runnerEnvironment(runnerHome: "/home/.grantiva/runner")
+        let env = p.runnerEnvironment(runnerHome: "/home/.grantiva/runner", deviceID: "emulator-5554")
         XCTAssertEqual(env["MAESTRO_RUNNER_HOME"], "/home/.grantiva/runner")
         XCTAssertEqual(env["ANDROID_HOME"], "/sdk")
         XCTAssertEqual(env["PATH"], "/sdk/platform-tools:/sdk/emulator:/usr/bin")

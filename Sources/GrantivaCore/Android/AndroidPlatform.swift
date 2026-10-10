@@ -202,7 +202,7 @@ public struct AndroidPlatform: DevicePlatform {
 
     public func runnerTestArguments() -> [String] { [] }
 
-    public func runnerEnvironment(runnerHome: String) -> [String: String] {
+    public func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] {
         let path = environment["PATH"].map { ":" + $0 } ?? ""
         return [
             "MAESTRO_RUNNER_HOME": runnerHome,

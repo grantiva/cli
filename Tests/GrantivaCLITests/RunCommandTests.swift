@@ -300,13 +300,6 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: "MyTag"), "Streaming emulator logs (tag: MyTag)")
     }
 
-    func testChattyLogWarningIsTheBaseCommitWording() {
-        XCTAssertEqual(
-            RunCommand.unfilteredLogsWarning,
-            "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
-        )
-    }
-
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

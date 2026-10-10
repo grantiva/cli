@@ -173,7 +173,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         try flowYaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
 
         let runnerArgs = Self.runnerArguments(platform: platformDevice, deviceID: booted.udid, flowPath: flowPath)
-        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir)
+        let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
         let launch = Launch(
             runnerBin: runnerBin, runnerDir: runnerDir, runnerArgs: runnerArgs,
             environment: environment.isEmpty ? nil : environment,
