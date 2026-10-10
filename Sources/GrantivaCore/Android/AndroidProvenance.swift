@@ -6,12 +6,17 @@ public struct StartedEmulatorRecord: Codable, Equatable, Sendable {
     public let avd: String
     public let pid: Int32
     public let startedAt: Date
+    /// The process's own start time (seconds since 1970, from the kernel), so
+    /// a pid the system reused for another process is not mistaken for this
+    /// emulator. Absent in records written before it existed.
+    public let processStartTime: Int64?
 
-    public init(serial: String, avd: String, pid: Int32, startedAt: Date = Date()) {
+    public init(serial: String, avd: String, pid: Int32, startedAt: Date = Date(), processStartTime: Int64? = nil) {
         self.serial = serial
         self.avd = avd
         self.pid = pid
         self.startedAt = startedAt
+        self.processStartTime = processStartTime
     }
 }
 

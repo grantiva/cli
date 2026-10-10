@@ -158,7 +158,9 @@ with `avdmanager create avd -d pixel_8`. The system image comes from `--system-i
 `system_image` in the config, then `system-images;android-35;google_apis;arm64-v8a`.
 An emulator is recorded only while the process Grantiva spawned is alive and owns the
 serial's console port: a boot whose process exits, even if another emulator answers on that
-serial, leaves no record, and a port whose console is already bound is skipped. A record
-whose pid is gone is dropped by `sessions` and `teardown`; `teardown` then refuses the
+serial, leaves no record, and a port whose console is already bound is skipped. The record
+keeps the process's start time, so a pid the system reused does not count. A record whose
+process is gone, whose pid now names another process, or whose console port another process
+owns is dropped by `sessions` and `teardown`; `teardown` then refuses the
 serial without `--force`, whatever AVD it runs, so `teardown --all` never kills an emulator
 someone else started. `delete` refuses while a running emulator's AVD name cannot be read.

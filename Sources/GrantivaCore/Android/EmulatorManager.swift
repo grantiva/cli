@@ -118,10 +118,11 @@ public struct EmulatorManager: Sendable {
         return result == 0
     }
 
-    /// The pids listening on a TCP port (`lsof`), or nil when that cannot be
-    /// read.
+    /// The pids listening on a TCP port (`lsof`): empty when lsof sees no
+    /// listener (it exits 1 then), nil when lsof itself could not run.
+    /// Without root, lsof does not show other users' processes.
     public static let listeningPIDs: @Sendable (Int) async -> [Int32]? = { port in
-        guard let output = try? await GrantivaCore.shell("/usr/sbin/lsof -nP -iTCP:\(port) -sTCP:LISTEN -t") else { return nil }
+        guard let output = try? await GrantivaCore.shell("/usr/sbin/lsof -nP -iTCP:\(port) -sTCP:LISTEN -t 2>/dev/null || true") else { return nil }
         return output.split(whereSeparator: \.isNewline).compactMap { Int32($0.trimmingCharacters(in: .whitespaces)) }
     }
 
@@ -249,7 +250,7 @@ public struct EmulatorManager: Sendable {
         let arguments = Self.bootArguments(avd: avd, port: port, headless: headless || isatty(STDOUT_FILENO) == 0)
         GrantivaLog.logger.info("Booting AVD \(avd) as \(serial)")
         let pid = try spawn(sdk.emulator, arguments)
-        try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid))
+        try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid, processStartTime: Self.processStartTime(pid)))
         try await waitForBoot(serial: serial, pid: pid)
         return BootedDevice(udid: serial, name: avd)
     }
@@ -278,14 +279,31 @@ public struct EmulatorManager: Sendable {
                let path = try? await adb.shell(serial: serial, "pm path android"), path.contains("package:") {
                 if let pid {
                     guard Self.isAlive(pid) else { throw exited(pid) }
-                    if let consolePort = Int(port), let owners = await consolePortOwners(consolePort),
-                       !owners.isEmpty, !owners.contains(pid) {
-                        try? provenance.remove(serial: serial)
-                        throw GrantivaError.commandFailed(
-                            "\(serial) is answered by another emulator (pid \(owners.map(String.init).joined(separator: ", "))), "
-                                + "not the one Grantiva started (pid \(pid)). See \(log).",
-                            1
-                        )
+                    // Fail closed when the console port is bound but lsof
+                    // shows no owner (another user's process): we cannot tell
+                    // it is ours. When lsof cannot run at all (nil), or nothing
+                    // listens, only the pid's liveness is known; accept that.
+                    if let consolePort = Int(port) {
+                        switch await consolePortOwners(consolePort) {
+                        case let owners? where !owners.isEmpty && !owners.contains(pid):
+                            try? provenance.remove(serial: serial)
+                            throw GrantivaError.commandFailed(
+                                "\(serial) is answered by another emulator (pid \(owners.map(String.init).joined(separator: ", "))), "
+                                    + "not the one Grantiva started (pid \(pid)). See \(log).",
+                                1
+                            )
+                        case let owners? where owners.isEmpty && consolePortBound(consolePort):
+                            try? provenance.remove(serial: serial)
+                            throw GrantivaError.commandFailed(
+                                "\(serial)'s console port \(consolePort) is held by a process lsof cannot see, "
+                                    + "so it cannot be confirmed as the emulator Grantiva started (pid \(pid)). See \(log).",
+                                1
+                            )
+                        case nil:
+                            GrantivaLog.logger.debug("Could not read the owner of console port \(consolePort); relying on pid \(pid) being alive")
+                        default:
+                            break
+                        }
                     }
                 }
                 _ = try? await adb.shell(serial: serial, "wm dismiss-keyguard")
@@ -378,8 +396,8 @@ public struct EmulatorManager: Sendable {
         let devices = try await adb.devices()
         var records: [EmulatorSessionRecord] = []
         for record in try provenance.all() {
-            let alive = Self.isAlive(record.pid)
             let state = devices.first { $0.serial == record.serial }?.state ?? "absent"
+            let alive = await isOurs(record, listed: state != "absent")
             if !alive {
                 try provenance.remove(serial: record.serial)
                 continue
@@ -396,10 +414,12 @@ public struct EmulatorManager: Sendable {
     /// emulator to exit, and waits for both the process and the serial to go.
     public func teardown(serial: String, force: Bool) async throws -> EmulatorTeardownOutcome {
         var record = try provenance.all().first { $0.serial == serial }
-        // A record whose process is gone proves nothing about the serial: the
-        // port may now belong to someone else's emulator, even one running the
-        // same AVD (an AVD name does not say who started it). Drop it.
-        if let stale = record, !Self.isAlive(stale.pid),
+        // A record whose process is gone (or whose pid now names another
+        // process, or whose console port another process owns) proves nothing
+        // about the serial: it may now belong to someone else's emulator, even
+        // one running the same AVD (an AVD name does not say who started it).
+        // Drop it.
+        if let stale = record, !(await isOurs(stale, listed: true)),
            try await adb.devices().contains(where: { $0.serial == serial }) {
             try provenance.remove(serial: serial)
             record = nil
@@ -422,7 +442,7 @@ public struct EmulatorManager: Sendable {
             let deadline = Date().addingTimeInterval(killTimeout)
             while true {
                 listed = try await adb.devices().contains { $0.serial == serial }
-                let processGone = record.map { !Self.isAlive($0.pid) } ?? true
+                let processGone = record.map { !Self.isRecordedProcessAlive($0) } ?? true
                 if !listed, processGone { break }
                 guard Date() < deadline else {
                     throw GrantivaError.commandFailed(
@@ -436,6 +456,33 @@ public struct EmulatorManager: Sendable {
             try provenance.remove(serial: serial)
         }
         return EmulatorTeardownOutcome(serial: serial, avd: record?.avd, killed: killed, recorded: record != nil)
+    }
+
+    /// A record is ours while its process lives (the same process, by start
+    /// time, not just the same pid) and, when its serial is listed, no other
+    /// process owns that serial's console port. An empty or unreadable owner
+    /// list proves nothing either way, so the start time decides then.
+    private func isOurs(_ record: StartedEmulatorRecord, listed: Bool) async -> Bool {
+        guard Self.isRecordedProcessAlive(record) else { return false }
+        guard listed, let port = Int(record.serial.replacingOccurrences(of: "emulator-", with: "")),
+              let owners = await consolePortOwners(port), !owners.isEmpty else { return true }
+        return owners.contains(record.pid)
+    }
+
+    /// `isAlive`, plus: a recorded start time must match the live process's,
+    /// so a reused pid does not pass. An unreadable start time fails closed.
+    static func isRecordedProcessAlive(_ record: StartedEmulatorRecord) -> Bool {
+        guard isAlive(record.pid) else { return false }
+        guard let expected = record.processStartTime else { return true }
+        return processStartTime(record.pid) == expected
+    }
+
+    /// The kernel's start time of `pid`, in whole seconds since 1970.
+    static func processStartTime(_ pid: Int32) -> Int64? {
+        var info = proc_bsdinfo()
+        let size = Int32(MemoryLayout<proc_bsdinfo>.size)
+        guard proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, size) == size else { return nil }
+        return Int64(info.pbi_start_tvsec)
     }
 
     static let notStartedByGrantiva = "was not started by Grantiva"

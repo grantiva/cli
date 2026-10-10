@@ -183,7 +183,30 @@ final class EmulatorManagerTests: XCTestCase {
         ])
         let device = try await manager(shell, portOwners: [getpid()]).boot(avd: "Pixel_8_API_35")
         XCTAssertEqual(device.udid, "emulator-5554")
-        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).all().map(\.pid), [getpid()])
+        let records = try AndroidProvenance(directory: scratch.path).all()
+        XCTAssertEqual(records.map(\.pid), [getpid()])
+        XCTAssertNotNil(records.first?.processStartTime)
+        XCTAssertEqual(records.first?.processStartTime, EmulatorManager.processStartTime(getpid()), "the start time is recorded")
+    }
+
+    /// The console port is bound but lsof shows no owner (another user's
+    /// process): the boot cannot be confirmed as ours, so it fails closed.
+    func testWaitForBootFailsClosedWhenTheBoundConsolePortHasNoVisibleOwner() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid()))
+        let shell = ScriptedShell([.success("1"), .success("package:x")])
+        do {
+            try await manager(shell, boundPorts: [5554], portOwners: []).waitForBoot(serial: "emulator-5554", pid: getpid())
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("cannot be confirmed"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.all(), [])
+    }
+
+    func testWaitForBootAcceptsAnUnreadableOwnerWhenThePIDIsAlive() async throws {
+        let shell = ScriptedShell([.success("1"), .success("package:x"), .success("")])
+        try await manager(shell, boundPorts: [5554], portOwners: nil).waitForBoot(serial: "emulator-5554", pid: getpid())
     }
 
     func testBootSkipsAPortWhoseConsoleIsBound() async throws {
@@ -520,6 +543,72 @@ final class EmulatorManagerTests: XCTestCase {
         let sessions = try await manager(shell).sessions()
         XCTAssertEqual(sessions, [])
         XCTAssertEqual(try ledger.all(), [])
+    }
+
+    /// Fix round 1: the recorded pid is alive (macOS reused it for an
+    /// unrelated process) but another process owns the serial's console port:
+    /// the user restarted the AVD there. Not ours.
+    func testALiveReusedPIDWhoseConsolePortAnotherProcessOwnsIsNotOurs() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let listed = "List of devices attached\nemulator-5554 device"
+
+        let sessions = try await manager(ScriptedShell([.success(listed)]), portOwners: [49817]).sessions()
+        XCTAssertEqual(sessions, [])
+        XCTAssertEqual(try ledger.all(), [], "sessions prunes it")
+
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let shell = ScriptedShell([.success(listed)])
+        do {
+            _ = try await manager(shell, portOwners: [49817]).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.all(), [])
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let all = ScriptedShell([.success(listed)])
+        let outcomes = try await manager(all, portOwners: [49817]).teardownAll()
+        XCTAssertEqual(outcomes, [])
+        XCTAssertFalse(all.commands.contains { $0.hasSuffix("emu kill") }, "\(all.commands)")
+    }
+
+    /// Fix round 1: a reused pid is caught by its start time even when lsof
+    /// tells us nothing.
+    func testALivePIDWhoseStartTimeDisagreesWithTheRecordIsNotOurs() async throws {
+        let actual = try XCTUnwrap(EmulatorManager.processStartTime(getpid()))
+        let ledger = AndroidProvenance(directory: scratch.path)
+        let listed = "List of devices attached\nemulator-5554 device"
+        let reused = StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual - 3600)
+        XCTAssertFalse(EmulatorManager.isRecordedProcessAlive(reused))
+        XCTAssertTrue(EmulatorManager.isRecordedProcessAlive(
+            StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual)
+        ))
+
+        try ledger.register(reused)
+        let pruned = try await manager(ScriptedShell([.success(listed)])).sessions()
+        XCTAssertEqual(pruned, [])
+        XCTAssertEqual(try ledger.all(), [])
+
+        try ledger.register(reused)
+        let shell = ScriptedShell([.success(listed)])
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+    }
+
+    func testOldLedgerRecordsWithoutAStartTimeStillDecode() throws {
+        let json = #"[{"startedAt":813271244.3,"avd":"Pixel_8_API_35","serial":"emulator-5554","pid":19482}]"#
+        try json.write(to: scratch.appendingPathComponent("started.json"), atomically: true, encoding: .utf8)
+        let records = try AndroidProvenance(directory: scratch.path).all()
+        XCTAssertEqual(records.map(\.pid), [19482])
+        XCTAssertNil(records.first?.processStartTime)
     }
 
     /// Review Focus 4.
