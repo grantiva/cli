@@ -1,0 +1,38 @@
+$ sed -n 410,420p /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/README.md
+
+`ensure` prints the UDID on stdout and nothing else, so it can be captured
+directly:
+
+```bash
+udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
+grantiva run --simulator "$udid" --flow flows/login.yaml
+```
+
+The human-readable line (`Reused iPhone 17 Pro (…) — Booted`) goes to stderr, so
+a terminal still shows it while a command substitution ignores it. `--json`
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d03 && udid=00000000-0000-0000-0000-0000000000C1; $GRANTIVA run --simulator "$udid" --flow flows/login.yaml --no-build
+Resolved: scheme=(none) simulator=00000000-0000-0000-0000-0000000000C1 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 00000000-0000-0000-0000-0000000000C1
+Error: Invalid argument: Simulator not found: "00000000-0000-0000-0000-0000000000C1"
+rc=1
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d03 && $GRANTIVA run --device X flows/
+Error: Unexpected argument 'flows/'
+Usage: grantiva run <options>
+  See 'grantiva run --help' for more information.
+rc=64
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d03 && udid=00000000-0000-0000-0000-0000000000C1; timeout 120 $GRANTIVA run --simulator "$udid" --flow flows/login.yaml
+Error: 2026-10-10 14:30:29.496 xcodebuild[84251:10000415] Error Domain=NSCocoaErrorDomain Code=3840 "Unable to parse empty data." UserInfo={NSDebugDescription=Unable to parse empty data.}
+2026-10-10 14:30:29.502 xcodebuild[84251:10000415] Writing error result bundle to /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/ResultBundle_2026-10-10_14-30-0029.xcresult
+xcodebuild: error: Unable to read project 'App.xcodeproj'.
+	Reason: The project “App” is not a valid property list, and cannot be opened.
+
+
+	Examine “/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d03/App.xcodeproj” for invalid content or unresolved source control conflicts.
+rc=1
+

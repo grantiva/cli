@@ -1,0 +1,64 @@
+# C11: MCP server with no runner session. Phase 1a: project dir with grantiva.yml (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios), no session anywhere (/tmp/grantiva-sessions empty, no .grantiva/).
+$ /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios --platform ios   (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios)
+>> {"jsonrpc": "2.0", "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 0}
+<< {"id":0,"jsonrpc":"2.0","result":{"capabilities":{"resources":{"listChanged":false,"subscribe":true},"tools":{"listChanged":false}},"instructions":"Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.","protocolVersion":"2025-03-26","serverInfo":{"name":"grantiva","version":"2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_tap", "arguments": {"label": "No Such Label QA"}}, "id": 1}
+<< {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_swipe", "arguments": {"direction": "up"}}, "id": 2}
+<< {"id":2,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_type", "arguments": {"text": "qa"}}, "id": 3}
+<< {"id":3,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_screenshot", "arguments": {}}, "id": 4}
+<< {"id":4,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_a11y_tree", "arguments": {}}, "id": 5}
+<< {"id":5,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_a11y_check", "arguments": {}}, "id": 6}
+<< {"id":6,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0}]}}, "id": 7}
+<< {"id":7,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_sim_list", "arguments": {"filter": "booted"}}, "id": 8}
+<< {"id":8,"jsonrpc":"2.0","result":{"content":[{"text":"Name | UDID | State | Runtime\niPhone 17 Pro | B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C | Booted | iOS-26-0\nqa-reg-ios-1 | 4278E141-1297-46F9-989F-FB9995D123F9 | Booted | iOS-26-0\nqa-reg-ios-2 | D65CAFEF-BB8A-4835-897F-C63578A905ED | Booted | iOS-27-0","type":"text"}]}}
+[server stderr:]
+
+server exit=0
+
+# Phase 1b: empty dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty (no config, no session), no --platform.
+$ /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty   (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty)
+>> {"jsonrpc": "2.0", "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 0}
+<< {"id":0,"jsonrpc":"2.0","result":{"capabilities":{"resources":{"listChanged":false,"subscribe":true},"tools":{"listChanged":false}},"instructions":"Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.","protocolVersion":"2025-03-26","serverInfo":{"name":"grantiva","version":"2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_a11y_tree", "arguments": {}}, "id": 1}
+<< {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: No active runner session at /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in /tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_capture", "arguments": {}}, "id": 2}
+<< {"id":2,"jsonrpc":"2.0","result":{"content":[{"text":"Capture failed:\nError: Invalid argument: No screens configured in grantiva.yml","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_context", "arguments": {}}, "id": 3}
+<< {"id":3,"jsonrpc":"2.0","result":{"content":[{"text":"[Config]\n  No grantiva.yml found in current directory.\n\n[Simulator]\n  name: iPhone 17 Pro\n  udid: B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C\n  runtime: iOS-26-0\n  state: Booted\n  source: first booted simulator (no runner session, no simulator in grantiva.yml)\n\n[Xcode]\n  Xcode 27.0\n  Build version 27A266a\n\n[Runner Session]\n  No active session.","type":"text"}]}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_sim_list", "arguments": {"filter": "booted"}}, "id": 4}
+<< {"id":4,"jsonrpc":"2.0","result":{"content":[{"text":"Name | UDID | State | Runtime\niPhone 17 Pro | B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C | Booted | iOS-26-0\nqa-reg-ios-1 | 4278E141-1297-46F9-989F-FB9995D123F9 | Booted | iOS-26-0\nqa-reg-ios-2 | D65CAFEF-BB8A-4835-897F-C63578A905ED | Booted | iOS-27-0","type":"text"}]}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_emulator_list", "arguments": {}}, "id": 5}
+<< {"id":5,"jsonrpc":"2.0","result":{"content":[{"text":"Name | Serial | State\nPixel_8_API_35 | - | Shutdown","type":"text"}]}}
+[server stderr:]
+
+server exit=0
+
+# Phase 1c: more config-dependent tools in the empty dir, plus the CLI equivalent for comparison.
+$ /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty   (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty)
+>> {"jsonrpc": "2.0", "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 0}
+<< {"id":0,"jsonrpc":"2.0","result":{"capabilities":{"resources":{"listChanged":false,"subscribe":true},"tools":{"listChanged":false}},"instructions":"Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.","protocolVersion":"2025-03-26","serverInfo":{"name":"grantiva","version":"2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_build", "arguments": {}}, "id": 1}
+<< {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Error: Invalid argument: no scheme specified. Pass 'scheme' or set it in grantiva.yml.","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_compare", "arguments": {}}, "id": 2}
+<< {"id":2,"jsonrpc":"2.0","result":{"content":[{"text":"Error: No captures found in .grantiva/captures. Run: grantiva diff capture","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {}}, "id": 3}
+<< {"id":3,"jsonrpc":"2.0","result":{"content":[{"text":"Approve failed:\nError: No captures found in .grantiva/captures. Run: grantiva diff capture","type":"text"}],"isError":true}}
+$ $GRANTIVA diff capture --no-build --json; $GRANTIVA diff compare --json   (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c11-empty)
+
+Error: Invalid argument: No screens configured in grantiva.yml
+Error: No captures found in .grantiva/captures. Run: grantiva diff capture
+rc=1
+[server stderr:]
+
+server exit=0
+

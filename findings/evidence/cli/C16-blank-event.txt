@@ -1,0 +1,18 @@
+$ $GRANTIVA console webhooks create https://example.com/hook --event ""
+Error: Event types must not be blank.
+Usage: grantiva console webhooks create [--json] [--verbose] [--quiet] <url> --event <event> ... [--description <description>]
+  See 'grantiva console webhooks create --help' for more information.
+rc=64
+
+$ $GRANTIVA console webhooks create https://example.com/hook --event "   "
+Error: Event types must not be blank.
+Usage: grantiva console webhooks create [--json] [--verbose] [--quiet] <url> --event <event> ... [--description <description>]
+  See 'grantiva console webhooks create --help' for more information.
+rc=64
+
+$ $GRANTIVA console webhooks update wh_1 --event ""
+Error: Event types must not be blank.
+Usage: grantiva console webhooks update [--json] [--verbose] [--quiet] <webhook> [--event <event> ...] [--description <description>]
+  See 'grantiva console webhooks update --help' for more information.
+rc=64
+

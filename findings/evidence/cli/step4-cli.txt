@@ -1,0 +1,155 @@
+# Step 4 CLI checks while the reg-ios runner session (started from /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios) is live. GRANTIVA_SESSION_ID=reg-ios per controller ruling.
+$ echo GRANTIVA_SESSION_ID=$GRANTIVA_SESSION_ID; $GRANTIVA simulator sessions --json
+GRANTIVA_SESSION_ID=reg-ios
+[
+  {
+    "acquiredAt" : "2026-10-10T21:27:23Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-1",
+    "ownerPID" : 75989,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "4278E141-1297-46F9-989F-FB9995D123F9"
+  },
+  {
+    "acquiredAt" : "2026-10-10T21:27:46Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-2",
+    "ownerPID" : 76626,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "D65CAFEF-BB8A-4835-897F-C63578A905ED"
+  }
+]
+rc=0
+
+$ ls -la /tmp/grantiva-sessions/
+total 16
+drwxr-xr-x@   4 kyle  wheel   128 Oct 10 15:07 .
+drwxrwxrwt  129 root  wheel  4128 Oct 10 15:07 ..
+-rw-r--r--@   1 kyle  wheel   209 Oct 10 15:07 66677-1791670022857136000.grantiva
+-rw-r--r--@   1 kyle  wheel   276 Oct 10 15:06 66677.owner.json
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA hierarchy --udid 4278E141-1297-46F9-989F-FB9995D123F9 --json | head -c 400
+{
+  "value" : {
+    "customActions" : null,
+    "nativeFrame" : "{{0, 0}, {402, 874}}",
+    "label" : "Landmarks",
+    "rawIdentifier" : null,
+    "traits" : "",
+    "frame" : "{{0, 0}, {402, 874}}",
+    "isVisible" : "1",
+    "type" : "Application",
+    "value" : null,
+    "isEnabled" : "1",
+    "children" : [
+      {
+        "customActions" : null,
+        "nativeFrame" : "{{0, 0}, {402, 874}}",rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA hierarchy --udid 4278E141-1297-46F9-989F-FB9995D123F9 --json | python3 -I -c 'import json,sys; d=json.load(sys.stdin); print("valid JSON, top-level type:", type(d).__name__)'
+valid JSON, top-level type: dict
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA hierarchy --udid 4278E141-1297-46F9-989F-FB9995D123F9 | head -c 200
+<?xml version="1.0" encoding="UTF-8"?>
+<XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Landmarks" label="Landmarks" enabled="true" visible="true" accessible="false" x="0" y="0" widrc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA hierarchy --json | head -c 200
+{
+  "value" : {
+    "customActions" : null,
+    "nativeFrame" : "{{0, 0}, {402, 874}}",
+    "label" : "Landmarks",
+    "rawIdentifier" : null,
+    "traits" : "",
+    "frame" : "{{0, 0}, {402, 874}}",
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA runner dump-hierarchy --json | head -3
+{
+  "children" : [
+    {
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA runner dump-hierarchy --udid 4278E141-1297-46F9-989F-FB9995D123F9 --json | python3 -I -c 'import json,sys; d=json.load(sys.stdin); print("valid JSON, top-level type:", type(d).__name__)'
+valid JSON, top-level type: dict
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA runner dump-hierarchy --udid 4278E141-1297-46F9-989F-FB9995D123F9 | head -5
+[XCUIElementTypeApplication] label="Landmarks"
+  [XCUIElementTypeWindow]
+    [XCUIElementTypeOther]
+      [XCUIElementTypeOther]
+        [XCUIElementTypeOther]
+rc=0
+
+$ $GRANTIVA runner stop --udid 4278E141-1297-46F9-989F-FB9995D123F9
+Error: Unknown option '--udid'
+Usage: grantiva runner stop [--json] [--verbose] [--quiet]
+  See 'grantiva runner stop --help' for more information.
+rc=64
+
+$ $GRANTIVA runner stop --help | sed -n 1,4p
+OVERVIEW: Stop the running runner session.
+
+USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
+
+rc=0
+
+# Final stop (runner stop takes no --udid; it stops the session recorded in the cwd project)
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA runner stop
+Runner stopped (pid 68990)
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && ls -A .grantiva; ps -p 68990 >/dev/null && echo 'runner 68990 alive' || echo 'runner 68990 gone'; ls -A /tmp/grantiva-sessions/
+captures
+runner 68990 gone
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios && $GRANTIVA runner stop --json
+{
+  "status" : "not_running"
+}
+rc=0
+
+$ xcrun simctl list devices booted
+== Devices ==
+-- iOS 26.0 --
+    iPhone 17 Pro (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) (Booted) 
+    qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) (Booted) 
+-- iOS 27.0 --
+    qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) (Booted) 
+-- watchOS 27.0 --
+-- visionOS 27.0 --
+rc=0
+
+$ $GRANTIVA simulator sessions --json
+[
+  {
+    "acquiredAt" : "2026-10-10T21:27:23Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-1",
+    "ownerPID" : 75989,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "4278E141-1297-46F9-989F-FB9995D123F9"
+  },
+  {
+    "acquiredAt" : "2026-10-10T21:27:46Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-2",
+    "ownerPID" : 76626,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "D65CAFEF-BB8A-4835-897F-C63578A905ED"
+  }
+]
+rc=0
+

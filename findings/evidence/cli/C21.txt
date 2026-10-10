@@ -1,0 +1,34 @@
+$ $GRANTIVA sim boot 'iPhone 16'
+Error: 3 unexpected arguments: 'sim', 'boot', 'iPhone 16'
+Usage: grantiva <subcommand>
+  See 'grantiva --help' for more information.
+rc=64
+
+$ $GRANTIVA ui a11y
+Error: 2 unexpected arguments: 'ui', 'a11y'
+Usage: grantiva <subcommand>
+  See 'grantiva --help' for more information.
+rc=64
+
+$ grep -n 'sim boot\|ui a11y' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/GrantivaError.swift
+rc=1
+
+$ grep -n 'Run: grantiva\|Run grantiva\|grantiva hierarchy\|simulator ensure' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/GrantivaError.swift
+31:            return "No simulator is running. Run: grantiva simulator ensure --name \"<device>\""
+35:            return "Element not found: \"\(label)\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree."
+43:            return "Not authenticated. Run: grantiva auth login"
+45:            return "grantiva.yml not found. Run: grantiva init"
+55:            return "No captures found in \(dir). Run: grantiva diff capture"
+rc=0
+
+$ strings $GRANTIVA | grep -n 'Run: grantiva simulator ensure\|Run grantiva hierarchy\|sim boot\|ui a11y' | head
+5683:Run: grantiva simulator ensure --name "
+5704:". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
+5706:No simulator is running. Run: grantiva simulator ensure --name "<device>"
+rc=0
+
+$ grep -rn 'simulator ensure --name' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Doctor* /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/*/Doctor* 2>/dev/null | head
+/Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Doctor/DoctorRunner.swift:105:            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\""
+/Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Doctor/DoctorRunner.swift:105:            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\""
+rc=0
+

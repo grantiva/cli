@@ -1,0 +1,42 @@
+# Why runner start on qa-reg-ios-1 is refused under GRANTIVA_SESSION_ID=reg-cli
+$ echo GRANTIVA_SESSION_ID=$GRANTIVA_SESSION_ID; $GRANTIVA simulator sessions --json
+GRANTIVA_SESSION_ID=reg-cli
+[
+  {
+    "acquiredAt" : "2026-10-10T21:27:23Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-1",
+    "ownerPID" : 75989,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "4278E141-1297-46F9-989F-FB9995D123F9"
+  },
+  {
+    "acquiredAt" : "2026-10-10T21:27:46Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-2",
+    "ownerPID" : 76626,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "D65CAFEF-BB8A-4835-897F-C63578A905ED"
+  }
+]
+rc=0
+
+$ ps -o pid,command -p 75989,76626
+  PID COMMAND
+rc=1
+
+$ xcrun simctl list devices booted
+== Devices ==
+-- iOS 26.0 --
+    iPhone 17 Pro (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) (Booted) 
+    qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) (Booted) 
+-- iOS 27.0 --
+    qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) (Booted) 
+-- watchOS 27.0 --
+-- visionOS 27.0 --
+rc=0
+

@@ -1,0 +1,54 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c07-swipe && cat grantiva.yml && $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- swipe:
+    direction: UP
+- takeScreenshot: "swipe"
+Resolved: scheme=(none) simulator=00000000-0000-0000-0000-0000000000C1 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: 00000000-0000-0000-0000-0000000000C1
+Error: Invalid argument: Simulator not found: "00000000-0000-0000-0000-0000000000C1"
+rc=1
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c07-extendedWaitUntil && cat grantiva.yml && $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- extendedWaitUntil:
+    visible: "Featured"
+    timeout: 5000
+- takeScreenshot: "extendedWaitUntil"
+Resolved: scheme=(none) simulator=00000000-0000-0000-0000-0000000000C1 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: 00000000-0000-0000-0000-0000000000C1
+Error: Invalid argument: Simulator not found: "00000000-0000-0000-0000-0000000000C1"
+rc=1
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c07-waitForAnimationToEnd && cat grantiva.yml && $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- waitForAnimationToEnd
+- takeScreenshot: "waitForAnimationToEnd"
+Resolved: scheme=(none) simulator=00000000-0000-0000-0000-0000000000C1 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: 00000000-0000-0000-0000-0000000000C1
+Error: Invalid argument: Simulator not found: "00000000-0000-0000-0000-0000000000C1"
+rc=1
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c07-back && cat grantiva.yml && $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- tapOn: "Golden Gate Bridge"
+- back
+- takeScreenshot: "back"
+Error: Invalid argument: grantiva.yml:5: unsupported Maestro command 'back'
+rc=1
+
+$ grep -n "Supported Maestro commands" README.md
+173:Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible`, `runFlow`, `extendedWaitUntil` (`visible:` or `notVisible:`), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.

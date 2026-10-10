@@ -1,0 +1,18 @@
+$ grep -n -i -B2 -A8 '^## CI' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/docs/android-environment.md
+16-`~/Library/Android/sdk`.
+17-
+18:## CI
+19-
+20-`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+21-are local only until the Grantiva backend supports platforms ("Android baselines are local
+22-only until the Grantiva backend supports platforms; use local baselines"). Use the local
+23-commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+24-`grantiva diff approve`.
+25-
+26-Once `ci run` supports Android, note that GitHub-hosted macOS runners cannot boot the
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d06 && $GRANTIVA ci run --platform android
+Error: Invalid argument: Android baselines are local only until the Grantiva backend supports platforms; use local baselines
+rc=1
+
