@@ -1,0 +1,82 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/10-seed-many.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7942F95C-DF2A-4D85-8A9B-EACA2F688C4F
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ scroll: DOWN (338ms)
+    ✓ scroll: DOWN (346ms)
+    ✓ scroll: DOWN (334ms)
+    ✓ scroll: DOWN (341ms)
+    ✓ assertVisible: text="Landmark 30" (136ms)
+    ✓ takeScreenshot (195ms)
+✓ 10-seed-many 3.5s
+
+  [1/1] 10-seed-many (.maestro/10-seed-many.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ scroll (338ms)
+    ✓ scroll (346ms)
+    ✓ scroll (335ms)
+    ✓ scroll (342ms)
+    ✓ assertVisible (136ms)
+    ✓ takeScreenshot (194ms)
+✓ 10-seed-many 3.5s
+
+  7 steps passing (3.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-seed-many                   ✓ PASS       7      7      0      0       3.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       3.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7942F95C-DF2A-4D85-8A9B-EACA2F688C4F
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7942F95C-DF2A-4D85-8A9B-EACA2F688C4F/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7942F95C-DF2A-4D85-8A9B-EACA2F688C4F/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7942F95C-DF2A-4D85-8A9B-EACA2F688C4F/allure-results
+
+  Built by Grantiva
+
+
+  10-seed-many-cmd-006-Scrolled
+    ✓ Run flow "10-seed-many"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/android/
+
+exit 0

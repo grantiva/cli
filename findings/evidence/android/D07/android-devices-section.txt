@@ -1,0 +1,15 @@
+    flows: [...]
+    diff: {...}
+
+## Devices
+
+`emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
+With no `emulator:`, the order is: the one running emulator, else the one emulator still
+booting (waited on), else the only existing AVD (booted); otherwise the command fails and
+lists the AVDs. `--device <serial>` targets any attached device, including
+a physical one. On a physical device the demo-mode and animation settings are skipped
+unless `--allow-device-settings` is given. `--headless` boots without a window.
+
+The application ID a run installs and tests is the app's own: the Gradle output metadata's
+`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+`application_id` in the config is used only when there is no app to read it from

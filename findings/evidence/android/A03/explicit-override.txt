@@ -1,0 +1,82 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Using pre-built binary: app-paid-debug.apk
+Warning: --application-id com.kylebrowning.landmarks differs from the app's own application ID com.kylebrowning.landmarks.paid; testing com.kylebrowning.landmarks. Drop --application-id to test com.kylebrowning.landmarks.paid.
+Installing com.kylebrowning.landmarks.paid...
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/05-category.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBB046FB-7E49-4DE2-B7CF-AC7E3120A9C8
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lakes" (935ms)
+    ✓ assertVisible: text="Lake Tahoe" (602ms)
+    ✓ assertVisible: text="Mono Lake" (26ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (88ms)
+    ✓ takeScreenshot (134ms)
+✓ 05-category 3.7s
+
+  [1/1] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (935ms)
+    ✓ assertVisible (602ms)
+    ✓ assertVisible (26ms)
+    ✓ assertNotVisible (88ms)
+    ✓ takeScreenshot (134ms)
+✓ 05-category 3.6s
+
+  6 steps passing (3.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-category                    ✓ PASS       6      6      0      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       3.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBB046FB-7E49-4DE2-B7CF-AC7E3120A9C8
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBB046FB-7E49-4DE2-B7CF-AC7E3120A9C8/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBB046FB-7E49-4DE2-B7CF-AC7E3120A9C8/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EBB046FB-7E49-4DE2-B7CF-AC7E3120A9C8/allure-results
+
+  Built by Grantiva
+
+
+  05-category-cmd-005-Lakes
+    ✓ Run flow "05-category"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/android/
+
+exit 0

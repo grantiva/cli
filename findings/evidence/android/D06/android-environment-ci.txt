@@ -1,0 +1,15 @@
+16-`~/Library/Android/sdk`.
+17-
+18:## CI
+19-
+20:`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+21-are local only until the Grantiva backend supports platforms ("Android baselines are local
+22-only until the Grantiva backend supports platforms; use local baselines"). Use the local
+23-commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+24-`grantiva diff approve`.
+25-
+26:Once `ci run` supports Android, note that GitHub-hosted macOS runners cannot boot the
+27-Android emulator (no nested virtualization) and Grantiva does not run on Linux, so it will
+28-need a self-hosted Mac runner or a developer machine.
+29-
+30-See docs/android.md for using Grantiva with an Android project.

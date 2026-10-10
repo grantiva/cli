@@ -1,0 +1,102 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: qa-reg-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: qa/a02-probe2.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] a02-probe2 (a02-probe2.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (907ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (54ms)
+    ✓ tapOn: text="Landmarks" (148ms)
+    ✓ tapOn: text="Favorites" (783ms)
+    ✓ assertVisible: text="Lake Tahoe" (474ms)
+    ✓ takeScreenshot (134ms)
+    ✓ swipe: LEFT (343ms)
+    ✓ waitForAnimationToEnd (315ms)
+    ✓ takeScreenshot (130ms)
+    ✓ swipe (322ms)
+    ✓ waitForAnimationToEnd (312ms)
+    ✓ takeScreenshot (129ms)
+✓ a02-probe2 7.1s
+
+  [1/1] a02-probe2 (qa/a02-probe2.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (907ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (54ms)
+    ✓ tapOn (148ms)
+    ✓ tapOn (783ms)
+    ✓ assertVisible (474ms)
+    ✓ takeScreenshot (134ms)
+    ✓ swipe (343ms)
+    ✓ waitForAnimationToEnd (315ms)
+    ✓ takeScreenshot (130ms)
+    ✓ swipe (322ms)
+    ✓ waitForAnimationToEnd (312ms)
+    ✓ takeScreenshot (129ms)
+✓ a02-probe2 7.1s
+
+  14 steps passing (7.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  a02-probe2                     ✓ PASS      14     14      0      0       7.1s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      14     14      0      0       7.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2/allure-results
+
+  Built by Grantiva
+
+
+  a02-probe2-cmd-007-Favorites With Item
+    ✓ Run flow "a02-probe2"
+
+  a02-probe2-cmd-010-AfterFromSwipe
+    ✓ Run flow "a02-probe2"
+
+  a02-probe2-cmd-013-AfterAbsSwipeFromCentreToEdge
+    ✓ Run flow "a02-probe2"
+
+  Screens: 3 total, 3 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-android/a02p2/captures/
+
+exit 0
