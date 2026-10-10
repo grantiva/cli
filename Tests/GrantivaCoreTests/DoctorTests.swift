@@ -159,9 +159,31 @@ final class DoctorTests: XCTestCase {
         XCTAssertTrue(missingRequired.fix?.contains("scripts/android-env.sh") == true)
         let missingOptional = runner.checkAndroidSDK(sdk: nil, required: false)
         XCTAssertEqual(missingOptional.status, .warning)
-        let present = runner.checkAndroidSDK(sdk: AndroidSDK(root: scratch.path), required: true)
+        let present = runner.checkAndroidSDK(sdk: AndroidSDK(root: scratch.path), required: true, environment: [:])
         XCTAssertEqual(present.status, .ok)
         XCTAssertEqual(present.message, scratch.path)
+    }
+
+    // Gradle and adb run from the same shell still use a stale ANDROID_HOME,
+    // so doctor must not hide that it skipped it.
+    func testAndroidSDKCheckWarnsAboutAStaleAndroidHome() throws {
+        let sdk = scratch.appendingPathComponent("Library/Android/sdk")
+        try FileManager.default.createDirectory(at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
+        try Data().write(to: sdk.appendingPathComponent("platform-tools/adb"))
+        let environment = ["ANDROID_HOME": "/nonexistent"]
+        let located = try XCTUnwrap(AndroidSDK.locate(environment: environment, home: scratch.path))
+
+        let check = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: environment)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.message, "\(sdk.path) (ANDROID_HOME=/nonexistent has no platform-tools/adb; unset or fix it)")
+
+        let sdkRoot = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_SDK_ROOT": "/stale"])
+        XCTAssertEqual(sdkRoot.status, .warning)
+        XCTAssertTrue(sdkRoot.message.contains("ANDROID_SDK_ROOT=/stale has no platform-tools/adb"), sdkRoot.message)
+
+        let fine = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_HOME": sdk.path])
+        XCTAssertEqual(fine.status, .ok)
+        XCTAssertEqual(fine.message, sdk.path)
     }
 
     func testAVDCheckWarnsWhenNoneExist() async {

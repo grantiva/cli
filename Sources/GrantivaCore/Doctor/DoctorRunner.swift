@@ -137,12 +137,24 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkAndroidSDK(sdk: AndroidSDK?, required: Bool) -> DoctorCheck {
+    func checkAndroidSDK(
+        sdk: AndroidSDK?, required: Bool,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> DoctorCheck {
         guard let sdk else {
             return DoctorCheck(
                 name: "Android SDK", status: required ? .error : .warning,
                 message: "Not found (ANDROID_HOME, ANDROID_SDK_ROOT, ~/Library/Android/sdk)",
                 fix: "Run: scripts/android-env.sh, or set ANDROID_HOME"
+            )
+        }
+        let stale = AndroidSDK.staleEnvironmentVariables(environment: environment)
+        if !stale.isEmpty {
+            let detail = stale.map { "\($0.name)=\($0.value)" }.joined(separator: " and ")
+            return DoctorCheck(
+                name: "Android SDK", status: .warning,
+                message: "\(sdk.root) (\(detail) \(stale.count == 1 ? "has" : "have") no platform-tools/adb; unset or fix \(stale.count == 1 ? "it" : "them"))",
+                fix: "Gradle and adb run from this shell still read \(stale.map(\.name).joined(separator: " and ")); export ANDROID_HOME=\(sdk.root)"
             )
         }
         return DoctorCheck(name: "Android SDK", status: .ok, message: sdk.root, fix: nil)

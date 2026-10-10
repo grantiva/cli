@@ -40,6 +40,19 @@ public struct AndroidSDK: Sendable, Equatable {
         return nil
     }
 
+    /// `ANDROID_HOME` / `ANDROID_SDK_ROOT` values that are set but hold no
+    /// `platform-tools/adb`, so `locate` skipped them.
+    public static func staleEnvironmentVariables(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        fileManager: FileManager = .default
+    ) -> [(name: String, value: String)] {
+        ["ANDROID_HOME", "ANDROID_SDK_ROOT"].compactMap { name in
+            guard let value = environment[name], !value.isEmpty,
+                  !fileManager.fileExists(atPath: AndroidSDK(root: value).adb) else { return nil }
+            return (name, value)
+        }
+    }
+
     public static func require(
         environment: [String: String] = ProcessInfo.processInfo.environment,
         home: String = NSHomeDirectory(),
