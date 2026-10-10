@@ -97,6 +97,16 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// Why there is nothing to run: no config file for the resolved platform
+    /// (say which file and how to create it), or a file with no screens or flows.
+    static func nothingToRunMessage(platform: Platform, hasConfig: Bool) -> String {
+        guard hasConfig else {
+            let initCommand = platform == .ios ? "grantiva init" : "grantiva init --platform \(platform.rawValue)"
+            return "No \(platform.configFileName) here. Create one with \(initCommand)."
+        }
+        return "No screens or flows configured in \(platform.configFileName)"
+    }
+
     func run() async throws {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
@@ -167,7 +177,7 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         guard !resolved.screens.isEmpty || !resolved.flows.isEmpty else {
-            throw GrantivaError.invalidArgument("No screens or flows configured in grantiva.yml")
+            throw GrantivaError.invalidArgument(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
         }
 
         log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count) flows=\(resolved.flows.count)")

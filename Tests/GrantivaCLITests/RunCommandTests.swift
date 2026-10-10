@@ -334,4 +334,60 @@ final class RunCommandTests: XCTestCase {
         let (_, config) = try options.loadConfig(directory: dir, environment: [:], includeMaestroDirectory: false)
         XCTAssertNil(config)
     }
+
+    // MARK: - Nothing to run (C18)
+
+    private func runIn(files: [String: String], _ arguments: [String], platform: Platform) async -> Error? {
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory
+            .appendingPathComponent("grantiva-run-c18-\(UUID().uuidString)")
+        try? fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
+        for (name, contents) in files {
+            try? contents.write(to: scratch.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        }
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+        do {
+            var command = try RunCommand.parse(arguments)
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: platform))
+            try await command.run()
+            return nil
+        } catch {
+            return error
+        }
+    }
+
+    func testNoAndroidConfigNamesTheAndroidFileAndInit() async {
+        let error = await runIn(
+            files: ["settings.gradle.kts": "rootProject.name = \"x\"\n"],
+            ["--no-build", "--platform", "android"], platform: .android
+        )
+        XCTAssertEqual(
+            (error as? GrantivaError)?.errorDescription,
+            "Invalid argument: No grantiva-android.yml here. Create one with grantiva init --platform android."
+        )
+    }
+
+    func testNoIOSConfigNamesGrantivaYmlAndInit() async {
+        let error = await runIn(files: [:], ["--no-build"], platform: .ios)
+        XCTAssertEqual(
+            (error as? GrantivaError)?.errorDescription,
+            "Invalid argument: No grantiva.yml here. Create one with grantiva init."
+        )
+    }
+
+    func testEmptyConfigSaysNothingIsConfiguredInTheResolvedFile() async {
+        let error = await runIn(
+            files: ["grantiva-android.yml": "application_id: com.example\n"],
+            ["--no-build", "--platform", "android"], platform: .android
+        )
+        XCTAssertEqual(
+            (error as? GrantivaError)?.errorDescription,
+            "Invalid argument: No screens or flows configured in grantiva-android.yml"
+        )
+    }
 }
