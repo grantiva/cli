@@ -481,6 +481,27 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(RunCommand.logStreamNarration(platform: .android, predicate: nil, tag: "MyTag"), "Streaming emulator logs (tag: MyTag)")
     }
 
+    /// A10: Android narrates module, variant, and device, not scheme/simulator.
+    func testResolvedNarrationUsesEachPlatformsTerms() {
+        let android = ResolvedProject(
+            scheme: nil, project: nil, workspace: nil, bundleId: "com.kylebrowning.landmarks", buildSettings: [],
+            simulator: "emulator-5554", screens: [], flows: ["flow.yaml"],
+            android: AndroidProject(module: "app", variant: "freeDebug")
+        )
+        XCTAssertEqual(
+            RunCommand.resolvedNarration(platform: .android, resolved: android),
+            "Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1"
+        )
+        let ios = ResolvedProject(
+            scheme: "Landmarks", project: nil, workspace: nil, bundleId: nil, buildSettings: [],
+            simulator: "iPhone 17", screens: [], flows: ["flow.yaml"]
+        )
+        XCTAssertEqual(
+            RunCommand.resolvedNarration(platform: .ios, resolved: ios),
+            "Resolved: scheme=Landmarks simulator=iPhone 17 screens=0 flows=1"
+        )
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

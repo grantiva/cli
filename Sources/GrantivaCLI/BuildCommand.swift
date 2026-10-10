@@ -166,7 +166,14 @@ struct InstallCommand: AsyncParsableCommand {
             try await device.launch(appID: bid, deviceID: booted.udid)
         }
 
-        if options.json {
+        if options.json, platform == .android {
+            Output.line(try JSONOutput.string(AndroidInstallResult(
+                status: status,
+                applicationId: bid,
+                device: .init(name: booted.name, serial: booted.udid),
+                appPath: productPath
+            )))
+        } else if options.json {
             let result = InstallResult(
                 status: status,
                 scheme: resolved.scheme,
@@ -243,4 +250,19 @@ struct InstallResult: Codable, Equatable {
     let simulator: Simulator
     let appPath: String?
     let dataContainerPath: String?
+}
+
+/// `build install --json` on Android: application ID and adb serial instead
+/// of iOS's `bundleId` and `simulator {name, udid}`. Android has no scheme
+/// and no host-readable data container.
+struct AndroidInstallResult: Codable, Equatable {
+    struct Device: Codable, Equatable {
+        let name: String
+        let serial: String
+    }
+
+    let status: InstallResult.Status
+    let applicationId: String
+    let device: Device
+    let appPath: String?
 }

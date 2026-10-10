@@ -82,7 +82,7 @@ struct ConsoleOpenCommand: AsyncParsableCommand {
 
         let status = try openURL(url)
         guard status == 0 else {
-            throw GrantivaError.commandFailed("open \(url)", status)
+            throw GrantivaError.commandFailed("open \(url) exited with code \(status)", status)
         }
         options.note("Opened \(url)")
     }

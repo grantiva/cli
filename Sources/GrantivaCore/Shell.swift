@@ -39,7 +39,7 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     guard process.terminationStatus == 0 else {
         let errOutput = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         throw GrantivaError.commandFailed(
-            errOutput.isEmpty ? (output.isEmpty ? command : output) : errOutput,
+            errOutput.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errOutput,
             process.terminationStatus
         )
     }

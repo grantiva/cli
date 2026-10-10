@@ -68,6 +68,32 @@ final class GrantivaCoreTests: XCTestCase {
         }
     }
 
+    /// A10: a sentence message is rendered as-is, without " exited with code N".
+    func testCommandFailedRendersSentenceMessagesWithoutExitSuffix() {
+        let message = "Grantiva recording ended at 0ms before requested frame 1000ms"
+        XCTAssertEqual(GrantivaError.commandFailed(message, 1).errorDescription, message)
+    }
+
+    func testShellFailureWithoutOutputNamesTheSubprocessAndExitCode() async {
+        do {
+            _ = try await shell("exit 3")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, "exit 3 exited with code 3")
+        }
+    }
+
+    func testRunnerFailureWithEmptyStderrPointsAtTheRunnerOutput() {
+        XCTAssertEqual(
+            RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "\n"),
+            "Runner failed (exit 1); see the runner output above."
+        )
+        XCTAssertEqual(
+            RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "boom\n"),
+            "Runner failed (exit 1):\nboom"
+        )
+    }
+
     func testNetworkErrorContainsStatusCode() {
         let error = GrantivaError.networkError("Not Found", 404)
         XCTAssertTrue(error.errorDescription!.contains("404"))

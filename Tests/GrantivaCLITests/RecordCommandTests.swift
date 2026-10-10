@@ -1,4 +1,5 @@
 import ArgumentParser
+import AVFoundation
 import Foundation
 import XCTest
 @testable import GrantivaCLI
@@ -57,7 +58,7 @@ final class RecordCommandTests: XCTestCase {
             }
             XCTFail("Expected startup timeout")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Timed out waiting for simulator recording to start exited with code 1")
+            XCTAssertEqual(error.localizedDescription, "Timed out waiting for simulator recording to start")
         }
 
         XCTAssertFalse(process.isRunning)
@@ -221,6 +222,43 @@ final class RecordCommandTests: XCTestCase {
             XCTAssertEqual(error as? ExitCode, .validationFailure, "\(error)")
         }
         XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
+    }
+
+    /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
+    /// duration. The last frame is held to --duration, so 1000 ms resolves to it.
+    func testAndroidStaticScreenRecordingHoldsTheLastFrameToTheRequestedDuration() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000,2000"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: ".grantiva/recordings/recording.json"))) as? [String: Any]
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.map { $0["requestedMilliseconds"] as? Int }, [1000, 2000])
+        XCTAssertEqual(frames.map { $0["actualMilliseconds"] as? Int }, [0, 0], "the held frame is the one shown")
+        for frame in frames {
+            XCTAssertTrue(FileManager.default.fileExists(atPath: try XCTUnwrap(frame["path"] as? String)))
+        }
+        let duration = try await AVURLAsset(url: URL(fileURLWithPath: ".grantiva/recordings/recording.mp4")).load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
+    }
+
+    func testAndroidFrameBeyondTheRequestedDurationStillThrows() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("ended at 2000ms before requested frame 2500ms"), "\(error)")
+        }
     }
 
     private func makeAndroidProject() throws -> (URL, String) {

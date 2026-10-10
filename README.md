@@ -251,7 +251,9 @@ grantiva run \
 ```
 
 The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
-`dataContainerPath`, and the selected simulator's `name` and `udid`.
+`dataContainerPath`, and the selected simulator's `name` and `udid`. On Android
+it includes `status`, `applicationId`, `appPath`, and `device` with the
+emulator's `name` and adb `serial`.
 `--derived-data-path` isolates Xcode products and intermediates for the run and
 supports absolute or relative paths, including paths containing spaces. It is
 available on every Grantiva command that builds the app and overrides a
@@ -335,6 +337,12 @@ grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for a
 grantiva mcp                Start the MCP server for AI agent integration (tool list: docs/mcp.md)
 grantiva init               Generate grantiva.yml
 ```
+
+`grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
+timestamp, with a JSON report of the frame actually shown at each. On Android,
+`screenrecord` writes frames only when the screen changes, so Grantiva holds the last
+frame to `--duration`; if more than half the recording was held, it prints a note on
+stderr, since a device that disconnected mid-recording looks the same as an idle screen.
 
 ### Dashboard commands
 

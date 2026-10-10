@@ -12,6 +12,14 @@ final class KilledFlag: @unchecked Sendable {
 
 /// Orchestrates the grantiva-runner execution and collects screenshot results.
 public enum RunnerSession {
+    /// The error text for a failed runner. Its stderr is often empty because
+    /// the runner streams to the terminal, so say where the detail went.
+    static func failureMessage(reason: String, stderr: String) -> String {
+        let detail = stderr.suffix(2000).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard detail.isEmpty else { return "\(reason):\n\(detail)" }
+        return reason.hasSuffix(".") ? reason : "\(reason); see the runner output above."
+    }
+
     /// Run the embedded runner against a booted simulator.
     /// Generates a Maestro flow, executes it, and collects screenshots.
     public static func run(
@@ -36,7 +44,7 @@ public enum RunnerSession {
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform)
         defer { simulatorLease.release() }
 
         // Ensure runner is extracted
@@ -162,7 +170,7 @@ public enum RunnerSession {
             ))
             let stderr = OutputRewriter(replacements: subflowPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
-                "\(reason):\n\(stderr.suffix(2000))",
+                Self.failureMessage(reason: reason, stderr: stderr),
                 outcome.terminationStatus
             )
         }
@@ -327,7 +335,7 @@ public enum RunnerSession {
         guard !flowPaths.isEmpty else { return [] }
 
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform)
         defer { simulatorLease.release() }
 
         // Resolve relative paths against the working directory where the CLI was invoked,
@@ -522,7 +530,7 @@ public enum RunnerSession {
                 failureReport?.markPassedBeforeInterrupt()
             }
             throw GrantivaError.commandFailed(
-                "\(reason):\n\(stderr.suffix(2000))",
+                Self.failureMessage(reason: reason, stderr: stderr),
                 outcome.terminationStatus
             )
         }

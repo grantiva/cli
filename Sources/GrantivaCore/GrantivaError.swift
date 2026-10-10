@@ -43,8 +43,10 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
             return "Not authenticated. Run: grantiva auth login"
         case .configNotFound:
             return "grantiva.yml not found. Run: grantiva init"
-        case .commandFailed(let cmd, let code):
-            return "\(cmd) exited with code \(code)"
+        case .commandFailed(let message, _):
+            // The message is the whole sentence; call sites that report a
+            // subprocess exit say so themselves (see `shell`).
+            return message
         case .invalidArgument(let msg):
             return "Invalid argument: \(msg)"
         case .diffSizeMismatch(let baseline, let current):

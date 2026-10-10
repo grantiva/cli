@@ -67,8 +67,9 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         )
         return DriverAttachment(client: client, port: Int(port ?? 7000), detach: { self.record("detach") })
     }
+    var recordingData = Data()
     func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
         record("recordVideo(\(deviceID),\(seconds))")
-        FileManager.default.createFile(atPath: path, contents: Data())
+        FileManager.default.createFile(atPath: path, contents: recordingData)
     }
 }

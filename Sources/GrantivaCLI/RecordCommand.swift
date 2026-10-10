@@ -98,6 +98,16 @@ struct RecordCommand: AsyncParsableCommand {
         }
     }
 
+    /// A hold longer than half the recording is worth a word: the screen may
+    /// simply have been idle, but a disconnected device looks the same.
+    static func heldRecordingNote(recordedSeconds: Double, requestedSeconds: Double) -> String? {
+        guard requestedSeconds - recordedSeconds > requestedSeconds / 2 else { return nil }
+        let recordedMs = Int((recordedSeconds * 1_000).rounded())
+        return "The recording's last frame is at \(recordedMs)ms; it was held to the requested \(requestedSeconds)s. "
+            + "screenrecord writes frames only when the screen changes, so this is expected for an idle screen; "
+            + "if the screen was changing, check that the device stayed connected."
+    }
+
     func run() async throws {
         guard duration > 0 else {
             throw GrantivaError.invalidArgument("--duration must be greater than zero")
@@ -129,6 +139,14 @@ struct RecordCommand: AsyncParsableCommand {
         try await platformDevice.recordVideo(deviceID: booted.udid, to: outputPath, seconds: duration)
         guard FileManager.default.fileExists(atPath: outputPath) else {
             throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
+        }
+        if platform == .android {
+            // screenrecord writes a frame only when the screen changes, so a
+            // static screen ends at its last change: hold that frame to --duration.
+            if let recorded = try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration),
+               let note = Self.heldRecordingNote(recordedSeconds: recorded, requestedSeconds: duration) {
+                GrantivaLog.logger.warning("\(note)")
+            }
         }
 
         let requested = requestedFrames

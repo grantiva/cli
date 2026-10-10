@@ -37,6 +37,18 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertTrue(text.contains("Product: /fake/app.apk"), text)
     }
 
+    /// A10: a failed Android build names the module and variant, not a scheme.
+    func testFailedAndroidBuildShowsModuleAndVariantAndNoScheme() async throws {
+        let device = MCPFakeDevicePlatform(platform: .android)
+        device.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["Task 'assembleNoSuchVariant' not found"], productPath: nil)
+        let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: ["variant": .string("noSuchVariant")])
+        XCTAssertEqual(result.isError, true)
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Build FAILED"), text)
+        XCTAssertTrue(text.contains("Module: app\nVariant: noSuchVariant"), text)
+        XCTAssertFalse(text.contains("Scheme:"), text)
+    }
+
     func testRunOnAndroidInstallsAndLaunchesWithTheBuiltApplicationID() async throws {
         let device = MCPFakeDevicePlatform(platform: .android)
         let result = try await BuildTools.run(device: device, platform: .android, config: androidConfig, arguments: [:])

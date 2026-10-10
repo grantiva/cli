@@ -106,6 +106,25 @@ final class SimulatorLeaseTests: XCTestCase {
             XCTAssertTrue(message.contains("teardown --udid SIM-1 --force"), message)
         }
     }
+
+    /// A10: on Android the refusal names the emulator and `grantiva emulator`.
+    func testAndroidOwnershipErrorNamesTheEmulatorCommands() throws {
+        let first = try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+        defer { first.release() }
+
+        XCTAssertThrowsError(
+            try SimulatorLease.acquire(udid: "emulator-5554", platform: .android, directory: leaseDirectory)
+        ) { error in
+            let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix("Emulator emulator-5554 is already owned"), message)
+            XCTAssertTrue(message.contains("`grantiva emulator teardown --serial emulator-5554 --force`"), message)
+            XCTAssertTrue(message.contains("`grantiva emulator ensure --name <unique-name>`"), message)
+            XCTAssertFalse(message.contains("simulator"), message)
+            XCTAssertFalse(message.contains("exited with code"), message)
+            XCTAssertTrue(SimulatorLease.isOwnershipRefusal(error))
+        }
+        XCTAssertFalse(SimulatorLease.isOwnershipRefusal(GrantivaError.commandFailed("Runner failed (exit 1)", 1)))
+    }
 }
 
 extension SimulatorLeaseTests {
