@@ -39,6 +39,33 @@ final class RunnerSessionCleanupTests: XCTestCase {
         RunnerSession.terminationCleanup(platform: fake, deviceID: "emulator-5554", timeout: 0.05)()
         XCTAssertLessThan(Date().timeIntervalSince(start), 0.5)
     }
+
+    // MARK: - Ready file (A06)
+
+    /// Without --report-dir the report lives in a temp dir that is deleted as
+    /// the run returns, so the ready file must not point a waiter at it.
+    func testAnEphemeralReportDirIsNotWrittenToTheReadyFile() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+
+        _ = try await scratch.runFlows(reportDir: nil)
+
+        let state = try ReadyFile.read(scratch.readyFile)
+        XCTAssertEqual(state.status, "passed")
+        XCTAssertNil(state.reportDir)
+    }
+
+    func testAPreservedReportDirIsWrittenToTheReadyFile() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        let reportDir = scratch.root.appendingPathComponent("report").path
+
+        _ = try await scratch.runFlows(reportDir: reportDir)
+
+        let state = try ReadyFile.read(scratch.readyFile)
+        XCTAssertEqual(state.reportDir, reportDir)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"))
+    }
 }
 
 private final class LockedCalls: @unchecked Sendable {
@@ -96,5 +123,75 @@ private actor EventLog {
 
     func append(_ value: String) {
         values.append(value)
+    }
+}
+
+/// A scratch project with a stand-in grantiva-runner: a shell script that
+/// writes `reportJSON` (and any `flowFiles`) into the `--output` dir it is
+/// given and exits with `exitStatus`. `@FLOW@` in the report becomes the
+/// staged flow path, as the real runner records it.
+struct FakeRunnerScratch {
+    let root: URL
+    let readyFile: String
+
+    init() throws {
+        root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-fake-runner-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        readyFile = root.appendingPathComponent("ready.json").path
+        try "appId: com.fake\n---\n- launchApp\n"
+            .write(to: root.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
+    }
+
+    func remove() {
+        try? FileManager.default.removeItem(at: root)
+    }
+
+    func runFlows(
+        reportDir: String?,
+        reportJSON: String = #"{"status":"passed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"passed"}]}"#,
+        flowFiles: [String: String] = [:],
+        exitStatus: Int32 = 0
+    ) async throws -> [ScreenCapture] {
+        var script = """
+        #!/bin/sh
+        while [ $# -gt 0 ]; do
+          if [ "$1" = "--output" ]; then out="$2"; shift; fi
+          flow="$1"
+          shift
+        done
+        mkdir -p "$out/flows"
+        cat > "$out/report.json" <<'GRANTIVA_EOF'
+        \(reportJSON)
+        GRANTIVA_EOF
+        sed -i '' "s|@FLOW@|$flow|g" "$out/report.json"
+
+        """
+        for (name, contents) in flowFiles {
+            script += """
+            cat > "$out/flows/\(name)" <<'GRANTIVA_EOF'
+            \(contents)
+            GRANTIVA_EOF
+
+            """
+        }
+        script += "exit \(exitStatus)\n"
+        let runner = root.appendingPathComponent("fake-runner").path
+        try script.write(toFile: runner, atomically: true, encoding: .utf8)
+        chmod(runner, 0o755)
+
+        let manager = RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path })
+        let flow = root.appendingPathComponent("smoke.yaml").path
+        return try await RunnerSession.runFlowFiles(
+            at: [flow],
+            bundleId: "com.fake",
+            udid: "FAKE-\(UUID().uuidString)",
+            platform: RecordingPlatform(calls: LockedCalls(), restoreDelay: 0),
+            runner: manager,
+            outputDir: root.appendingPathComponent("captures").path,
+            reportDir: reportDir,
+            timeoutSeconds: 30,
+            readyFile: readyFile
+        )
     }
 }

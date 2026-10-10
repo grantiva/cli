@@ -31,7 +31,8 @@ final class RunnerExecutionTests: XCTestCase {
         expectedFlows: Int = 1,
         keepAlive: Bool = false,
         sessions: KeepAliveSessionStore? = nil,
-        sessionFileGrace: TimeInterval = 10
+        sessionFileGrace: TimeInterval = 10,
+        readyReportDir: String? = nil
     ) -> RunnerExecution.Request {
         var request = RunnerExecution.Request(
             executable: "/bin/sh",
@@ -47,6 +48,7 @@ final class RunnerExecutionTests: XCTestCase {
         )
         if let sessions { request.sessions = sessions }
         request.sessionFileGrace = sessionFileGrace
+        request.readyReportDir = readyReportDir
         return request
     }
 
@@ -240,5 +242,67 @@ final class RunnerExecutionTests: XCTestCase {
         let state = try ReadyFile.read(readyPath)
         XCTAssertEqual(state.status, "failed")
         XCTAssertEqual(state.flows.first?.name, "current")
+    }
+
+    /// A06: Ctrl-C during a running flow. The relay used to reap the runner
+    /// first, so the session saw a non-zero exit and published `failed` with
+    /// the flow still `running`, and the `interrupted` cleanup was dropped.
+    func testASimulatedSIGINTDuringARunningFlowPublishesInterrupted() async throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+
+        let reportDir = scratch.appendingPathComponent("report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        let report = reportDir.appendingPathComponent("report.json").path
+        let readyPath = scratch.appendingPathComponent("ready.json").path
+        let signal = ReadyFileSignal(path: readyPath)
+
+        let interrupter = Task.detached {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            SignalRelay.shared.simulateTerminationForTesting()
+        }
+        let outcome = await RunnerExecution.run(request(
+            script: """
+            printf '{"status":"running","flows":[{"name":"qa-longwait","status":"running"}]}' > \(report)
+            sleep 30
+            """,
+            lease: lease,
+            reportDir: reportDir.path,
+            readyFile: signal,
+            timeoutSeconds: 60
+        ))
+        _ = try? await interrupter.value
+
+        XCTAssertTrue(outcome.interrupted)
+        XCTAssertFalse(outcome.timedOut)
+        let state = try ReadyFile.read(readyPath)
+        XCTAssertEqual(state.status, "interrupted")
+        XCTAssertEqual(state.flows, [RunReadyState.Flow(name: "qa-longwait", status: "interrupted")])
+        XCTAssertNil(state.reportDir, "an ephemeral report dir is deleted on exit and must not be advertised")
+    }
+
+    func testTheWatcherAdvertisesOnlyThePreservedReportDir() async throws {
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+
+        for preserved in [false, true] {
+            let reportDir = scratch.appendingPathComponent("report-\(preserved)")
+            try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+            let report = reportDir.appendingPathComponent("report.json").path
+            let readyPath = scratch.appendingPathComponent("ready-\(preserved).json").path
+            let signal = ReadyFileSignal(path: readyPath)
+            _ = await RunnerExecution.run(request(
+                script: """
+                printf '{"status":"passed","flows":[{"name":"a","status":"passed"}]}' > \(report)
+                sleep 1
+                """,
+                lease: lease,
+                reportDir: reportDir.path,
+                readyFile: signal,
+                readyReportDir: preserved ? reportDir.path : nil
+            ))
+            XCTAssertEqual(try ReadyFile.read(readyPath).reportDir, preserved ? reportDir.path : nil)
+        }
     }
 }

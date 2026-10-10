@@ -225,6 +225,31 @@ final class ReadyFileTests: XCTestCase {
         XCTAssertEqual(report.status, "passed")
         XCTAssertNil(RunnerReportIndex.load(reportDir: scratch.appendingPathComponent("missing").path))
     }
+
+    /// A06: a ready file written after an interrupt or a timeout must not
+    /// leave a flow `running` — the run is over, so nothing still is.
+    func testFinalFlowsReplaceEveryUnfinishedStatus() throws {
+        let reportDir = scratch.appendingPathComponent("report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        try #"{"status":"running","flows":[{"name":"a","status":"passed"},{"name":"b","status":"running"},{"name":"c","status":"pending"},{"name":"d","status":"failed"}]}"#
+            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+
+        let flows = RunnerReportIndex.finalFlows(reportDir: reportDir.path, unfinishedAs: "interrupted")
+        XCTAssertEqual(flows.map(\.status), ["passed", "interrupted", "interrupted", "failed"])
+        XCTAssertEqual(flows.map(\.name), ["a", "b", "c", "d"])
+        XCTAssertEqual(RunnerReportIndex.finalFlows(reportDir: scratch.appendingPathComponent("missing").path, unfinishedAs: "failed"), [])
+    }
+
+    func testErrorAndReportDirAreOmittedWhenAbsent() throws {
+        let path = scratch.appendingPathComponent("ready.json").path
+        try ReadyFile.write(RunReadyState(status: "passed", flows: []), to: path)
+        let json = try String(contentsOfFile: path, encoding: .utf8)
+        XCTAssertFalse(json.contains("reportDir"), json)
+        XCTAssertFalse(json.contains("error"), json)
+
+        try ReadyFile.write(RunReadyState(status: "failed", flows: [], error: "--timeout must be at least 30 seconds."), to: path)
+        XCTAssertEqual(try ReadyFile.read(path).error, "--timeout must be at least 30 seconds.")
+    }
 }
 
 private final class LockedValue<Value>: @unchecked Sendable {

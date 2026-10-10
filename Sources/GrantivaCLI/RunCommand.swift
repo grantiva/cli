@@ -65,7 +65,14 @@ struct RunCommand: AsyncParsableCommand {
 
     func validate() throws {
         guard timeout >= 30 else {
-            throw ValidationError("--timeout must be at least 30 seconds.")
+            let message = "--timeout must be at least 30 seconds."
+            // `--ready-file` is "always written", and validation runs before
+            // `run()` arms it: release the waiter here or it spins forever.
+            if let readyFile {
+                try? ReadyFile.prepare(at: readyFile)
+                try? ReadyFile.write(RunReadyState(status: "failed", flows: [], error: message), to: readyFile)
+            }
+            throw ValidationError(message)
         }
     }
 
@@ -118,7 +125,20 @@ struct RunCommand: AsyncParsableCommand {
                     to: readyFile
                 )
             }
+            if SignalRelay.shared.isTerminating {
+                await Self.awaitSignalRelayExit()
+            }
             throw error
+        }
+    }
+
+    /// On Ctrl-C the runner dies first, so this thread unwinds with a runner
+    /// error while SignalRelay is still running its cleanups (lease, capture
+    /// settings, log stream). Exiting here with that error's code would cut
+    /// them short and report exit 1 instead of 130; the relay exits for us.
+    static func awaitSignalRelayExit() async -> Never {
+        while true {
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
         }
     }
 

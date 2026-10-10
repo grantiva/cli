@@ -16,13 +16,18 @@ public struct RunReadyState: Codable, Sendable, Equatable {
     public let status: String
     public let flows: [Flow]
     public let finishedAt: Date
+    /// The `--report-dir` the run wrote to. Absent for the default ephemeral
+    /// report dir, which is deleted before a waiter could read it.
     public let reportDir: String?
+    /// Why the run failed before reaching the runner (for example a usage error).
+    public let error: String?
 
-    public init(status: String, flows: [Flow], finishedAt: Date = Date(), reportDir: String? = nil) {
+    public init(status: String, flows: [Flow], finishedAt: Date = Date(), reportDir: String? = nil, error: String? = nil) {
         self.status = status
         self.flows = flows
         self.finishedAt = finishedAt
         self.reportDir = reportDir
+        self.error = error
     }
 
     public var passed: Bool { status == "passed" }
@@ -151,6 +156,16 @@ public struct RunnerReportIndex: Decodable, Sendable {
         let overall = status.flatMap { Self.terminalStatuses.contains($0) ? $0 : nil }
             ?? (failed ? "failed" : "passed")
         return RunReadyState(status: overall == "passed" ? "passed" : overall, flows: entries)
+    }
+
+    /// The report's flows for a run that has ended without finishing them (an
+    /// interrupt, a timeout, a runner crash): every flow not in a terminal
+    /// status gets `unfinishedStatus`, so the ready file never says `running`
+    /// for a run that is over.
+    public static func finalFlows(reportDir: String, unfinishedAs unfinishedStatus: String) -> [RunReadyState.Flow] {
+        (load(reportDir: reportDir)?.readyState.flows ?? []).map { flow in
+            terminalStatuses.contains(flow.status) ? flow : RunReadyState.Flow(name: flow.name, status: unfinishedStatus)
+        }
     }
 
     public static func load(reportDir: String) -> RunnerReportIndex? {

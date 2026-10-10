@@ -98,8 +98,16 @@ public final class SignalRelay: @unchecked Sendable {
         cleanups.removeAll { $0.id == id }
     }
 
-    /// Test seam: runs the same sequence the signal handler runs, without
-    /// exiting the process.
+    /// True once a SIGINT/SIGTERM has been received. Set before the runner's
+    /// group is terminated, so a session that sees its runner die can tell an
+    /// interrupt from a runner failure and record `interrupted`.
+    public var isTerminating: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return terminating
+    }
+
+    /// Test seam: runs the registered cleanups without exiting the process.
     public func runCleanupsForTesting() {
         for cleanup in snapshotCleanups() { cleanup() }
     }
@@ -110,26 +118,50 @@ public final class SignalRelay: @unchecked Sendable {
         return cleanups.map(\.body)
     }
 
+    /// Test seam: runs the whole interrupt sequence the signal handler runs —
+    /// mark terminating, reap tracked groups, run cleanups — without exiting.
+    /// Pair with `resetTerminationForTesting()`.
+    public func simulateTerminationForTesting() {
+        terminate(announcing: nil)
+    }
+
+    public func resetTerminationForTesting() {
+        lock.lock()
+        defer { lock.unlock() }
+        terminating = false
+    }
+
     private func handle(_ signalNumber: Int32) {
+        guard terminate(announcing: signalNumber == SIGINT ? "SIGINT" : "SIGTERM") else { return }
+        exit(128 + signalNumber)
+    }
+
+    /// Returns false when a termination is already under way.
+    @discardableResult
+    private func terminate(announcing signalName: String?) -> Bool {
         lock.lock()
         if terminating {
             lock.unlock()
-            return
+            return false
         }
+        // Recorded before any group is signalled: the runner exits as a result
+        // of the terminateGroup below, and the session that wakes up on that
+        // exit must already see that this was an interrupt.
         terminating = true
         let trackedGroups = groups
         let pendingCleanups = cleanups.map(\.body)
         lock.unlock()
 
-        FileHandle.standardError.write(Data(
-            "\n[grantiva] received \(signalNumber == SIGINT ? "SIGINT" : "SIGTERM") — releasing simulator and reaping child processes\n".utf8
-        ))
+        if let signalName {
+            FileHandle.standardError.write(Data(
+                "\n[grantiva] received \(signalName) — releasing simulator and reaping child processes\n".utf8
+            ))
+        }
 
         for pgid in trackedGroups {
             ChildProcess.terminateGroup(pgid, gracePeriod: 5)
         }
         for cleanup in pendingCleanups { cleanup() }
-
-        exit(128 + signalNumber)
+        return true
     }
 }

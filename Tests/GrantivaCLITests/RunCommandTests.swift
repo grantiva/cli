@@ -177,6 +177,22 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(try RunCommand.parse(["--timeout", "30"]).timeout, 30)
     }
 
+    /// A06: validation runs before `run()`, so a usage error used to leave no
+    /// ready file and the documented `while [ ! -f ... ]` waiter spun forever.
+    func testAValidationFailureStillWritesAFailedReadyFile() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-ready-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let readyFile = directory.appendingPathComponent("ready.json").path
+
+        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "5", "--ready-file", readyFile]))
+
+        let state = try ReadyFile.read(readyFile)
+        XCTAssertEqual(state.status, "failed")
+        XCTAssertEqual(state.error, "--timeout must be at least 30 seconds.")
+    }
+
     func testParsesReadyFileAndRepeatedEnvironmentPairs() throws {
         let command = try RunCommand.parse([
             "--flow", "flows/advertise.yaml",
