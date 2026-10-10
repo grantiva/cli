@@ -118,12 +118,25 @@ public struct EmulatorManager: Sendable {
         return result == 0
     }
 
-    /// The pids listening on a TCP port (`lsof`): empty when lsof sees no
-    /// listener (it exits 1 then), nil when lsof itself could not run.
-    /// Without root, lsof does not show other users' processes.
+    /// The pids listening on a TCP port (`lsof -t`). Empty only when lsof ran
+    /// and found no listener (exit 1 with no output); nil for any other
+    /// failure (lsof missing, exit 127, sandbox denial, unreadable output),
+    /// where nothing is known. Without root, lsof does not show other users'
+    /// processes.
     public static let listeningPIDs: @Sendable (Int) async -> [Int32]? = { port in
-        guard let output = try? await GrantivaCore.shell("/usr/sbin/lsof -nP -iTCP:\(port) -sTCP:LISTEN -t 2>/dev/null || true") else { return nil }
-        return output.split(whereSeparator: \.isNewline).compactMap { Int32($0.trimmingCharacters(in: .whitespaces)) }
+        await listeningPIDs(port: port, execute: { try await GrantivaCore.shell($0) })
+    }
+
+    static func listeningPIDs(port: Int, execute: @Sendable (String) async throws -> String) async -> [Int32]? {
+        guard let output = try? await execute("/usr/sbin/lsof -nP -iTCP:\(port) -sTCP:LISTEN -t 2>/dev/null; echo \"exit=$?\"") else { return nil }
+        var lines = output.split(whereSeparator: \.isNewline).map { $0.trimmingCharacters(in: .whitespaces) }
+        guard let status = lines.popLast(), status.hasPrefix("exit=") else { return nil }
+        let pids = lines.compactMap { Int32($0) }
+        switch status {
+        case "exit=0" where !pids.isEmpty && pids.count == lines.count: return pids
+        case "exit=1" where lines.isEmpty: return []
+        default: return nil
+        }
     }
 
     public static func configuredBootTimeout(environment: [String: String] = ProcessInfo.processInfo.environment) -> TimeInterval {
@@ -286,6 +299,9 @@ public struct EmulatorManager: Sendable {
                     if let consolePort = Int(port) {
                         switch await consolePortOwners(consolePort) {
                         case let owners? where !owners.isEmpty && !owners.contains(pid):
+                            // The spawned process is our own child and is not
+                            // the emulator on this serial: stop it, not leak it.
+                            kill(pid, SIGTERM)
                             try? provenance.remove(serial: serial)
                             throw GrantivaError.commandFailed(
                                 "\(serial) is answered by another emulator (pid \(owners.map(String.init).joined(separator: ", "))), "
@@ -293,6 +309,9 @@ public struct EmulatorManager: Sendable {
                                 1
                             )
                         case let owners? where owners.isEmpty && consolePortBound(consolePort):
+                            // Unconfirmed and about to lose its record: kill our
+                            // own child so no unrecorded emulator is left running.
+                            kill(pid, SIGTERM)
                             try? provenance.remove(serial: serial)
                             throw GrantivaError.commandFailed(
                                 "\(serial)'s console port \(consolePort) is held by a process lsof cannot see, "

@@ -162,17 +162,31 @@ final class EmulatorManagerTests: XCTestCase {
     /// C02: the boot probes pass, the spawned pid is alive, but another
     /// process owns the console port: not ours.
     func testBootFailsAndLeavesNoRecordWhenAnotherProcessOwnsTheConsolePort() async throws {
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        child.arguments = ["30"]
+        try child.run()
+        defer { if child.isRunning { child.terminate() } }
         let shell = ScriptedShell([
             .success("List of devices attached"),
             .success("1"), .success("package:x"),
         ])
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute),
+            execute: shell.execute, spawn: FixedPIDSpawn(pid: child.processIdentifier).spawn,
+            provenance: AndroidProvenance(directory: scratch.path),
+            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in [49817] }
+        )
         do {
-            _ = try await manager(shell, portOwners: [49817]).boot(avd: "Pixel_8_API_35")
+            _ = try await manager.boot(avd: "Pixel_8_API_35")
             XCTFail("expected an error")
         } catch {
             XCTAssertTrue("\(error)".contains("49817"), "\(error)")
             XCTAssertTrue("\(error)".contains("not the one Grantiva started"), "\(error)")
         }
+        child.waitUntilExit()
+        XCTAssertEqual(child.terminationStatus, SIGTERM, "the stray duplicate Grantiva spawned is stopped")
         XCTAssertEqual(try AndroidProvenance(directory: scratch.path).all(), [])
     }
 
@@ -191,17 +205,49 @@ final class EmulatorManagerTests: XCTestCase {
 
     /// The console port is bound but lsof shows no owner (another user's
     /// process): the boot cannot be confirmed as ours, so it fails closed.
-    func testWaitForBootFailsClosedWhenTheBoundConsolePortHasNoVisibleOwner() async throws {
+    /// Re-review: the spawned child is killed on the fail-closed path rather
+    /// than left running without a record.
+    func testWaitForBootKillsTheSpawnedChildWhenItFailsClosed() async throws {
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        child.arguments = ["30"]
+        try child.run()
+        defer { if child.isRunning { child.terminate() } }
         let ledger = AndroidProvenance(directory: scratch.path)
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid()))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: child.processIdentifier))
         let shell = ScriptedShell([.success("1"), .success("package:x")])
         do {
-            try await manager(shell, boundPorts: [5554], portOwners: []).waitForBoot(serial: "emulator-5554", pid: getpid())
+            try await manager(shell, boundPorts: [5554], portOwners: []).waitForBoot(serial: "emulator-5554", pid: child.processIdentifier)
             XCTFail("expected an error")
         } catch {
             XCTAssertTrue("\(error)".contains("cannot be confirmed"), "\(error)")
         }
+        child.waitUntilExit()
+        XCTAssertEqual(child.terminationReason, .uncaughtSignal)
+        XCTAssertEqual(child.terminationStatus, SIGTERM)
         XCTAssertEqual(try ledger.all(), [])
+    }
+
+    func testListeningPIDsDistinguishesNoListenerFromLsofFailures() async {
+        func run(_ output: String) async -> [Int32]? {
+            await EmulatorManager.listeningPIDs(port: 5554, execute: { _ in output })
+        }
+        let found = await run("49817\n93625\nexit=0\n")
+        XCTAssertEqual(found, [49817, 93625])
+        let none = await run("exit=1\n")
+        XCTAssertEqual(none, [], "lsof ran and found no listener")
+        let missing = await run("exit=127\n")
+        XCTAssertNil(missing, "lsof missing is unknown, not 'no listener'")
+        let denied = await run("exit=1\nsomething\n")
+        XCTAssertNil(denied)
+        let threw = await EmulatorManager.listeningPIDs(port: 5554, execute: { _ in throw GrantivaError.commandFailed("x", 1) })
+        XCTAssertNil(threw)
+        let real = await EmulatorManager.listeningPIDs(port: 5554, execute: { command in
+            XCTAssertTrue(command.contains("-iTCP:5554 -sTCP:LISTEN -t"), command)
+            XCTAssertTrue(command.hasSuffix("; echo \"exit=$?\""), command)
+            return "exit=1"
+        })
+        XCTAssertEqual(real, [])
     }
 
     func testWaitForBootAcceptsAnUnreadableOwnerWhenThePIDIsAlive() async throws {
