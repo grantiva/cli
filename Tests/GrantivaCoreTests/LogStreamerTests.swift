@@ -65,3 +65,41 @@ final class LogStreamerTests: XCTestCase {
         values.map { String(decoding: $0, as: UTF8.self) }
     }
 }
+
+final class LogPredicateTests: XCTestCase {
+    func testDefaultPredicateMatchesTheAppsExecutable() {
+        let predicate = defaultLogPredicate(forBundleID: "com.kylebrowning.Landmarks", executable: "Landmarks")
+        XCTAssertEqual(
+            predicate,
+            "subsystem BEGINSWITH \"com.kylebrowning.Landmarks\" OR processImagePath CONTAINS \"com.kylebrowning.Landmarks\" OR process == \"Landmarks\""
+        )
+        // The predicate must still parse as an NSPredicate.
+        XCTAssertNoThrow(NSPredicate(format: predicate))
+    }
+
+    func testDefaultPredicateWithoutAnExecutableKeepsTheBundleClauses() {
+        XCTAssertEqual(
+            defaultLogPredicate(forBundleID: "com.example"),
+            "subsystem BEGINSWITH \"com.example\" OR processImagePath CONTAINS \"com.example\""
+        )
+    }
+
+    func testExecutableNamesAreEscaped() {
+        let predicate = defaultLogPredicate(forBundleID: "com.example", executable: "My \"App\"")
+        XCTAssertTrue(predicate.hasSuffix("OR process == \"My \\\"App\\\"\""), predicate)
+    }
+
+    func testSimctlBannerLinesAreDroppedFromTheStream() {
+        let decoder = PrefixedLineDecoder(dropping: LogStreamer.isStreamBanner)
+        let lines = decoder.consume(Data("""
+        getpwuid_r did not find a match for uid 501
+        Filtering the log data using "process == \\"Landmarks\\""
+        Timestamp               Ty Process[PID:TID]
+        2026-10-09 17:40:00.000 Df Landmarks[123:456] hello
+
+        """.utf8))
+        XCTAssertEqual(lines.map { String(decoding: $0, as: UTF8.self) }, [
+            "[log] 2026-10-09 17:40:00.000 Df Landmarks[123:456] hello\n",
+        ])
+    }
+}

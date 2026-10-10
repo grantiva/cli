@@ -59,16 +59,32 @@ final class IOSPlatformTests: XCTestCase {
     }
 
     func testLogStreamBuildsTheSimctlSpawnCommand() async throws {
-        let command = try await IOSPlatform().logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
+        let executor = ScriptedExecutor([
+            .success("/sims/ABC/Containers/Bundle/Application/X/Example.app\n"),
+            .success("Example\n"),
+        ])
+        let platform = IOSPlatform(execute: executor.execute)
+        let command = try await platform.logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
         XCTAssertEqual(command.executable, "/usr/bin/xcrun")
         XCTAssertEqual(command.arguments, [
             "simctl", "spawn", "ABC", "log", "stream", "--style", "compact",
-            "--predicate", defaultLogPredicate(forBundleID: "com.example"), "--level", "debug",
+            "--predicate", defaultLogPredicate(forBundleID: "com.example", executable: "Example"), "--level", "debug",
         ])
-        let explicit = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
+        XCTAssertEqual(executor.commands, [
+            "xcrun simctl get_app_container 'ABC' 'com.example' app",
+            "/usr/bin/plutil -extract CFBundleExecutable raw -o - '/sims/ABC/Containers/Bundle/Application/X/Example.app/Info.plist'",
+        ])
+        let explicit = try await platform.logStream(deviceID: "ABC", appID: nil, filter: "subsystem == \"x\"", level: nil)
         XCTAssertEqual(explicit.arguments.suffix(2), ["--predicate", "subsystem == \"x\""])
-        let none = try await IOSPlatform().logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
+        let none = try await platform.logStream(deviceID: "ABC", appID: nil, filter: nil, level: nil)
         XCTAssertFalse(none.arguments.contains("--predicate"))
+    }
+
+    func testLogStreamFallsBackToTheBundlePredicateWhenTheAppIsNotInstalled() async throws {
+        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed("No such app", 2))])
+        let command = try await IOSPlatform(execute: executor.execute)
+            .logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: nil)
+        XCTAssertEqual(command.arguments.suffix(2), ["--predicate", defaultLogPredicate(forBundleID: "com.example")])
     }
 
     func testRunnerEnvironmentPointsXcodebuildAtGrantivasXcconfig() throws {

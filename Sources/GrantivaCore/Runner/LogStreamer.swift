@@ -5,12 +5,16 @@ import Foundation
 /// across consecutive `FileHandle` callbacks.
 final class PrefixedLineDecoder: @unchecked Sendable {
     private let prefix: Data
+    private let dropping: @Sendable (String) -> Bool
     private let lock = NSLock()
     private var buffer = Data()
     private var finished = false
 
-    init(prefix: String = "[log] ") {
+    /// `dropping` returns true for complete lines that should not be
+    /// forwarded at all (for example the log tool's own banners).
+    init(prefix: String = "[log] ", dropping: @escaping @Sendable (String) -> Bool = { _ in false }) {
         self.prefix = Data(prefix.utf8)
+        self.dropping = dropping
     }
 
     func consume(_ data: Data) -> [Data] {
@@ -27,6 +31,7 @@ final class PrefixedLineDecoder: @unchecked Sendable {
             if line.last == 0x0D {
                 line.removeLast()
             }
+            if dropping(String(decoding: line, as: UTF8.self)) { continue }
             lines.append(prefixed(line))
         }
         return lines
@@ -41,6 +46,7 @@ final class PrefixedLineDecoder: @unchecked Sendable {
         finished = true
         guard !buffer.isEmpty else { return [] }
         defer { buffer.removeAll(keepingCapacity: false) }
+        if dropping(String(decoding: buffer, as: UTF8.self)) { return [] }
         return [prefixed(buffer)]
     }
 
@@ -113,8 +119,8 @@ public final class LogStreamer: @unchecked Sendable {
         p.standardOutput = outPipe
         p.standardError = errPipe
 
-        let outDecoder = PrefixedLineDecoder()
-        let errDecoder = PrefixedLineDecoder()
+        let outDecoder = PrefixedLineDecoder(dropping: Self.isStreamBanner)
+        let errDecoder = PrefixedLineDecoder(dropping: Self.isStreamBanner)
 
         // Pipe reads may split anywhere, including in the middle of a line or
         // UTF-8 scalar, so each pipe keeps independent raw-byte decoder state.
@@ -173,11 +179,33 @@ public final class LogStreamer: @unchecked Sendable {
     }
 }
 
-/// Derives a sensible default `simctl log stream --predicate` value from a
-/// bundle ID. Matches os_log subsystems that BEGIN with the bundle ID (the
+extension LogStreamer {
+    /// Lines `log stream` prints about itself rather than about the app: the
+    /// simulator's `getpwuid_r` warning, the "Filtering the log data using …"
+    /// echo of the predicate, and the compact style's column header. They are
+    /// dropped instead of being forwarded as `[log]` lines.
+    static let isStreamBanner: @Sendable (String) -> Bool = { line in
+        line.hasPrefix("getpwuid_r did not find a match")
+            || line.hasPrefix("Filtering the log data using")
+            || (line.hasPrefix("Timestamp") && line.contains("Process[PID:TID]"))
+    }
+}
+
+/// Derives a sensible default `simctl log stream --predicate` value for an
+/// app. Matches os_log subsystems that BEGIN with the bundle ID (the
 /// convention), so apps using `Logger(subsystem: "com.example.app", …)` get
-/// caught without extra config. Also matches the process image by bundle ID
-/// as a fallback for apps that don't use unified logging subsystems.
-public func defaultLogPredicate(forBundleID bundleID: String) -> String {
-    "subsystem BEGINSWITH \"\(bundleID)\" OR processImagePath CONTAINS \"\(bundleID)\""
+/// caught without extra config, and the process image by bundle ID. When the
+/// app's executable name (`CFBundleExecutable`) is known it also matches that
+/// process, which catches everything else the app logs: on a simulator the
+/// image path is `…/<App>.app/<App>` and never contains the bundle ID.
+public func defaultLogPredicate(forBundleID bundleID: String, executable: String? = nil) -> String {
+    var predicate = "subsystem BEGINSWITH \(predicateString(bundleID)) OR processImagePath CONTAINS \(predicateString(bundleID))"
+    if let executable, !executable.isEmpty {
+        predicate += " OR process == \(predicateString(executable))"
+    }
+    return predicate
+}
+
+private func predicateString(_ value: String) -> String {
+    "\"" + value.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
 }

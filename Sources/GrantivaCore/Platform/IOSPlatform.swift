@@ -99,7 +99,11 @@ public struct IOSPlatform: DevicePlatform {
 
     public func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
         var args = ["simctl", "spawn", deviceID, "log", "stream", "--style", "compact"]
-        let predicate = filter ?? appID.map(defaultLogPredicate(forBundleID:))
+        var predicate = filter
+        if predicate == nil, let appID {
+            let executable = await installedExecutable(appID: appID, deviceID: deviceID)
+            predicate = defaultLogPredicate(forBundleID: appID, executable: executable)
+        }
         if let predicate, !predicate.isEmpty {
             args += ["--predicate", predicate]
         }
@@ -107,6 +111,18 @@ public struct IOSPlatform: DevicePlatform {
             args += ["--level", level]
         }
         return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
+    }
+
+    /// The installed app's `CFBundleExecutable`, or nil when the app is not
+    /// installed on the simulator or its Info.plist cannot be read.
+    func installedExecutable(appID: String, deviceID: String) async -> String? {
+        guard let container = try? await execute(
+            "xcrun simctl get_app_container \(shellQuoted(deviceID)) \(shellQuoted(appID)) app"
+        ).trimmingCharacters(in: .whitespacesAndNewlines), !container.isEmpty else { return nil }
+        let executable = try? await execute(
+            "/usr/bin/plutil -extract CFBundleExecutable raw -o - \(shellQuoted(container + "/Info.plist"))"
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+        return executable?.isEmpty == false ? executable : nil
     }
 
     /// Points xcodebuild at grantiva's xcconfig so the runner's WebDriverAgent

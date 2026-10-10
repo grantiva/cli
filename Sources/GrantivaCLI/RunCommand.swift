@@ -20,7 +20,7 @@ struct RunCommand: AsyncParsableCommand {
     @Flag(name: .long, help: "Keep GrantivaAgent session alive after flows complete so `grantiva hierarchy` can inspect UI state without relaunching the app. Release with Ctrl-C.")
     var keepAlive: Bool = false
 
-    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem or process matches the app's bundle ID; on Android, to lines from the app's uid.")
+    @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem starts with the app's bundle ID or whose process is the app's executable; on Android, to lines from the app's uid.")
     var logs: Bool = false
 
     @Option(name: .long, help: "Custom NSPredicate for `simctl log stream --predicate` (iOS). Implies --logs.")
@@ -81,6 +81,12 @@ struct RunCommand: AsyncParsableCommand {
     ///   that never reach the runner and used to leave the waiter hanging until
     ///   CI's global timeout.
     static let unfilteredLogsWarning = "--logs requested but no bundle ID resolved; streaming without a predicate (very chatty)."
+
+    /// The value after `--predicate` in a log stream command, if any.
+    static func predicateArgument(in arguments: [String]) -> String? {
+        guard let flag = arguments.firstIndex(of: "--predicate"), flag + 1 < arguments.count else { return nil }
+        return arguments[flag + 1]
+    }
 
     /// The line printed once device log streaming starts.
     static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
@@ -181,17 +187,17 @@ struct RunCommand: AsyncParsableCommand {
         let expectedPixels = geometry.dimensions
 
         // Optional device log streaming, stopped by defer so it shuts down on
-        // any exit path (success, failure, Ctrl-C). iOS starts it right after
-        // boot, as it always has. Android starts it after install: logcat
-        // filters by the app's uid, which exists only once the package is
-        // installed, and the application ID may come from the build.
+        // any exit path (success, failure, Ctrl-C). Both platforms start it
+        // after install, before any flow launches the app: logcat filters by
+        // the app's uid, and the iOS default predicate names the installed
+        // app's executable, both of which exist only once the app is
+        // installed. The app ID may also come from the build.
         let wantsLogs = logs || logsPredicate != nil || logsTag != nil
         func startLogStream(appID: String?) async -> LogStreamer? {
             // iOS names the predicate it streams with: the explicit one or the
-            // default derived from the bundle ID. Without either, it streams
+            // default derived from the app. Without either, it streams
             // unfiltered and says so first.
-            let predicate = platform == .ios ? (logsPredicate ?? appID.map(defaultLogPredicate(forBundleID:))) : nil
-            if platform == .ios, predicate == nil {
+            if platform == .ios, logsPredicate == nil, appID == nil {
                 log(Self.unfilteredLogsWarning)
             }
             let streamer = LogStreamer()
@@ -200,6 +206,7 @@ struct RunCommand: AsyncParsableCommand {
                     deviceID: booted.udid, appID: appID,
                     filter: logsPredicate ?? logsTag, level: logsLevel
                 )
+                let predicate = platform == .ios ? Self.predicateArgument(in: stream.arguments) : nil
                 try streamer.start(executable: stream.executable, arguments: stream.arguments)
                 log(Self.logStreamNarration(platform: platform, predicate: predicate, tag: logsTag))
                 return streamer
@@ -211,9 +218,6 @@ struct RunCommand: AsyncParsableCommand {
         }
         var logStreamer: LogStreamer?
         defer { logStreamer?.stop() }
-        if wantsLogs, platform == .ios {
-            logStreamer = await startLogStream(appID: resolved.bundleId ?? appBundleId)
-        }
 
         // Build / install / launch
         var productPath: String?
@@ -261,7 +265,7 @@ struct RunCommand: AsyncParsableCommand {
             log("Installing \(bid)...")
             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
         }
-        if wantsLogs, platform != .ios {
+        if wantsLogs {
             logStreamer = await startLogStream(appID: bid)
         }
         // Do not pre-launch: flows drive the app themselves via launchApp/clearState.
