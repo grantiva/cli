@@ -160,16 +160,48 @@ final class DiffCommandTests: XCTestCase {
         let fake = FakeDevicePlatform(platform: .ios)
         fake.bootedID = "B-UDID"; fake.bootedName = "B"
         let booted = try await DiffCommand.noBuildDevice(
-            platform: .ios, explicit: nil, config: GrantivaConfig(simulator: "B"), sessionUDID: "SESSION-UDID", device: fake
+            platform: .ios, explicit: nil, config: GrantivaConfig(simulator: "B"), sessionUDID: { "SESSION-UDID" }, device: fake
         )
         XCTAssertEqual(booted.udid, "B-UDID")
+        XCTAssertEqual(fake.calls, ["bootDevice(B)"])
+    }
+
+    /// I02 end to end through `run()`: config `simulator: B` under --no-build reaches the platform as B.
+    func testCaptureNoBuildRunUsesTheConfiguredSimulator() async throws {
+        try await inTemporaryDirectory { dir in
+            try """
+            simulator: B
+            screens:
+              - name: Home
+                path: launch
+            """.write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+            let fake = FakeDevicePlatform(platform: .ios)
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            do {
+                try await command.run()
+                XCTFail("expected the missing bundle ID to stop the capture after device resolution")
+            } catch {
+                XCTAssertTrue("\(error)".contains("Bundle ID is required"), "\(error)")
+            }
+            XCTAssertEqual(fake.calls, ["bootDevice(B)"])
+        }
+    }
+
+    /// The runner session is only consulted when neither the flag nor the config names a device.
+    func testNoBuildDoesNotLookUpTheSessionWhenADeviceIsNamed() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        _ = try await DiffCommand.noBuildDevice(
+            platform: .ios, explicit: nil, config: GrantivaConfig(simulator: "B"),
+            sessionUDID: { XCTFail("session looked up"); return nil }, device: fake
+        )
         XCTAssertEqual(fake.calls, ["bootDevice(B)"])
     }
 
     func testNoBuildFlagWinsOverConfigAndSession() async throws {
         let fake = FakeDevicePlatform(platform: .ios)
         _ = try await DiffCommand.noBuildDevice(
-            platform: .ios, explicit: "A", config: GrantivaConfig(simulator: "B"), sessionUDID: "SESSION-UDID", device: fake
+            platform: .ios, explicit: "A", config: GrantivaConfig(simulator: "B"), sessionUDID: { "SESSION-UDID" }, device: fake
         )
         XCTAssertEqual(fake.calls, ["bootDevice(A)"])
     }
@@ -177,21 +209,21 @@ final class DiffCommandTests: XCTestCase {
     func testNoBuildFallsBackToTheRunnerSessionDevice() async throws {
         let fake = FakeDevicePlatform(platform: .ios)
         _ = try await DiffCommand.noBuildDevice(
-            platform: .ios, explicit: nil, config: GrantivaConfig(), sessionUDID: "SESSION-UDID", device: fake
+            platform: .ios, explicit: nil, config: GrantivaConfig(), sessionUDID: { "SESSION-UDID" }, device: fake
         )
         XCTAssertEqual(fake.calls, ["bootDevice(SESSION-UDID)"])
     }
 
     func testNoBuildUsesThePlatformDefaultOnlyWhenNothingIsNamed() async throws {
         let fake = FakeDevicePlatform(platform: .ios)
-        _ = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: nil, device: fake)
+        _ = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: { nil }, device: fake)
         XCTAssertEqual(fake.calls, ["defaultDevice"])
     }
 
     func testNoBuildOnAndroidHonoursTheConfiguredEmulator() async throws {
         let fake = FakeDevicePlatform(platform: .android)
         let config = GrantivaConfig(android: AndroidProject(emulator: "Pixel_8_API_35"))
-        _ = try await DiffCommand.noBuildDevice(platform: .android, explicit: nil, config: config, sessionUDID: nil, device: fake)
+        _ = try await DiffCommand.noBuildDevice(platform: .android, explicit: nil, config: config, sessionUDID: { nil }, device: fake)
         XCTAssertEqual(fake.calls, ["bootDevice(Pixel_8_API_35)"])
     }
 

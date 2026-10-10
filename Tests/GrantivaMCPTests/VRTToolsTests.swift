@@ -63,14 +63,15 @@ final class VRTToolsTests: XCTestCase {
             try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: file.path)
         }
 
-        let originalPath = ProcessInfo.processInfo.environment["PATH"] ?? ""
-        setenv("PATH", "\(stubDir.path):\(originalPath)", 1)
-        defer { setenv("PATH", originalPath, 1) }
+        // PATH is overridden only for the subprocesses, never for this test process.
+        let path = ["PATH": "\(stubDir.path):\(ProcessInfo.processInfo.environment["PATH"] ?? "")"]
+        let stubFirst = try await shell("command -v grantiva", environment: path)
+        XCTAssertEqual(stubFirst, stub.path)
 
         let results = [
-            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path),
-            try await VRTTools.compare(platform: .android, arguments: [:], executable: own.path),
-            try await VRTTools.approve(platform: .ios, arguments: ["screens": .array([.string("Home")])], executable: own.path),
+            try await VRTTools.capture(platform: .ios, arguments: [:], executable: own.path, environment: path),
+            try await VRTTools.compare(platform: .android, arguments: [:], executable: own.path, environment: path),
+            try await VRTTools.approve(platform: .ios, arguments: ["screens": .array([.string("Home")])], executable: own.path, environment: path),
         ]
         let texts = results.map { result -> String in
             guard case .text(let text, _, _) = result.content.first else { return "" }

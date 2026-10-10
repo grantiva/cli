@@ -54,10 +54,13 @@ enum VRTTools {
 
     // MARK: - Handlers
 
-    /// The absolute path of the running Grantiva binary.
+    /// The absolute path of the running Grantiva binary. The argv[0] fallback
+    /// is resolved through PATH when it is a bare name, never against the
+    /// working directory (MCPServer has changed it to the project dir).
     static var executable: String {
         if let path = Bundle.main.executablePath { return path }
         let argv0 = CommandLine.arguments[0]
+        if !argv0.contains("/"), let found = which(argv0) { return found }
         return URL(fileURLWithPath: argv0).standardizedFileURL.path
     }
 
@@ -77,9 +80,12 @@ enum VRTTools {
         return cmd
     }
 
-    static func capture(platform: Platform, arguments: [String: Value], executable: String = VRTTools.executable) async throws -> CallTool.Result {
+    static func capture(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(captureCommand(platform: platform, executable: executable))
+            let output = try await shell(captureCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -94,9 +100,12 @@ enum VRTTools {
         }
     }
 
-    static func compare(platform: Platform, arguments: [String: Value], executable: String = VRTTools.executable) async throws -> CallTool.Result {
+    static func compare(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(compareCommand(platform: platform, executable: executable))
+            let output = try await shell(compareCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -119,10 +128,13 @@ enum VRTTools {
         )
     }
 
-    static func approve(platform: Platform, arguments: [String: Value], executable: String = VRTTools.executable) async throws -> CallTool.Result {
+    static func approve(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
         do {
-            let output = try await shell(approveCommand(platform: platform, screens: screens, executable: executable))
+            let output = try await shell(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )

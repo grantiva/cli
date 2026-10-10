@@ -125,7 +125,7 @@ struct DiffCommand: AsyncParsableCommand {
                     platform: platform,
                     explicit: target.simulator ?? target.device ?? target.emulator,
                     config: config,
-                    sessionUDID: await DiffCommand.liveSessionUDID(for: platform),
+                    sessionUDID: { await DiffCommand.liveSessionUDID(for: platform) },
                     device: device
                 )
             }
@@ -190,12 +190,16 @@ struct DiffCommand: AsyncParsableCommand {
     /// `simulator:` (iOS) or `emulator:` (Android), else the live runner
     /// session's device, else the platform default.
     static func noBuildDevice(
-        platform: Platform, explicit: String?, config: GrantivaConfig?, sessionUDID: String?, device: any DevicePlatform
+        platform: Platform, explicit: String?, config: GrantivaConfig?,
+        sessionUDID: () async -> String?, device: any DevicePlatform
     ) async throws -> BootedDevice {
         let configured = platform == .ios ? config?.simulator : config?.android?.emulator
-        let named = [explicit, configured, sessionUDID].compactMap { $0 }.first { !$0.isEmpty }
-        if let named {
+        if let named = [explicit, configured].compactMap({ $0 }).first(where: { !$0.isEmpty }) {
             return try await device.bootDevice(named: named)
+        }
+        // Read session.json and run `ps` only when nothing else names a device.
+        if let session = await sessionUDID() {
+            return try await device.bootDevice(named: session)
         }
         return try await device.defaultDevice()
     }
