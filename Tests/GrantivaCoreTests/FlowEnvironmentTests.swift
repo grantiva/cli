@@ -245,6 +245,15 @@ final class FlowEnvironmentTests: XCTestCase {
         XCTAssertEqual(FlowEnvironment.headerEnvironment(flow), ["OK_1.x": "a"])
     }
 
+    func testWarnsAboutEachDroppedHeaderKey() {
+        let flow = "appId: x\nenv:\n  OK: a\n  my-key: b\n  \"A;B\": c\n---\n- launchApp\n"
+        XCTAssertEqual(FlowEnvironment.headerKeyWarnings(flow), [
+            "header env key \"A;B\" not passed to the app: launch keys must match [A-Za-z_][A-Za-z0-9_.]*",
+            "header env key \"my-key\" not passed to the app: launch keys must match [A-Za-z_][A-Za-z0-9_.]*",
+        ])
+        XCTAssertEqual(FlowEnvironment.headerKeyWarnings("appId: x\nenv:\n  OK: a\n---\n- launchApp\n"), [])
+    }
+
     func testRejectsKeysOutsideTheLaunchKeyAlphabet() {
         for argument in ["1ABC=x", "A;B=x", "A-B=x", "A'B=x", "A$B=x"] {
             XCTAssertThrowsError(try FlowEnvironment.parse([argument]), argument) { error in

@@ -56,6 +56,17 @@ public enum FlowEnvironment {
         }
     }
 
+    /// One warning per header `env:` key that `headerEnvironment` leaves out
+    /// because it is not a valid launch key.
+    public static func headerKeyWarnings(_ content: String) -> [String] {
+        guard let header = MaestroFlowParser.splitDocuments(content).config,
+              let mapping = (try? Yams.load(yaml: header)) as? [String: Any],
+              let env = mapping["env"] as? [String: Any] else { return [] }
+        return env.keys.filter { !isValidKey($0) }.sorted().map {
+            "header env key \"\($0)\" not passed to the app: launch keys must match [A-Za-z_][A-Za-z0-9_.]*"
+        }
+    }
+
     /// Launch keys are `[A-Za-z_][A-Za-z0-9_.]*`. On Android the runner can
     /// fall back to `am start` through a shell, interpolating the bare key, so
     /// anything else is refused rather than passed through.

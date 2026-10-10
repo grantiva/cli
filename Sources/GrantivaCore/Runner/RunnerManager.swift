@@ -146,6 +146,7 @@ extension RunnerManager {
                     pruneStaleInstalls(
                         versionsDir: "\(baseDir)/versions",
                         keeping: installStamp,
+                        locksDir: "\(baseDir)/locks",
                         isInUse: { runnerProcessExists(installDir: installDir(baseDir: baseDir, stamp: $0)) }
                     )
                 },
@@ -201,7 +202,7 @@ extension RunnerManager {
             guard lockDescriptor >= 0 else {
                 throw GrantivaError.commandFailed("Could not open the runner install lock \(lockPath)", errno)
             }
-            flock(lockDescriptor, LOCK_EX)
+            while flock(lockDescriptor, LOCK_EX) != 0 && errno == EINTR {}
         }
         defer {
             if lockDescriptor >= 0 {
@@ -293,6 +294,7 @@ extension RunnerManager {
     static func pruneStaleInstalls(
         versionsDir: String,
         keeping current: String,
+        locksDir: String? = nil,
         maxAge: TimeInterval = 30 * 24 * 60 * 60,
         now: Date = Date(),
         isInUse: (String) -> Bool
@@ -301,12 +303,26 @@ extension RunnerManager {
         guard let stamps = try? fm.contentsOfDirectory(atPath: versionsDir) else { return }
         for stamp in stamps where stamp != current && !stamp.hasPrefix(".") {
             let dir = "\(versionsDir)/\(stamp)"
-            let marker = ["\(dir)/\(lastUsedFileName)", "\(dir)/version"].first { fm.fileExists(atPath: $0) }
-            guard let marker,
-                  let modified = (try? fm.attributesOfItem(atPath: marker))?[.modificationDate] as? Date,
-                  now.timeIntervalSince(modified) > maxAge,
-                  !isInUse(stamp) else { continue }
-            try? fm.removeItem(atPath: dir)
+            func isStale() -> Bool {
+                let marker = ["\(dir)/\(lastUsedFileName)", "\(dir)/version"].first { fm.fileExists(atPath: $0) }
+                guard let marker,
+                      let modified = (try? fm.attributesOfItem(atPath: marker))?[.modificationDate] as? Date else { return false }
+                return now.timeIntervalSince(modified) > maxAge
+            }
+            guard isStale(), !isInUse(stamp) else { continue }
+            // Skip a stamp that is being installed right now, and re-check the
+            // marker in case a run passed its fast path since the first look.
+            var descriptor: Int32 = -1
+            if let locksDir {
+                descriptor = open("\(locksDir)/install-\(stamp).lock", O_RDWR | O_CREAT | O_CLOEXEC, 0o644)
+                guard descriptor >= 0 else { continue }
+                guard flock(descriptor, LOCK_EX | LOCK_NB) == 0 else { close(descriptor); continue }
+            }
+            if isStale() { try? fm.removeItem(atPath: dir) }
+            if descriptor >= 0 {
+                flock(descriptor, LOCK_UN)
+                close(descriptor)
+            }
         }
     }
 

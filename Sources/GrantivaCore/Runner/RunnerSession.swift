@@ -347,6 +347,9 @@ public enum RunnerSession {
                     "[grantiva] --env had no effect on \(flowPaths[index]): the flow has no launchApp step.\n".utf8
                 ))
             }
+            for warning in FlowEnvironment.headerKeyWarnings(injectedContent) {
+                FileHandle.standardError.write(Data("[grantiva] \(flowPaths[index]): \(warning)\n".utf8))
+            }
             // Stage each flow in its own numbered directory: the basename is kept
             // for readable runner output, but smoke/login.yaml and
             // regression/login.yaml must not overwrite each other.

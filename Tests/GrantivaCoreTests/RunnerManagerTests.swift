@@ -185,6 +185,25 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(remaining, ["recent", "old-in-use", "current", "no-marker", ".staging-x"])
     }
 
+    func testPruneSkipsAStampWhoseInstallLockIsHeld() throws {
+        let root = try makePaths().base
+        let versions = "\(root)/versions", locks = "\(root)/locks"
+        let fm = FileManager.default
+        try fm.createDirectory(atPath: "\(versions)/busy", withIntermediateDirectories: true)
+        try fm.createDirectory(atPath: locks, withIntermediateDirectories: true)
+        fm.createFile(atPath: "\(versions)/busy/.last-used", contents: Data())
+        try fm.setAttributes([.modificationDate: Date(timeIntervalSinceNow: -31 * 86_400)], ofItemAtPath: "\(versions)/busy/.last-used")
+        let held = open("\(locks)/install-busy.lock", O_RDWR | O_CREAT, 0o644)
+        XCTAssertEqual(flock(held, LOCK_EX), 0)
+
+        RunnerManager.pruneStaleInstalls(versionsDir: versions, keeping: "current", locksDir: locks, isInUse: { _ in false })
+        XCTAssertTrue(fm.fileExists(atPath: "\(versions)/busy"))
+
+        flock(held, LOCK_UN); close(held)
+        RunnerManager.pruneStaleInstalls(versionsDir: versions, keeping: "current", locksDir: locks, isInUse: { _ in false })
+        XCTAssertFalse(fm.fileExists(atPath: "\(versions)/busy"))
+    }
+
     func testRunnerProcessCheckFindsNothingForAnUnusedInstall() {
         XCTAssertFalse(RunnerManager.runnerProcessExists(installDir: "/nonexistent/versions/1.0+x"))
     }
