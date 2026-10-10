@@ -32,8 +32,6 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default`. iOS passes it to `log stream --level`; on Android default and info keep logcat priority I and above, debug adds D.")
     var logsLevel: LogStreamLevel?
 
-    @Flag(name: .customLong("no-auto-accept-alerts"), help: "iOS: turn off WebDriverAgent's alert auto-accept, so alerts stay up until a flow step answers them. For apps whose own alerts (\"Discard changes?\") were being dismissed mid-flow. Permissions are still pre-granted on the simulator, but prompts simctl cannot grant (notifications, tracking, local network, Bluetooth) are no longer accepted for you.")
-    var noAutoAcceptAlerts: Bool = false
 
     @Option(name: .long, help: "Snapshot policy: failure (default — one shot after failure), trailing (last-good step + failure step), full (every step).")
     var snapshot: SnapshotMode = .failure
@@ -366,8 +364,7 @@ struct RunCommand: AsyncParsableCommand {
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,
                         reportDir: session.reportDir,
-                        timeoutSeconds: session.timeoutSeconds,
-                        autoAcceptAlerts: !noAutoAcceptAlerts
+                        timeoutSeconds: session.timeoutSeconds
                     )
                     // A failed screen stops the suite before the flows run;
                     // --json still reports what was captured.
@@ -392,7 +389,6 @@ struct RunCommand: AsyncParsableCommand {
                         environment: launchEnvironment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
-                        autoAcceptAlerts: !noAutoAcceptAlerts,
                         failureReport: failureReport
                     )
                 }
