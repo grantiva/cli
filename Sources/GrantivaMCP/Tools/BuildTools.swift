@@ -233,16 +233,50 @@ enum BuildTools {
             destination: destination
         )
 
-        let summary = """
+        return CallTool.Result(
+            content: [.text(text: testSummary(result), annotations: nil, _meta: nil)],
+            isError: !result.success ? true : nil
+        )
+    }
+
+    /// Counts on success. On failure, also the reason: xcodebuild's `error:`
+    /// lines and failing test cases, then the tail of the output, bounded so a
+    /// long log does not flood the model's context.
+    static func testSummary(_ result: TestResult, tailLines: Int = 40, maxTailBytes: Int = 4096) -> String {
+        var summary = """
             Tests \(result.success ? "passed" : "FAILED")
             Scheme: \(result.scheme)
             Duration: \(String(format: "%.1fs", result.duration))
             Passed: \(result.testsPassed)
             Failed: \(result.testsFailed)
             """
-        return CallTool.Result(
-            content: [.text(text: summary, annotations: nil, _meta: nil)],
-            isError: !result.success ? true : nil
-        )
+        guard !result.success else { return summary }
+
+        let lines = result.output.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        var reasons: [String] = []
+        for line in lines where line.contains("error:") || isFailedTestLine(line) {
+            if !reasons.contains(line) { reasons.append(line) }
+        }
+        if !reasons.isEmpty {
+            summary += "\n\nErrors:\n" + reasons.prefix(20).joined(separator: "\n")
+            if reasons.count > 20 { summary += "\n... \(reasons.count - 20) more" }
+        }
+
+        var tail = lines.suffix(tailLines).joined(separator: "\n")
+        if tail.utf8.count > maxTailBytes {
+            tail = "..." + String(decoding: Array(tail.utf8.suffix(maxTailBytes)), as: UTF8.self)
+        }
+        if !tail.isEmpty {
+            summary += "\n\nOutput (last \(min(lines.count, tailLines)) lines):\n" + tail
+        }
+        return summary
+    }
+
+    /// XCTest (`Test Case '-[A b]' failed`) and Swift Testing (`✘ Test b() failed`).
+    private static func isFailedTestLine(_ line: String) -> Bool {
+        (line.hasPrefix("Test Case '") && line.contains("' failed"))
+            || (line.hasPrefix("✘ Test ") && line.contains(" failed"))
     }
 }

@@ -60,6 +60,7 @@
 - MCP `grantiva_tap {"label": …}` and `grantiva_script` `tap` steps on iOS now match the accessibility label (what `grantiva_a11y_tree` shows as `label`), falling back to the element name. They used WebDriverAgent's "link text" strategy, which matches only the name, so a tab labelled "Favorites" whose name is "heart" was "not found".
 - MCP `grantiva_type` works on iOS: keystrokes go to the agent's `/session/{id}/wda/keys` endpoint (falling back to `/keys` only on a 404) instead of `/keys`, which GrantivaAgent does not serve, and a failure names the HTTP status instead of "exited with code 1".
 - MCP `grantiva_a11y_check` on Android no longer reports `missing_label` and `small_tap_target` for every Compose button: the empty, non-clickable `android.widget.Button` stub Compose puts beside a button's text is skipped when a clickable ancestor carries a label, so the check evaluates the node TalkBack focuses. A clickable control with no text anywhere is still flagged.
+- MCP `grantiva_test` failures now say why: the result includes xcodebuild's `error:` lines and failing test cases plus the last 40 lines of output (at most 4 KB), and `xcodebuild test` runs with stderr merged into stdout so the reason and the test counts are no longer lost. A passing run stays a short summary.
 
 ## 2.0.1 — 2026-10-07
 

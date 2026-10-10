@@ -90,7 +90,10 @@ public struct XcodeBuildRunner: Sendable {
         }
         args += ["-destination", "\(destination)", "test"]
 
-        let command = args.map(shellQuoted).joined(separator: " ")
+        // Merge stderr into stdout: xcodebuild prints the failure reason on
+        // stderr and the failing tests and counts on stdout, and a failed
+        // command reports only one of the two streams.
+        let command = args.map(shellQuoted).joined(separator: " ") + " 2>&1"
 
         do {
             let output = try await execute(command)
