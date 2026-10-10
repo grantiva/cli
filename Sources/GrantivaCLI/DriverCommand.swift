@@ -275,7 +275,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// lets `grantiva hierarchy` and the MCP server find the device, exactly
     /// as `grantiva run --keep-alive` does.
     private static func recordKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {
-        KeepAliveSessionStore().recordOwner(udid: launch.device.udid, runnerPid: runnerPid)
+        KeepAliveSessionStore().recordOwner(udid: launch.device.udid, runnerPid: runnerPid, platform: launch.platform)
     }
 
     private static func removeKeepAliveOwner(_ launch: Launch, runnerPid: Int32) {

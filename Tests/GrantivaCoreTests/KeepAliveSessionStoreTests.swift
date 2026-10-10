@@ -116,6 +116,30 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: path))
     }
 
+    /// C03: the sidecar records where the session was started and for which
+    /// platform, and discovery surfaces both.
+    func testOwnerRecordsTheProjectDirectoryAndPlatform() throws {
+        let store = store(live: [100, 200])
+        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "ios")
+        try writeRunnerSession(pid: 200, nanos: 2, port: 0, sessionId: "android")
+        let project = directory.appendingPathComponent("project/../project")
+        try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        store.recordOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, projectDirectory: project.path)
+        store.recordOwner(udid: "emulator-5554", runnerPid: 200, projectDirectory: project.path)
+
+        let canonical = KeepAliveOwner.canonicalDirectory(directory.appendingPathComponent("project").path)
+        let sessions = Dictionary(uniqueKeysWithValues: store.liveSessions().map { ($0.sessionId, $0) })
+        XCTAssertEqual(sessions["ios"]?.projectDirectory, canonical)
+        XCTAssertEqual(sessions["ios"]?.platform, .ios)
+        XCTAssertEqual(sessions["android"]?.projectDirectory, canonical)
+        XCTAssertEqual(sessions["android"]?.platform, .android)
+        XCTAssertFalse(canonical.contains(".."))
+    }
+
+    func testCanonicalDirectoryResolvesSymlinks() {
+        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/tmp"), KeepAliveOwner.canonicalDirectory("/private/tmp"))
+    }
+
     func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {
         try writeRunnerSession(pid: 100, nanos: 1, port: 0, sessionId: "android")
 

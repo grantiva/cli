@@ -16,13 +16,23 @@ public struct KeepAliveSession: Equatable, Sendable {
     /// The simulator the session belongs to, when grantiva recorded it.
     public let udid: String?
     public let path: String
+    /// The directory `grantiva run --keep-alive` or `runner start` ran in
+    /// (symlinks resolved), when grantiva recorded it.
+    public let projectDirectory: String?
+    /// The platform the session drives, when grantiva recorded it.
+    public let platform: Platform?
 
-    public init(sessionId: String, port: Int, pid: Int32, udid: String?, path: String) {
+    public init(
+        sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
+        projectDirectory: String? = nil, platform: Platform? = nil
+    ) {
         self.sessionId = sessionId
         self.port = port
         self.pid = pid
         self.udid = udid
         self.path = path
+        self.projectDirectory = projectDirectory
+        self.platform = platform
     }
 }
 
@@ -32,12 +42,27 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     public let runnerPid: Int32
     public let grantivaPid: Int32
     public let createdAt: Date
+    /// Where the session was started, so the MCP server only attaches to its
+    /// own project's session. Absent in sidecars written by earlier versions.
+    public let projectDirectory: String?
+    public let platform: Platform?
 
-    public init(udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date()) {
+    public init(
+        udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
+        projectDirectory: String? = nil, platform: Platform? = nil
+    ) {
         self.udid = udid
         self.runnerPid = runnerPid
         self.grantivaPid = grantivaPid
         self.createdAt = createdAt
+        self.projectDirectory = projectDirectory
+        self.platform = platform
+    }
+
+    /// The canonical form both sides compare: absolute, standardized, with
+    /// symlinks resolved (so `/tmp/x` and `/private/tmp/x` match).
+    public static func canonicalDirectory(_ path: String) -> String {
+        URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
     }
 }
 
@@ -74,12 +99,23 @@ public struct KeepAliveSessionStore: Sendable {
         "\(directory)/\(runnerPid).\(Self.ownerExtension)"
     }
 
-    /// Records that `runnerPid` holds `udid`. Called right after the runner is
-    /// spawned, so the mapping exists before the runner's own session file and
-    /// before the `--ready-file` is written.
+    /// Records that `runnerPid` holds `udid`, started from `projectDirectory`
+    /// (default: the current directory) for `platform` (default: inferred from
+    /// the device ID's shape). Called right after the runner is spawned, so the
+    /// mapping exists before the runner's own session file and before the
+    /// `--ready-file` is written.
     @discardableResult
-    public func recordOwner(udid: String, runnerPid: Int32) -> KeepAliveOwner? {
-        let owner = KeepAliveOwner(udid: udid, runnerPid: runnerPid)
+    public func recordOwner(
+        udid: String,
+        runnerPid: Int32,
+        projectDirectory: String = FileManager.default.currentDirectoryPath,
+        platform: Platform? = nil
+    ) -> KeepAliveOwner? {
+        let owner = KeepAliveOwner(
+            udid: udid, runnerPid: runnerPid,
+            projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
+            platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios)
+        )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
             let encoder = JSONEncoder()
@@ -114,7 +150,7 @@ public struct KeepAliveSessionStore: Sendable {
             contents
                 .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
                 .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
-                .map { ($0.runnerPid, $0.udid) },
+                .map { ($0.runnerPid, $0) },
             uniquingKeysWith: { first, _ in first }
         )
 
@@ -123,9 +159,11 @@ public struct KeepAliveSessionStore: Sendable {
             .compactMap { name -> (KeepAliveSession, Double)? in
                 let path = "\(directory)/\(name)"
                 guard let raw = Self.loadRunnerSession(path: path), isProcessAlive(raw.pid) else { return nil }
+                let owner = owners[raw.pid]
                 let session = KeepAliveSession(
                     sessionId: raw.sessionId, port: raw.port, pid: raw.pid,
-                    udid: owners[raw.pid], path: path
+                    udid: owner?.udid, path: path,
+                    projectDirectory: owner?.projectDirectory, platform: owner?.platform
                 )
                 return (session, Self.sortKey(fileName: name, path: path))
             }

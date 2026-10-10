@@ -6,11 +6,10 @@ import MCP
 /// tool calls and resource reads to the appropriate handler.
 @available(macOS 15, *)
 struct ToolRegistry: Sendable {
-    let driver: DriverClient
+    let connection: RunnerConnection
     let platform: Platform
     let device: any DevicePlatform
     let config: GrantivaConfig?
-    let session: RunnerSessionInfo
     let simulatorManager: SimulatorManager
     let buildRunner: XcodeBuildRunner
     let emulators: EmulatorToolDependencies?
@@ -48,6 +47,14 @@ struct ToolRegistry: Sendable {
 
     // MARK: - Tool Dispatch
 
+    /// Tools that act on the runner session's device. They resolve the
+    /// session (and attach the driver) per call; with no session they return
+    /// a tool error instead of failing the server.
+    static let sessionTools: Set<String> = [
+        "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
+        "grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_script",
+    ]
+
     func call(
         name: String,
         arguments: [String: Value],
@@ -55,20 +62,32 @@ struct ToolRegistry: Sendable {
     ) async throws -> CallTool.Result {
         let result: CallTool.Result
 
+        var current: RunnerConnection.Current?
+        if Self.sessionTools.contains(name) {
+            do {
+                current = try await connection.current()
+            } catch {
+                return CallTool.Result(
+                    content: [.text(text: "Error: \(error.localizedDescription)", annotations: nil, _meta: nil)],
+                    isError: true
+                )
+            }
+        }
+
         switch name {
         // UI Tools
         case "grantiva_screenshot":
-            result = try await UITools.screenshot(driver: driver, device: device, session: session, arguments: arguments)
+            result = try await UITools.screenshot(driver: current!.driver, device: device, session: current!.session, arguments: arguments)
         case "grantiva_tap":
-            result = try await UITools.tap(driver: driver, arguments: arguments)
+            result = try await UITools.tap(driver: current!.driver, arguments: arguments)
         case "grantiva_swipe":
-            result = try await UITools.swipe(driver: driver, arguments: arguments)
+            result = try await UITools.swipe(driver: current!.driver, arguments: arguments)
         case "grantiva_type":
-            result = try await UITools.type(driver: driver, arguments: arguments)
+            result = try await UITools.type(driver: current!.driver, arguments: arguments)
         case "grantiva_a11y_tree":
-            result = try await UITools.a11yTree(driver: driver)
+            result = try await UITools.a11yTree(driver: current!.driver)
         case "grantiva_a11y_check":
-            result = try await UITools.a11yCheck(driver: driver, config: config, platform: platform)
+            result = try await UITools.a11yCheck(driver: current!.driver, config: config, platform: platform)
 
         // Build Tools
         case "grantiva_build":
@@ -104,7 +123,7 @@ struct ToolRegistry: Sendable {
 
         // Script
         case "grantiva_script":
-            result = try await ScriptTools.script(driver: driver, arguments: arguments)
+            result = try await ScriptTools.script(driver: current!.driver, arguments: arguments)
 
         // VRT Tools
         case "grantiva_vrt_capture":
@@ -135,7 +154,7 @@ struct ToolRegistry: Sendable {
     func readResource(uri: String) async throws -> [Resource.Content] {
         switch uri {
         case "grantiva://hierarchy":
-            let tree = try await driver.hierarchy()
+            let tree = try await connection.current().driver.hierarchy()
             let jsonData = try JSONSerialization.data(
                 withJSONObject: tree, options: [.prettyPrinted, .sortedKeys]
             )
@@ -143,7 +162,7 @@ struct ToolRegistry: Sendable {
             return [.text(jsonString, uri: uri, mimeType: "application/json")]
 
         case "grantiva://screenshot":
-            let imageData = try await driver.screenshot()
+            let imageData = try await connection.current().driver.screenshot()
             return [.binary(imageData, uri: uri, mimeType: "image/png")]
 
         default:
@@ -158,5 +177,26 @@ struct ToolRegistry: Sendable {
             .init(uri: "grantiva://hierarchy")
         )
         try await server.notify(notification)
+    }
+}
+
+@available(macOS 15, *)
+extension ToolRegistry {
+    /// A registry bound to one fixed driver and session; for tests.
+    init(
+        driver: DriverClient,
+        platform: Platform,
+        device: any DevicePlatform,
+        config: GrantivaConfig?,
+        session: RunnerSessionInfo,
+        simulatorManager: SimulatorManager,
+        buildRunner: XcodeBuildRunner,
+        emulators: EmulatorToolDependencies?
+    ) {
+        self.init(
+            connection: .fixed(driver: driver, session: session),
+            platform: platform, device: device, config: config,
+            simulatorManager: simulatorManager, buildRunner: buildRunner, emulators: emulators
+        )
     }
 }

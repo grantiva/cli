@@ -58,6 +58,8 @@
 - `doctor`'s Git Repository check passes in any subdirectory of a work tree (e.g. the `android/` project of a mono-repo), instead of advising `git init` there.
 - `grantiva init` (iOS) writes the newest iPhone simulator type an installed runtime supports instead of `iPhone 16`, and warns on stderr when the scheme (`MyApp`, no Xcode project found) or the simulator is a placeholder.
 - MCP `grantiva_script` validates every step before running any: a step that is not an object, has no known action, has a `tap_xy` without numeric `x` and `y`, or has a negative `wait` makes the call return `isError` naming each bad step, and no step runs. Before, such steps were skipped and the call reported success.
+- `grantiva mcp` starts without a runner session and without a config file, so an agent can list tools and provision a device. The device tools (`grantiva_tap`, `grantiva_swipe`, `grantiva_type`, `grantiva_screenshot`, `grantiva_a11y_*`, `grantiva_script`) return `isError` with the "No active runner session" text until a session exists, attach to it on the next call, and re-attach when it is replaced. Before, the process exited 1 before answering `initialize`.
+- The MCP server attaches only to its own project's runner session: `.grantiva/session.json`, or a `run --keep-alive`/`runner start` session started from the same project directory for the same platform. The keep-alive owner sidecar now records both. Before, it fell back to the newest keep-alive session on the machine, so it could drive another project's simulator (or pass an iOS UDID to adb).
 
 ## 2.0.1 — 2026-10-07
 
