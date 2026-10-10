@@ -470,18 +470,22 @@ struct DiffCommand: AsyncParsableCommand {
     /// Returns canonical screenshot artifacts in deterministic order. Treating an
     /// undecodable filename as absent can make a comparison succeed without
     /// evaluating every capture that was discovered on disk.
+    /// Files named the 2.0.1-and-earlier way (`Deep%20Links.png`) are accepted; when
+    /// both forms exist for one screen, the current one is used.
     static func captureArtifacts(from fileNames: [String]) throws -> [CaptureArtifact] {
-        try fileNames.sorted().map { fileName in
+        let artifacts = try fileNames.sorted().map { fileName in
             guard
                 let screenName = ScreenArtifact.screenName(from: fileName),
-                ScreenArtifact.fileName(for: screenName) == fileName
+                ScreenArtifact.isCanonical(fileName, for: screenName)
             else {
                 throw GrantivaError.invalidArgument(
-                    "Invalid capture filename \"\(fileName)\". Capture files must use canonical percent-encoded screen names."
+                    "Invalid capture filename \"\(fileName)\". Capture files are named after the screen, with only /, :, NUL and % percent-encoded."
                 )
             }
             return CaptureArtifact(fileName: fileName, screenName: screenName)
         }
+        let current = Set(artifacts.filter { $0.fileName == ScreenArtifact.fileName(for: $0.screenName) }.map(\.screenName))
+        return artifacts.filter { $0.fileName == ScreenArtifact.fileName(for: $0.screenName) || !current.contains($0.screenName) }
     }
 
     /// Returns only screenshots explicitly produced by this runner invocation.
@@ -572,7 +576,7 @@ struct DiffCommand: AsyncParsableCommand {
                         perceptualDistance: output.perceptualDistance,
                         pixelThreshold: config.threshold,
                         perceptualThreshold: config.perceptualThreshold,
-                        baselinePath: "\(store.baselineDirectory())/\(ScreenArtifact.fileName(for: screenName))",
+                        baselinePath: "\(store.baselineDirectory())/\(ScreenArtifact.existingFileName(for: screenName, in: store.baselineDirectory()))",
                         capturePath: capturePath,
                         diffImagePath: diffImagePath,
                         message: message
@@ -616,7 +620,7 @@ struct DiffCommand: AsyncParsableCommand {
         var approved: [String] = []
 
         for screenName in screenNames {
-            let capturePath = "\(captureDirectory)/\(ScreenArtifact.fileName(for: screenName))"
+            let capturePath = "\(captureDirectory)/\(ScreenArtifact.existingFileName(for: screenName, in: captureDirectory, fileManager: fileManager))"
             guard fileManager.fileExists(atPath: capturePath) else {
                 throw GrantivaError.noCaptures("No capture found for \"\(screenName)\"")
             }
