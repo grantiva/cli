@@ -1,0 +1,23 @@
+# C05: stub grantiva first on PATH (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/grantiva, logs to invoked.log and exits 2); MCP server started from the real binary in the project with the live reg-ios runner session.
+$ cat /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/grantiva
+#!/bin/sh
+echo "stub $*" >&2; echo "stub $*" >> /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/invoked.log; exit 2
+$ PATH=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub:$PATH which grantiva
+/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/grantiva
+$ /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios --platform ios   (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/ios)
+>> {"jsonrpc": "2.0", "method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 0}
+<< {"id":0,"jsonrpc":"2.0","result":{"capabilities":{"resources":{"listChanged":false,"subscribe":true},"tools":{"listChanged":false}},"instructions":"Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.","protocolVersion":"2025-03-26","serverInfo":{"name":"grantiva","version":"2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_compare", "arguments": {}}, "id": 1}
+<< {"id":1,"jsonrpc":"2.0","result":{"content":[{"text":"Error: No captures found in .grantiva/captures. Run: grantiva diff capture","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {}}, "id": 2}
+<< {"id":2,"jsonrpc":"2.0","result":{"content":[{"text":"Approve failed:\nError: No captures found in .grantiva/captures. Run: grantiva diff capture","type":"text"}],"isError":true}}
+>> {"jsonrpc": "2.0", "method": "tools/call", "params": {"name": "grantiva_vrt_capture", "arguments": {}}, "id": 3}
+<< {"id":3,"jsonrpc":"2.0","result":{"content":[{"text":"Capture failed:\nError: Simulator 4278E141-1297-46F9-989F-FB9995D123F9 is already owned by another Grantiva run (pid 68990, started 33s ago, grantiva-runner pid 68990, --keep-alive). Release it with `grantiva simulator teardown --udid 4278E141-1297-46F9-989F-FB9995D123F9 --force`, or run against a different simulator via `grantiva simulator ensure --name <unique-name>`.","type":"text"}],"isError":true}}
+[server stderr:]
+
+server exit=0
+
+$ ls /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub; cat /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/invoked.log
+grantiva
+cat: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c05stub/invoked.log: No such file or directory
