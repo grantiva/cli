@@ -85,6 +85,40 @@ final class RunnerSessionReportTests: XCTestCase {
         }
     }
 
+    // MARK: - I18: same-basename flows get distinct names
+
+    func testCollidingBasenamesAreStagedWithDistinctFlowNames() {
+        XCTAssertEqual(
+            RunnerSession.uniqueFlowNames(for: ["qa/a/same.yaml", "qa/b/same.yaml", "smoke.yaml"]),
+            ["qa/a/same", "qa/b/same", nil]
+        )
+        XCTAssertEqual(RunnerSession.uniqueFlowNames(for: ["a/Login.yaml", "b/login.yml"]), ["a/Login", "b/login"])
+        XCTAssertEqual(RunnerSession.uniqueFlowNames(for: ["a/x.yaml", "a/x.yml"]), ["a/x.yaml", "a/x.yml"])
+    }
+
+    func testInjectFlowNameAddsANameToTheHeaderUnlessTheFlowHasOne() {
+        XCTAssertEqual(
+            RunnerSession.injectFlowName("appId: com.example\n---\n- launchApp\n", name: "qa/a/same"),
+            "appId: com.example\nname: \"qa/a/same\"\n---\n- launchApp\n"
+        )
+        let named = "appId: com.example\nname: Mine\n---\n- launchApp\n"
+        XCTAssertEqual(RunnerSession.injectFlowName(named, name: "qa/a/same"), named)
+    }
+
+    func testRunFlowFilesStagesSameNamedFlowsUnderTheirOwnNames() async throws {
+        try writeFlow("qa/a/same.yaml")
+        try writeFlow("qa/b/same.yaml")
+        let runner = try makeRunner(exitCode: 1)
+        _ = try? await RunnerSession.runFlowFiles(
+            at: ["qa/a/same.yaml", "qa/b/same.yaml"], bundleId: "com.example", udid: udid(),
+            platform: StubPlatform(), runner: runner, outputDir: "captures", timeoutSeconds: 30
+        )
+        let staged0 = try String(contentsOfFile: "\(scratch.path)/seen/flow-0.yaml", encoding: .utf8)
+        let staged1 = try String(contentsOfFile: "\(scratch.path)/seen/flow-1.yaml", encoding: .utf8)
+        XCTAssertTrue(staged0.contains("name: \"qa/a/same\""), staged0)
+        XCTAssertTrue(staged1.contains("name: \"qa/b/same\""), staged1)
+    }
+
     // MARK: - Helpers
 
     private func udid() -> String { "TEST-REPORT-\(UUID().uuidString)" }

@@ -36,6 +36,7 @@
 - `grantiva runner start` on iOS exited seconds after reporting success: the session flow's `waitForAnimationToEnd` was meant to hold the runner for an hour, but runner 1.1.18 returns from it as soon as the screen settles, so `runner dump-hierarchy` and the MCP server then found no session. The runner is now started with `--keep-alive` on both platforms, the keep-alive owner sidecar is recorded for iOS as it already was for Android, and `runner stop` removes it.
 - Every shell subprocess now gets `/dev/null` as stdin instead of inheriting Grantiva's. Android needs this (`adb shell` would otherwise read the MCP server's JSON-RPC requests), and it also keeps any subprocess the iOS MCP server starts from consuming its input.
 - `run --report-dir` now names the flow file you passed in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log`, instead of the deleted temp copy, whether the run passes, fails, or times out.
+- Flows with the same file name in different directories (`a/same.yaml`, `b/same.yaml`) are now reported under distinct names (`a/same`, `b/same`), each with its own steps and duration, instead of two `same` rows showing the first flow's numbers.
 - `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
 
 ## 2.0.1 — 2026-10-07

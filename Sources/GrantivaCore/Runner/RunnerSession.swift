@@ -279,6 +279,7 @@ public enum RunnerSession {
         defer { try? FileManager.default.removeItem(atPath: tempFlowDir) }
 
         var tempFlowPaths: [String] = []
+        let uniqueFlowNames = uniqueFlowNames(for: flowPaths)
         // Maps every staged copy back to the path the user actually passed, so
         // runner output and error messages never name a /var/folders temp file.
         var stagedPathMap: [String: String] = [:]
@@ -305,6 +306,9 @@ public enum RunnerSession {
             let stageDir = "\(tempFlowDir)/\(index)"
             try FileManager.default.createDirectory(atPath: stageDir, withIntermediateDirectories: true)
             let tempFlowPath = "\(stageDir)/\(originalFilename)"
+            if let name = uniqueFlowNames[index] {
+                injectedContent = injectFlowName(injectedContent, name: name)
+            }
             try injectedContent.write(toFile: tempFlowPath, atomically: true, encoding: .utf8)
             tempFlowPaths.append(tempFlowPath)
             stagedPathMap[tempFlowPath] = flowPaths[index]
@@ -669,6 +673,39 @@ public enum RunnerSession {
             // No separator: prepend header and separator before the command list
             return "appId: \(bundleId)\n---\n\(content)"
         }
+    }
+
+    /// The runner names a flow after its file's basename and keys its summary
+    /// table by that name, so `a/same.yaml` and `b/same.yaml` were reported as
+    /// two rows called `same` sharing one flow's numbers. Flows whose basenames
+    /// collide get the path the user passed (without extension) as their
+    /// name; every other flow keeps the runner's default (nil).
+    static func uniqueFlowNames(for flowPaths: [String]) -> [String?] {
+        func key(_ name: String) -> String { name.precomposedStringWithCanonicalMapping.lowercased() }
+        let baseNames = flowPaths.map { URL(fileURLWithPath: $0).deletingPathExtension().lastPathComponent }
+        let baseCounts = Dictionary(grouping: baseNames, by: key).mapValues(\.count)
+        let stems = flowPaths.map { ($0 as NSString).deletingPathExtension }
+        let stemCounts = Dictionary(grouping: stems, by: key).mapValues(\.count)
+        return flowPaths.indices.map { index in
+            guard baseCounts[key(baseNames[index]), default: 0] > 1 else { return nil }
+            // `flows/login.yaml` beside `flows/login.yml`: keep the extension.
+            return stemCounts[key(stems[index]), default: 0] > 1 ? flowPaths[index] : stems[index]
+        }
+    }
+
+    /// Adds a `name:` to the flow's config header (which `injectAppId` has
+    /// already guaranteed) unless the flow names itself.
+    static func injectFlowName(_ content: String, name: String) -> String {
+        var lines = content.components(separatedBy: "\n")
+        guard let separator = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "---" }) else {
+            return content
+        }
+        let header = lines[0..<separator]
+        if header.contains(where: { $0.hasPrefix("name:") }) {
+            return content
+        }
+        lines.insert("name: \(FlowEnvironment.quoted(name))", at: separator)
+        return lines.joined(separator: "\n")
     }
 
     /// Build synthetic step results from the screen config.
