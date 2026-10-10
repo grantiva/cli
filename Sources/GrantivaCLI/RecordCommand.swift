@@ -111,7 +111,11 @@ struct RecordCommand: AsyncParsableCommand {
         }
         let outputPath = output ?? Self.defaultOutput(for: platform)
         if let problem = Self.outputExtensionProblem(outputPath, platform: platform) {
-            throw ValidationError(problem)
+            // A usage error, but it needs the resolved platform, so it is
+            // raised here rather than in validate(); ExitCode keeps the
+            // usage line out of it.
+            GrantivaLog.logger.error("\(problem)")
+            throw ExitCode.validationFailure
         }
         let platformDevice = try devicePlatform.make(platform)
 

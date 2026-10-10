@@ -227,6 +227,13 @@ struct RunCommand: AsyncParsableCommand {
                 return nil
             }
         }
+        // --no-build installs nothing, so the app ID is the resolved one; a
+        // missing one is reported by the app-ID check further down.
+        if buildOptions.shouldSkipInstall, let appID = resolved.bundleId,
+           await device.isInstalled(appID: appID, deviceID: booted.udid) == false {
+            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: appID, device: booted.name))
+        }
+
         var logStreamer: LogStreamer?
         defer { logStreamer?.stop() }
 
@@ -272,10 +279,6 @@ struct RunCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
         }
 
-        if buildOptions.shouldSkipInstall,
-           await device.isInstalled(appID: bid, deviceID: booted.udid) == false {
-            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: bid, device: booted.name))
-        }
         if !buildOptions.shouldSkipInstall, let productPath {
             log("Installing \(bid)...")
             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)

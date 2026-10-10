@@ -124,8 +124,8 @@ final class HierarchyCommandTests: XCTestCase {
     func testAnIOSSessionWhoseAgentIsGoneFailsWithTheMappedMessage() async throws {
         let directory = try temporaryDirectory()
         let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
-        // Port 9 (discard) on loopback has no listener: connection refused.
-        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "ios", in: directory, port: 9)
+        let port = try closedLoopbackPort()
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "ios", in: directory, port: port)
         let command = try HierarchyCommand.parse(["--timeout", "5"])
         do {
             try await command.run(store: store)
@@ -133,9 +133,30 @@ final class HierarchyCommandTests: XCTestCase {
         } catch {
             XCTAssertEqual(
                 error.localizedDescription,
-                "Cannot reach GrantivaAgent on port 9. Is the grantiva run --keep-alive session still alive?"
+                "Cannot reach GrantivaAgent on port \(port). Is the grantiva run --keep-alive session still alive?"
             )
         }
+    }
+
+    /// A loopback port the kernel just handed out and that nothing listens
+    /// on any more: bind to port 0, read the port, close.
+    private func closedLoopbackPort() throws -> Int {
+        let fd = Darwin.socket(AF_INET, SOCK_STREAM, 0)
+        guard fd >= 0 else { throw XCTSkip("socket() failed") }
+        defer { Darwin.close(fd) }
+        var address = sockaddr_in()
+        address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_port = 0
+        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+        var length = socklen_t(MemoryLayout<sockaddr_in>.size)
+        let bound = withUnsafeMutablePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { sockaddrPointer in
+                Darwin.bind(fd, sockaddrPointer, length) == 0 && Darwin.getsockname(fd, sockaddrPointer, &length) == 0
+            }
+        }
+        guard bound else { throw XCTSkip("bind() failed") }
+        return Int(UInt16(bigEndian: address.sin_port))
     }
 
     private func writeRunnerSession(pid: Int, nanos: Int, sessionId: String, in directory: URL, port: Int? = nil) throws {

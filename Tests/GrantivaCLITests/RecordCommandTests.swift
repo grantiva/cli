@@ -185,8 +185,7 @@ final class RecordCommandTests: XCTestCase {
             try await command.run()
             XCTFail("expected an error")
         } catch {
-            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
-            XCTAssertTrue("\(error)".contains("--output must end in .mp4"), "\(error)")
+            XCTAssertEqual(error as? ExitCode, .validationFailure, "\(error)")
         }
         XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
     }
@@ -219,7 +218,7 @@ final class RecordCommandTests: XCTestCase {
             try await command.run()
             XCTFail("expected an error")
         } catch {
-            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertEqual(error as? ExitCode, .validationFailure, "\(error)")
         }
         XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
     }

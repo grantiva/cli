@@ -52,6 +52,36 @@ final class ScreenArtifactTests: XCTestCase {
         XCTAssertEqual(relisted, ["Deep Links"])
     }
 
+    func testNamesThatDifferOnlyByEncodingKeepSeparateBaselines() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-artifact-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = BaselineStore.local(directory: root.path)
+        _ = try await store.save("A B", Data("space".utf8))
+        _ = try await store.save("A%20B", Data("literal".utf8))
+        let names = try await store.list()
+        XCTAssertEqual(names, ["A B", "A%20B"])
+        let space = try await store.load("A B")
+        let literal = try await store.load("A%20B")
+        XCTAssertEqual(space, Data("space".utf8))
+        XCTAssertEqual(literal, Data("literal".utf8))
+    }
+
+    func testDeleteRemovesBothCurrentAndLegacyFiles() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-artifact-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        try Data("old".utf8).write(to: root.appendingPathComponent("Deep%20Links.png"))
+        try Data("new".utf8).write(to: root.appendingPathComponent("Deep Links.png"))
+        let store = BaselineStore.local(directory: root.path)
+        try await store.delete("Deep Links")
+        let remaining = try FileManager.default.contentsOfDirectory(atPath: root.path)
+        XCTAssertEqual(remaining, [])
+        do {
+            try await store.delete("Deep Links")
+            XCTFail("deleting a missing baseline still fails")
+        } catch {}
+    }
+
     func testDeleteRemovesALegacyBaseline() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-artifact-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }

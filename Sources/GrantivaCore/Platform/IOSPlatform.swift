@@ -49,13 +49,19 @@ public struct IOSPlatform: DevicePlatform {
         try await xcodebuild.install(bundleId: appID, productPath: productPath, udid: deviceID)
     }
 
-    /// `simctl get_app_container` fails for a bundle ID that is not installed.
+    /// `simctl get_app_container` fails with exit 2 ("No such file or
+    /// directory") for a bundle ID that is not installed. Any other failure
+    /// (device shut down, simctl or xcrun trouble) says nothing about the
+    /// app, so it is reported as unknown rather than "not installed".
     public func isInstalled(appID: String, deviceID: String) async -> Bool? {
         do {
             _ = try await execute("xcrun simctl get_app_container \(shellQuoted(deviceID)) \(shellQuoted(appID))")
             return true
-        } catch {
+        } catch GrantivaError.commandFailed(let message, let status)
+            where status == 2 || message.contains("No such file or directory") {
             return false
+        } catch {
+            return nil
         }
     }
 

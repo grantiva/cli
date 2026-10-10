@@ -164,6 +164,11 @@ final class IOSPlatformTests: XCTestCase {
         let missing = IOSPlatform(execute: { _ in throw GrantivaError.commandFailed("No such file or directory", 2) })
         let isMissing = await missing.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
         XCTAssertEqual(isMissing, false)
+        let shutDown = IOSPlatform(execute: { _ in
+            throw GrantivaError.commandFailed("Unable to lookup in current state: Shutdown", 149)
+        })
+        let isUnknown = await shutDown.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+        XCTAssertNil(isUnknown, "an unrelated simctl failure must not read as not installed")
     }
 }
 

@@ -111,8 +111,21 @@ extension BaselineStore {
                 return Array(Set(names)).sorted()
             },
             delete: { screenName in
-                let path = "\(dir)/\(ScreenArtifact.existingFileName(for: screenName, in: dir))"
-                try FileManager.default.removeItem(atPath: path)
+                // Both the current and the legacy name, so no stale copy is
+                // left to be found by the load fallback.
+                let current = ScreenArtifact.fileName(for: screenName)
+                let legacy = ScreenArtifact.legacyFileName(for: screenName)
+                var removed = false
+                var firstError: Error?
+                for name in Set([current, legacy]) {
+                    do {
+                        try FileManager.default.removeItem(atPath: "\(dir)/\(name)")
+                        removed = true
+                    } catch {
+                        firstError = firstError ?? error
+                    }
+                }
+                if !removed, let firstError { throw firstError }
             },
             baselineDirectory: { dir }
         )
