@@ -264,6 +264,33 @@ public struct SimulatorManager: Sendable, Decodable {
             .max { $0.name.count < $1.name.count }
     }
 
+    /// The newest iPhone device type an installed iOS runtime can run, for
+    /// suggestions such as doctor's fix line and `init`'s default; nil when
+    /// simctl is unavailable or no iOS runtime is installed.
+    public func newestIPhone() async -> String? {
+        guard let output = try? await shell("xcrun simctl list devicetypes runtimes --json") else { return nil }
+        return Self.newestIPhone(catalogJSON: Data(output.utf8))
+    }
+
+    /// The iPhone type with the highest minimum runtime that the newest
+    /// available iOS runtime satisfies; ties go to simctl's order, which lists
+    /// the newest models first.
+    static func newestIPhone(catalogJSON: Data) -> String? {
+        guard let catalog = try? JSONDecoder().decode(SimctlCatalog.self, from: catalogJSON) else { return nil }
+        let installed = catalog.runtimes
+            .filter { $0.isAvailable && ($0.platform == "iOS" || $0.identifier.contains(".iOS-")) }
+            .map(\.version)
+            .max(by: versionIsLess)
+        guard let installed else { return nil }
+        var best: (name: String, min: String)?
+        for type in catalog.devicetypes where type.productFamily == "iPhone" || type.name.hasPrefix("iPhone") {
+            let min = type.minRuntimeVersionString ?? "0"
+            guard !versionIsLess(installed, min) else { continue }
+            if best == nil || versionIsLess(best!.min, min) { best = (type.name, min) }
+        }
+        return best?.name
+    }
+
     private func simulatorCatalog() async throws -> SimctlCatalog {
         let data = try await shell("xcrun simctl list devicetypes runtimes --json").data(using: .utf8) ?? Data()
         return try JSONDecoder().decode(SimctlCatalog.self, from: data)
@@ -301,9 +328,14 @@ private func versionIsLess(_ lhs: String, _ rhs: String) -> Bool {
 }
 
 private struct SimctlCatalog: Decodable {
-    struct DeviceType: Decodable { let name: String; let identifier: String }
+    struct DeviceType: Decodable {
+        let name: String; let identifier: String
+        var minRuntimeVersionString: String? = nil
+        var productFamily: String? = nil
+    }
     struct Runtime: Decodable {
         let name: String; let identifier: String; let version: String; let isAvailable: Bool
+        var platform: String? = nil
         var shortName: String { identifier.replacingOccurrences(of: "com.apple.CoreSimulator.SimRuntime.", with: "") }
     }
     let devicetypes: [DeviceType]

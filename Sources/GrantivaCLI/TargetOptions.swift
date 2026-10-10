@@ -53,11 +53,7 @@ struct TargetOptions: ParsableArguments {
         ]
         let wrong = platform == .ios ? androidFlags : iosFlags
         if let offending = wrong.first(where: { $0.1 })?.0 {
-            let owner = platform == .ios ? "an Android" : "an iOS"
-            throw GrantivaError.invalidArgument(
-                "\(offending) is \(owner) option, but this is \(platform == .ios ? "an iOS" : "an Android") project "
-                    + "(resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory)."
-            )
+            throw Self.otherPlatformFlagError(offending, platform: platform)
         }
         if device != nil, emulator != nil {
             throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
@@ -65,6 +61,14 @@ struct TargetOptions: ParsableArguments {
         if let device {
             _ = try DeviceID.validate(device, flag: "--device")
         }
+    }
+
+    static func otherPlatformFlagError(_ flag: String, platform: Platform) -> GrantivaError {
+        let owner = platform == .ios ? "an Android" : "an iOS"
+        return GrantivaError.invalidArgument(
+            "\(flag) is \(owner) option, but this is \(platform == .ios ? "an iOS" : "an Android") project "
+                + "(resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory)."
+        )
     }
 
     func resolve(platform: Platform, config: GrantivaConfig?, skipBuild: Bool, appID: String?) async throws -> ResolvedProject {

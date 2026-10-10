@@ -81,4 +81,28 @@ final class SimulatorManagerTests: XCTestCase {
     func testInferenceFailsWhenTheNameNamesNoDevice() {
         XCTAssertNil(SimulatorManager.inferDeviceType(fromName: "APP-652 device", in: catalog))
     }
+
+    // MARK: - newest installed iPhone (doctor and init suggest it instead of "iPhone 16")
+
+    func testNewestIPhoneSkipsTypesNewerThanTheInstalledRuntimes() throws {
+        let json = #"""
+        {"devicetypes":[
+          {"name":"iPhone 18 Pro","identifier":"t.18p","minRuntimeVersionString":"27.0.0","productFamily":"iPhone"},
+          {"name":"iPad Pro","identifier":"t.ipad","minRuntimeVersionString":"26.0.0","productFamily":"iPad"},
+          {"name":"iPhone 17 Pro","identifier":"t.17p","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"},
+          {"name":"iPhone 17e","identifier":"t.17e","minRuntimeVersionString":"26.3.0","productFamily":"iPhone"},
+          {"name":"iPhone 16","identifier":"t.16","minRuntimeVersionString":"18.0.0","productFamily":"iPhone"}
+        ],"runtimes":[
+          {"name":"iOS 26.2","identifier":"com.apple.CoreSimulator.SimRuntime.iOS-26-2","version":"26.2","isAvailable":true,"platform":"iOS"},
+          {"name":"iOS 27.0","identifier":"com.apple.CoreSimulator.SimRuntime.iOS-27-0","version":"27.0","isAvailable":false,"platform":"iOS"}
+        ]}
+        """#
+        XCTAssertEqual(SimulatorManager.newestIPhone(catalogJSON: Data(json.utf8)), "iPhone 17 Pro")
+    }
+
+    func testNewestIPhoneIsNilWithoutAnIOSRuntime() {
+        let json = #"{"devicetypes":[{"name":"iPhone 17","identifier":"t","minRuntimeVersionString":"26.0.0","productFamily":"iPhone"}],"runtimes":[]}"#
+        XCTAssertNil(SimulatorManager.newestIPhone(catalogJSON: Data(json.utf8)))
+        XCTAssertNil(SimulatorManager.newestIPhone(catalogJSON: Data("not json".utf8)))
+    }
 }

@@ -92,12 +92,18 @@ public struct DoctorRunner: Sendable {
                 message: "\(device.name) — \(device.runtime)", fix: nil
             )
         } catch {
-            return DoctorCheck(
-                name: "Booted Simulator", status: .warning,
-                message: "No simulator booted",
-                fix: "Run: xcrun simctl boot \"iPhone 16\""
-            )
+            return Self.noBootedSimulatorCheck(newestIPhone: await SimulatorManager.live.newestIPhone())
         }
+    }
+
+    /// Names an iPhone type this host has, not a hardcoded model that newer
+    /// Xcodes no longer ship.
+    static func noBootedSimulatorCheck(newestIPhone: String?) -> DoctorCheck {
+        DoctorCheck(
+            name: "Booted Simulator", status: .warning,
+            message: "No simulator booted",
+            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\""
+        )
     }
 
     func checkRunner(
@@ -131,12 +137,24 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkAndroidSDK(sdk: AndroidSDK?, required: Bool) -> DoctorCheck {
+    func checkAndroidSDK(
+        sdk: AndroidSDK?, required: Bool,
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> DoctorCheck {
         guard let sdk else {
             return DoctorCheck(
                 name: "Android SDK", status: required ? .error : .warning,
                 message: "Not found (ANDROID_HOME, ANDROID_SDK_ROOT, ~/Library/Android/sdk)",
                 fix: "Run: scripts/android-env.sh, or set ANDROID_HOME"
+            )
+        }
+        let stale = AndroidSDK.staleEnvironmentVariables(environment: environment)
+        if !stale.isEmpty {
+            let detail = stale.map { "\($0.name)=\($0.value)" }.joined(separator: " and ")
+            return DoctorCheck(
+                name: "Android SDK", status: .warning,
+                message: "\(sdk.root) (\(detail) \(stale.count == 1 ? "has" : "have") no platform-tools/adb; unset or fix \(stale.count == 1 ? "it" : "them"))",
+                fix: stale.map { "unset \($0.name) or export \($0.name)=\(sdk.root)" }.joined(separator: "; ")
             )
         }
         return DoctorCheck(name: "Android SDK", status: .ok, message: sdk.root, fix: nil)
@@ -181,7 +199,24 @@ public struct DoctorRunner: Sendable {
 
     func checkConfig(for platform: Platform, directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
         let name = platform.configFileName
-        if FileManager.default.fileExists(atPath: "\(directory)/\(name)") {
+        let path = "\(directory)/\(name)"
+        if FileManager.default.fileExists(atPath: path) {
+            // The same load `run` does, so a file `run` refuses is not "Found".
+            do {
+                _ = try GrantivaConfig.load(platform: platform, from: URL(fileURLWithPath: directory, isDirectory: true))
+            } catch {
+                var message = (error as? GrantivaError).flatMap { error -> String? in
+                    if case .invalidArgument(let message) = error { return message }
+                    return nil
+                } ?? error.localizedDescription
+                if message.hasPrefix("\(name) ") { message.removeFirst(name.count + 1) }
+                let firstLine = message.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? message
+                return DoctorCheck(
+                    name: name, status: .error, message: firstLine,
+                    fix: firstLine.hasPrefix("could not be parsed") ? "Fix the YAML in \(path)" : "Fix \(path)",
+                    section: .project
+                )
+            }
             return DoctorCheck(name: name, status: .ok, message: "Found", fix: nil, section: .project)
         }
         return DoctorCheck(
@@ -191,8 +226,24 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkGitRepository() -> DoctorCheck {
-        if FileManager.default.fileExists(atPath: ".git") {
+    /// Passes anywhere inside a work tree: walks up from `directory` for a
+    /// `.git` entry, a directory or (in worktrees and submodules) a file.
+    func checkGitRepository(directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
+        // Walk path strings, not URLs: on some Foundation versions
+        // `URL("/").deletingLastPathComponent()` is "/..", so a URL walk
+        // never reaches a fixed point and the check hangs outside a repo.
+        var path = URL(fileURLWithPath: directory, isDirectory: true).standardizedFileURL.path
+        var insideWorkTree = false
+        while true {
+            if FileManager.default.fileExists(atPath: (path as NSString).appendingPathComponent(".git")) {
+                insideWorkTree = true
+                break
+            }
+            let parent = (path as NSString).deletingLastPathComponent
+            if parent.isEmpty || parent == path || path == "/" { break }
+            path = parent
+        }
+        if insideWorkTree {
             return DoctorCheck(name: "Git Repository", status: .ok, message: "Detected", fix: nil, section: .project)
         }
         return DoctorCheck(

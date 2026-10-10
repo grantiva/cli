@@ -26,11 +26,11 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
     public var errorDescription: String? {
         switch self {
         case .simulatorNotRunning:
-            return "No simulator is running. Run: grantiva sim boot \"iPhone 16\""
+            return "No simulator is running. Run: grantiva simulator ensure --name \"<device>\""
         case .simulatorWindowNotFound:
             return "Simulator window not found. Is the Simulator app visible?"
         case .elementNotFound(let label):
-            return "Element not found: \"\(label)\". Run grantiva ui a11y to inspect the tree."
+            return "Element not found: \"\(label)\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree."
         case .buildFailed(let message):
             return "Build failed: \(message)"
         case .testFailed(let message):

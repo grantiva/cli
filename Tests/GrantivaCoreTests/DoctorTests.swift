@@ -159,9 +159,33 @@ final class DoctorTests: XCTestCase {
         XCTAssertTrue(missingRequired.fix?.contains("scripts/android-env.sh") == true)
         let missingOptional = runner.checkAndroidSDK(sdk: nil, required: false)
         XCTAssertEqual(missingOptional.status, .warning)
-        let present = runner.checkAndroidSDK(sdk: AndroidSDK(root: scratch.path), required: true)
+        let present = runner.checkAndroidSDK(sdk: AndroidSDK(root: scratch.path), required: true, environment: [:])
         XCTAssertEqual(present.status, .ok)
         XCTAssertEqual(present.message, scratch.path)
+    }
+
+    // Gradle and adb run from the same shell still use a stale ANDROID_HOME,
+    // so doctor must not hide that it skipped it.
+    func testAndroidSDKCheckWarnsAboutAStaleAndroidHome() throws {
+        let sdk = scratch.appendingPathComponent("Library/Android/sdk")
+        try FileManager.default.createDirectory(at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
+        try Data().write(to: sdk.appendingPathComponent("platform-tools/adb"))
+        let environment = ["ANDROID_HOME": "/nonexistent"]
+        let located = try XCTUnwrap(AndroidSDK.locate(environment: environment, home: scratch.path))
+
+        let check = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: environment)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.message, "\(sdk.path) (ANDROID_HOME=/nonexistent has no platform-tools/adb; unset or fix it)")
+
+        let sdkRoot = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_SDK_ROOT": "/stale"])
+        XCTAssertEqual(sdkRoot.status, .warning)
+        XCTAssertTrue(sdkRoot.message.contains("ANDROID_SDK_ROOT=/stale has no platform-tools/adb"), sdkRoot.message)
+        XCTAssertEqual(sdkRoot.fix, "unset ANDROID_SDK_ROOT or export ANDROID_SDK_ROOT=\(sdk.path)")
+        XCTAssertEqual(check.fix, "unset ANDROID_HOME or export ANDROID_HOME=\(sdk.path)")
+
+        let fine = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_HOME": sdk.path])
+        XCTAssertEqual(fine.status, .ok)
+        XCTAssertEqual(fine.message, sdk.path)
     }
 
     func testAVDCheckWarnsWhenNoneExist() async {
@@ -180,6 +204,61 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(android.name, "grantiva-android.yml")
         XCTAssertEqual(android.status, .warning)
         XCTAssertEqual(android.fix, "Run: grantiva init --platform android")
+    }
+
+    // A config that `run` refuses must not read as "Found" in doctor.
+    func testConfigCheckFlagsAFileThatDoesNotParse() throws {
+        try "application_id: com.kylebrowning.landmarks\nscreens:\n  - name: Home\n    path: launch\n  bad: : :\n"
+            .write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .error)
+        XCTAssertEqual(check.section, .project)
+        XCTAssertTrue(check.message.hasPrefix("could not be parsed: 5:3"), check.message)
+        XCTAssertFalse(check.message.contains("\n"), check.message)
+        XCTAssertTrue(check.fix?.contains(scratch.appendingPathComponent("grantiva-android.yml").path) == true, "\(check.fix ?? "nil")")
+    }
+
+    func testConfigCheckDeclaredPlatformMismatchIsNotCalledAYAMLError() throws {
+        try "platform: ios\n".write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .error)
+        XCTAssertTrue(check.message.contains("declares `platform: ios`"), check.message)
+        XCTAssertEqual(check.fix, "Fix \(scratch.appendingPathComponent("grantiva-android.yml").path)")
+    }
+
+    func testConfigCheckPassesAFileThatParses() throws {
+        try "module: app\n".write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "Found")
+    }
+
+    func testNoBootedSimulatorFixNamesAnInstalledDeviceType() {
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).fix, "Run: grantiva simulator ensure --name \"iPhone 17 Pro\"")
+    }
+
+    // A mono-repo's android/ subproject is inside the work tree; advising
+    // `git init` there would create a nested repository.
+    func testGitCheckPassesInASubdirectoryOfAWorkTree() throws {
+        let root = scratch.appendingPathComponent("root")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent(".git"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("android/app"), withIntermediateDirectories: true)
+        let check = DoctorRunner().checkGitRepository(directory: root.appendingPathComponent("android/app").path)
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "Detected")
+    }
+
+    func testGitCheckAcceptsAGitFileForWorktreesAndSubmodules() throws {
+        try "gitdir: /elsewhere\n".write(to: scratch.appendingPathComponent(".git"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(DoctorRunner().checkGitRepository(directory: scratch.path).status, .ok)
+    }
+
+    func testGitCheckWarnsWithNoAncestorGitEntry() {
+        // The temp directory lives outside any work tree.
+        let check = DoctorRunner().checkGitRepository(directory: scratch.path)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.fix, "Run: git init")
     }
 
     func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {

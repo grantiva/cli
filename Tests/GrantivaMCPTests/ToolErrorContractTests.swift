@@ -68,6 +68,15 @@ final class ToolErrorContractTests: XCTestCase {
         assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' array is required")
     }
 
+    /// A label that matches nothing is the model's mistake to correct, not a
+    /// transport failure: it must come back as an isError result.
+    func testTapByAMissingLabelReturnsToolError() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabel = { label in throw GrantivaError.elementNotFound(label) }
+        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("No Such Label QA")])
+        assertToolError(result, contains: "Element not found: \"No Such Label QA\". Run grantiva hierarchy")
+    }
+
     func testEmulatorEnsureAndDeleteMissingNameReturnToolErrors() async throws {
         let deps = EmulatorToolDependencies(
             listAVDs: { [] }, listDevices: { [] }, avdName: { _ in "" },

@@ -139,7 +139,15 @@ enum UITools {
 
     static func tap(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         if let label = arguments["label"]?.stringValue {
-            try await driver.tapByLabel(label)
+            do {
+                try await driver.tapByLabel(label)
+            } catch let error as GrantivaError {
+                guard case .elementNotFound = error else { throw error }
+                return CallTool.Result(
+                    content: [.text(text: "Error: \(error.localizedDescription)", annotations: nil, _meta: nil)],
+                    isError: true
+                )
+            }
             // Brief settle time for animations
             try await Task.sleep(nanoseconds: 500_000_000)
             let tree = try await fetchHierarchyJSON(driver: driver)
