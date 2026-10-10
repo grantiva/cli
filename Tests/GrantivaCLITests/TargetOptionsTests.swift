@@ -33,12 +33,12 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertThrowsError(try TargetOptions.parse(["--device", "not a serial"]).checkFlags(for: .android, derivedDataPath: nil))
     }
 
-    func testAndroidResolutionMergesFlagsOverConfigOverBinary() async throws {
+    func testAndroidResolutionMergesFlagsOverConfig() async throws {
         let config = GrantivaConfig(
             screens: [.init(name: "Home", path: .launch)], platform: .android,
             android: AndroidProject(module: "mobile", variant: "release", applicationId: "com.cfg", emulator: "Cfg_AVD", buildArgs: ["-Pa=1"])
         )
-        let fromConfig = try await TargetOptions.parse([]).resolve(platform: .android, config: config, skipBuild: false, appID: "com.bin")
+        let fromConfig = try await TargetOptions.parse([]).resolve(platform: .android, config: config, skipBuild: false, appID: nil)
         XCTAssertEqual(fromConfig.android?.module, "mobile")
         XCTAssertEqual(fromConfig.android?.variant, "release")
         XCTAssertEqual(fromConfig.bundleId, "com.cfg")
@@ -59,6 +59,53 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertEqual(bare.android?.variant, "debug")
         XCTAssertEqual(bare.bundleId, "com.bin")
         XCTAssertEqual(bare.simulator, "", "no emulator configured means auto-select")
+    }
+
+    /// A03: `--app-file app-paid-debug.apk` with `application_id` set to the
+    /// free package tested the free one. The APK's own ID wins over config.
+    func testAndroidResolutionPrefersTheAPKsApplicationIDOverConfig() async throws {
+        let config = GrantivaConfig(
+            flows: ["f.yaml"], platform: .android, android: AndroidProject(applicationId: "com.kylebrowning.landmarks")
+        )
+        let resolved = try TargetOptions.resolveAndroid(
+            moduleFlag: nil, variantFlag: nil, applicationIdFlag: nil, emulatorFlag: nil, deviceFlag: nil,
+            config: config, appID: "com.kylebrowning.landmarks.paid"
+        )
+        XCTAssertEqual(resolved.bundleId, "com.kylebrowning.landmarks.paid")
+        XCTAssertEqual(resolved.android?.applicationId, "com.kylebrowning.landmarks.paid")
+    }
+
+    func testAndroidAppIDRanksFlagThenAppThenConfigAndReportsDisagreement() {
+        let free = "com.kylebrowning.landmarks", paid = "com.kylebrowning.landmarks.paid"
+
+        let fromApp = TargetOptions.androidAppID(flag: nil, binary: paid, configured: free)
+        XCTAssertEqual(fromApp.id, paid)
+        let configWarning = try? XCTUnwrap(fromApp.warning)
+        XCTAssertTrue(configWarning?.contains("application_id \(free)") == true, "\(fromApp)")
+        XCTAssertTrue(configWarning?.contains("testing \(paid)") == true, "\(fromApp)")
+
+        let overridden = TargetOptions.androidAppID(flag: free, binary: paid, configured: nil)
+        XCTAssertEqual(overridden.id, free, "--application-id still overrides")
+        XCTAssertTrue(overridden.warning?.contains("--application-id \(free) differs") == true, "\(overridden)")
+        XCTAssertTrue(overridden.warning?.contains(paid) == true, "\(overridden)")
+
+        XCTAssertEqual(TargetOptions.androidAppID(flag: nil, binary: paid, configured: paid).warning, nil)
+        XCTAssertEqual(TargetOptions.androidAppID(flag: paid, binary: paid, configured: free).warning, nil)
+        XCTAssertEqual(TargetOptions.androidAppID(flag: nil, binary: nil, configured: free).id, free, "--no-build falls back to config")
+        XCTAssertNil(TargetOptions.androidAppID(flag: nil, binary: nil, configured: nil).id)
+    }
+
+    func testInstalledAppIDPrefersTheBuiltVariantsIDOnAndroidOnly() throws {
+        let config = GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "com.cfg"))
+        let resolved = ResolvedProject(bundleId: "com.cfg", android: AndroidProject(applicationId: "com.cfg"))
+        var warnings: [String] = []
+        XCTAssertEqual(
+            try TargetOptions.parse([]).installedAppID(platform: .android, config: config, resolved: resolved, binaryID: "com.built") { warnings.append($0) },
+            "com.built"
+        )
+        XCTAssertEqual(warnings.count, 1)
+        let ios = ResolvedProject(bundleId: "com.ios")
+        XCTAssertEqual(try TargetOptions.parse([]).installedAppID(platform: .ios, config: nil, resolved: ios, binaryID: "com.built") { _ in }, "com.ios")
     }
 
     func testInvalidApplicationIDIsRejected() async throws {

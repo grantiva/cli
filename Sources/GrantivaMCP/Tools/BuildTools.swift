@@ -185,7 +185,9 @@ enum BuildTools {
                 isError: true
             )
         }
-        guard let appID = resolved.bundleId ?? buildResult.applicationId else {
+        // Android tests the app the build produced, not application_id in the config.
+        let builtFirst = platform == .android ? buildResult.applicationId ?? resolved.bundleId : resolved.bundleId ?? buildResult.applicationId
+        guard let appID = builtFirst else {
             return toolError("no application_id in grantiva-android.yml and the build did not report one. Cannot launch app.")
         }
         if let productPath = buildResult.productPath {

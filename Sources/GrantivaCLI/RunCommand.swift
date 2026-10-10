@@ -252,7 +252,7 @@ struct RunCommand: AsyncParsableCommand {
             builtAppID = buildResult.applicationId
         }
 
-        guard let bid = resolved.bundleId ?? builtAppID else {
+        guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) else {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
         }
 

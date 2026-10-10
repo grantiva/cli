@@ -145,7 +145,7 @@ struct InstallCommand: AsyncParsableCommand {
             builtAppID = result.applicationId
         }
 
-        guard let bid = resolved.bundleId ?? builtAppID else {
+        guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) else {
             throw GrantivaError.invalidArgument(
                 platform == .ios
                     ? "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."

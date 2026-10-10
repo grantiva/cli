@@ -108,7 +108,7 @@ struct DiffCommand: AsyncParsableCommand {
                 }
 
                 // Install and launch
-                if let bid = resolved.bundleId ?? builtAppID {
+                if let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) {
                     if let productPath {
                         try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                     }
@@ -130,7 +130,7 @@ struct DiffCommand: AsyncParsableCommand {
                 )
             }
 
-            guard let bid = resolved.bundleId ?? builtAppID else {
+            guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { _ in }) else {
                 throw GrantivaError.invalidArgument(
                     platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
                 )
@@ -311,7 +311,7 @@ struct DiffCommand: AsyncParsableCommand {
                         builtAppID = buildResult.applicationId
                     }
 
-                    if let bid = resolved.bundleId ?? builtAppID {
+                    if let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) {
                         if let productPath {
                             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
                         }
@@ -320,7 +320,7 @@ struct DiffCommand: AsyncParsableCommand {
                     }
                 }
 
-                guard let bid = resolved.bundleId ?? builtAppID else {
+                guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { _ in }) else {
                     throw GrantivaError.invalidArgument(
                         platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
                     )

@@ -86,14 +86,15 @@ struct TargetOptions: ParsableArguments {
         }
     }
 
-    /// Flags over config over the binary's manifest. No Gradle parsing and no
-    /// detection cache: a missing module or variant is the default.
+    /// Flags over config; the application ID ranks the flag over the APK's own
+    /// ID over config. No Gradle parsing and no detection cache: a missing
+    /// module or variant is the default.
     static func resolveAndroid(
         moduleFlag: String?, variantFlag: String?, applicationIdFlag: String?,
         emulatorFlag: String?, deviceFlag: String?, config: GrantivaConfig?, appID: String?
     ) throws -> ResolvedProject {
         let configured = config?.android ?? AndroidProject()
-        let applicationId = applicationIdFlag ?? configured.applicationId ?? appID
+        let applicationId = androidAppID(flag: applicationIdFlag, binary: appID, configured: configured.applicationId).id
         if let applicationId, applicationId.wholeMatch(of: /[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+/) == nil {
             throw GrantivaError.invalidArgument(
                 "Application ID \"\(applicationId)\" is not a valid Android application ID (letters, digits, underscores, at least one dot)."
@@ -126,6 +127,35 @@ struct TargetOptions: ParsableArguments {
         case .android:
             return resolved.buildSettings
         }
+    }
+
+    /// The application ID a run installs and tests. The app's own ID (read
+    /// from the APK or the Gradle output metadata) wins over `application_id`
+    /// in the config, so the run tests the app it installed. `--application-id`
+    /// still overrides it; a disagreement either way is reported.
+    static func androidAppID(flag: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
+        if let flag {
+            guard let binary, binary != flag else { return (flag, nil) }
+            return (flag, "--application-id \(flag) differs from the app's own application ID \(binary); testing \(flag). Drop --application-id to test \(binary).")
+        }
+        if let binary {
+            guard let configured, configured != binary else { return (binary, nil) }
+            return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
+        }
+        return (configured, nil)
+    }
+
+    /// The ID of the app to install and test once the build (or `--app-file`)
+    /// is known. iOS keeps the resolved bundle ID first; Android applies
+    /// `androidAppID` and hands any disagreement to `warn`.
+    func installedAppID(
+        platform: Platform, config: GrantivaConfig?, resolved: ResolvedProject, binaryID: String?,
+        warn: (String) -> Void
+    ) -> String? {
+        guard platform == .android else { return resolved.bundleId ?? binaryID }
+        let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId)
+        if let warning { warn(warning) }
+        return id
     }
 
     static func appIDMessage(for platform: Platform) -> String {
