@@ -230,6 +230,78 @@ final class FlowEnvironmentTests: XCTestCase {
         XCTAssertEqual(FlowEnvironment.headerEnvironment("- launchApp\n- inputText: \"env: x\"\n"), [:])
     }
 
+    func testHeaderEnvSurvivesALeadingDocumentMarker() {
+        let flow = "---\nappId: x\nenv:\n  A: b\n---\n- launchApp\n"
+        XCTAssertEqual(FlowEnvironment.headerEnvironment(flow), ["A": "b"])
+    }
+
+    func testHeaderEnvNullBecomesEmptyString() {
+        let flow = "appId: x\nenv:\n  EMPTY:\n  TILDE: ~\n---\n- launchApp\n"
+        XCTAssertEqual(FlowEnvironment.headerEnvironment(flow), ["EMPTY": "", "TILDE": ""])
+    }
+
+    func testHeaderEnvDropsKeysThatAreNotValidLaunchKeys() {
+        let flow = "appId: x\nenv:\n  OK_1.x: a\n  \"BAD;rm\": b\n---\n- launchApp\n"
+        XCTAssertEqual(FlowEnvironment.headerEnvironment(flow), ["OK_1.x": "a"])
+    }
+
+    func testRejectsKeysOutsideTheLaunchKeyAlphabet() {
+        for argument in ["1ABC=x", "A;B=x", "A-B=x", "A'B=x", "A$B=x"] {
+            XCTAssertThrowsError(try FlowEnvironment.parse([argument]), argument) { error in
+                XCTAssertTrue(String(describing: error).contains("must start with a letter or `_`"), String(describing: error))
+            }
+        }
+        XCTAssertEqual(try FlowEnvironment.parse(["_A.b9=1"]), ["_A.b9": "1"])
+    }
+
+    func testAndroidMergesAStepsEnvironmentIntoItsArguments() throws {
+        let flow = """
+        appId: com.example.app
+        ---
+        - launchApp:
+            arguments:
+              KEEP: "args"
+            environment:
+              KEEP: "env"
+              SEED: "many"
+            clearState: true
+        - tapOn: "Start"
+        """
+        let result = FlowEnvironment.apply(to: flow, environment: ["NOTE": "n"], platform: .android)
+        let launch = try launchApp(in: result.yaml)
+        XCTAssertEqual(launch["arguments"] as? [String: String], ["KEEP": "args", "SEED": "many", "NOTE": "n"])
+        XCTAssertNil(launch["environment"])
+        XCTAssertEqual(launch["clearState"] as? Bool, true)
+    }
+
+    func testAndroidMergesEnvironmentThatPrecedesArguments() throws {
+        let flow = """
+        appId: com.example.app
+        ---
+        - launchApp:
+            environment:
+              SEED: "many"
+            arguments:
+              KEEP: "args"
+        """
+        let launch = try launchApp(in: FlowEnvironment.apply(to: flow, environment: [:], platform: .android).yaml)
+        XCTAssertEqual(launch["arguments"] as? [String: String], ["KEEP": "args", "SEED": "many"])
+        XCTAssertNil(launch["environment"])
+    }
+
+    func testOverrideMatchesQuotedExistingKeys() throws {
+        let flow = """
+        appId: com.example.app
+        ---
+        - launchApp:
+            environment:
+              "PORT": "1111"
+        """
+        let result = FlowEnvironment.inject(flow, environment: ["PORT": "2"])
+        XCTAssertEqual(result.yaml.components(separatedBy: "PORT").count - 1, 1, result.yaml)
+        XCTAssertEqual(try launchEnvironment(in: result.yaml), ["PORT": "2"])
+    }
+
     // MARK: - Generated flows
 
     func testGeneratedScreenFlowCarriesTheEnvironment() throws {

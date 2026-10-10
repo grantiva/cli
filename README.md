@@ -164,6 +164,16 @@ Each `takeScreenshot` becomes a named screen capture point. Commands between scr
 
 A flow header `env:` block defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
 
+### Environment variables
+
+| Variable | Effect |
+| --- | --- |
+| `GRANTIVA_API_KEY` | API key for the Grantiva dashboard and remote baselines. |
+| `GRANTIVA_PLATFORM` | `ios` or `android`, like `--platform`. |
+| `GRANTIVA_SESSION_ID` | Durable owner for simulator capacity slots (see below). |
+| `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
+| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`. A relative path is resolved against the current directory. |
+
 ## CI Integration
 
 Add to your GitHub Actions workflow:

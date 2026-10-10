@@ -87,13 +87,17 @@ extension RunnerManager {
     /// Shared runner state: `locks/` (simulator leases), the WDA build
     /// `cache/`, and one install per stamp under `versions/`.
     /// `GRANTIVA_RUNNER_HOME` overrides the default `~/.grantiva/runner`.
-    static let baseDir: String = {
-        if let override = ProcessInfo.processInfo.environment["GRANTIVA_RUNNER_HOME"], !override.isEmpty {
-            return override
+    static let baseDir: String = resolveBaseDir(environment: ProcessInfo.processInfo.environment)
+
+    /// `GRANTIVA_RUNNER_HOME` made absolute (a relative value would leave the
+    /// cache symlink dangling), else `~/.grantiva/runner`.
+    static func resolveBaseDir(environment: [String: String]) -> String {
+        if let override = environment["GRANTIVA_RUNNER_HOME"], !override.isEmpty {
+            return URL(fileURLWithPath: override).standardizedFileURL.path
         }
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         return "\(home)/.grantiva/runner"
-    }()
+    }
 
     /// This version's install: the runner binary, its `version` stamp and
     /// `drivers/`. Each stamp gets its own directory so two grantiva versions
@@ -137,6 +141,14 @@ extension RunnerManager {
                 versionFilePath: versionFilePath,
                 cacheDir: cacheDir,
                 version: installStamp,
+                lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
+                onInstalled: {
+                    pruneStaleInstalls(
+                        versionsDir: "\(baseDir)/versions",
+                        keeping: installStamp,
+                        isInUse: { runnerProcessExists(installDir: installDir(baseDir: baseDir, stamp: $0)) }
+                    )
+                },
                 extract: { try extractEmbedded(into: $0) }
             )
         },
@@ -153,7 +165,65 @@ extension RunnerManager {
     /// in `baseDir` is touched, and a failed extract leaves the previous
     /// install exactly as it was. When `cacheDir` lives outside `baseDir`, it
     /// is linked in as `cache` so the runner's WDA build cache is shared.
+    ///
+    /// With `lockPath`, the install runs under an exclusive `flock` on it and
+    /// re-checks the stamp once the lock is held, so concurrent first runs of
+    /// one stamp extract once instead of swapping entries under each other.
+    /// Every call touches `baseDir/.last-used`; `onInstalled` runs after a
+    /// fresh install.
     static func installIfNeeded(
+        baseDir: String,
+        binaryPath: String,
+        versionFilePath: String,
+        cacheDir: String,
+        version: String,
+        lockPath: String? = nil,
+        onInstalled: () -> Void = {},
+        extract: (String) throws -> Void
+    ) throws {
+        let fm = FileManager.default
+        func isInstalled() -> Bool {
+            fm.fileExists(atPath: binaryPath)
+                && fm.contents(atPath: versionFilePath)
+                    .flatMap { String(data: $0, encoding: .utf8) }?
+                    .trimmingCharacters(in: .whitespacesAndNewlines) == version
+        }
+        if isInstalled() {
+            try linkCache(cacheDir, into: baseDir)
+            touchLastUsed(baseDir)
+            return
+        }
+
+        var lockDescriptor: Int32 = -1
+        if let lockPath {
+            try fm.createDirectory(atPath: (lockPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
+            lockDescriptor = open(lockPath, O_RDWR | O_CREAT | O_CLOEXEC, 0o644)
+            guard lockDescriptor >= 0 else {
+                throw GrantivaError.commandFailed("Could not open the runner install lock \(lockPath)", errno)
+            }
+            flock(lockDescriptor, LOCK_EX)
+        }
+        defer {
+            if lockDescriptor >= 0 {
+                flock(lockDescriptor, LOCK_UN)
+                close(lockDescriptor)
+            }
+        }
+        if lockPath != nil, isInstalled() {
+            try linkCache(cacheDir, into: baseDir)
+            touchLastUsed(baseDir)
+            return
+        }
+
+        try installUnlocked(
+            baseDir: baseDir, binaryPath: binaryPath, versionFilePath: versionFilePath,
+            cacheDir: cacheDir, version: version, extract: extract
+        )
+        touchLastUsed(baseDir)
+        onInstalled()
+    }
+
+    private static func installUnlocked(
         baseDir: String,
         binaryPath: String,
         versionFilePath: String,
@@ -162,13 +232,6 @@ extension RunnerManager {
         extract: (String) throws -> Void
     ) throws {
         let fm = FileManager.default
-        if fm.fileExists(atPath: binaryPath),
-           let versionData = fm.contents(atPath: versionFilePath),
-           String(data: versionData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == version {
-            try linkCache(cacheDir, into: baseDir)
-            return
-        }
-
         try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
         let staging = "\(baseDir)/.staging-\(UUID().uuidString)"
         let backup = "\(baseDir)/.previous-\(UUID().uuidString)"
@@ -208,6 +271,56 @@ extension RunnerManager {
         try linkCache(cacheDir, into: baseDir)
         mergeMissing(from: "\(staging)/cache", into: cacheDir, depth: 1)
         try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
+    }
+
+    static let lastUsedFileName = ".last-used"
+
+    private static func touchLastUsed(_ installDir: String) {
+        let path = "\(installDir)/\(lastUsedFileName)"
+        let fm = FileManager.default
+        if fm.fileExists(atPath: path) {
+            try? fm.setAttributes([.modificationDate: Date()], ofItemAtPath: path)
+        } else {
+            fm.createFile(atPath: path, contents: Data())
+        }
+    }
+
+    /// Deletes installs under `versionsDir` other than `keeping` whose
+    /// `.last-used` (or, lacking one, `version`) is older than `maxAge` and
+    /// that no running process uses. Installs with neither file, and staging
+    /// or backup directories, are left alone. The legacy install at the
+    /// runner root is never touched.
+    static func pruneStaleInstalls(
+        versionsDir: String,
+        keeping current: String,
+        maxAge: TimeInterval = 30 * 24 * 60 * 60,
+        now: Date = Date(),
+        isInUse: (String) -> Bool
+    ) {
+        let fm = FileManager.default
+        guard let stamps = try? fm.contentsOfDirectory(atPath: versionsDir) else { return }
+        for stamp in stamps where stamp != current && !stamp.hasPrefix(".") {
+            let dir = "\(versionsDir)/\(stamp)"
+            let marker = ["\(dir)/\(lastUsedFileName)", "\(dir)/version"].first { fm.fileExists(atPath: $0) }
+            guard let marker,
+                  let modified = (try? fm.attributesOfItem(atPath: marker))?[.modificationDate] as? Date,
+                  now.timeIntervalSince(modified) > maxAge,
+                  !isInUse(stamp) else { continue }
+            try? fm.removeItem(atPath: dir)
+        }
+    }
+
+    /// Whether any process runs `<installDir>/grantiva-runner`. Errs on the
+    /// side of "in use" when pgrep cannot be run.
+    static func runnerProcessExists(installDir: String) -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+        process.arguments = ["-f", NSRegularExpression.escapedPattern(for: "\(installDir)/grantiva-runner")]
+        process.standardOutput = FileHandle.nullDevice
+        process.standardError = FileHandle.nullDevice
+        do { try process.run() } catch { return true }
+        process.waitUntilExit()
+        return process.terminationStatus != 1
     }
 
     /// Creates the shared `cacheDir` and, when it lives outside `baseDir`,

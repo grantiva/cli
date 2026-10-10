@@ -37,24 +37,30 @@ public enum FlowEnvironment {
         return inject(yaml, environment: environment, field: field)
     }
 
-    /// The flow header's `env:` mapping (the YAML document before `---`), with
-    /// scalar values as strings. Empty when the flow has no header or no `env:`.
+    /// The flow header's `env:` mapping (the config document before `---`,
+    /// split the way `MaestroFlowParser` splits it), with scalar values as
+    /// strings and null as "". Keys that are not valid launch keys (see
+    /// `isValidKey`) are left out. Empty when the flow has no header or no `env:`.
     public static func headerEnvironment(_ content: String) -> [String: String] {
-        let lines = content.components(separatedBy: "\n")
-        guard let separator = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "---" }) else {
-            return [:]
-        }
-        let header = lines[..<separator].joined(separator: "\n")
-        guard let mapping = (try? Yams.load(yaml: header)) as? [String: Any],
+        guard let header = MaestroFlowParser.splitDocuments(content).config,
+              let mapping = (try? Yams.load(yaml: header)) as? [String: Any],
               let env = mapping["env"] as? [String: Any] else { return [:] }
-        return env.compactMapValues { value in
+        return env.filter { isValidKey($0.key) }.compactMapValues { value in
             switch value {
+            case is NSNull: return ""
             case let string as String: return string
             case let bool as Bool: return bool ? "true" : "false"
             case is [Any], is [String: Any]: return nil
             default: return "\(value)"
             }
         }
+    }
+
+    /// Launch keys are `[A-Za-z_][A-Za-z0-9_.]*`. On Android the runner can
+    /// fall back to `am start` through a shell, interpolating the bare key, so
+    /// anything else is refused rather than passed through.
+    public static func isValidKey(_ key: String) -> Bool {
+        key.range(of: "^[A-Za-z_][A-Za-z0-9_.]*$", options: .regularExpression) != nil
     }
 
     /// Parses `KEY=VALUE` arguments. The value may be empty and may itself
@@ -77,6 +83,11 @@ public enum FlowEnvironment {
             guard key.rangeOfCharacter(from: .whitespacesAndNewlines) == nil else {
                 throw GrantivaError.invalidArgument(
                     "Invalid --env \"\(argument)\": the key must not contain whitespace."
+                )
+            }
+            guard isValidKey(key) else {
+                throw GrantivaError.invalidArgument(
+                    "Invalid --env \"\(argument)\": the key must start with a letter or `_` and contain only letters, digits, `_` and `.`."
                 )
             }
             environment[key] = value
@@ -156,7 +167,7 @@ public enum FlowEnvironment {
                             // the merged mapping has no duplicate keys.
                             let key = trimmed.split(separator: ":", maxSplits: 1)
                                 .first
-                                .map { String($0).trimmingCharacters(in: .whitespaces) }
+                                .map { String($0).trimmingCharacters(in: CharacterSet(charactersIn: " \"'")) }
                             if overrideExisting, let key, environment[key] != nil { continue }
                         } else {
                             existingEnvironmentIndent = nil
@@ -210,35 +221,75 @@ public enum FlowEnvironment {
         return keys
     }
 
-    /// Renames `from:` to `to:` in each block-mapping `launchApp` step that
-    /// does not already declare `to:`.
+    /// Renames `from:` to `to:` in each block-mapping `launchApp` step. When
+    /// the step already declares `to:` as well, the entries of a block-style
+    /// `from:` are moved into it instead (a key `to:` already has keeps its value).
     static func renameLaunchField(in content: String, from: String, to: String) -> String {
         var lines = content.components(separatedBy: "\n")
+        func indentOf(_ line: String) -> Int { line.prefix { $0 == " " }.count }
         var index = 0
         while index < lines.count {
             guard let step = LaunchAppStep(line: lines[index]), case .mapping = step.form else {
                 index += 1
                 continue
             }
+            let stepLine = index
             index += 1
             var blockIndent: Int?
             var fromLine: Int?
-            var hasTarget = false
+            var targetLine: Int?
             while index < lines.count {
                 let trimmed = lines[index].trimmingCharacters(in: .whitespaces)
                 if trimmed.isEmpty { index += 1; continue }
-                let indent = lines[index].prefix { $0 == " " }.count
+                let indent = indentOf(lines[index])
                 guard indent > step.indent else { break }
                 if blockIndent == nil { blockIndent = indent }
                 if indent == blockIndent {
                     if trimmed.hasPrefix("\(from):") { fromLine = index }
-                    if trimmed.hasPrefix("\(to):") { hasTarget = true }
+                    if trimmed.hasPrefix("\(to):") { targetLine = index }
                 }
                 index += 1
             }
-            if let fromLine, !hasTarget {
-                lines[fromLine] = lines[fromLine].replacingOccurrences(of: "\(from):", with: "\(to):", options: [], range: lines[fromLine].range(of: "\(from):"))
+            guard let fromLine, let blockIndent else { continue }
+            guard let targetLine else {
+                lines[fromLine] = lines[fromLine].replacingOccurrences(
+                    of: "\(from):", with: "\(to):", options: [], range: lines[fromLine].range(of: "\(from):")
+                )
+                continue
             }
+            // Both present: only block-style mappings can be merged.
+            guard lines[fromLine].trimmingCharacters(in: .whitespaces) == "\(from):",
+                  lines[targetLine].trimmingCharacters(in: .whitespaces) == "\(to):" else { continue }
+            var end = fromLine + 1
+            while end < lines.count {
+                let trimmed = lines[end].trimmingCharacters(in: .whitespaces)
+                if !trimmed.isEmpty, indentOf(lines[end]) <= blockIndent { break }
+                end += 1
+            }
+            let body = lines[(fromLine + 1)..<end].filter { !$0.trimmingCharacters(in: .whitespaces).isEmpty }
+            let sourceIndent = body.map(indentOf).min() ?? (blockIndent + 2)
+            let targetIndent = lines.indices.dropFirst(targetLine + 1)
+                .first { !lines[$0].trimmingCharacters(in: .whitespaces).isEmpty }
+                .map { indentOf(lines[$0]) }
+                .flatMap { $0 > blockIndent ? $0 : nil } ?? (blockIndent + 2)
+            let taken = Set(existingKeys(in: lines, after: targetLine + 1, deeperThan: blockIndent))
+            var moved: [String] = []
+            var skipping = false
+            for line in body {
+                let indent = indentOf(line)
+                if indent == sourceIndent {
+                    let key = line.trimmingCharacters(in: .whitespaces).split(separator: ":", maxSplits: 1).first
+                        .map { String($0).trimmingCharacters(in: CharacterSet(charactersIn: " \"'")) } ?? ""
+                    skipping = taken.contains(key)
+                }
+                if !skipping {
+                    moved.append(String(repeating: " ", count: targetIndent + indent - sourceIndent) + line.drop { $0 == " " })
+                }
+            }
+            lines.removeSubrange(fromLine..<end)
+            let insertAt = targetLine > fromLine ? targetLine - (end - fromLine) + 1 : targetLine + 1
+            lines.insert(contentsOf: moved, at: insertAt)
+            index = stepLine + 1
         }
         return lines.joined(separator: "\n")
     }

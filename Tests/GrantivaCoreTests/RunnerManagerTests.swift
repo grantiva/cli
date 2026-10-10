@@ -61,7 +61,7 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(try String(contentsOfFile: paths.version, encoding: .utf8), "v2")
         XCTAssertEqual(try String(contentsOfFile: "\(paths.base)/drivers/android/server.apk", encoding: .utf8), "new-apk")
         XCTAssertFalse(fm.fileExists(atPath: "\(paths.base)/drivers/android/old.apk"), "drivers/ is replaced, not merged")
-        let leftovers = try fm.contentsOfDirectory(atPath: paths.base).filter { $0.hasPrefix(".") }
+        let leftovers = try fm.contentsOfDirectory(atPath: paths.base).filter { $0.hasPrefix(".") && $0 != ".last-used" }
         XCTAssertEqual(leftovers, [], "staging and backup directories are cleaned up")
     }
 
@@ -137,6 +137,81 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/artifact", encoding: .utf8), "cached")
         XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/wda-builds/sim-a/build", encoding: .utf8), "mine")
         XCTAssertEqual(try String(contentsOfFile: "\(paths.cache)/wda-builds/sim-b/build", encoding: .utf8), "prebuilt")
+    }
+
+    func testRunnerHomeOverrideIsMadeAbsolute() {
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh/../runner"]), "\(cwd)/runner")
+        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/x/"]), "/tmp/x")
+        XCTAssertTrue(RunnerManager.resolveBaseDir(environment: [:]).hasSuffix("/.grantiva/runner"))
+    }
+
+    func testEveryCallTouchesLastUsed() throws {
+        let paths = try makePaths()
+        try seedInstall(paths, version: "v1", binary: "runner")
+        let marker = "\(paths.base)/.last-used"
+        try RunnerManager.installIfNeeded(paths: paths, version: "v1") { _ in XCTFail("no extract on the fast path") }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: marker))
+        let old = Date(timeIntervalSinceNow: -86_400)
+        try FileManager.default.setAttributes([.modificationDate: old], ofItemAtPath: marker)
+        try RunnerManager.installIfNeeded(paths: paths, version: "v1") { _ in }
+        let touched = try XCTUnwrap(FileManager.default.attributesOfItem(atPath: marker)[.modificationDate] as? Date)
+        XCTAssertGreaterThan(touched, old.addingTimeInterval(3600))
+    }
+
+    func testPruneDeletesOnlyOldUnusedSiblingInstalls() throws {
+        let versions = try makePaths().base + "/versions"
+        let fm = FileManager.default
+        let old = Date(timeIntervalSinceNow: -31 * 86_400)
+        func make(_ stamp: String, marker: String?, date: Date) throws {
+            let dir = "\(versions)/\(stamp)"
+            try fm.createDirectory(atPath: dir, withIntermediateDirectories: true)
+            if let marker {
+                fm.createFile(atPath: "\(dir)/\(marker)", contents: Data())
+                try fm.setAttributes([.modificationDate: date], ofItemAtPath: "\(dir)/\(marker)")
+            }
+        }
+        try make("old", marker: ".last-used", date: old)
+        try make("old-version-only", marker: "version", date: old)
+        try make("recent", marker: ".last-used", date: Date())
+        try make("old-in-use", marker: ".last-used", date: old)
+        try make("current", marker: ".last-used", date: old)
+        try make("no-marker", marker: nil, date: old)
+        try make(".staging-x", marker: "version", date: old)
+
+        RunnerManager.pruneStaleInstalls(versionsDir: versions, keeping: "current", isInUse: { $0 == "old-in-use" })
+
+        let remaining = Set(try fm.contentsOfDirectory(atPath: versions))
+        XCTAssertEqual(remaining, ["recent", "old-in-use", "current", "no-marker", ".staging-x"])
+    }
+
+    func testRunnerProcessCheckFindsNothingForAnUnusedInstall() {
+        XCTAssertFalse(RunnerManager.runnerProcessExists(installDir: "/nonexistent/versions/1.0+x"))
+    }
+
+    func testConcurrentInstallsOfOneStampExtractOnce() throws {
+        let paths = try makePaths()
+        let lock = "\(paths.base)/../locks/install-v1.lock"
+        let counter = NSLock()
+        nonisolated(unsafe) var extracts = 0
+        nonisolated(unsafe) var errors: [Error] = []
+        DispatchQueue.concurrentPerform(iterations: 4) { _ in
+            do {
+                try RunnerManager.installIfNeeded(
+                    baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version,
+                    cacheDir: paths.cache, version: "v1", lockPath: lock
+                ) { destination in
+                    counter.lock(); extracts += 1; counter.unlock()
+                    Thread.sleep(forTimeInterval: 0.2)
+                    FileManager.default.createFile(atPath: "\(destination)/grantiva-runner", contents: Data("r".utf8))
+                }
+            } catch {
+                counter.lock(); errors.append(error); counter.unlock()
+            }
+        }
+        XCTAssertEqual(errors.count, 0, "\(errors)")
+        XCTAssertEqual(extracts, 1)
+        XCTAssertEqual(try String(contentsOfFile: paths.version, encoding: .utf8), "v1")
     }
 
     private func seedInstall(_ paths: Paths, version: String, binary: String) throws {
