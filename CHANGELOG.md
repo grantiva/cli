@@ -43,6 +43,7 @@
 - `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
 - MCP `grantiva_vrt_capture`, `grantiva_vrt_compare`, and `grantiva_vrt_approve` run the Grantiva binary serving MCP by absolute path instead of whichever `grantiva` is first on PATH, which could be an older version that rejects `--platform`, or missing.
 - `diff capture --no-build` (and MCP `grantiva_vrt_capture`) honour `simulator:` in grantiva.yml (and `emulator:` on Android), then the live runner session's device, instead of attaching to the first booted simulator. **Breaking for scripts** that ran `diff capture --no-build` on iOS with several simulators booted and no `--simulator` or `simulator:`: they now get an error naming the booted simulators instead of silently capturing on the first one; pass `--simulator` or set `simulator:`.
+- `doctor` and `init` apply `run`'s platform validation: an invalid `GRANTIVA_PLATFORM` is an error, a directory with both an Xcode project and Gradle settings needs `--platform` (or `GRANTIVA_PLATFORM`), and `init` rejects `--scheme`/`--bundle-id` on Android and `--application-id` on iOS by name instead of writing a config that drops them. `init` now honours `GRANTIVA_PLATFORM`.
 
 ## 2.0.1 — 2026-10-07
 

@@ -61,4 +61,47 @@ final class InitAndroidTests: XCTestCase {
         try "".write(to: dir.appendingPathComponent("app/build.gradle.kts"), atomically: true, encoding: .utf8)
         XCTAssertEqual(InitCommand.detectModule(in: dir.path), "app")
     }
+
+    // MARK: - C12: init applies run's platform validation
+
+    private func assertInitFails(_ arguments: [String], environment: [String: String] = [:], mentioning expected: String, file: StaticString = #filePath, line: UInt = #line) async {
+        do {
+            try await InitCommand.parse(arguments).run(environment: environment)
+            XCTFail("expected init \(arguments) to fail", file: file, line: line)
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains(expected), "\(error.localizedDescription)", file: file, line: line)
+        }
+        for name in ["grantiva.yml", "grantiva-android.yml"] {
+            XCTAssertFalse(FileManager.default.fileExists(atPath: dir.appendingPathComponent(name).path), "\(name) was written", file: file, line: line)
+        }
+    }
+
+    func testSchemeWithTheAndroidPlatformIsRejectedByName() async {
+        try? "".write(to: dir.appendingPathComponent("settings.gradle"), atomically: true, encoding: .utf8)
+        await assertInitFails(["--platform", "android", "--scheme", "X"], mentioning: "--scheme is an iOS option, but this is an Android project")
+    }
+
+    func testBundleIdWithTheAndroidPlatformIsRejectedByName() async {
+        await assertInitFails(["--platform", "android", "--bundle-id", "a.b"], mentioning: "--bundle-id is an iOS option")
+    }
+
+    func testApplicationIdWithTheIOSPlatformIsRejectedByName() async {
+        try? FileManager.default.createDirectory(at: dir.appendingPathComponent("App.xcodeproj"), withIntermediateDirectories: true)
+        await assertInitFails(["--platform", "ios", "--application-id", "a.b"], mentioning: "--application-id is an Android option, but this is an iOS project")
+    }
+
+    func testAnInvalidEnvironmentPlatformIsAnError() async {
+        await assertInitFails([], environment: ["GRANTIVA_PLATFORM": "windows"], mentioning: "GRANTIVA_PLATFORM is \"windows\"; expected ios or android.")
+    }
+
+    func testTheEnvironmentPlatformSelectsAndroid() async throws {
+        try await InitCommand.parse([]).run(environment: ["GRANTIVA_PLATFORM": "android"])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: dir.appendingPathComponent("grantiva-android.yml").path))
+    }
+
+    func testBothProjectsWithoutAFlagMentionsTheEnvironmentVariable() async {
+        try? FileManager.default.createDirectory(at: dir.appendingPathComponent("App.xcodeproj"), withIntermediateDirectories: true)
+        try? "".write(to: dir.appendingPathComponent("settings.gradle"), atomically: true, encoding: .utf8)
+        await assertInitFails([], mentioning: "Pass --platform ios|android or set GRANTIVA_PLATFORM.")
+    }
 }

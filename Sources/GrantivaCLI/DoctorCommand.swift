@@ -12,7 +12,7 @@ struct DoctorCommand: AsyncParsableCommand {
     @OptionGroup var platformOptions: PlatformOptions
 
     func run() async throws {
-        let selection = Self.platformSelection(flag: platformOptions.platform)
+        let selection = try Self.platformSelection(flag: platformOptions.platform)
         let checks = await DoctorRunner().runAllChecks(platforms: selection.platforms, required: selection.required)
 
         if options.json {
@@ -30,21 +30,27 @@ struct DoctorCommand: AsyncParsableCommand {
     }
 
     /// Flag, then GRANTIVA_PLATFORM, then config files, then project files;
-    /// nothing found means both platforms, reported as advice.
+    /// nothing found means both platforms, reported as advice. An invalid
+    /// GRANTIVA_PLATFORM, or both project kinds with nothing to choose
+    /// between them, is the same error `run` gives.
     static func platformSelection(
         flag: Platform?,
         directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true),
         environment: [String: String] = ProcessInfo.processInfo.environment
-    ) -> (platforms: [Platform], required: Bool) {
+    ) throws -> (platforms: [Platform], required: Bool) {
         if let flag { return ([flag], true) }
         let resolver = PlatformResolver(directory: directory, environment: environment)
-        if let env = Platform(rawValue: (environment[PlatformResolver.environmentKey] ?? "").trimmingCharacters(in: .whitespaces).lowercased()) {
-            return ([env], true)
+        if !(environment[PlatformResolver.environmentKey] ?? "").isEmpty {
+            return ([try resolver.resolve(flag: nil)], true)
         }
         let configs = resolver.existingConfigFiles()
         if !configs.isEmpty { return (Platform.allCases.filter(configs.contains), true) }
         let detected = resolver.detectFromDirectory()
-        if !detected.isEmpty { return (Platform.allCases.filter(detected.contains), true) }
+        if detected.count > 1 {
+            // Throws "Found both an Xcode project and Gradle settings. ..."
+            return ([try resolver.resolve(flag: nil)], true)
+        }
+        if !detected.isEmpty { return (detected, true) }
         return (Platform.allCases, false)
     }
 }

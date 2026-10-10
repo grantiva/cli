@@ -21,13 +21,19 @@ struct InitCommand: AsyncParsableCommand {
     var applicationId: String?
 
     func run() async throws {
+        try await run(environment: ProcessInfo.processInfo.environment)
+    }
+
+    func run(environment: [String: String]) async throws {
         let fm = FileManager.default
         let cwd = fm.currentDirectoryPath
 
         let platform = try Self.platform(
             flag: platformOptions.platform,
+            environment: environment,
             detected: PlatformResolver(directory: URL(fileURLWithPath: cwd, isDirectory: true)).detectFromDirectory()
         )
+        try Self.checkFlags(for: platform, scheme: scheme, bundleId: bundleId, applicationId: applicationId)
         if platform == .android {
             let configPath = "\(cwd)/grantiva-android.yml"
             if fm.fileExists(atPath: configPath) {
@@ -78,20 +84,40 @@ struct InitCommand: AsyncParsableCommand {
 
     }
 
-    /// Which platform to initialize. An explicit flag wins; otherwise the
-    /// project files decide, and a directory with none of them stays iOS, as
-    /// `init` always was.
-    static func platform(flag: Platform?, detected: [Platform]) throws -> Platform {
+    /// Which platform to initialize. An explicit flag wins, then
+    /// GRANTIVA_PLATFORM (an invalid value is an error, as for `run`);
+    /// otherwise the project files decide, and a directory with none of them
+    /// stays iOS, as `init` always was.
+    static func platform(flag: Platform?, environment: [String: String] = [:], detected: [Platform]) throws -> Platform {
         if let flag { return flag }
+        if let raw = environment[PlatformResolver.environmentKey], !raw.isEmpty {
+            guard let platform = Platform(rawValue: raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()) else {
+                throw GrantivaError.invalidArgument(
+                    "\(PlatformResolver.environmentKey) is \"\(raw)\"; expected ios or android."
+                )
+            }
+            return platform
+        }
         switch detected.count {
         case 2:
             throw GrantivaError.invalidArgument(
-                "Found both an Xcode project and Gradle settings. Pass --platform ios|android."
+                "Found both an Xcode project and Gradle settings. Pass --platform ios|android or set \(PlatformResolver.environmentKey)."
             )
         case 1:
             return detected[0]
         default:
             return .ios
+        }
+    }
+
+    /// Rejects a flag from the other platform by name, as `run` does,
+    /// instead of writing a config file that silently drops it.
+    static func checkFlags(for platform: Platform, scheme: String?, bundleId: String?, applicationId: String?) throws {
+        let wrong: [(String, Bool)] = platform == .ios
+            ? [("--application-id", applicationId != nil)]
+            : [("--scheme", scheme != nil), ("--bundle-id", bundleId != nil)]
+        if let offending = wrong.first(where: { $0.1 })?.0 {
+            throw TargetOptions.otherPlatformFlagError(offending, platform: platform)
         }
     }
 
