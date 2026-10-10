@@ -67,6 +67,7 @@ struct DiffCommand: AsyncParsableCommand {
 
             var booted: BootedDevice
             var builtAppID: String?
+            var appID: String?
 
             if !buildOptions.shouldSkipInstall {
                 // Full lifecycle: boot → build → install → launch → capture
@@ -108,9 +109,10 @@ struct DiffCommand: AsyncParsableCommand {
                 }
 
                 // Install and launch
-                if let bid = resolved.bundleId ?? builtAppID {
+                appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
+                if let bid = appID {
                     if let productPath {
-                        try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+                        try await device.install(appID: TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId), productPath: productPath, deviceID: booted.udid)
                     }
                     try await device.launch(appID: bid, deviceID: booted.udid)
                     try await Task.sleep(for: .seconds(2))
@@ -128,9 +130,10 @@ struct DiffCommand: AsyncParsableCommand {
                     sessionUDID: { await DiffCommand.liveSessionUDID(for: platform) },
                     device: device
                 )
+                appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
             }
 
-            guard let bid = resolved.bundleId ?? builtAppID else {
+            guard let bid = appID else {
                 throw GrantivaError.invalidArgument(
                     platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
                 )
@@ -276,6 +279,7 @@ struct DiffCommand: AsyncParsableCommand {
 
                 let booted = try await device.bootDevice(named: resolved.simulator)
                 var builtAppID: String?
+                var appID: String?
 
                 if !buildOptions.shouldSkipInstall {
                     var productPath: String?
@@ -311,16 +315,20 @@ struct DiffCommand: AsyncParsableCommand {
                         builtAppID = buildResult.applicationId
                     }
 
-                    if let bid = resolved.bundleId ?? builtAppID {
+                    appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
+                    if let bid = appID {
                         if let productPath {
-                            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+                            try await device.install(appID: TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId), productPath: productPath, deviceID: booted.udid)
                         }
                         try await device.launch(appID: bid, deviceID: booted.udid)
                         try await Task.sleep(for: .seconds(2))
                     }
                 }
 
-                guard let bid = resolved.bundleId ?? builtAppID else {
+                if buildOptions.shouldSkipInstall {
+                    appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
+                }
+                guard let bid = appID else {
                     throw GrantivaError.invalidArgument(
                         platform == .ios ? "Bundle ID is required for screen capture" : TargetOptions.appIDMessage(for: .android)
                     )

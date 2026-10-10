@@ -64,7 +64,7 @@ final class IOSPlatformTests: XCTestCase {
             .success("Example\n"),
         ])
         let platform = IOSPlatform(execute: executor.execute)
-        let command = try await platform.logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: "debug")
+        let command = try await platform.logStream(deviceID: "ABC", appID: "com.example", filter: nil, level: .debug)
         XCTAssertEqual(command.executable, "/usr/bin/xcrun")
         XCTAssertEqual(command.arguments, [
             "simctl", "spawn", "ABC", "log", "stream", "--style", "compact",

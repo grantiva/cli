@@ -85,6 +85,7 @@ struct BuildOptions: ParsableArguments {
 }
 
 extension Platform: ExpressibleByArgument {}
+extension LogStreamLevel: ExpressibleByArgument {}
 
 /// Test seam a command can carry as a plain stored property. ArgumentParser
 /// requires every stored property of a command to be Decodable; an existential

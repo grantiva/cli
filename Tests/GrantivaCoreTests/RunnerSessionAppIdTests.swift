@@ -125,7 +125,7 @@ final class RunnerSessionAppIdTests: XCTestCase {
             func resolveBinary(_ path: String) async throws -> ResolvedBinary { fatalError() }
             func defaultDevice() async throws -> BootedDevice { fatalError() }
             func screenshot(deviceID: String, to path: String) async throws {}
-            func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand { fatalError() }
+            func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand { fatalError() }
             func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { ["MAESTRO_RUNNER_HOME": runnerHome] }
             func cleanupOrphans(deviceID: String) async {}
             func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment { fatalError() }

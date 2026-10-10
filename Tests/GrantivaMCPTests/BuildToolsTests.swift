@@ -48,6 +48,17 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertTrue(try textContent(of: result).contains("Application ID: com.fake.built"))
     }
 
+    func testRunOnAndroidWarnsWhenTheConfiguredApplicationIDDisagreesWithTheBuild() async throws {
+        let device = MCPFakeDevicePlatform(platform: .android)
+        let config = GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "com.fake.configured", emulator: "Pixel_8_API_35"))
+        let result = try await BuildTools.run(device: device, platform: .android, config: config, arguments: [:])
+        XCTAssertNil(result.isError)
+        XCTAssertTrue(device.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(device.calls)")
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Application ID: com.fake.built"), text)
+        XCTAssertTrue(text.contains("Warning: application_id com.fake.configured"), text)
+    }
+
     func testRunOnIOSWithoutABundleIDIsAToolError() async throws {
         let device = MCPFakeDevicePlatform(platform: .ios)
         let result = try await BuildTools.run(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:])

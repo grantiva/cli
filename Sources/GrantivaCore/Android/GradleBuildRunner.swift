@@ -61,7 +61,7 @@ public struct GradleBuildRunner: Sendable {
         } catch let error as GrantivaError {
             guard case .commandFailed(let message, _) = error else { throw error }
             let lines = message.components(separatedBy: "\n")
-            let errors = lines.filter { Self.isErrorLine($0) }
+            let errors = Self.errorLines(lines)
             return BuildResult(
                 success: false, duration: Date().timeIntervalSince(start),
                 warnings: lines.filter { Self.isWarningLine($0) },
@@ -86,6 +86,35 @@ public struct GradleBuildRunner: Sendable {
 
     static func isWarningLine(_ line: String) -> Bool {
         line.hasPrefix("w: ") || line.contains("warning:")
+    }
+
+    /// Compiler error lines and `FAILURE:`, each followed by the lines of
+    /// Gradle's `* What went wrong:` block (up to the next `* ` heading, such
+    /// as `* Try:`), which is where Gradle says why the build failed. An
+    /// unknown task (a mistyped `--variant` or `--module`) gets a hint.
+    static func errorLines(_ lines: [String]) -> [String] {
+        var errors: [String] = []
+        var inWhatWentWrong = false
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            if trimmed == "* What went wrong:" {
+                inWhatWentWrong = true
+                continue
+            }
+            if inWhatWentWrong {
+                if trimmed.hasPrefix("* ") || trimmed.hasPrefix("BUILD FAILED") {
+                    inWhatWentWrong = false
+                } else {
+                    if !trimmed.isEmpty, !errors.contains(trimmed) { errors.append(trimmed) }
+                    continue
+                }
+            }
+            if isErrorLine(line) { errors.append(line) }
+        }
+        if errors.contains(where: { $0.contains("Cannot locate tasks that match") || $0.contains("not found in root project") }) {
+            errors.append("Check --variant and --module (or variant and module in grantiva-android.yml); `./gradlew tasks --all` lists the assemble<Variant> tasks of each module.")
+        }
+        return errors
     }
 
     static func isErrorLine(_ line: String) -> Bool {

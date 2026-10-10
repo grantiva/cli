@@ -29,8 +29,8 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "logcat tag to keep when streaming logs (Android). Implies --logs.")
     var logsTag: String?
 
-    @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default` (warnings/errors/default).")
-    var logsLevel: String?
+    @Option(name: .long, help: "Log level for --logs: default, info, debug. Defaults to `default`. iOS passes it to `log stream --level`; on Android default and info keep logcat priority I and above, debug adds D.")
+    var logsLevel: LogStreamLevel?
 
     @Flag(name: .customLong("no-auto-accept-alerts"), help: "iOS: turn off WebDriverAgent's alert auto-accept, so alerts stay up until a flow step answers them. For apps whose own alerts (\"Discard changes?\") were being dismissed mid-flow. Permissions are still pre-granted on the simulator, but prompts simctl cannot grant (notifications, tracking, local network, Bluetooth) are no longer accepted for you.")
     var noAutoAcceptAlerts: Bool = false
@@ -307,13 +307,14 @@ struct RunCommand: AsyncParsableCommand {
             builtAppID = buildResult.applicationId
         }
 
-        guard let bid = resolved.bundleId ?? builtAppID else {
+        guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) else {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
         }
 
         if !buildOptions.shouldSkipInstall, let productPath {
-            log("Installing \(bid)...")
-            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+            let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
+            log("Installing \(installID)...")
+            try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
         }
         if wantsLogs {
             logStreamer = await startLogStream(appID: bid)

@@ -86,14 +86,15 @@ struct TargetOptions: ParsableArguments {
         }
     }
 
-    /// Flags over config over the binary's manifest. No Gradle parsing and no
-    /// detection cache: a missing module or variant is the default.
+    /// Flags over config; the application ID ranks the flag over the APK's own
+    /// ID over config. No Gradle parsing and no detection cache: a missing
+    /// module or variant is the default.
     static func resolveAndroid(
         moduleFlag: String?, variantFlag: String?, applicationIdFlag: String?,
         emulatorFlag: String?, deviceFlag: String?, config: GrantivaConfig?, appID: String?
     ) throws -> ResolvedProject {
         let configured = config?.android ?? AndroidProject()
-        let applicationId = applicationIdFlag ?? configured.applicationId ?? appID
+        let applicationId = androidAppID(flag: applicationIdFlag, binary: appID, configured: configured.applicationId).id
         if let applicationId, applicationId.wholeMatch(of: /[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z0-9_]+)+/) == nil {
             throw GrantivaError.invalidArgument(
                 "Application ID \"\(applicationId)\" is not a valid Android application ID (letters, digits, underscores, at least one dot)."
@@ -126,6 +127,31 @@ struct TargetOptions: ParsableArguments {
         case .android:
             return resolved.buildSettings
         }
+    }
+
+    /// See `AndroidProject.applicationID(override:binary:configured:)`.
+    static func androidAppID(flag: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
+        AndroidProject.applicationID(override: flag, binary: binary, configured: configured)
+    }
+
+    /// The ID of the app to install and test once the build (or `--app-file`)
+    /// is known. iOS keeps the resolved bundle ID first; Android applies
+    /// `androidAppID` and hands any disagreement to `warn`.
+    func installedAppID(
+        platform: Platform, config: GrantivaConfig?, resolved: ResolvedProject, binaryID: String?,
+        warn: (String) -> Void
+    ) -> String? {
+        guard platform == .android else { return resolved.bundleId ?? binaryID }
+        let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId)
+        if let warning { warn(warning) }
+        return id
+    }
+
+    /// The ID to install (and to uninstall on an incompatible update) under:
+    /// on Android the app's own ID, even when `--application-id` names
+    /// another package as the test target.
+    static func installAppID(platform: Platform, testID: String, binaryID: String?) -> String {
+        platform == .android ? binaryID ?? testID : testID
     }
 
     static func appIDMessage(for platform: Platform) -> String {

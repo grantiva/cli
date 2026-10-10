@@ -14,6 +14,12 @@ final class EmulatorManagerTests: XCTestCase {
         try? FileManager.default.removeItem(at: scratch)
     }
 
+    private final class FixedPIDSpawn: @unchecked Sendable {
+        let pid: Int32
+        init(pid: Int32) { self.pid = pid }
+        func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 { pid }
+    }
+
     private final class SpawnRecorder: @unchecked Sendable {
         var calls: [(String, [String])] = []
         func spawn(_ executable: String, _ arguments: [String]) throws -> Int32 {
@@ -21,7 +27,10 @@ final class EmulatorManagerTests: XCTestCase {
         }
     }
 
-    private func manager(_ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true, sdkRoot: String = "/sdk") -> EmulatorManager {
+    private func manager(
+        _ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true, sdkRoot: String = "/sdk",
+        boundPorts: Set<Int> = [], portOwners: [Int32]? = nil
+    ) -> EmulatorManager {
         EmulatorManager(
             sdk: AndroidSDK(root: sdkRoot),
             adb: ADB(path: "\(sdkRoot)/platform-tools/adb", execute: shell.execute),
@@ -32,9 +41,52 @@ final class EmulatorManagerTests: XCTestCase {
             bootTimeout: 1,
             pollInterval: 0.01,
             environment: [:],
-            killTimeout: 1
+            killTimeout: 1,
+            consolePortBound: { boundPorts.contains($0) },
+            consolePortOwners: { _ in portOwners }
         )
     }
+
+    /// Live children standing in for emulators Grantiva booted: each exits
+    /// when the scripted shell sees `emu kill` for its serial.
+    private final class EmulatorProcesses: @unchecked Sendable {
+        private var processes: [String: Process] = [:]
+        let shell: ScriptedShell
+        init(_ shell: ScriptedShell) { self.shell = shell }
+
+        func start(serial: String) throws -> Int32 {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+            process.arguments = ["30"]
+            try process.run()
+            processes[serial] = process
+            return process.processIdentifier
+        }
+
+        /// Kill every child when a command contains this, instead of on `emu kill`.
+        var killOn: String?
+
+        func execute(_ command: String) async throws -> String {
+            for (serial, process) in processes
+            where killOn.map(command.contains) ?? command.hasSuffix("'\(serial)' emu kill") {
+                process.terminate()
+                process.waitUntilExit()
+            }
+            return try await shell.execute(command)
+        }
+
+        deinit { processes.values.forEach { if $0.isRunning { $0.terminate() } } }
+    }
+
+    private func manager(_ emulators: EmulatorProcesses) -> EmulatorManager {
+        EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: emulators.execute),
+            execute: emulators.execute, spawn: SpawnRecorder().spawn, provenance: AndroidProvenance(directory: scratch.path),
+            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 2,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+        )
+    }
+
 
     /// A pid that no longer exists: a child that ran and was reaped.
     private func deadPID() throws -> Int32 {
@@ -50,6 +102,168 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(EmulatorManager.choosePort(used: ["emulator-5554", "emulator-5556"]), 5558)
         let all = stride(from: 5554, through: 5584, by: 2).map { "emulator-\($0)" }
         XCTAssertNil(EmulatorManager.choosePort(used: all))
+    }
+
+    /// C02: adb can briefly miss a running emulator; its console port is
+    /// still bound, so that port is not free.
+    func testChoosePortSkipsPortsWhoseConsoleIsBound() {
+        XCTAssertEqual(EmulatorManager.choosePort(used: [], isBound: { $0 == 5554 }), 5556)
+        XCTAssertEqual(EmulatorManager.choosePort(used: [], isBound: { $0 == 5557 }), 5554)
+        XCTAssertEqual(EmulatorManager.choosePort(used: [], isBound: { $0 == 5555 }), 5556, "the adb port counts too")
+    }
+
+    func testIsLocalPortBoundSeesAListeningSocket() {
+        let fd = socket(AF_INET, SOCK_STREAM, 0)
+        defer { close(fd) }
+        var address = sockaddr_in()
+        address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_port = 0
+        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+        var length = socklen_t(MemoryLayout<sockaddr_in>.size)
+        withUnsafeMutablePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                XCTAssertEqual(Darwin.bind(fd, $0, length), 0)
+                XCTAssertEqual(Darwin.listen(fd, 1), 0)
+                XCTAssertEqual(getsockname(fd, $0, &length), 0)
+            }
+        }
+        let port = Int(UInt16(bigEndian: address.sin_port))
+        XCTAssertTrue(EmulatorManager.isLocalPortBound(port))
+        close(fd)
+    }
+
+    /// C02: adb missed the user's emulator, Grantiva spawned a second copy on
+    /// the same port, and that copy died just as the user's emulator answered
+    /// `boot_completed=1` on the serial. The boot must fail and leave no record.
+    func testBootFailsAndLeavesNoRecordWhenTheSpawnedEmulatorDiesWhileTheSerialAnswers() async throws {
+        let shell = ScriptedShell([
+            .success("List of devices attached"),          // boot: adb devices (port choice) misses emulator-5554
+            .success("1"), .success("package:x"), .success(""), // the user's emulator answers the boot probes
+        ])
+        let emulators = EmulatorProcesses(shell)
+        let pid = try emulators.start(serial: "emulator-5554")
+        emulators.killOn = "sys.boot_completed"            // the duplicate dies during the first probe
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: emulators.execute),
+            execute: emulators.execute, spawn: FixedPIDSpawn(pid: pid).spawn, provenance: AndroidProvenance(directory: scratch.path),
+            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+        )
+        do {
+            _ = try await manager.boot(avd: "Pixel_8_API_35")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("exited"), "\(error)")
+        }
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).all(), [])
+    }
+
+    /// C02: the boot probes pass, the spawned pid is alive, but another
+    /// process owns the console port: not ours.
+    func testBootFailsAndLeavesNoRecordWhenAnotherProcessOwnsTheConsolePort() async throws {
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        child.arguments = ["30"]
+        try child.run()
+        defer { if child.isRunning { child.terminate() } }
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"),
+        ])
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute),
+            execute: shell.execute, spawn: FixedPIDSpawn(pid: child.processIdentifier).spawn,
+            provenance: AndroidProvenance(directory: scratch.path),
+            headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in [49817] }
+        )
+        do {
+            _ = try await manager.boot(avd: "Pixel_8_API_35")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("49817"), "\(error)")
+            XCTAssertTrue("\(error)".contains("not the one Grantiva started"), "\(error)")
+        }
+        child.waitUntilExit()
+        XCTAssertEqual(child.terminationStatus, SIGTERM, "the stray duplicate Grantiva spawned is stopped")
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).all(), [])
+    }
+
+    func testBootSucceedsWhenTheSpawnedPIDOwnsTheConsolePort() async throws {
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let device = try await manager(shell, portOwners: [getpid()]).boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(device.udid, "emulator-5554")
+        let records = try AndroidProvenance(directory: scratch.path).all()
+        XCTAssertEqual(records.map(\.pid), [getpid()])
+        XCTAssertNotNil(records.first?.processStartTime)
+        XCTAssertEqual(records.first?.processStartTime, EmulatorManager.processStartTime(getpid()), "the start time is recorded")
+    }
+
+    /// The console port is bound but lsof shows no owner (another user's
+    /// process): the boot cannot be confirmed as ours, so it fails closed.
+    /// Re-review: the spawned child is killed on the fail-closed path rather
+    /// than left running without a record.
+    func testWaitForBootKillsTheSpawnedChildWhenItFailsClosed() async throws {
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        child.arguments = ["30"]
+        try child.run()
+        defer { if child.isRunning { child.terminate() } }
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: child.processIdentifier))
+        let shell = ScriptedShell([.success("1"), .success("package:x")])
+        do {
+            try await manager(shell, boundPorts: [5554], portOwners: []).waitForBoot(serial: "emulator-5554", pid: child.processIdentifier)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("cannot be confirmed"), "\(error)")
+        }
+        child.waitUntilExit()
+        XCTAssertEqual(child.terminationReason, .uncaughtSignal)
+        XCTAssertEqual(child.terminationStatus, SIGTERM)
+        XCTAssertEqual(try ledger.all(), [])
+    }
+
+    func testListeningPIDsDistinguishesNoListenerFromLsofFailures() async {
+        func run(_ output: String) async -> [Int32]? {
+            await EmulatorManager.listeningPIDs(port: 5554, execute: { _ in output })
+        }
+        let found = await run("49817\n93625\nexit=0\n")
+        XCTAssertEqual(found, [49817, 93625])
+        let none = await run("exit=1\n")
+        XCTAssertEqual(none, [], "lsof ran and found no listener")
+        let missing = await run("exit=127\n")
+        XCTAssertNil(missing, "lsof missing is unknown, not 'no listener'")
+        let denied = await run("exit=1\nsomething\n")
+        XCTAssertNil(denied)
+        let threw = await EmulatorManager.listeningPIDs(port: 5554, execute: { _ in throw GrantivaError.commandFailed("x", 1) })
+        XCTAssertNil(threw)
+        let real = await EmulatorManager.listeningPIDs(port: 5554, execute: { command in
+            XCTAssertTrue(command.contains("-iTCP:5554 -sTCP:LISTEN -t"), command)
+            XCTAssertTrue(command.hasSuffix("; echo \"exit=$?\""), command)
+            return "exit=1"
+        })
+        XCTAssertEqual(real, [])
+    }
+
+    func testWaitForBootAcceptsAnUnreadableOwnerWhenThePIDIsAlive() async throws {
+        let shell = ScriptedShell([.success("1"), .success("package:x"), .success("")])
+        try await manager(shell, boundPorts: [5554], portOwners: nil).waitForBoot(serial: "emulator-5554", pid: getpid())
+    }
+
+    func testBootSkipsAPortWhoseConsoleIsBound() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let device = try await manager(shell, spawn: spawn, boundPorts: [5554, 5555]).boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(device.udid, "emulator-5556")
+        XCTAssertEqual(spawn.calls.first?.1.prefix(4), ["-avd", "Pixel_8_API_35", "-port", "5556"])
     }
 
     func testBootArgumentsMatchTheSpec() {
@@ -365,6 +579,84 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(try ledger.all().map(\.serial), ["emulator-5554"], "the dead, absent record is pruned")
     }
 
+    /// C02 / AND-F03: the emulator Grantiva booted died and the user started
+    /// the same AVD by hand on the same serial. The dead record is pruned.
+    func testSessionsPruneADeadPIDRecordWhoseSerialRunsTheSameAVD() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5554 device")])
+        shell.fallback = "Pixel_8_API_35\nOK"
+        let sessions = try await manager(shell).sessions()
+        XCTAssertEqual(sessions, [])
+        XCTAssertEqual(try ledger.all(), [])
+    }
+
+    /// Fix round 1: the recorded pid is alive (macOS reused it for an
+    /// unrelated process) but another process owns the serial's console port:
+    /// the user restarted the AVD there. Not ours.
+    func testALiveReusedPIDWhoseConsolePortAnotherProcessOwnsIsNotOurs() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let listed = "List of devices attached\nemulator-5554 device"
+
+        let sessions = try await manager(ScriptedShell([.success(listed)]), portOwners: [49817]).sessions()
+        XCTAssertEqual(sessions, [])
+        XCTAssertEqual(try ledger.all(), [], "sessions prunes it")
+
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let shell = ScriptedShell([.success(listed)])
+        do {
+            _ = try await manager(shell, portOwners: [49817]).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.all(), [])
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: getpid()))
+        let all = ScriptedShell([.success(listed)])
+        let outcomes = try await manager(all, portOwners: [49817]).teardownAll()
+        XCTAssertEqual(outcomes, [])
+        XCTAssertFalse(all.commands.contains { $0.hasSuffix("emu kill") }, "\(all.commands)")
+    }
+
+    /// Fix round 1: a reused pid is caught by its start time even when lsof
+    /// tells us nothing.
+    func testALivePIDWhoseStartTimeDisagreesWithTheRecordIsNotOurs() async throws {
+        let actual = try XCTUnwrap(EmulatorManager.processStartTime(getpid()))
+        let ledger = AndroidProvenance(directory: scratch.path)
+        let listed = "List of devices attached\nemulator-5554 device"
+        let reused = StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual - 3600)
+        XCTAssertFalse(EmulatorManager.isRecordedProcessAlive(reused))
+        XCTAssertTrue(EmulatorManager.isRecordedProcessAlive(
+            StartedEmulatorRecord(serial: "emulator-5554", avd: "P", pid: getpid(), processStartTime: actual)
+        ))
+
+        try ledger.register(reused)
+        let pruned = try await manager(ScriptedShell([.success(listed)])).sessions()
+        XCTAssertEqual(pruned, [])
+        XCTAssertEqual(try ledger.all(), [])
+
+        try ledger.register(reused)
+        let shell = ScriptedShell([.success(listed)])
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+    }
+
+    func testOldLedgerRecordsWithoutAStartTimeStillDecode() throws {
+        let json = #"[{"startedAt":813271244.3,"avd":"Pixel_8_API_35","serial":"emulator-5554","pid":19482}]"#
+        try json.write(to: scratch.appendingPathComponent("started.json"), atomically: true, encoding: .utf8)
+        let records = try AndroidProvenance(directory: scratch.path).all()
+        XCTAssertEqual(records.map(\.pid), [19482])
+        XCTAssertNil(records.first?.processStartTime)
+    }
+
     /// Review Focus 4.
     func testTeardownRefusesAForeignSerialWithoutForce() async {
         let shell = ScriptedShell()
@@ -401,16 +693,15 @@ final class EmulatorManagerTests: XCTestCase {
 
     func testTeardownKillsARecordedEmulatorAndRemovesTheRecord() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
         let shell = ScriptedShell([
-            .success("List of devices attached\nemulator-5554 device"),   // ownership: listed
-            .success("Pixel_8_API_35\nOK"),                               // ownership: emu avd name matches
             .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
             .success("List of devices attached\nemulator-5554 device"),
             .success(""),                                                 // emu kill
             .success("List of devices attached"),
         ])
-        let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
+        let emulators = EmulatorProcesses(shell)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try emulators.start(serial: "emulator-5554")))
+        let outcome = try await manager(emulators).teardown(serial: "emulator-5554", force: false)
         XCTAssertEqual(outcome, EmulatorTeardownOutcome(serial: "emulator-5554", avd: "Pixel_8_API_35", killed: true, recorded: true))
         XCTAssertEqual(try ledger.all(), [])
     }
@@ -436,8 +727,8 @@ final class EmulatorManagerTests: XCTestCase {
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Old", pid: try deadPID()))
         let shell = ScriptedShell([
             .success("List of devices attached\nemulator-5554 device"),
-            .success("Other\nOK"),
         ])
+        shell.fallback = "Other\nOK"
         do {
             _ = try await manager(shell).teardown(serial: "emulator-5554", force: false)
             XCTFail("expected an error")
@@ -449,20 +740,23 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertFalse(shell.commands.contains { $0.contains("force-stop") })
     }
 
-    func testTeardownKillsAReusedSerialWhoseAVDMatches() async throws {
+    /// C02 / AND-F03: dead pid, same AVD name, live serial. An AVD name does
+    /// not say who started the emulator, so it is not killed without --force.
+    func testTeardownRefusesADeadPIDRecordEvenWhenTheSerialRunsTheSameAVD() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Old", pid: try deadPID()))
-        let shell = ScriptedShell([
-            .success("List of devices attached\nemulator-5554 device"),
-            .success("Old\nOK"),
-            .success(""), .success(""), .success(""),
-            .success("List of devices attached\nemulator-5554 device"),
-            .success(""),
-            .success("List of devices attached"),
-        ])
-        let outcome = try await manager(shell).teardown(serial: "emulator-5554", force: false)
-        XCTAssertEqual(outcome, EmulatorTeardownOutcome(serial: "emulator-5554", avd: "Old", killed: true, recorded: true))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "qa-android-1", pid: try deadPID()))
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5556 device")])
+        shell.fallback = "qa-android-1\nOK"
+        do {
+            _ = try await manager(shell).teardown(serial: "emulator-5556", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("was not started by Grantiva"), "\(error)")
+            XCTAssertTrue("\(error)".contains("--force"), "\(error)")
+        }
         XCTAssertEqual(try ledger.all(), [])
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("emu kill") })
+        XCTAssertFalse(shell.commands.contains { $0.contains("force-stop") })
     }
 
     func testTeardownTimesOutWhenTheEmulatorKeepsRunning() async throws {
@@ -481,21 +775,20 @@ final class EmulatorManagerTests: XCTestCase {
 
     func testTeardownAllCoversEveryRecordedEmulator() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try deadPID()))
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try deadPID()))
         let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
         let second = "List of devices attached\nemulator-5556 device"
         let shell = ScriptedShell([
             // emulator-5554
-            .success(both), .success("A\nOK"),                           // ownership
             .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
             .success(both), .success(""), .success(second),              // listed, emu kill, gone
             // emulator-5556
-            .success(second), .success("B\nOK"),
             .success(""), .success(""), .success(""),
             .success(second), .success(""), .success("List of devices attached"),
         ])
-        let outcomes = try await manager(shell).teardownAll()
+        let emulators = EmulatorProcesses(shell)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try emulators.start(serial: "emulator-5554")))
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try emulators.start(serial: "emulator-5556")))
+        let outcomes = try await manager(emulators).teardownAll()
         XCTAssertEqual(outcomes.map(\.serial), ["emulator-5554", "emulator-5556"])
         XCTAssertEqual(outcomes.map(\.killed), [true, true])
         XCTAssertEqual(shell.commands.filter { $0.hasSuffix("emu kill") }, [
@@ -505,24 +798,27 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(try ledger.all(), [])
     }
 
-    func testTeardownAllSkipsARecordWhoseSerialWasReusedByAForeignEmulator() async throws {
+    /// C02: the user's emulator-5554 carries a dead-pid record with its own
+    /// AVD name (the shared-host state). `teardown --all` leaves it running.
+    func testTeardownAllSkipsADeadPIDRecordWhoseSerialRunsTheSameAVD() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try deadPID()))
-        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try deadPID()))
-        let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "Pixel_8_API_35", pid: try deadPID()))
         let afterKill = "List of devices attached\nemulator-5554 device"
+        let both = "List of devices attached\nemulator-5554 device\nemulator-5556 device"
         let shell = ScriptedShell([
-            // emulator-5554: its serial now runs someone else's AVD; refused and dropped
-            .success(both), .success("Foreign\nOK"),
+            // emulator-5554: dead pid, serial listed; refused and dropped
+            .success(both),
             // emulator-5556: ours, torn down
-            .success(both), .success("B\nOK"),
             .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
             .success(both), .success(""), .success(afterKill),           // listed, emu kill, gone
         ])
-        let outcomes = try await manager(shell).teardownAll()
+        let emulators = EmulatorProcesses(shell)
+        try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try emulators.start(serial: "emulator-5556")))
+        let outcomes = try await manager(emulators).teardownAll()
         XCTAssertEqual(outcomes, [EmulatorTeardownOutcome(serial: "emulator-5556", avd: "B", killed: true, recorded: true)])
         XCTAssertEqual(try ledger.all(), [])
         XCTAssertEqual(shell.commands.filter { $0.hasSuffix("emu kill") }, ["'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill"])
+        XCTAssertFalse(shell.commands.contains { $0.contains("'emulator-5554'") }, "nothing is sent to the user's emulator")
     }
 
     func testDeleteRefusesWhenARunningEmulatorsNameCannotBeRead() async {

@@ -114,6 +114,73 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertGreaterThan(stream, install, "\(calls)")
     }
 
+    private func configureApplicationID(_ id: String) throws {
+        try """
+        module: app
+        emulator: Pixel_8_API_35
+        application_id: \(id)
+        flows:
+          - smoke.yaml
+        """.write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+    }
+
+    /// A03: a built variant (`--variant paidDebug`) is installed and tested
+    /// under the output metadata's applicationId, not `application_id`.
+    func testRunOnAndroidTestsTheBuiltVariantsApplicationIDOverConfig() async throws {
+        try configureApplicationID("com.fake.configured")
+        var command = try RunCommand.parse(["--variant", "paidDebug", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertFalse(fake.calls.contains { $0.contains("com.fake.configured") }, "\(fake.calls)")
+    }
+
+    /// A03: `--app-file` installs and tests the APK's own package.
+    func testRunOnAndroidTestsTheAppFilesApplicationIDOverConfig() async throws {
+        try configureApplicationID("com.fake.configured")
+        let apk = dir.appendingPathComponent("app-paid-debug.apk").path
+        try Data().write(to: URL(fileURLWithPath: apk))
+        var command = try RunCommand.parse(["--app-file", apk, "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.binary,\(apk))"), "\(fake.calls)")
+        XCTAssertFalse(fake.calls.contains { $0.contains("com.fake.configured") }, "\(fake.calls)")
+    }
+
+    func testBuildInstallOnAndroidUsesTheBuiltApplicationIDOverConfig() async throws {
+        try configureApplicationID("com.fake.configured")
+        var command = try InstallCommand.parse(["--variant", "paidDebug"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
+    }
+
+    /// Review round 1: `--application-id` picks the test target, but the APK
+    /// is installed under its own ID (the INCOMPATIBLE retry uninstalls that).
+    func testBuildInstallWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+        var command = try InstallCommand.parse(["--variant", "paidDebug", "--application-id", "com.fake.flag"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.flag)"), "\(fake.calls)")
+    }
+
+    func testRunWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+        var command = try RunCommand.parse(["--application-id", "com.fake.flag", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+    }
+
     func testAppFileAPKGoesThroughThePlatformResolver() async throws {
         let apk = dir.appendingPathComponent("prebuilt.apk").path
         try Data().write(to: URL(fileURLWithPath: apk))

@@ -20,7 +20,7 @@ means Android, an `.xcodeproj` or `.xcworkspace` means iOS. With both, pass `--p
     platform: android
     module: app                      # Gradle module; default app
     variant: debug                   # assembleDebug; freeDebug -> assembleFreeDebug
-    application_id: com.example.app  # optional; read from the build output when absent
+    application_id: com.example.app  # optional; used only with --no-build (see below)
     emulator: Pixel_8_API_35         # AVD to use or boot
     system_image: "system-images;android-35;google_apis;arm64-v8a"
     build_args: ["-PsomeFlag=1"]
@@ -30,11 +30,19 @@ means Android, an `.xcodeproj` or `.xcworkspace` means iOS. With both, pass `--p
 
 ## Devices
 
-Only running emulators are considered by default. `emulator:` names the AVD; it is used if
-running, booted otherwise. With no `emulator:`, a single running emulator is used, else a
-single existing AVD is booted. `--device <serial>` targets any attached device, including
+`emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
+With no `emulator:`, the order is: the one running emulator, else the one emulator still
+booting (waited on), else the only existing AVD (booted); otherwise the command fails and
+lists the AVDs. `--device <serial>` targets any attached device, including
 a physical one. On a physical device the demo-mode and animation settings are skipped
 unless `--allow-device-settings` is given. `--headless` boots without a window.
+
+The application ID a run installs and tests is the app's own: the Gradle output metadata's
+`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+`application_id` in the config is used only when there is no app to read it from
+(`--no-build`); when it disagrees with the app, the app wins and a warning names both.
+`--application-id` overrides the test target, with a warning when it disagrees with the app;
+the APK is still installed under its own ID.
 
 Flags: `--module`, `--variant`, `--application-id`, `--emulator`, `--device`,
 `--allow-device-settings`, `--headless`, `--logs-tag`. iOS flags such as `--scheme` are
@@ -65,8 +73,17 @@ a run is interrupted, the next run restores them first.
 
 ## Logs
 
-`grantiva run --logs` streams `logcat` filtered to the app's uid. `--logs-tag <tag>` keeps
-one tag. `--logs-predicate` is iOS-only.
+`grantiva run --logs` streams `logcat` filtered to the app's uid, starting at the device's
+current time (the logcat buffer is not cleared). `--logs-tag <tag>` keeps one tag.
+`--logs-level` maps to a minimum logcat priority, for the tag or for every tag:
+
+| `--logs-level`      | logcat filter |
+|---------------------|---------------|
+| (none) or `default` | `*:I`         |
+| `info`              | `*:I`         |
+| `debug`             | `*:D`         |
+
+Any other value is rejected. `--logs-predicate` is iOS-only.
 
 ## CI
 
@@ -140,5 +157,11 @@ one.
 `ensure` installs the system image with `sdkmanager` when it is missing and creates the AVD
 with `avdmanager create avd -d pixel_8`. The system image comes from `--system-image`, then
 `system_image` in the config, then `system-images;android-35;google_apis;arm64-v8a`.
-`teardown` checks a recorded emulator whose pid is gone by its AVD name before killing
-anything, and `delete` refuses while a running emulator's AVD name cannot be read.
+An emulator is recorded only while the process Grantiva spawned is alive and owns the
+serial's console port: a boot whose process exits, even if another emulator answers on that
+serial, leaves no record, and a port whose console is already bound is skipped. The record
+keeps the process's start time, so a pid the system reused does not count. A record whose
+process is gone, whose pid now names another process, or whose console port another process
+owns is dropped by `sessions` and `teardown`; `teardown` then refuses the
+serial without `--force`, whatever AVD it runs, so `teardown --all` never kills an emulator
+someone else started. `delete` refuses while a running emulator's AVD name cannot be read.
