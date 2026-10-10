@@ -21,7 +21,7 @@ public struct IOSPlatform: DevicePlatform {
     }
 
     public func bootDevice(named nameOrID: String) async throws -> BootedDevice {
-        let device = try await simulators.boot(nameOrUDID: nameOrID)
+        let device = try await simulators.boot(nameOrUDID: nameOrID, ephemeral: true)
         return BootedDevice(udid: device.udid, name: device.name)
     }
 

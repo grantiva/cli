@@ -426,16 +426,17 @@ grantiva simulator teardown --udid "$UDID" --force
 This kills whatever is holding that simulator (including a `simctl diagnose` the
 dying runner starts), releases the lease, removes the killed runner's keep-alive
 session files, and clears any stale capacity record: a pending reservation, or a
-record whose owner process is dead and whose session holds no other simulator. A
-record whose session is still active on another simulator is kept, so
-`teardown --session-id` still finds the device; `--json` lists it under
-`capacityRecordsKept` with the reason. `--session-id` and `--udid` are mutually exclusive.
+record with no session ID whose owner process is dead. A named session's record
+is kept while the simulator is booted, so `teardown --session-id` still finds the
+device; `--json` lists it under `capacityRecordsKept` with the reason. `--session-id` and `--udid` are mutually exclusive.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
 toward the limit; manually booted Xcode simulators are never shut down by
-Grantiva teardown. A run against an already-booted simulator takes no slot, and a
-run without `GRANTIVA_SESSION_ID` holds its slot only while its process is alive.
+Grantiva teardown. A run against an already-booted simulator takes no slot, and
+teardown shuts down only simulators Grantiva itself booted. Without
+`GRANTIVA_SESSION_ID`, a slot taken by a run lasts only while that run's process
+is alive; one taken by `simulator ensure` lasts until the simulator is shut down.
 
 ## Local Workflow
 

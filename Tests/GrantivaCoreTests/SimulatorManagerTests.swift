@@ -156,6 +156,72 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertTrue(simctl.commands.contains("xcrun simctl shutdown 'MINE-1'"))
     }
 
+    private func seed(_ records: [ManagedSimulatorSession], into capacity: SimulatorCapacity) throws {
+        try FileManager.default.createDirectory(atPath: capacity.directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode(records).write(to: URL(fileURLWithPath: "\(capacity.directory)/sessions.json"))
+    }
+
+    // A record 2.0.1 wrote for a hand-booted device has no bootedByGrantiva
+    // flag. Teardown releases it but must not shut the device down, nor
+    // delete it even when Grantiva created it.
+    func testTeardownNeverShutsDownADeviceFromALegacyRecord() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Legacy", udid: "LEGACY-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, provenance) = makeManager(simctl)
+        try provenance.register(udid: "LEGACY-1", name: "Legacy")
+        try seed([ManagedSimulatorSession(
+            udid: "LEGACY-1", name: "Legacy", sessionId: "qa-ios-manual",
+            ownerPID: 4242, acquiredAt: Date(), state: .active
+        )], into: capacity)
+
+        let outcomes = try await manager.teardown(sessionId: "qa-ios-manual")
+
+        XCTAssertEqual(outcomes.map(\.session.udid), ["LEGACY-1"])
+        XCTAssertEqual(outcomes.map(\.deleted), [false])
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+        XCTAssertEqual(simctl.device("LEGACY-1")?.state, "Booted")
+        let devices = try await manager.listDevices()
+        XCTAssertEqual(try capacity.sessions(devices: devices), [])
+    }
+
+    func testEnsureTakesADurableSlotAndARunTakesAnEphemeralOne() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "A", udid: "A-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+            .init(name: "B", udid: "B-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+
+        _ = try await manager.ensure(name: "A", boot: true)
+        _ = try await manager.boot(nameOrUDID: "B-1", ephemeral: true)
+
+        let a = try capacity.records(udid: "A-1").first
+        let b = try capacity.records(udid: "B-1").first
+        XCTAssertEqual(a?.ephemeral, false)
+        XCTAssertEqual(a?.bootedByGrantiva, true)
+        XCTAssertEqual(b?.ephemeral, true)
+        XCTAssertEqual(b?.bootedByGrantiva, true)
+    }
+
+    // The simctl-call refactor must not change a single command string.
+    func testBootAndGeometryIssueTheSameSimctlCommandsAsBefore() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "qa-x", udid: "QAX-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+
+        _ = try await manager.ensure(name: "qa-x", boot: true)
+
+        let issued = simctl.commands.filter { !$0.hasPrefix("xcrun simctl list") }
+        XCTAssertEqual(issued, [
+            "xcrun simctl boot QAX-1",
+            "xcrun simctl bootstatus QAX-1 -b",
+            "xcrun simctl getenv 'QAX-1' SIMULATOR_MAINSCREEN_WIDTH",
+            "xcrun simctl getenv 'QAX-1' SIMULATOR_MAINSCREEN_HEIGHT",
+            "xcrun simctl getenv 'QAX-1' SIMULATOR_MAINSCREEN_SCALE",
+        ])
+    }
+
     // MARK: - I10: ensure reuses by name before inferring
 
     func testBareEnsureReusesAModelLessNameWithItsOwnTypeAndRuntime() async throws {
@@ -248,6 +314,28 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertTrue(simctl.commands.contains("xcrun simctl delete '\(created)'"), "\(simctl.commands)")
         XCTAssertNil(simctl.device(created))
         XCTAssertFalse(try provenance.contains(udid: created))
+    }
+
+    // Another process holds a record for the device ensure just created (it
+    // reused it under its own lock turn): the failed ensure must back off.
+    func testFailedEnsureLeavesACreatedDeviceAloneWhenAnotherProcessHoldsIt() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, provenance) = makeManager(simctl)
+        let foreign = ManagedSimulatorSession(
+            udid: "CREATED-1", name: "qa-ios-2", sessionId: "someone-else",
+            ownerPID: 1, acquiredAt: Date(), state: .pending
+        )
+        try seed([foreign], into: capacity)
+
+        do {
+            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+            XCTFail("expected the boot to fail")
+        } catch {}
+
+        XCTAssertEqual(simctl.createdUDIDs, ["CREATED-1"])
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+        XCTAssertEqual(try capacity.records(udid: "CREATED-1"), [foreign])
+        XCTAssertTrue(try provenance.contains(udid: "CREATED-1"))
     }
 
     func testEnsureNeverDeletesAReusedDeviceWhenTheCapacityWaitTimesOut() async throws {

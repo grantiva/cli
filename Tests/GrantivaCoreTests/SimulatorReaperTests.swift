@@ -180,34 +180,51 @@ final class SimulatorReaperTests: XCTestCase {
         )
     }
 
-    func testForceTeardownKeepsTheRecordOfASessionStillActiveOnAnotherDevice() async throws {
+    // A named session outlives the CLI process that booted its device, so a
+    // forced reclaim never drops its record while the device is booted.
+    func testForceTeardownKeepsANamedSessionRecordWhateverItsOwnerPID() async throws {
         let directory = temporaryDirectory()
-        let other = "B0B0B0B0-1111-2222-3333-444455556666"
-        try writeRecords([record(udid, session: "qa-ios"), record(other, session: "qa-ios")], to: directory)
+        try writeRecords([record(udid, session: "qa-ios")], to: directory)
 
         let result = try await forceTeardown(directory: directory)
 
         XCTAssertEqual(result.capacityRecordsCleared, 0)
         XCTAssertEqual(result.capacityRecordsKept.map(\.sessionId), ["qa-ios"])
-        XCTAssertTrue(result.capacityRecordsKept[0].reason.contains(other), result.capacityRecordsKept[0].reason)
-        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid, other))
-        XCTAssertEqual(remaining.filter { $0.sessionId == "qa-ios" }.map(\.udid).sorted(), [udid, other].sorted())
+        XCTAssertTrue(result.capacityRecordsKept[0].reason.contains("teardown --session-id qa-ios"), result.capacityRecordsKept[0].reason)
+        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid))
+        XCTAssertEqual(remaining.map(\.udid), [udid])
 
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
         XCTAssertNotNil(object["capacityRecordsKept"])
     }
 
-    func testForceTeardownClearsADeadSingleDeviceRecordAndAPendingOne() async throws {
+    func testForceTeardownClearsAPendingRecordAndADeadSessionlessOne() async throws {
         let directory = temporaryDirectory()
-        try writeRecords([record(udid, session: "solo")], to: directory)
+        try writeRecords([record(udid, session: "qa-ios", state: .pending)], to: directory)
         var result = try await forceTeardown(directory: directory)
         XCTAssertEqual(result.capacityRecordsCleared, 1)
         XCTAssertEqual(result.capacityRecordsKept, [])
 
-        let other = "B0B0B0B0-1111-2222-3333-444455556666"
-        try writeRecords([record(udid, session: "qa-ios", state: .pending), record(other, session: "qa-ios")], to: directory)
+        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
         result = try await forceTeardown(directory: directory)
         XCTAssertEqual(result.capacityRecordsCleared, 1)
+        XCTAssertEqual(result.capacityRecordsKept, [])
+    }
+
+    func testForceTeardownKeepsASessionlessRecordWhoseOwnerIsAlive() async throws {
+        let directory = temporaryDirectory()
+        try writeRecords([record(udid, session: "simulator:\(udid)")], to: directory)
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+            snapshot: { "" },
+            gracePeriod: 0,
+            isProcessAlive: { _ in true }
+        )
+        XCTAssertEqual(result.capacityRecordsCleared, 0)
+        XCTAssertTrue(result.capacityRecordsKept.first?.reason.contains("still running") == true)
     }
 
     func testForceTeardownRemovesTheKilledRunnersSessionFiles() async throws {
@@ -246,10 +263,18 @@ final class SimulatorReaperTests: XCTestCase {
             }
         }
         let runnerLine = "  \(runner.processIdentifier)  \(runner.processIdentifier) /x/grantiva-runner --platform ios --device \(udid) test"
+        let fresh = try sleeper()
+        defer {
+            if fresh.isRunning { fresh.terminate() }
+            fresh.waitUntilExit()
+        }
         let pid = late.processIdentifier
+        let freshPID = fresh.processIdentifier
         let snapshots = SnapshotSequence([
             runnerLine,
-            runnerLine + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive",
+            runnerLine
+                + "\n  \(pid)  \(pid) /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive"
+                + "\n  \(freshPID)  \(freshPID) /opt/homebrew/bin/grantiva run --simulator \(udid)",
         ])
 
         let result = try await SimulatorReaper.forceTeardown(
@@ -264,6 +289,8 @@ final class SimulatorReaperTests: XCTestCase {
         late.waitUntilExit()
         XCTAssertFalse(late.isRunning)
         XCTAssertEqual(result.processes.first { $0.pid == pid }?.kind, .diagnose)
+        XCTAssertTrue(fresh.isRunning, "a grantiva run started after the first snapshot was killed")
+        XCTAssertFalse(result.processes.contains { $0.pid == freshPID })
     }
 }
 

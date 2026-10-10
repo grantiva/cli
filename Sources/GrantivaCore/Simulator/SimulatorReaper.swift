@@ -179,11 +179,13 @@ public enum SimulatorReaper {
         reap(&targets, gracePeriod: gracePeriod)
 
         // A dying runner can start a `simctl diagnose` for the device after
-        // the first snapshot was taken. Look once more and reap anything new.
+        // the first snapshot was taken. Look once more and reap new diagnose
+        // processes only: a fresh `grantiva run` started in the grace window
+        // is someone else's and must survive.
         if !targets.isEmpty {
             let known = Set(targets.map(\.pid))
             var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
-                .filter { !known.contains($0.pid) }
+                .filter { $0.kind == .diagnose && !known.contains($0.pid) }
             reap(&late, gracePeriod: gracePeriod)
             targets += late
         }
