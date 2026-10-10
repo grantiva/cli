@@ -136,6 +136,27 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(captures.map(\.screenName), ["missing"])
     }
 
+    func testContinueOnFailureStillStopsOnSetupErrorsAndCancellation() async throws {
+        let errors: [Error] = [
+            GrantivaError.commandFailed("Simulator TEST is already owned by another Grantiva run", 1),
+            GrantivaError.runnerNotFound,
+            CancellationError(),
+        ]
+        for thrown in errors {
+            do {
+                _ = try await RunCommand.runSuite(
+                    hasScreens: true, hasFlows: true, keepAlive: false, readyFile: nil,
+                    options: RunCommand.SessionOptions(reportDir: nil, timeoutSeconds: 600, failFast: false),
+                    runScreens: { _, _, _ in throw thrown },
+                    runFlows: { _, _, _ in XCTFail("\(thrown) must not let flows run"); return [] }
+                )
+                XCTFail("Expected \(thrown) to be rethrown")
+            } catch {
+                XCTAssertEqual("\(error)", "\(thrown)")
+            }
+        }
+    }
+
     func testWithoutContinueOnFailureAThrowingScreensSessionStopsTheSuite() async throws {
         do {
             _ = try await RunCommand.runSuite(

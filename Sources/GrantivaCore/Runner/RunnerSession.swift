@@ -69,10 +69,11 @@ public enum RunnerSession {
                 .path
             preserveReportDir = false
         }
-        try RunnerReportWorkspace.prepare(at: reportDir)
         // A capture that does not happen this run must not leave last run's
-        // image behind for `diff compare` to pass against.
+        // image behind for `diff compare` to pass against. Before the report
+        // dir exists, so a throw here leaves nothing to clean up.
         try invalidateCaptures(of: screens, in: outputDir)
+        try RunnerReportWorkspace.prepare(at: reportDir)
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer {
@@ -218,6 +219,15 @@ public enum RunnerSession {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    /// True for the errors `run(screens:)` throws once the runner itself has
+    /// run and failed (non-zero exit, timeout, no screenshots), as opposed to
+    /// setup failures such as a simulator lease conflict or a runner that
+    /// could not be extracted. The prefixes match the messages thrown above.
+    public static func isRunnerOutcomeFailure(_ error: Error) -> Bool {
+        guard case .commandFailed(let message, _) = error as? GrantivaError else { return false }
+        return ["Runner failed", "Runner timed out", "Runner completed"].contains { message.hasPrefix($0) }
     }
 
     /// Removes the configured screens' previous captures before a capture run,

@@ -26,7 +26,7 @@ final class RunnerSessionReportTests: XCTestCase {
 
     func testRewriterReplacesStagedPathsAndKeepsJSONAndXMLValid() throws {
         let staged = "/var/folders/jv/T/grantiva-ABC/0/99-crash.yaml"
-        let user = ".maestro/R&D <99>.yaml"
+        let user = #".maestro/R&D <99> "q" \b.yaml"#
         let report = scratch.appendingPathComponent("report")
         try FileManager.default.createDirectory(at: report.appendingPathComponent("flows"), withIntermediateDirectories: true)
         try """
@@ -136,7 +136,9 @@ final class RunnerSessionReportTests: XCTestCase {
                 runner: try makeRunner(exitCode: 1), outputDir: captures.path
             )
             XCTFail("expected the runner failure to be thrown")
-        } catch {}
+        } catch {
+            XCTAssertTrue(RunnerSession.isRunnerOutcomeFailure(error), "run --continue-on-failure keys on this: \(error)")
+        }
 
         XCTAssertFalse(FileManager.default.fileExists(atPath: stale.path),
                        "diff compare would pass against last run's image")
@@ -179,6 +181,7 @@ final class RunnerSessionReportTests: XCTestCase {
             XCTFail("expected a timeout")
         } catch {
             XCTAssertTrue("\(error)".contains("timed out after 1s"), "\(error)")
+            XCTAssertTrue(RunnerSession.isRunnerOutcomeFailure(error))
         }
         XCTAssertLessThan(Date().timeIntervalSince(start), 20)
     }

@@ -411,8 +411,8 @@ struct RunCommand: AsyncParsableCommand {
     /// When screens and flows both run, the screens session reports into
     /// `<report-dir>/screens` so the flows session does not replace its
     /// report.json. A failed screens session stops the suite unless
-    /// `--continue-on-failure`; then it becomes a failed row, the flows still
-    /// run, and the ready file records `failed`.
+    /// `--continue-on-failure`; then a runner failure becomes a failed row,
+    /// the flows still run, and the ready file records `failed`.
     static func runSuite(
         hasScreens: Bool,
         hasFlows: Bool,
@@ -431,7 +431,9 @@ struct RunCommand: AsyncParsableCommand {
             }
             do {
                 captures += try await runScreens(keepAlive && !hasFlows, hasFlows ? nil : readyFile, screenOptions)
-            } catch where hasFlows && !options.failFast {
+            } catch where hasFlows && !options.failFast && RunnerSession.isRunnerOutcomeFailure(error) {
+                // Only the runner's own failure becomes a row; setup errors
+                // and cancellation still stop the suite.
                 let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
                 captures.append(ScreenCapture(screenName: "screens", path: "", sizeBytes: 0, steps: [
                     StepResult(action: "Capture screens", status: .failed, duration: 0, message: message),
