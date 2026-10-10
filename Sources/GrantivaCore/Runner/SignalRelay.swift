@@ -23,8 +23,8 @@ import Foundation
 ///
 /// A `DispatchSourceSignal` observes the signal on a queue rather than in
 /// signal context, so cleanups can do real work. Installation is idempotent and
-/// happens only on paths that spawn a runner, leaving every other command's
-/// Ctrl-C behaviour untouched.
+/// happens only on paths that spawn a runner or a log stream, leaving every
+/// other command's Ctrl-C behaviour untouched.
 public final class SignalRelay: @unchecked Sendable {
     public static let shared = SignalRelay()
 
