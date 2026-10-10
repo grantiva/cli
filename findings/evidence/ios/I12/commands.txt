@@ -1,0 +1,13 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# no --report-dir was passed in any I12 run, so no report dir was preserved and none appears in the JSON
+# 09-seed-empty-passes.json/.err (first attempt; flow 09 now passes)   (cwd $APP)
+$GRANTIVA run --no-build --flow .maestro/09-seed-empty.yaml --simulator $UDID1 --json > fail.json 2> fail.err   # renamed afterwards
+# pass.json / pass.err
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --simulator $UDID1 --json > $E/I12/pass.json 2> $E/I12/pass.err
+# fail.json / fail.err
+$GRANTIVA run --no-build --flow .maestro/99-crash.yaml --simulator $UDID1 --json > $E/I12/fail.json 2> $E/I12/fail.err
+# setup-fail.json / .err
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --simulator no-such-sim-qa --json > $E/I12/setup-fail.json 2> $E/I12/setup-fail.err
+# exit codes in exit.txt

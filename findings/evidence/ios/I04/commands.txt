@@ -1,0 +1,10 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# run1..5.txt, run1..5-report/, summary.txt   (cwd $APP)
+for i in 1 2 3 4 5; do $GRANTIVA run --simulator $UDID1 --no-build --flow .maestro/04-discard.yaml --report-dir $E/I04/run$i-report > $E/I04/run$i.txt 2>&1; echo "run $i: $?" | tee -a $E/I04/summary.txt; done
+# run6..10.txt (appended to summary.txt)   (cwd $APP)
+for i in 6 7 8 9 10; do $GRANTIVA run --simulator $UDID1 --no-build --flow .maestro/04-discard.yaml > $E/I04/run$i.txt 2>&1; echo "run $i: $?" | tee -a $E/I04/summary.txt; done
+# sysalert-maps.txt, sysalert-report/   (cwd $S/sysalert; flow = inputs/flows/maps.yaml)
+xcrun simctl privacy $UDID1 reset location com.apple.Maps
+$GRANTIVA run --no-build --flow maps.yaml --simulator $UDID1 --report-dir $E/I04/sysalert-report > $E/I04/sysalert-maps.txt 2>&1; echo "exit $?" >> $E/I04/sysalert-maps.txt

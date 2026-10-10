@@ -1,0 +1,11 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# repro.txt   (GRANTIVA_SESSION_ID=reg-ios-i14)
+xcrun simctl list devices | grep -c qa-reg-ios-3
+GRANTIVA_MAX_SIMULATORS=1 GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS=5 $GRANTIVA simulator ensure --name qa-reg-ios-3 --device-type "iPhone 17" --runtime 26.0
+xcrun simctl list devices | grep qa-reg-ios-3 || echo "qa-reg-ios-3 absent"
+grep -rl 'qa-reg-ios-3' $GRANTIVA_RUNNER_HOME/..; ls ~/.grantiva     # (this "provenance" block did NOT read created.json)
+$GRANTIVA simulator sessions
+# provenance-after-the-fact.txt   (read-only, captured later in the fix pass)
+cat ~/.grantiva/simulator-capacity/created.json; grep -c -E 'qa-reg-ios-3|0BE596F4' ~/.grantiva/simulator-capacity/created.json

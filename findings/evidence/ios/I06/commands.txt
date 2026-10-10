@@ -1,0 +1,8 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# cwd $APP; flow inputs/flows/i06-edit.yaml; requests inputs/mcp/i06.json
+$GRANTIVA run --no-build --flow $S/flows/i06-edit.yaml --simulator $UDID2 --keep-alive --ready-file $S/i06.ready > $E/I06/keepalive-run.txt 2>&1 &
+cat $(ls -t /tmp/grantiva-sessions/*.grantiva | head -1) > $E/I06/session-file.json
+python3 -I $S/client.py $S/i06.json $E/I06/mcp $APP -- $GRANTIVA mcp; kill -INT <run>
+# (the brief's curl /keys vs /wda/keys probes were not run)

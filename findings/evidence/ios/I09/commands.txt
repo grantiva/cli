@@ -1,0 +1,17 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# repro.txt   (cwd $APP, GRANTIVA_SESSION_ID=reg-ios-i09)
+u3=$($GRANTIVA simulator ensure --name qa-reg-ios-3 --device-type "iPhone 17" --runtime 26.0 | tail -1)
+u4=$($GRANTIVA simulator ensure --name qa-reg-ios-4 --device-type "iPhone 17" --runtime 26.0 | tail -1)
+$GRANTIVA build install --simulator $u3
+$GRANTIVA run --no-build --flow .maestro/01-browse.yaml --simulator $u3 --keep-alive --ready-file $S/i09.ready > $E/I09/keepalive-run.txt 2>&1 & pid=$!
+ls /tmp/grantiva-sessions/; $GRANTIVA simulator sessions; kill -9 $pid
+$GRANTIVA simulator teardown --udid $u3 --force --json
+$GRANTIVA simulator sessions
+ls /tmp/grantiva-sessions/ | grep "^$pid"   # NOTE: $pid is the grantiva pid (49912); the session files are named after the runner pid (50009), so this check proves nothing; the JSON sessionFilesRemoved is the evidence
+pgrep -fl "simctl diagnose"; xcrun simctl list devices | grep qa-reg-ios-3
+# teardown-session.json
+$GRANTIVA simulator teardown --session-id reg-ios-i09 --json > $E/I09/teardown-session.json 2>&1
+# device-homes-after-next-run.txt   (after a flow-01 run on $UDID1)
+ls $GRANTIVA_RUNNER_HOME/versions/1.1.28-grantiva.8+android-drivers-2/devices/ | tee $E/I09/device-homes-after-next-run.txt

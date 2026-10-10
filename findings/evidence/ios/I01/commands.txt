@@ -1,0 +1,17 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# concurrent-ios26.txt, concurrent-ios27.txt, a-report/, b-report/, start-times.txt   (cwd $APP)
+$GRANTIVA run --simulator $UDID1 --no-build --flow .maestro/01-browse.yaml --report-dir $E/I01/a-report > $E/I01/concurrent-ios26.txt 2>&1 & a=$!
+sleep 1
+$GRANTIVA run --simulator $UDID2 --no-build --flow .maestro/01-browse.yaml --report-dir $E/I01/b-report > $E/I01/concurrent-ios27.txt 2>&1 & b=$!
+wait $a; wait $b   # "a=0 b=0" appended to start-times.txt
+# devices-listing.txt
+ls -la $GRANTIVA_RUNNER_HOME/cache/wda-builds/*/devices/ 2>&1 | tee $E/I01/devices-listing.txt
+# devices-listing-per-udid.txt
+ls -la $GRANTIVA_RUNNER_HOME/versions/1.1.28-grantiva.8+android-drivers-2/devices; find <same> -maxdepth 4 -type d
+# pair1..5-{a,b}.txt, pairs-summary.txt   (cwd $APP)
+for i in 1 2 3 4 5; do
+  $GRANTIVA run --no-build --flow .maestro/06-visit.yaml --simulator $UDID1 > $E/I01/pair$i-a.txt 2>&1 & a=$!
+  $GRANTIVA run --no-build --flow .maestro/07-deeplink.yaml --simulator $UDID2 > $E/I01/pair$i-b.txt 2>&1 & b=$!
+  wait $a; ea=$?; wait $b; echo "pair $i: a=$ea b=$?" | tee -a $E/I01/pairs-summary.txt; done

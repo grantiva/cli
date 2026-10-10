@@ -1,0 +1,9 @@
+appId: com.apple.Maps
+---
+- launchApp
+- waitForAnimationToEnd
+- tapOn:
+    id: "MapsTrayHeaderSearchField"
+    optional: true
+- takeScreenshot: "maps"
+- assertNotVisible: "Allow Once"
