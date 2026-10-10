@@ -91,6 +91,40 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertFalse(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
     }
 
+    /// A10: `build install --json` on Android runs the Android branch and
+    /// emits applicationId and device{name, serial}, not bundleId/simulator.
+    func testBuildInstallJSONOnAndroidUsesAndroidKeys() async throws {
+        var command = try InstallCommand.parse(["--no-launch", "--json"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        let stdout = try await captureStandardOutput { try await command.run() }
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any], stdout)
+        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"], stdout)
+        XCTAssertEqual(json["status"] as? String, "installed")
+        XCTAssertEqual(json["applicationId"] as? String, "com.fake.built")
+        XCTAssertEqual(json["appPath"] as? String, "/fake/app.apk")
+        let device = try XCTUnwrap(json["device"] as? [String: Any])
+        XCTAssertEqual(device["name"] as? String, "Fake")
+        XCTAssertEqual(device["serial"] as? String, "emulator-5598")
+    }
+
+    /// Points fd 1 at a temporary file while `body` runs.
+    private func captureStandardOutput(_ body: () async throws -> Void) async throws -> String {
+        let file = dir.appendingPathComponent("stdout-\(UUID().uuidString).txt")
+        FileManager.default.createFile(atPath: file.path, contents: nil)
+        let handle = try FileHandle(forWritingTo: file)
+        let saved = dup(STDOUT_FILENO)
+        dup2(handle.fileDescriptor, STDOUT_FILENO)
+        do {
+            try await body()
+        } catch {
+            dup2(saved, STDOUT_FILENO); close(saved); try? handle.close()
+            throw error
+        }
+        dup2(saved, STDOUT_FILENO); close(saved); try handle.close()
+        return try String(contentsOf: file, encoding: .utf8)
+    }
+
     func testBuildInstallOnAndroidLaunchesTheBuiltApplicationID() async throws {
         var command = try InstallCommand.parse(["--module", "mobile"])
         let fake = FakeDevicePlatform(platform: .android)
