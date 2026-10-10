@@ -142,6 +142,15 @@ public struct IOSPlatform: DevicePlatform {
         return environment
     }
 
+    /// Promotes a WebDriverAgent build the runner produced in this
+    /// simulator's home into the shared cache (see `WDADeviceHome.promote`).
+    /// A build is complete once its xctestrun exists, so this runs whatever
+    /// the flows' verdict was: a failing first flow must not throw away a
+    /// fresh multi-minute WDA build.
+    public func runnerFinished(runnerHome: String, deviceID: String) {
+        WDADeviceHome.promote(runnerHome: runnerHome, deviceID: deviceID)
+    }
+
     public func cleanupOrphans(deviceID: String) async {}
 
     public func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {

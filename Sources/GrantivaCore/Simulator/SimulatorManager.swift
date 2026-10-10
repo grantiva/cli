@@ -176,6 +176,7 @@ public struct SimulatorManager: Sendable, Decodable {
         _ = try await shell("xcrun simctl delete \(shellQuoted(device.udid))")
         try SimulatorCapacity.live.remove(udid: device.udid)
         try SimulatorProvenance.live.remove(udid: device.udid)
+        WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: device.udid)
         return device
     }
 
@@ -201,6 +202,7 @@ public struct SimulatorManager: Sendable, Decodable {
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
+            WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: record.udid)
             outcomes.append(SimulatorTeardownOutcome(session: record, deleted: created))
         }
         return outcomes
@@ -224,6 +226,7 @@ public struct SimulatorManager: Sendable, Decodable {
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
+            WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: record.udid)
             outcomes.append(SimulatorTeardownOutcome(session: record, deleted: created))
         }
         return outcomes
