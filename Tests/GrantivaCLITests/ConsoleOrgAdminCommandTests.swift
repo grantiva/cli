@@ -133,29 +133,14 @@ final class ConsoleOrgAdminCommandTests: XCTestCase {
         XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse(["W1", "--event", "\t"]))
     }
 
-    // The server stores any event string and simply never fires a bogus one,
-    // so an unknown name has to be caught here, before the request.
-    func testUnknownWebhookEventsAreUsageErrorsListingTheValidOnes() {
-        for parse in [
-            { _ = try ConsoleWebhooksCommand.CreateCommand.parse(["https://x", "--event", "not.an.event"]) },
-            { _ = try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "not.an.event"]) },
-        ] {
-            XCTAssertThrowsError(try parse()) { error in
-                XCTAssertEqual(ConsoleWebhooksCommand.CreateCommand.exitCode(for: error), .validationFailure)
-                let message = ConsoleWebhooksCommand.CreateCommand.message(for: error)
-                XCTAssertTrue(message.contains("Unknown event 'not.an.event'"), message)
-                XCTAssertTrue(message.contains("device.high_risk"), message)
-                XCTAssertTrue(message.contains("grantiva console webhooks events"), message)
-            }
-        }
-        XCTAssertNoThrow(try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "flag.updated"]))
+    // Event types are validated by the server (#56, #108), not a local catalogue.
+    func testUnknownWebhookEventsAreLeftToTheServer() {
+        XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://x.example.com", "--event", "brand.new.event"]))
+        XCTAssertNoThrow(try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "brand.new.event"]))
     }
 
-    func testWebhookEventsIsARegisteredSubcommand() throws {
-        let command = try ConsoleWebhooksCommand.parseAsRoot(["events", "--json"])
-        XCTAssertTrue(command is ConsoleWebhooksCommand.EventsCommand)
-        XCTAssertEqual(WebhookEvent.allCases.count, 11)
-        XCTAssertEqual(WebhookEvent.allCases.first?.rawValue, "device.high_risk")
+    func testWebhookEventsIsNotASubcommand() {
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.parseAsRoot(["events"]))
     }
 
     func testWebhookCommandsRejectBlankResourceIDs() {

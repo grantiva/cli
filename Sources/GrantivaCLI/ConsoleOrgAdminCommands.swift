@@ -26,45 +26,17 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
         commandName: "webhooks",
         abstract: "Manage webhook endpoints and inspect their deliveries.",
-        subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self, EventsCommand.self]
+        subcommands: [ListCommand.self, GetCommand.self, CreateCommand.self, EnableCommand.self, DisableCommand.self, UpdateCommand.self, DeleteCommand.self, TestCommand.self, DeliveriesCommand.self, RetryCommand.self]
     )
 
     static func notFound(_ id: String) -> String { "webhook not found: \(id)" }
 
-    /// Rejects blank and unknown event names before any request: the API
-    /// accepts any string and a misspelt event would simply never fire.
+    /// Rejects blank event names before any request. Whether an event type
+    /// exists is the server's call: the CLI carries no catalogue of them.
     static func validateEvents(_ events: [String]) throws {
         if events.contains(where: { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
             throw ValidationError("Event types must not be blank.")
         }
-        let unknown = events.filter { WebhookEvent(rawValue: $0) == nil }
-        guard unknown.isEmpty else {
-            let noun = unknown.count == 1 ? "event" : "events"
-            let names = unknown.map { "'\($0)'" }.joined(separator: ", ")
-            throw ValidationError(
-                "Unknown \(noun) \(names). Expected one of: "
-                    + WebhookEvent.allCases.map(\.rawValue).joined(separator: ", ")
-                    + ". See grantiva console webhooks events."
-            )
-        }
-    }
-
-    struct EventsCommand: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(commandName: "events", abstract: "List the event types a webhook can subscribe to.")
-        @OptionGroup var options: GlobalOptions
-        func run() async throws {
-            let events = WebhookEvent.allCases.map { WebhookEventInfo(event: $0.rawValue, description: $0.summary) }
-            try ConsoleAdmin.emit(events, options: options) {
-                let width = events.map(\.event.count).max() ?? 0
-                return events.map { $0.event.padding(toLength: width, withPad: " ", startingAt: 0) + "  " + $0.description }
-                    .joined(separator: "\n")
-            }
-        }
-    }
-
-    struct WebhookEventInfo: Encodable {
-        let event: String
-        let description: String
     }
 
     static func validateID(_ id: String, label: String = "Webhook ID") throws {
@@ -108,7 +80,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         )
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Endpoint URL (https).") var url: String
-        @Option(name: .long, help: "Event type to subscribe to. Repeatable. See `grantiva console webhooks events`.") var event: [String]
+        @Option(name: .long, help: "Event type to subscribe to. Repeatable. The server validates event types.") var event: [String]
         @Option(name: .long, help: "Description.") var description: String?
         func validate() throws {
             if event.isEmpty { throw ValidationError("Pass at least one --event.") }
