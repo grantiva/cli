@@ -1,0 +1,89 @@
+# README §Commands table (lines 309-338) vs `grantiva <cmd> --help` OVERVIEW
+README:309: grantiva run -- Run Maestro flows against a simulator or emulator (supports --keep-alive, --logs, --flow)
+  HELP: Run Maestro flows against a simulator or emulator. No visual regression — reports step pass/fail and captures a screenshot on failure.
+
+README:310: grantiva record -- Record a simulator or emulator and extract PNG frames at requested timestamps
+  HELP: Record a simulator or emulator and extract PNG frames at exact requested timestamps.
+
+README:311: grantiva hierarchy -- Dump the live UI hierarchy of a keep-alive session
+  HELP: Dump the UI hierarchy of a booted simulator or emulator without relaunching the app.
+
+README:312: grantiva build -- Build the app for a simulator (xcodebuild) or emulator (Gradle)
+  HELP: Build and optionally install the app to a simulator or emulator.
+
+README:313: grantiva build install -- Build and install the app; use --no-launch to stop before launch
+  HELP: Build and install the app on a simulator or emulator, then optionally launch it.
+
+README:314: grantiva ci run -- Run full CI pipeline (build -> capture -> diff -> upload)
+  HELP: Run full CI pipeline: capture screenshots, compare against baselines, upload results.
+
+README:315: grantiva diff capture -- Capture screenshots for all configured screens
+  HELP: Navigate to configured screens and capture screenshots.
+
+README:316: grantiva diff compare -- Diff captures against baselines
+  HELP: Diff current captures against baselines.
+
+README:317: grantiva diff approve -- Promote captures to baselines
+  HELP: Promote current captures to baselines.
+
+README:318: grantiva simulator ensure -- Create or reuse a named simulator and boot it (--name is enough)
+  HELP: Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a device model ("iPhone 17") or --device-type must be given; the newest installed runtime is used unless --runtime is passed.
+
+README:319: grantiva simulator delete -- Explicitly delete a named simulator
+  HELP: Explicitly delete a named simulator.
+
+README:322: grantiva simulator cleanup -- Delete Grantiva-created simulators that are shut down and not part of an active session
+  HELP: Delete Grantiva-created simulators that are shut down and not part of an active session.
+
+README:323: grantiva emulator ensure -- Create the AVD if missing and boot it; prints the serial
+  HELP: Create the AVD when missing (installing its system image first) and boot it. stdout is the serial, or the AVD name with --no-boot.
+
+README:324: grantiva emulator delete -- Delete an AVD Grantiva created (--force for others)
+  HELP: Delete an AVD Grantiva created. Others need --force. A running AVD is never deleted.
+
+README:325: grantiva emulator sessions -- List the emulators Grantiva started
+  HELP: List the emulators Grantiva started.
+
+README:326: grantiva emulator teardown -- Kill emulators Grantiva started (one by --serial, or --all)
+  HELP: Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.
+
+README:327: grantiva console -- Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
+  HELP: Manage your Grantiva dashboard from the terminal.
+
+README:328: grantiva auth login -- Authenticate with Grantiva
+  HELP: Authenticate with Grantiva API.
+
+README:329: grantiva auth status -- Show current authentication
+  HELP: Show current authentication status.
+
+README:330: grantiva auth logout -- Remove stored credentials
+  HELP: Remove saved authentication credentials.
+
+README:331: grantiva doctor -- Check environment and dependencies (non-zero exit if a required check fails)
+  HELP: Check environment and dependencies.
+
+README:332: grantiva runner install -- Extract the embedded GrantivaAgent runner
+  HELP: Extract or update the embedded runner binary.
+
+README:333: grantiva runner version -- Show the embedded runner version
+  HELP: Show the embedded runner version.
+
+README:334: grantiva runner start -- Start an interactive GrantivaAgent session
+  HELP: Start the runner with WDA and keep it alive for interactive use.
+
+README:335: grantiva runner stop -- Stop a running interactive session
+  HELP: Stop the running runner session.
+
+README:336: grantiva runner dump-hierarchy -- Dump the view hierarchy from a running app for agent inspection
+  HELP: Dump the view hierarchy from a running app for agent inspection.
+
+README:337: grantiva mcp -- Start the MCP server for AI agent integration (tool list: docs/mcp.md)
+  HELP: Start the Grantiva MCP server for AI agent integration.
+
+README:338: grantiva init -- Generate grantiva.yml
+  HELP: Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory.
+
+README:320: grantiva simulator sessions List Grantiva-managed simulator capacity slots
+README:321: grantiva simulator teardown End a session, or reclaim one simulator with --udid <UDID> --force
+  HELP sessions: OVERVIEW: List Grantiva-managed simulator capacity slots.
+  HELP teardown: OVERVIEW: End a managed session, or reclaim one simulator by UDID when no ledger entry exists.  

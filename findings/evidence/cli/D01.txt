@@ -1,0 +1,77 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d01 && $GRANTIVA runner stop --json
+{
+  "status" : "not_running"
+}
+rc=0
+
+$ grep -n -i 'json' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/README.md | grep -i 'runner\|lifecycle\|hierarchy'
+91:- **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific simulator's with `--udid <UDID>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
+101:- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
+368:for example, `hierarchy` emits XML by default and JSON with `--json` (the same
+369:as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
+rc=0
+
+$ grep -n -- '--json\|--format' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/docs/dump-hierarchy.md
+18:grantiva hierarchy --format json > state.json
+37:| `--format` | `xml` (default) or `json`. |
+38:| `--json` | Same as `--format json`. Combining it with `--format xml` is a usage error. |
+47:grantiva runner dump-hierarchy --format json
+51:`runner dump-hierarchy` takes `--format tree|json|xml` (default `tree`); `--json` is the same as `--format json`.
+rc=0
+
+$ $GRANTIVA hierarchy --help | grep -A3 -- '--json\|--format'
+USAGE: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+--
+  --format <format>       Output format: xml (default) or json. --json is the
+                          same as --format json.
+  --version               Show the version.
+  -h, --help              Show help information.
+
+rc=0
+
+$ $GRANTIVA runner dump-hierarchy --help | grep -A3 -- '--json\|--format'
+USAGE: grantiva runner dump-hierarchy [--json] [--verbose] [--quiet] [--port <port>] [--format <format>] [--udid <udid>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+--
+  -f, --format <format>   Output format: tree, json, or xml (default: tree).
+                          --json is the same as --format json.
+  --udid <udid>           Simulator UDID or adb serial when falling back to a
+                          `grantiva run --keep-alive` session
+  --version               Show the version.
+rc=0
+
+$ $GRANTIVA hierarchy --json --format xml --udid 00000000-0000-0000-0000-0000000000C1
+Error: --json and --format xml conflict; pass one.
+Usage: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+  See 'grantiva hierarchy --help' for more information.
+rc=64
+
+$ $GRANTIVA runner dump-hierarchy --json --format xml
+Error: --json and --format xml conflict; pass one.
+Usage: grantiva runner dump-hierarchy [--json] [--verbose] [--quiet] [--port <port>] [--format <format>] [--udid <udid>]
+  See 'grantiva runner dump-hierarchy --help' for more information.
+rc=64
+
+$ sed -n 364,372p /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/README.md
+```
+
+Commands that advertise `--json` emit structured output. Consult
+`grantiva <command> --help` for the output modes supported by a specific command;
+for example, `hierarchy` emits XML by default and JSON with `--json` (the same
+as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
+`install`, `version`) print a JSON result with `--json`.
+
+### stdout is the result, stderr is the commentary
+rc=0
+

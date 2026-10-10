@@ -1,0 +1,32 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c23 && env -u ANDROID_SDK_ROOT ANDROID_HOME=/nonexistent $GRANTIVA doctor --platform android | sed -n '/Required/,/Project/p'
+  Required
+
+    ● Android SDK       /Users/kyle/Library/Android/sdk (ANDROID_HOME=/nonexistent has no platform-tools/adb; unset or fix it)
+                          unset ANDROID_HOME or export ANDROID_HOME=/Users/kyle/Library/Android/sdk
+    ✓ adb               Android Debug Bridge version 1.0.41
+    ✓ Android Emulator  /Users/kyle/Library/Android/sdk/emulator/emulator
+    ✗ JDK               No JDK found (JAVA_HOME or /usr/libexec/java_home)
+                          Run: brew install openjdk@21 and set JAVA_HOME (see docs/android-environment.md)
+    ✓ Android AVDs      Pixel_8_API_35, qa-reg-android
+    ✓ Running Emulator  emulator-5554
+    ✓ Runner            grantiva-runner 1.1.28-grantiva.8+android-drivers-2
+
+  Project
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c23 && env -u ANDROID_HOME ANDROID_SDK_ROOT=/nonexistent $GRANTIVA doctor --platform android | sed -n '/Required/,/Project/p'
+  Required
+
+    ● Android SDK       /Users/kyle/Library/Android/sdk (ANDROID_SDK_ROOT=/nonexistent has no platform-tools/adb; unset or fix it)
+                          unset ANDROID_SDK_ROOT or export ANDROID_SDK_ROOT=/Users/kyle/Library/Android/sdk
+    ✓ adb               Android Debug Bridge version 1.0.41
+    ✓ Android Emulator  /Users/kyle/Library/Android/sdk/emulator/emulator
+    ✗ JDK               No JDK found (JAVA_HOME or /usr/libexec/java_home)
+                          Run: brew install openjdk@21 and set JAVA_HOME (see docs/android-environment.md)
+    ✓ Android AVDs      Pixel_8_API_35, qa-reg-android
+    ✓ Running Emulator  emulator-5554
+    ✓ Runner            grantiva-runner 1.1.28-grantiva.8+android-drivers-2
+
+  Project
+rc=0
+

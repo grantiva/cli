@@ -1,0 +1,26 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c20 && cat -n grantiva-android.yml && $GRANTIVA doctor --platform android | sed -n '/Project/,/CI/p'
+     1	application_id: com.kylebrowning.landmarks
+     2	screens:
+     3	  - name: Home
+     4	    path: launch
+     5	  bad: : :
+  Project
+
+    ✗ grantiva-android.yml  could not be parsed: 5:3: error: parser: while parsing a block collection in line 3, column 3
+                              Fix the YAML in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c20/grantiva-android.yml
+    ● Git Repository        Not a git repository
+                              Run: git init
+
+  CI / Cloud
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c20 && $GRANTIVA doctor --platform android >/dev/null
+rc=1
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c20 && $GRANTIVA run --no-build --platform android --device emulator-0000
+Error: Invalid argument: grantiva-android.yml could not be parsed: 5:3: error: parser: while parsing a block collection in line 3, column 3
+did not find expected '-' indicator:
+  bad: : :
+  ^
+rc=1
+

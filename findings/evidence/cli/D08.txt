@@ -1,0 +1,35 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/d08 && $GRANTIVA run --no-build --ready-file does/not/exist/x.ready; ls -R does; cat does/not/exist/x.ready
+Error: Invalid argument: No grantiva.yml here. Create one with grantiva init.
+not
+
+does/not:
+exist
+
+does/not/exist:
+x.ready
+{
+  "finishedAt" : "2026-10-10T21:30:03Z",
+  "flows" : [
+
+  ],
+  "status" : "failed"
+}rc=0
+
+$ cd /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli && grep -n -i 'ready-file\|parent director' README.md
+77:- **`--ready-file <path>`** — Writes that file once, atomically, when the run reaches a terminal state. With `--keep-alive` the session deliberately outlives the flows, so process exit is not a completion signal and `report.json` is rewritten incrementally; wait on this file instead:
+80:  grantiva run --flow flows/advertise.yaml --keep-alive --ready-file /tmp/advertise.ready &
+87:  Missing parent directories of the path are created (`--ready-file out/ci/x.ready` creates `out/ci/`), so a typo in the directory part makes a new directory rather than failing; only an uncreatable or unwritable location is an error.
+rc=0
+
+$ $GRANTIVA run --help | grep -A8 -- '--ready-file <'
+  --ready-file <ready-file>
+                          Write this file once the run reaches a terminal
+                          state, containing its status. Deleted at startup, and
+                          always written — a setup failure records `failed`
+                          rather than leaving a waiter hanging. Missing parent
+                          directories are created. Wait on it with `while [ !
+                          -f <path> ]; do sleep 0.2; done` instead of polling
+                          report.json — useful with --keep-alive, where the
+                          session outlives the flows.
+rc=0
+

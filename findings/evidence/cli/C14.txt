@@ -1,0 +1,52 @@
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && time $GRANTIVA record --duration 5 --frames-at a,b --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mp4
+Error: --frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got a,b
+Usage: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+  See 'grantiva record --help' for more information.
+
+real	0m0.014s
+user	0m0.006s
+sys	0m0.004s
+rc=64
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && $GRANTIVA record --duration 2 --frames-at 1,5 --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14-noext
+Error: --output must end in .mov on iOS (simctl records QuickTime); got /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14-noext. Try /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14-noext.mov.
+rc=64
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && $GRANTIVA record --duration 2 --frames-at 0.5 --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.avi
+Error: --frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got 0.5
+Usage: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+  See 'grantiva record --help' for more information.
+rc=64
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && $GRANTIVA record --duration 2 --frames-at 0.5 --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mp4
+Error: --frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got 0.5
+Usage: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+  See 'grantiva record --help' for more information.
+rc=64
+
+$ ls -A /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14
+rc=0
+
+$ $GRANTIVA record --help | grep -A3 -- '--output'
+USAGE: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+
+OPTIONS:
+  --json                  Output as JSON
+--
+  --output <output>       Output video path. Must end in .mov on iOS and .mp4
+                          on Android, the containers each platform records
+                          (default: .grantiva/recordings/recording.mov on iOS,
+                          .mp4 on Android)
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && $GRANTIVA record --duration 2 --frames-at 500 --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mp4
+Error: --output must end in .mov on iOS (simctl records QuickTime); got /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mp4. Try /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mov.
+rc=64
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14 && $GRANTIVA record --duration 2 --frames-at 500 --simulator 00000000-0000-0000-0000-0000000000C1 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14/c14.mov
+Error: Invalid argument: Simulator not found: "00000000-0000-0000-0000-0000000000C1"
+rc=1
+
+$ ls -A /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c14
+rc=0
+

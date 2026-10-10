@@ -1,0 +1,48 @@
+$ grep -n -A12 '^## Devices' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/docs/android.md
+31:## Devices
+32-
+33-`emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
+34-With no `emulator:`, the order is: the one running emulator, else the one emulator still
+35-booting (waited on), else the only existing AVD (booted); otherwise the command fails and
+36-lists the AVDs. `--device <serial>` targets any attached device, including
+37-a physical one. On a physical device the demo-mode and animation settings are skipped
+38-unless `--allow-device-settings` is given. `--headless` boots without a window.
+39-
+40-The application ID a run installs and tests is the app's own: the Gradle output metadata's
+41-`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+42-`application_id` in the config is used only when there is no app to read it from
+43-(`--no-build`); when it disagrees with the app, the app wins and a warning names both.
+rc=0
+
+$ grep -n 'Only running emulators' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/docs/android.md /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Android/EmulatorManager.swift
+rc=1
+
+$ grep -n -B3 -A14 'func resolve\|/// Resolve\|/// Pick' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Android/EmulatorManager.swift | head -60
+48-    }
+49-}
+50-
+51:/// Picks the emulator a run uses and boots an AVD when none is running.
+52-public struct EmulatorManager: Sendable {
+53-    public typealias Spawn = @Sendable (_ executable: String, _ arguments: [String]) throws -> Int32
+54-
+55-    private let sdk: AndroidSDK
+56-    private let adb: ADB
+57-    private let execute: @Sendable (String) async throws -> String
+58-    private let spawn: Spawn
+59-    private let provenance: AndroidProvenance
+60-    private let headless: Bool
+61-    private let bootTimeout: TimeInterval
+62-    private let pollInterval: TimeInterval
+63-    private let environment: [String: String]
+64-    nonisolated(unsafe) private let fileManager: FileManager
+65-    private let killTimeout: TimeInterval
+rc=0
+
+$ sed -n 184,188p /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/Sources/GrantivaCore/Android/EmulatorManager.swift
+    /// With a configured AVD name, the running emulator with that name is
+    /// used, else it is booted. Without one: a single running emulator, else
+    /// a single booting emulator (waited on), else the only existing AVD is
+    /// booted, else an error lists the AVDs.
+    public func selectDevice(configured: String?) async throws -> BootedDevice {
+rc=0
+

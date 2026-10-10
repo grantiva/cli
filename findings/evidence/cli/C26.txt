@@ -1,0 +1,42 @@
+$ cd /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli && grep -n -- '--snapshot\|--continue-on-failure\|--timeout' README.md docs/*.md
+README.md:85:  Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit; a usage error such as `--timeout 5` records `failed` with an `error` field.
+README.md:89:  `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present only when `--report-dir` was given: the default report directory is deleted when the run exits.
+README.md:95:- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
+README.md:96:- **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
+README.md:97:- **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). The timeout itself is ignored under `--keep-alive`, where the session is held until you release it, but the 30 s minimum is still validated.
+README.md:99:  `--continue-on-failure` and `--timeout` apply to flow files (`flows:` in the config, or `--flow`). A suite that runs only the configured `screens:` does not read these two flags: it uses a fixed 300 s timeout.
+README.md:101:- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
+docs/dump-hierarchy.md:39:| `--timeout` | Seconds to wait for GrantivaAgent's page-source response (default 60). |
+rc=0
+
+$ $GRANTIVA run --help | sed -n '/--snapshot/,/--ready-file/p'
+  --snapshot <snapshot>   Snapshot policy: failure (default — one shot after
+                          failure), trailing (last-good step + failure step),
+                          full (every step). (default: failure)
+  --continue-on-failure   Keep running remaining flows after a failure. Default
+                          is fail-fast — stop the suite on the first broken
+                          flow, which matches CI semantics and avoids wasting
+                          cycles.
+  --report-dir <report-dir>
+                          Write the runner's report.json + assets to this
+                          directory (workspace-relative). Survives grantiva's
+                          cleanup so CI can upload it. Default: ephemeral tmp
+                          dir.
+  --timeout <timeout>     Max seconds to wait for the runner subprocess before
+                          killing it with SIGTERM. Default: 600 (10 min).
+                          Minimum 30. Ignored under --keep-alive. Bump this for
+                          long multi-flow suites. (default: 600)
+  --ready-file <ready-file>
+rc=0
+
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-cli/c26 && $GRANTIVA run --timeout 0 --no-build
+Error: --timeout must be at least 30 seconds.
+Usage: grantiva run <options>
+  See 'grantiva run --help' for more information.
+rc=64
+
+$ sed -n '99p;101p' /Users/kyle/Developer/grantiva-cli/.worktrees/reg-cli/README.md
+  `--continue-on-failure` and `--timeout` apply to flow files (`flows:` in the config, or `--flow`). A suite that runs only the configured `screens:` does not read these two flags: it uses a fixed 300 s timeout.
+- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
+rc=0
+
