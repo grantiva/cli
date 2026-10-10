@@ -164,6 +164,66 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertTrue(report.contains(#""video" : ".grantiva\/recordings\/recording.mp4""#), report)
     }
 
+    // MARK: - Argument validation before recording (C14)
+
+    func testMalformedFramesAtIsAUsageErrorAtParseTime() {
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "5", "--frames-at", "a,b"])) { error in
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertTrue(RecordCommand.message(for: error).contains("--frames-at"), RecordCommand.message(for: error))
+        }
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "5", "--frames-at", "-1"]))
+        XCTAssertEqual(try RecordCommand.parse(["--duration", "5", "--frames-at", "1500, 0,500,500"]).requestedFrames, [0, 500, 1500])
+    }
+
+    func testOutputWithoutAnExtensionIsRejectedBeforeRecording() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "1", "--output", "clip"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertTrue("\(error)".contains("--output must end in .mp4"), "\(error)")
+        }
+        XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
+    }
+
+    func testOutputExtensionMustMatchThePlatformsContainer() {
+        XCTAssertNil(RecordCommand.outputExtensionProblem("/tmp/a.mov", platform: .ios))
+        XCTAssertNil(RecordCommand.outputExtensionProblem("/tmp/a.MOV", platform: .ios))
+        XCTAssertNil(RecordCommand.outputExtensionProblem("/tmp/a.mp4", platform: .android))
+        // simctl writes a QuickTime container whatever the name, so .mp4 on
+        // iOS would be a mislabelled file.
+        let iosMP4 = RecordCommand.outputExtensionProblem("/tmp/a.mp4", platform: .ios)
+        XCTAssertEqual(iosMP4, "--output must end in .mov on iOS (simctl records QuickTime); got /tmp/a.mp4. Try /tmp/a.mov.")
+        XCTAssertEqual(
+            RecordCommand.outputExtensionProblem("clips/a", platform: .ios),
+            "--output must end in .mov on iOS (simctl records QuickTime); got clips/a. Try clips/a.mov."
+        )
+        XCTAssertNotNil(RecordCommand.outputExtensionProblem("/tmp/a.mov", platform: .android))
+    }
+
+    func testIOSMP4OutputIsRejectedBeforeTouchingTheSimulator() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-ios-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var command = try RecordCommand.parse(["--duration", "1", "--platform", "ios", "--simulator", "Fake", "--output", "clip.mp4"])
+        let fake = FakeDevicePlatform(platform: .ios)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+        }
+        XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
+    }
+
     private func makeAndroidProject() throws -> (URL, String) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)

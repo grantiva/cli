@@ -30,7 +30,7 @@ struct RecordCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Recording duration in seconds (Android caps a recording at 180)")
     var duration: Double
 
-    @Option(name: .long, help: "Output video path (default: .grantiva/recordings/recording.mov on iOS, .mp4 on Android)")
+    @Option(name: .long, help: "Output video path. Must end in .mov on iOS and .mp4 on Android, the containers each platform records (default: .grantiva/recordings/recording.mov on iOS, .mp4 on Android)")
     var output: String?
 
     @Option(name: .long, help: "Comma-separated frame timestamps in milliseconds, e.g. 0,150,300,600")
@@ -38,6 +38,40 @@ struct RecordCommand: AsyncParsableCommand {
 
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
+
+    func validate() throws {
+        _ = try Self.parseTimestamps(framesAt)
+    }
+
+    /// The parsed, de-duplicated `--frames-at` values. `validate()` has
+    /// already rejected malformed input by the time `run()` reads this.
+    var requestedFrames: [Int] {
+        (try? Self.parseTimestamps(framesAt)) ?? []
+    }
+
+    static func parseTimestamps(_ framesAt: String?) throws -> [Int] {
+        guard let framesAt, !framesAt.isEmpty else { return [] }
+        let values = try framesAt.split(separator: ",").map { part -> Int in
+            guard let value = Int(part.trimmingCharacters(in: .whitespaces)), value >= 0 else {
+                throw ValidationError("--frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got \(framesAt)")
+            }
+            return value
+        }
+        return Array(Set(values)).sorted()
+    }
+
+    /// The extension each platform's recorder actually writes: simctl writes
+    /// QuickTime whatever the name, and screenrecord writes MPEG-4. A file
+    /// named otherwise is mislabelled, and one with no extension cannot be
+    /// opened by AVFoundation for frame extraction.
+    static func outputExtensionProblem(_ path: String, platform: Platform) -> String? {
+        let expected = platform == .ios ? "mov" : "mp4"
+        let name = path as NSString
+        guard name.pathExtension.lowercased() != expected else { return nil }
+        let reason = platform == .ios ? "on iOS (simctl records QuickTime)" : "on Android (screenrecord records MPEG-4)"
+        let suggestion = name.deletingPathExtension + "." + expected
+        return "--output must end in .\(expected) \(reason); got \(path). Try \(suggestion)."
+    }
 
     static func defaultOutput(for platform: Platform) -> String {
         platform == .ios ? ".grantiva/recordings/recording.mov" : ".grantiva/recordings/recording.mp4"
@@ -75,8 +109,11 @@ struct RecordCommand: AsyncParsableCommand {
                 "Android recordings are capped at \(AndroidPlatform.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(duration) is too long."
             )
         }
-        let platformDevice = try devicePlatform.make(platform)
         let outputPath = output ?? Self.defaultOutput(for: platform)
+        if let problem = Self.outputExtensionProblem(outputPath, platform: platform) {
+            throw ValidationError(problem)
+        }
+        let platformDevice = try devicePlatform.make(platform)
 
         let booted = try await platformDevice.bootDevice(named: targetName)
         let outputURL = URL(fileURLWithPath: outputPath)
@@ -90,7 +127,7 @@ struct RecordCommand: AsyncParsableCommand {
             throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
         }
 
-        let requested = try parseTimestamps()
+        let requested = requestedFrames
         let geometry = try await platformDevice.displayGeometry(deviceID: booted.udid)
         let frames = try await extractFrames(
             from: outputURL,
@@ -116,17 +153,6 @@ struct RecordCommand: AsyncParsableCommand {
                 Output.line("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
             }
         }
-    }
-
-    private func parseTimestamps() throws -> [Int] {
-        guard let framesAt, !framesAt.isEmpty else { return [] }
-        let values = try framesAt.split(separator: ",").map { part -> Int in
-            guard let value = Int(part.trimmingCharacters(in: .whitespaces)), value >= 0 else {
-                throw GrantivaError.invalidArgument("--frames-at must contain non-negative integer milliseconds")
-            }
-            return value
-        }
-        return Array(Set(values)).sorted()
     }
 
     private func extractFrames(
