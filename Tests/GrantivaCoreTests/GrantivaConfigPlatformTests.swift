@@ -124,4 +124,177 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         XCTAssertEqual(config.bundleId, "com.example.demo")
         XCTAssertEqual(config.platform, .ios)
     }
+
+    // C19: unknown keys are reported with their line, and the load still succeeds.
+    func testUnknownKeysYieldDiagnosticsWithLineNumbers() throws {
+        try write("grantiva.yml", """
+            schem: Landmarks
+            simulator: qa-cli-1
+            bundle_id: com.kylebrowning.Landmarks
+            screen:
+              - name: Home
+                path: launch
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        XCTAssertEqual(config.warnings, [
+            #"grantiva.yml:1: unknown key "schem" (did you mean "scheme"?)"#,
+            #"grantiva.yml:4: unknown key "screen" (did you mean "screens"?)"#,
+        ])
+        XCTAssertEqual(config.bundleId, "com.kylebrowning.Landmarks")
+    }
+
+    func testUnknownNestedKeysAreReported() throws {
+        try write("grantiva-android.yml", """
+            application_id: com.example
+            modul: app
+            screens:
+              - name: Home
+                path: launch
+                titel: Home
+              - name: Tab
+                path:
+                  - tpa: "Lakes"
+                  - tap: {text: "Landmarks", exakt: true}
+            diff:
+              threshold: 0.1
+              perceptual_threshold: 3
+              tolerance: 1
+            """)
+        let config = try GrantivaConfig.load(platform: .android, from: dir)
+        XCTAssertEqual(config.warnings, [
+            #"grantiva-android.yml:2: unknown key "modul" (did you mean "module"?)"#,
+            #"grantiva-android.yml:6: unknown key "titel""#,
+            #"grantiva-android.yml:9: unknown key "tpa" (did you mean "tap"?)"#,
+            #"grantiva-android.yml:10: unknown key "exakt" (did you mean "exact"?)"#,
+            #"grantiva-android.yml:14: unknown key "tolerance""#,
+        ])
+    }
+
+    func testUnknownKeysAreAttachedToADecodingError() throws {
+        try write("grantiva.yml", """
+            screens:
+              - name: Home
+                pth: launch
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            XCTAssertTrue(
+                error.localizedDescription.contains(#"grantiva.yml:3: unknown key "pth" (did you mean "path"?)"#),
+                error.localizedDescription
+            )
+        }
+    }
+
+    func testNullLabelsDecodeAsAbsent() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Home
+                path:
+                  - tap:
+                    assert_visible: ~
+                    swipe: up
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertNil(steps[0].tap)
+        XCTAssertFalse(steps[0].tapExact)
+        XCTAssertNil(steps[0].assertVisible)
+        XCTAssertEqual(steps[0].swipe, "up")
+    }
+
+    func testKnownKeysProduceNoWarnings() throws {
+        try write("grantiva.yml", """
+            scheme: App
+            workspace: App.xcworkspace
+            project: App.xcodeproj
+            simulator: iPhone 17
+            bundle_id: com.example
+            build_settings: ["A=1"]
+            platform: ios
+            flows: []
+            screens:
+              - name: Home
+                path:
+                  - tap: {text: "Go", exact: true}
+                  - swipe: up
+                  - type: "x"
+                  - wait: 1
+                  - assert_visible: "Go"
+                  - assert_not_visible: "No"
+                  - run_flow: "f.yaml"
+            diff:
+              threshold: 0.02
+              perceptual_threshold: 5
+            a11y:
+              rules: [missing_label]
+            """)
+        XCTAssertEqual(try GrantivaConfig.load(platform: .ios, from: dir).warnings, [])
+    }
+
+    func testMaestroFormatFilesAreNotCheckedForUnknownKeys() throws {
+        try write("grantiva.yml", """
+            appId: com.example
+            ---
+            - launchApp
+            - takeScreenshot: Home
+            """)
+        XCTAssertEqual(try GrantivaConfig.load(platform: .ios, from: dir).warnings, [])
+    }
+
+    // C15: an unknown swipe direction is a config error naming file, screen, and value.
+    func testUnknownSwipeDirectionIsRejected() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Diag
+                path:
+                  - swipe: diagonal
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            XCTAssertTrue(
+                error.localizedDescription.contains(
+                    #"grantiva.yml: screen "Diag": swipe direction "diagonal" is not one of up, down, left, right"#
+                ),
+                error.localizedDescription
+            )
+        }
+    }
+
+    func testSwipeDirectionsAreCaseInsensitive() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Mixed
+                path:
+                  - swipe: Up
+                  - swipe: DOWN
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps.map(\.swipe), ["Up", "DOWN"])
+    }
+
+    // A13: `tap`, `assert_visible` and `assert_not_visible` take `{text:, exact:}`.
+    func testLabelMappingFormDecodes() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.example
+            screens:
+              - name: Tab
+                path:
+                  - tap: {text: "Landmarks", exact: true}
+                  - assert_visible: {text: "Lakes", exact: true}
+                  - assert_not_visible: {text: "Back"}
+                  - tap: "Lakes"
+            """)
+        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps[0].tap, "Landmarks")
+        XCTAssertTrue(steps[0].tapExact)
+        XCTAssertEqual(steps[1].assertVisible, "Lakes")
+        XCTAssertTrue(steps[1].assertVisibleExact)
+        XCTAssertEqual(steps[2].assertNotVisible, "Back")
+        XCTAssertFalse(steps[2].assertNotVisibleExact)
+        XCTAssertEqual(steps[3].tap, "Lakes")
+        XCTAssertFalse(steps[3].tapExact)
+    }
 }

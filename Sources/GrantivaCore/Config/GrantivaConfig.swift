@@ -18,6 +18,9 @@ public struct GrantivaConfig: Sendable, Codable {
     public var platform: Platform = .ios
     /// Gradle-side settings. Present only when `platform == .android`.
     public var android: AndroidProject?
+    /// Non-fatal problems found while loading the file, such as unknown keys.
+    /// Each is a complete line naming the file and line number.
+    public var warnings: [String] = []
 
     public struct Screen: Sendable, Codable {
         public var name: String
@@ -53,6 +56,12 @@ public struct GrantivaConfig: Sendable, Codable {
             /// The directions a swipe step takes, lowercased.
             static let swipeDirectionNames = ["up", "down", "left", "right"]
 
+            /// Set by the mapping form `{text: "...", exact: true}`: the label
+            /// must equal the element's full text, not merely occur in it.
+            public var tapExact: Bool
+            public var assertVisibleExact: Bool
+            public var assertNotVisibleExact: Bool
+
             public init(
                 tap: String? = nil, swipe: String? = nil, type: String? = nil,
                 wait: Double? = nil, assertVisible: String? = nil,
@@ -60,7 +69,9 @@ public struct GrantivaConfig: Sendable, Codable {
                 tapById: Bool = false, assertVisibleById: Bool = false,
                 assertNotVisibleById: Bool = false,
                 swipeFrom: String? = nil, swipeFromById: Bool = false,
-                settle: Double? = nil
+                settle: Double? = nil,
+                tapExact: Bool = false, assertVisibleExact: Bool = false,
+                assertNotVisibleExact: Bool = false
             ) {
                 self.tap = tap
                 self.swipe = swipe
@@ -75,13 +86,63 @@ public struct GrantivaConfig: Sendable, Codable {
                 self.swipeFrom = swipeFrom
                 self.swipeFromById = swipeFromById
                 self.settle = settle
+                self.tapExact = tapExact
+                self.assertVisibleExact = assertVisibleExact
+                self.assertNotVisibleExact = assertNotVisibleExact
             }
 
-            enum CodingKeys: String, CodingKey {
+            enum CodingKeys: String, CodingKey, CaseIterable {
                 case tap, swipe, type, wait
                 case assertVisible = "assert_visible"
                 case assertNotVisible = "assert_not_visible"
                 case runFlow = "run_flow"
+            }
+
+            /// `tap:`, `assert_visible:` and `assert_not_visible:` take either a
+            /// bare label or `{text: "Label", exact: true}`.
+            struct Label: Codable {
+                var text: String
+                var exact: Bool?
+
+                enum CodingKeys: String, CodingKey, CaseIterable {
+                    case text, exact
+                }
+            }
+
+            public init(from decoder: Decoder) throws {
+                let c = try decoder.container(keyedBy: CodingKeys.self)
+                func label(_ key: CodingKeys) throws -> (String?, Bool) {
+                    guard c.contains(key), try !c.decodeNil(forKey: key) else { return (nil, false) }
+                    if let text = try? c.decode(String.self, forKey: key) { return (text, false) }
+                    let mapped = try c.decode(Label.self, forKey: key)
+                    return (mapped.text, mapped.exact ?? false)
+                }
+                (tap, tapExact) = try label(.tap)
+                (assertVisible, assertVisibleExact) = try label(.assertVisible)
+                (assertNotVisible, assertNotVisibleExact) = try label(.assertNotVisible)
+                swipe = try c.decodeIfPresent(String.self, forKey: .swipe)
+                type = try c.decodeIfPresent(String.self, forKey: .type)
+                wait = try c.decodeIfPresent(Double.self, forKey: .wait)
+                runFlow = try c.decodeIfPresent(String.self, forKey: .runFlow)
+            }
+
+            public func encode(to encoder: Encoder) throws {
+                var c = encoder.container(keyedBy: CodingKeys.self)
+                func label(_ text: String?, exact: Bool, _ key: CodingKeys) throws {
+                    guard let text else { return }
+                    if exact {
+                        try c.encode(Label(text: text, exact: true), forKey: key)
+                    } else {
+                        try c.encode(text, forKey: key)
+                    }
+                }
+                try label(tap, exact: tapExact, .tap)
+                try c.encodeIfPresent(swipe, forKey: .swipe)
+                try c.encodeIfPresent(type, forKey: .type)
+                try c.encodeIfPresent(wait, forKey: .wait)
+                try label(assertVisible, exact: assertVisibleExact, .assertVisible)
+                try label(assertNotVisible, exact: assertNotVisibleExact, .assertNotVisible)
+                try c.encodeIfPresent(runFlow, forKey: .runFlow)
             }
         }
 
@@ -105,7 +166,7 @@ public struct GrantivaConfig: Sendable, Codable {
             self.perceptualThreshold = perceptualThreshold
         }
 
-        enum CodingKeys: String, CodingKey {
+        enum CodingKeys: String, CodingKey, CaseIterable {
             case threshold
             case perceptualThreshold = "perceptual_threshold"
         }
@@ -119,7 +180,7 @@ public struct GrantivaConfig: Sendable, Codable {
         }
     }
 
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey, CaseIterable {
         case scheme, workspace, project, simulator
         case bundleId = "bundle_id"
         case buildSettings = "build_settings"
@@ -203,7 +264,11 @@ public struct GrantivaConfig: Sendable, Codable {
 
         if fm.fileExists(atPath: configURL.path) {
             let contents = try String(contentsOf: configURL, encoding: .utf8)
-            return try parse(contents, platform: platform, fileName: platform.configFileName)
+            let config = try parse(contents, platform: platform, fileName: platform.configFileName)
+            for warning in config.warnings {
+                GrantivaLog.logger.warning("\(warning)")
+            }
+            return config
         }
 
         // The .maestro/ fallback is an iOS-era convention; Android has none.
@@ -239,18 +304,26 @@ public struct GrantivaConfig: Sendable, Codable {
                 throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
             }
         }
+        // Unknown keys are dropped by the decoder; report them, and attach
+        // them to a decoding error since a misspelled key is often its cause.
+        let warnings = firstDocument.map {
+            ConfigKeyValidator.unknownKeyWarnings(in: $0, platform: platform, fileName: fileName)
+        } ?? []
         var config: GrantivaConfig
         do {
             config = try YAMLDecoder().decode(GrantivaConfig.self, from: contents)
         } catch {
-            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+            let hints = warnings.map { "\n\($0)" }.joined()
+            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)\(hints)")
         }
+        config.warnings = warnings
         if let declared = (try? YAMLDecoder().decode(DeclaredPlatform.self, from: contents))?.platform,
            declared != platform {
             throw GrantivaError.invalidArgument(
                 "\(fileName) declares `platform: \(declared.rawValue)` but it is the \(platform.displayName) config file."
             )
         }
+        try validateSwipeDirections(config.screens, fileName: fileName)
         config.platform = platform
         if platform == .android {
             do {
@@ -260,6 +333,21 @@ public struct GrantivaConfig: Sendable, Codable {
             }
         }
         return config
+    }
+
+    /// `swipe:` is a free string in the YAML; an unknown direction must fail
+    /// here, before any device work, not when the runner reaches the step.
+    static func validateSwipeDirections(_ screens: [Screen], fileName: String) throws {
+        for screen in screens {
+            guard case .steps(let steps) = screen.path else { continue }
+            for direction in steps.compactMap(\.swipe)
+            where !Screen.Step.swipeDirectionNames.contains(direction.lowercased()) {
+                throw GrantivaError.invalidArgument(
+                    "\(fileName): screen \"\(screen.name)\": swipe direction \"\(direction)\" is not one of "
+                        + Screen.Step.swipeDirectionNames.joined(separator: ", ")
+                )
+            }
+        }
     }
 
     private struct DeclaredPlatform: Decodable {
