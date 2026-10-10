@@ -201,6 +201,11 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(check.message, "Found")
     }
 
+    func testNoBootedSimulatorFixNamesAnInstalledDeviceType() {
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).fix, "Run: grantiva simulator ensure --name \"iPhone 17 Pro\"")
+    }
+
     func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
         XCTAssertTrue(checks.contains { $0.name == "Android SDK" })

@@ -92,12 +92,18 @@ public struct DoctorRunner: Sendable {
                 message: "\(device.name) — \(device.runtime)", fix: nil
             )
         } catch {
-            return DoctorCheck(
-                name: "Booted Simulator", status: .warning,
-                message: "No simulator booted",
-                fix: "Run: xcrun simctl boot \"iPhone 16\""
-            )
+            return Self.noBootedSimulatorCheck(newestIPhone: await SimulatorManager.live.newestIPhone())
         }
+    }
+
+    /// Names an iPhone type this host has, not a hardcoded model that newer
+    /// Xcodes no longer ship.
+    static func noBootedSimulatorCheck(newestIPhone: String?) -> DoctorCheck {
+        DoctorCheck(
+            name: "Booted Simulator", status: .warning,
+            message: "No simulator booted",
+            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\""
+        )
     }
 
     func checkRunner(
