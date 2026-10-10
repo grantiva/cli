@@ -126,11 +126,13 @@ public struct SimulatorManager: Sendable, Decodable {
 
     /// Creates or reuses a simulator named `name`.
     ///
-    /// `deviceType` and `runtime` are optional: the device type is inferred from
-    /// the name (so `--name "iPhone 17"` is enough), and the runtime defaults to
-    /// the newest installed one. When neither is given the call is purely
-    /// idempotent — an existing device with that name is reused as-is rather
-    /// than rejected for not matching an inferred configuration.
+    /// An existing device with that name is looked up first and reused, so
+    /// `--name` alone is enough to reuse any simulator, whatever it is called.
+    /// `deviceType` and `runtime` are checked against it only when given.
+    /// Creating a new device needs a device type: `deviceType`, or a device
+    /// model inferred from the name (so `--name "iPhone 17"` is enough); the
+    /// runtime defaults to the newest installed one. The result reports the
+    /// device's own type and runtime.
     public func ensure(
         name: String,
         deviceType: String? = nil,
@@ -138,41 +140,28 @@ public struct SimulatorManager: Sendable, Decodable {
         boot shouldBoot: Bool
     ) async throws -> SimulatorProvisionResult {
         let catalog = try await simulatorCatalog()
-        let strictConfiguration = deviceType != nil || requestedRuntime != nil
-        let type: SimctlCatalog.DeviceType
-        if let deviceType {
+        let requestedType: SimctlCatalog.DeviceType? = try deviceType.map { deviceType in
             guard let match = catalog.deviceTypes.first(where: {
                 $0.name.caseInsensitiveCompare(deviceType) == .orderedSame || $0.identifier == deviceType
             }) else {
                 throw GrantivaError.invalidArgument("Simulator device type not found: \"\(deviceType)\"")
             }
-            type = match
-        } else {
-            guard let inferred = Self.inferDeviceType(fromName: name, in: catalog.deviceTypes.map { ($0.name, $0.identifier) }) else {
-                throw GrantivaError.invalidArgument(
-                    "Could not infer a device type from the name \"\(name)\". "
-                        + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
-                )
-            }
-            guard let match = catalog.deviceTypes.first(where: { $0.identifier == inferred.identifier }) else {
-                throw GrantivaError.invalidArgument("Simulator device type not found: \"\(inferred.name)\"")
-            }
-            type = match
+            return match
         }
         let availableRuntimes = catalog.runtimes.filter { $0.isAvailable && $0.identifier.contains("iOS") }
-        let runtime: SimctlCatalog.Runtime
-        if (requestedRuntime ?? "latest").lowercased() == "latest" {
-            guard let latest = availableRuntimes.max(by: { versionIsLess($0.version, $1.version) }) else {
-                throw GrantivaError.invalidArgument("No available iOS simulator runtime is installed")
+        func resolveRuntime(_ wanted: String) throws -> SimctlCatalog.Runtime {
+            if wanted.lowercased() == "latest" {
+                guard let latest = availableRuntimes.max(by: { versionIsLess($0.version, $1.version) }) else {
+                    throw GrantivaError.invalidArgument("No available iOS simulator runtime is installed")
+                }
+                return latest
             }
-            runtime = latest
-        } else {
-            let wanted = requestedRuntime ?? "latest"
             guard let match = availableRuntimes.first(where: { $0.identifier == wanted || $0.name == wanted || $0.version == wanted }) else {
                 throw GrantivaError.invalidArgument("Simulator runtime not found or unavailable: \"\(wanted)\"")
             }
-            runtime = match
+            return match
         }
+        let pinnedRuntime = try requestedRuntime.map(resolveRuntime)
 
         // The look-up/create pair runs under a cross-process lock so two
         // concurrent runs asking for the same name reuse one device instead of
@@ -182,14 +171,30 @@ public struct SimulatorManager: Sendable, Decodable {
             if named.count > 1 { throw GrantivaError.invalidArgument("Multiple simulators are named \"\(name)\"; delete duplicates or use a unique name") }
             if let existing = named.first {
                 // Only enforce the configuration the caller actually asked for.
-                // `ensure --name "iPhone 17"` must reuse whatever already
-                // carries that name instead of failing on an inferred runtime.
-                guard strictConfiguration else { return (false, existing.udid) }
-                guard existing.deviceTypeIdentifier == type.identifier && existing.runtime == runtime.shortName else {
-                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(type.name), \(runtime.name)")
+                let typeMatches = requestedType.map { existing.deviceTypeIdentifier == $0.identifier } ?? true
+                let runtimeMatches = pinnedRuntime.map { existing.runtime == $0.shortName } ?? true
+                guard typeMatches && runtimeMatches else {
+                    let requested = [requestedType?.name, pinnedRuntime?.name].compactMap { $0 }.joined(separator: ", ")
+                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(requested)")
                 }
                 return (false, existing.udid)
             }
+            let type: SimctlCatalog.DeviceType
+            if let requestedType {
+                type = requestedType
+            } else {
+                guard let inferred = Self.inferDeviceType(fromName: name, in: catalog.deviceTypes.map { ($0.name, $0.identifier) }) else {
+                    throw GrantivaError.invalidArgument(
+                        "Could not infer a device type from the name \"\(name)\". "
+                            + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
+                    )
+                }
+                guard let match = catalog.deviceTypes.first(where: { $0.identifier == inferred.identifier }) else {
+                    throw GrantivaError.invalidArgument("Simulator device type not found: \"\(inferred.name)\"")
+                }
+                type = match
+            }
+            let runtime = try pinnedRuntime ?? resolveRuntime("latest")
             let udid = try await execute("xcrun simctl create \(shellQuoted(name)) \(shellQuoted(type.identifier)) \(shellQuoted(runtime.identifier))")
             try provenance.register(udid: udid, name: name)
             return (true, udid)
@@ -200,7 +205,11 @@ public struct SimulatorManager: Sendable, Decodable {
         }
         let device = try await exactDevice(nameOrUDID: udid)
         let geometry = shouldBoot ? try await displayGeometry(udid: udid) : nil
-        return SimulatorProvisionResult(name: name, udid: udid, deviceType: type.name, runtime: runtime.name, created: created, state: device.state, pointWidth: geometry?.points[0], pointHeight: geometry?.points[1], pixelWidth: geometry?.pixels[0], pixelHeight: geometry?.pixels[1], displayScale: geometry?.scale)
+        // Report what the device actually is, not what was requested or inferred.
+        let typeName = catalog.deviceTypes.first { $0.identifier == device.deviceTypeIdentifier }?.name
+            ?? device.deviceTypeIdentifier ?? "unknown"
+        let runtimeName = catalog.runtimes.first { $0.shortName == device.runtime }?.name ?? device.runtime
+        return SimulatorProvisionResult(name: name, udid: udid, deviceType: typeName, runtime: runtimeName, created: created, state: device.state, pointWidth: geometry?.points[0], pointHeight: geometry?.points[1], pixelWidth: geometry?.pixels[0], pixelHeight: geometry?.pixels[1], displayScale: geometry?.scale)
     }
 
     public func delete(name: String) async throws -> SimulatorDevice {

@@ -404,10 +404,13 @@ The human-readable line (`Reused iPhone 17 Pro (…) — Booted`) goes to stderr
 a terminal still shows it while a command substitution ignores it. `--json`
 emits the full record, including display geometry.
 
-`ensure` needs only `--name`: it reads the device type out of the name, picks the
-newest installed runtime, reuses an existing simulator with that name, and boots
-it. Pass `--device-type` / `--runtime` to pin them exactly, and `--no-boot` to
-create without booting. `--json` reports the UDID and display geometry.
+`ensure --name` alone reuses an existing simulator with that name, whatever it is
+called, and boots it; `--json` reports that device's own type and runtime. To
+create a new one, the name must contain a device model (`"APP-652 iPhone 17 Pro"`)
+or you pass `--device-type`; the newest installed runtime is used unless you pass
+`--runtime`. `--device-type` / `--runtime` are checked against an existing device
+only when given. `--no-boot` creates without booting. `--json` reports the UDID
+and display geometry.
 
 ### Reclaiming a simulator
 

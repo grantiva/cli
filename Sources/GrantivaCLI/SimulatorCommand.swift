@@ -11,17 +11,17 @@ struct SimulatorCommand: AsyncParsableCommand {
 
     struct Ensure: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Create or reuse a named simulator and boot it. `--name` alone is enough: the device type is read from the name and the newest installed runtime is used."
+            abstract: "Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a device model (\"iPhone 17\") or --device-type must be given; the newest installed runtime is used unless --runtime is passed."
         )
         @OptionGroup var options: GlobalOptions
 
-        @Option(name: .long, help: "Simulator name. Also the source of the device type when --device-type is omitted, so `--name \"iPhone 17\"` works on its own.")
+        @Option(name: .long, help: "Simulator name. An existing simulator with this name is reused as-is. When creating, the device type is read from the name if --device-type is omitted, so `--name \"iPhone 17\"` works on its own.")
         var name: String
 
-        @Option(name: .long, help: "Device type name (\"iPhone 17 Pro\") or identifier. Defaults to the device model named in --name.")
+        @Option(name: .long, help: "Device type name (\"iPhone 17 Pro\") or identifier. Defaults to the device model named in --name. Checked against an existing simulator only when given.")
         var deviceType: String?
 
-        @Option(name: .long, help: "Runtime name, version, identifier, or `latest`. Defaults to the newest installed iOS runtime.")
+        @Option(name: .long, help: "Runtime name, version, identifier, or `latest`. Defaults to the newest installed iOS runtime when creating. Checked against an existing simulator only when given.")
         var runtime: String?
 
         @Flag(inversion: .prefixedNo, help: "Boot the simulator and wait for it to be ready. On by default; --no-boot creates it without booting.")

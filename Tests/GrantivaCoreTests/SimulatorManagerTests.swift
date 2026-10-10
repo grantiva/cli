@@ -155,6 +155,73 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertEqual(outcomes.map(\.session.udid), ["MINE-1"])
         XCTAssertTrue(simctl.commands.contains("xcrun simctl shutdown 'MINE-1'"))
     }
+
+    // MARK: - I10: ensure reuses by name before inferring
+
+    func testBareEnsureReusesAModelLessNameWithItsOwnTypeAndRuntime() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "qa-x", udid: "QAX-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+
+        let result = try await manager.ensure(name: "qa-x", boot: false)
+
+        XCTAssertEqual(result.udid, "QAX-1")
+        XCTAssertFalse(result.created)
+        XCTAssertEqual(result.deviceType, "iPhone 17")
+        XCTAssertEqual(result.runtime, "iOS 26.0")
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl create") })
+    }
+
+    func testBareEnsureReportsTheExistingRuntimeNotTheNewest() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "QA iPhone 17 Pro", udid: "PIN-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+
+        let result = try await manager.ensure(name: "QA iPhone 17 Pro", boot: false)
+        XCTAssertEqual(result.runtime, "iOS 26.0")
+        XCTAssertEqual(result.deviceType, "iPhone 17 Pro")
+    }
+
+    func testEnsureWithOnlyADeviceTypeDoesNotRejectAnOlderRuntime() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "QA iPhone 17 Pro", udid: "PIN-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17Pro),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+
+        let result = try await manager.ensure(name: "QA iPhone 17 Pro", deviceType: "iPhone 17 Pro", boot: false)
+        XCTAssertEqual(result.udid, "PIN-1")
+        XCTAssertEqual(result.runtime, "iOS 26.0")
+    }
+
+    func testEnsureStillRejectsAnExplicitlyMismatchedRuntime() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "qa-x", udid: "QAX-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+
+        do {
+            _ = try await manager.ensure(name: "qa-x", runtime: "27.0", boot: false)
+            XCTFail("expected an incompatible-configuration error")
+        } catch {
+            XCTAssertTrue(String(describing: error).contains("incompatible configuration"), "\(error)")
+        }
+    }
+
+    func testBareEnsureOfAnUnknownModelLessNameStillFailsToInfer() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, _, _) = makeManager(simctl)
+
+        do {
+            _ = try await manager.ensure(name: "qa-new", boot: false)
+            XCTFail("expected the inference error")
+        } catch {
+            let message = (error as? GrantivaError)?.errorDescription ?? String(describing: error)
+            XCTAssertTrue(message.contains("Could not infer a device type from the name \"qa-new\""), message)
+        }
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl create") })
+    }
 }
 
 /// A stateful stand-in for the handful of `simctl` commands SimulatorManager issues.
