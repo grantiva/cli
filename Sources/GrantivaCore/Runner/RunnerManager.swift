@@ -27,19 +27,49 @@ extension RunnerManager {
     /// mismatch and re-extracts.
     public static let installStamp = runnerVersion + "+android-drivers-2"
 
+    static let resourceBundleName = "grantiva_GrantivaCore"
+
+    /// The resource bundle that carries the runner tarballs, or nil when it is
+    /// missing (a binary copied away from its `.bundle`). Mirrors the
+    /// SwiftPM-generated `Bundle.module` lookup, which traps instead of
+    /// returning nil, so a missing bundle can surface as a `GrantivaError`.
+    static let resourceBundle: Bundle? = {
+        final class BundleFinder {}
+        let candidates: [URL?] = [
+            Bundle.main.resourceURL,
+            Bundle(for: BundleFinder.self).resourceURL,
+            Bundle.main.bundleURL,
+            Bundle.main.executableURL?.resolvingSymlinksInPath().deletingLastPathComponent(),
+        ]
+        for candidate in candidates {
+            if let url = candidate?.appendingPathComponent(resourceBundleName + ".bundle"),
+               let bundle = Bundle(url: url) {
+                return bundle
+            }
+        }
+        return nil
+    }()
+
     static func embeddedTarballURL(arch: String) -> URL? {
-        Bundle.module.url(forResource: "grantiva-runner-\(arch)", withExtension: "tar.gz")
+        resourceBundle?.url(forResource: "grantiva-runner-\(arch)", withExtension: "tar.gz")
     }
 
     static func embeddedDriversTarballURL() -> URL? {
-        Bundle.module.url(forResource: "android-drivers", withExtension: "tar.gz")
+        resourceBundle?.url(forResource: "android-drivers", withExtension: "tar.gz")
     }
 
     /// Extracts the arch runner tarball, then the shared Android drivers,
     /// into `destination`. Both unpack relative to `./`, so the result is
     /// `grantiva-runner`, `drivers/ios/…`, `drivers/android/*.apk`.
-    static func extractEmbedded(into destination: String) throws {
-        guard let runner = embeddedTarballURL(arch: currentArch), let drivers = embeddedDriversTarballURL() else {
+    static func extractEmbedded(into destination: String, bundle: Bundle? = resourceBundle) throws {
+        guard let bundle else {
+            throw GrantivaError.notFound(
+                "The \(resourceBundleName).bundle resource bundle was not found next to the grantiva executable, "
+                    + "so the embedded runner cannot be extracted. Reinstall grantiva, or keep the bundle beside the binary when copying it."
+            )
+        }
+        guard let runner = bundle.url(forResource: "grantiva-runner-\(currentArch)", withExtension: "tar.gz"),
+              let drivers = bundle.url(forResource: "android-drivers", withExtension: "tar.gz") else {
             throw GrantivaError.runnerNotFound
         }
         for tarball in [runner, drivers] {
@@ -54,17 +84,34 @@ extension RunnerManager {
         }
     }
 
+    /// Shared runner state: `locks/` (simulator leases), the WDA build
+    /// `cache/`, and one install per stamp under `versions/`.
+    /// `GRANTIVA_RUNNER_HOME` overrides the default `~/.grantiva/runner`.
     static let baseDir: String = {
+        if let override = ProcessInfo.processInfo.environment["GRANTIVA_RUNNER_HOME"], !override.isEmpty {
+            return override
+        }
         let home = FileManager.default.homeDirectoryForCurrentUser.path
         return "\(home)/.grantiva/runner"
     }()
 
+    /// This version's install: the runner binary, its `version` stamp and
+    /// `drivers/`. Each stamp gets its own directory so two grantiva versions
+    /// on one host do not re-extract over each other.
+    static func installDir(baseDir: String, stamp: String) -> String {
+        "\(baseDir)/versions/\(stamp)"
+    }
+
+    static let currentInstallDir: String = {
+        installDir(baseDir: baseDir, stamp: installStamp)
+    }()
+
     public static let binaryPath: String = {
-        "\(baseDir)/grantiva-runner"
+        "\(currentInstallDir)/grantiva-runner"
     }()
 
     static let versionFilePath: String = {
-        "\(baseDir)/version"
+        "\(currentInstallDir)/version"
     }()
 
     static let cacheDir: String = {
@@ -84,29 +131,28 @@ extension RunnerManager {
 
     public static let live = RunnerManager(
         ensureAvailable: {
-            let fm = FileManager.default
-
-            // Check if already extracted and version matches
-            if fm.fileExists(atPath: binaryPath),
-               let versionData = fm.contents(atPath: versionFilePath),
-               let version = String(data: versionData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines),
-               version == installStamp {
-                return
-            }
-
             try installIfNeeded(
-                baseDir: baseDir,
+                baseDir: currentInstallDir,
                 binaryPath: binaryPath,
                 versionFilePath: versionFilePath,
                 cacheDir: cacheDir,
                 version: installStamp,
-                extract: extractEmbedded
+                extract: { try extractEmbedded(into: $0) }
             )
         },
         runnerPath: { binaryPath },
-        runnerDir: { baseDir }
+        runnerDir: { currentInstallDir }
     )
 
+    /// Installs the runner into `baseDir` unless `binaryPath` exists and the
+    /// version file already holds `version`.
+    ///
+    /// The tarballs are extracted into a staging directory first; only when
+    /// that succeeds are the extracted entries (the binary, `drivers/`) swapped
+    /// into `baseDir`, one by one, and the version written last. Nothing else
+    /// in `baseDir` is touched, and a failed extract leaves the previous
+    /// install exactly as it was. When `cacheDir` lives outside `baseDir`, it
+    /// is linked in as `cache` so the runner's WDA build cache is shared.
     static func installIfNeeded(
         baseDir: String,
         binaryPath: String,
@@ -119,35 +165,77 @@ extension RunnerManager {
         if fm.fileExists(atPath: binaryPath),
            let versionData = fm.contents(atPath: versionFilePath),
            String(data: versionData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) == version {
+            try linkCache(cacheDir, into: baseDir)
             return
         }
 
-        // Preserve WDA build cache across updates, including every failure path.
-        let hadCache = fm.fileExists(atPath: cacheDir)
-        let tempCache = "\(baseDir)-cache-\(UUID().uuidString)"
-        var cacheRestored = !hadCache
-        if hadCache { try fm.moveItem(atPath: cacheDir, toPath: tempCache) }
-        defer {
-            if !cacheRestored, fm.fileExists(atPath: tempCache) {
-                try? fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
-                if fm.fileExists(atPath: cacheDir) { try? fm.removeItem(atPath: cacheDir) }
-                if (try? fm.moveItem(atPath: tempCache, toPath: cacheDir)) != nil { cacheRestored = true }
+        try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
+        let staging = "\(baseDir)/.staging-\(UUID().uuidString)"
+        let backup = "\(baseDir)/.previous-\(UUID().uuidString)"
+        try fm.createDirectory(atPath: staging, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(atPath: staging) }
+
+        try extract(staging)
+
+        // Swap the extracted entries in, keeping the replaced ones aside until
+        // every move has succeeded so a failure can put them back.
+        // The tarball's `cache/` holds prebuilt WDA builds. It never replaces
+        // the shared cache; configs the shared cache lacks are merged in below.
+        let entries = try fm.contentsOfDirectory(atPath: staging).filter { $0 != "cache" }
+        try fm.createDirectory(atPath: backup, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(atPath: backup) }
+        var swapped: [(destination: String, previous: String?)] = []
+        do {
+            for entry in entries {
+                let destination = "\(baseDir)/\(entry)"
+                var previous: String?
+                if (try? fm.attributesOfItem(atPath: destination)) != nil {
+                    previous = "\(backup)/\(entry)"
+                    try fm.moveItem(atPath: destination, toPath: previous!)
+                }
+                swapped.append((destination, previous))
+                try fm.moveItem(atPath: "\(staging)/\(entry)", toPath: destination)
+            }
+            try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binaryPath)
+        } catch {
+            for item in swapped.reversed() {
+                try? fm.removeItem(atPath: item.destination)
+                if let previous = item.previous { try? fm.moveItem(atPath: previous, toPath: item.destination) }
+            }
+            throw error
+        }
+
+        try linkCache(cacheDir, into: baseDir)
+        mergeMissing(from: "\(staging)/cache", into: cacheDir, depth: 1)
+        try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
+    }
+
+    /// Creates the shared `cacheDir` and, when it lives outside `baseDir`,
+    /// links it in as `baseDir/cache` (unless something is already there).
+    private static func linkCache(_ cacheDir: String, into baseDir: String) throws {
+        let fm = FileManager.default
+        try fm.createDirectory(atPath: cacheDir, withIntermediateDirectories: true)
+        let link = "\(baseDir)/cache"
+        guard (link as NSString).standardizingPath != (cacheDir as NSString).standardizingPath,
+              (try? fm.attributesOfItem(atPath: link)) == nil else { return }
+        try fm.createSymbolicLink(atPath: link, withDestinationPath: cacheDir)
+    }
+
+    /// Moves entries of `source` that `destination` lacks into it, descending
+    /// `depth` levels into directories both sides have (`cache/wda-builds/<config>`),
+    /// so an existing build is never mixed with a prebuilt one.
+    private static func mergeMissing(from source: String, into destination: String, depth: Int) {
+        let fm = FileManager.default
+        guard let entries = try? fm.contentsOfDirectory(atPath: source) else { return }
+        for entry in entries {
+            let from = "\(source)/\(entry)", to = "\(destination)/\(entry)"
+            var isDirectory: ObjCBool = false
+            if fm.fileExists(atPath: to, isDirectory: &isDirectory) {
+                if depth > 0, isDirectory.boolValue { mergeMissing(from: from, into: to, depth: depth - 1) }
+            } else {
+                try? fm.moveItem(atPath: from, toPath: to)
             }
         }
-
-        if fm.fileExists(atPath: baseDir) { try fm.removeItem(atPath: baseDir) }
-        try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
-
-        try extract(baseDir)
-
-        if hadCache {
-            if fm.fileExists(atPath: cacheDir) { try fm.removeItem(atPath: cacheDir) }
-            try fm.moveItem(atPath: tempCache, toPath: cacheDir)
-            cacheRestored = true
-        }
-
-        try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: binaryPath)
-        try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
     }
 }
 
