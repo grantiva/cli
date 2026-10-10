@@ -428,7 +428,8 @@ dying runner starts), releases the lease, removes the killed runner's keep-alive
 session files, and clears any stale capacity record: a pending reservation, or a
 record with no session ID whose owner process is dead. A named session's record
 is kept while the simulator is booted, so `teardown --session-id` still finds the
-device; `--json` lists it under `capacityRecordsKept` with the reason. `--session-id` and `--udid` are mutually exclusive.
+device; `--json` lists it under `capacityRecordsKept` with the reason.
+`--session-id` and `--udid` are mutually exclusive.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
