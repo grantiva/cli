@@ -340,6 +340,13 @@ public enum RunnerSession {
                 try? FileManager.default.removeItem(atPath: reportDir)
             }
         }
+        // Runs after capture collection and trace export, which both read the
+        // staged paths from report.json, and on every exit path.
+        defer {
+            if preserveReportDir {
+                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: stagedPathMap)
+            }
+        }
         defer {
             exportTraceArtifacts(
                 reportDir: reportDir, outputDir: outputDir, snapshot: snapshot,
