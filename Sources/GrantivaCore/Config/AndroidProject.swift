@@ -26,7 +26,7 @@ public struct AndroidProject: Sendable, Codable, Equatable {
         self.buildArgs = buildArgs
     }
 
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey, CaseIterable {
         case module, variant, emulator
         case applicationId = "application_id"
         case systemImage = "system_image"

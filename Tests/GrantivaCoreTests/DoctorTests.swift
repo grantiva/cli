@@ -261,6 +261,16 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(check.fix, "Run: git init")
     }
 
+    func testConfigCheckWarnsAboutUnknownKeys() throws {
+        try "schem: Landmarks\nbundle_id: com.example\n".write(
+            to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8
+        )
+        let check = DoctorRunner().checkConfig(for: .ios, directory: scratch.path)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.section, .project)
+        XCTAssertTrue(check.message.contains(#"grantiva.yml:1: unknown key "schem" (did you mean "scheme"?)"#), check.message)
+    }
+
     func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
         XCTAssertTrue(checks.contains { $0.name == "Android SDK" })
