@@ -72,8 +72,17 @@ a run is interrupted, the next run restores them first.
 
 ## Logs
 
-`grantiva run --logs` streams `logcat` filtered to the app's uid. `--logs-tag <tag>` keeps
-one tag. `--logs-predicate` is iOS-only.
+`grantiva run --logs` streams `logcat` filtered to the app's uid, starting at the device's
+current time (the logcat buffer is not cleared). `--logs-tag <tag>` keeps one tag.
+`--logs-level` maps to a minimum logcat priority, for the tag or for every tag:
+
+| `--logs-level`      | logcat filter |
+|---------------------|---------------|
+| (none) or `default` | `*:I`         |
+| `info`              | `*:I`         |
+| `debug`             | `*:D`         |
+
+Any other value is rejected. `--logs-predicate` is iOS-only.
 
 ## CI
 

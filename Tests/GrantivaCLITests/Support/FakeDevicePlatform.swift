@@ -42,7 +42,7 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         record("screenshot")
         FileManager.default.createFile(atPath: path, contents: Data())
     }
-    func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
+    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
         record("logStream(\(appID ?? "-"),\(filter ?? "-"))"); return LogStreamCommand(executable: "/bin/echo", arguments: ["fake log"])
     }
     func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }

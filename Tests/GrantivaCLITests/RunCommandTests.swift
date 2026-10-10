@@ -200,6 +200,20 @@ final class RunCommandTests: XCTestCase {
         }
     }
 
+    /// A08: `--logs-level` is validated against the documented values.
+    func testLogsLevelAcceptsOnlyTheDocumentedValues() throws {
+        XCTAssertEqual(try RunCommand.parse(["--logs-level", "default"]).logsLevel, .default)
+        XCTAssertEqual(try RunCommand.parse(["--logs-level", "info"]).logsLevel, .info)
+        XCTAssertEqual(try RunCommand.parse(["--logs-level", "debug"]).logsLevel, .debug)
+        XCTAssertNil(try RunCommand.parse([]).logsLevel)
+        XCTAssertThrowsError(try RunCommand.parse(["--logs-level", "warning"])) { error in
+            XCTAssertEqual(RunCommand.exitCode(for: error), .validationFailure)
+            let message = RunCommand.message(for: error)
+            XCTAssertTrue(message.contains("warning"), message)
+            XCTAssertTrue(message.contains("default") && message.contains("info") && message.contains("debug"), message)
+        }
+    }
+
     func testDefaultsLeaveReadyFileAndEnvironmentUnset() throws {
         let command = try RunCommand.parse([])
         XCTAssertNil(command.readyFile)

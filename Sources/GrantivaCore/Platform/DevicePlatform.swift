@@ -40,6 +40,22 @@ public struct PlatformBuildRequest: Sendable {
     }
 }
 
+/// `--logs-level`. iOS passes it to `log stream --level`; Android maps it to
+/// a logcat priority: `default` and `info` keep I and above, `debug` adds D.
+public enum LogStreamLevel: String, CaseIterable, Sendable {
+    case `default`
+    case info
+    case debug
+
+    /// The minimum logcat priority letter for this level.
+    public var logcatPriority: String {
+        switch self {
+        case .default, .info: return "I"
+        case .debug: return "D"
+        }
+    }
+}
+
 public struct LogStreamCommand: Sendable, Equatable {
     public let executable: String
     public let arguments: [String]
@@ -100,7 +116,7 @@ public protocol DevicePlatform: Sendable {
     func screenshot(deviceID: String, to path: String) async throws
     /// The process that streams the app's logs. `filter` is the platform's
     /// own syntax (an NSPredicate on iOS, a logcat tag on Android).
-    func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand
+    func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand
     /// Extra environment for the runner process that drives `deviceID`.
     func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String]
     /// Called once the runner process that drove `deviceID` has exited.

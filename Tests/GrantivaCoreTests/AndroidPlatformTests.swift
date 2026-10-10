@@ -120,16 +120,36 @@ final class AndroidPlatformTests: XCTestCase {
         }
     }
 
-    func testLogStreamClearsThenFiltersByUID() async throws {
-        let shell = ScriptedShell([.success(""), .success("package:com.example.app uid:10123")])
+    /// A08: the stream starts at the device's current time instead of
+    /// clearing the whole logcat buffer, and filters by uid and tag.
+    func testLogStreamStartsNowWithoutClearingAndFiltersByUID() async throws {
+        let shell = ScriptedShell([.success("package:com.example.app uid:10123"), .success("1791592382\n")])
         let command = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example.app", filter: "MyTag", level: nil)
-        XCTAssertEqual(shell.commands[0], "'/sdk/platform-tools/adb' -s 'emulator-5554' logcat -c")
+        XCTAssertFalse(shell.commands.contains { $0.contains("logcat -c") }, "\(shell.commands)")
+        XCTAssertEqual(shell.commands[1], "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'date +%s'")
         XCTAssertEqual(command.executable, "/sdk/platform-tools/adb")
-        XCTAssertEqual(command.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-s", "MyTag"])
+        XCTAssertEqual(command.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-T", "1791592382.000", "-s", "MyTag:I"])
+    }
+
+    /// A08: the documented levels map to logcat priorities; no level is `default`.
+    func testLogStreamMapsLevelsToLogcatPriorities() async throws {
+        let expected: [(LogStreamLevel?, String)] = [(nil, "*:I"), (.default, "*:I"), (.info, "*:I"), (.debug, "*:D")]
+        for (level, filter) in expected {
+            let shell = ScriptedShell([.success("package:com.example uid:10123"), .success("1791592382")])
+            let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: level)
+            XCTAssertEqual(stream.arguments.suffix(2), ["-s", filter], "\(String(describing: level))")
+            XCTAssertFalse(shell.commands.contains { $0.contains("logcat -c") })
+        }
+    }
+
+    func testLogStreamFallsBackToTheLastLineWhenTheDeviceClockCannotBeRead() async throws {
+        let shell = ScriptedShell([.success("package:com.example uid:10123"), .failure(GrantivaError.commandFailed("offline", 1))])
+        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: "T", level: .debug)
+        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-T", "1", "-s", "T:D"])
     }
 
     func testLogStreamWithoutAnInstalledAppFails() async {
-        let shell = ScriptedShell([.success(""), .success("")])
+        let shell = ScriptedShell([.success("")])
         do {
             _ = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example.app", filter: nil, level: nil)
             XCTFail("expected an error")
@@ -186,9 +206,9 @@ final class AndroidPlatformTests: XCTestCase {
     }
 
     func testLogStreamWithALevelAndNoTagFiltersEveryTagAtThatPriority() async throws {
-        let shell = ScriptedShell([.success(""), .success("package:com.example uid:10123")])
-        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: "warning")
-        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-s", "*:W"])
+        let shell = ScriptedShell([.success("package:com.example uid:10123"), .success("1791592382")])
+        let stream = try await platform(shell).logStream(deviceID: "emulator-5554", appID: "com.example", filter: nil, level: .debug)
+        XCTAssertEqual(stream.arguments, ["-s", "emulator-5554", "logcat", "--uid=10123", "-v", "time", "-T", "1791592382.000", "-s", "*:D"])
     }
 
     func testResolveBinaryRunsApkanalyzerWithJavaHomeWhenKnown() async throws {

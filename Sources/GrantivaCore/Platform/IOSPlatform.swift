@@ -97,7 +97,7 @@ public struct IOSPlatform: DevicePlatform {
         _ = try await execute("xcrun simctl io \(shellQuoted(deviceID)) screenshot \(shellQuoted(path))")
     }
 
-    public func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
+    public func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
         var args = ["simctl", "spawn", deviceID, "log", "stream", "--style", "compact"]
         var predicate = filter
         if predicate == nil, let appID {
@@ -107,8 +107,8 @@ public struct IOSPlatform: DevicePlatform {
         if let predicate, !predicate.isEmpty {
             args += ["--predicate", predicate]
         }
-        if let level, !level.isEmpty {
-            args += ["--level", level]
+        if let level {
+            args += ["--level", level.rawValue]
         }
         return LogStreamCommand(executable: "/usr/bin/xcrun", arguments: args)
     }

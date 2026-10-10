@@ -171,24 +171,21 @@ public struct AndroidPlatform: DevicePlatform {
 
     // MARK: Logs
 
-    public func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand {
-        _ = try? await execute(adb.line(deviceID, "logcat -c"))
+    /// Streams logcat for the app's uid from now on (`-T <device time>`),
+    /// without clearing the device's buffer for anyone else. No level means
+    /// `default`: I and above, for the tag when one is given, else every tag.
+    public func logStream(deviceID: String, appID: String?, filter: String?, level: LogStreamLevel?) async throws -> LogStreamCommand {
         guard let appID else {
             throw GrantivaError.invalidArgument("--logs on Android needs the application ID to filter logcat; pass --application-id.")
         }
         guard let uid = try await adb.packageUID(serial: deviceID, applicationId: appID) else {
             throw GrantivaError.invalidArgument("\(appID) is not installed on \(deviceID), so its logs cannot be streamed.")
         }
-        var args = ["-s", deviceID, "logcat", "--uid=\(uid)", "-v", "time"]
-        if let filter, !filter.isEmpty {
-            if let level, let priority = level.first {
-                args += ["-s", "\(filter):\(priority.uppercased())"]
-            } else {
-                args += ["-s", filter]
-            }
-        } else if let level, let priority = level.first {
-            args += ["-s", "*:\(priority.uppercased())"]
-        }
+        let now = (try? await adb.shell(serial: deviceID, "date +%s"))?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let since = now.flatMap { $0.wholeMatch(of: /[0-9]+/) != nil ? "\($0).000" : nil } ?? "1"
+        let priority = (level ?? .default).logcatPriority
+        let tag = filter.flatMap { $0.isEmpty ? nil : $0 } ?? "*"
+        let args = ["-s", deviceID, "logcat", "--uid=\(uid)", "-v", "time", "-T", since, "-s", "\(tag):\(priority)"]
         return LogStreamCommand(executable: adb.path, arguments: args)
     }
 
