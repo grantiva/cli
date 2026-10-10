@@ -76,6 +76,9 @@ public enum RunnerSession {
         // dir exists, so a throw here leaves nothing to clean up.
         try invalidateCaptures(of: screens, in: outputDir)
         try RunnerReportWorkspace.prepare(at: reportDir)
+        // The ephemeral dir is deleted before a waiter could read it, so the
+        // ready file names only a preserved --report-dir.
+        let readyReportDir = preserveReportDir ? reportDir : nil
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer {
@@ -137,6 +140,7 @@ public enum RunnerSession {
                 timeoutSeconds: timeoutSeconds,
                 pathMap: subflowPathMap,
                 reportDir: reportDir,
+                readyReportDir: readyReportDir,
                 expectedFlows: 1,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
@@ -144,8 +148,6 @@ public enum RunnerSession {
             ))
         }
 
-        // The report dir here is always ephemeral (deleted on return), so the
-        // ready file never names it.
         guard outcome.terminationStatus == 0, !outcome.interrupted else {
             let reason = outcome.interrupted
                 ? "Runner interrupted"
@@ -155,7 +157,8 @@ public enum RunnerSession {
             let verdict = outcome.interrupted ? "interrupted" : "failed"
             readySignal.write(RunReadyState(
                 status: verdict,
-                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict)
+                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
+                reportDir: readyReportDir
             ))
             let stderr = OutputRewriter(replacements: subflowPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
@@ -166,7 +169,8 @@ public enum RunnerSession {
 
         readySignal.write(RunReadyState(
             status: "passed",
-            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? []
+            flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
+            reportDir: readyReportDir
         ))
 
         // Collect screenshots from report output
