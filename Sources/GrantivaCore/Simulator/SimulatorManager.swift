@@ -335,7 +335,7 @@ public struct SimulatorManager: Sendable, Decodable {
     /// suggestions such as doctor's fix line and `init`'s default; nil when
     /// simctl is unavailable or no iOS runtime is installed.
     public func newestIPhone() async -> String? {
-        guard let output = try? await shell("xcrun simctl list devicetypes runtimes --json") else { return nil }
+        guard let output = try? await execute("xcrun simctl list devicetypes runtimes --json") else { return nil }
         return Self.newestIPhone(catalogJSON: Data(output.utf8))
     }
 
