@@ -27,6 +27,8 @@ enum RunnerExecution {
         /// Extra environment for the runner process; empty inherits ours unchanged.
         var environment: [String: String] = [:]
         let readyFile: ReadyFileSignal
+        /// The platform recorded in the keep-alive owner sidecar.
+        var platform: Platform? = nil
         /// Where keep-alive sessions are discovered. Overridable for tests.
         var sessions: KeepAliveSessionStore = KeepAliveSessionStore()
         /// How long, after the flows finish, to wait for the runner's keep-alive
@@ -67,7 +69,7 @@ enum RunnerExecution {
         // flows run, so `grantiva hierarchy --udid` can resolve the session the
         // moment the runner publishes it — and before any --ready-file exists.
         if request.keepAlive {
-            request.sessions.recordOwner(udid: request.lease.udid, runnerPid: child.pid)
+            request.sessions.recordOwner(udid: request.lease.udid, runnerPid: child.pid, platform: request.platform)
         }
         defer {
             if request.keepAlive {

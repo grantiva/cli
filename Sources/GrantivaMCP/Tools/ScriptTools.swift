@@ -14,6 +14,8 @@ enum ScriptTools {
             description: """
                 Execute a batch of UI actions sequentially. Each step is an object with one action key. \
                 Supported actions: tap (by label), tap_xy (by coordinates), swipe (direction), type (text), wait (seconds). \
+                Every step is validated before any step runs: if a step is not an object or has no valid action, \
+                nothing runs and the result is an error naming each invalid step. \
                 Returns the final accessibility tree after all steps complete.
                 """,
             inputSchema: .object([
@@ -69,40 +71,46 @@ enum ScriptTools {
             )
         }
 
+        // Validate every step before running any, so a bad script never
+        // half-runs and the caller sees an error result.
+        var steps: [Step] = []
+        var invalid: [String] = []
+        for (index, stepValue) in stepsValue.enumerated() {
+            switch Step.parse(stepValue) {
+            case .success(let step): steps.append(step)
+            case .failure(let reason): invalid.append("Step \(index + 1): \(reason.message)")
+            }
+        }
+        guard invalid.isEmpty else {
+            let text = "Error: invalid script steps; no steps were run.\n" + invalid.joined(separator: "\n")
+                + "\nEach step must be an object with one of: tap, tap_xy {x, y}, swipe, type, wait."
+            return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true)
+        }
+
         var log: [String] = []
 
-        for (index, stepValue) in stepsValue.enumerated() {
-            guard let step = stepValue.objectValue else {
-                log.append("Step \(index + 1): skipped (not an object)")
-                continue
-            }
-
+        for (index, step) in steps.enumerated() {
             let stepNum = index + 1
-
-            if let label = step["tap"]?.stringValue {
+            switch step {
+            case .tap(let label):
                 try await driver.tapByLabel(label)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): tapped \"\(label)\"")
-            } else if let tapXY = step["tap_xy"]?.objectValue,
-                      let x = tapXY["x"]?.doubleValue,
-                      let y = tapXY["y"]?.doubleValue {
+            case .tapXY(let x, let y):
                 try await driver.tapByCoordinate(x, y)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): tapped at (\(Int(x)), \(Int(y)))")
-            } else if let direction = step["swipe"]?.stringValue {
+            case .swipe(let direction):
                 try await driver.swipe(direction)
                 try await Task.sleep(nanoseconds: 500_000_000)
                 log.append("Step \(stepNum): swiped \(direction)")
-            } else if let text = step["type"]?.stringValue {
+            case .type(let text):
                 try await driver.typeText(text)
                 try await Task.sleep(nanoseconds: 300_000_000)
                 log.append("Step \(stepNum): typed \"\(text)\"")
-            } else if let seconds = step["wait"]?.doubleValue {
-                let nanoseconds = UInt64(seconds * 1_000_000_000)
-                try await Task.sleep(nanoseconds: nanoseconds)
+            case .wait(let seconds):
+                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
                 log.append("Step \(stepNum): waited \(seconds)s")
-            } else {
-                log.append("Step \(stepNum): unknown action, skipped")
             }
         }
 
@@ -115,5 +123,61 @@ enum ScriptTools {
         return CallTool.Result(
             content: [.text(text: output, annotations: nil, _meta: nil)]
         )
+    }
+
+    // MARK: - Step parsing
+
+    enum Step: Equatable {
+        case tap(String)
+        case tapXY(Double, Double)
+        case swipe(String)
+        case type(String)
+        case wait(Double)
+
+        struct Invalid: Error { let message: String }
+
+        static let actions = ["tap", "tap_xy", "swipe", "type", "wait"]
+
+        /// A step has exactly one action key, and nothing else.
+        static func parse(_ value: Value) -> Result<Step, Invalid> {
+            guard let step = value.objectValue else {
+                return .failure(Invalid(message: "not an object"))
+            }
+            let unknown = step.keys.filter { !actions.contains($0) }.sorted()
+            guard unknown.isEmpty else {
+                return .failure(Invalid(message: "unknown action \(unknown.map { "'\($0)'" }.joined(separator: ", "))"))
+            }
+            let present = actions.filter { step[$0] != nil }
+            guard let action = present.first else {
+                return .failure(Invalid(message: "no action"))
+            }
+            guard present.count == 1 else {
+                return .failure(Invalid(message: "more than one action (\(present.joined(separator: ", "))); use one action per step"))
+            }
+            let argument = step[action]!
+            func string() -> Result<String, Invalid> {
+                argument.stringValue.map { .success($0) } ?? .failure(Invalid(message: "'\(action)' must be a string"))
+            }
+            switch action {
+            case "tap":
+                return string().map(Step.tap)
+            case "swipe":
+                return string().map(Step.swipe)
+            case "type":
+                return string().map(Step.type)
+            case "tap_xy":
+                guard let point = argument.objectValue,
+                      let x = point["x"]?.doubleValue,
+                      let y = point["y"]?.doubleValue else {
+                    return .failure(Invalid(message: "tap_xy needs numeric x and y"))
+                }
+                return .success(.tapXY(x, y))
+            default: // wait
+                guard let seconds = argument.doubleValue, seconds >= 0, seconds.isFinite else {
+                    return .failure(Invalid(message: "wait must be a non-negative number of seconds"))
+                }
+                return .success(.wait(seconds))
+            }
+        }
     }
 }

@@ -110,6 +110,22 @@ config files exist) and drives the emulator through the same tools as iOS:
 `grantiva_emulator_list|boot|ensure|delete` mirror the `grantiva_sim_*` tools.
 `grantiva_test` is iOS-only.
 
+The MCP server starts without a runner session and without a config file, so an agent can
+list tools and provision a device first. Only the device tools (`grantiva_tap`,
+`grantiva_swipe`, `grantiva_type`, `grantiva_screenshot`, `grantiva_a11y_tree`,
+`grantiva_a11y_check`, `grantiva_script`) need a session: until one exists they return an
+error naming `grantiva runner start` and `grantiva run --keep-alive`, and they pick up a
+session on the next call once it starts. Tools that need a config file say which file is
+missing.
+
+The server attaches to a live `grantiva runner start` session in the project's
+`.grantiva/session.json`, or else to a `grantiva run --keep-alive` (or `runner start`)
+session that was started from the same project directory for the same platform. A
+keep-alive session started from another directory, for the other platform, or by an earlier
+Grantiva (which did not record the directory) is never used. `grantiva_context`
+reports the session's simulator or emulator; without a session it reports the configured
+one.
+
 ## Emulator subcommand
 
     grantiva emulator ensure --name Pixel_8_API_35          # create if missing, boot, print the serial

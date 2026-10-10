@@ -11,10 +11,18 @@ the registered tool names drift apart.
 
 ## Runner session
 
-Today `grantiva mcp` loads the active runner session from `.grantiva/session.json` before it starts
-serving, so start one first with `grantiva runner start` or `grantiva run --keep-alive` and run the
-server from the same project directory (or pass `--project-dir`). The **Session** column below says
-which tools drive the held session (the UI tools) and which do not use it.
+`grantiva mcp` starts without a runner session and without a config file, so an agent can list tools
+and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
+until one exists they return an error (`isError`) naming `grantiva runner start` and
+`grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
+is replaced). Tools that need a config file say which file is missing.
+
+The server uses a live `grantiva runner start` session in the project's `.grantiva/session.json`, or
+else a `grantiva run --keep-alive` (or `runner start`) session started from the same project directory
+(`--project-dir`, default the current directory) for the same platform. Sessions started from another
+directory, for the other platform, or by an earlier Grantiva that did not record the directory are
+never used. `grantiva_context` reports the session's simulator or emulator, or the configured one when
+there is no session.
 
 | Session | Meaning |
 | --- | --- |
@@ -33,7 +41,7 @@ which tools drive the held session (the UI tools) and which do not use it.
 | `grantiva_type` | iOS, Android | yes | Type text into the currently focused field. Returns the updated accessibility tree. |
 | `grantiva_a11y_tree` | iOS, Android | yes | Get the current accessibility tree (view hierarchy) of the running app as a JSON tree. |
 | `grantiva_a11y_check` | iOS, Android | yes | Run an accessibility audit on the current screen: missing labels on interactive elements and tap targets smaller than 44pt (iOS) or 48dp (Android). |
-| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`). Returns the final accessibility tree. |
+| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`; one action per step). Every step is validated first: if any is invalid, nothing runs and the result is an error naming each bad step. Returns the final accessibility tree. |
 
 ### Build and run
 
@@ -42,7 +50,7 @@ which tools drive the held session (the UI tools) and which do not use it.
 | `grantiva_build` | iOS, Android | no | Build the project: xcodebuild on iOS, Gradle on Android. Returns success status, duration, warnings, and errors. |
 | `grantiva_run` | iOS, Android | no | Build, install, and launch the app on the simulator or emulator. |
 | `grantiva_test` | iOS only | no | Run the project's test suite using `xcodebuild test`. Returns pass/fail counts and output. |
-| `grantiva_context` | iOS, Android | no | Get current project context: config, booted simulator or running emulator, Xcode or Android SDK, and runner session status. |
+| `grantiva_context` | iOS, Android | no | Get current project context: config, the device the UI tools act on (the runner session's simulator or emulator; without a session, the configured one), Xcode or Android SDK, and runner session status. |
 
 ### Simulators (iOS)
 

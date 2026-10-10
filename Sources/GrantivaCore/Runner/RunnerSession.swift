@@ -136,7 +136,8 @@ public enum RunnerSession {
                 reportDir: reportDir,
                 expectedFlows: 1,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
-                readyFile: readySignal
+                readyFile: readySignal,
+                platform: platform.platform
             ))
         }
 
@@ -446,7 +447,8 @@ public enum RunnerSession {
                 reportDir: reportDir,
                 expectedFlows: flowPaths.count,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
-                readyFile: readySignal
+                readyFile: readySignal,
+                platform: platform.platform
             ))
         }
 
