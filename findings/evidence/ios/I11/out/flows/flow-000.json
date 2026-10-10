@@ -1,0 +1,79 @@
+{
+  "id": "flow-000",
+  "name": "09-seed-empty",
+  "sourceFile": ".maestro/09-seed-empty.yaml",
+  "device": {
+    "id": "4278E141-1297-46F9-989F-FB9995D123F9",
+    "name": "qa-reg-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-10T14:51:56.69645-07:00",
+  "endTime": "2026-10-10T14:51:59.081911-07:00",
+  "duration": 2385,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-10T14:51:56.697692-07:00",
+      "endTime": "2026-10-10T14:51:58.627933-07:00",
+      "duration": 1930,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:51:58.629306-07:00",
+      "endTime": "2026-10-10T14:51:59.01289-07:00",
+      "duration": 383,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "37000000-0000-0000-2092-000000000000",
+        "text": "No landmarks yet",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 111,
+          "y": 434,
+          "width": 180,
+          "height": 92
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-10T14:51:59.013285-07:00",
+      "endTime": "2026-10-10T14:51:59.081504-07:00",
+      "duration": 68,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-Empty.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 793,
+    "p50": 383,
+    "p95": 1930,
+    "max": 1930,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

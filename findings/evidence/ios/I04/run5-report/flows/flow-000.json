@@ -1,0 +1,354 @@
+{
+  "id": "flow-000",
+  "name": "04-discard",
+  "sourceFile": ".maestro/04-discard.yaml",
+  "device": {
+    "id": "4278E141-1297-46F9-989F-FB9995D123F9",
+    "name": "qa-reg-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-10T14:36:30.854151-07:00",
+  "endTime": "2026-10-10T14:36:46.369036-07:00",
+  "duration": 15514,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:30.855234-07:00",
+      "endTime": "2026-10-10T14:36:32.810126-07:00",
+      "duration": 1954,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:32.810696-07:00",
+      "endTime": "2026-10-10T14:36:34.855199-07:00",
+      "duration": 2044,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-0904-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Edit Landmark\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:34.85612-07:00",
+      "endTime": "2026-10-10T14:36:37.137943-07:00",
+      "duration": 2281,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Edit Landmark"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "27010000-0000-0000-0904-000000000000",
+        "text": "Edit Landmark",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 35,
+          "y": 275,
+          "width": 147,
+          "height": 21
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Location\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:37.138302-07:00",
+      "endTime": "2026-10-10T14:36:38.821635-07:00",
+      "duration": 1683,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Location"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "5E010000-0000-0000-0904-000000000000",
+        "text": "San Francisco, CA",
+        "class": "XCUIElementTypeTextField",
+        "bounds": {
+          "x": 32,
+          "y": 275,
+          "width": 338,
+          "height": 23
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "inputText",
+      "yaml": "inputText: \"X\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:38.821998-07:00",
+      "endTime": "2026-10-10T14:36:39.421081-07:00",
+      "duration": 599,
+      "params": {
+        "text": "X"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Cancel\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:39.421577-07:00",
+      "endTime": "2026-10-10T14:36:40.499822-07:00",
+      "duration": 1078,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cancel"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "3C010000-0000-0000-0904-000000000000",
+        "text": "Cancel",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 20,
+          "y": 66,
+          "width": 69,
+          "height": 36
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"You have unsaved changes that will be lost.\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:40.500706-07:00",
+      "endTime": "2026-10-10T14:36:40.774465-07:00",
+      "duration": 273,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "You have unsaved changes that will be lost."
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "B9010000-0000-0000-0904-000000000000",
+        "text": "You have unsaved changes that will be lost.",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 71,
+          "y": 414,
+          "width": 260,
+          "height": 39
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:40.77593-07:00",
+      "endTime": "2026-10-10T14:36:40.84749-07:00",
+      "duration": 71,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-007-Discard Alert.png"
+      }
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Keep Editing\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:40.848122-07:00",
+      "endTime": "2026-10-10T14:36:41.86044-07:00",
+      "duration": 1012,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Keep Editing"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "C0010000-0000-0000-0904-000000000000",
+        "text": "Keep Editing",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 57,
+          "y": 473,
+          "width": 140,
+          "height": 48
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-009",
+      "index": 9,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Edit Landmark\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:41.861582-07:00",
+      "endTime": "2026-10-10T14:36:42.185629-07:00",
+      "duration": 324,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Edit Landmark"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "2B000000-0000-0000-0904-000000000000",
+        "text": "Edit Landmark",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 15,
+          "y": 119,
+          "width": 229,
+          "height": 42
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-010",
+      "index": 10,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Cancel\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:42.187358-07:00",
+      "endTime": "2026-10-10T14:36:43.119345-07:00",
+      "duration": 931,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cancel"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "3C010000-0000-0000-0904-000000000000",
+        "text": "Cancel",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 20,
+          "y": 66,
+          "width": 69,
+          "height": 36
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-011",
+      "index": 11,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Discard\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:43.119727-07:00",
+      "endTime": "2026-10-10T14:36:44.890841-07:00",
+      "duration": 1771,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Discard"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "F7010000-0000-0000-0904-000000000000",
+        "text": "Discard",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 205,
+          "y": 473,
+          "width": 140,
+          "height": 48
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-012",
+      "index": 12,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-10T14:36:44.892081-07:00",
+      "endTime": "2026-10-10T14:36:46.367631-07:00",
+      "duration": 1475,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-0904-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 13,
+    "mean": 1192,
+    "p50": 1078,
+    "p95": 2281,
+    "max": 2281,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,100 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (683ms)
+    ✓ tapOn: text="Landmarks" (736ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (265ms)
+    ✓ takeScreenshot (67ms)
+    ✓ swipe: LEFT (679ms)
+    ✓ tapOn: text="Remove" (1.9s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (202ms)
+    ✓ takeScreenshot (72ms)
+✓ 02-favorite 17.3s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.9s)
+    ✓ tapOn (1.8s)
+    ✓ assertVisible (683ms)
+    ✓ tapOn (736ms)
+    ✓ tapOn (2.0s)
+    ✓ assertVisible (265ms)
+    ✓ takeScreenshot (67ms)
+    ✓ swipe (679ms)
+    ✓ tapOn (1.9s)
+    ✓ assertNotVisible (2.4s)
+    ✓ assertVisible (202ms)
+    ✓ takeScreenshot (72ms)
+✓ 02-favorite 14.7s
+
+  13 steps passing (17.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      17.3s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      17.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report/allure-results
+
+  Built by Grantiva
+
+
+  02-favorite-cmd-007-Favorites With Item
+    ✓ Run flow "02-favorite"
+
+  02-favorite-cmd-012-Favorites Empty
+    ✓ Run flow "02-favorite"
+
+  Screens: 2 total, 2 passed, 0 failed
+  Screenshots: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/A02/pass-report/captures/
+
+exit 0

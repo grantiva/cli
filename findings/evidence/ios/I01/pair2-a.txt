@@ -1,0 +1,86 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/06-visit.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B28CCCB1-DC58-483A-A602-891624B48902
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] 06-visit (06-visit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Half Dome" (1.9s)
+    ✓ tapOn: text="Plan Visit" (1.8s)
+    ✓ assertVisible: text="Visit Scheduled!" (189ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (270ms)
+    ✓ takeScreenshot (63ms)
+    ✓ tapOn: text="Done" (524ms)
+    ✓ assertVisible: text="Half Dome" (1.1s)
+✓ 06-visit 10.5s
+
+  [1/1] 06-visit (.maestro/06-visit.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.9s)
+    ✓ tapOn (1.8s)
+    ✓ assertVisible (189ms)
+    ✓ assertVisible (270ms)
+    ✓ takeScreenshot (63ms)
+    ✓ tapOn (525ms)
+    ✓ assertVisible (1.1s)
+✓ 06-visit 7.8s
+
+  8 steps passing (10.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  06-visit                       ✓ PASS       8      8      0      0      10.5s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      10.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B28CCCB1-DC58-483A-A602-891624B48902
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B28CCCB1-DC58-483A-A602-891624B48902/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B28CCCB1-DC58-483A-A602-891624B48902/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B28CCCB1-DC58-483A-A602-891624B48902/allure-results
+
+  Built by Grantiva
+
+
+  06-visit-cmd-005-Visit Confirmed
+    ✓ Run flow "06-visit"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/
+

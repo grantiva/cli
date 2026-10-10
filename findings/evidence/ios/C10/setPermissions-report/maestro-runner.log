@@ -1,0 +1,51 @@
+14:42:11.773956 [INFO] === Test execution started ===
+14:42:11.774023 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/C10/setPermissions-report
+14:42:11.774028 [INFO] Platform: ios
+14:42:11.774032 [INFO] Driver: 
+14:42:11.774315 [INFO] Validated 1 flow(s)
+14:42:11.887470 [INFO] Single device execution mode
+14:42:11.887487 [INFO] Starting flow execution (parallel: false, devices: [])
+14:42:11.887492 [INFO] Creating driver for single device execution
+14:42:11.887495 [INFO] Using specified iOS device: 4278E141-1297-46F9-989F-FB9995D123F9
+14:42:11.992855 [INFO] Device 4278E141-1297-46F9-989F-FB9995D123F9 is a simulator
+14:42:11.992907 [INFO] Building WDA for device 4278E141-1297-46F9-989F-FB9995D123F9 (team ID: )
+14:42:12.203783 [INFO] WDA build completed successfully
+14:42:12.203797 [INFO] Starting WDA on device 4278E141-1297-46F9-989F-FB9995D123F9 (port: 8581)
+14:42:14.456361 [INFO] WDA started successfully on port 8581
+14:42:14.806514 [DEBUG] WDA GET /window/size
+14:42:14.887108 [DEBUG] WDA GET /window/size completed (80ms, status: 200)
+14:42:14.887171 [INFO] Driver created: ios on qa-reg-ios-1
+14:42:14.888483 [INFO] === Starting flow: setPermissions ===
+14:42:14.888488 [INFO] Flow file: setPermissions.yaml
+14:42:14.888492 [INFO] Total steps: 3
+14:42:14.888600 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:42:14.889200 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+14:42:14.889245 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+14:42:16.434729 [DEBUG] WDA POST /session completed (1545ms, status: 200)
+14:42:16.434782 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+14:42:16.435718 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings completed (0ms, status: 200)
+14:42:16.435800 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+14:42:16.436366 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings completed (0ms, status: 200)
+14:42:16.436704 [DEBUG] Executing step 0: launchApp
+14:42:16.892389 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+14:42:16.892484 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+14:42:16.893203 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/appium/settings completed (0ms, status: 200)
+14:42:16.893305 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+14:42:16.893733 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/wda/apps/terminate completed (0ms, status: 200)
+14:42:16.893754 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+14:42:18.475879 [DEBUG] WDA POST /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/wda/apps/launch completed (1582ms, status: 200)
+14:42:18.475924 [DEBUG] Step 0 completed successfully (2039ms): launchApp
+14:42:18.476304 [DEBUG] Executing step 1: setPermissions
+14:42:19.376814 [DEBUG] Step 1 completed successfully (900ms): setPermissions
+14:42:19.377229 [DEBUG] Executing step 2: takeScreenshot
+14:42:19.377400 [DEBUG] WDA GET /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/alert/text
+14:42:19.383584 [DEBUG] WDA GET /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/alert/text completed (6ms, status: 400)
+14:42:19.383690 [DEBUG] WDA GET /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/screenshot
+14:42:19.523524 [DEBUG] WDA GET /session/7977B1C1-A74F-42A9-A41E-BF6AA5756F1D/screenshot completed (139ms, status: 200)
+14:42:19.533759 [DEBUG] Step 2 completed successfully (156ms): takeScreenshot
+14:42:19.535596 [INFO] === Flow completed: setPermissions (status: passed, duration: 4647ms, passed: 3, failed: 0, skipped: 0) ===
+14:42:19.548515 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+14:42:19.548692 [INFO] Generating reports...
+14:42:19.550711 [INFO] Shutting down devices started by maestro-runner...
+14:42:19.550718 [INFO] Shutting down all tracked emulators
+14:42:19.550722 [INFO] Shutting down all tracked simulators
