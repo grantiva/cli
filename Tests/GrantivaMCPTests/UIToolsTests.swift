@@ -311,4 +311,61 @@ final class UIToolsTests: XCTestCase {
         let iosText = try textContent(of: try await UITools.a11yCheck(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: ios), config: nil, platform: .ios))
         XCTAssertEqual(iosText, "No accessibility violations found.")
     }
+
+    // MARK: - a11y_check: Compose merged labels (A11)
+
+    /// Two Deep Links buttons as UIAutomator2 dumps them on a Pixel 8 (scale
+    /// 2.625): a clickable `View` holding the text and an empty, non-clickable
+    /// `android.widget.Button` stub. From AND-061/hierarchy-immediate.xml.
+    private static let composeDeepLinksXML = """
+        <hierarchy rotation="0">
+          <android.widget.ScrollView class="android.widget.ScrollView" text="" clickable="false" enabled="true" focusable="false" bounds="[0,316][1080,2064]" displayed="true">
+            <android.view.View class="android.view.View" text="" clickable="true" enabled="true" focusable="true" bounds="[42,359][1038,485]" displayed="true">
+              <android.widget.TextView class="android.widget.TextView" text="Caching Demo" clickable="false" enabled="true" focusable="false" bounds="[421,395][659,448]" displayed="true" />
+              <android.widget.Button class="android.widget.Button" text="" clickable="false" enabled="true" focusable="false" bounds="[42,369][1038,474]" displayed="true" />
+            </android.view.View>
+            <android.view.View class="android.view.View" text="" clickable="true" enabled="true" focusable="true" bounds="[42,506][1038,632]" displayed="true">
+              <android.widget.TextView class="android.widget.TextView" text="Edit Landmark" clickable="false" enabled="true" focusable="false" bounds="[423,542][657,595]" displayed="true" />
+              <android.widget.Button class="android.widget.Button" text="" clickable="false" enabled="true" focusable="false" bounds="[42,516][1038,621]" displayed="true" />
+            </android.view.View>
+          </android.widget.ScrollView>
+        </hierarchy>
+        """
+
+    private func androidCheck(xml: String) async throws -> String {
+        let tree = try UIAutomator2HierarchyXMLParser(xml: xml, scale: 2.625).parse()
+        let json = String(decoding: try JSONSerialization.data(withJSONObject: tree), as: UTF8.self)
+        return try textContent(of: try await UITools.a11yCheck(
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: json), config: nil, platform: .android
+        ))
+    }
+
+    func testA11yCheckSkipsTheComposeButtonStubInsideALabelledClickableParent() async throws {
+        let text = try await androidCheck(xml: Self.composeDeepLinksXML)
+        XCTAssertFalse(text.contains("missing_label"), text)
+        // The focused node is the 48 dp parent, not the 40 dp stub.
+        XCTAssertEqual(text, "No accessibility violations found.")
+    }
+
+    func testA11yCheckStillFlagsAClickableImageButtonWithNoLabelAnywhere() async throws {
+        let xml = """
+            <hierarchy rotation="0">
+              <android.widget.ImageButton class="android.widget.ImageButton" text="" content-desc="" clickable="true" enabled="true" bounds="[0,0][300,300]" displayed="true" />
+            </hierarchy>
+            """
+        let text = try await androidCheck(xml: xml)
+        XCTAssertEqual(text.components(separatedBy: "\"missing_label\"").count - 1, 1, text)
+    }
+
+    func testA11yCheckStillFlagsAnEmptyButtonStubWhenTheClickableParentHasNoText() async throws {
+        let xml = """
+            <hierarchy rotation="0">
+              <android.view.View class="android.view.View" text="" clickable="true" enabled="true" bounds="[0,0][300,300]" displayed="true">
+                <android.widget.Button class="android.widget.Button" text="" clickable="false" enabled="true" bounds="[0,0][300,300]" displayed="true" />
+              </android.view.View>
+            </hierarchy>
+            """
+        let text = try await androidCheck(xml: xml)
+        XCTAssertTrue(text.contains("missing_label"), text)
+    }
 }

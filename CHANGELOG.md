@@ -59,6 +59,7 @@
 - `grantiva init` (iOS) writes the newest iPhone simulator type an installed runtime supports instead of `iPhone 16`, and warns on stderr when the scheme (`MyApp`, no Xcode project found) or the simulator is a placeholder.
 - MCP `grantiva_tap {"label": …}` and `grantiva_script` `tap` steps on iOS now match the accessibility label (what `grantiva_a11y_tree` shows as `label`), falling back to the element name. They used WebDriverAgent's "link text" strategy, which matches only the name, so a tab labelled "Favorites" whose name is "heart" was "not found".
 - MCP `grantiva_type` works on iOS: keystrokes go to the agent's `/session/{id}/wda/keys` endpoint (falling back to `/keys` only on a 404) instead of `/keys`, which GrantivaAgent does not serve, and a failure names the HTTP status instead of "exited with code 1".
+- MCP `grantiva_a11y_check` on Android no longer reports `missing_label` and `small_tap_target` for every Compose button: the empty, non-clickable `android.widget.Button` stub Compose puts beside a button's text is skipped when a clickable ancestor carries a label, so the check evaluates the node TalkBack focuses. A clickable control with no text anywhere is still flagged.
 
 ## 2.0.1 — 2026-10-07
 
