@@ -145,6 +145,20 @@ final class RunnerSessionReportTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: unrelated.path))
     }
 
+    func testSuccessfulRunnerWithoutScreenshotsIsARunnerOutcomeFailure() async throws {
+        do {
+            _ = try await RunnerSession.run(
+                screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
+                bundleId: "com.example", udid: udid(), platform: StubPlatform(),
+                runner: try makeRunner(exitCode: 0), outputDir: "captures"
+            )
+            XCTFail("expected the missing screenshots to be thrown")
+        } catch {
+            XCTAssertTrue("\(error)".contains("no screenshots found"), "\(error)")
+            XCTAssertTrue(RunnerSession.isRunnerOutcomeFailure(error), "\(error)")
+        }
+    }
+
     // MARK: - C04: screens runs honour --report-dir, --timeout, --continue-on-failure
 
     func testScreensRunWritesToASuppliedReportDirAndKeepsIt() async throws {
