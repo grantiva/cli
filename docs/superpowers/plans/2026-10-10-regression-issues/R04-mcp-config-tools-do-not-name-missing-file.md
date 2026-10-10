@@ -1,6 +1,6 @@
 # MCP config-dependent tools do not say that the config file is missing
 
-Severity: message wording
+Severity: contract
 Blocking: no
 Platforms: cli, ios, android
 Found by: CLI slice, brief row `C11` (findings/cli-results.md, Step 1). Original brief: C11 (`plans/2026-10-09-qa-issues/C11-mcp-starts-without-session-or-config.md` (last round's files are on branch `qa-campaign`, commit 8084069; exported copy at `~/.grantiva-qa/briefs/docs/superpowers/`)), criterion 3.

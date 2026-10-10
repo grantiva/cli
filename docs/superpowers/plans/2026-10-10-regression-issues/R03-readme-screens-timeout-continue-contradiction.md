@@ -1,6 +1,6 @@
 # README contradicts itself on whether `--timeout` and `--continue-on-failure` apply to `screens:`
 
-Severity: doc
+Severity: docs
 Blocking: no
 Platforms: cli, ios, android
 Found by: CLI slice, brief row `C26` (findings/cli-results.md, Step 1 and "Regressed detail"). Original brief: C26 (`plans/2026-10-09-qa-issues/C26-document-run-continue-snapshot-timeout.md` (last round's files are on branch `qa-campaign`, commit 8084069; exported copy at `~/.grantiva-qa/briefs/docs/superpowers/`)); related: C04.

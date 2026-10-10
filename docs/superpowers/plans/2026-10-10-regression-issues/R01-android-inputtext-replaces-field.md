@@ -3,7 +3,7 @@
 Severity: wrong-result
 Blocking: yes
 Platforms: android
-Found by: Android slice, flow table row `03-edit` (findings/android-results.md); no original brief. `03-edit` is a stock landmarks-demo flow, and the QA spec (`specs/2026-10-09-qa-campaign-design.md` §Gate (last round's files are on branch `qa-campaign`, commit 8084069; exported copy at `~/.grantiva-qa/briefs/docs/superpowers/`)) requires each app's non-failing flows to pass on its device with the shared binary.
+Found by: Android slice, flow table row `03-edit` (findings/android-results.md); no original brief. `03-edit` is a stock landmarks-demo flow, and the QA spec (`specs/2026-10-09-qa-campaign-design.md` §Gate; last round's files are on branch `qa-campaign`, commit 8084069, with an exported copy at `~/.grantiva-qa/briefs/docs/superpowers/`) requires each app's non-failing flows to pass on its device with the shared binary.
 Binary: grantiva 2.1.0 at a278b77, grantiva-runner 1.1.28-grantiva.8, emulator-5554 (AVD `qa-reg-android`, API 35 google_apis arm64, 1080x2400)
 
 ## Expected

@@ -56,14 +56,19 @@ Slice results: `findings/cli-results.md`, `findings/ios-results.md`, `findings/a
 
 | Briefs checked | Pass | Regressed | Not verifiable here |
 |---|---|---|---|
-| 35 (C01-C26, D01-D09) | 27 | 2 (C11, C26) | 6 (C01, C02, C04, C08, C09, C10) |
+| 35 (C01-C26, D01-D09) | 27 (5 partial: C03, C07, C13, C14, C21) | 2 (C11, C26) | 6 (C01, C02, C04, C08, C09, C10) |
 
 - Not verifiable here, why: C01 needs a simulator lease and `runner install` lock contention on a device host; C02 needs
   emulators started and torn down by the agent (exercised in the Android slice, pass, partial); C04 needs a `screens:`
   run on a simulator; C08, C09, C10 only show in device runs (all three pass in the iOS slice). C01 and C04 were
   therefore not re-verified anywhere in this pass.
+- Partial passes: C03, C07, C13, C14 and C21 pass on the criteria observable here, with a named part not exercised
+  (C03 "another platform" half; on-device execution for C07; `record 2>/dev/null` for C13; a real recording for C14;
+  C21's doctor remediation criterion shown only by a source grep and `strings`, not by running doctor).
 - Flows: none (no device of its own). Steps 2-4 (help and version surface, webhook events, session commands on the
-  borrowed qa-reg-ios-1) pass, with two observations (S4-startup-window, S4-vrt-capture-owned).
+  borrowed qa-reg-ios-1) pass except one Step 4 row, S4-startup-window, which is regressed (R05); one observation
+  remains (S4-vrt-capture-owned). Counting that row, the CLI slice has 3 regressed rows; it is a Step 4 row, not one of
+  the 35 briefs, so the brief counts above (27 / 2 / 6) are unchanged.
 - Cache hit: n/a. Concurrency: n/a. Step 4 ran under `GRANTIVA_SESSION_ID=reg-ios` by controller ruling, because a
   simulator leased to one session cannot be used by another (S4-lease, expected behaviour).
 
@@ -105,8 +110,9 @@ test presence was spot-checked by grep, and CHANGELOG.md was removed in #179 in 
 |---|---|---|---|---|
 | R01 | Android `inputText` replaces the focused field's text instead of appending (flow 03-edit); `tapOn "Done"` hits the keyboard key | wrong-result | yes | none (stock flow; QA spec §Gate) |
 | R02 | Android `swipe: {direction: LEFT, from: <element>}` too short to open the row; absolute-pixel coordinates read as percentages (hypothesis) | wrong-result | yes | A02 (partially fixed) |
-| R03 | README:99 contradicts README:101 on `--timeout` / `--continue-on-failure` for `screens:` | doc | no | C26 |
-| R04 | MCP config-dependent tools do not say the config file is missing | message wording | no | C11 (criterion 3) |
+| R03 | README:99 contradicts README:101 on `--timeout` / `--continue-on-failure` for `screens:` | docs | no | C26 |
+| R04 | MCP config-dependent tools do not say the config file is missing | contract | no | C11 (criterion 3) |
+| R05 | MCP session tools answer with a JSON-RPC error, not an isError result, while WDA starts after `runner start --detach` | contract | no | C21 (rpc-error vs isError), C11 (lazy attach) |
 
 Regressed rows whose original acceptance criteria were wrong: none.
 
@@ -116,9 +122,6 @@ Not regressions against any brief; candidates for later briefs.
 
 - `runner install` with a stale resource bundle beside the binary extracts the old runner under the new stamp, and
   `runner version` still reports the new version (findings/task0-upgrade.md).
-- For about 10 s after `runner start --detach` returns, MCP session tools answer with a JSON-RPC error
-  (`-32603`, "Internal error: No active WDA session") rather than an isError result (cli S4-startup-window;
-  cli/step4-session-regios.txt, C11-lazy-attach.txt).
 - `grantiva_vrt_capture` refuses while a runner session owns the simulator ("already owned by another Grantiva run"),
   though docs/mcp.md marks it Session "no" (cli S4-vrt-capture-owned; cli/C05.txt).
 - README:92 gives the per-simulator runner home as `~/.grantiva/runner/devices/<udid>`; on disk it is
@@ -163,14 +166,15 @@ So the next plan gets these right:
 
 - `xcrun simctl list devices | grep -c qa-reg-` → 0; `simulator sessions --json` → `[]` (ios/teardown/teardown.txt).
 - No `qa-reg` AVDs; `adb devices` empty; `~/.grantiva/android/started.json` `[]` (android/fix-round-teardown.txt, 15:00:28).
-- iPhone 17 Pro (`B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C`) booted and not driven by any agent (ios/teardown/teardown.txt;
-  ios I02 row).
+- iPhone 17 Pro (`B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C`) still booted. It was listed by simctl and enumerated as a
+  booted candidate by `grantiva_context` and `diff capture` (findings/cli-results.md:22, C06 row;
+  findings/ios-results.md:63, I02 row), but no agent ever commanded it (ios/teardown/teardown.txt).
 - `Pixel_8_API_35` AVD still present (see the `build build` observation for the 14:39-14:47 incident).
 - The user's real runner home `~/.grantiva/runner` was not modified.
 
 ## Verdict
 
-**`RELEASE 2.1.0: NO-GO`**: blocking briefs **R01** and **R02** (wrong-result). R03 and R04 do not block.
+**`RELEASE 2.1.0: NO-GO`**: blocking briefs **R01** and **R02** (wrong-result). R03, R04 and R05 do not block.
 
 For GO: fix R01 and R02 in grantiva-runner and bundle the fixed runner in this repo; then re-run Task 0's upgrade check
 for the new runner, the full Android flow set (12/12 with 03-edit passing, 99-crash failing as required) and the A02
