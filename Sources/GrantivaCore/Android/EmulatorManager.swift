@@ -167,10 +167,10 @@ public struct EmulatorManager: Sendable {
         return args
     }
 
-    /// Spec rules: only running emulators count by default. With a configured
-    /// AVD name, the running emulator with that name is used, else it is
-    /// booted. Without one: a single running emulator, else a single existing
-    /// AVD is booted, else the AVDs are listed.
+    /// With a configured AVD name, the running emulator with that name is
+    /// used, else it is booted. Without one: a single running emulator, else
+    /// a single booting emulator (waited on), else the only existing AVD is
+    /// booted, else an error lists the AVDs.
     public func selectDevice(configured: String?) async throws -> BootedDevice {
         let devices = try await adb.devices()
         let broken = devices.filter { !$0.isUsable }

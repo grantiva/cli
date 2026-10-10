@@ -30,9 +30,10 @@ means Android, an `.xcodeproj` or `.xcworkspace` means iOS. With both, pass `--p
 
 ## Devices
 
-Only running emulators are considered by default. `emulator:` names the AVD; it is used if
-running, booted otherwise. With no `emulator:`, a single running emulator is used, else a
-single existing AVD is booted. `--device <serial>` targets any attached device, including
+`emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
+With no `emulator:`, the order is: the one running emulator, else the one emulator still
+booting (waited on), else the only existing AVD (booted); otherwise the command fails and
+lists the AVDs. `--device <serial>` targets any attached device, including
 a physical one. On a physical device the demo-mode and animation settings are skipped
 unless `--allow-device-settings` is given. `--headless` boots without a window.
 
