@@ -61,6 +61,47 @@ final class LogStreamerTests: XCTestCase {
         streamer.stop()
     }
 
+    /// A07: on Ctrl-C the relay exits before RunCommand's `defer` can stop the
+    /// stream, so the streamer must register its own termination cleanup.
+    func testTerminationCleanupsKillARunningLogStream() throws {
+        let streamer = LogStreamer()
+        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+        let pid = try XCTUnwrap(streamer.processIdentifier)
+        XCTAssertEqual(kill(pid, 0), 0, "the stand-in log process should be running")
+
+        SignalRelay.shared.runCleanupsForTesting()
+
+        XCTAssertTrue(waitForExit(pid), "the log stream outlived the termination cleanups")
+        XCTAssertNil(streamer.processIdentifier)
+    }
+
+    func testARestartedStreamIsStillCoveredByTheTerminationCleanup() throws {
+        let streamer = LogStreamer()
+        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+        let first = try XCTUnwrap(streamer.processIdentifier)
+        streamer.stop()
+        XCTAssertTrue(waitForExit(first))
+
+        // A stopped streamer that is started again must not be torn down by a
+        // cleanup left over from its first session, and a later sweep must not
+        // stop the new one twice.
+        try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+        let second = try XCTUnwrap(streamer.processIdentifier)
+        defer { streamer.stop() }
+        SignalRelay.shared.runCleanupsForTesting()
+        XCTAssertTrue(waitForExit(second))
+    }
+
+    private func waitForExit(_ pid: pid_t, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            // Foundation's Process reaps its child, so ESRCH means it is gone.
+            if kill(pid, 0) != 0 { return true }
+            Thread.sleep(forTimeInterval: 0.05)
+        }
+        return false
+    }
+
     private func strings(_ values: [Data]) -> [String] {
         values.map { String(decoding: $0, as: UTF8.self) }
     }

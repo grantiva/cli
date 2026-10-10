@@ -185,8 +185,9 @@ struct RunCommand: AsyncParsableCommand {
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions
 
-        // Optional device log streaming, stopped by defer so it shuts down on
-        // any exit path (success, failure, Ctrl-C). Both platforms start it
+        // Optional device log streaming, stopped by defer on success and
+        // failure; on Ctrl-C the streamer's own SignalRelay cleanup stops it,
+        // since the relay exits before this defer runs. Both platforms start it
         // after install, before any flow launches the app: logcat filters by
         // the app's uid, and the iOS default predicate names the installed
         // app's executable, both of which exist only once the app is

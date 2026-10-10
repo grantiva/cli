@@ -89,8 +89,16 @@ public final class LogStreamer: @unchecked Sendable {
     private let lock = NSLock()
     private let output = SerializedLogOutput()
     private var stopped = false
+    private var terminationCleanup: UInt64?
 
     public init() {}
+
+    /// The running log process's pid, for tests.
+    var processIdentifier: Int32? {
+        lock.lock()
+        defer { lock.unlock() }
+        return process.map(\.processIdentifier)
+    }
 
     /// Starts streaming simulator logs. Non-blocking. Call `stop()` to tear
     /// down. `predicate` is passed verbatim to `simctl log stream --predicate`;
@@ -153,6 +161,10 @@ public final class LogStreamer: @unchecked Sendable {
         stdoutDecoder = outDecoder
         stderrDecoder = errDecoder
         stopped = false
+        // Ctrl-C reaches SignalRelay, which runs its cleanups and calls exit,
+        // so a caller's `defer { stop() }` never runs and the log process
+        // (`adb logcat`, `log stream`) would be reparented to launchd.
+        terminationCleanup = SignalRelay.shared.onTermination { [self] in stop() }
     }
 
     /// Stops the log stream subprocess. Safe to call multiple times.
@@ -162,6 +174,10 @@ public final class LogStreamer: @unchecked Sendable {
 
         guard !stopped else { return }
         stopped = true
+        if let terminationCleanup {
+            SignalRelay.shared.removeCleanup(terminationCleanup)
+            self.terminationCleanup = nil
+        }
 
         stdoutPipe?.fileHandleForReading.readabilityHandler = nil
         stderrPipe?.fileHandleForReading.readabilityHandler = nil
