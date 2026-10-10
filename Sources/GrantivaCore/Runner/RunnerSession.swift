@@ -135,7 +135,7 @@ public enum RunnerSession {
                 pathMap: [:],
                 reportDir: reportDir,
                 expectedFlows: 1,
-                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform
             ))
@@ -446,7 +446,7 @@ public enum RunnerSession {
                 pathMap: stagedPathMap,
                 reportDir: reportDir,
                 expectedFlows: flowPaths.count,
-                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir),
+                environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform
             ))
@@ -535,8 +535,8 @@ public enum RunnerSession {
     }
 
     /// Extra environment for the runner process, supplied by the platform.
-    static func runnerEnvironment(platform: any DevicePlatform, runnerDir: String) -> [String: String] {
-        platform.runnerEnvironment(runnerHome: runnerDir)
+    static func runnerEnvironment(platform: any DevicePlatform, runnerDir: String, deviceID: String) -> [String: String] {
+        platform.runnerEnvironment(runnerHome: runnerDir, deviceID: deviceID)
     }
 
     /// Builds the full runner argv (binary path first). Global flags go before

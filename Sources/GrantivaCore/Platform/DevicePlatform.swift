@@ -101,8 +101,8 @@ public protocol DevicePlatform: Sendable {
     /// The process that streams the app's logs. `filter` is the platform's
     /// own syntax (an NSPredicate on iOS, a logcat tag on Android).
     func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand
-    /// Extra environment for the runner process.
-    func runnerEnvironment(runnerHome: String) -> [String: String]
+    /// Extra environment for the runner process that drives `deviceID`.
+    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String]
     /// Kills driver processes a crashed runner may have left on the device.
     func cleanupOrphans(deviceID: String) async
     /// A driver client for the session held on `deviceID`. `port` is the

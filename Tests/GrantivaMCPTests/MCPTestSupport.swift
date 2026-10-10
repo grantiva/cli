@@ -157,7 +157,7 @@ final class MCPFakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         try Data(screenshotBytes).write(to: URL(fileURLWithPath: path))
     }
     func logStream(deviceID: String, appID: String?, filter: String?, level: String?) async throws -> LogStreamCommand { LogStreamCommand(executable: "/bin/echo", arguments: []) }
-    func runnerEnvironment(runnerHome: String) -> [String: String] { [:] }
+    func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] { [:] }
     func cleanupOrphans(deviceID: String) async { record("cleanupOrphans") }
     func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment {
         record("attachDriver(\(deviceID),\(port.map(String.init) ?? "-"))")

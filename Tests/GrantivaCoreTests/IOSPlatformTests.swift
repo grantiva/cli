@@ -77,15 +77,15 @@ final class IOSPlatformTests: XCTestCase {
         try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(atPath: home) }
 
-        let env = IOSPlatform().runnerEnvironment(runnerHome: home)
+        let env = IOSPlatform().runnerEnvironment(runnerHome: home, deviceID: "SIM-1")
         let xcconfig = "\(home)/\(WDABuildConfig.fileName)"
-        XCTAssertEqual(env, ["XCODE_XCCONFIG_FILE": xcconfig])
+        XCTAssertEqual(env["XCODE_XCCONFIG_FILE"], xcconfig)
         let contents = try String(contentsOfFile: xcconfig, encoding: .utf8)
         XCTAssertTrue(contents.contains("WARNING_CFLAGS = $(inherited) -Wno-poison-system-directories"), contents)
     }
 
     func testRunnerEnvironmentFallsBackWhenTheXcconfigCannotBeWritten() {
-        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)"), [:])
+        XCTAssertEqual(IOSPlatform().runnerEnvironment(runnerHome: "/nonexistent-grantiva-\(UUID().uuidString)", deviceID: "SIM-1"), [:])
     }
 
     func testWDABuildConfigRewritesAStaleFileAndLeavesACurrentOne() throws {

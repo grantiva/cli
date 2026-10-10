@@ -110,11 +110,20 @@ public struct IOSPlatform: DevicePlatform {
     }
 
     /// Points xcodebuild at grantiva's xcconfig so the runner's WebDriverAgent
-    /// build survives Xcode 27 (see `WDABuildConfig`). Falls back to the stock
-    /// build when the file cannot be written.
-    public func runnerEnvironment(runnerHome: String) -> [String: String] {
-        guard let xcconfig = WDABuildConfig.install(in: runnerHome) else { return [:] }
-        return ["XCODE_XCCONFIG_FILE": xcconfig]
+    /// build survives Xcode 27 (see `WDABuildConfig`), and gives the runner a
+    /// per-simulator home so concurrent runs on different simulators each
+    /// launch WDA from their own xctestrun, port, and DerivedData (see
+    /// `WDADeviceHome`). Each piece falls back to the stock behavior when its
+    /// files cannot be written.
+    public func runnerEnvironment(runnerHome: String, deviceID: String) -> [String: String] {
+        var environment: [String: String] = [:]
+        if let xcconfig = WDABuildConfig.install(in: runnerHome) {
+            environment["XCODE_XCCONFIG_FILE"] = xcconfig
+        }
+        if let deviceHome = WDADeviceHome.prepare(runnerHome: runnerHome, deviceID: deviceID) {
+            environment["MAESTRO_RUNNER_HOME"] = deviceHome
+        }
+        return environment
     }
 
     public func cleanupOrphans(deviceID: String) async {}
