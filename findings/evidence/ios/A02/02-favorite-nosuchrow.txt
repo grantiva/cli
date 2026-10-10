@@ -1,0 +1,92 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-ios/flows/02-favorite-nosuchrow.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8BEF91A1-1A4D-4E20-B67E-068DF14CE4ED
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] 02-favorite-nosuchrow (02-favorite-nosuchrow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (1.8s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (715ms)
+    ✓ tapOn: text="Landmarks" (733ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (267ms)
+    ✓ takeScreenshot (66ms)
+    ✗ swipe: LEFT (12.1s)
+      ╰─ Element not found: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "show map", "Vertical scroll bar, 1 page", "Lake Tahoe, Sierra Nevada, CA")
+✗ 02-favorite-nosuchrow 24.4s
+
+  [1/1] 02-favorite-nosuchrow (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/reg-ios/flows/02-favorite-nosuchrow.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.8s)
+    ✓ tapOn (1.8s)
+    ✓ assertVisible (715ms)
+    ✓ tapOn (733ms)
+    ✓ tapOn (2.0s)
+    ✓ assertVisible (267ms)
+    ✓ takeScreenshot (66ms)
+    ✗ swipe (12.4s)
+      ╰─ Element not found: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "show map", "Vertical scroll bar, 1 page", "Lake Tahoe, Sierra Nevada, CA")
+    ✗ tapOn (0ms)
+    ✗ assertNotVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 02-favorite-nosuchrow 21.8s
+
+  8 steps passing (24.4s)
+  1 steps failing
+  4 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite-nosuchrow          ✗ FAIL      13      8      1      4      24.4s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      13      8      1      4      24.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8BEF91A1-1A4D-4E20-B67E-068DF14CE4ED
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8BEF91A1-1A4D-4E20-B67E-068DF14CE4ED/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8BEF91A1-1A4D-4E20-B67E-068DF14CE4ED/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8BEF91A1-1A4D-4E20-B67E-068DF14CE4ED/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791668277.png
+Error: Runner failed (exit 1); see the runner output above.
+exit 1

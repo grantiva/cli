@@ -1,0 +1,12 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# repro.txt   (cwd $S/i19 = fresh copy; source change = inputs/configs/i19/Landmark.swift.diff; final config inputs/configs/i19/grantiva.yml.final)
+{ $GRANTIVA diff capture --no-build --simulator $UDID1 && $GRANTIVA diff approve --json >/dev/null; echo "baseline exit $?"
+  sed -i '' 's/threshold: 0.02/threshold: 1.0/' grantiva.yml
+  sed -i '' '60s/name: "Golden Gate Bridge",/name: "Golden Gate Bridge 2",/' Landmarks/Models/Landmark.swift
+  $GRANTIVA build install --simulator $UDID1; echo "rebuild exit $?"
+  $GRANTIVA diff capture --no-build --simulator $UDID1; echo "capture exit $?"
+  $GRANTIVA diff compare --json; echo "compare exit $?"; } > $E/I19/repro.txt 2>&1
+# restore-app-install.txt   (cwd $APP: put the unmodified app back on UDID1)
+$GRANTIVA build install --simulator $UDID1 > $E/I19/restore-app-install.txt 2>&1

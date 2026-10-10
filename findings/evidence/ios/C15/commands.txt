@@ -1,0 +1,7 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# diagonal.txt   (cwd $S/c15, grantiva.yml = qa/cli fixtures/config/swipe-diagonal.yml)
+$GRANTIVA run --no-build --simulator $UDID1 --bundle-id com.apple.Preferences --timeout 120 > $E/C15/diagonal.txt 2>&1; echo "exit $?" >> …
+# up-mixedcase.txt   (same dir after: sed -i '' 's/swipe: diagonal/swipe: Up/' grantiva.yml  -> inputs/configs/c15/grantiva.yml is this final form)
+$GRANTIVA run --no-build --simulator $UDID1 --bundle-id com.apple.Preferences --timeout 120 > $E/C15/up-mixedcase.txt 2>&1; echo "exit $?" >> …

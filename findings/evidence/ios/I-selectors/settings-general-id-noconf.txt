@@ -1,0 +1,79 @@
+Resolved: scheme=(none) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: settings-general-id.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D869EC33-F181-40DA-A86C-A3361F31B183
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] settings-general-id (settings-general-id.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.5s)
+    ✓ tapOn: id="General" (1.5s)
+    ✓ assertVisible: text="About" (642ms)
+    ✓ takeScreenshot (69ms)
+✓ settings-general-id 6.7s
+
+  [1/1] settings-general-id (settings-general-id.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.5s)
+    ✓ tapOn (1.5s)
+    ✓ assertVisible (642ms)
+    ✓ takeScreenshot (69ms)
+✓ settings-general-id 4.7s
+
+  4 steps passing (6.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  settings-general-id            ✓ PASS       4      4      0      0       6.7s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       4      4      0      0       6.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D869EC33-F181-40DA-A86C-A3361F31B183
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D869EC33-F181-40DA-A86C-A3361F31B183/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D869EC33-F181-40DA-A86C-A3361F31B183/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D869EC33-F181-40DA-A86C-A3361F31B183/allure-results
+
+  Built by Grantiva
+
+
+  settings-general-id-cmd-003-General
+    ✓ Run flow "settings-general-id"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/
+
+exit 0

@@ -1,0 +1,14 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# repro.txt   (cwd $APP)
+u=$(xcrun simctl create qa-reg-ios-3 com.apple.CoreSimulator.SimDeviceType.iPhone-17 com.apple.CoreSimulator.SimRuntime.iOS-26-0)
+xcrun simctl boot $u && $GRANTIVA build install --simulator $u
+$GRANTIVA simulator sessions
+GRANTIVA_SESSION_ID=qa-reg-ios-manual $GRANTIVA run --no-build --flow .maestro/01-browse.yaml --simulator $u | grep -E 'PASS|FAIL|Error'
+$GRANTIVA simulator sessions
+$GRANTIVA simulator teardown --session-id qa-reg-ios-manual --json; xcrun simctl list devices | grep qa-reg-ios-3
+xcrun simctl boot $u; (unset GRANTIVA_SESSION_ID; $GRANTIVA run --no-build --flow .maestro/01-browse.yaml --simulator $u | grep -E 'PASS|FAIL|Error')
+$GRANTIVA simulator sessions --json; $GRANTIVA simulator sessions --json | grep -c "simulator:$u"
+# cleanup (appended "deleted 0")
+xcrun simctl shutdown $u; xcrun simctl delete $u

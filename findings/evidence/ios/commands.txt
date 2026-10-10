@@ -1,0 +1,16 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# step1-ensure-1.txt / step1-ensure-2.txt
+$GRANTIVA simulator ensure --name qa-reg-ios-1 --device-type "iPhone 17" --runtime 26.0 2>&1 | tee $E/step1-ensure-1.txt
+$GRANTIVA simulator ensure --name qa-reg-ios-2 --device-type "iPhone 17" --runtime 27.0 2>&1 | tee $E/step1-ensure-2.txt
+# step1-build-install.txt   (cwd $APP)
+($GRANTIVA build install --simulator $UDID1 && $GRANTIVA build install --simulator $UDID2) > $E/step1-build-install.txt 2>&1
+# run-26.0.txt, captures-26.0/   (cwd $APP)
+$GRANTIVA run --simulator $UDID1 --no-build > $E/run-26.0.txt 2>&1; echo "exit $?" >> $E/run-26.0.txt; cp -R .grantiva/captures $E/captures-26.0
+# run-27.0.txt, captures-27.0/   (cwd $APP)
+$GRANTIVA run --simulator $UDID2 --no-build > $E/run-27.0.txt 2>&1; echo "exit $?" >> $E/run-27.0.txt; cp -R .grantiva/captures $E/captures-27.0
+# cache-grep.txt
+grep -o 'Using cached GrantivaAgent build ([^)]*)\|Building GrantivaAgent for the first time' $E/run-2*.txt | tee $E/cache-grep.txt
+# 99-crash.txt   (cwd $APP)
+$GRANTIVA run --simulator $UDID1 --no-build --flow .maestro/99-crash.yaml > $E/99-crash.txt 2>&1; echo "exit $?" >> $E/99-crash.txt

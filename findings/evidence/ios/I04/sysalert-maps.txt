@@ -1,0 +1,81 @@
+Resolved: scheme=(none) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: maps.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] maps (maps.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ waitForAnimationToEnd (1.5s)
+    ⚠ tapOn: id="MapsTrayHeaderSearchField" (8.1s)
+    ✓ takeScreenshot (88ms)
+    ✓ assertNotVisible: text="Allow Once" (699ms)
+✓ maps 14.2s
+
+  [1/1] maps (maps.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ waitForAnimationToEnd (1.5s)
+    ⚠ tapOn (8.1s)
+    ✓ takeScreenshot (88ms)
+    ✓ assertNotVisible (699ms)
+✓ maps 12.5s
+
+  5 steps passing (14.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  maps                           ✓ PASS       5      5      0      0      14.2s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       5      5      0      0      14.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report/allure-results
+
+  Built by Grantiva
+
+
+  maps-cmd-003-maps
+    ✓ Run flow "maps"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: /Users/kyle/Developer/grantiva-cli/.worktrees/reg-ios/findings/evidence/ios/I04/sysalert-report/captures/
+
+exit 0

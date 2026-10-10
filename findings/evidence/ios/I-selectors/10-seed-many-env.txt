@@ -1,0 +1,85 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/10-seed-many.yaml
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-417A1A72-D283-4122-B4AE-7BD10121AC74
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll: DOWN (1.7s)
+    ✓ scroll: DOWN (3.6s)
+    ✓ scroll: DOWN (2.9s)
+    ✓ scroll: DOWN (2.9s)
+    ✓ assertVisible: text="Landmark 30" (618ms)
+    ✓ takeScreenshot (72ms)
+✓ 10-seed-many 16.5s
+
+  [1/1] 10-seed-many (.maestro/10-seed-many.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll (1.7s)
+    ✓ scroll (3.6s)
+    ✓ scroll (2.9s)
+    ✓ scroll (2.9s)
+    ✓ assertVisible (618ms)
+    ✓ takeScreenshot (72ms)
+✓ 10-seed-many 13.8s
+
+  7 steps passing (16.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-seed-many                   ✓ PASS       7      7      0      0      16.5s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0      16.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-417A1A72-D283-4122-B4AE-7BD10121AC74
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-417A1A72-D283-4122-B4AE-7BD10121AC74/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-417A1A72-D283-4122-B4AE-7BD10121AC74/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-417A1A72-D283-4122-B4AE-7BD10121AC74/allure-results
+
+  Built by Grantiva
+
+
+  10-seed-many-cmd-006-Scrolled
+    ✓ Run flow "10-seed-many"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/
+
+exit 0

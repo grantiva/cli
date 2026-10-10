@@ -1,0 +1,6 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# capture.json / capture.err / ls-captures.txt   (cwd $S/i02, config simulator: qa-reg-ios-1)
+$GRANTIVA diff capture --no-build --simulator $UDID1 --json > $E/I16/capture.json 2> $E/I16/capture.err; ls .grantiva/captures | tee $E/I16/ls-captures.txt
+# compare-side paths: see I19/repro.txt

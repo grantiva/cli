@@ -1,0 +1,68 @@
+Created qa-reg-ios-3 (0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8) — Booted
+Created qa-reg-ios-4 (BAEECF98-AC14-4230-A794-4B6A87CBE628) — Booted
+u3=0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8 u4=BAEECF98-AC14-4230-A794-4B6A87CBE628
+install exit 0
+grantiva pid=49912
+## session files
+50009-1791669515930455000.grantiva
+50009.owner.json
+## sessions before kill
+Grantiva-managed simulator sessions (4/4):
+  qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) — reg-ios [active]
+  qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) — reg-ios [active]
+  qa-reg-ios-3 (0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8) — reg-ios-i09 [active]
+  qa-reg-ios-4 (BAEECF98-AC14-4230-A794-4B6A87CBE628) — reg-ios-i09 [active]
+## force teardown
+[
+  {
+    "capacityRecordsCleared" : 0,
+    "capacityRecordsKept" : [
+      {
+        "reason" : "session reg-ios-i09 owns this simulator until `grantiva simulator teardown --session-id reg-ios-i09`",
+        "sessionId" : "reg-ios-i09",
+        "udid" : "0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8"
+      }
+    ],
+    "leaseReleased" : true,
+    "processes" : [
+      {
+        "command" : "\/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.8+android-drivers-2\/grantiva-runner --platform ios --device 0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8 --no-ansi --no-app-install test --output \/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-report-7040A316-D1D5-44A5-AE67-DD1CC94397FB --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast --keep-alive \/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-C87842BE-4130-42AC-8AA3-8F3FFCE578C2\/0\/01-browse.yaml",
+        "killed" : true,
+        "kind" : "runner",
+        "pid" : 50009,
+        "processGroup" : 50009
+      },
+      {
+        "command" : "\/Applications\/Xcode-27.0.0.app\/Contents\/Developer\/usr\/bin\/xcodebuild test-without-building -xctestrun \/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.8+android-drivers-2\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/cache\/wda-builds\/sim-ios26.0-iphone-wda16.12.8\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/run-50009-1791669502655701000\/Products\/WebDriverAgentRunner_iphonesimulator27.0-arm64.xctestrun -destination platform=iOS Simulator,arch=arm64,id=0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8 -derivedDataPath \/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.8+android-drivers-2\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/cache\/wda-builds\/sim-ios26.0-iphone-wda16.12.8\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/run-50009-1791669502655701000\/DerivedData -resultBundlePath \/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.8+android-drivers-2\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/cache\/wda-builds\/sim-ios26.0-iphone-wda16.12.8\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/run-50009-1791669502655701000\/attempt-1.xcresult",
+        "killed" : true,
+        "kind" : "webDriverAgent",
+        "pid" : 50068,
+        "processGroup" : 50009
+      },
+      {
+        "command" : "\/Library\/Developer\/PrivateFrameworks\/CoreSimulator.framework\/Versions\/A\/Resources\/bin\/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=\/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.8+android-drivers-2\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/cache\/wda-builds\/sim-ios26.0-iphone-wda16.12.8\/devices\/0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8\/run-50009-1791669502655701000\/attempt-1.xcresult\/Staging\/1_Test\/Diagnostics\/simctl_diagnostics --no-archive --udid=0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8",
+        "killed" : true,
+        "kind" : "diagnose",
+        "pid" : 50464,
+        "processGroup" : 50464
+      }
+    ],
+    "reclaimed" : true,
+    "sessionFilesRemoved" : [
+      "\/tmp\/grantiva-sessions\/50009-1791669515930455000.grantiva",
+      "\/tmp\/grantiva-sessions\/50009.owner.json"
+    ],
+    "udid" : "0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8"
+  }
+]
+## sessions after
+Grantiva-managed simulator sessions (4/4):
+  qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) — reg-ios [active]
+  qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) — reg-ios [active]
+  qa-reg-ios-3 (0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8) — reg-ios-i09 [active]
+  qa-reg-ios-4 (BAEECF98-AC14-4230-A794-4B6A87CBE628) — reg-ios-i09 [active]
+## session files after
+no 49912* files
+## simctl diagnose
+none
+    qa-reg-ios-3 (0BE596F4-D3CC-4A23-8533-02DCEB5BCFF8) (Booted) 

@@ -1,0 +1,6 @@
+# Captured after the fact (2026-10-10 15:08:24 PDT), read-only, well after the I14 run (~14:58).
+# The I14 ensure printed no UDID for the device it attempted, so this check uses the name qa-reg-ios-3 and also the UDID 0BE596F4, which belonged to the I09 device of the same name (removed by teardown --session-id reg-ios-i09).
+$ cat ~/.grantiva/simulator-capacity/created.json
+[{"name":"TienLen Flow deal-investigation","udid":"FBE26107-54BB-4CD8-9C1D-6EDACDC2E39C","createdAt":810336274.132179},{"udid":"E151FCDC-8DCA-434B-81FE-2B8456650EC5","name":"BLESwift E2E probe","createdAt":810861190.990449},{"createdAt":813360443.598611,"udid":"4278E141-1297-46F9-989F-FB9995D123F9","name":"qa-reg-ios-1"},{"createdAt":813360466.013139,"udid":"D65CAFEF-BB8A-4835-897F-C63578A905ED","name":"qa-reg-ios-2"}]
+$ grep -c -E "qa-reg-ios-3|0BE596F4" ~/.grantiva/simulator-capacity/created.json
+0

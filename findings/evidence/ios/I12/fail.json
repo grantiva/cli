@@ -1,0 +1,21 @@
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1); see the runner output above.",
+  "screens" : [
+    {
+      "name" : "99-crash",
+      "passed" : false,
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Landmarks\"",
+          "message" : "Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}

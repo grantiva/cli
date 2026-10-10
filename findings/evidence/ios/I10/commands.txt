@@ -1,0 +1,13 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# repro.txt
+$GRANTIVA simulator ensure --name qa-reg-ios-1 --device-type "iPhone 17" --runtime 26.0 --no-boot
+$GRANTIVA simulator ensure --name qa-reg-ios-1 --no-boot
+$GRANTIVA simulator ensure --name qa-reg-ios-1 --no-boot --json
+GRANTIVA_SESSION_ID=reg-ios-i10 $GRANTIVA simulator ensure --name qa-reg-ios-4 --device-type "iPhone 17" --runtime 26.0 --no-boot
+GRANTIVA_SESSION_ID=reg-ios-i10 $GRANTIVA simulator ensure --name qa-reg-ios-4 --no-boot --json
+GRANTIVA_SESSION_ID=reg-ios-i10 $GRANTIVA simulator ensure --name qa-reg-ios-3 --no-boot
+GRANTIVA_SESSION_ID=reg-ios-i10 $GRANTIVA simulator delete --name qa-reg-ios-4
+# ensure-help.txt
+$GRANTIVA simulator ensure --help | head -20 > $E/I10/ensure-help.txt

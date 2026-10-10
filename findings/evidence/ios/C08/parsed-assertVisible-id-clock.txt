@@ -1,0 +1,91 @@
+Resolved: scheme=(none) simulator=4278E141-1297-46F9-989F-FB9995D123F9 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: 4278E141-1297-46F9-989F-FB9995D123F9
+Simulator booted: qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.8 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-00460F1B-A6C3-4F3E-A172-7CC31D0EAABC
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8581
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✓ waitForAnimationToEnd (961ms)
+    ✓ tapOn: text="Caching Demo" (1.0s)
+    ✓ waitForAnimationToEnd (722ms)
+    ✓ assertVisible: text="Cache Policy" (390ms)
+    ✓ assertVisible: id="clock" (439ms)
+    ✓ waitForAnimationToEnd (234ms)
+    ✓ takeScreenshot (73ms)
+✓ flow 10.3s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-723CD216-6BFE-4DEA-90CD-8D8E28AF452F/flow.yaml) - Device: qa-reg-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.9s)
+    ✓ waitForAnimationToEnd (961ms)
+    ✓ tapOn (1.0s)
+    ✓ waitForAnimationToEnd (722ms)
+    ✓ assertVisible (390ms)
+    ✓ assertVisible (439ms)
+    ✓ waitForAnimationToEnd (234ms)
+    ✓ takeScreenshot (73ms)
+✓ flow 7.7s
+
+  9 steps passing (10.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✓ PASS       9      9      0      0      10.3s  qa-reg-ios-1 (ios 26.0 Simu...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0      10.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-00460F1B-A6C3-4F3E-A172-7CC31D0EAABC
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-00460F1B-A6C3-4F3E-A172-7CC31D0EAABC/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-00460F1B-A6C3-4F3E-A172-7CC31D0EAABC/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-00460F1B-A6C3-4F3E-A172-7CC31D0EAABC/allure-results
+
+  Built by Grantiva
+
+
+  Caching clock id
+    ✓ Tap on "Deep Links"
+    ✓ Tap on "Caching Demo"
+    ✓ Assert visible "Cache Policy"
+    ✓ Assert visible id "clock"
+
+  Screens: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/captures/
+
+exit 0

@@ -1,0 +1,10 @@
+# Every shell first ran: source inputs/env.sh  (GRANTIVA, GRANTIVA_RUNNER_HOME, GRANTIVA_SESSION_ID=reg-ios, unset GRANTIVA_API_KEY,
+# S=scratch dir, APP=$S/ios (copy of landmarks-demo/ios), E=findings/evidence/ios, UDID1=4278E141-…, UDID2=D65CAFEF-…).
+# Hand-made inputs referenced below are copied verbatim under inputs/ (path given as inputs/...).
+# cwd $S/i02 = fresh copy of landmarks-demo/ios; grantiva.yml edited: simulator: qa-ios-1 -> qa-reg-ios-1 (final form inputs/configs/i02/grantiva.yml.final)
+xcrun simctl list devices booted > $E/I02/booted-before.txt
+$GRANTIVA diff capture --no-build --json > $E/I02/capture.json 2> $E/I02/capture.err; echo "exit $?" > $E/I02/exit.txt
+# capture-noconf.*: after sed -i '' '/^simulator:/d' grantiva.yml
+$GRANTIVA diff capture --no-build --json > $E/I02/capture-noconf.json 2> $E/I02/capture-noconf.err; echo "noconf exit $?" >> $E/I02/exit.txt
+# mcp/: simulator: qa-reg-ios-1 re-added; requests = inputs/mcp/i02-mcp.json
+python3 -I $S/client.py $S/i02-mcp.json $E/I02/mcp $S/i02 -- $GRANTIVA mcp

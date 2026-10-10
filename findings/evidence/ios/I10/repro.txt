@@ -1,0 +1,41 @@
+## ensure qa-reg-ios-1 with type+runtime --no-boot
+Reused qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) — Booted
+4278E141-1297-46F9-989F-FB9995D123F9
+exit 0
+## bare ensure --name qa-reg-ios-1 --no-boot
+Reused qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) — Booted
+4278E141-1297-46F9-989F-FB9995D123F9
+exit 0
+## bare ensure --json qa-reg-ios-1
+{
+  "created" : false,
+  "device_type" : "iPhone 17",
+  "name" : "qa-reg-ios-1",
+  "runtime" : "iOS 26.0",
+  "state" : "Booted",
+  "udid" : "4278E141-1297-46F9-989F-FB9995D123F9"
+}
+exit 0
+## create qa-reg-ios-4 on 26.0 (no boot)
+Created qa-reg-ios-4 (C5398FCD-978C-49D9-A46C-A94F5F591F42) — Shutdown
+C5398FCD-978C-49D9-A46C-A94F5F591F42
+exit 0
+## bare ensure --json qa-reg-ios-4
+{
+  "created" : false,
+  "device_type" : "iPhone 17",
+  "name" : "qa-reg-ios-4",
+  "runtime" : "iOS 26.0",
+  "state" : "Shutdown",
+  "udid" : "C5398FCD-978C-49D9-A46C-A94F5F591F42"
+}
+exit 0
+## new model-less name without --device-type
+Error: Invalid argument: Could not infer a device type from the name "qa-reg-ios-3". Include a device model in the name (for example "iPhone 17") or pass --device-type.
+exit 1
+qa-reg-ios-3 not created
+## delete qa-reg-ios-4
+Deleted qa-reg-ios-4 (C5398FCD-978C-49D9-A46C-A94F5F591F42)
+exit 0
+    qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) (Booted) 
+    qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) (Booted) 

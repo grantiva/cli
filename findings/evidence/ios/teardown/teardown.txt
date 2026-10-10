@@ -1,0 +1,64 @@
+# Step 6 teardown, 2026-10-10 15:12:57 PDT; env from inputs/env.sh (GRANTIVA_SESSION_ID=reg-ios)
+$ ls -la $GRANTIVA_RUNNER_HOME/versions/*/devices/
+total 0
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:59 .
+drwxr-xr-x@ 10 kyle  staff  320 Oct 10 14:45 ..
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:29 4278E141-1297-46F9-989F-FB9995D123F9
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:31 D65CAFEF-BB8A-4835-897F-C63578A905ED
+[exit 0]
+
+$ $GRANTIVA simulator sessions --json
+[
+  {
+    "acquiredAt" : "2026-10-10T21:27:23Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-1",
+    "ownerPID" : 75989,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "4278E141-1297-46F9-989F-FB9995D123F9"
+  },
+  {
+    "acquiredAt" : "2026-10-10T21:27:46Z",
+    "bootedByGrantiva" : true,
+    "ephemeral" : false,
+    "name" : "qa-reg-ios-2",
+    "ownerPID" : 76626,
+    "sessionId" : "reg-ios",
+    "state" : "active",
+    "udid" : "D65CAFEF-BB8A-4835-897F-C63578A905ED"
+  }
+]
+[exit 0]
+
+$ $GRANTIVA simulator teardown --udid 4278E141-1297-46F9-989F-FB9995D123F9
+Deleted Grantiva-created qa-reg-ios-1 (4278E141-1297-46F9-989F-FB9995D123F9) and released session reg-ios.
+[exit 0]
+
+$ $GRANTIVA simulator teardown --udid D65CAFEF-BB8A-4835-897F-C63578A905ED
+Deleted Grantiva-created qa-reg-ios-2 (D65CAFEF-BB8A-4835-897F-C63578A905ED) and released session reg-ios.
+[exit 0]
+
+$ ls -la $GRANTIVA_RUNNER_HOME/versions/*/devices/
+total 0
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:59 .
+drwxr-xr-x@ 10 kyle  staff  320 Oct 10 14:45 ..
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:29 4278E141-1297-46F9-989F-FB9995D123F9
+drwxr-xr-x@  4 kyle  staff  128 Oct 10 14:31 D65CAFEF-BB8A-4835-897F-C63578A905ED
+[exit 0]
+
+$ xcrun simctl list devices | grep -c qa-reg-
+0
+[exit 1]
+
+$ $GRANTIVA simulator sessions --json
+[
+
+]
+[exit 0]
+
+$ xcrun simctl list devices | grep -E "iPhone 17 Pro \(B27D7D31"
+    iPhone 17 Pro (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) (Booted) 
+[exit 0]
+
