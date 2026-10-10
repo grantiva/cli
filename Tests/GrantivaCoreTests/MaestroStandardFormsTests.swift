@@ -58,6 +58,20 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertTrue(yaml.contains("- swipe:\n    direction: LEFT\n    duration: 250\n"), yaml)
     }
 
+    func testPixelSwipePointsFallBackToDirection() throws {
+        let steps = try steps("""
+        - swipe:
+            start: 300, 200
+            end: 100, 200
+        """)
+        XCTAssertEqual(steps[0].swipe, "left")
+        XCTAssertNil(steps[0].swipeStart)
+        XCTAssertNil(steps[0].swipeEnd)
+        let yaml = FlowGenerator.generate(screens: [.init(name: "S", path: .steps(steps))], bundleId: "a.b")
+        XCTAssertTrue(yaml.contains("- swipe:\n    direction: LEFT\n"), yaml)
+        XCTAssertFalse(yaml.contains("start:"), yaml)
+    }
+
     func testScrollDirectionIsCaseInsensitive() throws {
         let steps = try steps("""
         - scroll:

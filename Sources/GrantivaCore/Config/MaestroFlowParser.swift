@@ -314,9 +314,11 @@ public struct MaestroFlowParser {
                 var step = GrantivaConfig.Screen.Step(swipe: direction)
                 step.swipeDuration = asInt(val["duration"])
                 // Maestro's `"x%, y%"` points are kept so the generated flow
-                // swipes exactly there; the legacy `{x:, y:}` maps keep
-                // swiping by direction only.
-                if let start = val["start"] as? String, let end = val["end"] as? String {
+                // swipes exactly there. Pixel points ("100, 200") and the
+                // legacy `{x:, y:}` maps keep swiping by direction only: the
+                // runner reads every start/end value as a percentage.
+                if let start = val["start"] as? String, let end = val["end"] as? String,
+                   start.contains("%"), end.contains("%") {
                     step.swipeStart = start
                     step.swipeEnd = end
                 }
