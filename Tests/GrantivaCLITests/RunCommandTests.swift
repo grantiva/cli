@@ -390,4 +390,50 @@ final class RunCommandTests: XCTestCase {
             "Invalid argument: No screens or flows configured in grantiva-android.yml"
         )
     }
+
+    // MARK: - --no-build with the app missing (I15)
+
+    func testNoBuildWithTheAppNotInstalledFailsBeforeTheRunnerStarts() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.bootedName = "qa-ios-1"
+        fake.installed = false
+        let runnerUsed = LockedFlag()
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-i15-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
+        try "bundle_id: com.kylebrowning.Landmarks\nsimulator: qa-ios-1\nflows:\n  - smoke.yaml\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+
+        var command = try RunCommand.parse(["--no-build", "--platform", "ios"])
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = RunnerManager(
+            ensureAvailable: {},
+            runnerPath: { runnerUsed.set(); return "/usr/bin/false" },
+            runnerDir: { runnerUsed.set(); return NSTemporaryDirectory() }
+        )
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "com.kylebrowning.Landmarks is not installed on qa-ios-1. Drop --no-build or run grantiva build install."
+            )
+        }
+        XCTAssertFalse(runnerUsed.value, "the runner must never be launched")
+        XCTAssertTrue(fake.calls.contains("isInstalled(com.kylebrowning.Landmarks)"), "\(fake.calls)")
+    }
+}
+
+final class LockedFlag: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored = false
+    var value: Bool { lock.withLock { stored } }
+    func set() { lock.withLock { stored = true } }
 }

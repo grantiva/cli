@@ -15,6 +15,8 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
     case noCaptures(String)
     case runnerNotFound
     case networkError(String, Int)
+    /// A local agent or device state problem whose message is the whole story.
+    case unavailable(String)
     case baselineNotFound(String)
     case appNotFound(String)
     case invalidBinary(String)
@@ -53,6 +55,8 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
             return "Runner binary not found. The embedded grantiva-runner could not be extracted."
         case .networkError(let message, let statusCode):
             return "Network error (\(statusCode)): \(message)"
+        case .unavailable(let message):
+            return message
         case .baselineNotFound(let screen):
             return "Baseline not found for screen \"\(screen)\""
         case .appNotFound(let path):

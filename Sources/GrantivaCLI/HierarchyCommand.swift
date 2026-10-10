@@ -92,7 +92,13 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
 
         let request = URLRequest(url: url, timeoutInterval: timeout)
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            throw Self.agentError(error, port: session.port, timeout: timeout)
+        }
 
         guard let http = response as? HTTPURLResponse else {
             throw GrantivaError.commandFailed("GrantivaAgent returned a non-HTTP response", 1)
@@ -136,6 +142,25 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
         await attachment.detach()
         Output.line(text)
+    }
+
+    /// Turns URLSession's NSError dumps into one line naming the port and
+    /// what to check. Anything else passes through unchanged.
+    static func agentError(_ error: Error, port: Int, timeout: Double) -> Error {
+        guard let urlError = error as? URLError else { return error }
+        switch urlError.code {
+        case .timedOut:
+            let seconds = timeout == timeout.rounded() ? String(Int(timeout)) : String(timeout)
+            return GrantivaError.unavailable(
+                "GrantivaAgent on port \(port) did not answer within \(seconds)s (--timeout). Is the run still alive?"
+            )
+        case .cannotConnectToHost, .networkConnectionLost, .cannotFindHost:
+            return GrantivaError.unavailable(
+                "Cannot reach GrantivaAgent on port \(port). Is the grantiva run --keep-alive session still alive?"
+            )
+        default:
+            return error
+        }
     }
 
     /// Resolves the keep-alive session to query. `store` is injectable for tests.

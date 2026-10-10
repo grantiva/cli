@@ -113,6 +113,13 @@ public protocol DevicePlatform: Sendable {
     func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment
     /// Records the screen for `seconds` and leaves a video file at `path`.
     func recordVideo(deviceID: String, to path: String, seconds: Double) async throws
+    /// Whether `appID` is installed on the device; nil when the platform
+    /// cannot tell. `run --no-build` checks this before starting the runner.
+    func isInstalled(appID: String, deviceID: String) async -> Bool?
+}
+
+extension DevicePlatform {
+    public func isInstalled(appID: String, deviceID: String) async -> Bool? { nil }
 }
 
 public enum DevicePlatformFactory {

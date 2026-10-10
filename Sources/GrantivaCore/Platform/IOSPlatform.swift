@@ -49,6 +49,16 @@ public struct IOSPlatform: DevicePlatform {
         try await xcodebuild.install(bundleId: appID, productPath: productPath, udid: deviceID)
     }
 
+    /// `simctl get_app_container` fails for a bundle ID that is not installed.
+    public func isInstalled(appID: String, deviceID: String) async -> Bool? {
+        do {
+            _ = try await execute("xcrun simctl get_app_container \(shellQuoted(deviceID)) \(shellQuoted(appID))")
+            return true
+        } catch {
+            return false
+        }
+    }
+
     public func launch(appID: String, deviceID: String) async throws {
         try await xcodebuild.launch(bundleId: appID, udid: deviceID)
     }

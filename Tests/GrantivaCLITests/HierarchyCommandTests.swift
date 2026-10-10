@@ -93,6 +93,51 @@ final class HierarchyCommandTests: XCTestCase {
         }
     }
 
+    // MARK: - Agent errors (I15)
+
+    func testATimeoutIsOneActionableLine() {
+        let error = HierarchyCommand.agentError(URLError(.timedOut), port: 8129, timeout: 0.01)
+        XCTAssertEqual(
+            error.localizedDescription,
+            "GrantivaAgent on port 8129 did not answer within 0.01s (--timeout). Is the run still alive?"
+        )
+        XCTAssertEqual(
+            HierarchyCommand.agentError(URLError(.timedOut), port: 8129, timeout: 60).localizedDescription,
+            "GrantivaAgent on port 8129 did not answer within 60s (--timeout). Is the run still alive?"
+        )
+    }
+
+    func testARefusedConnectionNamesThePortAndTheKeepAliveRun() {
+        let message = HierarchyCommand.agentError(URLError(.cannotConnectToHost), port: 8129, timeout: 60).localizedDescription
+        XCTAssertEqual(
+            message,
+            "Cannot reach GrantivaAgent on port 8129. Is the grantiva run --keep-alive session still alive?"
+        )
+        XCTAssertFalse(message.contains("NSURLErrorDomain"))
+    }
+
+    func testOtherErrorsPassThrough() {
+        let error = HierarchyCommand.agentError(GrantivaError.invalidImage, port: 1, timeout: 1)
+        XCTAssertEqual(error.localizedDescription, GrantivaError.invalidImage.localizedDescription)
+    }
+
+    func testAnIOSSessionWhoseAgentIsGoneFailsWithTheMappedMessage() async throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        // Port 9 (discard) on loopback has no listener: connection refused.
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "ios", in: directory, port: 9)
+        let command = try HierarchyCommand.parse(["--timeout", "5"])
+        do {
+            try await command.run(store: store)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "Cannot reach GrantivaAgent on port 9. Is the grantiva run --keep-alive session still alive?"
+            )
+        }
+    }
+
     private func writeRunnerSession(pid: Int, nanos: Int, sessionId: String, in directory: URL, port: Int? = nil) throws {
         let data = try JSONSerialization.data(withJSONObject: [
             "version": 1, "sessionId": sessionId, "createdAt": "2026-10-07T10:00:00Z",
@@ -107,13 +152,6 @@ final class HierarchyCommandTests: XCTestCase {
         addTeardownBlock { try? FileManager.default.removeItem(at: url) }
         return url
     }
-}
-
-func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Void, file: StaticString = #filePath, line: UInt = #line) async {
-    do {
-        try await expression()
-        XCTFail("expected an error", file: file, line: line)
-    } catch {}
 
     // `--json` was advertised (GlobalOptions) but never read, so it printed XML.
     func testJSONFlagSelectsJSONOutput() throws {
@@ -128,4 +166,11 @@ func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Voi
             XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
         }
     }
+}
+
+func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Void, file: StaticString = #filePath, line: UInt = #line) async {
+    do {
+        try await expression()
+        XCTFail("expected an error", file: file, line: line)
+    } catch {}
 }

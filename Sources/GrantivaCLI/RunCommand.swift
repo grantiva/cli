@@ -107,6 +107,12 @@ struct RunCommand: AsyncParsableCommand {
         return "No screens or flows configured in \(platform.configFileName)"
     }
 
+    /// `--no-build` assumes the app is on the device; say so plainly when it
+    /// is not, instead of letting the runner fail every launchApp step.
+    static func notInstalledMessage(appID: String, device: String) -> String {
+        "\(appID) is not installed on \(device). Drop --no-build or run grantiva build install."
+    }
+
     func run() async throws {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
@@ -266,6 +272,10 @@ struct RunCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
         }
 
+        if buildOptions.shouldSkipInstall,
+           await device.isInstalled(appID: bid, deviceID: booted.udid) == false {
+            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: bid, device: booted.name))
+        }
         if !buildOptions.shouldSkipInstall, let productPath {
             log("Installing \(bid)...")
             try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
