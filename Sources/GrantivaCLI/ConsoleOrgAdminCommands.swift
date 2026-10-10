@@ -135,7 +135,7 @@ struct ConsoleWebhooksCommand: AsyncParsableCommand {
         static let configuration = CommandConfiguration(commandName: "update", abstract: "Change a webhook's events or description.")
         @OptionGroup var options: GlobalOptions
         @Argument(help: "Webhook ID.") var webhook: String
-        @Option(name: .long, help: "Replace the subscribed events. Repeatable.") var event: [String] = []
+        @Option(name: .long, help: "Replace the subscribed events. Repeatable. The server validates event types.") var event: [String] = []
         @Option(name: .long, help: "New description.") var description: String?
         func validate() throws {
             try ConsoleWebhooksCommand.validateID(webhook)
