@@ -32,7 +32,7 @@ public enum MP4LastFrameHold {
 
         var changed = false
         for index in moov.children.indices where moov.children[index].type == "trak" {
-            if holdTrack(&moov.children[index], seconds: seconds, movieScale: movieScale, movieTarget: movieTarget) {
+            if holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
                 changed = true
             }
         }
@@ -56,7 +56,7 @@ public enum MP4LastFrameHold {
         return Data(output)
     }
 
-    private static func holdTrack(_ trak: inout Box, seconds: Double, movieScale: UInt32, movieTarget: UInt64) -> Bool {
+    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Bool {
         guard var mdia = trak.child("mdia"),
               mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true,
               var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0,
