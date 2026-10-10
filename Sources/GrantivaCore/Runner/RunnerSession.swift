@@ -46,7 +46,7 @@ public enum RunnerSession {
         let runnerDir = runner.runnerDir()
 
         // Generate Maestro flow YAML
-        let flowPath = try FlowGenerator.writeTemp(
+        let (flowPath, subflowPathMap) = try FlowGenerator.writeTempStaged(
             screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
             disableAlertAutoAccept: disablesAlertAutoAccept(platform: platform, autoAcceptAlerts: autoAcceptAlerts)
         )
@@ -135,7 +135,7 @@ public enum RunnerSession {
                 lease: simulatorLease,
                 keepAlive: keepAlive,
                 timeoutSeconds: timeoutSeconds,
-                pathMap: [:],
+                pathMap: subflowPathMap,
                 reportDir: reportDir,
                 expectedFlows: 1,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
@@ -149,8 +149,9 @@ public enum RunnerSession {
                 ? "Runner timed out after \(timeoutSeconds)s"
                 : "Runner failed (exit \(outcome.terminationStatus))"
             readySignal.write(RunReadyState(status: "failed", flows: [], reportDir: reportDir))
+            let stderr = OutputRewriter(replacements: subflowPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
-                "\(reason):\n\(outcome.stderr.suffix(2000))",
+                "\(reason):\n\(stderr.suffix(2000))",
                 outcome.terminationStatus
             )
         }

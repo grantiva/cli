@@ -136,6 +136,10 @@ public enum FlowAlertPolicy {
 /// shared `setup.yaml`'s `launchApp` gets the same alert policy as the flow
 /// that calls it. Pass `stage` as `FlowReferenceResolver.resolve`'s
 /// `mapFile`. Each file is staged once; cycles reuse the first copy.
+///
+/// Only `runFlow` references are rewritten to absolute paths. Other relative
+/// references in a staged child (`runScript`, `addMedia`, …) resolve from the
+/// temp folder, the same as they already do in top-level staged flows.
 final class FlowAlertStager {
     let directory: String
     private var staged: [String: String] = [:]

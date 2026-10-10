@@ -94,10 +94,31 @@ final class WDADeviceHomeTests: XCTestCase {
         _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { nil }))
         _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "CCCC-3333", existingDeviceIDs: { nil }))
         // simctl lists only BBBB; AAAA was deleted, CCCC is the device being prepared.
-        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "CCCC-3333", existingDeviceIDs: { ["BBBB-2222"] }))
+        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "CCCC-3333", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory))
         XCTAssertFalse(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
         XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "BBBB-2222")))
         XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "CCCC-3333")))
+    }
+
+    private var leaseDirectory: String { "\(home!)/locks" }
+
+    func testAnEmptySimulatorListPrunesNothing() throws {
+        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+        // A CoreSimulatorService hiccup can list no devices with exit 0.
+        _ = try XCTUnwrap(WDADeviceHome.prepare(
+            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { [] }, leaseDirectory: leaseDirectory
+        ))
+        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+    }
+
+    func testAHomeWhoseLeaseIsHeldIsNotPruned() throws {
+        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+        let lease = try SimulatorLease.acquire(udid: "AAAA-1111", directory: leaseDirectory)
+        defer { lease.release() }
+        _ = try XCTUnwrap(WDADeviceHome.prepare(
+            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory
+        ))
+        XCTAssertTrue(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
     }
 
     func testNothingIsPrunedWhenSimulatorsCannotBeListed() throws {

@@ -169,4 +169,22 @@ final class FlowAlertPolicyTests: XCTestCase {
         let yaml = try String(contentsOfFile: path, encoding: .utf8)
         XCTAssertEqual(runnerAlertAction(try launchPermissions(in: yaml)[0]), "")
     }
+
+    func testGeneratedScreenFlowsReportTheirStagedSubflows() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("grantiva-screens-subflow-\(UUID().uuidString)").path
+        defer { try? fm.removeItem(atPath: root) }
+        try fm.createDirectory(atPath: root, withIntermediateDirectories: true)
+        try "- launchApp\n- tapOn: x".write(toFile: "\(root)/setup.yaml", atomically: true, encoding: .utf8)
+        var step = GrantivaConfig.Screen.Step()
+        step.runFlow = "setup.yaml"
+        let staged = try FlowGenerator.writeTempStaged(
+            screens: [GrantivaConfig.Screen(name: "Home", path: .steps([step]))],
+            bundleId: "com.example", runFlowBaseDirectory: root, disableAlertAutoAccept: true
+        )
+        defer { try? fm.removeItem(atPath: (staged.path as NSString).deletingLastPathComponent) }
+        XCTAssertEqual(Array(staged.pathMap.values), ["\(root)/setup.yaml"])
+        let copy = try XCTUnwrap(staged.pathMap.keys.first)
+        XCTAssertTrue(try String(contentsOfFile: staged.path, encoding: .utf8).contains(copy))
+    }
 }

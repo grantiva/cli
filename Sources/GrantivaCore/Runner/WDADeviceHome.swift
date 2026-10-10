@@ -60,6 +60,7 @@ public enum WDADeviceHome {
         runnerHome: String,
         deviceID: String,
         existingDeviceIDs: () -> Set<String>? = liveDeviceIDs,
+        leaseDirectory: String? = nil,
         fileManager fm: FileManager = .default
     ) -> String? {
         guard isPlainIdentifier(deviceID) else { return nil }
@@ -78,11 +79,17 @@ public enum WDADeviceHome {
             return nil
         }
 
-        if let existing = existingDeviceIDs() {
+        // An empty list is treated as "unknown": a CoreSimulatorService
+        // hiccup can briefly list no devices, and pruning on it would wipe
+        // the homes of runs in progress. A home whose simulator lease is
+        // held belongs to a live run and is skipped too.
+        if let existing = existingDeviceIDs(), !existing.isEmpty {
             let devices = "\(runnerHome)/\(devicesDirectory)"
             for other in subdirectories(of: devices, fileManager: fm)
             where other != deviceID && !existing.contains(other) {
+                guard let lease = try? SimulatorLease.acquire(udid: other, directory: leaseDirectory) else { continue }
                 try? fm.removeItem(atPath: "\(devices)/\(other)")
+                lease.release()
             }
         }
 
@@ -155,7 +162,7 @@ public enum WDADeviceHome {
     /// if the lock file cannot be opened.
     @discardableResult
     static func withBuildsLock<T>(_ sharedBuilds: String, _ body: () -> T) -> T {
-        let descriptor = open("\(sharedBuilds)/\(lockFileName)", O_CREAT | O_RDWR, 0o644)
+        let descriptor = open("\(sharedBuilds)/\(lockFileName)", O_CREAT | O_RDWR | O_CLOEXEC, 0o644)
         guard descriptor >= 0 else { return body() }
         defer { close(descriptor) }
         flock(descriptor, LOCK_EX)
