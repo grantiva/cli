@@ -76,6 +76,9 @@ public enum RunnerSession {
         // dir exists, so a throw here leaves nothing to clean up.
         try invalidateCaptures(of: screens, in: outputDir)
         try RunnerReportWorkspace.prepare(at: reportDir)
+        // The ephemeral dir is deleted before a waiter could read it, so the
+        // ready file names only a preserved --report-dir.
+        let readyReportDir = preserveReportDir ? reportDir : nil
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer {
@@ -137,6 +140,7 @@ public enum RunnerSession {
                 timeoutSeconds: timeoutSeconds,
                 pathMap: subflowPathMap,
                 reportDir: reportDir,
+                readyReportDir: readyReportDir,
                 expectedFlows: 1,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
@@ -144,11 +148,18 @@ public enum RunnerSession {
             ))
         }
 
-        guard outcome.terminationStatus == 0 else {
-            let reason = outcome.timedOut
+        guard outcome.terminationStatus == 0, !outcome.interrupted else {
+            let reason = outcome.interrupted
+                ? "Runner interrupted"
+                : outcome.timedOut
                 ? "Runner timed out after \(timeoutSeconds)s"
                 : "Runner failed (exit \(outcome.terminationStatus))"
-            readySignal.write(RunReadyState(status: "failed", flows: [], reportDir: reportDir))
+            let verdict = outcome.interrupted ? "interrupted" : "failed"
+            readySignal.write(RunReadyState(
+                status: verdict,
+                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
+                reportDir: readyReportDir
+            ))
             let stderr = OutputRewriter(replacements: subflowPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
                 "\(reason):\n\(stderr.suffix(2000))",
@@ -159,7 +170,7 @@ public enum RunnerSession {
         readySignal.write(RunReadyState(
             status: "passed",
             flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
-            reportDir: reportDir
+            reportDir: readyReportDir
         ))
 
         // Collect screenshots from report output
@@ -310,7 +321,8 @@ public enum RunnerSession {
         environment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
-        autoAcceptAlerts: Bool = true
+        autoAcceptAlerts: Bool = true,
+        failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
@@ -411,6 +423,9 @@ public enum RunnerSession {
         // Keep unrelated caller files intact because the directory itself is
         // not owned by grantiva.
         try RunnerReportWorkspace.prepare(at: reportDir)
+        // The ephemeral dir is deleted before a waiter could read it, so the
+        // ready file names only a preserved --report-dir.
+        let readyReportDir = preserveReportDir ? reportDir : nil
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer {
@@ -468,6 +483,7 @@ public enum RunnerSession {
                 timeoutSeconds: effectiveTimeout,
                 pathMap: outputPathMap,
                 reportDir: reportDir,
+                readyReportDir: readyReportDir,
                 expectedFlows: flowPaths.count,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
@@ -478,18 +494,33 @@ public enum RunnerSession {
         let pathRewriter = OutputRewriter(replacements: outputPathMap)
         let stderr = pathRewriter.rewrite(outcome.stderr)
 
-        guard outcome.terminationStatus == 0 else {
+        // An interrupt is checked first: the runner may exit 0 on SIGTERM, and
+        // either way the verdict is `interrupted`, not `passed` or `failed`.
+        guard outcome.terminationStatus == 0, !outcome.interrupted else {
             let reason: String
-            if outcome.timedOut {
+            if outcome.interrupted {
+                reason = "Runner interrupted"
+            } else if outcome.timedOut {
                 reason = "grantiva killed the runner after \(effectiveTimeout)s (--timeout <seconds> to raise the cap). The runner's last output above shows how far it got."
             } else {
                 reason = "Runner failed (exit \(outcome.terminationStatus))"
             }
+            let verdict = outcome.interrupted ? "interrupted" : "failed"
             readySignal.write(RunReadyState(
-                status: "failed",
-                flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
-                reportDir: reportDir
+                status: verdict,
+                flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
+                reportDir: readyReportDir
             ))
+            // Read before the ephemeral report dir is deleted on the way out.
+            failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir)
+            // The same test the readiness watcher uses to publish `passed`:
+            // the report can list fewer flows than were requested.
+            if outcome.interrupted,
+               let index = RunnerReportIndex.load(reportDir: reportDir),
+               index.isComplete(expectedFlows: flowPaths.count),
+               index.readyState.passed {
+                failureReport?.markPassedBeforeInterrupt()
+            }
             throw GrantivaError.commandFailed(
                 "\(reason):\n\(stderr.suffix(2000))",
                 outcome.terminationStatus
@@ -499,7 +530,7 @@ public enum RunnerSession {
         readySignal.write(RunReadyState(
             status: "passed",
             flows: RunnerReportIndex.load(reportDir: reportDir)?.readyState.flows ?? [],
-            reportDir: reportDir
+            reportDir: readyReportDir
         ))
 
         // report.json is the runner's source of truth for flow order and asset

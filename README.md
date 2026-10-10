@@ -82,9 +82,11 @@ grantiva hierarchy > state.xml
   jq -r .status /tmp/advertise.ready   # passed | failed | interrupted
   ```
 
-  Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit.
+  Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit; a usage error such as `--timeout 5` records `failed` with an `error` field.
 
   Missing parent directories of the path are created (`--ready-file out/ci/x.ready` creates `out/ci/`), so a typo in the directory part makes a new directory rather than failing; only an uncreatable or unwritable location is an error.
+
+  `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present only when `--report-dir` was given: the default report directory is deleted when the run exits.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific simulator's with `--udid <UDID>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`~/.grantiva/runner/devices/<udid>`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` and `simulator delete` remove the device's home, and homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
@@ -370,6 +372,11 @@ neither sees the other's output:
 udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
 grantiva doctor --json | jq '.[] | select(.status == "fail")'
 ```
+
+A failing `run --json` still prints its document, with `"allPassed": false`, the
+failed step and its message, an `error` field, and `reportDir` when
+`--report-dir` was given; a failure before any flow ran prints
+`{"allPassed": false, "screens": [], "error": "..."}`. The exit status stays non-zero.
 
 Two flags adjust the stderr side only; neither changes stdout:
 

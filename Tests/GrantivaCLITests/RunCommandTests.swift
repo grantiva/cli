@@ -177,6 +177,22 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(try RunCommand.parse(["--timeout", "30"]).timeout, 30)
     }
 
+    /// A06: validation runs before `run()`, so a usage error used to leave no
+    /// ready file and the documented `while [ ! -f ... ]` waiter spun forever.
+    func testAValidationFailureStillWritesAFailedReadyFile() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-ready-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let readyFile = directory.appendingPathComponent("ready.json").path
+
+        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "5", "--ready-file", readyFile]))
+
+        let state = try ReadyFile.read(readyFile)
+        XCTAssertEqual(state.status, "failed")
+        XCTAssertEqual(state.error, "--timeout must be at least 30 seconds.")
+    }
+
     func testParsesReadyFileAndRepeatedEnvironmentPairs() throws {
         let command = try RunCommand.parse([
             "--flow", "flows/advertise.yaml",
@@ -205,6 +221,157 @@ final class RunCommandTests: XCTestCase {
         XCTAssertNil(command.readyFile)
         XCTAssertTrue(command.env.isEmpty)
         XCTAssertNil(command.reportDir)
+    }
+
+    // MARK: - run --json on failure (I12)
+
+    /// A project with one flow and a stand-in runner that writes a failed
+    /// report and exits 1, run from inside it.
+    private func withFailingRunnerProject(_ body: (URL, RunnerManager) async throws -> Void) async throws {
+        let fileManager = FileManager.default
+        let dir = fileManager.temporaryDirectory.appendingPathComponent("grantiva-json-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = fileManager.currentDirectoryPath
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: dir)
+        }
+        try "module: app\nemulator: Pixel_8_API_35\nflows:\n  - smoke.yaml\n"
+            .write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        try "appId: com.placeholder\n---\n- launchApp\n"
+            .write(to: dir.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
+        let runner = dir.appendingPathComponent("fake-runner").path
+        try #"""
+        #!/bin/sh
+        while [ $# -gt 0 ]; do
+          if [ "$1" = "--output" ]; then out="$2"; shift; fi
+          flow="$1"
+          shift
+        done
+        mkdir -p "$out/flows"
+        printf '{"status":"failed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"%s","assetsDir":"assets/flow-000","dataFile":"flows/flow-000.json","status":"failed","error":"Element not found: text=Remove"}]}' "$flow" > "$out/report.json"
+        printf '{"commands":[{"yaml":"launchApp","status":"passed"},{"yaml":"tapOn: Remove","status":"failed","error":{"message":"Element not found: text=Remove"}}]}' > "$out/flows/flow-000.json"
+        echo "flow smoke failed" >&2
+        exit 1
+        """#.write(toFile: runner, atomically: true, encoding: .utf8)
+        chmod(runner, 0o755)
+        fileManager.changeCurrentDirectoryPath(dir.path)
+        unsetenv("GRANTIVA_PLATFORM")
+        try await body(dir, RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path }))
+    }
+
+    func testJSONRunnerFailureStillPrintsTheResultWithTheFailedStep() async throws {
+        try await withFailingRunnerProject { _, runner in
+            var command = try RunCommand.parse([
+                "--json", "--no-build", "--application-id", "com.fake", "--timeout", "30", "--report-dir", "rep",
+            ])
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .android))
+            command.runnerManager = runner
+            let stdout = CapturedLines()
+            command.resultOutput = ResultOutput { stdout.append($0) }
+
+            do {
+                try await command.run()
+                XCTFail("a failed flow must fail the run")
+            } catch {
+                XCTAssertTrue("\(error)".contains("Runner failed (exit 1)"), "\(error)")
+            }
+
+            XCTAssertEqual(stdout.values.count, 1, "exactly one JSON document: \(stdout.values)")
+            let json = try XCTUnwrap(
+                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+            )
+            XCTAssertEqual(json["allPassed"] as? Bool, false)
+            XCTAssertTrue((json["error"] as? String)?.contains("Runner failed (exit 1)") == true, "\(json)")
+            XCTAssertTrue((json["reportDir"] as? String)?.hasSuffix("/rep") == true, "\(json)")
+            let screens = try XCTUnwrap(json["screens"] as? [[String: Any]])
+            XCTAssertEqual(screens.first?["name"] as? String, "smoke")
+            XCTAssertEqual(screens.first?["passed"] as? Bool, false)
+            let steps = try XCTUnwrap(screens.first?["steps"] as? [[String: Any]])
+            let failed = try XCTUnwrap(steps.first { $0["status"] as? String == "failed" })
+            XCTAssertEqual(failed["action"] as? String, "tapOn: Remove")
+            XCTAssertEqual(failed["message"] as? String, "Element not found: text=Remove")
+        }
+    }
+
+    func testJSONSetupFailurePrintsAnErrorDocument() async throws {
+        var command = try RunCommand.parse(["--json"])
+        let stdout = CapturedLines()
+        command.resultOutput = ResultOutput { stdout.append($0) }
+
+        let error = await runInADirectoryWithNoProject(command)
+
+        XCTAssertNotNil(error)
+        XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+        let json = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+        )
+        XCTAssertEqual(json["allPassed"] as? Bool, false)
+        XCTAssertEqual((json["screens"] as? [Any])?.count, 0)
+        XCTAssertFalse((json["error"] as? String ?? "").isEmpty, "\(json)")
+        XCTAssertNil(json["reportDir"])
+    }
+
+    func testJSONBuildFailureIsARunResult() async throws {
+        try await withFailingRunnerProject { _, runner in
+            var command = try RunCommand.parse(["--json", "--application-id", "com.fake", "--timeout", "30"])
+            let fake = FakeDevicePlatform(platform: .android)
+            fake.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["e: Main.kt:3 unresolved"], productPath: nil, applicationId: nil)
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            command.runnerManager = runner
+            let stdout = CapturedLines()
+            command.resultOutput = ResultOutput { stdout.append($0) }
+
+            _ = try? await command.run()
+
+            XCTAssertEqual(stdout.values.count, 1, "\(stdout.values)")
+            let json = try XCTUnwrap(
+                JSONSerialization.jsonObject(with: Data(stdout.values.joined().utf8)) as? [String: Any]
+            )
+            XCTAssertEqual(json["allPassed"] as? Bool, false)
+            XCTAssertEqual((json["screens"] as? [Any])?.count, 0)
+            XCTAssertEqual(json["error"] as? String, "Build failed\ne: Main.kt:3 unresolved")
+        }
+    }
+
+    /// Releasing a --keep-alive session with Ctrl-C after every flow passed
+    /// is a passing run, matching the `passed` ready file.
+    func testAnInterruptAfterAllFlowsPassedIsAPassingDocument() {
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "smoke", path: "", sizeBytes: 0, steps: [StepResult(action: "launchApp", status: .passed, duration: 0)]),
+        ])
+        let error = GrantivaError.commandFailed("Runner interrupted:\n", 0)
+
+        let failed = RunCommand.failureResult(error: error, report: report)
+        XCTAssertFalse(failed.allPassed, "passing captures alone are not a passing verdict")
+        XCTAssertNotNil(failed.error)
+
+        report.markPassedBeforeInterrupt()
+        let released = RunCommand.failureResult(error: error, report: report)
+        XCTAssertTrue(released.allPassed)
+        XCTAssertNil(released.error)
+    }
+
+    /// A failed screens session stops the suite before the flows; the
+    /// document keeps the screens it captured instead of `screens: []`.
+    func testEarlierScreenCapturesAreReported() {
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "Home", path: "", sizeBytes: 0, steps: [StepResult(action: "Capture Home", status: .failed, duration: 0, message: "missing")]),
+        ])
+        let result = RunCommand.failureResult(error: ExitCode.failure, report: report)
+        XCTAssertEqual(result.screens.map(\.name), ["Home"])
+        XCTAssertEqual(result.screens.first?.steps.first?.message, "missing")
+        XCTAssertEqual(result.error, "Run failed (exit 1)")
+    }
+
+    func testWithoutJSONAFailurePrintsNoResultDocument() async throws {
+        var command = try RunCommand.parse([])
+        let stdout = CapturedLines()
+        command.resultOutput = ResultOutput { stdout.append($0) }
+        _ = await runInADirectoryWithNoProject(command)
+        XCTAssertEqual(stdout.values, [])
     }
 
     // MARK: - --ready-file contract
@@ -436,4 +603,12 @@ final class LockedFlag: @unchecked Sendable {
     private var stored = false
     var value: Bool { lock.withLock { stored } }
     func set() { lock.withLock { stored = true } }
+}
+
+private final class CapturedLines: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [String] = []
+
+    func append(_ line: String) { lock.withLock { storage.append(line) } }
+    var values: [String] { lock.withLock { storage } }
 }

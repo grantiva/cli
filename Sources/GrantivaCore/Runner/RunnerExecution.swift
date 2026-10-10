@@ -11,6 +11,8 @@ enum RunnerExecution {
         let stderr: String
         /// True when grantiva itself killed the runner on its timeout.
         let timedOut: Bool
+        /// True when grantiva received SIGINT/SIGTERM and reaped the runner.
+        var interrupted: Bool = false
     }
 
     struct Request {
@@ -23,6 +25,9 @@ enum RunnerExecution {
         /// Temp-staging path → the path the user passed, for output rewriting.
         let pathMap: [String: String]
         let reportDir: String
+        /// The report dir to name in the ready file: the preserved
+        /// `--report-dir`, or nil for an ephemeral one deleted on exit.
+        var readyReportDir: String?
         let expectedFlows: Int
         /// Extra environment for the runner process; empty inherits ours unchanged.
         var environment: [String: String] = [:]
@@ -85,7 +90,11 @@ enum RunnerExecution {
         let lease = request.lease
         let readyFile = request.readyFile
         let cleanupToken = SignalRelay.shared.onTermination {
-            readyFile.write(RunReadyState(status: "interrupted", flows: []))
+            readyFile.write(RunReadyState(
+                status: "interrupted",
+                flows: RunnerReportIndex.finalFlows(reportDir: request.reportDir, unfinishedAs: "interrupted"),
+                reportDir: request.readyReportDir
+            ))
             lease.release()
         }
         defer {
@@ -156,7 +165,7 @@ enum RunnerExecution {
                         state = RunReadyState(
                             status: state.status,
                             flows: state.flows,
-                            reportDir: request.reportDir
+                            reportDir: request.readyReportDir
                         )
                         readyFile.write(state)
                         return
@@ -181,6 +190,9 @@ enum RunnerExecution {
             }
         }
         timeoutTask.cancel()
+        // SignalRelay marks itself terminating before it reaps the group, so a
+        // runner killed by an interrupt is already visible as one here.
+        let interrupted = SignalRelay.shared.isTerminating
         // The runner is gone; make sure nothing it started is still holding the
         // simulator. Harmless when the group is already empty.
         child.signalGroup(SIGTERM)
@@ -193,7 +205,8 @@ enum RunnerExecution {
         return Outcome(
             terminationStatus: status,
             stderr: stderr,
-            timedOut: killed.isSet
+            timedOut: killed.isSet,
+            interrupted: interrupted
         )
     }
 }

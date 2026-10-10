@@ -70,6 +70,26 @@ final class OutputStreamContractTests: XCTestCase {
         XCTAssertTrue(run.stderr.contains(#"unknown key "schem""#), run.stderr)
     }
 
+    /// `run --json` with nothing to run fails at project resolution, before
+    /// any device work, and must still put exactly one document on stdout.
+    func testRunJSONFailurePrintsExactlyOneDocument() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-run-json-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let run = try grantiva(["run", "--json"], in: directory)
+
+        XCTAssertEqual(run.status, 1, run.stderr)
+        let stdout = run.stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        let json = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any],
+            "stdout is not a single JSON document:\n\(run.stdout)"
+        )
+        XCTAssertEqual(json["allPassed"] as? Bool, false)
+        XCTAssertNotNil(json["error"] as? String)
+    }
+
     func testDiagnosticsNeverReachStdout() throws {
         // `runner version` has a fixed, complete result: the version line and
         // nothing else. Anything informational appearing here would show up as
