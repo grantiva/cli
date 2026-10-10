@@ -229,16 +229,19 @@ public struct DoctorRunner: Sendable {
     /// Passes anywhere inside a work tree: walks up from `directory` for a
     /// `.git` entry, a directory or (in worktrees and submodules) a file.
     func checkGitRepository(directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
-        var url = URL(fileURLWithPath: directory, isDirectory: true).standardizedFileURL
+        // Walk path strings, not URLs: on some Foundation versions
+        // `URL("/").deletingLastPathComponent()` is "/..", so a URL walk
+        // never reaches a fixed point and the check hangs outside a repo.
+        var path = URL(fileURLWithPath: directory, isDirectory: true).standardizedFileURL.path
         var insideWorkTree = false
         while true {
-            if FileManager.default.fileExists(atPath: url.appendingPathComponent(".git").path) {
+            if FileManager.default.fileExists(atPath: (path as NSString).appendingPathComponent(".git")) {
                 insideWorkTree = true
                 break
             }
-            let parent = url.deletingLastPathComponent()
-            if parent.path == url.path { break }
-            url = parent
+            let parent = (path as NSString).deletingLastPathComponent
+            if parent.isEmpty || parent == path || path == "/" { break }
+            path = parent
         }
         if insideWorkTree {
             return DoctorCheck(name: "Git Repository", status: .ok, message: "Detected", fix: nil, section: .project)
