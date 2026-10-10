@@ -20,7 +20,7 @@ public struct RunnerManager: Sendable, Decodable {
 }
 
 extension RunnerManager {
-    public static let runnerVersion = "1.1.18-grantiva.7"
+    public static let runnerVersion = "1.1.28-grantiva.8"
 
     /// What the version file holds. Bump the suffix whenever the tarball
     /// layout changes without a runner rebuild, so `installIfNeeded` sees a

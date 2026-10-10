@@ -305,8 +305,8 @@ final class RunnerManagerTests: XCTestCase {
     }
 
     func testInstallStampChangesWhenDriversMoveButRunnerVersionDoesNot() {
-        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.18-grantiva.7")
-        XCTAssertEqual(RunnerManager.installStamp, "1.1.18-grantiva.7+android-drivers-2")
+        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.8")
+        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.8+android-drivers-2")
     }
 
     func testLiveExtractionLaysOutBothTarballs() throws {
