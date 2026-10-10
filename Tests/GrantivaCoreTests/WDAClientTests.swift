@@ -124,4 +124,25 @@ final class WDAClientTests: XCTestCase {
         }
         XCTAssertEqual(transport.calls.count, 2, "a non-404 failure must not retry /keys")
     }
+
+    func testTapByLabelTriesTheNameAfterA404OnTheLabelQuery() async throws {
+        let transport = ScriptedTransport([(status, 200), ("{}", 404), (oneElement, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
+        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 2)
+        XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    func testTapByLabelReportsAServerErrorInsteadOfElementNotFound() async {
+        let transport = ScriptedTransport([(status, 200), (#"{"value":{"error":"invalid session id"}}"#, 500)])
+        do {
+            try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Favorites")
+            XCTFail("expected an error")
+        } catch let error as GrantivaError {
+            guard case .networkError(_, 500) = error else { return XCTFail("\(error)") }
+            XCTAssertTrue(error.localizedDescription.contains("Favorites"), error.localizedDescription)
+        } catch {
+            XCTFail("\(error)")
+        }
+        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 1, "a 500 must not fall through to the name query")
+    }
 }

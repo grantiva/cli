@@ -242,7 +242,9 @@ enum BuildTools {
     /// Counts on success. On failure, also the reason: xcodebuild's `error:`
     /// lines and failing test cases, then the tail of the output, bounded so a
     /// long log does not flood the model's context.
-    static func testSummary(_ result: TestResult, tailLines: Int = 40, maxTailBytes: Int = 4096) -> String {
+    static func testSummary(
+        _ result: TestResult, tailLines: Int = 40, maxTailBytes: Int = 4096, maxReasonLineBytes: Int = 500
+    ) -> String {
         var summary = """
             Tests \(result.success ? "passed" : "FAILED")
             Scheme: \(result.scheme)
@@ -260,18 +262,40 @@ enum BuildTools {
             if !reasons.contains(line) { reasons.append(line) }
         }
         if !reasons.isEmpty {
-            summary += "\n\nErrors:\n" + reasons.prefix(20).joined(separator: "\n")
+            var block = reasons.prefix(20).map { utf8Prefix($0, maxBytes: maxReasonLineBytes) }
+                .joined(separator: "\n")
+            if block.utf8.count > maxTailBytes { block = utf8Prefix(block, maxBytes: maxTailBytes) }
+            summary += "\n\nErrors:\n" + block
             if reasons.count > 20 { summary += "\n... \(reasons.count - 20) more" }
         }
 
         var tail = lines.suffix(tailLines).joined(separator: "\n")
         if tail.utf8.count > maxTailBytes {
-            tail = "..." + String(decoding: Array(tail.utf8.suffix(maxTailBytes)), as: UTF8.self)
+            tail = "..." + utf8Suffix(tail, maxBytes: maxTailBytes)
         }
         if !tail.isEmpty {
             summary += "\n\nOutput (last \(min(lines.count, tailLines)) lines):\n" + tail
         }
         return summary
+    }
+
+    /// At most `maxBytes` of UTF-8 from the start, cut on a character boundary.
+    static func utf8Prefix(_ text: String, maxBytes: Int) -> String {
+        guard text.utf8.count > maxBytes else { return text }
+        var end = text.utf8.index(text.utf8.startIndex, offsetBy: maxBytes)
+        while end > text.startIndex && end.samePosition(in: text) == nil { end = text.utf8.index(before: end) }
+        return String(text[..<end]) + "..."
+    }
+
+    /// At most `maxBytes` of UTF-8 from the end, starting after a newline when
+    /// one falls in range, otherwise on a character boundary.
+    static func utf8Suffix(_ text: String, maxBytes: Int) -> String {
+        guard text.utf8.count > maxBytes else { return text }
+        var start = text.utf8.index(text.utf8.endIndex, offsetBy: -maxBytes)
+        while start < text.endIndex && start.samePosition(in: text) == nil { start = text.utf8.index(after: start) }
+        let suffix = text[start...]
+        if let newline = suffix.firstIndex(of: "\n") { return String(suffix[suffix.index(after: newline)...]) }
+        return String(suffix)
     }
 
     /// XCTest (`Test Case '-[A b]' failed`) and Swift Testing (`✘ Test b() failed`).

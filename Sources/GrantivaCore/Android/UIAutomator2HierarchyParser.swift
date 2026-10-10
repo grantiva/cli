@@ -6,7 +6,8 @@ import Foundation
 ///
 /// Mapping: `class` → `type`; `content-desc` then `text` → `label`;
 /// `content-desc` → `name`; `resource-id` → `identifier`; `text` → `value`;
-/// `enabled`, `displayed` → `enabled`, `visible`; `clickable` → `clickable`;
+/// `enabled`, `displayed` → `enabled`, `visible`; `clickable`, `focusable` →
+/// `clickable`, `focusable`;
 /// `bounds="[x1,y1][x2,y2]"` (pixels) → `frame` in dp using `scale`.
 public final class UIAutomator2HierarchyXMLParser: NSObject, XMLParserDelegate {
     private let xml: String
@@ -61,6 +62,7 @@ public final class UIAutomator2HierarchyXMLParser: NSObject, XMLParserDelegate {
         if let enabled = attributes["enabled"] { node["enabled"] = enabled == "true" }
         if let displayed = attributes["displayed"] { node["visible"] = displayed == "true" }
         if let clickable = attributes["clickable"] { node["clickable"] = clickable == "true" }
+        if let focusable = attributes["focusable"] { node["focusable"] = focusable == "true" }
         if let bounds = attributes["bounds"], let b = Self.parseBounds(bounds) {
             func dp(_ px: Int) -> String { String(Int((Double(px) / scale).rounded())) }
             node["frame"] = ["x": dp(b.x), "y": dp(b.y), "width": dp(b.width), "height": dp(b.height)]

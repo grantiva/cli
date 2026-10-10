@@ -112,4 +112,27 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertFalse(result.success)
         XCTAssertTrue(BuildTools.testSummary(result).contains("Scheme X is not currently configured for the test action"))
     }
+
+    func testTestSummaryCapsEachErrorLineAndTheErrorsBlock() {
+        let long = "error: " + String(repeating: "t", count: 3000)
+        let output = (1...20).map { "\($0) \(long)" }.joined(separator: "\n")
+        let text = BuildTools.testSummary(TestResult(success: false, scheme: "Demo", duration: 1, testsPassed: 0, testsFailed: 0, output: output), tailLines: 0)
+        let errors = text.components(separatedBy: "Errors:\n")[1]
+        XCTAssertLessThanOrEqual(errors.utf8.count, 4096 + 3, "the block is capped")
+        let first = errors.components(separatedBy: "\n")[0]
+        XCTAssertLessThanOrEqual(first.utf8.count, 500 + 3, "each line is capped")
+        XCTAssertTrue(first.hasPrefix("1 error: ttt"), first)
+    }
+
+    func testTruncationNeverSplitsAMultiByteCharacter() {
+        let text = String(repeating: "é✘", count: 1000)
+        for bytes in [1, 2, 3, 4, 100, 101, 102] {
+            XCTAssertFalse(BuildTools.utf8Suffix(text, maxBytes: bytes).contains("\u{FFFD}"))
+            XCTAssertFalse(BuildTools.utf8Prefix(text, maxBytes: bytes).contains("\u{FFFD}"))
+            XCTAssertLessThanOrEqual(BuildTools.utf8Suffix(text, maxBytes: bytes).utf8.count, bytes)
+        }
+        XCTAssertEqual(BuildTools.utf8Suffix("aaaa\nbb", maxBytes: 5), "bb", "starts after a newline in range")
+        let failing = TestResult(success: false, scheme: "D", duration: 1, testsPassed: 0, testsFailed: 0, output: (1...200).map { "ligne é✘ \($0)" }.joined(separator: "\n"))
+        XCTAssertFalse(BuildTools.testSummary(failing, maxTailBytes: 101).contains("\u{FFFD}"))
+    }
 }

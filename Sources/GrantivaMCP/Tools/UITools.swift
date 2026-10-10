@@ -290,7 +290,8 @@ enum UITools {
         // text plus a non-clickable, empty `android.widget.Button` stub. TalkBack
         // focuses the parent and reads the merged text, so the stub is not a
         // control of its own: skip it when a labelled clickable ancestor exists.
-        if platform == .android && inLabelledFocusGroup && element["clickable"] as? Bool == false {
+        let focusTarget = element["clickable"] as? Bool == true || element["focusable"] as? Bool == true
+        if platform == .android && inLabelledFocusGroup && element["clickable"] as? Bool == false && !focusTarget {
             for child in element["children"] as? [[String: Any]] ?? [] {
                 checkViolations(element: child, rules: rules, platform: platform, inLabelledFocusGroup: true, violations: &violations)
             }
@@ -341,13 +342,17 @@ enum UITools {
         }
 
         // Recurse into children
-        let startsLabelledFocusGroup = platform == .android && element["clickable"] as? Bool == true
-            && (!label.isEmpty || !name.isEmpty || hasDescendantLabel(element))
+        // A clickable or focusable node starts its own focus group: its
+        // descendants are covered only if it carries a label, whatever an
+        // outer group says.
+        let childrenInLabelledFocusGroup = focusTarget
+            ? platform == .android && (!label.isEmpty || !name.isEmpty || hasDescendantLabel(element))
+            : inLabelledFocusGroup
         if let children = element["children"] as? [[String: Any]] {
             for child in children {
                 checkViolations(
                     element: child, rules: rules, platform: platform,
-                    inLabelledFocusGroup: inLabelledFocusGroup || startsLabelledFocusGroup, violations: &violations
+                    inLabelledFocusGroup: childrenInLabelledFocusGroup, violations: &violations
                 )
             }
         }

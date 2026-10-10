@@ -94,7 +94,13 @@ extension DriverClient {
                     let (responseData, status) = try await send(
                         transport, "POST", "\(base)/session/\(sessionId)/elements", findBody
                     )
-                    guard status == 200 else { continue }
+                    // 404 is WebDriver's "no such element": try the next
+                    // attribute. Anything else (500, invalid session) is a
+                    // real failure and must not read as "not found".
+                    if status == 404 { continue }
+                    guard status == 200 else {
+                        throw GrantivaError.networkError("Failed to look up \"\(label)\"", status)
+                    }
                     let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
                     if let elements = findJson["value"] as? [[String: Any]],
                        let first = elements.first,

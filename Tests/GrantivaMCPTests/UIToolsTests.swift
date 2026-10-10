@@ -368,4 +368,35 @@ final class UIToolsTests: XCTestCase {
         let text = try await androidCheck(xml: xml)
         XCTAssertTrue(text.contains("missing_label"), text)
     }
+
+    func testA11yCheckResetsTheFocusGroupAtANestedClickable() async throws {
+        // The outer card is labelled, but the inner clickable has no text of its
+        // own: its empty stub is not covered by the outer label.
+        let xml = """
+            <hierarchy rotation="0">
+              <android.view.View class="android.view.View" text="" clickable="true" focusable="true" enabled="true" bounds="[0,0][600,600]" displayed="true">
+                <android.widget.TextView class="android.widget.TextView" text="Card" clickable="false" focusable="false" enabled="true" bounds="[0,0][600,200]" displayed="true" />
+                <android.view.View class="android.view.View" text="" clickable="true" focusable="true" enabled="true" bounds="[0,300][300,600]" displayed="true">
+                  <android.widget.Button class="android.widget.Button" text="" clickable="false" focusable="false" enabled="true" bounds="[0,300][300,600]" displayed="true" />
+                </android.view.View>
+              </android.view.View>
+            </hierarchy>
+            """
+        let text = try await androidCheck(xml: xml)
+        XCTAssertTrue(text.contains(#""type" : "android.widget.Button""#), text)
+        XCTAssertTrue(text.contains(#""type" : "android.view.View""#), text)
+    }
+
+    func testA11yCheckStillChecksAFocusableWidgetInsideALabelledGroup() async throws {
+        let xml = """
+            <hierarchy rotation="0">
+              <android.view.View class="android.view.View" text="" clickable="true" enabled="true" bounds="[0,0][300,300]" displayed="true">
+                <android.widget.TextView class="android.widget.TextView" text="Row" clickable="false" enabled="true" bounds="[0,0][300,100]" displayed="true" />
+                <android.widget.Switch class="android.widget.Switch" text="" clickable="false" focusable="true" enabled="true" bounds="[0,100][300,300]" displayed="true" />
+              </android.view.View>
+            </hierarchy>
+            """
+        let text = try await androidCheck(xml: xml)
+        XCTAssertTrue(text.contains("android.widget.Switch has no accessibility label"), text)
+    }
 }
