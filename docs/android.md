@@ -41,7 +41,8 @@ The application ID a run installs and tests is the app's own: the Gradle output 
 `applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
 `application_id` in the config is used only when there is no app to read it from
 (`--no-build`); when it disagrees with the app, the app wins and a warning names both.
-`--application-id` overrides everything, with a warning when it disagrees with the app.
+`--application-id` overrides the test target, with a warning when it disagrees with the app;
+the APK is still installed under its own ID.
 
 Flags: `--module`, `--variant`, `--application-id`, `--emulator`, `--device`,
 `--allow-device-settings`, `--headless`, `--logs-tag`. iOS flags such as `--scheme` are

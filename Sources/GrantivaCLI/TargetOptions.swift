@@ -129,20 +129,9 @@ struct TargetOptions: ParsableArguments {
         }
     }
 
-    /// The application ID a run installs and tests. The app's own ID (read
-    /// from the APK or the Gradle output metadata) wins over `application_id`
-    /// in the config, so the run tests the app it installed. `--application-id`
-    /// still overrides it; a disagreement either way is reported.
+    /// See `AndroidProject.applicationID(override:binary:configured:)`.
     static func androidAppID(flag: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
-        if let flag {
-            guard let binary, binary != flag else { return (flag, nil) }
-            return (flag, "--application-id \(flag) differs from the app's own application ID \(binary); testing \(flag). Drop --application-id to test \(binary).")
-        }
-        if let binary {
-            guard let configured, configured != binary else { return (binary, nil) }
-            return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
-        }
-        return (configured, nil)
+        AndroidProject.applicationID(override: flag, binary: binary, configured: configured)
     }
 
     /// The ID of the app to install and test once the build (or `--app-file`)
@@ -156,6 +145,13 @@ struct TargetOptions: ParsableArguments {
         let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId)
         if let warning { warn(warning) }
         return id
+    }
+
+    /// The ID to install (and to uninstall on an incompatible update) under:
+    /// on Android the app's own ID, even when `--application-id` names
+    /// another package as the test target.
+    static func installAppID(platform: Platform, testID: String, binaryID: String?) -> String {
+        platform == .android ? binaryID ?? testID : testID
     }
 
     static func appIDMessage(for platform: Platform) -> String {

@@ -26,6 +26,23 @@ public struct AndroidProject: Sendable, Codable, Equatable {
         self.buildArgs = buildArgs
     }
 
+    /// The application ID a run installs and tests. The app's own ID (read
+    /// from the APK or the Gradle output metadata) wins over `application_id`
+    /// in the config, so the run tests the app it installed. An explicit
+    /// override (`--application-id`) still wins; a disagreement either way is
+    /// returned as a warning naming both IDs.
+    public static func applicationID(override: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
+        if let override {
+            guard let binary, binary != override else { return (override, nil) }
+            return (override, "--application-id \(override) differs from the app's own application ID \(binary); testing \(override). Drop --application-id to test \(binary).")
+        }
+        if let binary {
+            guard let configured, configured != binary else { return (binary, nil) }
+            return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
+        }
+        return (configured, nil)
+    }
+
     enum CodingKeys: String, CodingKey, CaseIterable {
         case module, variant, emulator
         case applicationId = "application_id"

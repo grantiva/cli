@@ -108,6 +108,12 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertEqual(try TargetOptions.parse([]).installedAppID(platform: .ios, config: nil, resolved: ios, binaryID: "com.built") { _ in }, "com.ios")
     }
 
+    func testInstallAppIDIsTheAppsOwnIDOnAndroid() {
+        XCTAssertEqual(TargetOptions.installAppID(platform: .android, testID: "com.flag", binaryID: "com.built"), "com.built")
+        XCTAssertEqual(TargetOptions.installAppID(platform: .android, testID: "com.cfg", binaryID: nil), "com.cfg")
+        XCTAssertEqual(TargetOptions.installAppID(platform: .ios, testID: "com.ios", binaryID: "com.built"), "com.ios")
+    }
+
     func testInvalidApplicationIDIsRejected() async throws {
         do {
             _ = try await TargetOptions.parse(["--application-id", "bad id"]).resolve(platform: .android, config: nil, skipBuild: true, appID: nil)

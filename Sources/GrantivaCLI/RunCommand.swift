@@ -257,8 +257,9 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         if !buildOptions.shouldSkipInstall, let productPath {
-            log("Installing \(bid)...")
-            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+            let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
+            log("Installing \(installID)...")
+            try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
         }
         if wantsLogs {
             logStreamer = await startLogStream(appID: bid)

@@ -185,9 +185,12 @@ enum BuildTools {
                 isError: true
             )
         }
-        // Android tests the app the build produced, not application_id in the config.
-        let builtFirst = platform == .android ? buildResult.applicationId ?? resolved.bundleId : resolved.bundleId ?? buildResult.applicationId
-        guard let appID = builtFirst else {
+        // Android tests the app the build produced, not application_id in the
+        // config; a disagreement is reported in the result.
+        let (chosen, idWarning): (String?, String?) = platform == .android
+            ? AndroidProject.applicationID(override: nil, binary: buildResult.applicationId, configured: config?.android?.applicationId)
+            : (resolved.bundleId ?? buildResult.applicationId, nil)
+        guard let appID = chosen else {
             return toolError("no application_id in grantiva-android.yml and the build did not report one. Cannot launch app.")
         }
         if let productPath = buildResult.productPath {
@@ -202,6 +205,7 @@ enum BuildTools {
         case .android:
             let android = resolved.android ?? AndroidProject()
             text = "App built and launched.\nModule: \(android.module) (\(android.variant))\nApplication ID: \(appID)\nDevice: \(booted.name) (\(booted.udid))"
+                + (idWarning.map { "\nWarning: \($0)" } ?? "")
         }
         return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)])
     }

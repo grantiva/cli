@@ -154,8 +154,9 @@ struct InstallCommand: AsyncParsableCommand {
         }
 
         if let productPath {
-            options.note("[grantiva] Installing \(bid)...")
-            try await device.install(appID: bid, productPath: productPath, deviceID: booted.udid)
+            let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
+            options.note("[grantiva] Installing \(installID)...")
+            try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
         }
 
         let dataContainerPath = try await Self.dataContainerPath(platform: platform, bundleId: bid, deviceID: booted.udid)

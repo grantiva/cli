@@ -161,6 +161,26 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertTrue(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
     }
 
+    /// Review round 1: `--application-id` picks the test target, but the APK
+    /// is installed under its own ID (the INCOMPATIBLE retry uninstalls that).
+    func testBuildInstallWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+        var command = try InstallCommand.parse(["--variant", "paidDebug", "--application-id", "com.fake.flag"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.flag)"), "\(fake.calls)")
+    }
+
+    func testRunWithAnApplicationIDOverrideInstallsUnderTheAppsOwnID() async throws {
+        var command = try RunCommand.parse(["--application-id", "com.fake.flag", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.built,/fake/app.apk)"), "\(fake.calls)")
+    }
+
     func testAppFileAPKGoesThroughThePlatformResolver() async throws {
         let apk = dir.appendingPathComponent("prebuilt.apk").path
         try Data().write(to: URL(fileURLWithPath: apk))
