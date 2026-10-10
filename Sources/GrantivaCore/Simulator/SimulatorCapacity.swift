@@ -167,6 +167,24 @@ public struct SimulatorCapacity: Sendable {
         }
     }
 
+    /// Under the registry lock: when every record for `udid` belongs to this
+    /// process, replaces them with one `pending` record owned by this process
+    /// and returns true; otherwise changes nothing and returns false. The
+    /// pending record makes any other `reserve` for the device wait until it
+    /// is removed with `remove(udid:ownedBy:)`.
+    public func claimForRemoval(udid: String, name: String) throws -> Bool {
+        try withRegistryLock { records in
+            let me = getpid()
+            guard records.allSatisfy({ $0.udid != udid || $0.ownerPID == me }) else { return false }
+            records.removeAll { $0.udid == udid }
+            records.append(ManagedSimulatorSession(
+                udid: udid, name: name, sessionId: sessionId ?? Self.sessionlessOwner(udid: udid),
+                ownerPID: me, acquiredAt: Date(), state: .pending, ephemeral: true
+            ))
+            return true
+        }
+    }
+
     /// Every record for `udid`, without pruning.
     public func records(udid: String) throws -> [ManagedSimulatorSession] {
         try withRegistryLock { records in records.filter { $0.udid == udid } }

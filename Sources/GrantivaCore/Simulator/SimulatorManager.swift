@@ -233,7 +233,10 @@ public struct SimulatorManager: Sendable, Decodable {
     private func removeCreatedDevice(udid: String) async throws {
         try await provenance.withProvisioningLock {
             let me = getpid()
-            guard try capacity.records(udid: udid).allSatisfy({ $0.ownerPID == me }) else { return }
+            // Atomically confirm no other process holds the device and park a
+            // pending record under this pid, so a concurrent `ensure` that
+            // reused it waits in `reserve` instead of booting into the delete.
+            guard try capacity.claimForRemoval(udid: udid, name: udid) else { return }
             if (try? await exactDevice(nameOrUDID: udid))?.isBooted == true {
                 _ = try? await execute("xcrun simctl shutdown \(shellQuoted(udid))")
             }

@@ -338,6 +338,27 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertTrue(try provenance.contains(udid: "CREATED-1"))
     }
 
+    // While the created device is being deleted, a pending record owned by
+    // this process holds it, so a concurrent ensure's reserve waits instead
+    // of booting it. The record is gone afterwards.
+    func testFailedEnsureHoldsAPendingRecordWhileDeletingTheDevice() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, _) = makeManager(simctl, maximum: 1)
+        try await fillCapacity(capacity, with: simctl)
+        let seen = Recorded()
+        simctl.onDelete = { _ in seen.value = try? capacity.records(udid: "CREATED-1") }
+
+        do {
+            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+            XCTFail("expected a capacity timeout")
+        } catch {}
+
+        let during = try XCTUnwrap(seen.value)
+        XCTAssertEqual(during.map(\.state), [.pending])
+        XCTAssertEqual(during.map(\.ownerPID), [getpid()])
+        XCTAssertEqual(try capacity.records(udid: "CREATED-1"), [])
+    }
+
     func testEnsureNeverDeletesAReusedDeviceWhenTheCapacityWaitTimesOut() async throws {
         let simctl = FakeSimctl(devices: [
             .init(name: "qa-ios-2", udid: "REUSED-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
@@ -372,6 +393,8 @@ final class FakeSimctl: @unchecked Sendable {
     private var devices: [Device]
     private var recorded: [String] = []
     private var created: [String] = []
+    /// Called (outside the lock) with each `simctl delete` command before it runs.
+    var onDelete: (@Sendable (String) -> Void)?
 
     init(devices: [Device]) { self.devices = devices }
 
@@ -381,7 +404,8 @@ final class FakeSimctl: @unchecked Sendable {
     func add(_ device: Device) { lock.withLock { devices.append(device) } }
 
     func execute(_ command: String) async throws -> String {
-        try lock.withLock {
+        if command.hasPrefix("xcrun simctl delete "), let onDelete { onDelete(command) }
+        return try lock.withLock {
             recorded.append(command)
             let words = command.split(separator: " ").map { String($0).trimmingCharacters(in: CharacterSet(charactersIn: "'")) }
             switch true {
@@ -440,4 +464,13 @@ final class FakeSimctl: @unchecked Sendable {
       {"name": "iOS 27.0", "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "version": "27.0", "isAvailable": true}
     ]}
     """
+}
+
+private final class Recorded: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored: [ManagedSimulatorSession]?
+    var value: [ManagedSimulatorSession]? {
+        get { lock.withLock { stored } }
+        set { lock.withLock { stored = newValue } }
+    }
 }
