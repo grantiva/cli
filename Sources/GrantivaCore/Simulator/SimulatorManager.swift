@@ -21,6 +21,25 @@ public struct SimulatorManager: Sendable, Decodable {
         return booted
     }
 
+    /// The only booted simulator. With several booted this is an error naming
+    /// them, never a guess: the first booted device may be one the user is
+    /// using, and capture would drive it.
+    public func soleBootedDevice() async throws -> SimulatorDevice {
+        try Self.soleBooted(in: try await listDevices())
+    }
+
+    static func soleBooted(in devices: [SimulatorDevice]) throws -> SimulatorDevice {
+        let booted = devices.filter(\.isBooted)
+        guard let first = booted.first else { throw GrantivaError.simulatorNotRunning }
+        guard booted.count == 1 else {
+            let names = booted.map { "\($0.name) (\($0.udid))" }.joined(separator: ", ")
+            throw GrantivaError.invalidArgument(
+                "\(booted.count) simulators are booted: \(names). Pass --simulator <name|UDID> or set simulator: in grantiva.yml."
+            )
+        }
+        return first
+    }
+
     public func bootedUDID() async throws -> String {
         try await bootedDevice().udid
     }

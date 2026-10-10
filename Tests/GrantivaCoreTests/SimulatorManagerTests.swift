@@ -2,6 +2,34 @@ import XCTest
 @testable import GrantivaCore
 
 final class SimulatorManagerTests: XCTestCase {
+    // MARK: - I02: never guess among several booted simulators
+
+    private func device(_ name: String, _ udid: String, _ state: String = "Booted") -> SimulatorDevice {
+        SimulatorDevice(name: name, udid: udid, state: state, runtime: "iOS-26-0", isAvailable: true)
+    }
+
+    func testSoleBootedReturnsTheOnlyBootedSimulator() throws {
+        let devices = [device("Off", "OFF", "Shutdown"), device("qa-ios-1", "QA-1")]
+        XCTAssertEqual(try SimulatorManager.soleBooted(in: devices).udid, "QA-1")
+    }
+
+    func testSoleBootedRefusesToPickAmongSeveralAndNamesThem() {
+        let devices = [device("iPhone 17 Pro", "B27D7D31"), device("qa-ios-1", "QA-1")]
+        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: devices)) { error in
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("iPhone 17 Pro (B27D7D31)"), message)
+            XCTAssertTrue(message.contains("qa-ios-1 (QA-1)"), message)
+            XCTAssertTrue(message.contains("--simulator"), message)
+            XCTAssertTrue(message.contains("simulator:"), message)
+        }
+    }
+
+    func testSoleBootedWithNoneBootedIsSimulatorNotRunning() {
+        XCTAssertThrowsError(try SimulatorManager.soleBooted(in: [device("Off", "OFF", "Shutdown")])) { error in
+            guard case GrantivaError.simulatorNotRunning = error else { return XCTFail("\(error)") }
+        }
+    }
+
     func testIPhone15ProPixelMetricsConvertToExpectedPointGeometry() {
         let geometry = SimulatorManager.geometry(pixelWidth: 1179, pixelHeight: 2556, scale: 3)
         XCTAssertEqual(geometry.points, [393, 852])

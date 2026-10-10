@@ -153,6 +153,56 @@ final class DiffCommandTests: XCTestCase {
         }
     }
 
+    // MARK: - I02: --no-build device resolution
+
+    /// Two booted devices and config `simulator: B`: the --no-build path uses B, never the platform default.
+    func testNoBuildUsesConfiguredSimulatorNotFirstBooted() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.bootedID = "B-UDID"; fake.bootedName = "B"
+        let booted = try await DiffCommand.noBuildDevice(
+            platform: .ios, explicit: nil, config: GrantivaConfig(simulator: "B"), sessionUDID: "SESSION-UDID", device: fake
+        )
+        XCTAssertEqual(booted.udid, "B-UDID")
+        XCTAssertEqual(fake.calls, ["bootDevice(B)"])
+    }
+
+    func testNoBuildFlagWinsOverConfigAndSession() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        _ = try await DiffCommand.noBuildDevice(
+            platform: .ios, explicit: "A", config: GrantivaConfig(simulator: "B"), sessionUDID: "SESSION-UDID", device: fake
+        )
+        XCTAssertEqual(fake.calls, ["bootDevice(A)"])
+    }
+
+    func testNoBuildFallsBackToTheRunnerSessionDevice() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        _ = try await DiffCommand.noBuildDevice(
+            platform: .ios, explicit: nil, config: GrantivaConfig(), sessionUDID: "SESSION-UDID", device: fake
+        )
+        XCTAssertEqual(fake.calls, ["bootDevice(SESSION-UDID)"])
+    }
+
+    func testNoBuildUsesThePlatformDefaultOnlyWhenNothingIsNamed() async throws {
+        let fake = FakeDevicePlatform(platform: .ios)
+        _ = try await DiffCommand.noBuildDevice(platform: .ios, explicit: nil, config: nil, sessionUDID: nil, device: fake)
+        XCTAssertEqual(fake.calls, ["defaultDevice"])
+    }
+
+    func testNoBuildOnAndroidHonoursTheConfiguredEmulator() async throws {
+        let fake = FakeDevicePlatform(platform: .android)
+        let config = GrantivaConfig(android: AndroidProject(emulator: "Pixel_8_API_35"))
+        _ = try await DiffCommand.noBuildDevice(platform: .android, explicit: nil, config: config, sessionUDID: nil, device: fake)
+        XCTAssertEqual(fake.calls, ["bootDevice(Pixel_8_API_35)"])
+    }
+
+    func testRunnerSessionDeviceMustMatchThePlatform() {
+        XCTAssertEqual(DiffCommand.sessionUDID("B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", for: .ios), "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C")
+        XCTAssertNil(DiffCommand.sessionUDID("emulator-5554", for: .ios))
+        XCTAssertEqual(DiffCommand.sessionUDID("emulator-5554", for: .android), "emulator-5554")
+        XCTAssertNil(DiffCommand.sessionUDID("B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", for: .android))
+        XCTAssertNil(DiffCommand.sessionUDID(nil, for: .ios))
+    }
+
     func testDirectoriesArePerPlatform() {
         XCTAssertEqual(DiffCommand.captureDirectory(for: .ios), ".grantiva/captures")
         XCTAssertEqual(DiffCommand.captureDirectory(for: .android), ".grantiva/captures/android")
