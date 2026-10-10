@@ -71,6 +71,63 @@ final class GradleBuildRunnerTests: XCTestCase {
         XCTAssertNil(result.productPath)
     }
 
+    /// A09: Gradle's reason is in the What-went-wrong block, not on a
+    /// `FAILURE:` line. Captured from `./gradlew :app:assembleNoSuchVariant`.
+    func testFailedBuildIncludesGradlesWhatWentWrongBlock() async throws {
+        let log = """
+        [Incubating] Problems report is available at: file:///tmp/problems-report.html
+
+        FAILURE: Build failed with an exception.
+
+        * What went wrong:
+        Cannot locate tasks that match ':app:assembleNoSuchVariant' as task 'assembleNoSuchVariant' not found in project ':app'.
+
+        * Try:
+        > Run gradlew tasks to get a list of available tasks.
+        > Run with --stacktrace option to get the stack trace.
+
+        BUILD FAILED in 412ms
+        """
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(log, 1))])
+        let result = try await GradleBuildRunner(execute: shell.execute).build(
+            projectRoot: scratch.path, module: "app", variant: "noSuchVariant", extraArgs: [], javaHome: nil, deviceABI: "arm64-v8a"
+        )
+        XCTAssertFalse(result.success)
+        XCTAssertEqual(Array(result.errors.prefix(2)), [
+            "FAILURE: Build failed with an exception.",
+            "Cannot locate tasks that match ':app:assembleNoSuchVariant' as task 'assembleNoSuchVariant' not found in project ':app'.",
+        ])
+        XCTAssertTrue(result.errors.last?.contains("--variant") == true, "\(result.errors)")
+        XCTAssertFalse(result.errors.contains { $0.contains("Run gradlew tasks") }, "the Try block is not an error: \(result.errors)")
+    }
+
+    func testWhatWentWrongBlocksOfSeveralFailuresAreAllKept() {
+        let lines = """
+        FAILURE: Build completed with 2 failures.
+
+        1: Task failed with an exception.
+        -----------
+        * What went wrong:
+        Execution failed for task ':app:compileDebugKotlin'.
+        > Compilation error. See log for more details
+
+        * Try:
+        > Run with --stacktrace option to get the stack trace.
+        ==============================================================================
+
+        2: Task failed with an exception.
+        -----------
+        * What went wrong:
+        Execution failed for task ':lib:mergeDebugResources'.
+        """.components(separatedBy: "\n")
+        XCTAssertEqual(GradleBuildRunner.errorLines(lines), [
+            "FAILURE: Build completed with 2 failures.",
+            "Execution failed for task ':app:compileDebugKotlin'.",
+            "> Compilation error. See log for more details",
+            "Execution failed for task ':lib:mergeDebugResources'.",
+        ])
+    }
+
     func testSuccessfulBuildWithoutMetadataFailsNamingTheDirectory() async throws {
         let shell = ScriptedShell([.success("BUILD SUCCESSFUL")])
         do {
