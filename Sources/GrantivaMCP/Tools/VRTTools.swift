@@ -3,7 +3,9 @@ import GrantivaCore
 import MCP
 
 /// Visual Regression Testing tools: capture, compare, and approve screenshots.
-/// These shell out to the grantiva CLI diff subcommands.
+/// These run the `diff` subcommands of the Grantiva binary that is serving MCP,
+/// by absolute path: a `grantiva` resolved from PATH may be another version
+/// (or missing) and reject flags such as `--platform`.
 @available(macOS 15, *)
 enum VRTTools {
 
@@ -52,25 +54,38 @@ enum VRTTools {
 
     // MARK: - Handlers
 
-    static func captureCommand(platform: Platform) -> String {
-        "grantiva diff capture --no-build --json --platform \(platform.rawValue)"
+    /// The absolute path of the running Grantiva binary. The argv[0] fallback
+    /// is resolved through PATH when it is a bare name, never against the
+    /// working directory (MCPServer has changed it to the project dir).
+    static var executable: String {
+        if let path = Bundle.main.executablePath { return path }
+        let argv0 = CommandLine.arguments[0]
+        if !argv0.contains("/"), let found = which(argv0) { return found }
+        return URL(fileURLWithPath: argv0).standardizedFileURL.path
     }
 
-    static func compareCommand(platform: Platform) -> String {
-        "grantiva diff compare --json --platform \(platform.rawValue)"
+    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
+        "\(shellQuoted(executable)) diff capture --no-build --json --platform \(platform.rawValue)"
     }
 
-    static func approveCommand(platform: Platform, screens: [String]) -> String {
-        var cmd = "grantiva diff approve --json --platform \(platform.rawValue)"
+    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
+        "\(shellQuoted(executable)) diff compare --json --platform \(platform.rawValue)"
+    }
+
+    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> String {
+        var cmd = "\(shellQuoted(executable)) diff approve --json --platform \(platform.rawValue)"
         if !screens.isEmpty {
             cmd += " " + screens.map(shellQuoted).joined(separator: " ")
         }
         return cmd
     }
 
-    static func capture(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func capture(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(captureCommand(platform: platform))
+            let output = try await shell(captureCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -85,9 +100,12 @@ enum VRTTools {
         }
     }
 
-    static func compare(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func compare(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(compareCommand(platform: platform))
+            let output = try await shell(compareCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )
@@ -110,10 +128,13 @@ enum VRTTools {
         )
     }
 
-    static func approve(platform: Platform, arguments: [String: Value]) async throws -> CallTool.Result {
+    static func approve(
+        platform: Platform, arguments: [String: Value],
+        executable: String = VRTTools.executable, environment: [String: String]? = nil
+    ) async throws -> CallTool.Result {
         let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
         do {
-            let output = try await shell(approveCommand(platform: platform, screens: screens))
+            let output = try await shell(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
             return CallTool.Result(
                 content: [.text(text: output, annotations: nil, _meta: nil)]
             )

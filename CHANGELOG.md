@@ -36,6 +36,8 @@
 - `grantiva runner start` on iOS exited seconds after reporting success: the session flow's `waitForAnimationToEnd` was meant to hold the runner for an hour, but runner 1.1.18 returns from it as soon as the screen settles, so `runner dump-hierarchy` and the MCP server then found no session. The runner is now started with `--keep-alive` on both platforms, the keep-alive owner sidecar is recorded for iOS as it already was for Android, and `runner stop` removes it.
 - Every shell subprocess now gets `/dev/null` as stdin instead of inheriting Grantiva's. Android needs this (`adb shell` would otherwise read the MCP server's JSON-RPC requests), and it also keeps any subprocess the iOS MCP server starts from consuming its input.
 - `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
+- MCP `grantiva_vrt_capture`, `grantiva_vrt_compare`, and `grantiva_vrt_approve` run the Grantiva binary serving MCP by absolute path instead of whichever `grantiva` is first on PATH, which could be an older version that rejects `--platform`, or missing.
+- `diff capture --no-build` (and MCP `grantiva_vrt_capture`) honour `simulator:` in grantiva.yml (and `emulator:` on Android), then the live runner session's device, instead of attaching to the first booted simulator. **Breaking for scripts** that ran `diff capture --no-build` on iOS with several simulators booted and no `--simulator` or `simulator:`: they now get an error naming the booted simulators instead of silently capturing on the first one; pass `--simulator` or set `simulator:`.
 
 ## 2.0.1 — 2026-10-07
 

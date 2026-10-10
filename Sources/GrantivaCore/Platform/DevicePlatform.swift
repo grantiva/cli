@@ -92,7 +92,9 @@ public protocol DevicePlatform: Sendable {
 
     /// Validates a pre-built binary for this platform and reads its app ID.
     func resolveBinary(_ path: String) async throws -> ResolvedBinary
-    /// The device a `--no-build` capture targets when none is named.
+    /// The device a `--no-build` capture targets when none is named by flag,
+    /// config, or runner session. On iOS this is the only booted simulator;
+    /// several booted is an error, never "the first one".
     func defaultDevice() async throws -> BootedDevice
     /// A full-screen PNG of the device, written to `path`.
     func screenshot(deviceID: String, to path: String) async throws

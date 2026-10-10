@@ -219,6 +219,10 @@ available on every Grantiva command that builds the app and overrides a
 `-derivedDataPath` value in `build_settings` when both are supplied.
 `--no-build` assumes the app is already installed; the flow launches it with
 `launchApp` after fixture preparation.
+`diff capture --no-build` drives the simulator named by `--simulator`, else
+`simulator:` in grantiva.yml, else the live runner session's device, else the one
+booted simulator. With several booted and none of those set, it fails and names
+them rather than guessing.
 
 This enables split build/test workflows in CI:
 

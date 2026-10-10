@@ -118,14 +118,16 @@ struct DiffCommand: AsyncParsableCommand {
 
                 options.note("Capturing \(resolved.screens.count) screen(s)...")
             } else {
-                // --no-build still honors an explicit target. This matters on
-                // hosts where an iPad is already booted while the evidence
-                // command asks for an iPhone by name/UDID.
-                booted = if let explicit = target.simulator ?? target.device ?? target.emulator {
-                    try await device.bootDevice(named: explicit)
-                } else {
-                    try await device.defaultDevice()
-                }
+                // --no-build honours flag > config > runner session, and only
+                // then the platform default, which on iOS refuses to pick among
+                // several booted simulators.
+                booted = try await DiffCommand.noBuildDevice(
+                    platform: platform,
+                    explicit: target.simulator ?? target.device ?? target.emulator,
+                    config: config,
+                    sessionUDID: { await DiffCommand.liveSessionUDID(for: platform) },
+                    device: device
+                )
             }
 
             guard let bid = resolved.bundleId ?? builtAppID else {
@@ -180,6 +182,40 @@ struct DiffCommand: AsyncParsableCommand {
                 Output.line(TableFormatter().formatCapture(result))
             }
         }
+    }
+
+    // MARK: - --no-build device
+
+    /// The device a `--no-build` capture drives: the flag, else the config's
+    /// `simulator:` (iOS) or `emulator:` (Android), else the live runner
+    /// session's device, else the platform default.
+    static func noBuildDevice(
+        platform: Platform, explicit: String?, config: GrantivaConfig?,
+        sessionUDID: () async -> String?, device: any DevicePlatform
+    ) async throws -> BootedDevice {
+        let configured = platform == .ios ? config?.simulator : config?.android?.emulator
+        if let named = [explicit, configured].compactMap({ $0 }).first(where: { !$0.isEmpty }) {
+            return try await device.bootDevice(named: named)
+        }
+        // Read session.json and run `ps` only when nothing else names a device.
+        if let session = await sessionUDID() {
+            return try await device.bootDevice(named: session)
+        }
+        return try await device.defaultDevice()
+    }
+
+    /// The device of the runner session in this directory, if its runner is
+    /// still the process that owns it and the device belongs to `platform`.
+    static func liveSessionUDID(for platform: Platform) async -> String? {
+        guard let session = try? RunnerSessionInfo.load(), session.isAlive,
+              let snapshot = try? await SimulatorReaper.processSnapshot(),
+              session.ownsRunnerProcess(in: snapshot) else { return nil }
+        return sessionUDID(session.udid, for: platform)
+    }
+
+    static func sessionUDID(_ udid: String?, for platform: Platform) -> String? {
+        guard let udid, !udid.isEmpty else { return nil }
+        return DeviceID.isAndroidSerial(udid) == (platform == .android) ? udid : nil
     }
 
     // MARK: - Compare

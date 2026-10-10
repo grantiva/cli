@@ -89,7 +89,7 @@ public struct IOSPlatform: DevicePlatform {
     }
 
     public func defaultDevice() async throws -> BootedDevice {
-        let device = try await simulators.bootedDevice()
+        let device = try await simulators.soleBootedDevice()
         return BootedDevice(udid: device.udid, name: device.name)
     }
 
