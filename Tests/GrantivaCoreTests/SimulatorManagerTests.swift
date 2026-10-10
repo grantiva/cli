@@ -105,4 +105,141 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertNil(SimulatorManager.newestIPhone(catalogJSON: Data(json.utf8)))
         XCTAssertNil(SimulatorManager.newestIPhone(catalogJSON: Data("not json".utf8)))
     }
+    // MARK: - Fake simctl harness
+
+    private func makeManager(
+        _ simctl: FakeSimctl,
+        maximum: Int = 4,
+        waitTimeout: TimeInterval = 0
+    ) -> (SimulatorManager, SimulatorCapacity, SimulatorProvenance) {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-manager-tests-\(UUID().uuidString)").path
+        addTeardownBlock { try? FileManager.default.removeItem(atPath: directory) }
+        let capacity = SimulatorCapacity(directory: directory, maximum: maximum, waitTimeout: waitTimeout, pollInterval: 0.01)
+        let provenance = SimulatorProvenance(directory: directory)
+        return (SimulatorManager(execute: simctl.execute, capacity: capacity, provenance: provenance), capacity, provenance)
+    }
+
+    // MARK: - I08: pre-booted devices are not Grantiva's
+
+    func testBootingAnAlreadyBootedDeviceTakesNoSlotAndTeardownNeverShutsItDown() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+
+        _ = try await manager.boot(nameOrUDID: "MANUAL-1")
+
+        let devices = try await manager.listDevices()
+        XCTAssertEqual(try capacity.sessions(devices: devices), [])
+        let byUDID = try await manager.teardown(udid: "MANUAL-1")
+        let bySession = try await manager.teardown(sessionId: "simulator:MANUAL-1")
+        XCTAssertEqual(byUDID, [])
+        XCTAssertEqual(bySession, [])
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") }, "\(simctl.commands)")
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl boot ") })
+        XCTAssertEqual(simctl.device("MANUAL-1")?.state, "Booted")
+    }
+
+    func testBootingAShutdownDeviceTakesASlotAndTeardownShutsItDown() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Mine", udid: "MINE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+
+        _ = try await manager.boot(nameOrUDID: "MINE-1")
+        let devices = try await manager.listDevices()
+        XCTAssertEqual(try capacity.sessions(devices: devices).map(\.udid), ["MINE-1"])
+
+        let outcomes = try await manager.teardown(udid: "MINE-1")
+        XCTAssertEqual(outcomes.map(\.session.udid), ["MINE-1"])
+        XCTAssertTrue(simctl.commands.contains("xcrun simctl shutdown 'MINE-1'"))
+    }
+}
+
+/// A stateful stand-in for the handful of `simctl` commands SimulatorManager issues.
+final class FakeSimctl: @unchecked Sendable {
+    static let iPhone17 = "com.apple.CoreSimulator.SimDeviceType.iPhone-17"
+    static let iPhone17Pro = "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"
+
+    struct Device {
+        var name: String
+        var udid: String
+        var state: String
+        var runtime: String
+        var type: String
+    }
+
+    private let lock = NSLock()
+    private var devices: [Device]
+    private var recorded: [String] = []
+    private var created: [String] = []
+
+    init(devices: [Device]) { self.devices = devices }
+
+    var commands: [String] { lock.withLock { recorded } }
+    var createdUDIDs: [String] { lock.withLock { created } }
+    func device(_ udid: String) -> Device? { lock.withLock { devices.first { $0.udid == udid } } }
+    func add(_ device: Device) { lock.withLock { devices.append(device) } }
+
+    func execute(_ command: String) async throws -> String {
+        try lock.withLock {
+            recorded.append(command)
+            let words = command.split(separator: " ").map { String($0).trimmingCharacters(in: CharacterSet(charactersIn: "'")) }
+            switch true {
+            case command == "xcrun simctl list devices --json":
+                return deviceListJSON()
+            case command == "xcrun simctl list devicetypes runtimes --json":
+                return Self.catalogJSON
+            case command.hasPrefix("xcrun simctl create "):
+                let parts = command.components(separatedBy: "'")
+                let udid = "CREATED-\(created.count + 1)"
+                let runtime = parts[5].replacingOccurrences(of: "com.apple.CoreSimulator.SimRuntime.", with: "")
+                devices.append(Device(name: parts[1], udid: udid, state: "Shutdown", runtime: runtime, type: parts[3]))
+                created.append(udid)
+                return udid
+            case command.hasPrefix("xcrun simctl boot "):
+                setState(words[3], "Booted")
+                return ""
+            case command.hasPrefix("xcrun simctl shutdown "):
+                setState(words[3], "Shutdown")
+                return ""
+            case command.hasPrefix("xcrun simctl delete "):
+                devices.removeAll { $0.udid == words[3] }
+                return ""
+            case command.hasPrefix("xcrun simctl bootstatus "):
+                return ""
+            case command.hasPrefix("xcrun simctl getenv "):
+                return command.hasSuffix("SCALE") ? "3" : "1000"
+            default:
+                throw GrantivaError.commandFailed("unexpected command: \(command)", 1)
+            }
+        }
+    }
+
+    private func setState(_ udid: String, _ state: String) {
+        if let index = devices.firstIndex(where: { $0.udid == udid }) { devices[index].state = state }
+    }
+
+    private func deviceListJSON() -> String {
+        var byRuntime: [String: [[String: Any]]] = [:]
+        for device in devices {
+            byRuntime["com.apple.CoreSimulator.SimRuntime.\(device.runtime)", default: []].append([
+                "name": device.name, "udid": device.udid, "state": device.state,
+                "isAvailable": true, "deviceTypeIdentifier": device.type,
+            ])
+        }
+        let data = try! JSONSerialization.data(withJSONObject: ["devices": byRuntime])
+        return String(decoding: data, as: UTF8.self)
+    }
+
+    static let catalogJSON = """
+    {"devicetypes": [
+      {"name": "iPhone 17", "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17"},
+      {"name": "iPhone 17 Pro", "identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro"}
+    ], "runtimes": [
+      {"name": "iOS 26.0", "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-0", "version": "26.0", "isAvailable": true},
+      {"name": "iOS 27.0", "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-27-0", "version": "27.0", "isAvailable": true}
+    ]}
+    """
 }

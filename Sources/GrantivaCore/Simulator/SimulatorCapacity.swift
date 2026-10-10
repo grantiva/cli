@@ -19,6 +19,9 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
         self.acquiredAt = acquiredAt
         self.state = state
     }
+
+    /// Whether the record was taken by a run with no `GRANTIVA_SESSION_ID`.
+    var isSessionless: Bool { sessionId == SimulatorCapacity.sessionlessOwner(udid: udid) }
 }
 
 /// Host-wide admission control for simulators booted by Grantiva.
@@ -59,7 +62,7 @@ public struct SimulatorCapacity: Sendable {
         devices: @Sendable () async throws -> [SimulatorDevice],
         onWait: @Sendable ([ManagedSimulatorSession], TimeInterval) -> Void = { _, _ in }
     ) async throws -> ManagedSimulatorSession {
-        let owner = sessionId ?? "simulator:\(device.udid)"
+        let owner = sessionId ?? Self.sessionlessOwner(udid: device.udid)
         let start = Date()
 
         while true {
@@ -192,11 +195,18 @@ public struct SimulatorCapacity: Sendable {
         records.removeAll { record in
             guard let state = states[record.udid] else { return true }
             if record.state == .pending && !isProcessAlive(record.ownerPID) { return true }
+            // A run without GRANTIVA_SESSION_ID has no ticket that will ever
+            // tear it down by name, so its record lives only as long as the
+            // process that took it.
+            if record.isSessionless && !isProcessAlive(record.ownerPID) { return true }
             if state == "Booted" { return false }
             if record.state == .pending { return false }
             return true
         }
     }
+
+    /// The owner recorded for a run that set no `GRANTIVA_SESSION_ID`.
+    static func sessionlessOwner(udid: String) -> String { "simulator:\(udid)" }
 
     private static func positiveInt(_ value: String?) -> Int? {
         guard let value, let parsed = Int(value), parsed > 0 else { return nil }

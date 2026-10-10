@@ -4,10 +4,31 @@ import Logging
 public struct SimulatorManager: Sendable, Decodable {
     public static let live = SimulatorManager()
 
-    public init() {}
+    private let execute: @Sendable (String) async throws -> String
+    private let capacity: SimulatorCapacity
+    private let provenance: SimulatorProvenance
+
+    public init() {
+        self.init(execute: { try await shell($0) })
+    }
+
+    /// Test seam: a scripted `simctl` and private capacity/provenance stores.
+    init(
+        execute: @escaping @Sendable (String) async throws -> String,
+        capacity: SimulatorCapacity = .live,
+        provenance: SimulatorProvenance = .live
+    ) {
+        self.execute = execute
+        self.capacity = capacity
+        self.provenance = provenance
+    }
+
+    public init(from decoder: Decoder) throws {
+        self.init()
+    }
 
     public func listDevices() async throws -> [SimulatorDevice] {
-        let output = try await shell("xcrun simctl list devices --json")
+        let output = try await execute("xcrun simctl list devices --json")
         guard let data = output.data(using: .utf8) else { return [] }
         let parsed = try JSONDecoder().decode(SimctlDeviceList.self, from: data)
         return parsed.allDevices
@@ -61,9 +82,20 @@ public struct SimulatorManager: Sendable, Decodable {
         return (.warning, "Waiting for simulator capacity (\(sessions.count)/\(maximum)): \(owners)")
     }
 
+    /// Boots a simulator and takes a capacity slot for it.
+    ///
+    /// Only simulators Grantiva boots count toward the limit. A device that is
+    /// already booted with no Grantiva record was booted by someone else (Xcode,
+    /// `simctl boot`): it is used as-is, takes no slot, and is therefore never
+    /// listed by `simulator sessions` or shut down by `simulator teardown`.
     public func boot(nameOrUDID: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: nameOrUDID)
-        let capacity = SimulatorCapacity.live
+        if device.isBooted {
+            let devices = try await listDevices()
+            guard try capacity.sessions(devices: devices).contains(where: { $0.udid == device.udid }) else {
+                return device
+            }
+        }
         _ = try await capacity.reserve(device: device, devices: { try await listDevices() }) { sessions, elapsed in
             guard Int(elapsed) % 10 == 0 else { return }
             let wait = Self.capacityWait(sessions: sessions, maximum: capacity.maximum)
@@ -71,8 +103,8 @@ public struct SimulatorManager: Sendable, Decodable {
         }
         do {
             if !device.isBooted {
-                _ = try await shell("xcrun simctl boot \(device.udid)")
-                _ = try await shell("xcrun simctl bootstatus \(device.udid) -b")
+                _ = try await execute("xcrun simctl boot \(device.udid)")
+                _ = try await execute("xcrun simctl bootstatus \(device.udid) -b")
             }
             try capacity.activate(udid: device.udid)
         } catch {
@@ -145,7 +177,7 @@ public struct SimulatorManager: Sendable, Decodable {
         // The look-up/create pair runs under a cross-process lock so two
         // concurrent runs asking for the same name reuse one device instead of
         // both observing "not found" and creating duplicates.
-        let (created, provisionedUDID): (Bool, String) = try await SimulatorProvenance.live.withProvisioningLock {
+        let (created, provisionedUDID): (Bool, String) = try await provenance.withProvisioningLock {
             let named = try await listDevices().filter { $0.name == name }
             if named.count > 1 { throw GrantivaError.invalidArgument("Multiple simulators are named \"\(name)\"; delete duplicates or use a unique name") }
             if let existing = named.first {
@@ -158,8 +190,8 @@ public struct SimulatorManager: Sendable, Decodable {
                 }
                 return (false, existing.udid)
             }
-            let udid = try await shell("xcrun simctl create \(shellQuoted(name)) \(shellQuoted(type.identifier)) \(shellQuoted(runtime.identifier))")
-            try SimulatorProvenance.live.register(udid: udid, name: name)
+            let udid = try await execute("xcrun simctl create \(shellQuoted(name)) \(shellQuoted(type.identifier)) \(shellQuoted(runtime.identifier))")
+            try provenance.register(udid: udid, name: name)
             return (true, udid)
         }
         let udid = provisionedUDID
@@ -173,32 +205,30 @@ public struct SimulatorManager: Sendable, Decodable {
 
     public func delete(name: String) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: name)
-        _ = try await shell("xcrun simctl delete \(shellQuoted(device.udid))")
-        try SimulatorCapacity.live.remove(udid: device.udid)
-        try SimulatorProvenance.live.remove(udid: device.udid)
+        _ = try await execute("xcrun simctl delete \(shellQuoted(device.udid))")
+        try capacity.remove(udid: device.udid)
+        try provenance.remove(udid: device.udid)
         WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: device.udid)
         return device
     }
 
     public func managedSessions() async throws -> [ManagedSimulatorSession] {
-        try SimulatorCapacity.live.sessions(devices: try await listDevices())
+        try capacity.sessions(devices: try await listDevices())
     }
 
     /// Ends a session. Simulators Grantiva created are deleted outright;
     /// pre-existing devices the session merely booted are only shut down.
     public func teardown(sessionId: String) async throws -> [SimulatorTeardownOutcome] {
-        let capacity = SimulatorCapacity.live
-        let provenance = SimulatorProvenance.live
         let devices = try await listDevices()
         let records = try capacity.sessions(sessionId: sessionId, devices: devices)
         var outcomes: [SimulatorTeardownOutcome] = []
         for record in records {
             if devices.first(where: { $0.udid == record.udid })?.isBooted == true {
-                _ = try await shell("xcrun simctl shutdown \(shellQuoted(record.udid))")
+                _ = try await execute("xcrun simctl shutdown \(shellQuoted(record.udid))")
             }
             let created = try provenance.contains(udid: record.udid)
             if created {
-                _ = try await shell("xcrun simctl delete \(shellQuoted(record.udid))")
+                _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
@@ -211,18 +241,16 @@ public struct SimulatorManager: Sendable, Decodable {
     /// Ends whatever session owns `udid`. Used by
     /// `teardown --udid` when the caller knows the device but not the ticket.
     public func teardown(udid: String) async throws -> [SimulatorTeardownOutcome] {
-        let capacity = SimulatorCapacity.live
-        let provenance = SimulatorProvenance.live
         let devices = try await listDevices()
         let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
         var outcomes: [SimulatorTeardownOutcome] = []
         for record in records {
             if devices.first(where: { $0.udid == record.udid })?.isBooted == true {
-                _ = try await shell("xcrun simctl shutdown \(shellQuoted(record.udid))")
+                _ = try await execute("xcrun simctl shutdown \(shellQuoted(record.udid))")
             }
             let created = try provenance.contains(udid: record.udid)
             if created {
-                _ = try await shell("xcrun simctl delete \(shellQuoted(record.udid))")
+                _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
@@ -236,9 +264,8 @@ public struct SimulatorManager: Sendable, Decodable {
     /// longer part of an active managed session. Ledger entries for devices
     /// that no longer exist are pruned. Never touches user-created devices.
     public func cleanup() async throws -> [CreatedSimulatorRecord] {
-        let provenance = SimulatorProvenance.live
         let devices = try await listDevices()
-        let active = Set(try SimulatorCapacity.live.sessions(devices: devices).map(\.udid))
+        let active = Set(try capacity.sessions(devices: devices).map(\.udid))
         var removed: [CreatedSimulatorRecord] = []
         for record in try provenance.all() {
             guard let device = devices.first(where: { $0.udid == record.udid }) else {
@@ -246,7 +273,7 @@ public struct SimulatorManager: Sendable, Decodable {
                 continue
             }
             guard !device.isBooted, !active.contains(record.udid) else { continue }
-            _ = try await shell("xcrun simctl delete \(shellQuoted(record.udid))")
+            _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
             try provenance.remove(udid: record.udid)
             removed.append(record)
         }
@@ -295,13 +322,13 @@ public struct SimulatorManager: Sendable, Decodable {
     }
 
     private func simulatorCatalog() async throws -> SimctlCatalog {
-        let data = try await shell("xcrun simctl list devicetypes runtimes --json").data(using: .utf8) ?? Data()
+        let data = try await execute("xcrun simctl list devicetypes runtimes --json").data(using: .utf8) ?? Data()
         return try JSONDecoder().decode(SimctlCatalog.self, from: data)
     }
 
     public func displayGeometry(udid: String) async throws -> SimulatorDisplayGeometry {
         func value(_ key: String) async throws -> Double {
-            guard let number = Double(try await shell("xcrun simctl getenv \(shellQuoted(udid)) \(key)")) else { throw GrantivaError.invalidArgument("Could not read simulator display metric \(key)") }
+            guard let number = Double(try await execute("xcrun simctl getenv \(shellQuoted(udid)) \(key)")) else { throw GrantivaError.invalidArgument("Could not read simulator display metric \(key)") }
             return number
         }
         let pixelWidth = try await value("SIMULATOR_MAINSCREEN_WIDTH")

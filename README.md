@@ -426,7 +426,8 @@ stale capacity record. `--session-id` and `--udid` are mutually exclusive.
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
 toward the limit; manually booted Xcode simulators are never shut down by
-Grantiva teardown.
+Grantiva teardown. A run against an already-booted simulator takes no slot, and a
+run without `GRANTIVA_SESSION_ID` holds its slot only while its process is alive.
 
 ## Local Workflow
 

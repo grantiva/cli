@@ -73,6 +73,37 @@ final class SimulatorCapacityTests: XCTestCase {
         XCTAssertTrue(records.isEmpty)
     }
 
+    // A run without GRANTIVA_SESSION_ID owns its record as `simulator:<udid>`.
+    // Nothing will ever tear that session down by name, so once the run's
+    // process is gone the record must not hold a slot forever.
+    func testActiveSessionlessRecordWithDeadOwnerIsPruned() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertTrue(records.isEmpty)
+    }
+
+    func testActiveSessionlessRecordWithLiveOwnerIsKept() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in true })
+
+        XCTAssertEqual(records.count, 1)
+    }
+
+    // A named ticket session outlives the CLI process that booted its device.
+    func testActiveNamedSessionRecordOutlivesItsOwnerProcess() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "APP-652", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertEqual(records.count, 1)
+    }
+
     func testSameSimulatorReusesItsSlot() async throws {
         let capacity = SimulatorCapacity(directory: directory, maximum: 1, waitTimeout: 0)
         let simulator = device(1, state: "Booted")
@@ -100,6 +131,13 @@ final class SimulatorCapacityTests: XCTestCase {
 
         let acquired = try await waiter.value
         XCTAssertEqual(acquired.udid, second.udid)
+    }
+
+    private func record(_ device: SimulatorDevice, sessionId: String, pid: Int32) -> ManagedSimulatorSession {
+        ManagedSimulatorSession(
+            udid: device.udid, name: device.name, sessionId: sessionId,
+            ownerPID: pid, acquiredAt: Date(), state: .active
+        )
     }
 
     private func device(_ number: Int, state: String) -> SimulatorDevice {
