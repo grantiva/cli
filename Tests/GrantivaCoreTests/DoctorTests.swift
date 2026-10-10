@@ -182,6 +182,25 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(android.fix, "Run: grantiva init --platform android")
     }
 
+    // A config that `run` refuses must not read as "Found" in doctor.
+    func testConfigCheckFlagsAFileThatDoesNotParse() throws {
+        try "application_id: com.kylebrowning.landmarks\nscreens:\n  - name: Home\n    path: launch\n  bad: : :\n"
+            .write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .error)
+        XCTAssertEqual(check.section, .project)
+        XCTAssertTrue(check.message.hasPrefix("could not be parsed: 5:3"), check.message)
+        XCTAssertFalse(check.message.contains("\n"), check.message)
+        XCTAssertTrue(check.fix?.contains(scratch.appendingPathComponent("grantiva-android.yml").path) == true, "\(check.fix ?? "nil")")
+    }
+
+    func testConfigCheckPassesAFileThatParses() throws {
+        try "module: app\n".write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "Found")
+    }
+
     func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
         XCTAssertTrue(checks.contains { $0.name == "Android SDK" })

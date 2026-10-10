@@ -181,7 +181,24 @@ public struct DoctorRunner: Sendable {
 
     func checkConfig(for platform: Platform, directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
         let name = platform.configFileName
-        if FileManager.default.fileExists(atPath: "\(directory)/\(name)") {
+        let path = "\(directory)/\(name)"
+        if FileManager.default.fileExists(atPath: path) {
+            // The same load `run` does, so a file `run` refuses is not "Found".
+            do {
+                _ = try GrantivaConfig.load(platform: platform, from: URL(fileURLWithPath: directory, isDirectory: true))
+            } catch {
+                var message = (error as? GrantivaError).flatMap { error -> String? in
+                    if case .invalidArgument(let message) = error { return message }
+                    return nil
+                } ?? error.localizedDescription
+                if message.hasPrefix("\(name) ") { message.removeFirst(name.count + 1) }
+                let firstLine = message.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? message
+                return DoctorCheck(
+                    name: name, status: .error, message: firstLine,
+                    fix: "Fix the YAML in \(path)",
+                    section: .project
+                )
+            }
             return DoctorCheck(name: name, status: .ok, message: "Found", fix: nil, section: .project)
         }
         return DoctorCheck(
