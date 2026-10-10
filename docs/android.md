@@ -41,6 +41,15 @@ Flags: `--module`, `--variant`, `--application-id`, `--emulator`, `--device`,
 rejected on Android, and vice versa. `GRANTIVA_PLATFORM=android` or `--platform android`
 forces the platform when both config files exist.
 
+## Launch environment
+
+Android has no launch-time process environment, so `--env KEY=VALUE`, a flow header's
+`env:` block, and a `launchApp: environment:` map are delivered as string intent extras:
+Grantiva writes them into the staged flow's `launchApp: arguments:` (merging with any
+`arguments:` the step already has), which the runner passes to the launch intent. Read
+them with `intent.getStringExtra("KEY")`. `--env` wins over a value the step sets, which
+wins over the header `env:`.
+
 ## Captures and baselines
 
 Android captures go to `.grantiva/captures/android/` and baselines to

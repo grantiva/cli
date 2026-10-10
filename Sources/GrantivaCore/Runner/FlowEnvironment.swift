@@ -1,14 +1,62 @@
 import Foundation
+import Yams
 
 /// Parses `--env KEY=VALUE` pairs and injects them into a flow's `launchApp`
 /// steps.
 ///
-/// The runner already supports an `environment:` field on `launchApp` and
-/// forwards it to the app at launch, so `--env` rides that existing path rather
-/// than introducing a second mechanism. Injection happens on the staged copy of
-/// the flow — the same copy that already receives the resolved `appId` — so the
-/// user's file is never modified.
+/// On iOS the runner forwards `launchApp: environment:` to the app as process
+/// environment. On Android the only launch-time channel is intent extras, which
+/// the runner fills from `launchApp: arguments:` (it ignores `environment:`
+/// there), so the same values go into `arguments:` as string extras. Injection
+/// happens on the staged copy of the flow — the same copy that already receives
+/// the resolved `appId` — so the user's file is never modified.
 public enum FlowEnvironment {
+    /// The `launchApp` field the runner delivers to the app on `platform`.
+    public static func launchField(for platform: Platform) -> String {
+        platform == .android ? "arguments" : "environment"
+    }
+
+    /// Prepares a flow's launch data for `platform`: the flow header's `env:`
+    /// block and `--env` (which wins) are injected into every `launchApp`, and
+    /// on Android a step's own `environment:` becomes `arguments:`. A value a
+    /// step declares itself beats the header but not `--env`.
+    public static func apply(
+        to content: String,
+        environment: [String: String],
+        platform: Platform
+    ) -> (yaml: String, injected: Bool) {
+        let field = launchField(for: platform)
+        var yaml = content
+        if platform == .android {
+            yaml = renameLaunchField(in: yaml, from: "environment", to: field)
+        }
+        let header = headerEnvironment(content)
+        if !header.isEmpty {
+            yaml = inject(yaml, environment: header, field: field, overrideExisting: false).yaml
+        }
+        return inject(yaml, environment: environment, field: field)
+    }
+
+    /// The flow header's `env:` mapping (the YAML document before `---`), with
+    /// scalar values as strings. Empty when the flow has no header or no `env:`.
+    public static func headerEnvironment(_ content: String) -> [String: String] {
+        let lines = content.components(separatedBy: "\n")
+        guard let separator = lines.firstIndex(where: { $0.trimmingCharacters(in: .whitespaces) == "---" }) else {
+            return [:]
+        }
+        let header = lines[..<separator].joined(separator: "\n")
+        guard let mapping = (try? Yams.load(yaml: header)) as? [String: Any],
+              let env = mapping["env"] as? [String: Any] else { return [:] }
+        return env.compactMapValues { value in
+            switch value {
+            case let string as String: return string
+            case let bool as Bool: return bool ? "true" : "false"
+            case is [Any], is [String: Any]: return nil
+            default: return "\(value)"
+            }
+        }
+    }
+
     /// Parses `KEY=VALUE` arguments. The value may be empty and may itself
     /// contain `=`; the key may not be empty or contain whitespace.
     public static func parse(_ arguments: [String]) throws -> [String: String] {
@@ -40,9 +88,15 @@ public enum FlowEnvironment {
     /// Returns the rewritten YAML and whether any `launchApp` step was found —
     /// a flow with none cannot receive launch environment at all, which is
     /// worth telling the user about rather than silently doing nothing.
+    ///
+    /// `field` is the `launchApp` key the values go under (see
+    /// `launchField(for:)`). With `overrideExisting` false, keys the step
+    /// already declares keep their value.
     public static func inject(
         _ content: String,
-        environment: [String: String]
+        environment: [String: String],
+        field: String = "environment",
+        overrideExisting: Bool = true
     ) -> (yaml: String, injected: Bool) {
         guard !environment.isEmpty else { return (content, true) }
 
@@ -66,20 +120,20 @@ public enum FlowEnvironment {
             switch step.form {
             case .bare:
                 output.append("\(itemIndent)- launchApp:")
-                output.append(contentsOf: environmentLines(environment, indent: keyIndent))
+                output.append(contentsOf: environmentLines(environment, field: field, indent: keyIndent))
                 index += 1
 
             case .scalar(let appId):
                 output.append("\(itemIndent)- launchApp:")
                 output.append("\(keyIndent)appId: \(appId)")
-                output.append(contentsOf: environmentLines(environment, indent: keyIndent))
+                output.append(contentsOf: environmentLines(environment, field: field, indent: keyIndent))
                 index += 1
 
             case .mapping:
                 output.append(line)
                 index += 1
                 // Copy the step's own mapping block, merging into an existing
-                // `environment:` if the flow already declares one.
+                // `environment:` (or `field:`) if the flow already declares one.
                 var blockIndent: Int?
                 var mergedIntoExisting = false
                 var existingEnvironmentIndent: Int?
@@ -103,16 +157,22 @@ public enum FlowEnvironment {
                             let key = trimmed.split(separator: ":", maxSplits: 1)
                                 .first
                                 .map { String($0).trimmingCharacters(in: .whitespaces) }
-                            if let key, environment[key] != nil { continue }
+                            if overrideExisting, let key, environment[key] != nil { continue }
                         } else {
                             existingEnvironmentIndent = nil
                         }
                     }
 
                     output.append(bodyLine)
-                    if trimmed == "environment:" && indent == blockIndent {
+                    if trimmed == "\(field):" && indent == blockIndent {
+                        var entries = environment
+                        if !overrideExisting {
+                            for key in existingKeys(in: lines, after: index, deeperThan: indent) {
+                                entries[key] = nil
+                            }
+                        }
                         output.append(contentsOf: environmentEntries(
-                            environment,
+                            entries,
                             indent: String(repeating: " ", count: indent + 2)
                         ))
                         mergedIntoExisting = true
@@ -121,7 +181,7 @@ public enum FlowEnvironment {
                 }
                 if !mergedIntoExisting {
                     let indent = String(repeating: " ", count: blockIndent ?? (step.indent + 4))
-                    output.append(contentsOf: environmentLines(environment, indent: indent))
+                    output.append(contentsOf: environmentLines(environment, field: field, indent: indent))
                 }
             }
         }
@@ -129,8 +189,58 @@ public enum FlowEnvironment {
         return (output.joined(separator: "\n"), injected)
     }
 
-    private static func environmentLines(_ environment: [String: String], indent: String) -> [String] {
-        ["\(indent)environment:"] + environmentEntries(environment, indent: indent + "  ")
+    private static func environmentLines(_ environment: [String: String], field: String, indent: String) -> [String] {
+        ["\(indent)\(field):"] + environmentEntries(environment, indent: indent + "  ")
+    }
+
+    /// Keys of the mapping block that starts at `lines[start]` and is indented
+    /// deeper than `indent`.
+    private static func existingKeys(in lines: [String], after start: Int, deeperThan indent: Int) -> [String] {
+        var keys: [String] = []
+        var index = start
+        while index < lines.count {
+            let trimmed = lines[index].trimmingCharacters(in: .whitespaces)
+            index += 1
+            if trimmed.isEmpty { continue }
+            guard lines[index - 1].prefix(while: { $0 == " " }).count > indent else { break }
+            if let key = trimmed.split(separator: ":", maxSplits: 1).first {
+                keys.append(String(key).trimmingCharacters(in: CharacterSet(charactersIn: " \"'")))
+            }
+        }
+        return keys
+    }
+
+    /// Renames `from:` to `to:` in each block-mapping `launchApp` step that
+    /// does not already declare `to:`.
+    static func renameLaunchField(in content: String, from: String, to: String) -> String {
+        var lines = content.components(separatedBy: "\n")
+        var index = 0
+        while index < lines.count {
+            guard let step = LaunchAppStep(line: lines[index]), case .mapping = step.form else {
+                index += 1
+                continue
+            }
+            index += 1
+            var blockIndent: Int?
+            var fromLine: Int?
+            var hasTarget = false
+            while index < lines.count {
+                let trimmed = lines[index].trimmingCharacters(in: .whitespaces)
+                if trimmed.isEmpty { index += 1; continue }
+                let indent = lines[index].prefix { $0 == " " }.count
+                guard indent > step.indent else { break }
+                if blockIndent == nil { blockIndent = indent }
+                if indent == blockIndent {
+                    if trimmed.hasPrefix("\(from):") { fromLine = index }
+                    if trimmed.hasPrefix("\(to):") { hasTarget = true }
+                }
+                index += 1
+            }
+            if let fromLine, !hasTarget {
+                lines[fromLine] = lines[fromLine].replacingOccurrences(of: "\(from):", with: "\(to):", options: [], range: lines[fromLine].range(of: "\(from):"))
+            }
+        }
+        return lines.joined(separator: "\n")
     }
 
     private static func environmentEntries(_ environment: [String: String], indent: String) -> [String] {
