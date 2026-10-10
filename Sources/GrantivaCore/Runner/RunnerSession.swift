@@ -508,6 +508,14 @@ public enum RunnerSession {
             ))
             // Read before the ephemeral report dir is deleted on the way out.
             failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir)
+            // The same test the readiness watcher uses to publish `passed`:
+            // the report can list fewer flows than were requested.
+            if outcome.interrupted,
+               let index = RunnerReportIndex.load(reportDir: reportDir),
+               index.isComplete(expectedFlows: flowPaths.count),
+               index.readyState.passed {
+                failureReport?.markPassedBeforeInterrupt()
+            }
             throw GrantivaError.commandFailed(
                 "\(reason):\n\(stderr.suffix(2000))",
                 outcome.terminationStatus

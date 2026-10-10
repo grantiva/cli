@@ -343,16 +343,14 @@ final class RunCommandTests: XCTestCase {
         ])
         let error = GrantivaError.commandFailed("Runner interrupted:\n", 0)
 
-        let released = RunCommand.failureResult(error: error, report: report, interrupted: true)
-        XCTAssertTrue(released.allPassed)
-        XCTAssertNil(released.error)
-
-        let failed = RunCommand.failureResult(error: error, report: report, interrupted: false)
-        XCTAssertFalse(failed.allPassed)
+        let failed = RunCommand.failureResult(error: error, report: report)
+        XCTAssertFalse(failed.allPassed, "passing captures alone are not a passing verdict")
         XCTAssertNotNil(failed.error)
 
-        let empty = RunCommand.failureResult(error: error, report: RunnerFailureReport(), interrupted: true)
-        XCTAssertFalse(empty.allPassed, "an interrupt with nothing finished is not a pass")
+        report.markPassedBeforeInterrupt()
+        let released = RunCommand.failureResult(error: error, report: report)
+        XCTAssertTrue(released.allPassed)
+        XCTAssertNil(released.error)
     }
 
     /// A failed screens session stops the suite before the flows; the
@@ -362,7 +360,7 @@ final class RunCommandTests: XCTestCase {
         report.recordEarlierCaptures([
             ScreenCapture(screenName: "Home", path: "", sizeBytes: 0, steps: [StepResult(action: "Capture Home", status: .failed, duration: 0, message: "missing")]),
         ])
-        let result = RunCommand.failureResult(error: ExitCode.failure, report: report, interrupted: false)
+        let result = RunCommand.failureResult(error: ExitCode.failure, report: report)
         XCTAssertEqual(result.screens.map(\.name), ["Home"])
         XCTAssertEqual(result.screens.first?.steps.first?.message, "missing")
         XCTAssertEqual(result.error, "Run failed (exit 1)")

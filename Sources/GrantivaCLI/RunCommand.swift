@@ -371,9 +371,7 @@ struct RunCommand: AsyncParsableCommand {
                 log("Failure screenshot: \(failurePath)")
             }
             if options.json {
-                try? resultOutput.emit(Self.failureResult(
-                    error: error, report: failureReport, interrupted: SignalRelay.shared.isTerminating
-                ))
+                try? resultOutput.emit(Self.failureResult(error: error, report: failureReport))
             }
             // The --ready-file waiter is released by `run`, which covers this
             // path and every setup failure that never reaches the runner.
@@ -468,9 +466,11 @@ struct RunCommand: AsyncParsableCommand {
     /// session is released after its flows finish, so an interrupt whose
     /// flows all passed is a passing run (the ready file says `passed` too),
     /// not a failure.
-    static func failureResult(error: Error, report: RunnerFailureReport, interrupted: Bool) -> RunResult {
+    static func failureResult(error: Error, report: RunnerFailureReport) -> RunResult {
         let screens = report.captures.map(RunResult.ScreenResult.init)
-        if interrupted, !screens.isEmpty, screens.allSatisfy(\.passed) {
+        // Decided from the run's verdict, not the captures: the report may
+        // list fewer flows than were requested.
+        if report.passedBeforeInterruption, screens.allSatisfy(\.passed) {
             return RunResult(screens: screens, allPassed: true)
         }
         return RunResult(

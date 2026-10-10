@@ -118,9 +118,42 @@ final class RunnerSessionCleanupTests: XCTestCase {
         _ = try? await interrupter.value
 
         XCTAssertEqual(try ReadyFile.read(scratch.readyFile).status, "passed")
+        XCTAssertTrue(report.passedBeforeInterruption)
         let captures = report.captures
         XCTAssertFalse(captures.isEmpty)
         XCTAssertTrue(captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } })
+    }
+
+    /// Ctrl-C during flow 2 of 2 with only flow 1 in the report: every
+    /// recorded flow passed, but the run did not, so it is not a pass.
+    func testAnInterruptWithFewerReportedFlowsThanRequestedIsNotAPass() async throws {
+        let scratch = try FakeRunnerScratch()
+        defer { scratch.remove() }
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let report = RunnerFailureReport()
+
+        let interrupter = Task.detached {
+            try await Task.sleep(nanoseconds: 1_500_000_000)
+            SignalRelay.shared.simulateTerminationForTesting()
+        }
+        do {
+            // The runner keeps the suite `running` until every flow is done.
+            _ = try await scratch.runFlows(
+                reportDir: nil,
+                reportJSON: #"{"status":"running","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"@FLOW@","assetsDir":"assets/flow-000","status":"passed"}]}"#,
+                sleepSeconds: 30,
+                flowCount: 2,
+                failureReport: report
+            )
+            XCTFail("an interrupted run must throw")
+        } catch {
+            XCTAssertTrue("\(error)".contains("Runner interrupted"), "\(error)")
+        }
+        _ = try? await interrupter.value
+
+        XCTAssertEqual(try ReadyFile.read(scratch.readyFile).status, "interrupted")
+        XCTAssertFalse(report.passedBeforeInterruption)
+        XCTAssertTrue(report.captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } })
     }
 
     // MARK: - Failure report (I12)
@@ -261,6 +294,7 @@ struct FakeRunnerScratch {
         flowFiles: [String: String] = [:],
         exitStatus: Int32 = 0,
         sleepSeconds: Int = 0,
+        flowCount: Int = 1,
         failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         var script = """
@@ -294,7 +328,7 @@ struct FakeRunnerScratch {
         let manager = RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path })
         let flow = root.appendingPathComponent("smoke.yaml").path
         return try await RunnerSession.runFlowFiles(
-            at: [flow],
+            at: Array(repeating: flow, count: flowCount),
             bundleId: "com.fake",
             udid: "FAKE-\(UUID().uuidString)",
             platform: RecordingPlatform(calls: LockedCalls(), restoreDelay: 0),

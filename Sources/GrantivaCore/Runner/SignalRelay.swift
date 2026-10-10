@@ -132,8 +132,11 @@ public final class SignalRelay: @unchecked Sendable {
     }
 
     private func handle(_ signalNumber: Int32) {
-        // A repeat signal while cleanups run means "stop now": exit at once
-        // rather than swallow it behind a cleanup that may be hung.
+        // A signal arriving while cleanups run exits at once. In practice only
+        // a different signal gets here (SIGTERM after SIGINT): a repeat of the
+        // same signal on its DispatchSourceSignal is held until this handler
+        // returns. RunCommand's 30 s cap on waiting for the relay is the real
+        // guarantee against a hung cleanup.
         terminate(announcing: signalNumber == SIGINT ? "SIGINT" : "SIGTERM")
         exit(128 + signalNumber)
     }

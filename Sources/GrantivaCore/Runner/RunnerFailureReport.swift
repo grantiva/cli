@@ -10,6 +10,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
     private var storedCaptures: [ScreenCapture] = []
     private var storedReportDir: String?
     private var earlierCaptures: [ScreenCapture] = []
+    private var passedBeforeInterrupt = false
 
     public init() {}
 
@@ -19,6 +20,21 @@ public final class RunnerFailureReport: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         return earlierCaptures + storedCaptures
+    }
+
+    /// True when the run's verdict was already `passed` (every expected flow
+    /// in the report terminal and passing) before an interrupt ended it —
+    /// how a `--keep-alive` session is released.
+    public var passedBeforeInterruption: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return passedBeforeInterrupt
+    }
+
+    public func markPassedBeforeInterrupt() {
+        lock.lock()
+        defer { lock.unlock() }
+        passedBeforeInterrupt = true
     }
 
     /// Captures from an earlier session of the same suite (the screens
