@@ -626,7 +626,8 @@ struct RunnerStopCommand: AsyncParsableCommand {
             if options.json {
                 Output.line(try JSONOutput.string(["status": "not_running"]))
             } else {
-                Output.line("No active session found.")
+                // Narration, not a result: stderr, so stdout stays empty.
+                options.note("No active session found.")
             }
             return
         }

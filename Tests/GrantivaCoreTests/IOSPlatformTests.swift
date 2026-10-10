@@ -156,4 +156,15 @@ private final class ScriptedExecutor: @unchecked Sendable {
         }
     }
     var commands: [String] { lock.withLock { recorded } }
+
+    // simctl prints "Recording completed. Writing to disk." and "Wrote video
+    // to: ..." on its own stdout; inherited, that landed ahead of `record`'s
+    // result and broke `record --json | jq`.
+    func testRecordVideoProcessDoesNotInheritStdout() throws {
+        let log = FileHandle.nullDevice
+        let recorder = IOSPlatform.makeRecorder(deviceID: "ABC-123", path: "/tmp/x.mov", log: log)
+        XCTAssertEqual(recorder.arguments, ["simctl", "io", "ABC-123", "recordVideo", "--codec=h264", "/tmp/x.mov"])
+        XCTAssertTrue((recorder.standardOutput as? FileHandle) === log, "stdout must go to the log, not be inherited")
+        XCTAssertTrue((recorder.standardError as? FileHandle) === log)
+    }
 }
