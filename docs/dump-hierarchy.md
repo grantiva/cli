@@ -35,6 +35,8 @@ If no keep-alive session is live, the command fails fast with an actionable erro
 |------|-------------|
 | `--udid` | Target a specific simulator's session, resolved through grantiva's `<pid>.owner.json` sidecar (defaults to the newest live keep-alive session). |
 | `--format` | `xml` (default) or `json`. |
+| `--json` | Same as `--format json`. Combining it with `--format xml` is a usage error. |
+| `--timeout` | Seconds to wait for GrantivaAgent's page-source response (default 60). |
 
 ## Alternative: `grantiva runner dump-hierarchy`
 
@@ -45,6 +47,8 @@ grantiva runner start --bundle-id com.example.myapp
 grantiva runner dump-hierarchy --format json
 grantiva runner stop
 ```
+
+`runner dump-hierarchy` takes `--format tree|json|xml` (default `tree`); `--json` is the same as `--format json`.
 
 This path is preserved for backward compatibility and MCP integration. New flows should prefer `grantiva run --keep-alive` + `grantiva hierarchy`, which integrate natively with flow execution.
 

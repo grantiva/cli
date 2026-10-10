@@ -93,6 +93,72 @@ final class HierarchyCommandTests: XCTestCase {
         }
     }
 
+    // MARK: - Agent errors (I15)
+
+    func testATimeoutIsOneActionableLine() {
+        let error = HierarchyCommand.agentError(URLError(.timedOut), port: 8129, timeout: 0.01)
+        XCTAssertEqual(
+            error.localizedDescription,
+            "GrantivaAgent on port 8129 did not answer within 0.01s (--timeout). Is the run still alive?"
+        )
+        XCTAssertEqual(
+            HierarchyCommand.agentError(URLError(.timedOut), port: 8129, timeout: 60).localizedDescription,
+            "GrantivaAgent on port 8129 did not answer within 60s (--timeout). Is the run still alive?"
+        )
+    }
+
+    func testARefusedConnectionNamesThePortAndTheKeepAliveRun() {
+        let message = HierarchyCommand.agentError(URLError(.cannotConnectToHost), port: 8129, timeout: 60).localizedDescription
+        XCTAssertEqual(
+            message,
+            "Cannot reach GrantivaAgent on port 8129. Is the grantiva run --keep-alive session still alive?"
+        )
+        XCTAssertFalse(message.contains("NSURLErrorDomain"))
+    }
+
+    func testOtherErrorsPassThrough() {
+        let error = HierarchyCommand.agentError(GrantivaError.invalidImage, port: 1, timeout: 1)
+        XCTAssertEqual(error.localizedDescription, GrantivaError.invalidImage.localizedDescription)
+    }
+
+    func testAnIOSSessionWhoseAgentIsGoneFailsWithTheMappedMessage() async throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        let port = try closedLoopbackPort()
+        try writeRunnerSession(pid: 100, nanos: 1, sessionId: "ios", in: directory, port: port)
+        let command = try HierarchyCommand.parse(["--timeout", "5"])
+        do {
+            try await command.run(store: store)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "Cannot reach GrantivaAgent on port \(port). Is the grantiva run --keep-alive session still alive?"
+            )
+        }
+    }
+
+    /// A loopback port the kernel just handed out and that nothing listens
+    /// on any more: bind to port 0, read the port, close.
+    private func closedLoopbackPort() throws -> Int {
+        let fd = Darwin.socket(AF_INET, SOCK_STREAM, 0)
+        guard fd >= 0 else { throw XCTSkip("socket() failed") }
+        defer { Darwin.close(fd) }
+        var address = sockaddr_in()
+        address.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        address.sin_family = sa_family_t(AF_INET)
+        address.sin_port = 0
+        address.sin_addr.s_addr = inet_addr("127.0.0.1")
+        var length = socklen_t(MemoryLayout<sockaddr_in>.size)
+        let bound = withUnsafeMutablePointer(to: &address) { pointer in
+            pointer.withMemoryRebound(to: sockaddr.self, capacity: 1) { sockaddrPointer in
+                Darwin.bind(fd, sockaddrPointer, length) == 0 && Darwin.getsockname(fd, sockaddrPointer, &length) == 0
+            }
+        }
+        guard bound else { throw XCTSkip("bind() failed") }
+        return Int(UInt16(bigEndian: address.sin_port))
+    }
+
     private func writeRunnerSession(pid: Int, nanos: Int, sessionId: String, in directory: URL, port: Int? = nil) throws {
         let data = try JSONSerialization.data(withJSONObject: [
             "version": 1, "sessionId": sessionId, "createdAt": "2026-10-07T10:00:00Z",
@@ -106,6 +172,20 @@ final class HierarchyCommandTests: XCTestCase {
         try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
         addTeardownBlock { try? FileManager.default.removeItem(at: url) }
         return url
+    }
+
+    // `--json` was advertised (GlobalOptions) but never read, so it printed XML.
+    func testJSONFlagSelectsJSONOutput() throws {
+        XCTAssertEqual(try HierarchyCommand.parse(["--json"]).outputFormat, .json)
+        XCTAssertEqual(try HierarchyCommand.parse(["--json", "--format", "json"]).outputFormat, .json)
+        XCTAssertEqual(try HierarchyCommand.parse([]).outputFormat, .xml)
+        XCTAssertEqual(try HierarchyCommand.parse(["--format", "json"]).outputFormat, .json)
+    }
+
+    func testJSONFlagWithXMLFormatIsAUsageError() {
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--json", "--format", "xml"])) { error in
+            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+        }
     }
 }
 

@@ -142,6 +142,34 @@ final class IOSPlatformTests: XCTestCase {
             XCTAssertTrue("\(error)".contains("WebDriverAgent port"), "\(error)")
         }
     }
+
+    // simctl prints "Recording completed. Writing to disk." and "Wrote video
+    // to: ..." on its own stdout; inherited, that landed ahead of `record`'s
+    // result and broke `record --json | jq`.
+    func testRecordVideoProcessDoesNotInheritStdout() throws {
+        let log = FileHandle.nullDevice
+        let recorder = IOSPlatform.makeRecorder(deviceID: "ABC-123", path: "/tmp/x.mov", log: log)
+        XCTAssertEqual(recorder.arguments, ["simctl", "io", "ABC-123", "recordVideo", "--codec=h264", "/tmp/x.mov"])
+        XCTAssertTrue((recorder.standardOutput as? FileHandle) === log, "stdout must go to the log, not be inherited")
+        XCTAssertTrue((recorder.standardError as? FileHandle) === log)
+    }
+
+    func testIsInstalledProbesTheAppContainer() async {
+        let installed = IOSPlatform(execute: { command in
+            XCTAssertEqual(command, "xcrun simctl get_app_container 'ABC-123' 'com.example.app'")
+            return "/path/to/App.app\n"
+        })
+        let isInstalled = await installed.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+        XCTAssertEqual(isInstalled, true)
+        let missing = IOSPlatform(execute: { _ in throw GrantivaError.commandFailed("No such file or directory", 2) })
+        let isMissing = await missing.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+        XCTAssertEqual(isMissing, false)
+        let shutDown = IOSPlatform(execute: { _ in
+            throw GrantivaError.commandFailed("Unable to lookup in current state: Shutdown", 149)
+        })
+        let isUnknown = await shutDown.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+        XCTAssertNil(isUnknown, "an unrelated simctl failure must not read as not installed")
+    }
 }
 
 private final class ScriptedExecutor: @unchecked Sendable {

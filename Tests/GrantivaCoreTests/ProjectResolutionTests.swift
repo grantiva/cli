@@ -56,6 +56,60 @@ final class ProjectResolutionTests: XCTestCase {
         XCTAssertEqual(result.bundleId, "com.binary")
     }
 
+    func testSeveralDetectedSchemesAndNoneConfiguredIsAnErrorListingThem() async {
+        let detector = ProjectDetector {
+            DetectedProject(scheme: "Landmarks", schemes: ["Landmarks", "Landmarks (UI Testing)"], project: "Landmarks.xcodeproj")
+        }
+        do {
+            _ = try await ResolvedProject.resolve(detector: detector, loadCache: { nil }, saveCache: { _ in })
+            XCTFail("expected failure")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "Invalid argument: No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary. Found: Landmarks, Landmarks (UI Testing)."
+            )
+        }
+    }
+
+    func testACachedDetectionWithSeveralSchemesDoesNotPickOne() async {
+        let cached = DetectedProject(scheme: "Landmarks", schemes: ["Landmarks", "Landmarks (UI Testing)"])
+        do {
+            _ = try await ResolvedProject.resolve(detector: .failing, loadCache: { cached }, saveCache: { _ in })
+            XCTFail("expected failure")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("Found: Landmarks, Landmarks (UI Testing)"), error.localizedDescription)
+        }
+    }
+
+    func testALegacyCacheWithoutTheSchemeListIsReDetected() async {
+        var stale = DetectedProject(scheme: "Landmarks")
+        stale.schemes = nil
+        let legacy = stale
+        let detector = ProjectDetector {
+            DetectedProject(scheme: "Landmarks", schemes: ["Landmarks", "Landmarks (UI Testing)"])
+        }
+        do {
+            _ = try await ResolvedProject.resolve(detector: detector, loadCache: { legacy }, saveCache: { _ in })
+            XCTFail("expected failure")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("Found: Landmarks, Landmarks (UI Testing)"), error.localizedDescription)
+        }
+    }
+
+    func testOneDetectedSchemeStillResolvesSilently() async throws {
+        let detector = ProjectDetector { DetectedProject(scheme: "Only", schemes: ["Only"]) }
+        let result = try await ResolvedProject.resolve(detector: detector, loadCache: { nil }, saveCache: { _ in })
+        XCTAssertEqual(result.scheme, "Only")
+    }
+
+    func testAnExplicitSchemeWinsOverSeveralDetectedOnes() async throws {
+        let cached = DetectedProject(scheme: "Landmarks", schemes: ["Landmarks", "Landmarks (UI Testing)"], bundleId: "com.x")
+        let result = try await ResolvedProject.resolve(
+            schemeFlag: "Landmarks (UI Testing)", detector: .failing, loadCache: { cached }, saveCache: { _ in }
+        )
+        XCTAssertEqual(result.scheme, "Landmarks (UI Testing)")
+    }
+
     func testDetectionFailureIsPropagatedAfterCacheMiss() async {
         do {
             _ = try await ResolvedProject.resolve(detector: .failing, loadCache: { nil }, saveCache: { _ in })

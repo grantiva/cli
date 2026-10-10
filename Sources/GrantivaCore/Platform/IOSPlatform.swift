@@ -49,6 +49,22 @@ public struct IOSPlatform: DevicePlatform {
         try await xcodebuild.install(bundleId: appID, productPath: productPath, udid: deviceID)
     }
 
+    /// `simctl get_app_container` fails with exit 2 ("No such file or
+    /// directory") for a bundle ID that is not installed. Any other failure
+    /// (device shut down, simctl or xcrun trouble) says nothing about the
+    /// app, so it is reported as unknown rather than "not installed".
+    public func isInstalled(appID: String, deviceID: String) async -> Bool? {
+        do {
+            _ = try await execute("xcrun simctl get_app_container \(shellQuoted(deviceID)) \(shellQuoted(appID))")
+            return true
+        } catch GrantivaError.commandFailed(let message, let status)
+            where status == 2 || message.contains("No such file or directory") {
+            return false
+        } catch {
+            return nil
+        }
+    }
+
     public func launch(appID: String, deviceID: String) async throws {
         try await xcodebuild.launch(bundleId: appID, udid: deviceID)
     }
@@ -160,18 +176,27 @@ public struct IOSPlatform: DevicePlatform {
         return DriverAttachment(client: .wda(port: port), port: Int(port), detach: {})
     }
 
-    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
-    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
-        let outputURL = URL(fileURLWithPath: path)
+    /// The `simctl io recordVideo` process. Both of its streams go to `log`:
+    /// simctl narrates ("Recording completed. Writing to disk.") on stdout,
+    /// which must not reach Grantiva's stdout ahead of the result.
+    static func makeRecorder(deviceID: String, path: String, log: FileHandle) -> Process {
         let recorder = Process()
         recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
         recorder.arguments = ["simctl", "io", deviceID, "recordVideo", "--codec=h264", path]
+        recorder.standardOutput = log
+        recorder.standardError = log
+        return recorder
+    }
+
+    /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
+    public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
+        let outputURL = URL(fileURLWithPath: path)
         let stderrURL = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-record-\(UUID().uuidString).log")
         FileManager.default.createFile(atPath: stderrURL.path, contents: nil)
         defer { try? FileManager.default.removeItem(at: stderrURL) }
         let stderr = try FileHandle(forWritingTo: stderrURL)
-        recorder.standardError = stderr
+        let recorder = Self.makeRecorder(deviceID: deviceID, path: path, log: stderr)
         do {
             try recorder.run()
             try await RecorderLifecycle.withCleanup(for: recorder) {

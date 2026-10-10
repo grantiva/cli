@@ -4,6 +4,10 @@ import Foundation
 
 public struct DetectedProject: Codable, Sendable {
     public var scheme: String
+    /// Every scheme `xcodebuild -list` reported. nil only in a cache written
+    /// before this was recorded; the resolver re-detects rather than trust
+    /// such a cache's scheme.
+    public var schemes: [String]?
     public var project: String?
     public var workspace: String?
     public var bundleId: String?
@@ -11,12 +15,14 @@ public struct DetectedProject: Codable, Sendable {
 
     public init(
         scheme: String,
+        schemes: [String]? = nil,
         project: String? = nil,
         workspace: String? = nil,
         bundleId: String? = nil,
         detectedAt: Date = Date()
     ) {
         self.scheme = scheme
+        self.schemes = schemes ?? [scheme]
         self.project = project
         self.workspace = workspace
         self.bundleId = bundleId
@@ -108,6 +114,7 @@ extension ProjectDetector {
 
         return DetectedProject(
             scheme: scheme,
+            schemes: schemes,
             project: project,
             workspace: workspace,
             bundleId: bundleId

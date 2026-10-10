@@ -73,8 +73,13 @@ extension ResolvedProject {
 
         if !skipBuild {
             if flagScheme == nil && configScheme == nil {
-                // Try cache first
+                // Try cache first. A cache from before the scheme list was
+                // recorded may hold a silent first-of-several pick, so it
+                // cannot supply the scheme; detect again.
                 detected = loadCache()
+                if detected?.schemes == nil {
+                    detected = nil
+                }
                 if detected == nil {
                     // Live detection
                     detected = try await detector.detect()
@@ -94,14 +99,19 @@ extension ResolvedProject {
             }
         }
 
-        // Resolution: flags > config > detected
+        // Resolution: flags > config > detected. Detection only picks a scheme
+        // when there is exactly one; with several, guessing builds the wrong
+        // target silently, so it is the same error as finding none.
+        let noSchemeMessage = "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
+        if flagScheme == nil, configScheme == nil, !skipBuild,
+           let found = detected?.schemes, found.count > 1 {
+            throw GrantivaError.invalidArgument("\(noSchemeMessage) Found: \(found.joined(separator: ", ")).")
+        }
         let scheme = flagScheme ?? configScheme ?? detected?.scheme
 
         // Scheme is required unless we're skipping the build
         if scheme == nil && !skipBuild {
-            throw GrantivaError.invalidArgument(
-                "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-            )
+            throw GrantivaError.invalidArgument(noSchemeMessage)
         }
 
         // Bundle ID: CLI flag > config > binary Info.plist > detected

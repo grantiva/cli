@@ -38,8 +38,13 @@ struct HierarchyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
     var timeout: Double = 60
 
-    @Option(name: .long, help: "Output format: xml or json")
-    var format: OutputFormat = .xml
+    @Option(name: .long, help: "Output format: xml (default) or json. --json is the same as --format json.")
+    var format: OutputFormat?
+
+    /// `--json` selects JSON, as it does on every command that offers it.
+    var outputFormat: OutputFormat {
+        options.json ? .json : (format ?? .xml)
+    }
 
     var devicePlatform = InjectedDevicePlatform()
 
@@ -53,6 +58,9 @@ struct HierarchyCommand: AsyncParsableCommand {
             throw ValidationError("--timeout must be greater than zero")
         }
         if let udid { _ = try DeviceID.validate(udid) }
+        if options.json, format == .xml {
+            throw ValidationError("--json and --format xml conflict; pass one.")
+        }
     }
 
     func run() async throws {
@@ -77,14 +85,20 @@ struct HierarchyCommand: AsyncParsableCommand {
         // The runner's `sessionId` is its own keep-alive identifier, not a
         // WebDriverAgent session, so the session-scoped route 404s. The bare
         // /source route serves the current application's tree.
-        let path = format == .json ? "/source?format=json" : "/source"
+        let path = outputFormat == .json ? "/source?format=json" : "/source"
 
         guard let url = URL(string: "http://127.0.0.1:\(session.port)\(path)") else {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
         }
 
         let request = URLRequest(url: url, timeoutInterval: timeout)
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let data: Data
+        let response: URLResponse
+        do {
+            (data, response) = try await URLSession.shared.data(for: request)
+        } catch {
+            throw Self.agentError(error, port: session.port, timeout: timeout)
+        }
 
         guard let http = response as? HTTPURLResponse else {
             throw GrantivaError.commandFailed("GrantivaAgent returned a non-HTTP response", 1)
@@ -98,7 +112,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
 
         // WDA wraps /source in {"value": "<xml>"}. Unwrap for cleanliness.
-        if format == .xml, let wrapped = unwrapWDASource(data) {
+        if outputFormat == .xml, let wrapped = unwrapWDASource(data) {
             Output.line(wrapped)
         } else {
             Output.write(data)
@@ -114,7 +128,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         let attachment = try await device.attachDriver(deviceID: serial, port: nil)
         let text: String
         do {
-            switch format {
+            switch outputFormat {
             case .xml:
                 text = try await attachment.client.hierarchyXML()
             case .json:
@@ -128,6 +142,25 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
         await attachment.detach()
         Output.line(text)
+    }
+
+    /// Turns URLSession's NSError dumps into one line naming the port and
+    /// what to check. Anything else passes through unchanged.
+    static func agentError(_ error: Error, port: Int, timeout: Double) -> Error {
+        guard let urlError = error as? URLError else { return error }
+        switch urlError.code {
+        case .timedOut:
+            let seconds = timeout == timeout.rounded() ? String(Int(timeout)) : String(timeout)
+            return GrantivaError.unavailable(
+                "GrantivaAgent on port \(port) did not answer within \(seconds)s (--timeout). Is the run still alive?"
+            )
+        case .cannotConnectToHost, .networkConnectionLost, .cannotFindHost:
+            return GrantivaError.unavailable(
+                "Cannot reach GrantivaAgent on port \(port). Is the grantiva run --keep-alive session still alive?"
+            )
+        default:
+            return error
+        }
     }
 
     /// Resolves the keep-alive session to query. `store` is injectable for tests.

@@ -15,7 +15,14 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     var bootedID = "emulator-5598"
     var buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/fake/app.apk", applicationId: "com.fake.built")
 
+    /// What `isInstalled` reports; nil means "cannot tell".
+    var installed: Bool?
+
     init(platform: Platform) { self.platform = platform }
+
+    func isInstalled(appID: String, deviceID: String) async -> Bool? {
+        record("isInstalled(\(appID))"); return installed
+    }
 
     func bootDevice(named nameOrID: String) async throws -> BootedDevice {
         record("bootDevice(\(nameOrID))"); return BootedDevice(udid: bootedID, name: bootedName)

@@ -40,12 +40,13 @@ public struct AuthStore: Sendable, Decodable {
     public init(from decoder: Decoder) throws { self = .live }
     public var load: @Sendable () -> AuthCredentials?
     public var save: @Sendable (AuthCredentials) throws -> Void
-    public var delete: @Sendable () throws -> Void
+    /// Removes stored credentials; returns false when there were none.
+    public var delete: @Sendable () throws -> Bool
 
     public init(
         load: @escaping @Sendable () -> AuthCredentials?,
         save: @escaping @Sendable (AuthCredentials) throws -> Void,
-        delete: @escaping @Sendable () throws -> Void
+        delete: @escaping @Sendable () throws -> Bool
     ) {
         self.load = load
         self.save = save
@@ -76,8 +77,9 @@ extension AuthStore {
         },
         delete: {
             let fm = FileManager.default
-            guard fm.fileExists(atPath: path) else { return }
+            guard fm.fileExists(atPath: path) else { return false }
             try fm.removeItem(atPath: path)
+            return true
         }
         )
     }

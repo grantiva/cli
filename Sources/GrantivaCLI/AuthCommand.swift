@@ -241,14 +241,23 @@ struct AuthCommand: AsyncParsableCommand {
         var authStore: AuthStore = .live
 
         func run() async throws {
-            try authStore.delete()
+            Output.line(try logout())
+        }
 
+        /// Deletes stored credentials and returns the result line. Having
+        /// nothing to remove is still success, but says so.
+        func logout() throws -> String {
+            let removed = try authStore.delete()
             if options.json {
-                let result = LogoutResult(success: true, message: "Credentials removed")
-                Output.line(try JSONOutput.string(result))
-            } else {
-                Output.line("Logged out. Credentials removed from ~/.grantiva/auth.json")
+                let result = LogoutResult(
+                    success: true, removed: removed,
+                    message: removed ? "Credentials removed" : "No stored credentials"
+                )
+                return try JSONOutput.string(result)
             }
+            return removed
+                ? "Logged out. Credentials removed from ~/.grantiva/auth.json"
+                : "Not logged in; no credentials at ~/.grantiva/auth.json."
         }
     }
 }
@@ -275,5 +284,6 @@ private struct StatusResult: Codable, Sendable {
 @available(macOS 15, *)
 private struct LogoutResult: Codable, Sendable {
     let success: Bool
+    let removed: Bool
     let message: String
 }

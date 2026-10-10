@@ -14,7 +14,7 @@ final class RemediationCommandTests: XCTestCase {
         case simulatorNotRunning, simulatorWindowNotFound, elementNotFound, buildFailed, testFailed, invalidImage
         case notAuthenticated, configNotFound, commandFailed, invalidArgument, diffSizeMismatch, noCaptures
         case runnerNotFound, networkError, baselineNotFound, appNotFound, invalidBinary, ipaExtractionFailed
-        case permissionDenied, notFound, aborted
+        case permissionDenied, notFound, aborted, unavailable
 
         var sample: GrantivaError {
             switch self {
@@ -39,6 +39,7 @@ final class RemediationCommandTests: XCTestCase {
             case .permissionDenied: .permissionDenied("x")
             case .notFound: .notFound("x")
             case .aborted: .aborted
+            case .unavailable: .unavailable("x")
             }
         }
 
@@ -65,6 +66,7 @@ final class RemediationCommandTests: XCTestCase {
             case .permissionDenied: .permissionDenied
             case .notFound: .notFound
             case .aborted: .aborted
+            case .unavailable: .unavailable
             }
         }
     }

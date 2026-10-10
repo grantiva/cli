@@ -27,6 +27,17 @@ final class DiffCommandTests: XCTestCase {
         ])
     }
 
+    // Captures left by a version that percent-encoded spaces still compare;
+    // when a fresh plain-named capture sits beside one, the fresh one wins.
+    func testCaptureArtifactsAcceptLegacyNamesAndPreferTheCurrentForm() throws {
+        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png"]), [
+            .init(fileName: "Deep%20Links.png", screenName: "Deep Links"),
+        ])
+        XCTAssertEqual(try DiffCommand.captureArtifacts(from: ["Deep%20Links.png", "Deep Links.png"]), [
+            .init(fileName: "Deep Links.png", screenName: "Deep Links"),
+        ])
+    }
+
     func testCaptureArtifactsRejectsUndecodableScreenName() {
         XCTAssertThrowsError(try DiffCommand.captureArtifacts(from: ["%FF.png"])) { error in
             XCTAssertTrue(error.localizedDescription.contains("Invalid capture filename \"%FF.png\""))

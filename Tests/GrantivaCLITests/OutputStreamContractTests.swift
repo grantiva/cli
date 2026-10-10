@@ -80,6 +80,25 @@ final class OutputStreamContractTests: XCTestCase {
         XCTAssertTrue(run.stdout.hasPrefix("grantiva-runner "), run.stdout)
     }
 
+    // `runner stop` with nothing running printed its "No active session"
+    // narration on stdout, so `runner stop >/dev/null` was not silent about
+    // nothing and a script reading stdout saw prose.
+    func testRunnerStopWithNoSessionWritesNothingToStdout() throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-stop-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+
+        let plain = try grantiva(["runner", "stop"], in: directory)
+        XCTAssertEqual(plain.status, 0)
+        XCTAssertEqual(plain.stdout, "", "narration reached stdout")
+        XCTAssertTrue(plain.stderr.contains("No active session found."), plain.stderr)
+
+        let json = try grantiva(["runner", "stop", "--json"], in: directory)
+        let object = try JSONSerialization.jsonObject(with: Data(json.stdout.utf8)) as? [String: String]
+        XCTAssertEqual(object, ["status": "not_running"])
+    }
+
     // MARK: - --quiet silences diagnostics, never results
 
     func testQuietLeavesProgramOutputUntouched() throws {
@@ -213,6 +232,7 @@ final class OutputStreamContractTests: XCTestCase {
             ["console", "webhooks", "test"],
             ["console", "webhooks", "deliveries"],
             ["console", "webhooks", "retry"],
+            ["console", "webhooks", "events"],
             ["console", "alerts", "rules", "list"],
             ["console", "alerts", "rules", "get"],
             ["console", "alerts", "rules", "create"],

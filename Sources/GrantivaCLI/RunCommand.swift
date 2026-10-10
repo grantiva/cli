@@ -97,6 +97,22 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// Why there is nothing to run: no config file for the resolved platform
+    /// (say which file and how to create it), or a file with no screens or flows.
+    static func nothingToRunMessage(platform: Platform, hasConfig: Bool) -> String {
+        guard hasConfig else {
+            let initCommand = platform == .ios ? "grantiva init" : "grantiva init --platform \(platform.rawValue)"
+            return "No \(platform.configFileName) here. Create one with \(initCommand)."
+        }
+        return "No screens or flows configured in \(platform.configFileName)"
+    }
+
+    /// `--no-build` assumes the app is on the device; say so plainly when it
+    /// is not, instead of letting the runner fail every launchApp step.
+    static func notInstalledMessage(appID: String, device: String) -> String {
+        "\(appID) is not installed on \(device). Drop --no-build or run grantiva build install."
+    }
+
     func run() async throws {
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
@@ -167,7 +183,7 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         guard !resolved.screens.isEmpty || !resolved.flows.isEmpty else {
-            throw GrantivaError.invalidArgument("No screens or flows configured in grantiva.yml")
+            throw GrantivaError.invalidArgument(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
         }
 
         log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count) flows=\(resolved.flows.count)")
@@ -211,6 +227,13 @@ struct RunCommand: AsyncParsableCommand {
                 return nil
             }
         }
+        // --no-build installs nothing, so the app ID is the resolved one; a
+        // missing one is reported by the app-ID check further down.
+        if buildOptions.shouldSkipInstall, let appID = resolved.bundleId,
+           await device.isInstalled(appID: appID, deviceID: booted.udid) == false {
+            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: appID, device: booted.name))
+        }
+
         var logStreamer: LogStreamer?
         defer { logStreamer?.stop() }
 
