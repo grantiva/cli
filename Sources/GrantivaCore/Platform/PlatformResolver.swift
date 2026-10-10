@@ -28,13 +28,7 @@ public struct PlatformResolver: Sendable {
             return flag
         }
 
-        if let raw = environment[Self.environmentKey], !raw.isEmpty {
-            let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-            guard let platform = Platform(rawValue: normalized) else {
-                throw GrantivaError.invalidArgument(
-                    "\(Self.environmentKey) is \"\(raw)\"; expected ios or android."
-                )
-            }
+        if let platform = try environmentPlatform() {
             return platform
         }
 
@@ -64,6 +58,19 @@ public struct PlatformResolver: Sendable {
                     + "or grantiva-android.yml or settings.gradle(.kts) for Android."
             )
         }
+    }
+
+    /// The platform `GRANTIVA_PLATFORM` names, nil when it is unset or empty;
+    /// any other value is an error.
+    public func environmentPlatform() throws -> Platform? {
+        guard let raw = environment[Self.environmentKey], !raw.isEmpty else { return nil }
+        let normalized = raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard let platform = Platform(rawValue: normalized) else {
+            throw GrantivaError.invalidArgument(
+                "\(Self.environmentKey) is \"\(raw)\"; expected ios or android."
+            )
+        }
+        return platform
     }
 
     /// `resolve(flag:)`, except that when nothing at all points anywhere (no

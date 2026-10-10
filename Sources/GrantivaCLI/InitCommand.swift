@@ -72,12 +72,7 @@ struct InitCommand: AsyncParsableCommand {
     /// stays iOS, as `init` always was.
     static func platform(flag: Platform?, environment: [String: String] = [:], detected: [Platform]) throws -> Platform {
         if let flag { return flag }
-        if let raw = environment[PlatformResolver.environmentKey], !raw.isEmpty {
-            guard let platform = Platform(rawValue: raw.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()) else {
-                throw GrantivaError.invalidArgument(
-                    "\(PlatformResolver.environmentKey) is \"\(raw)\"; expected ios or android."
-                )
-            }
+        if let platform = try PlatformResolver(environment: environment).environmentPlatform() {
             return platform
         }
         switch detected.count {

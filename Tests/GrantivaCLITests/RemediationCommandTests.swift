@@ -8,13 +8,72 @@ import GrantivaCore
 /// `grantiva sim boot` and `grantiva ui a11y` were printed for releases after
 /// both commands were gone.
 final class RemediationCommandTests: XCTestCase {
-    private let errors: [GrantivaError] = [
-        .simulatorNotRunning, .simulatorWindowNotFound, .elementNotFound("Button"), .buildFailed("x"),
-        .testFailed("x"), .invalidImage, .notAuthenticated, .configNotFound, .commandFailed("x", 1),
-        .invalidArgument("x"), .diffSizeMismatch(baseline: "1x1", current: "2x2"), .noCaptures("dir"),
-        .runnerNotFound, .networkError("x", 500), .baselineNotFound("Home"), .appNotFound("/x"),
-        .invalidBinary("x"), .ipaExtractionFailed("x"), .permissionDenied("x"), .notFound("x"), .aborted,
-    ]
+    /// One sample per case. `kind(of:)` switches over GrantivaError with no
+    /// default, so a new case breaks the build until it is added here.
+    private enum Kind: CaseIterable {
+        case simulatorNotRunning, simulatorWindowNotFound, elementNotFound, buildFailed, testFailed, invalidImage
+        case notAuthenticated, configNotFound, commandFailed, invalidArgument, diffSizeMismatch, noCaptures
+        case runnerNotFound, networkError, baselineNotFound, appNotFound, invalidBinary, ipaExtractionFailed
+        case permissionDenied, notFound, aborted
+
+        var sample: GrantivaError {
+            switch self {
+            case .simulatorNotRunning: .simulatorNotRunning
+            case .simulatorWindowNotFound: .simulatorWindowNotFound
+            case .elementNotFound: .elementNotFound("Button")
+            case .buildFailed: .buildFailed("x")
+            case .testFailed: .testFailed("x")
+            case .invalidImage: .invalidImage
+            case .notAuthenticated: .notAuthenticated
+            case .configNotFound: .configNotFound
+            case .commandFailed: .commandFailed("x", 1)
+            case .invalidArgument: .invalidArgument("x")
+            case .diffSizeMismatch: .diffSizeMismatch(baseline: "1x1", current: "2x2")
+            case .noCaptures: .noCaptures("dir")
+            case .runnerNotFound: .runnerNotFound
+            case .networkError: .networkError("x", 500)
+            case .baselineNotFound: .baselineNotFound("Home")
+            case .appNotFound: .appNotFound("/x")
+            case .invalidBinary: .invalidBinary("x")
+            case .ipaExtractionFailed: .ipaExtractionFailed("x")
+            case .permissionDenied: .permissionDenied("x")
+            case .notFound: .notFound("x")
+            case .aborted: .aborted
+            }
+        }
+
+        static func kind(of error: GrantivaError) -> Kind {
+            switch error {
+            case .simulatorNotRunning: .simulatorNotRunning
+            case .simulatorWindowNotFound: .simulatorWindowNotFound
+            case .elementNotFound: .elementNotFound
+            case .buildFailed: .buildFailed
+            case .testFailed: .testFailed
+            case .invalidImage: .invalidImage
+            case .notAuthenticated: .notAuthenticated
+            case .configNotFound: .configNotFound
+            case .commandFailed: .commandFailed
+            case .invalidArgument: .invalidArgument
+            case .diffSizeMismatch: .diffSizeMismatch
+            case .noCaptures: .noCaptures
+            case .runnerNotFound: .runnerNotFound
+            case .networkError: .networkError
+            case .baselineNotFound: .baselineNotFound
+            case .appNotFound: .appNotFound
+            case .invalidBinary: .invalidBinary
+            case .ipaExtractionFailed: .ipaExtractionFailed
+            case .permissionDenied: .permissionDenied
+            case .notFound: .notFound
+            case .aborted: .aborted
+            }
+        }
+    }
+
+    private var errors: [GrantivaError] { Kind.allCases.map(\.sample) }
+
+    func testTheSampleListCoversEveryCase() {
+        XCTAssertEqual(Kind.allCases.map { Kind.kind(of: $0.sample) }, Kind.allCases)
+    }
 
     /// The subcommand words after `grantiva` in each "Run[:] grantiva ..." mention.
     static func commandPaths(in text: String) -> [[String]] {

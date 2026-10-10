@@ -154,7 +154,7 @@ public struct DoctorRunner: Sendable {
             return DoctorCheck(
                 name: "Android SDK", status: .warning,
                 message: "\(sdk.root) (\(detail) \(stale.count == 1 ? "has" : "have") no platform-tools/adb; unset or fix \(stale.count == 1 ? "it" : "them"))",
-                fix: "Gradle and adb run from this shell still read \(stale.map(\.name).joined(separator: " and ")); export ANDROID_HOME=\(sdk.root)"
+                fix: stale.map { "unset \($0.name) or export \($0.name)=\(sdk.root)" }.joined(separator: "; ")
             )
         }
         return DoctorCheck(name: "Android SDK", status: .ok, message: sdk.root, fix: nil)
@@ -213,7 +213,7 @@ public struct DoctorRunner: Sendable {
                 let firstLine = message.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? message
                 return DoctorCheck(
                     name: name, status: .error, message: firstLine,
-                    fix: "Fix the YAML in \(path)",
+                    fix: firstLine.hasPrefix("could not be parsed") ? "Fix the YAML in \(path)" : "Fix \(path)",
                     section: .project
                 )
             }

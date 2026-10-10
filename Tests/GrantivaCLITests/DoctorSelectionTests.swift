@@ -43,15 +43,21 @@ final class DoctorSelectionTests: XCTestCase {
         XCTAssertEqual(try DoctorCommand.platformSelection(flag: .ios, directory: dir, environment: ["GRANTIVA_PLATFORM": "windows"]).platforms, [.ios])
     }
 
-    func testBothProjectsDetectedWithoutAFlagIsAnErrorLikeRun() throws {
+    func testBothProjectsDetectedWithoutAFlagIsAdviceNotAFailure() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir.appendingPathComponent("App.xcodeproj"), withIntermediateDirectories: true)
         try "".write(to: dir.appendingPathComponent("settings.gradle.kts"), atomically: true, encoding: .utf8)
         defer { try? FileManager.default.removeItem(at: dir) }
 
-        XCTAssertThrowsError(try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: [:])) { error in
-            XCTAssertTrue(error.localizedDescription.contains("Found both an Xcode project and Gradle settings. Pass --platform ios|android or set GRANTIVA_PLATFORM."), "\(error)")
-        }
+        let selection = try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: [:])
+        XCTAssertEqual(selection.platforms, [.ios, .android])
+        XCTAssertFalse(selection.required, "an ambiguous root is diagnosed, not failed")
+        let advice = try XCTUnwrap(selection.advice)
+        XCTAssertEqual(advice.status, .warning)
+        XCTAssertEqual(advice.message, "Found both an Xcode project and Gradle settings")
+        XCTAssertEqual(advice.fix, "Pass --platform ios|android or set GRANTIVA_PLATFORM.")
+        XCTAssertFalse(DoctorRunner.hasFailures([advice]))
+        XCTAssertNil(try DoctorCommand.platformSelection(flag: .ios, directory: dir, environment: [:]).advice)
         XCTAssertEqual(try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: ["GRANTIVA_PLATFORM": "android"]).platforms, [.android])
     }
 }

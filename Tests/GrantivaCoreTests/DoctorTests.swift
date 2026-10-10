@@ -180,6 +180,8 @@ final class DoctorTests: XCTestCase {
         let sdkRoot = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_SDK_ROOT": "/stale"])
         XCTAssertEqual(sdkRoot.status, .warning)
         XCTAssertTrue(sdkRoot.message.contains("ANDROID_SDK_ROOT=/stale has no platform-tools/adb"), sdkRoot.message)
+        XCTAssertEqual(sdkRoot.fix, "unset ANDROID_SDK_ROOT or export ANDROID_SDK_ROOT=\(sdk.path)")
+        XCTAssertEqual(check.fix, "unset ANDROID_HOME or export ANDROID_HOME=\(sdk.path)")
 
         let fine = DoctorRunner().checkAndroidSDK(sdk: located, required: true, environment: ["ANDROID_HOME": sdk.path])
         XCTAssertEqual(fine.status, .ok)
@@ -214,6 +216,14 @@ final class DoctorTests: XCTestCase {
         XCTAssertTrue(check.message.hasPrefix("could not be parsed: 5:3"), check.message)
         XCTAssertFalse(check.message.contains("\n"), check.message)
         XCTAssertTrue(check.fix?.contains(scratch.appendingPathComponent("grantiva-android.yml").path) == true, "\(check.fix ?? "nil")")
+    }
+
+    func testConfigCheckDeclaredPlatformMismatchIsNotCalledAYAMLError() throws {
+        try "platform: ios\n".write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let check = DoctorRunner().checkConfig(for: .android, directory: scratch.path)
+        XCTAssertEqual(check.status, .error)
+        XCTAssertTrue(check.message.contains("declares `platform: ios`"), check.message)
+        XCTAssertEqual(check.fix, "Fix \(scratch.appendingPathComponent("grantiva-android.yml").path)")
     }
 
     func testConfigCheckPassesAFileThatParses() throws {

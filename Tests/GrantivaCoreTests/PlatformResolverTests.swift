@@ -106,4 +106,13 @@ final class PlatformResolverTests: XCTestCase {
         try "platform: android\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
         XCTAssertEqual(try resolver.resolveOrDefault(flag: nil), .android)
     }
+
+    func testEnvironmentPlatform() throws {
+        XCTAssertNil(try PlatformResolver(environment: [:]).environmentPlatform())
+        XCTAssertNil(try PlatformResolver(environment: ["GRANTIVA_PLATFORM": ""]).environmentPlatform())
+        XCTAssertEqual(try PlatformResolver(environment: ["GRANTIVA_PLATFORM": " Android "]).environmentPlatform(), .android)
+        XCTAssertThrowsError(try PlatformResolver(environment: ["GRANTIVA_PLATFORM": "windows"]).environmentPlatform()) { error in
+            XCTAssertTrue(error.localizedDescription.contains("GRANTIVA_PLATFORM is \"windows\"; expected ios or android."), "\(error)")
+        }
+    }
 }
