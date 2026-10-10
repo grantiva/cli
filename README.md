@@ -154,7 +154,7 @@ the screen it is leaving. Unknown keys in the config file are reported as warnin
 
 Grantiva can read [Maestro](https://maestro.mobile.dev) flow files as a drop-in replacement. If you have existing Maestro flows, Grantiva will auto-detect and parse them — no rewrite needed.
 
-Alerts on iOS: a `launchApp` pre-grants the app's permissions on the simulator, and WebDriverAgent auto-accepts alerts that appear during the flow, so system prompts that cannot be pre-granted (notifications, tracking, local network, Bluetooth) don't block it. That auto-accept can also catch the app's own alerts: an alert whose buttons aren't "Allow" or "OK" gets its default button pressed. If your app's alerts ("Discard changes?") disappear mid-flow, pass `grantiva run --no-auto-accept-alerts`: alerts then stay up until a flow step answers them, including in `runFlow` subflows, and your flows must tap through any system prompt the simulator cannot pre-grant. The proper fix, accepting only system alerts, belongs in grantiva-runner. The flag applies to `grantiva run`; `runner start` and the MCP session keep auto-accept.
+Alerts on iOS: a `launchApp` pre-grants the app's permissions on the simulator, and GrantivaAgent auto-accepts only system alerts that appear during the flow (notifications, tracking, local network, Bluetooth and other prompts the simulator cannot pre-grant), so they don't block it. Your app's own alerts ("Discard changes?") are left alone: they stay up until a flow step answers them, including in `runFlow` subflows.
 
 Place your flows in a `.maestro/` directory, or write `grantiva.yml` in Maestro format:
 

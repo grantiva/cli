@@ -98,45 +98,20 @@ public enum FlowGenerator {
         bundleId: String,
         environment: [String: String] = [:],
         platform: Platform = .ios,
-        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
-        disableAlertAutoAccept: Bool = false
+        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath
     ) throws -> String {
-        try writeTempStaged(
-            screens: screens, bundleId: bundleId, environment: environment,
-            platform: platform, runFlowBaseDirectory: runFlowBaseDirectory, disableAlertAutoAccept: disableAlertAutoAccept
-        ).path
-    }
-
-    /// `writeTemp`, also returning the staged `runFlow` copies (staged copy →
-    /// original file) made when `disableAlertAutoAccept` is set, so runner
-    /// output can name the originals.
-    static func writeTempStaged(
-        screens: [GrantivaConfig.Screen],
-        bundleId: String,
-        environment: [String: String] = [:],
-        platform: Platform = .ios,
-        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
-        disableAlertAutoAccept: Bool = false
-    ) throws -> (path: String, pathMap: [String: String]) {
         // One directory per call: concurrent runs against different simulators
         // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-flows-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let stager = disableAlertAutoAccept
-            ? FlowAlertStager(directory: tempDir.appendingPathComponent("subflows").path)
-            : nil
-        var yaml = try FlowReferenceResolver.resolve(
+        let yaml = try FlowReferenceResolver.resolve(
             in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
-            relativeTo: runFlowBaseDirectory,
-            mapFile: stager.map { $0.stage }
+            relativeTo: runFlowBaseDirectory
         )
-        if disableAlertAutoAccept {
-            yaml = FlowAlertPolicy.disableAutoAccept(in: yaml)
-        }
         let flowPath = tempDir.appendingPathComponent("flow.yaml").path
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
-        return (flowPath, stager?.pathMap ?? [:])
+        return flowPath
     }
 
     /// Upper bound for the settle wait after a tap, swipe, or typed text and
