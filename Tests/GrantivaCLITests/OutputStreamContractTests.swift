@@ -60,7 +60,9 @@ final class OutputStreamContractTests: XCTestCase {
 
         let run = try grantiva(
             ["diff", "compare", "--json"], in: dir,
-            environment: ["GRANTIVA_API_KEY": nil, "HOME": home.path]
+            // AuthStore uses homeDirectoryForCurrentUser, which ignores HOME
+            // but honours CFFIXED_USER_HOME; set both so no auth.json is found.
+            environment: ["GRANTIVA_API_KEY": nil, "HOME": home.path, "CFFIXED_USER_HOME": home.path]
         )
         XCTAssertEqual(run.status, 0, run.stderr)
         XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(run.stdout.utf8)), run.stdout)
