@@ -29,14 +29,11 @@ public enum FlowGenerator {
         }
 
         for screen in screens {
-            switch screen.path {
-            case .launch:
-                lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
-
-            case .steps(let steps):
+            if case .steps(let steps) = screen.path {
                 for step in steps {
                     if let label = step.tap {
-                        appendSelector("tapOn", label, byId: step.tapById, to: &lines)
+                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
+                        appendSettle(to: &lines)
                     }
                     if let direction = step.swipe {
                         lines.append("- swipe:")
@@ -57,31 +54,37 @@ public enum FlowGenerator {
                                 lines.append("    from: \(FlowEnvironment.quoted(from))")
                             }
                         }
+                        appendSettle(to: &lines)
                     }
                     if let text = step.type {
                         lines.append("- inputText: \(FlowEnvironment.quoted(text))")
+                        appendSettle(to: &lines)
                     }
                     if let seconds = step.wait {
-                        let ms = Int(seconds * 1000)
-                        lines.append("- waitForAnimationToEnd:")
-                        lines.append("    timeout: \(ms)")
+                        lines.append("- evalScript:")
+                        lines.append("    script: \(FlowEnvironment.quoted(sleepScript(seconds: seconds)))")
+                        lines.append("    label: \(FlowEnvironment.quoted(waitLabel(seconds: seconds)))")
                     }
                     if let seconds = step.settle {
                         lines.append("- waitForAnimationToEnd:")
                         lines.append("    timeout: \(Int(seconds * 1000))")
                     }
                     if let label = step.assertVisible {
-                        appendSelector("assertVisible", label, byId: step.assertVisibleById, to: &lines)
+                        appendSelector("assertVisible", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
                     }
                     if let label = step.assertNotVisible {
-                        appendSelector("assertNotVisible", label, byId: step.assertNotVisibleById, to: &lines)
+                        appendSelector(
+                            "assertNotVisible", label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, to: &lines
+                        )
                     }
                     if let path = step.runFlow {
                         lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
+                        appendSettle(to: &lines)
                     }
                 }
-                lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
             }
+            appendSettle(to: &lines)
+            lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
         }
 
         return lines.joined(separator: "\n") + "\n"
@@ -109,14 +112,53 @@ public enum FlowGenerator {
         return flowPath
     }
 
-    /// `byId` selects by accessibility identifier (`id:`), otherwise by text.
-    private static func appendSelector(_ command: String, _ label: String, byId: Bool, to lines: inout [String]) {
+    /// Upper bound for the settle wait after a tap, swipe, or typed text and
+    /// before each screenshot. `waitForAnimationToEnd` returns as soon as two
+    /// consecutive screenshots match, so this only costs time while the
+    /// screen is still changing.
+    static let settleTimeoutMs = 5000
+
+    /// The runner dispatches a tap and returns before the app has rendered
+    /// the destination; without a settle the next screenshot can show the
+    /// previous screen. A settle directly after another settle (including a
+    /// Maestro `waitForAnimationToEnd`) is skipped.
+    private static func appendSettle(to lines: inout [String]) {
+        if lines.suffix(2).first == "- waitForAnimationToEnd:" { return }
+        lines.append(contentsOf: ["- waitForAnimationToEnd:", "    timeout: \(settleTimeoutMs)"])
+    }
+
+    /// `byId` selects by accessibility identifier (`id:`); `exact` requires
+    /// the element's full text to equal the label; otherwise a text match.
+    private static func appendSelector(
+        _ command: String, _ label: String, byId: Bool, exact: Bool = false, to lines: inout [String]
+    ) {
         if byId {
             lines.append("- \(command):")
             lines.append("    id: \(FlowEnvironment.quoted(label))")
+        } else if exact {
+            lines.append("- \(command):")
+            lines.append("    text: \(FlowEnvironment.quoted(label))")
+            lines.append("    exact: true")
         } else {
             lines.append("- \(command): \(FlowEnvironment.quoted(label))")
         }
+    }
+
+    /// `wait: N` must sleep N seconds unconditionally. The runner has no sleep
+    /// command, and `waitForAnimationToEnd` is only an upper bound: it returns
+    /// as soon as the screen is still. The runner's JS engine runs `evalScript`
+    /// synchronously, so a deadline loop holds the flow for exactly N seconds.
+    /// The loop spins one core for those N seconds; a sleep command in the
+    /// runner is the real fix and belongs in the runner repo.
+    static func sleepScript(seconds: Double) -> String {
+        let ms = Int(seconds * 1000)
+        return "${var grantivaWaitUntil = Date.now() + \(ms); while (Date.now() < grantivaWaitUntil) {}}"
+    }
+
+    /// The step's name in run reports, instead of the raw script.
+    static func waitLabel(seconds: Double) -> String {
+        let value = seconds == seconds.rounded() ? String(Int(seconds)) : String(seconds)
+        return "Wait \(value)s"
     }
 
     private static func maestroSwipeDirection(_ direction: String) -> String {
