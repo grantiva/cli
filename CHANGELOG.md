@@ -47,6 +47,7 @@
 - `doctor` loads the config file the way `run` does: a `grantiva.yml` or `grantiva-android.yml` that does not parse is reported as a failed Project check with the YAML position, instead of "Found".
 - Remediation lines name commands that exist: "No simulator is running" suggests `grantiva simulator ensure --name "<device>"` (not `grantiva sim boot`), "Element not found" suggests `grantiva hierarchy` or the `grantiva_a11y_tree` MCP tool (not `grantiva ui a11y`), and doctor's booted-simulator fix names the newest iPhone type an installed runtime supports instead of iPhone 16. MCP `grantiva_tap` by a label that matches nothing returns an `isError` result instead of a JSON-RPC internal error.
 - `doctor` warns when `ANDROID_HOME` or `ANDROID_SDK_ROOT` is set to a directory without `platform-tools/adb`, instead of silently reporting the SDK it fell back to.
+- `doctor`'s Git Repository check passes in any subdirectory of a work tree (e.g. the `android/` project of a mono-repo), instead of advising `git init` there.
 
 ## 2.0.1 — 2026-10-07
 

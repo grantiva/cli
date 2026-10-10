@@ -228,6 +228,29 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).fix, "Run: grantiva simulator ensure --name \"iPhone 17 Pro\"")
     }
 
+    // A mono-repo's android/ subproject is inside the work tree; advising
+    // `git init` there would create a nested repository.
+    func testGitCheckPassesInASubdirectoryOfAWorkTree() throws {
+        let root = scratch.appendingPathComponent("root")
+        try FileManager.default.createDirectory(at: root.appendingPathComponent(".git"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: root.appendingPathComponent("android/app"), withIntermediateDirectories: true)
+        let check = DoctorRunner().checkGitRepository(directory: root.appendingPathComponent("android/app").path)
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "Detected")
+    }
+
+    func testGitCheckAcceptsAGitFileForWorktreesAndSubmodules() throws {
+        try "gitdir: /elsewhere\n".write(to: scratch.appendingPathComponent(".git"), atomically: true, encoding: .utf8)
+        XCTAssertEqual(DoctorRunner().checkGitRepository(directory: scratch.path).status, .ok)
+    }
+
+    func testGitCheckWarnsWithNoAncestorGitEntry() {
+        // The temp directory lives outside any work tree.
+        let check = DoctorRunner().checkGitRepository(directory: scratch.path)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.fix, "Run: git init")
+    }
+
     func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
         XCTAssertTrue(checks.contains { $0.name == "Android SDK" })

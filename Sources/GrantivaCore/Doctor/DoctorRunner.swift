@@ -226,8 +226,21 @@ public struct DoctorRunner: Sendable {
         )
     }
 
-    func checkGitRepository() -> DoctorCheck {
-        if FileManager.default.fileExists(atPath: ".git") {
+    /// Passes anywhere inside a work tree: walks up from `directory` for a
+    /// `.git` entry, a directory or (in worktrees and submodules) a file.
+    func checkGitRepository(directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
+        var url = URL(fileURLWithPath: directory, isDirectory: true).standardizedFileURL
+        var insideWorkTree = false
+        while true {
+            if FileManager.default.fileExists(atPath: url.appendingPathComponent(".git").path) {
+                insideWorkTree = true
+                break
+            }
+            let parent = url.deletingLastPathComponent()
+            if parent.path == url.path { break }
+            url = parent
+        }
+        if insideWorkTree {
             return DoctorCheck(name: "Git Repository", status: .ok, message: "Detected", fix: nil, section: .project)
         }
         return DoctorCheck(
