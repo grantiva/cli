@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 @testable import GrantivaCLI
+import GrantivaCore
 
 final class InstallCommandTests: XCTestCase {
     func testNoLaunchSkipsLaunch() async throws {
@@ -105,6 +106,26 @@ final class InstallCommandTests: XCTestCase {
             simulator["udid"] as? String,
             "00000000-0000-0000-0000-000000000000"
         )
+    }
+
+    /// A10: Android names the application ID and the adb serial.
+    func testAndroidInstallResultJSONUsesAndroidKeys() throws {
+        let result = AndroidInstallResult(
+            status: .installed,
+            applicationId: "com.kylebrowning.landmarks",
+            device: .init(name: "Pixel_8_API_35", serial: "emulator-5554"),
+            appPath: "/tmp/app-free-debug.apk"
+        )
+        let json = try XCTUnwrap(
+            JSONSerialization.jsonObject(with: Data(JSONOutput.string(result).utf8)) as? [String: Any]
+        )
+        XCTAssertEqual(Set(json.keys), ["status", "applicationId", "device", "appPath"])
+        XCTAssertEqual(json["applicationId"] as? String, "com.kylebrowning.landmarks")
+        let device = try XCTUnwrap(json["device"] as? [String: Any])
+        XCTAssertEqual(device["name"] as? String, "Pixel_8_API_35")
+        XCTAssertEqual(device["serial"] as? String, "emulator-5554")
+        XCTAssertNil(json["bundleId"])
+        XCTAssertNil(json["simulator"])
     }
 
     func testHumanCompletionIncludesDataContainerPath() {

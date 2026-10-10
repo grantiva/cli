@@ -143,9 +143,12 @@ enum BuildTools {
         let result = try await device.build(PlatformBuildRequest(
             config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted.udid, extraBuildSettings: resolved.buildSettings
         ))
+        let target = platform == .android
+            ? "Module: \(resolved.android?.module ?? "(none)")\nVariant: \(resolved.android?.variant ?? "(none)")"
+            : "Scheme: \(result.scheme ?? "(none)")"
         var summary = """
             Build \(result.success ? "succeeded" : "FAILED")
-            Scheme: \(result.scheme ?? "(none)")
+            \(target)
             Duration: \(String(format: "%.1fs", result.duration))
             Warnings: \(result.warnings.count)
             Errors: \(result.errors.count)\(result.errors.isEmpty ? "" : "\n" + result.errors.joined(separator: "\n"))

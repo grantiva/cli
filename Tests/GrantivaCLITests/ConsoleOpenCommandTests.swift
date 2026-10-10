@@ -44,7 +44,7 @@ final class ConsoleOpenCommandTests: XCTestCase {
             guard case GrantivaError.commandFailed(let invocation, let status) = error else {
                 return XCTFail("unexpected \(error)")
             }
-            XCTAssertEqual(invocation, "open https://grantiva.io/dashboard/feature-flags")
+            XCTAssertEqual(invocation, "open https://grantiva.io/dashboard/feature-flags exited with code 17")
             XCTAssertEqual(status, 17)
         }
     }

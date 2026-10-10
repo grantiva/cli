@@ -251,7 +251,9 @@ grantiva run \
 ```
 
 The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
-`dataContainerPath`, and the selected simulator's `name` and `udid`.
+`dataContainerPath`, and the selected simulator's `name` and `udid`. On Android
+it includes `status`, `applicationId`, `appPath`, and `device` with the
+emulator's `name` and adb `serial`.
 `--derived-data-path` isolates Xcode products and intermediates for the run and
 supports absolute or relative paths, including paths containing spaces. It is
 available on every Grantiva command that builds the app and overrides a

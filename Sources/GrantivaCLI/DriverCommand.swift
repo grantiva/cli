@@ -145,7 +145,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // Held until the runner is up, then handed to the runner process: this
         // command returns immediately, but the session it started still owns
         // the device until `runner stop`.
-        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid)
+        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
         var handedOff = false
         defer { if !handedOff { simulatorLease.release() } }
 

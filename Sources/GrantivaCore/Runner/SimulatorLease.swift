@@ -61,6 +61,7 @@ public final class SimulatorLease: @unchecked Sendable {
 
     public static func acquire(
         udid: String,
+        platform: Platform = .ios,
         directory: String? = nil
     ) throws -> SimulatorLease {
         let directory = Self.directory(directory)
@@ -87,7 +88,7 @@ public final class SimulatorLease: @unchecked Sendable {
             let holder = Self.claim(udid: udid, directory: directory)
             Darwin.close(descriptor)
             if lockError == EWOULDBLOCK {
-                throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder), 1)
+                throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder, platform: platform), 1)
             }
             throw GrantivaError.commandFailed(
                 "Could not lock simulator \(udid): \(String(cString: strerror(lockError)))",
@@ -102,7 +103,7 @@ public final class SimulatorLease: @unchecked Sendable {
            holder.keepAlive, holder.pid != getpid(), !holder.isStale {
             flock(descriptor, LOCK_UN)
             Darwin.close(descriptor)
-            throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder), 1)
+            throw GrantivaError.commandFailed(ownershipMessage(udid: udid, holder: holder, platform: platform), 1)
         }
 
         let claim = SimulatorLeaseClaim(pid: getpid(), udid: udid, startedAt: Date())
@@ -115,8 +116,19 @@ public final class SimulatorLease: @unchecked Sendable {
     /// process and the exact command that frees it, because the situation this
     /// error describes is otherwise invisible: `simulator sessions` tracks boot
     /// capacity, not runner ownership.
-    static func ownershipMessage(udid: String, holder: SimulatorLeaseClaim?) -> String {
-        var message = "Simulator \(udid) is already owned by another Grantiva run"
+    /// True when `error` is the refusal above: the device belongs to another
+    /// run, so this run never touched it (no failure screenshot of it).
+    public static func isOwnershipRefusal(_ error: Error) -> Bool {
+        guard case GrantivaError.commandFailed(let message, _)? = error as? GrantivaError else { return false }
+        return message.contains(ownershipMarker)
+    }
+
+    private static let ownershipMarker = " is already owned by another Grantiva run"
+
+    static func ownershipMessage(udid: String, holder: SimulatorLeaseClaim?, platform: Platform = .ios) -> String {
+        var message = platform == .ios
+            ? "Simulator \(udid)\(ownershipMarker)"
+            : "Emulator \(udid)\(ownershipMarker)"
         if let holder {
             let age = Int(Date().timeIntervalSince(holder.startedAt))
             message += " (pid \(holder.pid), started \(age)s ago"
@@ -128,8 +140,13 @@ public final class SimulatorLease: @unchecked Sendable {
             }
             message += ")"
         }
-        message += ". Release it with `grantiva simulator teardown --udid \(udid) --force`, "
-            + "or run against a different simulator via `grantiva simulator ensure --name <unique-name>`."
+        if platform == .ios {
+            message += ". Release it with `grantiva simulator teardown --udid \(udid) --force`, "
+                + "or run against a different simulator via `grantiva simulator ensure --name <unique-name>`."
+        } else {
+            message += ". Release it with `grantiva emulator teardown --serial \(udid) --force`, "
+                + "or run against a different emulator via `grantiva emulator ensure --name <unique-name>`."
+        }
         return message
     }
 

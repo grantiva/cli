@@ -28,6 +28,17 @@ final class TableFormatterTests: XCTestCase {
         XCTAssertFalse(output.contains("Scheme:"), output)
     }
 
+    /// A10: a failed Android build has no scheme and no APK; print neither.
+    func testFailedAndroidBuildPrintsNoSchemeLine() {
+        let output = TableFormatter().formatBuild(BuildResult(
+            success: false, duration: 1, warnings: [], errors: ["Task 'assembleNoSuchVariant' not found"],
+            productPath: nil
+        ))
+        XCTAssertTrue(output.hasPrefix("✗ Build failed"), output)
+        XCTAssertFalse(output.contains("Scheme:"), output)
+        XCTAssertFalse(output.contains("APK:"), output)
+    }
+
     func testIOSBuildStillPrintsTheScheme() {
         let output = TableFormatter().formatBuild(BuildResult(
             success: true, scheme: "Demo", duration: 1, warnings: [], errors: [],

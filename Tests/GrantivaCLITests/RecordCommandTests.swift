@@ -58,7 +58,7 @@ final class RecordCommandTests: XCTestCase {
             }
             XCTFail("Expected startup timeout")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Timed out waiting for simulator recording to start exited with code 1")
+            XCTAssertEqual(error.localizedDescription, "Timed out waiting for simulator recording to start")
         }
 
         XCTAssertFalse(process.isRunning)

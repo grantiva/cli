@@ -39,10 +39,11 @@ public struct TableFormatter: Sendable {
     public func formatBuild(_ result: BuildResult) -> String {
         var lines: [String] = []
         lines.append(result.success ? "✓ Build succeeded" : "✗ Build failed")
-        if result.scheme == nil, let productPath = result.productPath {
+        // Android builds have no scheme: show the APK, or nothing when the build failed.
+        if let scheme = result.scheme {
+            lines.append("  Scheme: \(scheme)")
+        } else if let productPath = result.productPath {
             lines.append("  APK: \(productPath)")
-        } else {
-            lines.append("  Scheme: \(result.scheme ?? "(none)")")
         }
         lines.append("  Duration: \(String(format: "%.1f", result.duration))s")
         if !result.warnings.isEmpty {

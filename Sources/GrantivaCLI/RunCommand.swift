@@ -97,6 +97,20 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     /// The line printed once device log streaming starts.
+    /// iOS names the scheme and simulator; Android the Gradle module,
+    /// variant, and the emulator (AVD name or adb serial).
+    static func resolvedNarration(platform: Platform, resolved: ResolvedProject) -> String {
+        let counts = "screens=\(resolved.screens.count) flows=\(resolved.flows.count)"
+        switch platform {
+        case .ios:
+            return "Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) \(counts)"
+        case .android:
+            let module = resolved.android?.module ?? "(none)"
+            let variant = resolved.android?.variant ?? "(none)"
+            return "Resolved: module=\(module) variant=\(variant) device=\(resolved.simulator) \(counts)"
+        }
+    }
+
     static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
         switch platform {
         case .ios:
@@ -215,7 +229,7 @@ struct RunCommand: AsyncParsableCommand {
             throw GrantivaError.invalidArgument(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
         }
 
-        log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count) flows=\(resolved.flows.count)")
+        log(Self.resolvedNarration(platform: platform, resolved: resolved))
 
         // Prepare runner
         log("Preparing runner...")
@@ -383,6 +397,8 @@ struct RunCommand: AsyncParsableCommand {
                 }
             )
         } catch {
+            // The device belongs to another run: this run never drove it.
+            if SimulatorLease.isOwnershipRefusal(error) { throw error }
             // Runner failed — take a failure screenshot so the developer can see the current state
             let failurePath = "\(captureDir)/failure-\(Int(Date().timeIntervalSince1970)).png"
             let fm = FileManager.default
