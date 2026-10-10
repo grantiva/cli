@@ -117,7 +117,37 @@ final class SimulatorManagerTests: XCTestCase {
         addTeardownBlock { try? FileManager.default.removeItem(atPath: directory) }
         let capacity = SimulatorCapacity(directory: directory, maximum: maximum, waitTimeout: waitTimeout, pollInterval: 0.01)
         let provenance = SimulatorProvenance(directory: directory)
-        return (SimulatorManager(execute: simctl.execute, capacity: capacity, provenance: provenance), capacity, provenance)
+        // Runner homes live under the temp dir, never the real ~/.grantiva.
+        let manager = SimulatorManager(
+            execute: simctl.execute, capacity: capacity, provenance: provenance,
+            runnerHome: "\(directory)/runner"
+        )
+        return (manager, capacity, provenance)
+    }
+
+    private func makeDeviceHome(_ capacity: SimulatorCapacity, _ udid: String) throws -> String {
+        let home = WDADeviceHome.path(runnerHome: "\(capacity.directory)/runner", deviceID: udid)
+        try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
+        return home
+    }
+
+    func testFailedEnsureAndCleanupRemoveTheDevicesRunnerHome() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, provenance) = makeManager(simctl, maximum: 1)
+        try await fillCapacity(capacity, with: simctl)
+        let created = try makeDeviceHome(capacity, "CREATED-1")
+        do {
+            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+            XCTFail("expected a capacity timeout")
+        } catch {}
+        XCTAssertFalse(FileManager.default.fileExists(atPath: created))
+
+        simctl.add(.init(name: "Old", udid: "OLD-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17))
+        try provenance.register(udid: "OLD-1", name: "Old")
+        let old = try makeDeviceHome(capacity, "OLD-1")
+        let removed = try await manager.cleanup()
+        XCTAssertEqual(removed.map(\.udid), ["OLD-1"])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: old))
     }
 
     // MARK: - I08: pre-booted devices are not Grantiva's

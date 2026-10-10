@@ -7,6 +7,8 @@ public struct SimulatorManager: Sendable, Decodable {
     private let execute: @Sendable (String) async throws -> String
     private let capacity: SimulatorCapacity
     private let provenance: SimulatorProvenance
+    /// Base of the per-simulator runner homes (`<runnerHome>/devices/<udid>`).
+    private let runnerHome: String
 
     public init() {
         self.init(execute: { try await shell($0) })
@@ -16,11 +18,13 @@ public struct SimulatorManager: Sendable, Decodable {
     init(
         execute: @escaping @Sendable (String) async throws -> String,
         capacity: SimulatorCapacity = .live,
-        provenance: SimulatorProvenance = .live
+        provenance: SimulatorProvenance = .live,
+        runnerHome: String = RunnerManager.baseDir
     ) {
         self.execute = execute
         self.capacity = capacity
         self.provenance = provenance
+        self.runnerHome = runnerHome
     }
 
     public init(from decoder: Decoder) throws {
@@ -243,6 +247,7 @@ public struct SimulatorManager: Sendable, Decodable {
             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
             try? capacity.remove(udid: udid, ownedBy: me)
             try? provenance.remove(udid: udid)
+            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: udid)
         }
     }
 
@@ -251,7 +256,7 @@ public struct SimulatorManager: Sendable, Decodable {
         _ = try await execute("xcrun simctl delete \(shellQuoted(device.udid))")
         try capacity.remove(udid: device.udid)
         try provenance.remove(udid: device.udid)
-        WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: device.udid)
+        WDADeviceHome.remove(runnerHome: runnerHome, deviceID: device.udid)
         return device
     }
 
@@ -291,7 +296,7 @@ public struct SimulatorManager: Sendable, Decodable {
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
-            WDADeviceHome.remove(runnerHome: RunnerManager.baseDir, deviceID: record.udid)
+            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: record.udid)
             outcomes.append(SimulatorTeardownOutcome(session: record, deleted: created))
         }
         return outcomes
@@ -312,6 +317,7 @@ public struct SimulatorManager: Sendable, Decodable {
             guard !device.isBooted, !active.contains(record.udid) else { continue }
             _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
             try provenance.remove(udid: record.udid)
+            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: record.udid)
             removed.append(record)
         }
         return removed
