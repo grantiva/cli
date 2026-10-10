@@ -15,9 +15,9 @@ final class AuthStoreSecurityTests: XCTestCase {
         XCTAssertEqual(store.load()?.apiKey, "second")
         XCTAssertEqual(store.load()?.email, "dev@example.com")
 
-        try store.delete()
+        XCTAssertTrue(try store.delete(), "a stored file was removed")
         XCTAssertNil(store.load())
-        XCTAssertNoThrow(try store.delete())
+        XCTAssertFalse(try store.delete(), "nothing left to remove")
     }
 
     func testFileStoreTreatsMalformedJSONAsMissingCredentials() throws {

@@ -45,7 +45,7 @@ final class AuthCommandTests: XCTestCase {
         command.authStore = AuthStore(
             load: { nil },
             save: { credentials in saved.withLock { $0 = credentials } },
-            delete: {}
+            delete: { false }
         )
         let client = AuthClient(
             profile: { key in
@@ -62,5 +62,34 @@ final class AuthCommandTests: XCTestCase {
         XCTAssertEqual(credentials?.apiKey, "grantiva_secret")
         XCTAssertEqual(credentials?.baseURL, "https://api.example.com")
         XCTAssertEqual(credentials?.email, "dev@example.com")
+    }
+
+    // MARK: - Logout
+
+    private func logoutLine(removed: Bool, json: Bool) throws -> String {
+        var command = try AuthCommand.LogoutCommand.parse(json ? ["--json"] : [])
+        command.authStore = AuthStore(load: { nil }, save: { _ in }, delete: { removed })
+        return try command.logout()
+    }
+
+    func testLogoutWithNoStoredCredentialsSaysNotLoggedIn() throws {
+        XCTAssertEqual(
+            try logoutLine(removed: false, json: false),
+            "Not logged in; no credentials at ~/.grantiva/auth.json."
+        )
+        let json = try JSONSerialization.jsonObject(with: Data(try logoutLine(removed: false, json: true).utf8)) as? [String: Any]
+        XCTAssertEqual(json?["success"] as? Bool, true)
+        XCTAssertEqual(json?["removed"] as? Bool, false)
+        XCTAssertEqual(json?["message"] as? String, "No stored credentials")
+    }
+
+    func testLogoutWithStoredCredentialsReportsRemoval() throws {
+        XCTAssertEqual(
+            try logoutLine(removed: true, json: false),
+            "Logged out. Credentials removed from ~/.grantiva/auth.json"
+        )
+        let json = try JSONSerialization.jsonObject(with: Data(try logoutLine(removed: true, json: true).utf8)) as? [String: Any]
+        XCTAssertEqual(json?["removed"] as? Bool, true)
+        XCTAssertEqual(json?["message"] as? String, "Credentials removed")
     }
 }
