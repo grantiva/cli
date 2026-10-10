@@ -435,6 +435,9 @@ final class MaestroFlowParserTests: XCTestCase {
             XCTAssertEqual(steps[0].tap, "Button Text")
             XCTAssertEqual(steps[1].tap, "Other Button")
             XCTAssertEqual(steps[2].tap, "button_id")
+            XCTAssertFalse(steps[0].tapById)
+            XCTAssertFalse(steps[1].tapById)
+            XCTAssertTrue(steps[2].tapById)
         } else {
             XCTFail("Expected steps")
         }
@@ -449,7 +452,8 @@ final class MaestroFlowParserTests: XCTestCase {
 
         let config = try MaestroFlowParser.parse(yaml)
         if case .steps(let steps) = config.screens[0].path {
-            XCTAssertEqual(steps[0].wait, 3.0) // 3000ms → 3.0s
+            XCTAssertEqual(steps[0].settle, 3.0) // 3000ms → 3.0s, a settle, not a sleep
+            XCTAssertNil(steps[0].wait)
         } else {
             XCTFail("Expected steps")
         }
@@ -499,9 +503,7 @@ final class MaestroFlowParserTests: XCTestCase {
         """
 
         XCTAssertThrowsError(try MaestroFlowParser.parse(yaml, sourceName: "checkout.yaml")) { error in
-            let message = String(describing: error)
-            XCTAssertTrue(message.contains("setPermissions"))
-            XCTAssertTrue(message.contains("checkout.yaml:2"))
+            XCTAssertEqual(error.localizedDescription, "Invalid argument: checkout.yaml:2: unsupported Maestro command 'setPermissions'")
         }
     }
 

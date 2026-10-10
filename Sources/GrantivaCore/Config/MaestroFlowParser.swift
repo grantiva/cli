@@ -83,6 +83,16 @@ public struct MaestroFlowParser {
         return GrantivaConfig(bundleId: bundleId, screens: allScreens)
     }
 
+    /// The `appId:` from a flow's header document, if it has one.
+    public static func appId(in content: String) -> String? {
+        guard let header = splitDocuments(content).config,
+              let config = try? Yams.load(yaml: header) as? [String: Any],
+              let appId = config["appId"] as? String,
+              !appId.trimmingCharacters(in: .whitespaces).isEmpty
+        else { return nil }
+        return appId
+    }
+
     /// Detect whether a YAML string is in Maestro format rather than Grantiva format.
     public static func isMaestroFormat(_ content: String) -> Bool {
         for line in content.components(separatedBy: "\n") {
@@ -235,6 +245,7 @@ public struct MaestroFlowParser {
             case "stopApp", "killApp": return .stopApp
             case "back": return .unsupported(str)
             case "scroll": return .step(.init(swipe: "up")) // default scroll down = swipe up
+            case "waitForAnimationToEnd": return .step(.init(settle: defaultSettleSeconds))
             default: return .unsupported(str)
             }
         }
@@ -243,14 +254,10 @@ public struct MaestroFlowParser {
 
         // --- Tap variants ---
 
-        if let val = dict["tapOn"] {
-            return parseTapSelector(val)
-        }
-        if let val = dict["doubleTapOn"] {
-            return parseTapSelector(val)
-        }
-        if let val = dict["longPressOn"] {
-            return parseTapSelector(val)
+        for command in ["tapOn", "doubleTapOn", "longPressOn"] {
+            if let val = dict[command] {
+                return parseTapSelector(val, command: command)
+            }
         }
 
         // --- Text input ---
@@ -265,45 +272,57 @@ public struct MaestroFlowParser {
         // --- Assertions ---
 
         if let val = dict["assertVisible"] {
-            if let text = val as? String {
-                return .step(.init(assertVisible: text))
-            }
-            if let obj = val as? [String: Any],
-               let text = obj["text"] as? String ?? obj["id"] as? String {
-                return .step(.init(assertVisible: text))
+            if let (label, byId) = selector(val) {
+                return .step(.init(assertVisible: label, assertVisibleById: byId))
             }
             return .unsupported("assertVisible")
         }
 
         if let val = dict["assertNotVisible"] {
-            if let text = val as? String {
-                return .step(.init(assertNotVisible: text))
-            }
-            if let obj = val as? [String: Any],
-               let text = obj["text"] as? String ?? obj["id"] as? String {
-                return .step(.init(assertNotVisible: text))
+            if let (label, byId) = selector(val) {
+                return .step(.init(assertNotVisible: label, assertNotVisibleById: byId))
             }
             return .unsupported("assertNotVisible")
         }
 
-        // --- Swipe (coordinate-based) ---
+        // --- Swipe (direction, optionally from an element, or coordinates) ---
 
         if let val = dict["swipe"] as? [String: Any] {
-            if let start = val["start"] as? [String: Any],
-               let end = val["end"] as? [String: Any] {
-                let sx = asDouble(start["x"]) ?? 0
-                let sy = asDouble(start["y"]) ?? 0
-                let ex = asDouble(end["x"]) ?? 0
-                let ey = asDouble(end["y"]) ?? 0
-                let dx = ex - sx
-                let dy = ey - sy
+            if let raw = val["direction"] as? String {
+                let direction = raw.lowercased()
+                guard GrantivaConfig.Screen.Step.swipeDirectionNames.contains(direction) else {
+                    return .unsupported("swipe")
+                }
+                var step = GrantivaConfig.Screen.Step(swipe: direction)
+                step.swipeDuration = asInt(val["duration"])
+                if val["from"] != nil {
+                    guard let (label, byId) = selector(val["from"]) else { return .unsupported("swipe") }
+                    step.swipeFrom = label
+                    step.swipeFromById = byId
+                }
+                return .step(step)
+            }
+            if let start = point(val["start"]), let end = point(val["end"]) {
+                let dx = end.x - start.x
+                let dy = end.y - start.y
                 let direction: String
                 if abs(dx) > abs(dy) {
                     direction = dx > 0 ? "right" : "left"
                 } else {
                     direction = dy > 0 ? "down" : "up"
                 }
-                return .step(.init(swipe: direction))
+                var step = GrantivaConfig.Screen.Step(swipe: direction)
+                step.swipeDuration = asInt(val["duration"])
+                // Maestro's `"x%, y%"` points are kept so the generated flow
+                // swipes exactly there. Pixel points ("100, 200") and the
+                // legacy `{x:, y:}` maps keep swiping by direction only: the
+                // runner reads every start/end value as a percentage.
+                if let start = val["start"] as? String, let end = val["end"] as? String,
+                   start.contains("%"), end.contains("%") {
+                    step.swipeStart = start
+                    step.swipeEnd = end
+                }
+                return .step(step)
             }
             return .unsupported("swipe")
         }
@@ -323,23 +342,31 @@ public struct MaestroFlowParser {
         // --- scrollUntilVisible → assertVisible ---
 
         if let val = dict["scrollUntilVisible"] as? [String: Any] {
-            if let text = val["text"] as? String ?? val["id"] as? String {
-                return .step(.init(assertVisible: text))
+            if let (label, byId) = selector(val["element"]) ?? selector(val) {
+                return .step(.init(assertVisible: label, assertVisibleById: byId))
             }
             return .unsupported("scrollUntilVisible")
         }
 
         // --- Wait ---
 
+        // A settle, not a sleep: it returns as soon as the screen is still.
         if dict.keys.contains("waitForAnimationToEnd") {
             let timeout = (dict["waitForAnimationToEnd"] as? [String: Any])?["timeout"]
-            let seconds = asDouble(timeout).map { $0 / 1000.0 } ?? 1.0
-            return .step(.init(wait: seconds))
+            let seconds = asDouble(timeout).map { $0 / 1000.0 } ?? defaultSettleSeconds
+            return .step(.init(settle: seconds))
         }
 
         if let val = dict["extendedWaitUntil"] as? [String: Any] {
-            if let text = val["text"] as? String ?? val["id"] as? String {
-                return .step(.init(assertVisible: text))
+            if let (label, byId) = selector(val["visible"]) {
+                return .step(.init(assertVisible: label, assertVisibleById: byId))
+            }
+            if let (label, byId) = selector(val["notVisible"]) {
+                return .step(.init(assertNotVisible: label, assertNotVisibleById: byId))
+            }
+            // Older Grantiva form: `extendedWaitUntil: {text: X}`.
+            if let (label, byId) = selector(val) {
+                return .step(.init(assertVisible: label, assertVisibleById: byId))
             }
             return .unsupported("extendedWaitUntil")
         }
@@ -377,17 +404,38 @@ public struct MaestroFlowParser {
 
     // MARK: - Helpers
 
-    /// Parse a Maestro tap selector (string, or object with text/id/point).
-    private static func parseTapSelector(_ val: Any) -> ParsedCommand {
-        if let text = val as? String {
-            return .step(.init(tap: text))
+    /// Upper bound for `waitForAnimationToEnd` without a `timeout:`.
+    static let defaultSettleSeconds = 5.0
+
+    /// Parse a Maestro tap selector (string, or object with text/id).
+    private static func parseTapSelector(_ val: Any, command: String) -> ParsedCommand {
+        if let (label, byId) = selector(val) {
+            return .step(.init(tap: label, tapById: byId))
         }
+        return .unsupported(command)
+    }
+
+    /// A Maestro element selector: a bare string or `{text: X}` matches text,
+    /// `{id: X}` matches the accessibility identifier.
+    private static func selector(_ val: Any?) -> (label: String, byId: Bool)? {
+        if let text = val as? String { return (text, false) }
+        guard let obj = val as? [String: Any] else { return nil }
+        if let text = obj["text"] as? String { return (text, false) }
+        if let id = obj["id"] as? String { return (id, true) }
+        return nil
+    }
+
+    /// A swipe point: Maestro's `"x%, y%"` string, or `{x:, y:}`.
+    private static func point(_ val: Any?) -> (x: Double, y: Double)? {
         if let obj = val as? [String: Any] {
-            if let text = obj["text"] as? String ?? obj["id"] as? String {
-                return .step(.init(tap: text))
-            }
+            return (asDouble(obj["x"]) ?? 0, asDouble(obj["y"]) ?? 0)
         }
-        return .unsupported("tapOn")
+        guard let str = val as? String else { return nil }
+        let parts = str.split(separator: ",").map {
+            Double($0.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "%", with: ""))
+        }
+        guard parts.count == 2, let x = parts[0], let y = parts[1] else { return nil }
+        return (x, y)
     }
 
     private static func unsupportedCommand(
@@ -396,7 +444,7 @@ public struct MaestroFlowParser {
         line: Int?
     ) -> GrantivaError {
         let location = line.map { "\(sourceName):\($0)" } ?? sourceName
-        return .invalidArgument("Unsupported Maestro command '\(command)' at \(location)")
+        return .invalidArgument("\(location): unsupported Maestro command '\(command)'")
     }
 
     private static func commandLineNumbers(in content: String) -> [Int] {
@@ -411,13 +459,18 @@ public struct MaestroFlowParser {
     /// Invert scroll direction to swipe direction.
     /// Maestro "scroll down" = see content below = finger swipe up.
     private static func invertDirection(_ scrollDir: String) -> String {
-        switch scrollDir {
+        switch scrollDir.lowercased() {
         case "down": return "up"
         case "up": return "down"
         case "left": return "right"
         case "right": return "left"
         default: return "up"
         }
+    }
+
+    /// Coerce a YAML number to whole milliseconds.
+    private static func asInt(_ value: Any?) -> Int? {
+        asDouble(value).map { Int($0) }
     }
 
     /// Coerce YAML number (Int or Double) to Double.

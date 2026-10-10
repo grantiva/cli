@@ -766,17 +766,20 @@ public enum RunnerSession {
             return steps.map { step in
                 let action: String
                 if let label = step.tap {
-                    action = "Tap on \"\(label)\""
+                    action = step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\""
                 } else if let direction = step.swipe {
-                    action = "Swipe \(direction)"
+                    action = step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
                 } else if let text = step.type {
                     action = "Type \"\(text)\""
                 } else if let seconds = step.wait {
                     action = "Wait \(seconds)s"
+                } else if let seconds = step.settle {
+                    action = "Wait for animation to end (\(seconds)s max)"
                 } else if let label = step.assertVisible {
-                    action = "Assert visible \"\(label)\""
+                    action = step.assertVisibleById ? "Assert visible id \"\(label)\"" : "Assert visible \"\(label)\""
                 } else if let label = step.assertNotVisible {
-                    action = "Assert not visible \"\(label)\""
+                    action = step.assertNotVisibleById
+                        ? "Assert not visible id \"\(label)\"" : "Assert not visible \"\(label)\""
                 } else if let path = step.runFlow {
                     action = "Run flow \"\(path)\""
                 } else {

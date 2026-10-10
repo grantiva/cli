@@ -35,11 +35,27 @@ public enum FlowGenerator {
             case .steps(let steps):
                 for step in steps {
                     if let label = step.tap {
-                        lines.append("- tapOn: \(FlowEnvironment.quoted(label))")
+                        appendSelector("tapOn", label, byId: step.tapById, to: &lines)
                     }
                     if let direction = step.swipe {
                         lines.append("- swipe:")
-                        lines.append("    direction: \(maestroSwipeDirection(direction))")
+                        if let start = step.swipeStart, let end = step.swipeEnd {
+                            lines.append("    start: \(FlowEnvironment.quoted(start))")
+                            lines.append("    end: \(FlowEnvironment.quoted(end))")
+                        } else {
+                            lines.append("    direction: \(maestroSwipeDirection(direction))")
+                        }
+                        if let duration = step.swipeDuration {
+                            lines.append("    duration: \(duration)")
+                        }
+                        if let from = step.swipeFrom {
+                            if step.swipeFromById {
+                                lines.append("    from:")
+                                lines.append("      id: \(FlowEnvironment.quoted(from))")
+                            } else {
+                                lines.append("    from: \(FlowEnvironment.quoted(from))")
+                            }
+                        }
                     }
                     if let text = step.type {
                         lines.append("- inputText: \(FlowEnvironment.quoted(text))")
@@ -49,11 +65,15 @@ public enum FlowGenerator {
                         lines.append("- waitForAnimationToEnd:")
                         lines.append("    timeout: \(ms)")
                     }
+                    if let seconds = step.settle {
+                        lines.append("- waitForAnimationToEnd:")
+                        lines.append("    timeout: \(Int(seconds * 1000))")
+                    }
                     if let label = step.assertVisible {
-                        lines.append("- assertVisible: \(FlowEnvironment.quoted(label))")
+                        appendSelector("assertVisible", label, byId: step.assertVisibleById, to: &lines)
                     }
                     if let label = step.assertNotVisible {
-                        lines.append("- assertNotVisible: \(FlowEnvironment.quoted(label))")
+                        appendSelector("assertNotVisible", label, byId: step.assertNotVisibleById, to: &lines)
                     }
                     if let path = step.runFlow {
                         lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
@@ -85,6 +105,16 @@ public enum FlowGenerator {
         let flowPath = tempDir.appendingPathComponent("flow.yaml").path
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
         return flowPath
+    }
+
+    /// `byId` selects by accessibility identifier (`id:`), otherwise by text.
+    private static func appendSelector(_ command: String, _ label: String, byId: Bool, to lines: inout [String]) {
+        if byId {
+            lines.append("- \(command):")
+            lines.append("    id: \(FlowEnvironment.quoted(label))")
+        } else {
+            lines.append("- \(command): \(FlowEnvironment.quoted(label))")
+        }
     }
 
     private static func maestroSwipeDirection(_ direction: String) -> String {

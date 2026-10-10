@@ -31,11 +31,36 @@ public struct GrantivaConfig: Sendable, Codable {
             public var assertVisible: String?
             public var assertNotVisible: String?
             public var runFlow: String?
+            /// Set when the Maestro source selected by `id:`: the label is an
+            /// accessibility identifier, not text. Only the Maestro parser
+            /// sets these; they are not grantiva.yml keys.
+            public var tapById: Bool = false
+            public var assertVisibleById: Bool = false
+            public var assertNotVisibleById: Bool = false
+            /// Maestro `swipe: {from: ...}`: the element the swipe starts on.
+            public var swipeFrom: String? = nil
+            public var swipeFromById: Bool = false
+            /// Maestro `swipe: {start: "x%, y%", end: "x%, y%"}`: exact points,
+            /// emitted instead of `direction`.
+            public var swipeStart: String? = nil
+            public var swipeEnd: String? = nil
+            /// Maestro `swipe: {duration: ms}`.
+            public var swipeDuration: Int? = nil
+            /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
+            /// for at most this many seconds. Unlike `wait`, it returns early.
+            public var settle: Double? = nil
+
+            /// The directions a swipe step takes, lowercased.
+            static let swipeDirectionNames = ["up", "down", "left", "right"]
 
             public init(
                 tap: String? = nil, swipe: String? = nil, type: String? = nil,
                 wait: Double? = nil, assertVisible: String? = nil,
-                assertNotVisible: String? = nil, runFlow: String? = nil
+                assertNotVisible: String? = nil, runFlow: String? = nil,
+                tapById: Bool = false, assertVisibleById: Bool = false,
+                assertNotVisibleById: Bool = false,
+                swipeFrom: String? = nil, swipeFromById: Bool = false,
+                settle: Double? = nil
             ) {
                 self.tap = tap
                 self.swipe = swipe
@@ -44,6 +69,12 @@ public struct GrantivaConfig: Sendable, Codable {
                 self.assertVisible = assertVisible
                 self.assertNotVisible = assertNotVisible
                 self.runFlow = runFlow
+                self.tapById = tapById
+                self.assertVisibleById = assertVisibleById
+                self.assertNotVisibleById = assertNotVisibleById
+                self.swipeFrom = swipeFrom
+                self.swipeFromById = swipeFromById
+                self.settle = settle
             }
 
             enum CodingKeys: String, CodingKey {
@@ -160,9 +191,12 @@ public struct GrantivaConfig: Sendable, Codable {
     }
 
     /// Like `load(platform:from:)` but returns nil when no file exists.
+    /// `includeMaestroDirectory: false` skips the `.maestro/` fallback, for a
+    /// run that names its own flow and must not parse unrelated files.
     public static func loadIfPresent(
         platform: Platform,
-        from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+        from directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath),
+        includeMaestroDirectory: Bool = true
     ) throws -> GrantivaConfig? {
         let fm = FileManager.default
         let configURL = directory.appendingPathComponent(platform.configFileName)
@@ -173,7 +207,7 @@ public struct GrantivaConfig: Sendable, Codable {
         }
 
         // The .maestro/ fallback is an iOS-era convention; Android has none.
-        guard platform == .ios else { return nil }
+        guard platform == .ios, includeMaestroDirectory else { return nil }
         let maestroDir = directory.appendingPathComponent(".maestro")
         if fm.fileExists(atPath: maestroDir.path) {
             return try MaestroFlowParser.loadDirectory(maestroDir)
@@ -197,7 +231,10 @@ public struct GrantivaConfig: Sendable, Codable {
         }
         if platform == .ios, MaestroFlowParser.isMaestroFormat(contents) {
             do {
-                return try MaestroFlowParser.parse(contents)
+                return try MaestroFlowParser.parse(contents, sourceName: fileName)
+            } catch let error as GrantivaError {
+                // Already names the file and line.
+                throw error
             } catch {
                 throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
             }
