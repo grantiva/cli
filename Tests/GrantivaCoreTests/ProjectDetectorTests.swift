@@ -36,6 +36,7 @@ final class ProjectDetectorTests: XCTestCase {
         )
 
         XCTAssertEqual(project.scheme, "Main App")
+        XCTAssertEqual(project.schemes, ["Main App", "Tests"])
         XCTAssertEqual(project.workspace, "A Workspace.xcworkspace")
         XCTAssertEqual(project.project, "Z.xcodeproj")
         XCTAssertEqual(project.bundleId, "com.example.main")
