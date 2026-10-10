@@ -31,6 +31,11 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     public var processes: [ReapedProcess]
     public var leaseReleased: Bool
     public var capacityRecordsCleared: Int
+    /// Records for the device that were left in place because their session
+    /// is still live, with the reason.
+    public var capacityRecordsKept: [KeptCapacityRecord]
+    /// Keep-alive session files of the reaped runner that were deleted.
+    public var sessionFilesRemoved: [String]
     /// Whether this teardown actually took something back. A `--force` run that
     /// found nothing is a success — the device was already free — but it is not
     /// the same event as one that killed a stranded runner, and a script that
@@ -38,11 +43,20 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     /// (the exit code is 0 either way, deliberately).
     public var reclaimed: Bool
 
-    public init(udid: String, processes: [ReapedProcess], leaseReleased: Bool, capacityRecordsCleared: Int) {
+    public init(
+        udid: String,
+        processes: [ReapedProcess],
+        leaseReleased: Bool,
+        capacityRecordsCleared: Int,
+        capacityRecordsKept: [KeptCapacityRecord] = [],
+        sessionFilesRemoved: [String] = []
+    ) {
         self.udid = udid
         self.processes = processes
         self.leaseReleased = leaseReleased
         self.capacityRecordsCleared = capacityRecordsCleared
+        self.capacityRecordsKept = capacityRecordsKept
+        self.sessionFilesRemoved = sessionFilesRemoved
         self.reclaimed = !processes.isEmpty || leaseReleased || capacityRecordsCleared > 0
     }
 }
@@ -134,15 +148,16 @@ public enum SimulatorReaper {
         udid: String,
         capacity: SimulatorCapacity = .live,
         leaseDirectory: String? = nil,
+        sessions: KeepAliveSessionStore = KeepAliveSessionStore(),
         snapshot: (() async throws -> String)? = nil,
-        gracePeriod: TimeInterval = 3
+        gracePeriod: TimeInterval = 3,
+        isProcessAlive: (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
     ) async throws -> ForceTeardownResult {
-        let psOutput: String
-        if let snapshot {
-            psOutput = try await snapshot()
-        } else {
-            psOutput = try await processSnapshot()
+        func takeSnapshot() async throws -> String {
+            if let snapshot { return try await snapshot() }
+            return try await processSnapshot()
         }
+        let psOutput = try await takeSnapshot()
         var targets = processes(owning: udid, psOutput: psOutput, excludingPID: getpid())
 
         // The lease names its owner even when the command line does not carry
@@ -161,6 +176,44 @@ public enum SimulatorReaper {
             ))
         }
 
+        reap(&targets, gracePeriod: gracePeriod)
+
+        // A dying runner can start a `simctl diagnose` for the device after
+        // the first snapshot was taken. Look once more and reap new diagnose
+        // processes only: a fresh `grantiva run` started in the grace window
+        // is someone else's and must survive.
+        if !targets.isEmpty {
+            let known = Set(targets.map(\.pid))
+            var late = processes(owning: udid, psOutput: try await takeSnapshot(), excludingPID: getpid())
+                .filter { $0.kind == .diagnose && !known.contains($0.pid) }
+            reap(&late, gracePeriod: gracePeriod)
+            targets += late
+        }
+
+        let leaseReleased = SimulatorLease.forceRelease(udid: udid, directory: leaseDirectory)
+
+        // Clear only stale capacity records for this device. The record of a
+        // session that still owns other simulators is not stale: dropping it
+        // would hide a booted device from `teardown --session-id`.
+        let (cleared, kept) = (try? capacity.removeStale(udid: udid, isProcessAlive: isProcessAlive)) ?? (0, [])
+
+        // The killed keep-alive runner never got to remove its session files.
+        let runnerPids = targets.filter { $0.kind == .runner }.map(\.pid)
+        let removedFiles = sessions.removeSessions(udid: udid, runnerPids: runnerPids)
+
+        return ForceTeardownResult(
+            udid: udid,
+            processes: targets,
+            leaseReleased: leaseReleased,
+            capacityRecordsCleared: cleared,
+            capacityRecordsKept: kept,
+            sessionFilesRemoved: removedFiles
+        )
+    }
+
+    /// SIGINT each target (and its process group, unless it is ours), wait up
+    /// to `gracePeriod` for them to exit, then SIGKILL the survivors.
+    private static func reap(_ targets: inout [ReapedProcess], gracePeriod: TimeInterval) {
         let ownGroup = getpgrp()
         for index in targets.indices {
             let target = targets[index]
@@ -174,32 +227,17 @@ public enum SimulatorReaper {
             targets[index].killed = true
         }
 
-        if !targets.isEmpty {
-            let deadline = Date().addingTimeInterval(gracePeriod)
-            while Date() < deadline {
-                if targets.allSatisfy({ kill($0.pid, 0) != 0 }) { break }
-                usleep(100_000)
-            }
-            for target in targets where kill(target.pid, 0) == 0 {
-                kill(target.pid, SIGKILL)
-                if target.processGroup > 1, target.processGroup != ownGroup {
-                    kill(-target.processGroup, SIGKILL)
-                }
+        guard !targets.isEmpty else { return }
+        let deadline = Date().addingTimeInterval(gracePeriod)
+        while Date() < deadline {
+            if targets.allSatisfy({ kill($0.pid, 0) != 0 }) { break }
+            usleep(100_000)
+        }
+        for target in targets where kill(target.pid, 0) == 0 {
+            kill(target.pid, SIGKILL)
+            if target.processGroup > 1, target.processGroup != ownGroup {
+                kill(-target.processGroup, SIGKILL)
             }
         }
-
-        let leaseReleased = SimulatorLease.forceRelease(udid: udid, directory: leaseDirectory)
-
-        // Drop any capacity record for this device so the ownership check and
-        // the session ledger agree again. `remove` never prunes other records,
-        // so this stays safe without a simctl round-trip.
-        let cleared = (try? capacity.remove(udid: udid)) ?? 0
-
-        return ForceTeardownResult(
-            udid: udid,
-            processes: targets,
-            leaseReleased: leaseReleased,
-            capacityRecordsCleared: cleared
-        )
     }
 }

@@ -405,10 +405,13 @@ The human-readable line (`Reused iPhone 17 Pro (…) — Booted`) goes to stderr
 a terminal still shows it while a command substitution ignores it. `--json`
 emits the full record, including display geometry.
 
-`ensure` needs only `--name`: it reads the device type out of the name, picks the
-newest installed runtime, reuses an existing simulator with that name, and boots
-it. Pass `--device-type` / `--runtime` to pin them exactly, and `--no-boot` to
-create without booting. `--json` reports the UDID and display geometry.
+`ensure --name` alone reuses an existing simulator with that name, whatever it is
+called, and boots it; `--json` reports that device's own type and runtime. To
+create a new one, the name must contain a device model (`"APP-652 iPhone 17 Pro"`)
+or you pass `--device-type`; the newest installed runtime is used unless you pass
+`--runtime`. `--device-type` / `--runtime` are checked against an existing device
+only when given. `--no-boot` creates without booting. `--json` reports the UDID
+and display geometry.
 
 ### Reclaiming a simulator
 
@@ -421,13 +424,21 @@ by UDID:
 grantiva simulator teardown --udid "$UDID" --force
 ```
 
-This kills whatever is holding that simulator, releases the lease, and clears any
-stale capacity record. `--session-id` and `--udid` are mutually exclusive.
+This kills whatever is holding that simulator (including a `simctl diagnose` the
+dying runner starts), releases the lease, removes the killed runner's keep-alive
+session files, and clears any stale capacity record: a pending reservation, or a
+record with no session ID whose owner process is dead. A named session's record
+is kept while the simulator is booted, so `teardown --session-id` still finds the
+device; `--json` lists it under `capacityRecordsKept` with the reason.
+`--session-id` and `--udid` are mutually exclusive.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count
 toward the limit; manually booted Xcode simulators are never shut down by
-Grantiva teardown.
+Grantiva teardown. A run against an already-booted simulator takes no slot, and
+teardown shuts down only simulators Grantiva itself booted. Without
+`GRANTIVA_SESSION_ID`, a slot taken by a run lasts only while that run's process
+is alive; one taken by `simulator ensure` lasts until the simulator is shut down.
 
 ## Local Workflow
 

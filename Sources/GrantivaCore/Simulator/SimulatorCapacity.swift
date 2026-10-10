@@ -10,14 +10,50 @@ public struct ManagedSimulatorSession: Codable, Equatable, Sendable {
     public let ownerPID: Int32
     public let acquiredAt: Date
     public var state: State
+    /// True only when Grantiva itself issued `simctl boot` for this device.
+    /// Teardown shuts a device down only when this is true; nil (a record
+    /// written by 2.0.1 or earlier) or false leaves the device running.
+    public var bootedByGrantiva: Bool?
+    /// True for a record taken by a single run (`grantiva run`, `diff`, ...)
+    /// rather than by `simulator ensure`. Without a session ID, such a record
+    /// lives only as long as its owner process. nil is a record written by
+    /// 2.0.1 or earlier and is treated as ephemeral.
+    public var ephemeral: Bool?
 
-    public init(udid: String, name: String, sessionId: String, ownerPID: Int32, acquiredAt: Date, state: State) {
+    public init(
+        udid: String,
+        name: String,
+        sessionId: String,
+        ownerPID: Int32,
+        acquiredAt: Date,
+        state: State,
+        bootedByGrantiva: Bool? = nil,
+        ephemeral: Bool? = nil
+    ) {
         self.udid = udid
         self.name = name
         self.sessionId = sessionId
         self.ownerPID = ownerPID
         self.acquiredAt = acquiredAt
         self.state = state
+        self.bootedByGrantiva = bootedByGrantiva
+        self.ephemeral = ephemeral
+    }
+
+    /// Whether the record was taken by a run with no `GRANTIVA_SESSION_ID`.
+    var isSessionless: Bool { sessionId == SimulatorCapacity.sessionlessOwner(udid: udid) }
+}
+
+/// A capacity record that `teardown --udid --force` left in place, and why.
+public struct KeptCapacityRecord: Codable, Equatable, Sendable {
+    public let udid: String
+    public let sessionId: String
+    public let reason: String
+
+    public init(udid: String, sessionId: String, reason: String) {
+        self.udid = udid
+        self.sessionId = sessionId
+        self.reason = reason
     }
 }
 
@@ -56,10 +92,11 @@ public struct SimulatorCapacity: Sendable {
 
     public func reserve(
         device: SimulatorDevice,
+        ephemeral: Bool = false,
         devices: @Sendable () async throws -> [SimulatorDevice],
         onWait: @Sendable ([ManagedSimulatorSession], TimeInterval) -> Void = { _, _ in }
     ) async throws -> ManagedSimulatorSession {
-        let owner = sessionId ?? "simulator:\(device.udid)"
+        let owner = sessionId ?? Self.sessionlessOwner(udid: device.udid)
         let start = Date()
 
         while true {
@@ -67,7 +104,10 @@ public struct SimulatorCapacity: Sendable {
             let outcome = try withRegistryLock { records in
                 Self.prune(&records, devices: currentDevices)
 
-                if let existing = records.first(where: { $0.udid == device.udid }) {
+                if let index = records.firstIndex(where: { $0.udid == device.udid }) {
+                    // A durable holder (`ensure`) reusing a run's record keeps it.
+                    if !ephemeral { records[index].ephemeral = false }
+                    let existing = records[index]
                     guard existing.sessionId == owner else {
                         throw GrantivaError.commandFailed(
                             "Simulator \(device.name) (\(device.udid)) belongs to Grantiva session "
@@ -88,7 +128,8 @@ public struct SimulatorCapacity: Sendable {
                         sessionId: owner,
                         ownerPID: getpid(),
                         acquiredAt: Date(),
-                        state: .pending
+                        state: .pending,
+                        ephemeral: ephemeral
                     )
                     records.append(record)
                     return ReservationOutcome.acquired(record)
@@ -116,10 +157,47 @@ public struct SimulatorCapacity: Sendable {
         }
     }
 
-    public func activate(udid: String) throws {
+    /// Marks the reservation active. `bootedByGrantiva` records that this
+    /// process issued the boot; it never clears an earlier `true`.
+    public func activate(udid: String, bootedByGrantiva: Bool = false) throws {
         try withRegistryLock { records in
             guard let index = records.firstIndex(where: { $0.udid == udid }) else { return }
             records[index].state = .active
+            if bootedByGrantiva { records[index].bootedByGrantiva = true }
+        }
+    }
+
+    /// Under the registry lock: when every record for `udid` belongs to this
+    /// process, replaces them with one `pending` record owned by this process
+    /// and returns true; otherwise changes nothing and returns false. The
+    /// pending record makes any other `reserve` for the device wait until it
+    /// is removed with `remove(udid:ownedBy:)`.
+    public func claimForRemoval(udid: String, name: String) throws -> Bool {
+        try withRegistryLock { records in
+            let me = getpid()
+            guard records.allSatisfy({ $0.udid != udid || $0.ownerPID == me }) else { return false }
+            records.removeAll { $0.udid == udid }
+            records.append(ManagedSimulatorSession(
+                udid: udid, name: name, sessionId: sessionId ?? Self.sessionlessOwner(udid: udid),
+                ownerPID: me, acquiredAt: Date(), state: .pending, ephemeral: true
+            ))
+            return true
+        }
+    }
+
+    /// Every record for `udid`, without pruning.
+    public func records(udid: String) throws -> [ManagedSimulatorSession] {
+        try withRegistryLock { records in records.filter { $0.udid == udid } }
+    }
+
+    /// Removes the records for `udid` owned by process `pid`, leaving any
+    /// other process's record in place.
+    @discardableResult
+    public func remove(udid: String, ownedBy pid: Int32) throws -> Int {
+        try withRegistryLock { records in
+            let before = records.count
+            records.removeAll { $0.udid == udid && $0.ownerPID == pid }
+            return before - records.count
         }
     }
 
@@ -139,6 +217,45 @@ public struct SimulatorCapacity: Sendable {
             records.removeAll { $0.udid == udid }
             return before - records.count
         }
+    }
+
+    /// Removes the records for `udid` that are stale after a forced reclaim,
+    /// and reports the ones kept and why. A record is stale when it is still
+    /// `pending` (a reservation whose boot never finished), or when it has no
+    /// session ID and its owner process is dead. A named session's record is
+    /// never stale while its device is booted, whatever its owner pid: the
+    /// session outlives the CLI process, and `teardown --session-id` must
+    /// still find the device.
+    public func removeStale(
+        udid: String,
+        isProcessAlive: (Int32) -> Bool = KeepAliveSessionStore.processIsAlive
+    ) throws -> (cleared: Int, kept: [KeptCapacityRecord]) {
+        try withRegistryLock { records in
+            var kept: [KeptCapacityRecord] = []
+            let before = records.count
+            records.removeAll { record in
+                guard record.udid == udid else { return false }
+                guard let reason = Self.keepReason(for: record, isProcessAlive: isProcessAlive) else {
+                    return true
+                }
+                kept.append(KeptCapacityRecord(udid: record.udid, sessionId: record.sessionId, reason: reason))
+                return false
+            }
+            return (before - records.count, kept)
+        }
+    }
+
+    /// Why a forced reclaim must keep `record`, or nil when it is stale.
+    static func keepReason(
+        for record: ManagedSimulatorSession,
+        isProcessAlive: (Int32) -> Bool
+    ) -> String? {
+        if record.state == .pending { return nil }
+        if record.isSessionless {
+            guard isProcessAlive(record.ownerPID) else { return nil }
+            return "owner pid \(record.ownerPID) is still running"
+        }
+        return "session \(record.sessionId) owns this simulator until `grantiva simulator teardown --session-id \(record.sessionId)`"
     }
 
     public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
@@ -192,11 +309,20 @@ public struct SimulatorCapacity: Sendable {
         records.removeAll { record in
             guard let state = states[record.udid] else { return true }
             if record.state == .pending && !isProcessAlive(record.ownerPID) { return true }
+            // A run without GRANTIVA_SESSION_ID has no ticket that will ever
+            // tear it down by name, so its record lives only as long as the
+            // process that took it.
+            // `ensure` without a session keeps its record until the device is
+            // shut down, so the cap and `teardown --udid` still apply to it.
+            if record.isSessionless && record.ephemeral != false && !isProcessAlive(record.ownerPID) { return true }
             if state == "Booted" { return false }
             if record.state == .pending { return false }
             return true
         }
     }
+
+    /// The owner recorded for a run that set no `GRANTIVA_SESSION_ID`.
+    static func sessionlessOwner(udid: String) -> String { "simulator:\(udid)" }
 
     private static func positiveInt(_ value: String?) -> Int? {
         guard let value, let parsed = Int(value), parsed > 0 else { return nil }

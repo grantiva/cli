@@ -40,7 +40,7 @@ enum SimTools {
         ),
         Tool(
             name: "grantiva_sim_ensure",
-            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness. Only 'name' is required: the device type is inferred from the name and the runtime defaults to the newest installed one.",
+            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness. Only 'name' is required: an existing simulator with that name is reused as-is. To create one, the name must contain a device model (\"iPhone 17\") or 'device_type' must be given; the runtime defaults to the newest installed one.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([

@@ -73,6 +73,66 @@ final class SimulatorCapacityTests: XCTestCase {
         XCTAssertTrue(records.isEmpty)
     }
 
+    // A run without GRANTIVA_SESSION_ID owns its record as `simulator:<udid>`.
+    // Nothing will ever tear that session down by name, so once the run's
+    // process is gone the record must not hold a slot forever.
+    func testActiveSessionlessRecordWithDeadOwnerIsPruned() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertTrue(records.isEmpty)
+    }
+
+    func testEphemeralSessionlessRecordWithDeadOwnerIsPruned() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242, ephemeral: true)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertTrue(records.isEmpty)
+    }
+
+    // `simulator ensure` exits right after booting. Its slot must last until
+    // the device is shut down, or the cap and `teardown --udid` stop applying.
+    func testDurableSessionlessRecordOutlivesItsOwnerWhileBooted() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242, ephemeral: false)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+        XCTAssertEqual(records.count, 1)
+
+        SimulatorCapacity.prune(&records, devices: [device(1, state: "Shutdown")], isProcessAlive: { _ in false })
+        XCTAssertTrue(records.isEmpty)
+    }
+
+    func testRecordsWithoutTheNewFieldsStillDecode() throws {
+        let legacy = #"[{"udid":"SIM-1","name":"Simulator 1","sessionId":"x","ownerPID":1,"acquiredAt":0,"state":"active"}]"#
+        let records = try JSONDecoder().decode([ManagedSimulatorSession].self, from: Data(legacy.utf8))
+        XCTAssertNil(records[0].bootedByGrantiva)
+        XCTAssertNil(records[0].ephemeral)
+    }
+
+    func testActiveSessionlessRecordWithLiveOwnerIsKept() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "simulator:\(simulator.udid)", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in true })
+
+        XCTAssertEqual(records.count, 1)
+    }
+
+    // A named ticket session outlives the CLI process that booted its device.
+    func testActiveNamedSessionRecordOutlivesItsOwnerProcess() {
+        let simulator = device(1, state: "Booted")
+        var records = [record(simulator, sessionId: "APP-652", pid: 4242)]
+
+        SimulatorCapacity.prune(&records, devices: [simulator], isProcessAlive: { _ in false })
+
+        XCTAssertEqual(records.count, 1)
+    }
+
     func testSameSimulatorReusesItsSlot() async throws {
         let capacity = SimulatorCapacity(directory: directory, maximum: 1, waitTimeout: 0)
         let simulator = device(1, state: "Booted")
@@ -100,6 +160,13 @@ final class SimulatorCapacityTests: XCTestCase {
 
         let acquired = try await waiter.value
         XCTAssertEqual(acquired.udid, second.udid)
+    }
+
+    private func record(_ device: SimulatorDevice, sessionId: String, pid: Int32, ephemeral: Bool? = nil) -> ManagedSimulatorSession {
+        ManagedSimulatorSession(
+            udid: device.udid, name: device.name, sessionId: sessionId,
+            ownerPID: pid, acquiredAt: Date(), state: .active, ephemeral: ephemeral
+        )
     }
 
     private func device(_ number: Int, state: String) -> SimulatorDevice {
