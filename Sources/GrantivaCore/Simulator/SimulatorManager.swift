@@ -201,7 +201,22 @@ public struct SimulatorManager: Sendable, Decodable {
         }
         let udid = provisionedUDID
         if shouldBoot {
-            _ = try await boot(nameOrUDID: udid)
+            do {
+                _ = try await boot(nameOrUDID: udid)
+            } catch {
+                // A failed ensure (most often a capacity-wait timeout) leaves
+                // the host as it found it: remove a device this call created.
+                // A reused device is never touched.
+                if created {
+                    if (try? await exactDevice(nameOrUDID: udid))?.isBooted == true {
+                        _ = try? await execute("xcrun simctl shutdown \(shellQuoted(udid))")
+                    }
+                    _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+                    try? capacity.remove(udid: udid)
+                    try? provenance.remove(udid: udid)
+                }
+                throw error
+            }
         }
         let device = try await exactDevice(nameOrUDID: udid)
         let geometry = shouldBoot ? try await displayGeometry(udid: udid) : nil

@@ -222,6 +222,49 @@ final class SimulatorManagerTests: XCTestCase {
         }
         XCTAssertFalse(simctl.commands.contains { $0.contains("simctl create") })
     }
+
+    // MARK: - I14: a timed-out ensure leaves no device behind
+
+    private func fillCapacity(_ capacity: SimulatorCapacity, with simctl: FakeSimctl) async throws {
+        let other = SimulatorDevice(name: "Other", udid: "OTHER-1", state: "Booted", runtime: "iOS-26-0", isAvailable: true)
+        simctl.add(.init(name: "Other", udid: "OTHER-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17))
+        _ = try await capacity.reserve(device: other, devices: { [other] })
+        try capacity.activate(udid: other.udid)
+    }
+
+    func testEnsureDeletesTheDeviceItCreatedWhenTheCapacityWaitTimesOut() async throws {
+        let simctl = FakeSimctl(devices: [])
+        let (manager, capacity, provenance) = makeManager(simctl, maximum: 1)
+        try await fillCapacity(capacity, with: simctl)
+
+        do {
+            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+            XCTFail("expected a capacity timeout")
+        } catch {
+            XCTAssertTrue(String(describing: error).contains("Timed out"), "\(error)")
+        }
+
+        let created = try XCTUnwrap(simctl.createdUDIDs.first)
+        XCTAssertTrue(simctl.commands.contains("xcrun simctl delete '\(created)'"), "\(simctl.commands)")
+        XCTAssertNil(simctl.device(created))
+        XCTAssertFalse(try provenance.contains(udid: created))
+    }
+
+    func testEnsureNeverDeletesAReusedDeviceWhenTheCapacityWaitTimesOut() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "qa-ios-2", udid: "REUSED-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl, maximum: 1)
+        try await fillCapacity(capacity, with: simctl)
+
+        do {
+            _ = try await manager.ensure(name: "qa-ios-2", deviceType: "iPhone 17", runtime: "26.0", boot: true)
+            XCTFail("expected a capacity timeout")
+        } catch {}
+
+        XCTAssertFalse(simctl.commands.contains { $0.contains("simctl delete") }, "\(simctl.commands)")
+        XCTAssertNotNil(simctl.device("REUSED-1"))
+    }
 }
 
 /// A stateful stand-in for the handful of `simctl` commands SimulatorManager issues.
