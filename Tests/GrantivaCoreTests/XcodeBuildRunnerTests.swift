@@ -61,6 +61,20 @@ final class XcodeBuildRunnerTests: XCTestCase {
         XCTAssertEqual(result.testsFailed, 2)
     }
 
+    func testTestMergesStderrSoAFailureKeepsReasonAndTestNames() async throws {
+        let output = """
+        Test Case '-[DemoTests testLogin]' failed (0.1 seconds).
+        Executed 3 tests, with 1 failure in 0.2 seconds
+        xcodebuild: error: Testing failed
+        """
+        let executor = ScriptedExecutor([.failure(GrantivaError.commandFailed(output, 65))])
+        let result = try await XcodeBuildRunner(execute: executor.execute).test(scheme: "Demo", destination: "sim")
+        XCTAssertTrue(executor.commands[0].hasSuffix("'test' 2>&1"), executor.commands[0])
+        XCTAssertFalse(result.success)
+        XCTAssertEqual(result.output, output)
+        XCTAssertEqual(result.testsFailed, 1)
+    }
+
     func testSimctlOperationsQuoteValuesAndTrimContainer() async throws {
         let executor = ScriptedExecutor([.success(""), .success(""), .success(" /tmp/container \n"), .success(""), .success("")])
         let runner = XcodeBuildRunner(execute: executor.execute)

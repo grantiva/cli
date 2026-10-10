@@ -283,8 +283,21 @@ enum UITools {
         element: [String: Any],
         rules: [String],
         platform: Platform,
+        inLabelledFocusGroup: Bool = false,
         violations: inout [[String: String]]
     ) {
+        // On Android, Compose draws a button as a clickable parent holding its
+        // text plus a non-clickable, empty `android.widget.Button` stub. TalkBack
+        // focuses the parent and reads the merged text, so the stub is not a
+        // control of its own: skip it when a labelled clickable ancestor exists.
+        let focusTarget = element["clickable"] as? Bool == true || element["focusable"] as? Bool == true
+        if platform == .android && inLabelledFocusGroup && element["clickable"] as? Bool == false && !focusTarget {
+            for child in element["children"] as? [[String: Any]] ?? [] {
+                checkViolations(element: child, rules: rules, platform: platform, inLabelledFocusGroup: true, violations: &violations)
+            }
+            return
+        }
+
         let type = element["type"] as? String ?? ""
         let label = element["label"] as? String ?? ""
         let name = element["name"] as? String ?? ""
@@ -329,9 +342,18 @@ enum UITools {
         }
 
         // Recurse into children
+        // A clickable or focusable node starts its own focus group: its
+        // descendants are covered only if it carries a label, whatever an
+        // outer group says.
+        let childrenInLabelledFocusGroup = focusTarget
+            ? platform == .android && (!label.isEmpty || !name.isEmpty || hasDescendantLabel(element))
+            : inLabelledFocusGroup
         if let children = element["children"] as? [[String: Any]] {
             for child in children {
-                checkViolations(element: child, rules: rules, platform: platform, violations: &violations)
+                checkViolations(
+                    element: child, rules: rules, platform: platform,
+                    inLabelledFocusGroup: childrenInLabelledFocusGroup, violations: &violations
+                )
             }
         }
     }

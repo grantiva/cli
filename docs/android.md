@@ -106,7 +106,9 @@ server resolves the platform like every command (a directory with only
 `grantiva-android.yml` is Android; `grantiva mcp --platform ios|android` chooses when both
 config files exist) and drives the emulator through the same tools as iOS:
 `grantiva_tap` takes `x`/`y` in dp, the same unit the hierarchy reports,
-`grantiva_a11y_check` uses 48 dp as the minimum tap target, and
+`grantiva_a11y_check` uses 48 dp as the minimum tap target and checks the node TalkBack
+focuses (a non-clickable widget inside a labelled clickable parent, such as the empty
+`android.widget.Button` Compose places beside a button's text, is not checked on its own), and
 `grantiva_emulator_list|boot|ensure|delete` mirror the `grantiva_sim_*` tools.
 `grantiva_test` is iOS-only.
 

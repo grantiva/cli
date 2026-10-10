@@ -53,14 +53,15 @@ public struct WDAStatus: Sendable {
 
 @available(macOS 15, *)
 extension DriverClient {
-    public static func wda(port: UInt16) -> DriverClient {
+    /// The iOS driver. `transport` defaults to URLSession; tests pass a stub
+    /// that records each request.
+    public static func wda(port: UInt16, transport: UIAutomator2Transport = .live) -> DriverClient {
         let base = "http://localhost:\(port)"
 
         return DriverClient(
             status: {
-                let url = URL(string: "\(base)/status")!
-                let (data, response) = try await URLSession.shared.data(from: url)
-                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                let (data, status) = try await send(transport, "GET", "\(base)/status")
+                guard status == 200 else {
                     throw GrantivaError.commandFailed("WDA not responding on port \(port)", 1)
                 }
                 let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
@@ -69,48 +70,58 @@ extension DriverClient {
                 return WDAStatus(sessionId: sessionId, ready: ready)
             },
             hierarchy: {
-                let xml = try await fetchHierarchyXML(base: base)
+                let xml = try await fetchHierarchyXML(base: base, transport: transport)
                 let parser = WDAHierarchyXMLParser(xml: xml)
                 return try parser.parse()
             },
             hierarchyXML: {
-                try await fetchHierarchyXML(base: base)
+                try await fetchHierarchyXML(base: base, transport: transport)
             },
             tapByLabel: { label in
-                let sessionId = try await resolveSessionId(base: base)
-                // Find element by accessibility label using link text strategy
-                let findBody: [String: Any] = ["using": "link text", "value": label]
-                let findData = try JSONSerialization.data(withJSONObject: findBody)
-                var findRequest = URLRequest(url: URL(string: "\(base)/session/\(sessionId)/elements")!)
-                findRequest.httpMethod = "POST"
-                findRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                findRequest.httpBody = findData
-
-                let (responseData, findResponse) = try await URLSession.shared.data(for: findRequest)
-                guard let findHttp = findResponse as? HTTPURLResponse, findHttp.statusCode == 200 else {
+                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                // Match the accessibility label first (what VoiceOver reads and
+                // what `grantiva_a11y_tree` shows as `label`), then fall back to
+                // the element name. "link text" matched only the name, so a tab
+                // labelled "Favorites" whose name is "heart" was not found. The
+                // application element is excluded: it carries the app's display
+                // name as its label and would shadow a same-named back button.
+                var elementId: String?
+                for attribute in ["label", "name"] {
+                    let findBody: [String: Any] = [
+                        "using": "predicate string",
+                        "value": "\(attribute) == \(predicateLiteral(label)) AND type != \"XCUIElementTypeApplication\"",
+                    ]
+                    let (responseData, status) = try await send(
+                        transport, "POST", "\(base)/session/\(sessionId)/elements", findBody
+                    )
+                    // 404 is WebDriver's "no such element": try the next
+                    // attribute. Anything else (500, invalid session) is a
+                    // real failure and must not read as "not found".
+                    if status == 404 { continue }
+                    guard status == 200 else {
+                        throw GrantivaError.networkError("Failed to look up \"\(label)\"", status)
+                    }
+                    let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
+                    if let elements = findJson["value"] as? [[String: Any]],
+                       let first = elements.first,
+                       let id = elementID(from: first) {
+                        elementId = id
+                        break
+                    }
+                }
+                guard let elementId else {
                     throw GrantivaError.elementNotFound(label)
                 }
 
-                let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
-                guard let elements = findJson["value"] as? [[String: Any]],
-                      let first = elements.first,
-                      let elementId = elementID(from: first) else {
-                    throw GrantivaError.elementNotFound(label)
-                }
-
-                // Click the element
-                var clickRequest = URLRequest(url: URL(string: "\(base)/session/\(sessionId)/element/\(elementId)/click")!)
-                clickRequest.httpMethod = "POST"
-                clickRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                clickRequest.httpBody = Data("{}".utf8)
-
-                let (_, clickResponse) = try await URLSession.shared.data(for: clickRequest)
-                guard let clickHttp = clickResponse as? HTTPURLResponse, clickHttp.statusCode == 200 else {
-                    throw GrantivaError.commandFailed("Failed to tap element \"\(label)\"", 1)
+                let (_, clickStatus) = try await send(
+                    transport, "POST", "\(base)/session/\(sessionId)/element/\(elementId)/click", [:]
+                )
+                guard clickStatus == 200 else {
+                    throw GrantivaError.networkError("Failed to tap element \"\(label)\"", clickStatus)
                 }
             },
             tapByCoordinate: { x, y in
-                let sessionId = try await resolveSessionId(base: base)
+                let sessionId = try await resolveSessionId(base: base, transport: transport)
                 let body: [String: Any] = [
                     "actions": [
                         [
@@ -126,36 +137,28 @@ extension DriverClient {
                         ] as [String: Any]
                     ]
                 ]
-                let data = try JSONSerialization.data(withJSONObject: body)
-                var request = URLRequest(url: URL(string: "\(base)/session/\(sessionId)/actions")!)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = data
-
-                let (_, response) = try await URLSession.shared.data(for: request)
-                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                let (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
+                guard status == 200 else {
                     throw GrantivaError.commandFailed("Failed to tap at (\(x), \(y))", 1)
                 }
             },
             typeText: { text in
-                let sessionId = try await resolveSessionId(base: base)
+                let sessionId = try await resolveSessionId(base: base, transport: transport)
                 let body: [String: Any] = ["value": Array(text).map { String($0) }]
-                let data = try JSONSerialization.data(withJSONObject: body)
-                var request = URLRequest(url: URL(string: "\(base)/session/\(sessionId)/keys")!)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = data
-
-                let (_, response) = try await URLSession.shared.data(for: request)
-                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-                    throw GrantivaError.commandFailed("Failed to type text", 1)
+                // GrantivaAgent (WebDriverAgent) serves keystrokes at /wda/keys;
+                // /keys is the W3C path some drivers use, kept as a fallback.
+                var (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/wda/keys", body)
+                if status == 404 {
+                    (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/keys", body)
+                }
+                guard status == 200 else {
+                    throw GrantivaError.networkError("Failed to type text", status)
                 }
             },
             swipe: { direction in
-                let sessionId = try await resolveSessionId(base: base)
+                let sessionId = try await resolveSessionId(base: base, transport: transport)
                 // Get window size first for calculating swipe coordinates
-                let sizeUrl = URL(string: "\(base)/session/\(sessionId)/window/size")!
-                let (sizeData, _) = try await URLSession.shared.data(from: sizeUrl)
+                let (sizeData, _) = try await send(transport, "GET", "\(base)/session/\(sessionId)/window/size")
                 let sizeJson = try JSONSerialization.jsonObject(with: sizeData) as? [String: Any] ?? [:]
                 let value = sizeJson["value"] as? [String: Any] ?? [:]
                 let width = value["width"] as? Double ?? 390.0
@@ -197,22 +200,15 @@ extension DriverClient {
                         ] as [String: Any]
                     ]
                 ]
-                let data = try JSONSerialization.data(withJSONObject: body)
-                var request = URLRequest(url: URL(string: "\(base)/session/\(sessionId)/actions")!)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.httpBody = data
-
-                let (_, response) = try await URLSession.shared.data(for: request)
-                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                let (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
+                guard status == 200 else {
                     throw GrantivaError.commandFailed("Failed to swipe \(direction)", 1)
                 }
             },
             screenshot: {
-                let sessionId = try await resolveSessionId(base: base)
-                let url = URL(string: "\(base)/session/\(sessionId)/screenshot")!
-                let (data, response) = try await URLSession.shared.data(from: url)
-                guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let (data, status) = try await send(transport, "GET", "\(base)/session/\(sessionId)/screenshot")
+                guard status == 200 else {
                     throw GrantivaError.commandFailed("Failed to take screenshot via WDA", 1)
                 }
                 let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
@@ -235,10 +231,29 @@ extension DriverClient {
             ?? element["element-6066-11e4-a52e-4f735466cecf"] as? String
     }
 
-    private static func resolveSessionId(base: String) async throws -> String {
-        let url = URL(string: "\(base)/status")!
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+    /// An NSPredicate string literal: double-quoted, with `\\` and `"` escaped.
+    static func predicateLiteral(_ value: String) -> String {
+        let escaped = value
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        return "\"\(escaped)\""
+    }
+
+    private static func send(
+        _ transport: UIAutomator2Transport, _ method: String, _ url: String, _ body: [String: Any]? = nil
+    ) async throws -> (Data, Int) {
+        var request = URLRequest(url: URL(string: url)!)
+        request.httpMethod = method
+        if let body {
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        }
+        return try await transport.send(request)
+    }
+
+    private static func resolveSessionId(base: String, transport: UIAutomator2Transport) async throws -> String {
+        let (data, status) = try await send(transport, "GET", "\(base)/status")
+        guard status == 200 else {
             throw GrantivaError.commandFailed("WDA not responding", 1)
         }
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
@@ -248,11 +263,10 @@ extension DriverClient {
         throw GrantivaError.commandFailed("No active WDA session", 1)
     }
 
-    private static func fetchHierarchyXML(base: String) async throws -> String {
-        let sessionId = try await resolveSessionId(base: base)
-        let url = URL(string: "\(base)/session/\(sessionId)/source")!
-        let (data, response) = try await URLSession.shared.data(from: url)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+    private static func fetchHierarchyXML(base: String, transport: UIAutomator2Transport) async throws -> String {
+        let sessionId = try await resolveSessionId(base: base, transport: transport)
+        let (data, status) = try await send(transport, "GET", "\(base)/session/\(sessionId)/source")
+        guard status == 200 else {
             throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1)
         }
         // WDA returns JSON with a "value" key containing the XML source

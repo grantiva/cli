@@ -64,4 +64,14 @@ final class UIAutomator2HierarchyParserTests: XCTestCase {
         let child = try XCTUnwrap((root["children"] as? [[String: Any]])?.first)
         XCTAssertNil(child["frame"])
     }
+
+    func testFocusableIsCarriedWhenPresent() throws {
+        let xml = #"<hierarchy><android.view.View class="android.view.View" clickable="true" focusable="true" bounds="[0,0][10,10]"><android.widget.Button class="android.widget.Button" focusable="false" bounds="[0,0][10,10]"/><android.widget.TextView class="android.widget.TextView" bounds="[0,0][10,10]"/></android.view.View></hierarchy>"#
+        let root = try UIAutomator2HierarchyXMLParser(xml: xml, scale: 1).parse()
+        let view = try XCTUnwrap((root["children"] as? [[String: Any]])?.first)
+        XCTAssertEqual(view["focusable"] as? Bool, true)
+        let children = try XCTUnwrap(view["children"] as? [[String: Any]])
+        XCTAssertEqual(children[0]["focusable"] as? Bool, false)
+        XCTAssertNil(children[1]["focusable"])
+    }
 }

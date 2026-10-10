@@ -46,4 +46,103 @@ final class WDAClientTests: XCTestCase {
     func testHierarchyParserRejectsEmptyXML() {
         XCTAssertThrowsError(try WDAHierarchyXMLParser(xml: "").parse())
     }
+
+    // MARK: - Live client against a stub transport (I05, I06)
+
+    private let status = #"{"sessionId":"S1","value":{"ready":true}}"#
+    private let oneElement = #"{"value":[{"ELEMENT":"E1"}]}"#
+    private let noElements = #"{"value":[]}"#
+
+    func testTapByLabelFindsByAccessibilityLabelPredicate() async throws {
+        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Favorites")
+        let calls = transport.calls
+        XCTAssertEqual(calls.map(\.path), ["/status", "/session/S1/elements", "/session/S1/element/E1/click"])
+        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(calls[1].body.utf8)) as? [String: String])
+        XCTAssertEqual(find["using"], "predicate string")
+        XCTAssertEqual(find["value"], #"label == "Favorites" AND type != "XCUIElementTypeApplication""#)
+    }
+
+    func testTapByLabelFallsBackToTheNameWhenNoLabelMatches() async throws {
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
+        let finds = transport.calls.filter { $0.path.hasSuffix("/elements") }
+        let values = try finds.map { try XCTUnwrap(JSONSerialization.jsonObject(with: Data($0.body.utf8)) as? [String: String])["value"] }
+        XCTAssertEqual(values, [
+            #"label == "heart" AND type != "XCUIElementTypeApplication""#,
+            #"name == "heart" AND type != "XCUIElementTypeApplication""#,
+        ])
+        XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    func testTapByLabelEscapesQuotesAndBackslashesInThePredicate() async throws {
+        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel(#"Say "hi" \o/"#)
+        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: String])
+        XCTAssertEqual(find["value"], #"label == "Say \"hi\" \\o/" AND type != "XCUIElementTypeApplication""#)
+        XCTAssertEqual(DriverClient.predicateLiteral(#"a"b"#), #""a\"b""#)
+    }
+
+    func testTapByLabelThrowsElementNotFoundWhenNeitherLabelNorNameMatches() async {
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200)])
+        do {
+            try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Missing")
+            XCTFail("expected elementNotFound")
+        } catch let error as GrantivaError {
+            guard case .elementNotFound("Missing") = error else { return XCTFail("\(error)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+        XCTAssertFalse(transport.calls.contains { $0.path.hasSuffix("/click") })
+    }
+
+    func testTypeTextPostsCharactersToWDAKeys() async throws {
+        let transport = ScriptedTransport([(status, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("Hi!")
+        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/wda/keys"])
+        XCTAssertEqual(transport.calls[1].method, "POST")
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: [String]])
+        XCTAssertEqual(body["value"], ["H", "i", "!"])
+    }
+
+    func testTypeTextFallsBackToKeysOnlyAfterA404() async throws {
+        let transport = ScriptedTransport([(status, 200), ("{}", 404), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
+        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/wda/keys", "/session/S1/keys"])
+    }
+
+    func testTypeTextFailureNamesTheHTTPStatus() async {
+        let transport = ScriptedTransport([(status, 200), ("{}", 500)])
+        do {
+            try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("500"), message)
+            XCTAssertTrue(message.contains("Failed to type text"), message)
+            XCTAssertFalse(message.contains("exited with code"), message)
+        }
+        XCTAssertEqual(transport.calls.count, 2, "a non-404 failure must not retry /keys")
+    }
+
+    func testTapByLabelTriesTheNameAfterA404OnTheLabelQuery() async throws {
+        let transport = ScriptedTransport([(status, 200), ("{}", 404), (oneElement, 200), ("{}", 200)])
+        try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
+        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 2)
+        XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    func testTapByLabelReportsAServerErrorInsteadOfElementNotFound() async {
+        let transport = ScriptedTransport([(status, 200), (#"{"value":{"error":"invalid session id"}}"#, 500)])
+        do {
+            try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Favorites")
+            XCTFail("expected an error")
+        } catch let error as GrantivaError {
+            guard case .networkError(_, 500) = error else { return XCTFail("\(error)") }
+            XCTAssertTrue(error.localizedDescription.contains("Favorites"), error.localizedDescription)
+        } catch {
+            XCTFail("\(error)")
+        }
+        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 1, "a 500 must not fall through to the name query")
+    }
 }
