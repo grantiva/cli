@@ -90,6 +90,9 @@ live. `runner dump-hierarchy` reads the same tree and prints it as a tree, JSON,
 
 Records with `screenrecord` to `.grantiva/recordings/recording.mp4` and extracts frames
 as PNGs. Android caps a recording at 180 seconds; longer durations are refused.
+`screenrecord` writes a frame only when the screen changes; Grantiva holds the last frame
+until `--duration`, so a static screen still yields a video of the requested length and a PNG
+for every timestamp (`actualMilliseconds` is the frame on screen at that moment).
 `--device <serial>` or `--emulator <AVD>` pick the target; the config's `emulator` is the
 default.
 

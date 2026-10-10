@@ -130,6 +130,11 @@ struct RecordCommand: AsyncParsableCommand {
         guard FileManager.default.fileExists(atPath: outputPath) else {
             throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
         }
+        if platform == .android {
+            // screenrecord writes a frame only when the screen changes, so a
+            // static screen ends at its last change: hold that frame to --duration.
+            try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration)
+        }
 
         let requested = requestedFrames
         let geometry = try await platformDevice.displayGeometry(deviceID: booted.udid)

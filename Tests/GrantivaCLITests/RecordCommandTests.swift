@@ -1,4 +1,5 @@
 import ArgumentParser
+import AVFoundation
 import Foundation
 import XCTest
 @testable import GrantivaCLI
@@ -222,6 +223,99 @@ final class RecordCommandTests: XCTestCase {
         }
         XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
     }
+
+    /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
+    /// duration. The last frame is held to --duration, so 1000 ms resolves to it.
+    func testAndroidStaticScreenRecordingHoldsTheLastFrameToTheRequestedDuration() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000,2000"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: Self.staticScreenrecordMP4))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: ".grantiva/recordings/recording.json"))) as? [String: Any]
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.map { $0["requestedMilliseconds"] as? Int }, [1000, 2000])
+        XCTAssertEqual(frames.map { $0["actualMilliseconds"] as? Int }, [0, 0], "the held frame is the one shown")
+        for frame in frames {
+            XCTAssertTrue(FileManager.default.fileExists(atPath: try XCTUnwrap(frame["path"] as? String)))
+        }
+        let duration = try await AVURLAsset(url: URL(fileURLWithPath: ".grantiva/recordings/recording.mp4")).load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
+    }
+
+    func testAndroidFrameBeyondTheRequestedDurationStillThrows() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: Self.staticScreenrecordMP4))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("ended at 2000ms before requested frame 2500ms"), "\(error)")
+        }
+    }
+
+    /// `screenrecord --size 72x160 --time-limit 1` of an idle Pixel 8 API 35
+    /// screen: one H.264 frame at 0 ms, every track duration 0.
+    private static let staticScreenrecordMP4 = [
+        "AAAAGGZ0eXBtcDQyAAAAAGlzb21tcDQyAAAGUW1vb3YAAABsbXZoZAAAAADm7z9O5u8/TgAAJxAAAAAAAAEAAAEAAAAAAAAAAAAA",
+        "AAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAB2bWV0YQAA",
+        "ACFoZGxyAAAAAAAAAABtZHRhAAAAAAAAAAAAAAAAAAAAACtrZXlzAAAAAAAAAAEAAAAbbWR0YWNvbS5hbmRyb2lkLnZlcnNpb24A",
+        "AAAiaWxzdAAAABoAAAABAAAAEmRhdGEAAAABAAAAADE1AAACG3RyYWsAAABcdGtoZAAAAAfm7z9O5u8/TgAAAAEAAAAAAAAAAAAA",
+        "AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAEAAAAAASAAAAKAAAAAAAbdtZGlhAAAAIG1kaGQA",
+        "AAAA5u8/TubvP04AAV+QAAAAAAAAAAAAAAAsaGRscgAAAAAAAAAAdmlkZQAAAAAAAAAAAAAAAFZpZGVvSGFuZGxlAAAAAWNtaW5m",
+        "AAAAFHZtaGQAAAABAAAAAAAAAAAAAAAkZGluZgAAABxkcmVmAAAAAAAAAAEAAAAMdXJsIAAAAAEAAAEjc3RibAAAAKNzdHNkAAAA",
+        "AAAAAAEAAACTYXZjMQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAABIAKAASAAAAEgAAAAAAAAAAQAgICAgICAgICAgICAgICAgICAg",
+        "ICAgICAgICAgICAgABj//wAAACphdmNDAULAKf/hABFnQsApjWhRXl5CDAIMDwiEagEABmjOAag1yAAAABNjb2xybmNseAAGAAEA",
+        "BgAAAAAYc3R0cwAAAAAAAAABAAAAAQAAAAAAAAAUc3RzcwAAAAAAAAABAAAAAQAAABhzdHN6AAAAAAAAAAAAAAABAAAB2wAAABxz",
+        "dHNjAAAAAAAAAAEAAAABAAAAAQAAAAEAAAAYY282NAAAAAAAAAABAAAAAAAADKAAAAGmdHJhawAAAFx0a2hkAAAAB+bvP07m7z9O",
+        "AAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAB",
+        "Qm1kaWEAAAAgbWRoZAAAAADm7z9O5u8/TgABX5AAAAAAAAAAAAAAACxoZGxyAAAAAAAAAABtZXRhAAAAAAAAAAAAAAAATWV0YWRI",
+        "YW5kbGUAAAAA7m1pbmYAAAAMbm1oZAAAAAAAAAAkZGluZgAAABxkcmVmAAAAAAAAAAEAAAAMdXJsIAAAAAEAAAC2c3RibAAAAEpz",
+        "dHNkAAAAAAAAAAEAAAA6bWV0dGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0AAAAAGHN0",
+        "dHMAAAAAAAAAAQAAAAEAAAAAAAAAGHN0c3oAAAAAAAAAAAAAAAEAAAAcAAAAHHN0c2MAAAAAAAAAAQAAAAEAAAABAAAAAQAAABhj",
+        "bzY0AAAAAAAAAAEAAAAAAAAOowAAAaZ0cmFrAAAAXHRraGQAAAAH5u8/TubvP04AAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "AAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAFCbWRpYQAAACBtZGhkAAAAAObvP07m7z9OAAFf",
+        "kAAAAAAAAAAAAAAALGhkbHIAAAAAAAAAAG1ldGEAAAAAAAAAAAAAAABNZXRhZEhhbmRsZQAAAADubWluZgAAAAxubWhkAAAAAAAA",
+        "ACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAALZzdGJsAAAASnN0c2QAAAAAAAAAAQAAADptZXR0YXBwbGljYXRp",
+        "b24vb2N0ZXQtc3RyZWFtAGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQAAAAAYc3R0cwAAAAAAAAABAAAAAQAAAAAAAAAYc3RzegAA",
+        "AAAAAAAAAAAAAQAAACgAAAAcc3RzYwAAAAAAAAABAAAAAQAAAAEAAAABAAAAGGNvNjQAAAAAAAAAAQAAAAAAAA57AAAGJ2ZyZWUw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAw",
+        "MDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwAAAAAW1kYXQA",
+        "AAAAAAACLwAAAddluAAEBZ/4lz4TxQABBE/ABcMVHmMPFqOLnq8AImFd/kOxci2Wlk/wSCkJ3+Y1KUN5AY+PvvvvwD+H9/IbEORx",
+        "GmhCW+myDgAQZwxZRpY2pgX/ITEMQFYzlFBJvhMMOAAghftRTW9y0q5i+Dp6AtRmUGOViV/+8My4g6l7ieRqvwACCL47CZshfktd",
+        "4MV1UW1HPtBHJJ8EfcBBF9Um7t6W3wYvGBeEOIncTiNQkdgCACY5zGOePf+WADDxTBCUVI9738wC6mUN5dic6TuH647AAhsJ3krs",
+        "zP/+ABKY2TFLaj9VlBww9sxVliP/Ww/HYACbSTaTaSb/wIuwsRTwjDlaGH///8JQ+dDBioZMNddcnXXXXXXXXXXXXXXXXXXXXXXX",
+        "X//H4IOD3l999/9P/gjgAOaHBCK00laSCAgj/7zOSGqMpSZjv4XON05SV9qVV/GItYx41GLEbVr+Hn8NB/Bt0gA2TNoTZSqzLE9J",
+        "f9BqAD5ACcroBWakkdwUa+CEJxuSIxStySKKaAAIILUmNk+EopCrzGtV6VYkb8OAFTX8JqAAiMo7uwKisb4ADkdewi15n/2K0AZ+",
+        "4QxNEId7jXUCCmUrSeJM3drnIxriEznchP8PInh//RIjVlYxTlNDMFBFVDFNRTIjAgAAALTWKXs6itwYAQAAAEcVysMxewAAI1ZW",
+        "MU5TQzBQRVQxTUUhIwEAAAA/9KqJHwAAAA==",
+    ].joined()
 
     private func makeAndroidProject() throws -> (URL, String) {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-\(UUID().uuidString)", isDirectory: true)
