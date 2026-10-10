@@ -82,12 +82,14 @@ extension DriverClient {
                 // Match the accessibility label first (what VoiceOver reads and
                 // what `grantiva_a11y_tree` shows as `label`), then fall back to
                 // the element name. "link text" matched only the name, so a tab
-                // labelled "Favorites" whose name is "heart" was not found.
+                // labelled "Favorites" whose name is "heart" was not found. The
+                // application element is excluded: it carries the app's display
+                // name as its label and would shadow a same-named back button.
                 var elementId: String?
                 for attribute in ["label", "name"] {
                     let findBody: [String: Any] = [
                         "using": "predicate string",
-                        "value": "\(attribute) == \(predicateLiteral(label))",
+                        "value": "\(attribute) == \(predicateLiteral(label)) AND type != \"XCUIElementTypeApplication\"",
                     ]
                     let (responseData, status) = try await send(
                         transport, "POST", "\(base)/session/\(sessionId)/elements", findBody

@@ -60,7 +60,7 @@ final class WDAClientTests: XCTestCase {
         XCTAssertEqual(calls.map(\.path), ["/status", "/session/S1/elements", "/session/S1/element/E1/click"])
         let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(calls[1].body.utf8)) as? [String: String])
         XCTAssertEqual(find["using"], "predicate string")
-        XCTAssertEqual(find["value"], #"label == "Favorites""#)
+        XCTAssertEqual(find["value"], #"label == "Favorites" AND type != "XCUIElementTypeApplication""#)
     }
 
     func testTapByLabelFallsBackToTheNameWhenNoLabelMatches() async throws {
@@ -68,7 +68,10 @@ final class WDAClientTests: XCTestCase {
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
         let finds = transport.calls.filter { $0.path.hasSuffix("/elements") }
         let values = try finds.map { try XCTUnwrap(JSONSerialization.jsonObject(with: Data($0.body.utf8)) as? [String: String])["value"] }
-        XCTAssertEqual(values, [#"label == "heart""#, #"name == "heart""#])
+        XCTAssertEqual(values, [
+            #"label == "heart" AND type != "XCUIElementTypeApplication""#,
+            #"name == "heart" AND type != "XCUIElementTypeApplication""#,
+        ])
         XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
     }
 
@@ -76,7 +79,7 @@ final class WDAClientTests: XCTestCase {
         let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel(#"Say "hi" \o/"#)
         let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: String])
-        XCTAssertEqual(find["value"], #"label == "Say \"hi\" \\o/""#)
+        XCTAssertEqual(find["value"], #"label == "Say \"hi\" \\o/" AND type != "XCUIElementTypeApplication""#)
         XCTAssertEqual(DriverClient.predicateLiteral(#"a"b"#), #""a\"b""#)
     }
 
