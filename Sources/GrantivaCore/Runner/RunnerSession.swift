@@ -56,6 +56,9 @@ public enum RunnerSession {
             .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
             .path
         try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+        // A capture that does not happen this run must not leave last run's
+        // image behind for `diff compare` to pass against.
+        try invalidateCaptures(of: screens, in: outputDir)
         // Defers fire in reverse order — trace must export before cleanup wipes
         // the report dir, so declare cleanup first, then the export.
         defer { try? FileManager.default.removeItem(atPath: reportDir) }
@@ -192,6 +195,19 @@ public enum RunnerSession {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    /// Removes the configured screens' previous captures before a capture run,
+    /// so a failed or partial run leaves those screens missing rather than
+    /// stale. Other files in the directory are left alone.
+    static func invalidateCaptures(of screens: [GrantivaConfig.Screen], in outputDir: String) throws {
+        let fileManager = FileManager.default
+        for screen in screens {
+            let path = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
+            if fileManager.fileExists(atPath: path) {
+                try fileManager.removeItem(atPath: path)
+            }
+        }
     }
 
     /// Runner artifacts are cmd-<step>-<screenshot name>.png. Match the entire

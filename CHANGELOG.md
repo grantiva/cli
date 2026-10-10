@@ -37,6 +37,7 @@
 - Every shell subprocess now gets `/dev/null` as stdin instead of inheriting Grantiva's. Android needs this (`adb shell` would otherwise read the MCP server's JSON-RPC requests), and it also keeps any subprocess the iOS MCP server starts from consuming its input.
 - `run --report-dir` now names the flow file you passed in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log`, instead of the deleted temp copy, whether the run passes, fails, or times out.
 - Flows with the same file name in different directories (`a/same.yaml`, `b/same.yaml`) are now reported under distinct names (`a/same`, `b/same`), each with its own steps and duration, instead of two `same` rows showing the first flow's numbers.
+- `diff capture` (and `run` with `screens:`) removes each configured screen's previous capture before capturing, so a failed capture leaves those screens missing and `diff compare` fails instead of passing against last run's images.
 - `run --keep-alive` interrupted with Ctrl-C now restores capture settings before exiting: on iOS it clears the simulator's status bar override, and on Android it restores demo mode and animation scales and cleans up orphans.
 
 ## 2.0.1 — 2026-10-07

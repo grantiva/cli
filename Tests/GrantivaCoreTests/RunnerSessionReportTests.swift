@@ -119,6 +119,30 @@ final class RunnerSessionReportTests: XCTestCase {
         XCTAssertTrue(staged1.contains("name: \"qa/b/same\""), staged1)
     }
 
+    // MARK: - I03: a failed capture leaves no stale capture behind
+
+    func testFailedScreensCaptureRemovesThePreviousCaptures() async throws {
+        let captures = scratch.appendingPathComponent(".grantiva/captures")
+        try FileManager.default.createDirectory(at: captures, withIntermediateDirectories: true)
+        let stale = captures.appendingPathComponent(ScreenArtifact.fileName(for: "Deep Links"))
+        let unrelated = captures.appendingPathComponent("notes.txt")
+        try Data("old".utf8).write(to: stale)
+        try Data("keep".utf8).write(to: unrelated)
+
+        do {
+            _ = try await RunnerSession.run(
+                screens: [GrantivaConfig.Screen(name: "Deep Links", path: .launch)],
+                bundleId: "com.example", udid: udid(), platform: StubPlatform(),
+                runner: try makeRunner(exitCode: 1), outputDir: captures.path
+            )
+            XCTFail("expected the runner failure to be thrown")
+        } catch {}
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: stale.path),
+                       "diff compare would pass against last run's image")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: unrelated.path))
+    }
+
     // MARK: - Helpers
 
     private func udid() -> String { "TEST-REPORT-\(UUID().uuidString)" }
