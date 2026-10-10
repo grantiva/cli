@@ -232,6 +232,7 @@ final class OutputStreamContractTests: XCTestCase {
             ["console", "webhooks", "test"],
             ["console", "webhooks", "deliveries"],
             ["console", "webhooks", "retry"],
+            ["console", "webhooks", "events"],
             ["console", "alerts", "rules", "list"],
             ["console", "alerts", "rules", "get"],
             ["console", "alerts", "rules", "create"],

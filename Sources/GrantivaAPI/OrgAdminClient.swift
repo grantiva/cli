@@ -68,6 +68,41 @@ public struct WebhookDelivery: Codable, Sendable, Equatable {
     public let createdAt: String?
 }
 
+/// The event types a webhook can subscribe to. Mirrors the backend's
+/// `WebhookEventType` (Sources/App/Models/WebhookEndpoint.swift); the API
+/// stores any string it is given and simply never fires an unknown one, so
+/// the CLI checks names against this list. Add new events here when the
+/// backend adds them.
+public enum WebhookEvent: String, CaseIterable, Sendable, Codable {
+    case deviceHighRisk = "device.high_risk"
+    case deviceAttestationFailed = "device.attestation_failed"
+    case deviceNew = "device.new"
+    case deviceAttestedFirst = "device.attested.first"
+    case attestationAnomaly = "attestation.anomaly"
+    case flagUpdated = "flag.updated"
+    case flagCreated = "flag.created"
+    case flagDeleted = "flag.deleted"
+    case subscriptionChanged = "subscription.changed"
+    case subscriptionExpired = "subscription.expired"
+    case subscriptionRefunded = "subscription.refunded"
+
+    public var summary: String {
+        switch self {
+        case .deviceHighRisk: return "A device's risk score exceeds the configured threshold"
+        case .deviceAttestationFailed: return "A device attestation attempt fails"
+        case .deviceNew: return "The first attestation from a new device"
+        case .deviceAttestedFirst: return "The first device ever attests for this app"
+        case .attestationAnomaly: return "Unusual attestation patterns are detected"
+        case .flagUpdated: return "A feature flag is toggled or its configuration changes"
+        case .flagCreated: return "A feature flag is created"
+        case .flagDeleted: return "A feature flag is deleted"
+        case .subscriptionChanged: return "A subscriber's entitlement changes"
+        case .subscriptionExpired: return "A subscription lapses or expires"
+        case .subscriptionRefunded: return "A subscription purchase is refunded"
+        }
+    }
+}
+
 public struct RiskAlertRule: Codable, Sendable, Equatable {
     public let id: String
     public let name: String
