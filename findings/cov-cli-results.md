@@ -58,3 +58,41 @@ Binary `~/.grantiva-qa/bin/grantiva` 2.1.0 (runner 1.1.28-grantiva.9), `GRANTIVA
 | CLI-045 | pass | findings/evidence/cov-cli/CLI-045/ | exact message, exit 1, before device work (emulator-9999 used for emulator-5554) |
 | CLI-046 | pass | findings/evidence/cov-cli/CLI-046/ | every step form parses (screens=2); diff capture and run fail only at Simulator not found |
 | CLI-047 | pass | findings/evidence/cov-cli/CLI-047/ | exact message before boot or build, exit 1 |
+| CLI-048 | blocked needs a device | findings/evidence/cov-cli/CLI-048/ | run_flow references are not resolved before device resolution (screens and --flow both stop at Simulator not found first; the runFlow is handed to the runner, FlowGenerator.swift:82); relative resolution and the missing-path error can only be observed with a device |
+| CLI-049 | blocked needs a device | findings/evidence/cov-cli/CLI-049/ | a->b->a cycle is not detected before device resolution (screens run_flow and run --flow both stop at Simulator not found in 0.12 s, no hang); the cycle error can only be observed with a device |
+| CLI-050 | pass | findings/evidence/cov-cli/CLI-050/ | four exact messages, exit 1, before device work |
+| CLI-051 | pass | findings/evidence/cov-cli/CLI-051/ | rejected at startup: --ready-file adir is a directory, not a file, exit 1; directory untouched |
+| CLI-052 | pass | findings/evidence/cov-cli/CLI-052/ | stale passed file replaced by status failed (finishedAt fresh), exit 1; file has no error field (see CLI-044) |
+| CLI-053 | pass | findings/evidence/cov-cli/CLI-053/ | x.ready written with status failed, exit 1 |
+| CLI-054 | pass | findings/evidence/cov-cli/CLI-054/ | --ready-file ro/x.ready is not writable, exit 1, before project work (same in a project dir with --no-build, 0.02 s) |
+| CLI-055 | fail | findings/evidence/cov-cli/CLI-055/ | exit 64, but the error line is only `The value 'bogus' is invalid for '--snapshot <snapshot>'` with no list of valid values; failure/trailing/full appear only inside the echoed help text, unlike --platform and --logs-level which say `Please provide one of ...`: inconsistent usage errors across flags |
+| CLI-056 | fail | findings/evidence/cov-cli/CLI-056/ | both exit 64; --timeout abc is fine, but --timeout -1 reports `Error: Missing value for '--timeout <timeout>'` although a value was given (the -1 is read as an option): misleading message; expected an invalid-value error |
+| CLI-129 | pass | findings/evidence/cov-cli/CLI-129/ | exit 64 with the exact message; r.ready status failed with error field |
+| CLI-130 | pass | findings/evidence/cov-cli/CLI-130/ | exit 64, same message under --keep-alive |
+| CLI-131 | pass | findings/evidence/cov-cli/CLI-131/ | exit 64 naming default, info, debug |
+| CLI-057 | pass | findings/evidence/cov-cli/CLI-057/ | rejected before device or build work, exit 1 |
+| CLI-058 | fail | findings/evidence/cov-cli/CLI-058/ | rejected, exit 64, clear text; but the usage error is prefixed `Error: Invalid argument:` (the GrantivaError prefix that elsewhere means exit 1), unlike the other teardown usage errors (CLI-060/062: plain `Error:`); the same mixed prefix appears for --udid not-a-udid and --session-id "" (CLI-059): inconsistent error shape |
+| CLI-059 | pass | findings/evidence/cov-cli/CLI-059/ | both rejected exit 64 with clear text (prefix inconsistency recorded once under CLI-058) |
+| CLI-060 | pass | findings/evidence/cov-cli/CLI-060/ | exact message, exit 64 |
+| CLI-061 | blocked needs a device | findings/evidence/cov-cli/CLI-061/ | parse half holds (no parse error; stops at Simulator not found); the staged flow is generated only after device resolution, so the byte-for-byte label cannot be observed device-free |
+| CLI-062 | pass | findings/evidence/cov-cli/CLI-062/ | exact message, exit 64 |
+| CLI-132 | pass | findings/evidence/cov-cli/CLI-132/ | --device rejected by name as an Android option, exit 1 (emulator-9999 used) |
+| CLI-133 | fail | findings/evidence/cov-cli/CLI-133/ | expected an error naming missing.yaml before device work; actual run counts it (`flows=1`), prepares the runner and tries to boot the simulator, failing with `Simulator not found: "qa-ios-1"`; the missing flow file is never mentioned (with and without --no-build) |
+| CLI-134 | fail | findings/evidence/cov-cli/CLI-134/ | all six rejected by name before any build or boot (exit 1), but the wording differs by command: build/ci/diff say `... but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).` while runner start says only `--application-id is an Android option, but this is an iOS project.` / `--simulator is an iOS option, but this is an Android project.`: inconsistent across commands |
+| CLI-063 | pass | findings/evidence/cov-cli/CLI-063/ | 18 fixtures (every listed command and swipe/extendedWaitUntil form, fixtures/ copied) parse to screens=1 under run and diff capture; failure only at Simulator not found |
+| CLI-064 | blocked needs a device | findings/evidence/cov-cli/CLI-064/ | both selector forms parse (fails only at Simulator not found); the staged flow is written only after device resolution, so the emitted id: selector cannot be observed device-free |
+| CLI-065 | pass | findings/evidence/cov-cli/CLI-065/ | back, setPermissions, evalScript, pressKey, openLink each rejected before device work as grantiva.yml:5: unsupported Maestro command '<name>' (diff capture and run), exit 1 |
+| CLI-066 | blocked needs a device | findings/evidence/cov-cli/CLI-066/ | bare scroll and scroll {direction: up} parse (screens=1); the swipe they map to is emitted only into the staged flow after device resolution |
+| CLI-067 | pass | findings/evidence/cov-cli/CLI-067/ | two takeScreenshot points resolve to screens=2 |
+| CLI-068 | blocked needs a device | findings/evidence/cov-cli/CLI-068/ | both runFlow forms parse identically (screens=1); the sub-flow is passed on as a runFlow step, not inlined at parse time (its takeScreenshot is not counted), so inclusion of its steps is only observable on a device |
+| CLI-135 | pass | findings/evidence/cov-cli/CLI-135/ | swipe {direction: UP}, extendedWaitUntil {visible:}, bare waitForAnimationToEnd parse; fails only at Simulator not found |
+| CLI-069 | fail | findings/evidence/cov-cli/CLI-069/ | writes grantiva.yml, exit 0, but the project has two shared schemes (Landmarks, Landmarks (UI Testing)) and init silently writes `scheme: Landmarks` with no warning, while run in the same situation refuses: `No scheme specified. Pass --scheme ... Found: Landmarks, Landmarks (UI Testing).` (CLI-028 evidence): inconsistent handling of an ambiguous scheme |
+| CLI-070 | pass | findings/evidence/cov-cli/CLI-070/ | writes grantiva-android.yml (platform: android), exit 0 |
+| CLI-071 | pass | findings/evidence/cov-cli/CLI-071/ | exact message, exit 1, no file written |
+| CLI-072 | pass | findings/evidence/cov-cli/CLI-072/ | writes grantiva.yml, exact placeholder warning on stderr; simulator default iPhone 18 Pro is an installed device type (simctl list devicetypes) |
+| CLI-073 | pass | findings/evidence/cov-cli/CLI-073/ | scheme: Landmarks and bundle_id: com.kylebrowning.Landmarks written |
+| CLI-074 | pass | findings/evidence/cov-cli/CLI-074/ | grantiva-android.yml with application_id: com.kylebrowning.landmarks |
+| CLI-075 | pass | findings/evidence/cov-cli/CLI-075/ | second init: 'grantiva.yml already exists — skipping' on stderr, file byte-identical (exit 0) |
+| CLI-076 | pass | findings/evidence/cov-cli/CLI-076/ | both fail naming the flag, exit 1, no file written |
+| CLI-077 | pass | findings/evidence/cov-cli/CLI-077/ | Unknown option '--json', exit 64 |
+| CLI-136 | pass | findings/evidence/cov-cli/CLI-136/ | scheme: X, no placeholder warning (only 'Created grantiva.yml') |
