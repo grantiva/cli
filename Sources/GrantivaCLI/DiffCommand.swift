@@ -379,6 +379,7 @@ struct DiffCommand: AsyncParsableCommand {
                 throw GrantivaError.noCaptures(captureDir)
             }
             let captureArtifacts: [CaptureArtifact]
+            var ignored: [String] = []
             if let invocationCaptures {
                 captureArtifacts = try DiffCommand.currentInvocationArtifacts(
                     from: invocationCaptures,
@@ -387,11 +388,14 @@ struct DiffCommand: AsyncParsableCommand {
             } else {
                 let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
                     .filter { $0.hasSuffix(".png") }
+                let screens = config.map { $0.screens.map(\.name) }
                 let selection = DiffCommand.configuredArtifacts(
-                    try DiffCommand.captureArtifacts(from: captureFiles), screens: config.map { $0.screens.map(\.name) }
+                    try DiffCommand.captureArtifacts(from: captureFiles), screens: screens
                 )
                 DiffCommand.noteIgnored(selection.ignored, in: captureDir, options: options)
+                try DiffCommand.requireConfiguredCaptures(selection, screens: screens, directory: captureDir)
                 captureArtifacts = selection.kept
+                ignored = selection.ignored.map(\.screenName)
             }
 
             guard !captureArtifacts.isEmpty else {
@@ -415,7 +419,8 @@ struct DiffCommand: AsyncParsableCommand {
             let result = CompareResult(
                 screens: comparison.screens,
                 passed: comparison.passed,
-                duration: Date().timeIntervalSince(start)
+                duration: Date().timeIntervalSince(start),
+                ignored: ignored
             )
 
             if options.json {
@@ -446,7 +451,7 @@ struct DiffCommand: AsyncParsableCommand {
 
         func run() async throws {
             let platform = try platformOptions.resolve()
-            let config = try GrantivaConfig.loadIfPresent(platform: platform)
+            let config = try DiffCommand.approveConfig(platform: platform)
             let captureDir = DiffCommand.captureDirectory(for: platform)
             let fm = FileManager.default
 
@@ -464,13 +469,14 @@ struct DiffCommand: AsyncParsableCommand {
             // that is not one (an old run's shot) is listed and left alone.
             // A screen named on the command line is approved as asked.
             var captureArtifacts = try DiffCommand.captureArtifacts(from: allCaptures)
+            var ignored: [String] = []
             if screenNames.isEmpty {
-                let selection = DiffCommand.configuredArtifacts(captureArtifacts, screens: config.map { $0.screens.map(\.name) })
+                let screens = config.map { $0.screens.map(\.name) }
+                let selection = DiffCommand.configuredArtifacts(captureArtifacts, screens: screens)
                 DiffCommand.noteIgnored(selection.ignored, in: captureDir, options: options)
+                try DiffCommand.requireConfiguredCaptures(selection, screens: screens, directory: captureDir)
                 captureArtifacts = selection.kept
-                guard !captureArtifacts.isEmpty else {
-                    throw GrantivaError.noCaptures(captureDir)
-                }
+                ignored = selection.ignored.map(\.screenName)
             }
             let store = try await DiffCommand.resolveBaselineStore(platform: platform)
 
@@ -483,7 +489,8 @@ struct DiffCommand: AsyncParsableCommand {
 
             let result = ApproveResult(
                 approvedScreens: approved,
-                baselineDirectory: store.baselineDirectory()
+                baselineDirectory: store.baselineDirectory(),
+                ignored: ignored
             )
 
             if options.json {
@@ -534,6 +541,39 @@ struct DiffCommand: AsyncParsableCommand {
         guard !ignored.isEmpty else { return }
         let names = ignored.map(\.screenName).joined(separator: ", ")
         options.note("Ignoring \(ignored.count) file\(ignored.count == 1 ? "" : "s") in \(directory) that \(ignored.count == 1 ? "is not a configured screen" : "are not configured screens"): \(names)")
+    }
+
+    /// When the directory holds captures but none of a configured screen,
+    /// "No captures found" would be wrong: name the screens that have no
+    /// capture and the files that were set aside.
+    static func requireConfiguredCaptures(
+        _ selection: (kept: [CaptureArtifact], ignored: [CaptureArtifact]), screens: [String]?, directory: String
+    ) throws {
+        guard selection.kept.isEmpty, !selection.ignored.isEmpty, let screens, !screens.isEmpty else { return }
+        let others = selection.ignored.map(\.screenName)
+        throw GrantivaError.notFound(
+            "No capture found for the configured screens (\(screens.joined(separator: ", "))) in \(directory); "
+                + "its \(others.count) other file\(others.count == 1 ? " is not a configured screen" : "s are not configured screens") "
+                + "(\(others.joined(separator: ", "))). Run: grantiva diff capture"
+        )
+    }
+
+    /// `diff approve` reads the config only for the configured screens; a
+    /// file it cannot parse still stops it, and the message says which file
+    /// and why.
+    static func approveConfig(
+        platform: Platform,
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    ) throws -> GrantivaConfig? {
+        do {
+            return try GrantivaConfig.loadIfPresent(platform: platform, from: directory)
+        } catch {
+            let reason = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            throw GrantivaError.unavailable(
+                "diff approve reads \(platform.configFileName) for the configured screens and could not parse it: \(reason). "
+                    + "Fix \(platform.configFileName) and run grantiva diff approve again."
+            )
+        }
     }
 
     /// Returns only screenshots explicitly produced by this runner invocation.

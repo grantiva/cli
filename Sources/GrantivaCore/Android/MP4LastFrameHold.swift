@@ -47,47 +47,127 @@ public enum MP4LastFrameHold {
     public enum Outcome: Sendable, Equatable {
         /// The last frame was held to the requested length.
         case held(Timing)
-        /// The track already lasted the requested length; the file is as recorded.
+        /// The track already lasted the requested length (the recorder gave
+        /// the last frame a long sample); the file is as recorded.
         case unchanged(Timing)
+        /// The requested length is not one this can write (not finite, not
+        /// positive, or too large for the container's arithmetic). The file
+        /// is untouched.
+        case outOfRange(Double)
         /// The file is not an MP4 this understands; it is left untouched.
         case unreadable(String)
+
+        /// The track's timing, when the file could be read.
+        public var timing: Timing? {
+            switch self {
+            case .held(let timing), .unchanged(let timing): return timing
+            case .outOfRange, .unreadable: return nil
+            }
+        }
+    }
+
+    /// screenrecord caps a file at 180 s; this bound only keeps the timescale
+    /// arithmetic far from overflow.
+    static func isInRange(_ seconds: Double) -> Bool {
+        seconds.isFinite && seconds > 0 && seconds < 1_000_000
     }
 
     /// Rewrites the file in place when its last frame must be held, and says
     /// what it found either way.
     public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Outcome {
+        guard isInRange(seconds) else { return .outOfRange(seconds) }
         let url = URL(fileURLWithPath: path)
-        let data = try Data(contentsOf: url)
-        let timing: Timing
-        switch self.timing(of: data) {
-        case .success(let value): timing = value
-        case .failure(let error): return .unreadable(error.reason)
-        }
-        if let held = hold(data, toSeconds: seconds) {
+        switch process(try Data(contentsOf: url), toSeconds: seconds) {
+        case .failure(let error):
+            return .unreadable(error.reason)
+        case .success(.unchanged(let timing)):
+            return .unchanged(timing)
+        case .success(.held(let held)):
             try held.data.write(to: url, options: .atomic)
             return .held(held.timing)
         }
-        guard seconds.isFinite, seconds > 0, seconds < 1_000_000 else {
-            return .unreadable("the requested length \(seconds)s is out of range")
-        }
-        // `hold` declines a track that already lasts the requested length;
-        // any other refusal is a container it could not rewrite.
-        guard timing.recordedSeconds + 0.000_5 >= seconds else {
-            return .unreadable("the container's chunk offsets or durations could not be rewritten")
-        }
-        return .unchanged(timing)
     }
 
     /// The video track's frame count, last frame start and end, or why the
     /// file cannot be read. With several video tracks, the longest one.
     public static func timing(of data: Data) -> Result<Timing, Unreadable> {
+        parseMovie([UInt8](data)).flatMap { videoTiming(of: $0.top[$0.moovIndex]) }
+    }
+
+    /// The rewritten file, or nil when nothing needs to change, the length is
+    /// out of range, or the file is malformed. Never traps on bad input.
+    public static func hold(_ data: Data, toSeconds seconds: Double) -> Held? {
+        guard isInRange(seconds), case .success(.held(let held)) = process(data, toSeconds: seconds) else { return nil }
+        return held
+    }
+
+    private enum Processed {
+        case held(Held)
+        case unchanged(Timing)
+    }
+
+    /// Parses the file once, reads the video timing from that parse, and
+    /// rewrites the same structure when the last frame needs holding.
+    private static func process(_ data: Data, toSeconds seconds: Double) -> Result<Processed, Unreadable> {
         let bytes = [UInt8](data)
+        let movie: (top: [Box], moovIndex: Int)
+        switch parseMovie(bytes) {
+        case .success(let value): movie = value
+        case .failure(let error): return .failure(error)
+        }
+        let (top, moovIndex) = movie
+        var moov = top[moovIndex]
+        let timing: Timing
+        switch videoTiming(of: moov) {
+        case .success(let value): timing = value
+        case .failure(let error): return .failure(error)
+        }
+        guard var mvhd = moov.child("mvhd") else { return .failure(Unreadable("the moov has no mvhd box")) }
+        guard let movieScale = mvhd.timescale(), movieScale > 0, let movieDuration = mvhd.duration() else {
+            return .failure(Unreadable("the mvhd box is too short or has a zero timescale"))
+        }
+        let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
+
+        var heldAny = false
+        for index in moov.children.indices where moov.children[index].type == "trak" {
+            switch holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
+            case .failure(let error): return .failure(error)
+            case .success(let didHold): heldAny = heldAny || didHold
+            }
+        }
+        guard heldAny else { return .success(.unchanged(timing)) }
+        if movieDuration < movieTarget { mvhd.setDuration(movieTarget) }
+        moov.replaceChild(mvhd)
+
+        let oldSize = top[moovIndex].end - top[moovIndex].start
+        var newMoov = moov.serialized()
+        let growth = Int64(newMoov.count) - Int64(oldSize)
+        if growth != 0 {
+            // Chunk offsets that point past the moov move with it.
+            guard (try? moov.shiftChunkOffsets(after: UInt64(top[moovIndex].start), by: growth)) != nil else {
+                return .failure(Unreadable("a stco/co64 chunk offset leaves its range when the moov grows"))
+            }
+            newMoov = moov.serialized()
+        }
+        var output = [UInt8]()
+        output.reserveCapacity(bytes.count + newMoov.count - oldSize)
+        output += bytes[0..<top[moovIndex].start]
+        output += newMoov
+        output += bytes[top[moovIndex].end..<bytes.count]
+        return .success(.held(Held(data: Data(output), timing: timing)))
+    }
+
+    private static func parseMovie(_ bytes: [UInt8]) -> Result<(top: [Box], moovIndex: Int), Unreadable> {
         guard let top = try? parseBoxes(bytes, 0, bytes.count) else {
             return .failure(Unreadable("the file's box sizes are malformed"))
         }
-        guard let moov = top.first(where: { $0.type == "moov" }) else {
+        guard let moovIndex = top.firstIndex(where: { $0.type == "moov" }) else {
             return .failure(Unreadable("the file has no moov box (not an MP4, or not finalized)"))
         }
+        return .success((top, moovIndex))
+    }
+
+    private static func videoTiming(of moov: Box) -> Result<Timing, Unreadable> {
         var best: Timing?
         var reason = "the movie has no video track"
         for trak in moov.children where trak.type == "trak" {
@@ -95,17 +175,17 @@ public enum MP4LastFrameHold {
             case .success(let timing):
                 if timing.recordedSeconds >= (best?.recordedSeconds ?? -1) { best = timing }
             case .failure(let error):
-                if error.reason != "not a video track" { reason = error.reason }
+                if error != notVideo { reason = error.reason }
             }
         }
         return best.map { .success($0) } ?? .failure(Unreadable(reason))
     }
 
+    private static let notVideo = Unreadable("not a video track")
+
     private static func trackTiming(_ trak: Box) -> Result<Timing, Unreadable> {
         guard let mdia = trak.child("mdia") else { return .failure(Unreadable("a track has no mdia box")) }
-        guard mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else {
-            return .failure(Unreadable("not a video track"))
-        }
+        guard mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .failure(notVideo) }
         guard let mdhd = mdia.child("mdhd"), let scale = mdhd.timescale(), scale > 0, mdhd.duration() != nil else {
             return .failure(Unreadable("the video track's mdhd box is missing or too short"))
         }
@@ -131,71 +211,34 @@ public enum MP4LastFrameHold {
         ))
     }
 
-    /// The rewritten file, or nil when nothing needs to change or the file is
-    /// malformed. Never traps on bad input.
-    public static func hold(_ data: Data, toSeconds seconds: Double) -> Held? {
-        // screenrecord caps a file at 180 s; this bound only keeps the
-        // timescale arithmetic far from overflow.
-        guard seconds.isFinite, seconds > 0, seconds < 1_000_000 else { return nil }
-        let bytes = [UInt8](data)
-        guard let top = try? parseBoxes(bytes, 0, bytes.count),
-              let moovIndex = top.firstIndex(where: { $0.type == "moov" }) else { return nil }
-        var moov = top[moovIndex]
-        guard var mvhd = moov.child("mvhd"), let movieScale = mvhd.timescale(), movieScale > 0,
-              let movieDuration = mvhd.duration() else { return nil }
-        let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
-
-        var recorded: Timing?
-        for index in moov.children.indices where moov.children[index].type == "trak" {
-            let before = moov.children[index]
-            if holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) != nil,
-               case .success(let timing) = trackTiming(before),
-               timing.recordedSeconds >= (recorded?.recordedSeconds ?? -1) {
-                recorded = timing
-            }
+    /// Holds a video track's last frame: true when it was rewritten, false
+    /// for a track that is not video or already long enough, or the atom
+    /// that stopped it.
+    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Result<Bool, Unreadable> {
+        guard var mdia = trak.child("mdia") else { return .failure(Unreadable("a track has no mdia box")) }
+        guard mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .success(false) }
+        guard var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0, mdhd.duration() != nil else {
+            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
         }
-        guard let recorded else { return nil }
-        if movieDuration < movieTarget { mvhd.setDuration(movieTarget) }
-        moov.replaceChild(mvhd)
-
-        let oldSize = top[moovIndex].end - top[moovIndex].start
-        var newMoov = moov.serialized()
-        let growth = Int64(newMoov.count) - Int64(oldSize)
-        if growth != 0 {
-            // Chunk offsets that point past the moov move with it.
-            guard (try? moov.shiftChunkOffsets(after: UInt64(top[moovIndex].start), by: growth)) != nil else { return nil }
-            newMoov = moov.serialized()
+        guard var tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration() else {
+            return .failure(Unreadable("the video track's tkhd box is missing or too short"))
         }
-        var output = [UInt8]()
-        output.reserveCapacity(bytes.count + newMoov.count - oldSize)
-        output += bytes[0..<top[moovIndex].start]
-        output += newMoov
-        output += bytes[top[moovIndex].end..<bytes.count]
-        return Held(data: Data(output), timing: recorded)
-    }
-
-    /// The track's length in seconds before the hold, or nil when the track
-    /// is not video, already long enough, or malformed.
-    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Double? {
-        guard var mdia = trak.child("mdia"),
-              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true,
-              var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0,
-              mdhd.duration() != nil,
-              var tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration(),
-              var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
+        guard var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
               var entries = stts.sttsEntries(), !entries.isEmpty
-        else { return nil }
+        else { return .failure(Unreadable("the video track has no readable stts box")) }
         let mediaTarget = UInt64((seconds * Double(mediaScale)).rounded())
         var current: UInt64 = 0
         for entry in entries {
             let (sum, overflow) = current.addingReportingOverflow(UInt64(entry.count) * UInt64(entry.delta))
-            guard !overflow else { return nil }
+            guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
             current = sum
         }
-        guard current < mediaTarget else { return nil }
+        guard current < mediaTarget else { return .success(false) }
         let last = entries.removeLast()
         let heldDelta = UInt64(last.delta) + (mediaTarget - current)
-        guard heldDelta <= UInt64(UInt32.max) else { return nil }
+        guard heldDelta <= UInt64(UInt32.max) else {
+            return .failure(Unreadable("the held stts sample delta does not fit in 32 bits"))
+        }
         if last.count > 1 { entries.append((last.count - 1, last.delta)) }
         entries.append((1, UInt32(heldDelta)))
         stts.setSttsEntries(entries)
@@ -210,7 +253,7 @@ public enum MP4LastFrameHold {
                 edts.replaceChild(elst); trak.replaceChild(edts)
             }
         }
-        return Double(current) / Double(mediaScale)
+        return .success(true)
     }
 
     // MARK: - Boxes

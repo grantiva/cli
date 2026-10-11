@@ -324,6 +324,50 @@ final class RecordCommandTests: XCTestCase {
         }
     }
 
+    /// K84: a timestamp within --duration passes validation; a recording
+    /// that then ends short of it still fails after recording, as before.
+    /// iOS has no hold, so the near-empty fixture ends before 1000 ms.
+    func testRecordingThatEndsShortOfAValidTimestampStillFailsAfterRecording() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-short-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected the post-recording error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("before requested frame 1000ms"), "\(error)")
+        }
+        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+    }
+
+    /// K34-b fix round: when screenrecord already stretched the last frame,
+    /// the note says so and gives the track's length, not "held to".
+    func testNoteForARecorderStretchedFrameGivesTheTrackLength() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.033, recordedSeconds: 4.02)
+        let note = try XCTUnwrap(RecordCommand.holdDiagnostics(.unchanged(timing), requestedSeconds: 4).note)
+        XCTAssertTrue(note.contains("last frame is at 33ms; screenrecord already kept it on screen to the end of the 4020ms track (requested 4.0s)"), note)
+        XCTAssertFalse(note.contains("held to the requested"), note)
+        let held = try XCTUnwrap(RecordCommand.holdDiagnostics(.held(timing), requestedSeconds: 5).note)
+        XCTAssertTrue(held.contains("it was held to the requested 5.0s"), held)
+    }
+
+    func testOutcomeTimingAndOutOfRangeDiagnostics() {
+        let timing = MP4LastFrameHold.Timing(frameCount: 1, lastFrameSeconds: 0, recordedSeconds: 0)
+        XCTAssertEqual(MP4LastFrameHold.Outcome.held(timing).timing, timing)
+        XCTAssertEqual(MP4LastFrameHold.Outcome.unchanged(timing).timing, timing)
+        XCTAssertNil(MP4LastFrameHold.Outcome.unreadable("x").timing)
+        XCTAssertNil(MP4LastFrameHold.Outcome.outOfRange(.infinity).timing)
+        let diagnostics = RecordCommand.holdDiagnostics(.outOfRange(.infinity), requestedSeconds: .infinity)
+        XCTAssertNil(diagnostics.note)
+        XCTAssertEqual(diagnostics.statistics, "Held frame: not held; the requested length infs is out of range")
+    }
+
     // MARK: - K85: one path style per report
 
     func testRelativeOutputGivesRelativePathsThroughout() async throws {
@@ -340,6 +384,16 @@ final class RecordCommandTests: XCTestCase {
         let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
         XCTAssertEqual(frames.compactMap { $0["path"] as? String }, ["clips/a-frames/001000ms.png"])
         XCTAssertTrue(FileManager.default.fileExists(atPath: "clips/a-frames/001000ms.png"))
+
+        // Text mode prints the same relative paths, the frame report included.
+        let decoded = try JSONDecoder().decode(RecordReport.self, from: Data(contentsOf: URL(fileURLWithPath: "clips/a.json")))
+        XCTAssertEqual(RecordCommand.textLines(decoded, reportPath: RecordCommand.reportPath(forOutput: "clips/a.mp4")), [
+            "Recording: clips/a.mp4",
+            "Frame report: clips/a.json",
+            "  1000ms -> 0ms: clips/a-frames/001000ms.png",
+        ])
+        XCTAssertEqual(RecordCommand.reportPath(forOutput: "/abs/a.mp4"), "/abs/a.json")
+        XCTAssertEqual(RecordCommand.reportPath(forOutput: "a.mov"), "a.json")
     }
 
     func testAbsoluteOutputGivesAbsolutePathsThroughout() async throws {

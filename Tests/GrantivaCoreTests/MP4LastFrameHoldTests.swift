@@ -134,6 +134,27 @@ final class MP4LastFrameHoldTests: XCTestCase {
         }
     }
 
+    /// Fix round: an out-of-range length is not "unreadable", and a missing
+    /// atom is named.
+    func testOutOfRangeLengthAndMissingAtomsAreNamed() throws {
+        let file = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: .infinity), .outOfRange(.infinity))
+        XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 0), .outOfRange(0))
+        XCTAssertEqual(try Data(contentsOf: url), file.data)
+
+        for (box, reason) in [
+            ("mvhd", "the mvhd box is too short or has a zero timescale"),
+            ("tkhd", "the video track's tkhd box is missing or too short"),
+        ] {
+            let truncated = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0, truncating: box)
+            let path = try temporaryFile(truncated.data)
+            defer { try? FileManager.default.removeItem(at: path) }
+            XCTAssertEqual(try MP4LastFrameHold.holdFile(atPath: path.path, toSeconds: 2), .unreadable(reason), box)
+        }
+    }
+
     private func temporaryFile(_ data: Data) throws -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("hold-\(UUID().uuidString).mp4")
         try data.write(to: url)

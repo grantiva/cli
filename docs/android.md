@@ -125,7 +125,8 @@ for every timestamp (`actualMilliseconds` is the frame on screen at that moment)
 last frame was on screen for more than half of the requested duration (the screen last changed
 before the halfway point), `record` prints a note on stderr naming when that frame appears:
 expected for an idle screen, but a device that disconnected mid-recording looks the same. This
-holds whether Grantiva stretched the last frame or `screenrecord` already gave it a long sample.
+holds whether Grantiva stretched the last frame or `screenrecord` already gave it a long sample
+(the note then says so and gives the track's length).
 A late screen change (the status-bar clock, a blinking caret, a notification) suppresses the
 note. The JSON report adds `lastFrameMilliseconds` (when the last frame appears) and
 `recordedMilliseconds` (where the track ended before the hold), and `--verbose` prints one

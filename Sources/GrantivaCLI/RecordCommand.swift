@@ -117,10 +117,18 @@ struct RecordCommand: AsyncParsableCommand {
     /// device looks the same. Measured from when the last frame appears, so
     /// it holds whether Grantiva stretched that frame or the recorder already
     /// gave it a long sample.
-    static func heldRecordingNote(timing: MP4LastFrameHold.Timing, requestedSeconds: Double) -> String? {
+    /// `stretchedByRecorder` is the `.unchanged` case: Grantiva rewrote
+    /// nothing because screenrecord already gave the last frame a sample
+    /// that reaches the track's end, so the note gives that length instead.
+    static func heldRecordingNote(
+        timing: MP4LastFrameHold.Timing, requestedSeconds: Double, stretchedByRecorder: Bool = false
+    ) -> String? {
         guard requestedSeconds - timing.lastFrameSeconds > requestedSeconds / 2 else { return nil }
         let lastFrameMs = milliseconds(timing.lastFrameSeconds)
-        return "The recording's last frame is at \(lastFrameMs)ms; it was held to the requested \(requestedSeconds)s. "
+        let how = stretchedByRecorder
+            ? "screenrecord already kept it on screen to the end of the \(milliseconds(timing.recordedSeconds))ms track (requested \(requestedSeconds)s). "
+            : "it was held to the requested \(requestedSeconds)s. "
+        return "The recording's last frame is at \(lastFrameMs)ms; " + how
             + "screenrecord writes frames only when the screen changes, so this is expected for an idle screen; "
             + "if the screen was changing, check that the device stayed connected."
     }
@@ -133,19 +141,33 @@ struct RecordCommand: AsyncParsableCommand {
         let timing: MP4LastFrameHold.Timing
         switch outcome {
         case .held(let value), .unchanged(let value): timing = value
+        case .outOfRange(let seconds):
+            return (nil, "Held frame: not held; the requested length \(seconds)s is out of range")
         case .unreadable(let reason):
             return (nil, "Held frame: not held; the recording could not be read (\(reason))")
         }
-        let note = heldRecordingNote(timing: timing, requestedSeconds: requestedSeconds)
+        let stretchedByRecorder = if case .unchanged = outcome { true } else { false }
+        let note = heldRecordingNote(timing: timing, requestedSeconds: requestedSeconds, stretchedByRecorder: stretchedByRecorder)
         let requestedMs = milliseconds(requestedSeconds)
         let lastFrameMs = milliseconds(timing.lastFrameSeconds)
         let endMs = milliseconds(timing.recordedSeconds)
-        let held = if case .held = outcome { max(requestedMs - endMs, 0) } else { 0 }
+        let held = stretchedByRecorder ? 0 : max(requestedMs - endMs, 0)
         let verdict = note != nil ? "printed" : "not printed (the screen changed after the halfway point)"
         let statistics = "Held frame: frames=\(timing.frameCount) lastFrame=\(lastFrameMs)ms trackEnd=\(endMs)ms "
             + "requested=\(requestedMs)ms lastFrameOnScreen=\(max(requestedMs - lastFrameMs, 0))ms held=\(held)ms "
             + "noteThreshold=>\(milliseconds(requestedSeconds / 2))ms note=\(verdict)"
         return (note, statistics)
+    }
+
+    /// The JSON report beside the video, in the style of `--output`.
+    static func reportPath(forOutput outputPath: String) -> String {
+        sibling(of: outputPath, replacingExtensionWith: "json")
+    }
+
+    /// The text-mode result: the video, the report and one line per frame.
+    static func textLines(_ report: RecordReport, reportPath: String) -> [String] {
+        ["Recording: \(report.video)", "Frame report: \(reportPath)"]
+            + report.frames.map { "  \($0.requestedMilliseconds)ms -> \($0.actualMilliseconds)ms: \($0.path)" }
     }
 
     private static func milliseconds(_ seconds: Double) -> Int { Int((seconds * 1_000).rounded()) }
@@ -197,8 +219,7 @@ struct RecordCommand: AsyncParsableCommand {
             // screenrecord writes a frame only when the screen changes, so a
             // static screen ends at its last change: hold that frame to --duration.
             let outcome = try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration)
-            if case .held(let timing) = outcome { heldTiming = timing }
-            if case .unchanged(let timing) = outcome { heldTiming = timing }
+            heldTiming = outcome.timing
             let diagnostics = Self.holdDiagnostics(outcome, requestedSeconds: duration)
             GrantivaLog.logger.debug("\(diagnostics.statistics)")
             if let note = diagnostics.note {
@@ -226,17 +247,13 @@ struct RecordCommand: AsyncParsableCommand {
         )
         // Every path in the report and the text output is in the style of
         // --output: relative to the current directory, or absolute.
-        let reportPath = Self.sibling(of: outputPath, replacingExtensionWith: "json")
+        let reportPath = Self.reportPath(forOutput: outputPath)
         try JSONEncoder.pretty.encode(report).write(to: URL(fileURLWithPath: reportPath))
 
         if options.json {
             Output.line(try JSONOutput.string(report))
         } else {
-            Output.line("Recording: \(outputPath)")
-            Output.line("Frame report: \(reportPath)")
-            for frame in frames {
-                Output.line("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
-            }
+            Self.textLines(report, reportPath: reportPath).forEach(Output.line)
         }
     }
 
@@ -299,7 +316,7 @@ struct RecordCommand: AsyncParsableCommand {
 /// `simulator` and `udid` name the device on both platforms (kept for
 /// compatibility); Android adds the same values as `emulator` (the AVD name,
 /// or the serial of a physical device) and `serial`.
-private struct RecordReport: Codable {
+struct RecordReport: Codable {
     let simulator: String
     let udid: String
     let emulator: String?
@@ -314,7 +331,7 @@ private struct RecordReport: Codable {
     let frames: [RecordFrame]
 }
 
-private struct RecordFrame: Codable {
+struct RecordFrame: Codable {
     let requestedMilliseconds: Int
     let actualMilliseconds: Int
     let path: String

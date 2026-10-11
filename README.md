@@ -475,7 +475,7 @@ grantiva diff approve
 
 `diff capture` writes `.grantiva/captures/<screen>.png` for each configured screen. `diff approve` (with no names) and
 `diff compare` work on the screens configured in `grantiva.yml`; any other file in `.grantiva/captures/` (for example a
-shot an older `grantiva run` left there) is listed in a note and left alone. A failing screen's line names the check it
+shot an older `grantiva run` left there) is listed in a note (and under `ignored` in `--json`) and left alone. A failing screen's line names the check it
 failed and its limit, for example `Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)`.
 
 `diff compare` exits 0 only when every screen has a baseline and passes. It exits 1 when a screen fails or errors,

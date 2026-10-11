@@ -200,11 +200,15 @@ public struct CompareResult: Sendable, Codable {
     public let screens: [ScreenDiff]
     public let passed: Bool
     public let duration: Double
+    /// Files in the capture directory that are not configured screens and
+    /// were left out of the comparison; absent when there were none.
+    public let ignored: [String]?
 
-    public init(screens: [ScreenDiff], passed: Bool, duration: Double) {
+    public init(screens: [ScreenDiff], passed: Bool, duration: Double, ignored: [String] = []) {
         self.screens = screens
         self.passed = passed
         self.duration = duration
+        self.ignored = ignored.isEmpty ? nil : ignored
     }
 }
 
@@ -213,14 +217,19 @@ public struct CompareResult: Sendable, Codable {
 public struct ApproveResult: Sendable, Codable {
     public let approvedScreens: [String]
     public let baselineDirectory: String
+    /// Files in the capture directory that are not configured screens and
+    /// were not approved; absent when there were none.
+    public let ignored: [String]?
 
-    public init(approvedScreens: [String], baselineDirectory: String) {
+    public init(approvedScreens: [String], baselineDirectory: String, ignored: [String] = []) {
         self.approvedScreens = approvedScreens
         self.baselineDirectory = baselineDirectory
+        self.ignored = ignored.isEmpty ? nil : ignored
     }
 
     enum CodingKeys: String, CodingKey {
         case approvedScreens = "approved_screens"
         case baselineDirectory = "baseline_directory"
+        case ignored
     }
 }

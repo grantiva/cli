@@ -321,6 +321,69 @@ final class DiffCommandTests: XCTestCase {
             }
             try await command.run()
             XCTAssertEqual(compared.count, 1, "only Home is compared")
+            // K51: with captures present, compare still creates diffs/.
+            var isDirectory: ObjCBool = false
+            XCTAssertTrue(FileManager.default.fileExists(atPath: ".grantiva/captures/android/diffs", isDirectory: &isDirectory))
+            XCTAssertTrue(isDirectory.boolValue)
+        }
+    }
+
+    /// Fix round: when every capture is set aside, the error names the
+    /// configured screens without a capture instead of "No captures found".
+    func testOnlyUnconfiguredCapturesNameTheMissingScreens() async throws {
+        try await inTemporaryDirectory { dir in
+            try """
+            module: app
+            screens:
+              - name: Home
+                path: launch
+              - name: Settings
+                path: launch
+            """.write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+            try FileManager.default.createDirectory(atPath: ".grantiva/captures/android", withIntermediateDirectories: true)
+            for name in ["failure-1", "flow-cmd-003-Home"] {
+                try Data([0x89, 0x50]).write(to: URL(fileURLWithPath: ".grantiva/captures/android/\(name).png"))
+            }
+            let expected = "No capture found for the configured screens (Home, Settings) in .grantiva/captures/android; "
+                + "its 2 other files are not configured screens (failure-1, flow-cmd-003-Home). Run: grantiva diff capture"
+            for run in [
+                { try await DiffCommand.ApproveCommand.parse(["--platform", "android"]).run() },
+                { try await DiffCommand.CompareCommand.parse(["--platform", "android"]).run() },
+            ] as [() async throws -> Void] {
+                do {
+                    try await run()
+                    XCTFail("expected an error")
+                } catch {
+                    XCTAssertEqual(error.localizedDescription, expected)
+                }
+            }
+            XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/baselines"))
+            XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/android/diffs"))
+        }
+    }
+
+    /// Fix round: the ignored files reach `--json` consumers.
+    func testIgnoredFilesAreInTheJSONDocuments() throws {
+        let compare = try JSONOutput.string(CompareResult(screens: [], passed: true, duration: 0, ignored: ["failure-1"]))
+        XCTAssertTrue(compare.contains(#""ignored" : ["#) && compare.contains("failure-1"), compare)
+        let approve = try JSONOutput.string(ApproveResult(approvedScreens: ["Home"], baselineDirectory: "b", ignored: ["failure-1"]))
+        XCTAssertTrue(approve.contains(#""ignored" : ["#) && approve.contains("failure-1"), approve)
+        XCTAssertFalse(try JSONOutput.string(CompareResult(screens: [], passed: true, duration: 0)).contains("ignored"))
+    }
+
+    /// Fix round: approve reads the config for the screen set; a file it
+    /// cannot parse stops it with the file named and the parse error.
+    func testApproveNamesAnUnparseableConfig() async throws {
+        try await inTemporaryDirectory { dir in
+            try "module: app\nscreens: [unclosed\n".write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+            do {
+                try await DiffCommand.ApproveCommand.parse(["--platform", "android"]).run()
+                XCTFail("expected an error")
+            } catch {
+                let message = error.localizedDescription
+                XCTAssertTrue(message.hasPrefix("diff approve reads grantiva-android.yml for the configured screens and could not parse it: "), message)
+                XCTAssertTrue(message.hasSuffix("Fix grantiva-android.yml and run grantiva diff approve again."), message)
+            }
         }
     }
 
