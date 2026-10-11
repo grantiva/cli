@@ -1,4 +1,5 @@
 import Foundation
+import GrantivaCore
 import XCTest
 
 /// README and docs/ statements that have drifted from the code before
@@ -50,16 +51,29 @@ final class DocsContractTests: XCTestCase {
 
     // MARK: - K64: no internal incident note in the repository root
 
+    /// Every `x.y.z` version in `body` other than the current CLI version,
+    /// skipping runner versions (`1.1.28-grantiva.N`), which are not CLI
+    /// version claims.
+    static func versionClaims(in body: String, current: String = grantivaVersion) -> [String] {
+        body.ranges(of: /\b[0-9]+\.[0-9]+\.[0-9]+\b/)
+            .filter { !body[$0.upperBound...].hasPrefix("-grantiva") }
+            .map { String(body[$0]) }
+            .filter { $0 != current }
+    }
+
+    func testVersionClaimsChecksEveryMatchNotOnlyTheFirst() {
+        let body = "The stamp is 1.1.28-grantiva.10+android-drivers-2.\n\nShip 1.6.5 to Homebrew."
+        XCTAssertEqual(Self.versionClaims(in: body), ["1.6.5"])
+        XCTAssertEqual(Self.versionClaims(in: "Runner 1.1.28-grantiva.10 only."), [])
+        XCTAssertEqual(Self.versionClaims(in: "written by \(grantivaVersion)"), [], "the current version is not stale")
+    }
+
     func testNoShippedMarkdownClaimsAnOldVersionOrCarriesAnIncidentNote() throws {
         XCTAssertFalse(FileManager.default.fileExists(atPath: Self.root.appendingPathComponent("SIMULATOR-LIFECYCLE.md").path))
         let markdown = try FileManager.default.contentsOfDirectory(atPath: Self.root.path).filter { $0.hasSuffix(".md") }
             + (try shippedFiles().filter { $0.hasPrefix("docs/") })
         for path in markdown {
-            let body = try text(path)
-            XCTAssertNil(body.range(of: #"\b1\.[0-9]+\.[0-9]+\b"#, options: .regularExpression).flatMap { range in
-                // A runner version (1.1.28-grantiva.N) is not a CLI version claim.
-                body[range.upperBound...].hasPrefix("-grantiva") ? nil : range
-            }, "\(path) names an old grantiva version")
+            XCTAssertEqual(Self.versionClaims(in: try text(path)), [], "\(path) names a grantiva version other than \(grantivaVersion)")
         }
     }
 

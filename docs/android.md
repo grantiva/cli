@@ -103,7 +103,9 @@ values are saved to `.grantiva/android-settings-<serial>.json` and restored afte
 a run is interrupted, the next run restores them first. A freshly booted emulator can drop
 off adb for a moment (its adbd restarts once after boot); when that happens during the
 restore, Grantiva waits up to 30 seconds for the device to come back and retries, and prints
-one warning only if it does not return.
+one warning only if it does not return. A serial adb does not list at all when the restore
+starts (an emulator that has exited) gets 5 seconds instead, so a dead emulator does not hold
+the command up.
 
 ## Logs
 

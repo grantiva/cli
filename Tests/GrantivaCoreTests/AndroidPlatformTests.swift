@@ -96,7 +96,10 @@ final class AndroidPlatformTests: XCTestCase {
         let shell = ScriptedShell()
         shell.fallback = "1"
         await platform(shell).prepareForCapture(deviceID: "emulator-5554")
-        XCTAssertTrue(shell.commands[0].contains("command exit"), "the crash restore runs before anything else: \(shell.commands[0])")
+        // The restore's own `adb devices` pre-check may come first; the first
+        // command sent to the device is the restore's demo-mode exit.
+        let first = shell.commands.first { !$0.hasSuffix("devices -l") } ?? ""
+        XCTAssertTrue(first.contains("command exit"), "the crash restore runs before anything else: \(first)")
         XCTAssertTrue(shell.commands.contains { $0.contains("settings put global window_animation_scale 1.0") })
     }
 

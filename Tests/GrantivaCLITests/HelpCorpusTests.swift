@@ -71,7 +71,7 @@ final class HelpCorpusTests: XCTestCase {
         for (path, type) in Self.allCommands() {
             let help = GrantivaCommand.helpMessage(for: type, columns: 1000)
             for line in help.split(separator: "\n") where line.contains("--app-file <") {
-                if !help.contains(".apk (Android)") {
+                if !line.contains(".apk (Android)") {
                     offenders.append("grantiva \(path.joined(separator: " ")): \(line.trimmingCharacters(in: .whitespaces))")
                 }
             }
