@@ -94,6 +94,51 @@ final class HierarchyCommandTests: XCTestCase {
         }
     }
 
+    // MARK: - K46
+
+    func testTheNoSessionTextIsTheSharedOne() throws {
+        let missing = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path
+        let store = KeepAliveSessionStore(directory: missing, isProcessAlive: { _ in true })
+        XCTAssertThrowsError(try HierarchyCommand.parse([]).locateSession(store: store)) { error in
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`."
+            )
+        }
+    }
+
+    // MARK: - K99: JSON is the unwrapped tree
+
+    func testJSONFromAnXMLSourceIsTheParsedTree() throws {
+        let xml = #"<?xml version="1.0" encoding="UTF-8"?><XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Landmarks" label="Landmarks" enabled="true" visible="true" x="0" y="0" width="402" height="874"><XCUIElementTypeButton type="XCUIElementTypeButton" name="Favorites" label="Favorites" enabled="true" visible="true" x="10" y="20" width="44" height="44"/></XCUIElementTypeApplication>"#
+        let body = try JSONSerialization.data(withJSONObject: ["value": xml, "sessionId": "x"])
+        let output = try HierarchyCommand.renderIOSSource(body, format: .json)
+        let tree = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(output.utf8)) as? [String: Any])
+        XCTAssertNil(tree["value"])
+        XCTAssertNil(tree["sessionId"])
+        XCTAssertEqual(tree["label"] as? String, "Landmarks")
+        let children = try XCTUnwrap(tree["children"] as? [[String: Any]])
+        XCTAssertEqual(children.first?["label"] as? String, "Favorites")
+        // The same shape `runner dump-hierarchy --format json` prints.
+        let expected = try WDAHierarchyXMLParser(xml: xml).parse()
+        XCTAssertEqual(NSDictionary(dictionary: tree), NSDictionary(dictionary: expected))
+    }
+
+    func testAJSONEnvelopeIsUnwrapped() throws {
+        let body = try JSONSerialization.data(withJSONObject: [
+            "value": ["type": "XCUIElementTypeApplication", "children": [["type": "XCUIElementTypeButton"]]],
+            "sessionId": "x",
+        ])
+        let output = try HierarchyCommand.renderIOSSource(body, format: .json)
+        let tree = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(output.utf8)) as? [String: Any])
+        XCTAssertEqual(Set(tree.keys), ["type", "children"])
+    }
+
+    func testXMLOutputIsUnchanged() throws {
+        let body = try JSONSerialization.data(withJSONObject: ["value": "<a/>", "sessionId": "x"])
+        XCTAssertEqual(try HierarchyCommand.renderIOSSource(body, format: .xml), "<a/>")
+    }
+
     // MARK: - Agent errors (I15)
 
     func testATimeoutIsOneActionableLine() {

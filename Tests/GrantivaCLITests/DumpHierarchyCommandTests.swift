@@ -65,4 +65,34 @@ final class DumpHierarchyCommandTests: XCTestCase {
             }
         }
     }
+    // MARK: - K46: one message, one prefix
+
+    func testTheNoSessionTextIsExactAndNotAnInvalidArgument() {
+        XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: nil, keepAlive: nil)) { error in
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`, or pass --port."
+            )
+            XCTAssertFalse(error.localizedDescription.contains("Invalid argument"))
+            XCTAssertFalse(error.localizedDescription.contains("'"))
+        }
+    }
+
+    // MARK: - K47: --format is checked while parsing
+
+    func testABogusFormatIsAUsageErrorNamingTheChoices() {
+        XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--format", "bogus"])) { error in
+            XCTAssertEqual(DumpHierarchyCommand.exitCode(for: error), .validationFailure)
+            let message = DumpHierarchyCommand.message(for: error)
+            for choice in ["tree", "json", "xml"] {
+                XCTAssertTrue(message.contains(choice), message)
+            }
+        }
+    }
+
+    func testFormatIsCaseInsensitive() throws {
+        XCTAssertEqual(try DumpHierarchyCommand.parse(["--format", "Tree"]).outputFormat, "tree")
+        XCTAssertEqual(try DumpHierarchyCommand.parse(["--format", "JSON"]).outputFormat, "json")
+        XCTAssertNoThrow(try DumpHierarchyCommand.parse(["--json", "--format", "JSON"]))
+    }
 }

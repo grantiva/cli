@@ -97,3 +97,25 @@ extension GrantivaError {
         "\(appID) is not installed on \(device)"
     }
 }
+
+extension GrantivaError {
+    /// The one "no session" error (K46) for `hierarchy`, `runner
+    /// dump-hierarchy` and the MCP session tools: what is missing, then how to
+    /// start one. `sessionFile` and `directory` name where the MCP server
+    /// looked; `orPassPort` adds dump-hierarchy's escape hatch; `ignored`
+    /// counts keep-alive sessions passed over because they belong elsewhere.
+    public static func noRunnerSession(
+        sessionFile: String? = nil, directory: String? = nil, orPassPort: Bool = false, ignored: Int = 0
+    ) -> GrantivaError {
+        var text = "No active runner session"
+        if let sessionFile { text += " at \(sessionFile)" }
+        text += ". Start one with `grantiva runner start` or `grantiva run --keep-alive`"
+        if let directory { text += " in \(directory)" }
+        if orPassPort { text += ", or pass --port" }
+        text += "."
+        if ignored > 0 {
+            text += " \(ignored) keep-alive session(s) started from another project directory or for another platform were ignored."
+        }
+        return .notFound(text)
+    }
+}

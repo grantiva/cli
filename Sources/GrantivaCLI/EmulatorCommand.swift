@@ -115,7 +115,10 @@ struct EmulatorCommand: AsyncParsableCommand {
     }
 
     struct Teardown: AsyncParsableCommand {
-        static let configuration = CommandConfiguration(abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.")
+        static let configuration = CommandConfiguration(
+            abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
+            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped."
+        )
         @OptionGroup var options: GlobalOptions
 
         @Option(name: .long, help: "Emulator serial to kill, e.g. emulator-5554.")
@@ -131,9 +134,14 @@ struct EmulatorCommand: AsyncParsableCommand {
         /// housekeeping: forget created AVDs that are gone from disk. The AVDs
         /// just stopped stay recorded, so `emulator delete` still knows
         /// Grantiva created them.
-        static func teardown(_ emulators: EmulatorManager, serial: String?, force: Bool) async throws -> [EmulatorTeardownOutcome] {
+        /// `stopRunners` stops the runner sessions on one serial (nil: leave
+        /// them, for callers that only want the emulator bookkeeping).
+        static func teardown(
+            _ emulators: EmulatorManager, serial: String?, force: Bool,
+            stopRunners: (@Sendable (String) async -> [RunnerSessionStopper.Outcome])? = nil
+        ) async throws -> [EmulatorTeardownOutcome] {
             // The prune runs on a refusal too (`defer` cannot await).
-            let outcomes: [EmulatorTeardownOutcome]
+            var outcomes: [EmulatorTeardownOutcome]
             do {
                 outcomes = if let serial {
                     [try await emulators.teardown(serial: serial, force: force)]
@@ -145,6 +153,13 @@ struct EmulatorCommand: AsyncParsableCommand {
                 throw error
             }
             _ = try? await emulators.pruneCreatedAVDs()
+            // After the kill, so a refused teardown touches nothing; the
+            // runner's own adb cleanup has nothing left to do by then.
+            if let stopRunners {
+                for index in outcomes.indices {
+                    outcomes[index].runnerSessionStopped = !(await stopRunners(outcomes[index].serial)).isEmpty
+                }
+            }
             return outcomes
         }
 
@@ -175,9 +190,15 @@ struct EmulatorCommand: AsyncParsableCommand {
         }
 
         func run() async throws {
+            let json = options.json
             let outcomes = try await Self.teardown(
                 AndroidPlatform.live().emulators,
-                serial: serial?.trimmingCharacters(in: .whitespacesAndNewlines), force: force
+                serial: serial?.trimmingCharacters(in: .whitespacesAndNewlines), force: force,
+                stopRunners: { serial in
+                    let stopped = await DeviceRunnerSessions.live.stop(udid: serial)
+                    if !json { stopped.map(DeviceRunnerSessions.render).forEach(Output.line) }
+                    return stopped
+                }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))

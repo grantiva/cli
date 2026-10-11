@@ -180,6 +180,66 @@ final class MCPServerTests: XCTestCase {
         return store
     }
 
+    // MARK: - K104 / K46
+
+    func testResolveProjectDirectoryKeepsThePrivatePrefix() throws {
+        let (short, real) = try symlinkedSpellings()
+        defer { try? FileManager.default.removeItem(atPath: real) }
+
+        let resolved = try GrantivaMCPServer.resolveProjectDirectory(URL(fileURLWithPath: short))
+        XCTAssertEqual(resolved.path, real)
+        XCTAssertTrue(resolved.path.hasPrefix("/private/"), resolved.path)
+    }
+
+    func testTheNoSessionTextIsTheSharedOneWithoutAnInvalidArgumentLabel() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let project = try GrantivaMCPServer.resolveProjectDirectory(directory)
+        XCTAssertThrowsError(
+            try GrantivaMCPServer.loadActiveSession(projectDirectory: project, platform: .ios, keepAliveSessions: emptyKeepAliveStore())
+        ) { error in
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No active runner session at \(project.path)/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in \(project.path)."
+            )
+        }
+    }
+
+    /// A 2.1.0 sidecar recorded `/tmp/...`; a server for `/private/tmp/...`
+    /// (or for `/tmp/...`) still attaches to it.
+    func testAKeepAliveSessionRecordedWithTheTmpSpellingStillAttaches() throws {
+        let (short, real) = try symlinkedSpellings()
+        defer { try? FileManager.default.removeItem(atPath: real) }
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: sessions) }
+        try JSONSerialization.data(withJSONObject: ["sessionId": "s", "pid": 4242, "port": 8577])
+            .write(to: sessions.appendingPathComponent("4242-1.grantiva"))
+        let legacy = #"{"createdAt":"2026-10-11T07:28:18Z","grantivaPid":1,"platform":"ios","projectDirectory":"SHORT","runnerPid":4242,"udid":"921A0945-7157-4533-BA1F-21E8132D3E40"}"#
+            .replacingOccurrences(of: "SHORT", with: short)
+        try Data(legacy.utf8).write(to: sessions.appendingPathComponent("4242.owner.json"))
+        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { _ in true })
+
+        for spelling in [short, real] {
+            let project = try GrantivaMCPServer.resolveProjectDirectory(URL(fileURLWithPath: spelling))
+            let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: project, platform: .ios, keepAliveSessions: store)
+            XCTAssertEqual(loaded.pid, 4242, spelling)
+        }
+    }
+
+    /// A new directory under the temporary directory, spelled through the
+    /// `/var` → `/private/var` symlink and as realpath(3) resolves it.
+    private func symlinkedSpellings() throws -> (short: String, real: String) {
+        let created = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-k104-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: created, withIntermediateDirectories: true)
+        let real = KeepAliveOwner.canonicalDirectory(created.path)
+        guard real.hasPrefix("/private/") else {
+            try? FileManager.default.removeItem(at: created)
+            throw XCTSkip("the temporary directory \(real) is not behind a /private symlink")
+        }
+        return (String(real.dropFirst("/private".count)), real)
+    }
+
     private func emptyKeepAliveStore() -> KeepAliveSessionStore {
         KeepAliveSessionStore(
             directory: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString).path,
@@ -294,19 +354,21 @@ final class MCPServerTests: XCTestCase {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
+        // K104: the server names the directory as realpath(3) spells it.
+        let resolved = KeepAliveOwner.canonicalDirectory(directory.path)
         try await withServer(directory: directory) { client in
             let tools = try await client.listTools().tools
             XCTAssertFalse(tools.isEmpty)
             let result = try await client.callTool(name: "grantiva_build", arguments: [:])
             XCTAssertEqual(result.isError, true)
             let text = result.content.compactMap { if case .text(let t, _, _) = $0 { return t } else { return nil } }.joined()
-            XCTAssertTrue(text.contains("grantiva.yml not found at \(directory.standardizedFileURL.path)/grantiva.yml"), text)
+            XCTAssertTrue(text.contains("grantiva.yml not found at \(resolved)/grantiva.yml"), text)
 
             // R04 repro: vrt_capture in the same empty directory, no session.
             let capture = try await client.callTool(name: "grantiva_vrt_capture", arguments: [:])
             XCTAssertEqual(capture.isError, true)
             let captureText = capture.content.compactMap { if case .text(let t, _, _) = $0 { return t } else { return nil } }.joined()
-            XCTAssertTrue(captureText.contains("grantiva.yml not found at \(directory.standardizedFileURL.path)/grantiva.yml"), captureText)
+            XCTAssertTrue(captureText.contains("grantiva.yml not found at \(resolved)/grantiva.yml"), captureText)
         }
     }
 

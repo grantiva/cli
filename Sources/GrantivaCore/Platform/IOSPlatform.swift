@@ -189,6 +189,19 @@ public struct IOSPlatform: DevicePlatform {
         return recorder
     }
 
+    /// The `--verbose` end line for the recorder, on success and failure
+    /// alike. `withCleanup` has stopped it (or thrown trying), so this waits
+    /// at most a moment; a recorder that is somehow still running says so.
+    static func logRecorderEnd(_ recorder: Process) {
+        let deadline = Date().addingTimeInterval(1)
+        while recorder.isRunning, Date() < deadline { usleep(10_000) }
+        if recorder.isRunning {
+            GrantivaLog.logger.debug("still running: \(SubprocessLog.commandLine(of: recorder))")
+        } else {
+            SubprocessLog.ended(recorder)
+        }
+    }
+
     /// `simctl io recordVideo`, stopped with SIGINT so simctl finalizes the file.
     public func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {
         let outputURL = URL(fileURLWithPath: path)
@@ -199,11 +212,17 @@ public struct IOSPlatform: DevicePlatform {
         let stderr = try FileHandle(forWritingTo: stderrURL)
         let recorder = Self.makeRecorder(deviceID: deviceID, path: path, log: stderr)
         do {
-            try recorder.run()
-            try await RecorderLifecycle.withCleanup(for: recorder) {
-                try await RecorderLifecycle.waitForStart(of: outputURL)
-                try await Task.sleep(for: .seconds(seconds))
+            try SubprocessLog.run(recorder)
+            do {
+                try await RecorderLifecycle.withCleanup(for: recorder) {
+                    try await RecorderLifecycle.waitForStart(of: outputURL)
+                    try await Task.sleep(for: .seconds(seconds))
+                }
+            } catch {
+                Self.logRecorderEnd(recorder)
+                throw error
             }
+            Self.logRecorderEnd(recorder)
             try stderr.close()
         } catch {
             try? stderr.close()

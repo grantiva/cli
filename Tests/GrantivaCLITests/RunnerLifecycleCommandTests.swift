@@ -62,7 +62,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     func testForegroundPortDiscoveryTimesOutWhenRunnerIsSilent() async {
         let pipe = Pipe()
         defer { try? pipe.fileHandleForWriting.close() }
-        let stream = RunnerStartCommand.outputStream(from: pipe.fileHandleForReading)
+        let stream = Self.outputStream(from: pipe.fileHandleForReading)
 
         let port = await RunnerStartCommand.waitForForegroundWDAPort(
             chunks: stream,
@@ -138,16 +138,16 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let events = LockedValue<[String]>([])
         let session = makeSession()
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
-        try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "terminate", "remove", "owner", "release"])
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["snapshot", "terminate", "files 1234", "remove", "owner", "release"])
     }
 
     func testStopCleansStaleReusedPIDWithoutSignallingIt() async throws {
         let events = LockedValue<[String]>([])
         let session = makeSession()
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /usr/bin/unrelated")
-        try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "remove", "owner", "release"])
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["snapshot", "files 1234", "remove", "owner", "release"])
     }
 
     func testSnapshotFailurePreservesSessionAndLease() async {
@@ -159,7 +159,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             throw GrantivaError.commandFailed("ps failed", 1)
         }
         do {
-            try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
+            _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
             XCTFail("expected failure")
         } catch {
             XCTAssertTrue(error.localizedDescription.contains("ps failed"))
@@ -172,16 +172,16 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession()
         var dependencies = dependencies(session: session, events: events, snapshot: "")
         dependencies.isAlive = { _ in false }
-        try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["remove", "owner", "release"])
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["files 1234", "remove", "owner", "release"])
     }
 
     func testStopOnAnAndroidSessionCleansOrphansAfterTerminating() async throws {
         let events = LockedValue<[String]>([])
         let session = makeSession(udid: "emulator-5554")
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
-        try await RunnerStopCommand.parse([]).run(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "terminate", "orphans", "remove", "owner", "release"])
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["snapshot", "terminate", "files 1234", "orphans", "remove", "owner", "release"])
     }
 
     func testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms() {
@@ -235,6 +235,268 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertNil(attachment)
     }
 
+    // MARK: - K88: `runner stop` on a session whose runner already exited
+
+    func testStopOfADeadRunnerSaysItHadExited() async throws {
+        let events = LockedValue<[String]>([])
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.isAlive = { _ in false }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(result, .exited(pid: 1234, udid: makeSession().udid))
+        XCTAssertEqual(RunnerStopCommand.render(result), "No running runner (pid 1234 had exited); cleaned up its session.")
+        // Ruling (c): still `stopped`, flagged, with the platform's keys.
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["status"] as? String, "stopped")
+        XCTAssertEqual(json["alreadyExited"] as? Bool, true)
+        XCTAssertEqual(json["runnerPid"] as? Int, 1234)
+        XCTAssertEqual(json["pid"] as? Int, 1234)
+        XCTAssertEqual(json["platform"] as? String, "ios")
+        XCTAssertEqual(json["udid"] as? String, makeSession().udid)
+
+        let android = try decode(RunnerStopCommand.document(.exited(pid: 9, udid: "emulator-5554")))
+        XCTAssertEqual(android["serial"] as? String, "emulator-5554")
+        XCTAssertEqual(android["platform"] as? String, "android")
+    }
+
+    // MARK: - K87: SIGKILL escalation still removes the runner's session file
+
+    func testStopOfARunnerThatIgnoresSIGINTRemovesItsSessionFileAndSaysItKilled() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        var dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
+        dependencies.terminateGroup = { _ in events.append("terminate"); return .killed }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(result, .stopped(pid: 1234, udid: session.udid, killed: true))
+        XCTAssertTrue(events.value.contains("files 1234"), "\(events.value)")
+        XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234; it ignored SIGINT and SIGTERM and was killed)")
+    }
+
+    // MARK: - K14: `runner stop` finds a `run --keep-alive` session
+
+    func testStopReleasesAKeepAliveSessionFromThisDirectory() async throws {
+        let events = LockedValue<[String]>([])
+        let keepAlive = KeepAliveSession(
+            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/tmp/grantiva-sessions/4267-1.grantiva",
+            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false
+        )
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { [keepAlive] }
+        dependencies.stopKeepAlive = { session in
+            events.append("stop \(session.pid)")
+            return .released(grantivaPid: 4163, runnerPid: 4267, udid: session.udid ?? "")
+        }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["stop 4267"])
+        XCTAssertEqual(result, .keepAlive([.released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!)]))
+        XCTAssertEqual(
+            RunnerStopCommand.render(result),
+            "Stopped keep-alive session (pid 4163, \(keepAlive.udid!))"
+        )
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["status"] as? String, "stopped")
+        XCTAssertEqual(json["pid"] as? Int, 4163)
+        XCTAssertEqual(json["runnerPid"] as? Int, 4267)
+    }
+
+    func testStopReleasesEveryKeepAliveSessionFromThisDirectory() async throws {
+        let events = LockedValue<[String]>([])
+        let sessions = [4267, 5267].map { pid in
+            KeepAliveSession(
+                sessionId: "s\(pid)", port: 8100, pid: Int32(pid), udid: makeSession().udid, path: "/x",
+                projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: Int32(pid - 100), detached: false
+            )
+        }
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { sessions }
+        dependencies.stopKeepAlive = { session in
+            events.append("stop \(session.pid)")
+            return .released(grantivaPid: session.ownerPid!, runnerPid: session.pid, udid: session.udid ?? "")
+        }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["stop 4267", "stop 5267"])
+        XCTAssertEqual(RunnerStopCommand.render(result).split(separator: "\n").count, 2)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual((json["sessions"] as? [[String: Any]])?.compactMap { $0["runnerPid"] as? Int }, [4267, 5267])
+    }
+
+    func testStopLeavesAKeepAliveSessionFromAnotherDirectoryAlone() async throws {
+        let events = LockedValue<[String]>([])
+        let keepAlive = KeepAliveSession(
+            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/x",
+            projectDirectory: "/private/tmp/elsewhere", platform: .ios, ownerPid: 4163, detached: false
+        )
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { [keepAlive] }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(result, .notRunning)
+        XCTAssertEqual(events.value, [])
+        XCTAssertEqual(try decode(RunnerStopCommand.document(result))["status"] as? String, "not_running")
+    }
+
+    func testStopWithNoSessionAtAllKeepsTheNote() async throws {
+        let events = LockedValue<[String]>([])
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(result, .notRunning)
+        XCTAssertEqual(RunnerStopCommand.render(result), "No active session found.")
+    }
+
+    func testStopHelpSaysItReleasesKeepAliveSessions() {
+        let help = RunnerStopCommand.helpMessage(columns: 1000)
+        XCTAssertTrue(help.contains("grantiva run --keep-alive"), help)
+        XCTAssertTrue(help.contains("SIGINT"), help)
+    }
+
+    // MARK: - K16: numbers for pid and port, platform-neutral keys
+
+    func testStartDocumentsUseNumbersAndThePlatformsKeys() throws {
+        let ios = try decode(RunnerLifecycleDocument(
+            status: "started", pid: 64253, port: 8235, appID: "com.example", deviceID: "921A0945-7157-4533-BA1F-21E8132D3E40",
+            platform: .ios, log: "/tmp/r.log"
+        ))
+        XCTAssertEqual(ios["pid"] as? Int, 64253)
+        XCTAssertFalse(ios["pid"] is String)
+        XCTAssertEqual(ios["port"] as? Int, 8235)
+        XCTAssertFalse(ios["port"] is String)
+        XCTAssertEqual(ios["bundleId"] as? String, "com.example")
+        XCTAssertEqual(ios["udid"] as? String, "921A0945-7157-4533-BA1F-21E8132D3E40")
+        XCTAssertEqual(ios["platform"] as? String, "ios")
+        XCTAssertNil(ios["applicationId"])
+        XCTAssertNil(ios["serial"])
+
+        let android = try decode(RunnerLifecycleDocument(
+            status: "already_running", pid: 7067, port: 57776, appID: "com.example", deviceID: "emulator-5554",
+            platform: .android, log: nil
+        ))
+        XCTAssertEqual(android["pid"] as? Int, 7067)
+        XCTAssertEqual(android["port"] as? Int, 57776)
+        XCTAssertEqual(android["applicationId"] as? String, "com.example")
+        XCTAssertEqual(android["serial"] as? String, "emulator-5554")
+        XCTAssertEqual(android["platform"] as? String, "android")
+        XCTAssertNil(android["bundleId"])
+        XCTAssertNil(android["log"])
+    }
+
+    func testStopDocumentUsesTheSameKeys() throws {
+        let result = RunnerStopCommand.Result.stopped(pid: 6630, udid: "emulator-5554", killed: false)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["status"] as? String, "stopped")
+        XCTAssertEqual(json["pid"] as? Int, 6630)
+        XCTAssertEqual(json["runnerPid"] as? Int, 6630)
+        XCTAssertFalse(json["pid"] is String)
+        XCTAssertEqual(json["serial"] as? String, "emulator-5554")
+        XCTAssertEqual(json["platform"] as? String, "android")
+    }
+
+    // MARK: - K88: foreground `runner start` stays attached
+
+    func testForegroundHoldWaitsForTheRunnerThenCleansUp() async throws {
+        let (exits, exit) = AsyncStream<Int32>.makeStream()
+        let cleaned = LockedValue(0)
+        let held = Task {
+            await RunnerStartCommand.holdForeground(
+                waitForExit: { for await status in exits { return status }; return 0 },
+                onInterrupt: { _ in 1 }, removeInterruptHandler: { _ in },
+                cleanup: { cleaned.set(cleaned.value + 1) }
+            )
+        }
+        try await Task.sleep(for: .milliseconds(300))
+        XCTAssertEqual(cleaned.value, 0, "returned before the runner exited")
+        exit.yield(0)
+        let status = await held.value
+        XCTAssertEqual(status, 0)
+        XCTAssertEqual(cleaned.value, 1)
+    }
+
+    func testForegroundHoldCleansUpOnceOnInterrupt() async throws {
+        let (exits, exit) = AsyncStream<Int32>.makeStream()
+        let cleaned = LockedValue(0)
+        let handler = LockedValue<(@Sendable () -> Void)?>(nil)
+        let removed = LockedValue<[UInt64]>([])
+        let held = Task {
+            await RunnerStartCommand.holdForeground(
+                waitForExit: { for await status in exits { return status }; return 0 },
+                onInterrupt: { body in handler.set(body); return 7 },
+                removeInterruptHandler: { removed.append($0) },
+                cleanup: { cleaned.set(cleaned.value + 1) }
+            )
+        }
+        try await Task.sleep(for: .milliseconds(200))
+        let interrupt = try XCTUnwrap(handler.value)
+        interrupt()
+        XCTAssertEqual(cleaned.value, 1)
+        exit.yield(Int32(SIGINT))
+        _ = await held.value
+        XCTAssertEqual(cleaned.value, 1, "cleanup must run once")
+        XCTAssertEqual(removed.value, [7])
+    }
+
+    func testForegroundStartHelpSaysItStaysAttached() {
+        let help = RunnerStartCommand.helpMessage(columns: 1000)
+        XCTAssertTrue(help.contains("Ctrl-C"), help)
+        XCTAssertTrue(help.contains("130"), help)
+    }
+
+    // MARK: - K61: help names both drivers
+
+    func testRunnerStartAbstractNamesBothDriversAndMatchesTheREADME() throws {
+        let abstract = "Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use."
+        XCTAssertEqual(RunnerStartCommand.configuration.abstract, abstract)
+        let readme = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("README.md")
+        let text = try String(contentsOf: readme, encoding: .utf8)
+        XCTAssertTrue(text.contains("grantiva runner start       \(abstract.dropLast())\n"), "README's runner start line drifted from the abstract")
+        XCTAssertTrue(RunnerCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+    }
+
+    func testDumpHierarchyPortHelpNamesBothDrivers() {
+        let help = DumpHierarchyCommand.helpMessage(columns: 1000)
+        XCTAssertTrue(help.contains("Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android"), help)
+    }
+
+    func testHierarchyTimeoutHelpNamesBothDrivers() {
+        let help = HierarchyCommand.helpMessage(columns: 1000)
+        XCTAssertTrue(help.contains("GrantivaAgent's (iOS) or UIAutomator2's (Android) page-source response"), help)
+    }
+
+    func testAppFileHelpNamesTheAPK() {
+        for help in [RunCommand.helpMessage(columns: 1000), InstallCommand.helpMessage(columns: 1000)] {
+            XCTAssertTrue(help.contains("Path to a pre-built app: .app bundle or .ipa archive (iOS), .apk (Android). Skips the build step."), help)
+        }
+        XCTAssertTrue(RunCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+    }
+
+    /// Convert process output into a cancellable stream. `availableData` blocks
+    /// when called directly, which can otherwise prevent the startup timeout
+    /// from ever firing for a silent or wedged runner.
+    static func outputStream(from handle: FileHandle) -> AsyncStream<Data> {
+        AsyncStream { continuation in
+            handle.readabilityHandler = { readableHandle in
+                let data = readableHandle.availableData
+                if data.isEmpty {
+                    readableHandle.readabilityHandler = nil
+                    continuation.finish()
+                } else {
+                    continuation.yield(data)
+                }
+            }
+            continuation.onTermination = { _ in
+                handle.readabilityHandler = nil
+                try? handle.close()
+            }
+        }
+    }
+
+    private func decode<T: Encodable>(_ value: T) throws -> [String: Any] {
+        let data = Data(try JSONOutput.string(value).utf8)
+        return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+    }
+
     private func makeSession(udid: String = "921A0945-7157-4533-BA1F-21E8132D3E40") -> RunnerSessionInfo {
         RunnerSessionInfo(pid: 1234, wdaPort: 8430, bundleId: "com.example", udid: udid, startedAt: Date())
     }
@@ -243,11 +505,15 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         RunnerStopDependencies(
             loadSession: { session }, isAlive: { _ in true },
             processSnapshot: { events.append("snapshot"); return snapshot },
-            terminateGroup: { _ in events.append("terminate") },
+            terminateGroup: { _ in events.append("terminate"); return .interrupted },
             removeSession: { events.append("remove") },
             releaseLease: { _ in events.append("release") },
             cleanupOrphans: { _ in events.append("orphans") },
-            removeKeepAliveOwner: { _ in events.append("owner") }
+            removeKeepAliveOwner: { _ in events.append("owner") },
+            removeRunnerSessionFiles: { events.append("files \($0)") },
+            keepAliveSessions: { [] },
+            stopKeepAlive: { _ in XCTFail("no keep-alive session to stop"); throw GrantivaError.aborted },
+            currentDirectory: { "/private/tmp/project" }
         )
     }
 }
@@ -259,4 +525,65 @@ private final class LockedValue<Value>: @unchecked Sendable {
     func set(_ value: Value) { lock.withLock { storage = value } }
     func append<Element>(_ value: Element) where Value == [Element] { lock.withLock { storage.append(value) } }
     var value: Value { lock.withLock { storage } }
+}
+
+/// K45: `runner install` narrates what happened.
+@available(macOS 15, *)
+final class RunnerInstallNarrationTests: XCTestCase {
+    func testOnlyAnInstallThatExtractsSaysExtracting() async throws {
+        let installed = LockedValue(false)
+        let manager = RunnerManager(
+            ensureAvailable: {},
+            runnerPath: { "/rh/versions/v/grantiva-runner" },
+            runnerDir: { "/rh/versions/v" },
+            install: { willExtract in
+                if installed.value { return false }
+                willExtract()
+                installed.set(true)
+                return true
+            }
+        )
+        let first = LockedValue<[String]>([])
+        let firstResult = try await RunnerInstallCommand.install(manager: manager, note: { first.append($0) })
+        XCTAssertEqual(first.value, ["Extracting runner..."])
+        XCTAssertTrue(firstResult.extracted)
+        XCTAssertEqual(RunnerInstallCommand.lines(firstResult).first, "Runner installed at /rh/versions/v/grantiva-runner")
+
+        let second = LockedValue<[String]>([])
+        let secondResult = try await RunnerInstallCommand.install(manager: manager, note: { second.append($0) })
+        XCTAssertFalse(second.value.contains { $0.contains("Extracting") }, "\(second.value)")
+        XCTAssertFalse(secondResult.extracted)
+        XCTAssertEqual(RunnerInstallCommand.lines(secondResult).first, "Runner already installed at /rh/versions/v/grantiva-runner")
+
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(secondResult).utf8)) as? [String: Any])
+        XCTAssertEqual(json["extracted"] as? Bool, false)
+        XCTAssertEqual(json["status"] as? String, "installed")
+    }
+}
+
+/// Foreground `runner start` output goes through the narration choke point,
+/// whole lines at a time.
+@available(macOS 15, *)
+final class RunnerOutputForwarderTests: XCTestCase {
+    func testOutputIsNarratedLineByLineAndParsed() async throws {
+        let narrated = LockedValue<[String]>([])
+        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) })
+        let pipe = Pipe()
+        forwarder.attachOutput(pipe.fileHandleForReading)
+        let bytes = Array("WDA started successfully on port 8430 🙂\nnext".utf8)
+        pipe.fileHandleForWriting.write(Data(bytes.prefix(41)))
+        try await Task.sleep(for: .milliseconds(100))
+        pipe.fileHandleForWriting.write(Data(bytes.dropFirst(41)))
+        try pipe.fileHandleForWriting.close()
+        var received = Data()
+        for await chunk in forwarder.chunks { received.append(chunk) }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(narrated.value.joined(), "WDA started successfully on port 8430 🙂\nnext\n")
+        XCTAssertEqual(String(decoding: received, as: UTF8.self), "WDA started successfully on port 8430 🙂\nnext")
+    }
+
+    func testSilencedNarrationPrintsNothing() {
+        XCTAssertTrue(RunnerNarration.shouldSilence(json: true, quiet: false, verbose: false))
+        XCTAssertTrue(RunnerNarration.shouldSilence(json: false, quiet: true, verbose: false))
+    }
 }

@@ -288,4 +288,41 @@ final class SimulatorCommandTests: XCTestCase {
             XCTAssertEqual(EmulatorCommand.Teardown.exitCode(for: error), .validationFailure)
         }
     }
+
+    // MARK: - K15: teardown stops the simulator's runner session
+
+    func testTeardownStopsRunnerSessionsOfEveryTargetFirst() async throws {
+        let stopped = LockedList()
+        let lines = await SimulatorCommand.Teardown.stopRunnerSessions(udids: ["A", "B"]) { udid in
+            stopped.append(udid)
+            return udid == "A" ? [.released(grantivaPid: 4163, runnerPid: 4267, udid: "A")] : []
+        }
+        XCTAssertEqual(stopped.values, ["A", "B"])
+        XCTAssertEqual(lines.stopped, ["A"])
+        XCTAssertEqual(lines.lines, ["Stopped runner session (pid 4267) for A."])
+    }
+
+    /// Fix round 1, item 5: an unmanaged UDID without --force is a no-op
+    /// teardown, so its runner sessions are left alone.
+    func testRunnerSessionsAreStoppedOnlyOnDevicesTheTeardownActsOn() {
+        typealias T = SimulatorCommand.Teardown
+        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+        XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: false, managed: [record]), [])
+        XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: true, managed: [record]), ["UNMANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: "MANAGED", sessionId: nil, force: false, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "S1", force: false, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "other", force: false, managed: [record]), [])
+    }
+
+    func testTeardownOutcomeEncodesRunnerSessionStopped() throws {
+        var outcome = SimulatorTeardownOutcome(
+            session: ManagedSimulatorSession(
+                udid: "EXACT-UDID", name: "n", sessionId: "s", ownerPID: 1, acquiredAt: Date(), state: .active
+            ),
+            deleted: false
+        )
+        outcome.runnerSessionStopped = true
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
+        XCTAssertEqual(object["runnerSessionStopped"] as? Bool, true)
+    }
 }

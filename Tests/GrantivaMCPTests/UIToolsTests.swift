@@ -185,6 +185,23 @@ final class UIToolsTests: XCTestCase {
         XCTAssertFalse(text.contains("Wi-Fi"), text)
     }
 
+    /// The iOS parser now emits numeric frames (K99/MCP-017); the tap-target
+    /// rule must still read them.
+    func testA11yCheckReadsNumericFrames() async throws {
+        let numeric = """
+            {"type": "XCUIElementTypeButton", "label": "Close", "enabled": true,
+             "frame": {"x": 0, "y": 0, "width": 20, "height": 20.5}}
+            """
+        let result = try await UITools.a11yCheck(
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: numeric),
+            config: nil,
+            platform: .ios
+        )
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("small_tap_target"), text)
+        XCTAssertTrue(text.contains("20x20"), text)
+    }
+
     func testA11yCheckRecursesIntoNestedChildren() async throws {
         let nested = """
             {"type": "XCUIElementTypeOther", "children": [

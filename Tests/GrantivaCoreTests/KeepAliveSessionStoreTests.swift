@@ -79,7 +79,11 @@ final class KeepAliveSessionStoreTests: XCTestCase {
     func testNoLiveSessionsIsReportedWithTheStartHint() throws {
         let empty = store(live: [])
         XCTAssertThrowsError(try empty.locate()) { error in
-            XCTAssertTrue(String(describing: error).contains("No keep-alive session found"))
+            // K46: the shared no-session text, not an "Invalid argument".
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`."
+            )
         }
 
         try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "dead")
@@ -138,6 +142,88 @@ final class KeepAliveSessionStoreTests: XCTestCase {
 
     func testCanonicalDirectoryResolvesSymlinks() {
         XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/tmp"), KeepAliveOwner.canonicalDirectory("/private/tmp"))
+        // K104: resolved, not undone: realpath(3) spells /tmp as /private/tmp.
+        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/tmp"), "/private/tmp")
+        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/private/tmp"), "/private/tmp")
+        // A directory that does not exist keeps its standardized spelling.
+        XCTAssertEqual(KeepAliveOwner.canonicalDirectory("/no/such/dir/../x"), "/no/such/x")
+    }
+
+    /// K104: a sidecar written by 2.1.0 recorded the `/tmp` spelling; it still
+    /// matches a project canonicalised to `/private/tmp`.
+    func testOwnerRecordedWithTheTmpSpellingStillMatches() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "old")
+        let legacy = #"{"createdAt":"2026-10-11T07:28:18Z","grantivaPid":1,"platform":"ios","projectDirectory":"/tmp","runnerPid":100,"udid":"921A0945-7157-4533-BA1F-21E8132D3E40"}"#
+        try Data(legacy.utf8).write(to: directory.appendingPathComponent("100.owner.json"))
+        let sessions = store(live: [100, 1]).liveSessions()
+        XCTAssertEqual(sessions.first?.projectDirectory, "/private/tmp")
+        XCTAssertEqual(sessions.first?.projectDirectory, KeepAliveOwner.canonicalDirectory("/tmp"))
+    }
+
+    func testRecordOwnerStoresThePrivateSpelling() throws {
+        let owner = try XCTUnwrap(store(live: []).recordOwner(
+            udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, projectDirectory: "/tmp"
+        ))
+        XCTAssertEqual(owner.projectDirectory, "/private/tmp")
+    }
+
+    // MARK: - K79: a run --keep-alive owner that died
+
+    func testARunOwnerWhoseGrantivaIsDeadIsExcluded() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "orphan")
+        let store = store(live: [100])
+        let owner = KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: false)
+        try write(owner)
+
+        XCTAssertTrue(store.liveSessions().isEmpty)
+        XCTAssertThrowsError(try store.locate())
+        // Teardown and `runner stop` still see it, to clean it up.
+        XCTAssertEqual(store.liveSessions(includingOrphans: true).map(\.pid), [100])
+    }
+
+    func testADetachedRunnerStartOwnerWithADeadStarterIsIncluded() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "detached")
+        let store = store(live: [100])
+        try write(KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: true))
+
+        let sessions = store.liveSessions()
+        XCTAssertEqual(sessions.map(\.sessionId), ["detached"])
+        XCTAssertEqual(sessions.first?.ownerPid, 4163)
+        XCTAssertEqual(sessions.first?.detached, true)
+    }
+
+    func testAnAttachedOwnerWhoseGrantivaIsAliveIsIncluded() throws {
+        try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "attached")
+        try write(KeepAliveOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100, grantivaPid: 4163, detached: false))
+        XCTAssertEqual(store(live: [100, 4163]).liveSessions().map(\.sessionId), ["attached"])
+    }
+
+    func testRecordOwnerKeepsWhetherTheSessionIsDetached() throws {
+        let store = store(live: [])
+        let owner = try XCTUnwrap(store.recordOwner(udid: "emulator-5554", runnerPid: 100, detached: true))
+        XCTAssertEqual(owner.detached, true)
+        let path = directory.appendingPathComponent("100.owner.json").path
+        XCTAssertEqual(KeepAliveSessionStore.loadOwner(path: path)?.detached, true)
+    }
+
+    // MARK: - K87
+
+    func testRemoveSessionFilesDeletesTheRunnerFileEvenWhileThePidLooksAlive() throws {
+        let runnerFile = try writeRunnerSession(pid: 100, nanos: 1, port: 8100, sessionId: "stopped")
+        try writeRunnerSession(pid: 1000, nanos: 2, port: 8200, sessionId: "other")
+        let store = store(live: [100, 1000])
+        store.recordOwner(udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 100)
+
+        let removed = store.removeSessionFiles(runnerPid: 100)
+        XCTAssertEqual(Set(removed), [runnerFile, directory.appendingPathComponent("100.owner.json").path])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: runnerFile))
+        XCTAssertEqual(store.liveSessions().map(\.pid), [1000])
+    }
+
+    private func write(_ owner: KeepAliveOwner) throws {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
     }
 
     func testASessionWithPortZeroIsListedBecauseAndroidRunnersPublishNoPort() throws {

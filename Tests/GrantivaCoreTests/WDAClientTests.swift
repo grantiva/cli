@@ -29,11 +29,24 @@ final class WDAClientTests: XCTestCase {
         XCTAssertEqual(root["label"] as? String, "App & More")
         XCTAssertEqual(root["enabled"] as? Bool, true)
         XCTAssertEqual(root["visible"] as? Bool, false)
-        XCTAssertEqual((root["frame"] as? [String: String])?["height"], "844")
+        // K99/MCP-017: frame values are numbers.
+        let frame = try XCTUnwrap(root["frame"] as? [String: Any])
+        XCTAssertEqual(frame["height"] as? Int, 844)
+        XCTAssertEqual(frame["y"] as? Int, 1)
+        XCTAssertFalse(frame["height"] is String)
         let children = try XCTUnwrap(root["children"] as? [[String: Any]])
         XCTAssertEqual(children.first?["identifier"] as? String, "next")
         XCTAssertEqual(children.first?["enabled"] as? Bool, false)
         XCTAssertNoThrow(try JSONSerialization.data(withJSONObject: root))
+    }
+
+    func testHierarchyParserKeepsFractionalFramesAndEmitsJSONNumbers() throws {
+        let root = try WDAHierarchyXMLParser(xml: #"<Button x="10.5" y="0" width="44" height="43.75"/>"#).parse()
+        let frame = try XCTUnwrap(root["frame"] as? [String: Any])
+        XCTAssertEqual(frame["x"] as? Double, 10.5)
+        XCTAssertEqual(frame["height"] as? Double, 43.75)
+        let json = String(decoding: try JSONSerialization.data(withJSONObject: root, options: [.sortedKeys]), as: UTF8.self)
+        XCTAssertTrue(json.contains(#""frame":{"height":43.75,"width":44,"x":10.5,"y":0}"#), json)
     }
 
     func testHierarchyParserOmitsEmptyAttributesAndIncompleteFrames() throws {
