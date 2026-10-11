@@ -1,9 +1,13 @@
-# Round 2 coverage pass: cluster map (CLI + iOS slices)
+# Round 2 coverage pass: cluster map (CLI + iOS + Android slices)
 
-Inputs: `cov2-cli/findings/cov2-cli-results.md` (CLI slice, tag `[cli]`) and `cov2-ios/findings/cov2-ios-results.md`
-(iOS slice, tag `[ios]`). The Android slice is not finished, so this map does not cover it. Source references are CLI main
-c65fc17 (`Sources/…`) and runner 1be68db (`pkg/…`). Both slices count as fails every row graded `fail` and every row graded
-`fail (matrix/brief error — triage)`. `fail` rows go to clusters. Triage rows go to §Expectation corrections.
+Inputs: `cov2-cli/findings/cov2-cli-results.md` (CLI slice, tag `[cli]`), `cov2-ios/findings/cov2-ios-results.md`
+(iOS slice, tag `[ios]`) and `cov2-android/findings/cov2-android-results.md` (Android slice, tag `[android]`; its extras
+AND2-OBS-01..06 count as fails). Source references are CLI main c65fc17 (`Sources/…`) and runner 1be68db (`pkg/…`).
+Every slice counts as fails every row graded `fail` and every row graded `fail (matrix/brief error — triage)`. `fail`
+rows go to clusters, or to §Carried open items when they verify a brief that is still open (L01, L02, L05, L06, L07,
+K111). Triage rows go to §Expectation corrections. Android evidence lives under
+`cov2-android/findings/evidence/cov2-android/<ROW>/` and the shared `CF-*/` runs; each `commands.txt` records the 1-min host
+load. Fails that may only be load artefacts are listed in §Load-sensitive.
 CLI-049 was `blocked` in the CLI slice and handed over. The iOS slice graded it `fail`, so it counts in the iOS slice.
 
 ## Clusters
@@ -39,11 +43,12 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 
 ### M03 — failing-run-text-summary-empty
 - Component: cli. Severity: wrong-result.
-- Rows: S2-03 [ios].
+- Rows: S2-03 [ios], S2-03 [android].
 - Expected: a run with `screens:` and `flows:` prints the per-screen and per-flow blocks plus the `Screens: …` and `Flows: …`
   lines on a failing run, as it does on a passing one.
 - Actual: the screens session passed and a flow failed, and stdout was 0 bytes. Neither summary line was printed. The exit
-  code was 1. The Android smoke showed the same.
+  code was 1. Android is the same: stdout empty, stderr ends with `Error: Runner failed (exit 1): 02-exact-negative: …`, and
+  the ready file is correct (screens passed, 02-exact-negative failed, the rest skipped). The Android smoke showed the same.
 - Brief: K20 extends. Screens-session failure reporting fixed `--json`, but the text form still prints nothing on a failure.
 - Suspected cause: `Sources/GrantivaCLI/RunCommand.swift:552-557`. A throw from `runFlows` goes to `handleSuiteFailure` and is
   rethrown. `handleSuiteFailure` (`RunCommand.swift:205-217`) only emits the `--json` failure document. The text path
@@ -78,12 +83,15 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 
 ### M06 — runner-stop-json-shape-differs-from-start
 - Component: cli. Severity: contract.
-- Rows: IOS-138, B2-K16, N2-05, N2-07, D2-13 [ios].
+- Rows: IOS-138, B2-K16, N2-05, N2-07, D2-13 [ios]; B2-K16, N2-07, D2-13 [android].
 - Expected: README:399-403 says `runner start --json` and `runner stop --json` share one shape: `status`, `pid` and `port`
   as numbers, `platform`, `bundleId` and `udid`. README also names `runner stop` for the `bundle_id` → `bundleId` pair.
 - Actual: the `stop` documents (single, multi-session `sessions[]`, `alreadyExited`) have no `port` and no `bundleId` or
   `bundle_id`. They also add `killed` (`false` next to `status: stopped`), `reaped` and `runnerPid`. README documents
   `reaped` and `runnerPid` but not `killed`. `pid` and `port` are numbers now, which is the round-1 part of the fix.
+  Android has the same gap: the stop document is `{killed, pid, platform, reaped, runnerPid, serial, status, udid}`, with no
+  `applicationId`, no deprecated `bundle_id` and no `port`, while `started`/`already_running` carry `applicationId` +
+  `bundle_id` and `serial` + `udid`.
 - Brief: K16 incomplete. `runner stop` lacks `port` and `bundleId`, and `killed` is undocumented.
 - Suspected cause: `Sources/GrantivaCLI/DriverCommand.swift:826-865`. Every stop `RunnerLifecycleDocument(status:
   "stopped", pid:, deviceID:, platform:)` is built without `port:` or `appID:`, although the session file holds both.
@@ -151,10 +159,11 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 
 ### M12 — run-stdout-runflow-prints-staged-absolute-path
 - Component: cli. Severity: ux.
-- Rows: B2-K105 [ios].
+- Rows: B2-K105 [ios], B2-K105 [android].
 - Expected: the live line, nested header, report.json and the summary name the sub-flow as written (K105 Expected).
 - Actual: live lines and report.json are fixed. grantiva's stdout step list still prints
-  `✓ runFlow: /tmp/…/ios/.maestro/coverage/14-runflow-sub.yaml` (twice). That is the `/tmp` spelling, not the realpath.
+  `✓ runFlow: /tmp/…/ios/…/coverage/14-runflow-sub.yaml` (twice). That is the `/tmp` spelling, not the realpath.
+  Android prints the same staged path in the `run` result block (verbose.out, verbose-rd.out), for both forms.
 - Brief: K105 incomplete.
 - Suspected cause: `Sources/GrantivaCore/Runner/RunnerSession.swift:485-495` and `:580-587`. Captures are collected from
   report.json by `RunnerArtifactCollector.collect(…, stagedPathMap:)`. That collector receives `stagedPathMap`, not
@@ -201,10 +210,12 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 ### M16 — session-capture-launch-step-duration-zero
 - Component: mcp (`SessionCapture`, used by `diff capture --no-build` through a live session and by MCP `grantiva_vrt_capture`).
   Severity: contract.
-- Rows: N2-08 [ios] (also seen in MCP-063).
+- Rows: N2-08 [ios] (also seen in MCP-063); X-022, B2-K17, N2-08 [android] (also MCP-064).
 - Expected: every step's `duration` is a positive number or `null` when the runner measured none, never `0` (README `run --json`
   duration rule, which also holds for `diff capture --json`).
-- Actual: a session capture reports Home's `Launch app` with `duration: 0`.
+- Actual: a session capture reports Home's `Launch app` with `duration: 0`. On Android, the CLI capture without a session
+  measures the same step (8.284 s, AND-108), while `diff capture --no-build --json` through a session and MCP
+  `grantiva_vrt_capture` report `0`.
 - Brief: K17 incomplete (session-capture path).
 - Suspected cause: `Sources/GrantivaMCP/Tools/SessionCapture.swift:158`, `StepResult(action: "Launch app", status: .passed,
   duration: 0)`. Use `nil`, or time the launch.
@@ -220,6 +231,9 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
   (`pkg/driver/wda/wait_crash.go:34-55`). The home screen is static, so it "settles". The fix brief should decide whether
   `waitForAnimationToEnd` is a wait under the K97 rule: it is not an element wait, so check whether the stock flows depend on
   it passing.
+- Android: on Android the four N2-13 waits fail with `app_crash` except `extendedWaitUntil {visible: "Landmarks"}`, which
+  passes by matching the launcher's label. That is an open L02 criterion (§Carried open items), not this cluster. The
+  screenshot-stability weakness also explains M38: a static blank or home screen "settles" at once.
 
 ### M18 — mp4-hold-fails-on-malformed-extra-track
 - Component: cli. Severity: wrong-result.
@@ -308,6 +322,205 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 - Suspected cause: criterion 3 was not implemented. Add the CI step (`GRANTIVA_RUNNER_HOME=$(mktemp -d) swift test` followed by
   an emptiness check) to `.github/workflows/ci.yml`.
 
+### M25 — android-crash-on-launch-detected-at-first-assert
+- Component: runner. Severity: contract.
+- Rows: AND-107, AND-040, B-A01.1, B-R01.3 [android].
+- Expected: 99-crash and `--env LANDMARKS_CRASH_ON_LAUNCH=1` fail at `launchApp` with `crashed on launch:
+  java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH` (brief R01 criterion 3, A01 criterion 1, AND-040/AND-107).
+- Actual: `launchApp` passes (4.8-17.1 s), and the first `assertVisible "Landmarks"` fails with `error.type: app_crash` and
+  `app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH`. No step passes against the dead app,
+  and the exit code, failure screenshot and ready file `failed` are right. AND-107 takes 50.0 s wall (round 1: 6.2 s, at
+  `launchApp`).
+- Brief: R01 criterion 3 and A01 criterion 1 regress. Note that L02's own Expected ("fails on the first assert, within ~2 s
+  of the crash") describes the observed step. **Needs a ruling** before a brief is written:
+  - either `launchApp` must catch a crash in the first seconds after launch (product fix), or
+  - first-assert `app_crash` is accepted, and AND-107/AND-040/B-A01.1/B-R01.3 become matrix corrections.
+- Suspected cause: `pkg/driver/uiautomator2/commands.go:1607-1630` (`confirmLaunch`) returns success once the process has
+  been alive for `settle` = 1 s (`defaultLaunchTiming`, `:1566-1571`). On the slow software-rendered AVD, the app lives more
+  than 1 s before its `onCreate` throws, so the crash lands after `launchApp` returned. This is timing-dependent (see
+  §Load-sensitive). A fix could keep watching for a FATAL EXCEPTION until the first UI is drawn, or for a longer settle.
+
+### M26 — android-doubletap-registers-as-two-taps
+- Component: runner. Severity: wrong-result.
+- Rows: AND-210 [android].
+- Expected: `doubleTapOn: {id: "gesture-pad"}` gives `Double taps: 1`, `Taps: 0` (README:172; round 1 did).
+- Actual: the step passes in 1.4 s but registers two single taps, 3 of 3 runs (`Double taps: 0`, `Taps: 3`), at load 9-19
+  on the software AVD.
+- Brief: new. The command shares the UIAutomator2 robustness family of K06-K09.
+- Suspected cause: `pkg/uiautomator2/gestures.go:51-57` sends the server's `/appium/gestures/double_click`. On a slow
+  software-rendered AVD the two clicks probably land further apart than the double-tap timeout (~300 ms). Not confirmed:
+  there is no pointer trace. A fix would send one W3C `/actions` sequence with an explicit short inter-tap gap. Re-run on a
+  quiet host first (§Load-sensitive).
+
+### M27 — android-doubletap-point-only-selector-rejected
+- Component: runner. Severity: wrong-result.
+- Rows: AND2-OBS-01 [android].
+- Expected: README lists `point:` for taps, so `doubleTapOn: {point: "50%,50%"}` double-taps the point, as `tapOn {point}`
+  taps one.
+- Actual: the step fails at once with `Element not found: selector (cause: no selector specified)`.
+- Brief: new.
+- Suspected cause: `pkg/driver/uiautomator2/commands.go:155` calls `findElementForTap` before the point branch at `:163`.
+  A point-only selector has nothing to find, so the step fails before reaching `DoubleClick(x, y)`. Handle a point-only
+  selector first, as `tapOn` does.
+
+### M28 — android-scrolluntilvisible-short-scrolls
+- Component: runner. Severity: wrong-result.
+- Rows: AND-224 [android].
+- Expected: `scrollUntilVisible {element: "Landmark 70", direction: DOWN}` finds it (README:172; round 1 passed).
+- Actual: fails 2 of 2 with `Element not found after 20 scrolls` (49.8/52.2 s). The last hierarchy reaches only Landmark 55.
+- Brief: L03 extends. L03 made bare `scroll` device-independent with a measured top-up. `scrollUntilVisible` was not
+  covered.
+- Suspected cause: `pkg/driver/uiautomator2/commands.go:1019-1055` scrolls each step with `performScrollInRect` /
+  `performScroll` at a 0.3 fraction and no measured top-up. On the software AVD a gesture moves the content less, so 20
+  scrolls fall short of row 70. Apply L03's measured-travel plan here, or count progress instead of scrolls.
+
+### M29 — android-force-teardown-leaves-killed-run-temp-dirs
+- Component: cli. Severity: ux.
+- Rows: B2-K106 [android].
+- Expected: after `kill -9` of a run, a forced teardown removes the run's temp dirs and lists them (K106).
+- Actual: `emulator teardown --serial emulator-5556 --force --json` kills the emulator (`killed: true`,
+  `runnerSessionStopped: false`), but both temp dirs stay (`grantiva-96934240-…`, `grantiva-report-E0C92521-…` under
+  `$TMPDIR`), and the JSON lists no removed paths. iOS passes (B2-K106 [ios]).
+- Brief: K106 incomplete (Android).
+- Suspected cause: only `SimulatorReaper` removes the claim's temp dirs (`Sources/GrantivaCore/Simulator/SimulatorReaper.swift:216`,
+  `:247`). `EmulatorManager.teardown(serial:force:)` (`Sources/GrantivaCore/Android/EmulatorManager.swift:590`) has no
+  equivalent, and its outcome has no `temporaryDirectoriesRemoved` field.
+
+### M30 — android-foreground-runner-start-stop-exits-1
+- Component: cli. Severity: contract.
+- Rows: N2-15 [android]. Also cited by M31.
+- Expected: a foreground `runner start` ended by `runner stop` from another shell prints `Runner stopped …; the session has
+  ended.` and exits 0, as on iOS (N2-15 [ios] pass; K88).
+- Actual: Android prints `Error: The runner exited with status 1; the session has ended.` and exits 1. Cleanup is correct.
+- Brief: K88 incomplete (Android).
+- Suspected cause: `Sources/GrantivaCLI/DriverCommand.swift:519-521` with `isOrderlyRunnerExit` (`:544-546`), which accepts
+  0, SIGINT, SIGTERM, SIGKILL and 128+INT/TERM only. The Android runner exits 1 when stopped. Not located on the runner
+  side: either the runner's Android shutdown should exit 0 on SIGTERM, or the CLI should treat a stop it requested as
+  orderly (for example, by checking that the session file was removed by `runner stop`).
+
+### M31 — sigint-narration-says-simulator-on-android
+- Component: cli. Severity: ux.
+- Rows: AND2-OBS-04 [android] (also seen in N2-15 [android]).
+- Expected: the interrupt notice names the device kind: `releasing emulator` on Android, as the keep-alive `run` says.
+- Actual: foreground `runner start` on Android prints `[grantiva] received SIGINT — releasing simulator and reaping child
+  processes`.
+- Brief: K04 and K11 extend (Android labelled as iOS).
+- Suspected cause: `SignalRelay.shared.deviceNoun` is set only in `Sources/GrantivaCore/Runner/RunnerExecution.swift:106` (the
+  run path). The `runner start` path in `DriverCommand.swift` never sets it, so it keeps the default `simulator`.
+
+### M32 — android-runner-start-readiness-not-reported
+- Component: cli and mcp. Severity: contract.
+- Rows: B2-K100.2, D2-44, AND2-OBS-03 [android].
+- Expected: while `runner start` is still bringing the driver up, MCP reads answer `-32002` with `The runner session is
+  starting … Retry in a few seconds.` (docs/mcp.md:19; K100). `runner start --detach` "returns once the driver is up"
+  (help).
+- Actual:
+  - During a 7.9 s Android start, `resources/read` of both URIs answers `-32002` `No active runner session at
+    <dir>/.grantiva/session.json. Start one with …`, never the "starting" text. iOS passes.
+  - Separately, one `runner start --detach` returned after 1.5 s (B2-K79/03), and `hierarchy` / `runner dump-hierarchy`
+    then failed for ~15 s (`No active runner session`, `not answering on local port 62675`). Other starts returned after
+    4.7-7.9 s, ready.
+- Brief: K100 incomplete (Android). The OBS-03 half is new.
+- Suspected cause: the "starting" state exists only for WDA: `Sources/GrantivaCore/WDA/WDAClient.swift:363-368`
+  (`sessionStartingMessage`). There is no Android counterpart, and `.grantiva/session.json` seems to be written only once
+  UIAutomator2 is ready. The `--detach` readiness check (`DriverCommand.swift`, `WDAStartup` at `:551`) is WDA-oriented, and
+  an early return on Android was not traced. The early return may be load-dependent (load 10.3).
+
+### M33 — build-install-skipped-omits-apppath
+- Component: cli. Severity: contract.
+- Rows: D2-07 [android].
+- Expected: README (c65fc17 :258-263) lists `appPath` for every Android `build install --json` document.
+- Actual: `launched` and `installed` carry `applicationId, appPath, device{name, serial}`. `--no-build --no-launch` gives
+  `status: skipped` without `appPath`.
+- Brief: new (D2 contract row).
+- Suspected cause: `Sources/GrantivaCLI/BuildCommand.swift:202/210` pass `appPath: productPath`, which is `nil` when nothing
+  was built or resolved (`appPath: String?` at `:308`/`:324`; `skipped` at `:260`). Either resolve the installed APK's path,
+  or say in README that `skipped` omits it.
+
+### M34 — android-hierarchy-frame-values-are-strings
+- Component: cli. Severity: contract.
+- Rows: D2-31 [android].
+- Expected: docs/dump-hierarchy.md:30: `frame` is `{x, y, width, height}` with numbers, the same tree from `hierarchy
+  --format json`, `runner dump-hierarchy --format json` and `grantiva_a11y_tree`.
+- Actual: Android gives the same tree from all three, but every `frame` value is a JSON string (`"height" : "50"`). iOS
+  passes.
+- Brief: K99 extends. K99 was iOS-only and noted that string frames "may be tracked separately". The round-2 docs now promise
+  numbers for all platforms, so the Android half is a defect, not an open question.
+- Suspected cause: `Sources/GrantivaCore/Android/UIAutomator2HierarchyParser.swift:69-70`, where
+  `func dp(_ px: Int) -> String` returns `String(...)`. Return an `Int`.
+
+### M35 — android-unknown-variant-lists-no-variants
+- Component: cli. Severity: ux.
+- Rows: B-A09.2 [android].
+- Expected: for an unknown variant or module, "ideally also list the available ones" (brief A09 criterion 2).
+- Actual: the error only adds "`./gradlew tasks --all` lists the assemble<Variant> tasks of each module".
+- Brief: A09 criterion 2 (an "ideally" criterion) not met. Low priority, or close by ruling.
+- Suspected cause: `Sources/GrantivaCore/Android/GradleBuildRunner.swift:115` gives the pointer only, without running
+  `./gradlew :<module>:tasks` to list the variants.
+
+### M36 — native-config-id-selector-raw-decodingerror
+- Component: cli. Severity: ux.
+- Rows: B-C08.2 [android].
+- Expected: the native `screens:` step gains an id-selector form (for example `tap: {id: X}`) for tap, assertVisible,
+  assertNotVisible, scrollUntilVisible and extendedWaitUntil (brief C08 criterion 2).
+- Actual: `tap: {id: "clock"}` / `assert_visible: {id: …}` in `grantiva-android.yml` fails to parse with a raw decoder
+  dump: `grantiva-android.yml could not be parsed: DecodingError.keyNotFound: Key 'text' not found … Path:
+  screens[0].path[2].tap` plus `unknown key "id"`. The iOS half passed through the flow-format config path, which does carry `id`.
+- Brief: C08 criterion 2 incomplete. The native form was never added, and the raw error is a K-series ux defect of its own.
+- Suspected cause: only the flow-format parser (`Sources/GrantivaCore/Config/`, the `tapById` setter at line 499) sets `tapById`. The native `Step` decoding in
+  `Sources/GrantivaCore/Config/GrantivaConfig.swift` has no `{id}` form, and `:317/:337/:350` interpolate the raw
+  `DecodingError` (`\(error)`). This is probably platform-neutral: an iOS `grantiva.yml` with the native `{id}` form should
+  fail the same way (not run).
+
+### M37 — android-session-json-names-differ-from-runner-start
+- Component: cli. Severity: contract.
+- Rows: B2-K103 [android].
+- Expected: `runner start --json` and `.grantiva/session.json` name the bundle the same way (K103 criterion 1). iOS passes:
+  `bundleId` in both.
+- Actual: Android `runner start --json` says `applicationId` (+ `bundle_id`) and `port`. `.grantiva/session.json` says
+  `bundleId` and `wdaPort` (AND-082/01, AND-126/02).
+- Brief: K103 incomplete (Android). Related to M06, but a different writer.
+- Suspected cause: `Sources/GrantivaCore/Runner/RunnerSessionInfo.swift:6-18` stores and encodes `wdaPort` / `bundleId`
+  for both platforms. Encode the platform's names (`applicationId`, `port`) for Android, keeping the old keys readable.
+
+### M38 — screens-capture-before-app-renders
+- Component: cli. Severity: wrong-result.
+- Rows: N-12, AND2-OBS-02 [android].
+- Expected: a launch-only screen is captured after the app has drawn. Session and CLI captures of the same screens pass
+  `diff compare` against each other (N-12).
+- Actual: while the default AVD was slow, the CLI capture of the launch-only `Home` screen is blank (status bar only,
+  ~20 KB). This happened in AND-108, the stock `run` screens, N-12 and the flow-format `Home Swiped`, so N-12 fails
+  `pixel=99.90%`. Session captures show the list, and once the emulator sped up, Home was 122 KB (B-A04.1).
+- Brief: new. Related to M17: the settle wait is fooled by a static screen.
+- Suspected cause: `Sources/GrantivaCore/Runner/FlowGenerator.swift:133-134` and `:215-217`. Before `takeScreenshot`, the
+  generated flow's only wait is `waitForAnimationToEnd` (timeout 5000), which returns as soon as two screenshots match. A
+  blank pre-render screen is static, so it "settles" at once. A launch-only screen needs an app-drawn condition, such as
+  waiting until the hierarchy contains the app's package, or a minimum delay after `launchApp`. Load-sensitive (load 40.8,
+  slow period).
+
+### M39 — mcp-emulator-boot-reports-reuse-as-boot
+- Component: mcp. Severity: ux.
+- Rows: AND2-OBS-05 [android].
+- Expected: like the CLI after K12/K29, a reuse of an already running AVD is reported as `Using`/`Reused`, not as a boot.
+- Actual: `grantiva_emulator_boot` answers `Emulator booted: cov2-android (emulator-5554)` for an AVD that was already
+  running.
+- Brief: K12 and K29 extend (MCP twin).
+- Suspected cause: `Sources/GrantivaMCP/Tools/EmulatorTools.swift:103` always says "booted". Use the boot outcome's reuse
+  flag, as the CLI does.
+
+### M40 — emulator-teardown-loses-recently-installed-app
+- Component: cli. Severity: wrong-result.
+- Rows: AND2-OBS-06 [android].
+- Expected: `emulator teardown --serial` shuts the emulator down without losing the data partition. An app installed before
+  the teardown is still installed after the next `ensure`.
+- Actual: `com.kylebrowning.landmarks` was listed before teardown and missing after `ensure` (AND-113/03). AND-029/01 and
+  AND-115/01 then failed with `… is not installed`.
+- Brief: new.
+- Suspected cause: not located. `EmulatorManager.teardown` (`Sources/GrantivaCore/Android/EmulatorManager.swift:590-630`)
+  ends the emulator with `adb emu kill` (or a kill after `killTimeout`). Boots use `-no-snapshot-save` (`:229`). A kill
+  before the guest flushes userdata would lose a recent install. Check whether teardown escalates to a kill, and add `adb
+  shell sync` or a graceful `reboot -p` before `emu kill`.
+
 ## Expectation corrections
 
 Row text cites README/brief lines that were checked at c65fc17 where noted.
@@ -333,6 +546,8 @@ Row text cites README/brief lines that were checked at c65fc17 where noted.
 | N-01 | ios | `runner stop` releases a `run --keep-alive` session fully. The ready file stays `passed` because it was written at the flows' terminal state, and README:83 and :419 say it is written once and keeps `passed`/`failed` | correct the matrix (`interrupted` applies only when the stop lands before the flows finish) |
 | B2-K14 | ios | same as N-01. The K14 criterion asks for the ready file to read `interrupted` after a stop that follows completed flows | correct the brief (K14 criterion: ready file unchanged once terminal; `interrupted` only if stopped mid-flow) |
 | B2-K68 | ios | free UDID: `reclaimed:false, leaseReleased:false` (bullet 1 met). After `kill -9` of a keep-alive, `reclaimed:true` with WDA and diagnose killed, but `leaseReleased:false`. Bullet 2 asks for `true`, while bullet 3 says `true` only when the flock is held or the claim is live | correct the brief. See the judgment below |
+| AND-223 | android | four bare scrolls land with Landmark 28 as the last row (20-28 visible). N-03/B2-K07 were corrected to `Landmark 28` for Android (00-expectation-corrections.md:16, landmarks-demo flow asserts 28 and passes). This row still expects `Landmark 30` | correct the matrix (apply the N-03 correction to AND-223) |
+| MCP-026 | android | steps 1-4 run in order, then step 5 `type "x"` stops with isError `No focused text field …`, listing the steps that ran. That is the K102/D2-37 behaviour; the row still expects the final tree. The invalid-script half passes | correct the matrix (same fix as MCP-025: drop the `type` step or focus a field first) |
 
 **B2-K68 judgment.** The contradiction is real but conditional. When K68 was written, K79 was open: the runner outlived
 its killed grantiva and kept the lease's flock through its inherited descriptor. In that world, bullet 3's rule ("held:
@@ -358,34 +573,110 @@ true only if the runner still held the lease when teardown ran. Not a product de
 | B-C21.1 | ios | `simulatorNotRunning` and doctor no-simulator advice need no booted simulator. The user's booted iPhone 17 Pro and 18 Pro rule that out. The reachable part (the hierarchy hint) holds | yes, same window as CLI-083. Needs the owner to shut their simulators down, or a host with none booted |
 | IOS-018 | ios | `created.json` lists devices from other sessions (TienLen, BLESwift, fix-8-*, fix2-13-*), so `simulator cleanup` would delete them | yes, with a scratch `GRANTIVA_RUNNER_HOME`/HOME whose ledger holds only `cov2-*` devices, or after the owner prunes the ledger |
 | B-I06.2 | ios | the HTTP request `grantiva_type` sends to WDA (`/wda/keys`) is logged nowhere, and `grantiva mcp` has no `--verbose` | yes, by a source check (MCP driver's type path) or a logging proxy in front of WDA's port. No product change needed to verify |
-| N-08 | ios | whether grantiva reads `~/.maestro-runner` cannot be observed without root (`fs_usage`/`opensnoop`) | partly: a source grep for the path in both repos settles "never reads" statically. A dynamic check needs sudo, which only the owner can grant |
+| N-08 | ios | whether grantiva reads the runner's developer install dir in HOME cannot be observed without root (`fs_usage`/`opensnoop`) | partly: a source grep for the path in both repos settles "never reads" statically. A dynamic check needs sudo, which only the owner can grant |
+| AND-002 | android | the install half needs a small uninstalled system image (downloads are 1 GB+). The sdkmanager error path is clean (B2-K31) | yes, on a host with bandwidth and disk for one image download, or with a deliberately uninstalled small image. Owner's call |
+| AND-012 | android | Global Constraints forbid `emulator teardown --all` while other AVDs (the owner's `Pixel_8_API_35`) may be running | yes, only on a host or window where every running emulator is Grantiva-created for the campaign, or with a scratch ledger. Needs owner approval |
+| AND-088 | android | no credentials in the campaign (spec §Out of scope) | no, not within the campaign's scope. Needs a test API key |
 
 ## Carried open items
 
-- **L05** (Android first find after `launchApp` blocks 5-10 s; failure capture queues behind it). Not observed: both
-  finished slices are device-free or iOS. Runner 1be68db carries L01-L04 only (#20), so L05 is expected open. The B2-L05
-  row is the Android slice's.
-- **L06** (Android page-source selectors check for a crash only between attempts). Not observed on Android (Android slice
-  pending). `confirmMatch` exists in `pkg/driver/uiautomator2/wait_crash.go:34-38` and is called from `driver.go:591,604,692`.
-  Whether every page-source path (relative, index, size, tap fallback) goes through it was not verified. On iOS, the sibling
-  rule holds for element waits (N2-13: `app_crash` within 7-338 ms), but `waitForAnimationToEnd` passes on a dead app → M17.
-- **L07** (Android `swipe {direction, from}` flaky under load). The CLI slice's source check (B-R02.5, pass) found both
-  Android drivers' swipe tests assert `input swipe 246 500 0 500 300`. The element swipe still goes through `adb input swipe`,
-  which L07 asks to replace with a UIAutomator2 `/actions` sequence with a hold, so L07 is open at 1be68db. No device
-  observation yet.
-- **K111** (Android `record` overrun never trimmed). Not observed (Android slice pending: B2-K111, N2-01). At c65fc17,
-  `MP4LastFrameHold.swift` has no trim or overrun handling (no `stts` shortening), so K111 is expected to stay `fail`.
+The Android rows below verify briefs that are still open at runner 1be68db / CLI c65fc17. They are placed here, not in
+clusters, and feed the existing briefs' next fix.
+
+- **L01** (Android inputText cut by a fixed 10 s request timeout). Rows: B2-L01, AND-213 [android].
+  - What passes: 03-edit passes 3 of 3 alone (inputText 12.8/21.0/15.9 s; `/actions` answered after 8.2/15.1/11.6 s and was
+    **not** cut, so the step-governed deadline works) and inside the stock set (12/12).
+  - AND-213 failed 1 of 3 (`15-input-unicode`, load 68 at start): `✗ inputText … (48.0s)`, `did not answer POST /actions
+    within 10s`.
+  - **Client-log reading** (CF-15-input-unicode/report/client.log and the runner log beside it): step 4 starts at 10:31:02.82.
+    `GET /element/active` then takes **35.5 s** (ends 10:31:38.36, 404, no focused field), and that request was itself
+    allowed past 10 s. `POST /actions` follows and is cut at exactly 10.0 s (10:31:48.36). The step fails at 48.0 s.
+  - `requestDeadline` (`pkg/uiautomator2/transport.go:83-99`) gives a request the larger of the 10 s floor and the time
+    left on the step. A cut at exactly 10.0 s means at most 10 s was left. So this is the floor after the step budget was
+    spent by the slow focused-element lookup, not the hard-coded cap L01 removed.
+  - Because `active` returned 404, the L01 timeout recovery (`typedDespiteTimeout`, `pkg/driver/uiautomator2/commands.go:505-522`)
+    had no field to read and could not rescue the step.
+  - **Verdict:** a different path from L01's (a slow `GET /element/active` under heavy load), not a regression of the fix.
+    It is load-sensitive, so re-run before filing. Not confirmed: the inputText step timeout value is not in the log.
+  - Worth adding to L01 or L05: at flow start (10:30:12-10:30:42), three consecutive `POST /element` calls are each cut at
+    10.00 s. That looks like a find attempt still capped at the floor while its step had time, which matches L01 criterion 2
+    ("no call cut at a hard-coded 10 s while its step still has time") and L05.
+- **L02** (Android crash check stalled by a blocked find; assert can pass on the dead app). Rows: B2-L02, N2-13 [android].
+  - B2-L02: 99-crash fails 3 of 3 at `assertVisible "Landmarks"` with `app_crash` and the right cause, 0.7-1.9 s after
+    `am_crash`, and never passes (detection criterion met). The timing criteria are missed: assert step 5.6-6.0 s (target
+    ~3 s), flow 16.2-19.2 s (< 6 s) and wall 31.4-32.3 s (< 12 s), at load ~10-13.
+  - N2-13 [android]: `extendedWaitUntil {visible: "Landmarks", timeout: 15000}` **passes** against the crashed app (13.2 s;
+    `am_crash` lands inside the wait, and the match is the launcher's "Landmarks" label). That breaks L02 criterion 4 ("no
+    element-wait step reports success while the launched process is gone"). The other three variants fail with `app_crash`
+    1.2-2.6 s after the crash.
+  - The detection-at-first-assert outcome is what M25 turns on.
+- **L05** (Android first find after `launchApp` blocks 5-10 s). Row: B2-L05 [android]. Reproduces: the first `tapOn "Deep
+  Links"` takes 9.1/10.8/8.5 s (target < ~3 s), the first `POST /element` (404) 6.33/6.05/5.95 s (< 2 s), and 99-crash wall
+  31.4/32.3/31.9 s (< 12 s), still `app_crash` at the first assert. Load ~6-14. The slice notes the AVD was slow until about
+  12:50, so re-run on a quiet host (§Load-sensitive).
+- **L06** (page-source selectors check for a crash only between attempts). Row: B2-L06 [android].
+  - (a) The `index: 1` variant **passes both steps** 3 of 3 (`assertVisible {text: ".*", index: 1}` 0.8-1.2 s, `tapOn` 0.7
+    s) against an app that never came up. Its `am_crash` follows the passing flow.
+  - (b) `below:` and (c) `width:` fail with `app_crash` 1.8-3.7 s and 1.8-4.0 s after `am_crash` (2 of 6 within ~2 s).
+  - `confirmMatch` exists (`pkg/driver/uiautomator2/wait_crash.go:34-38`, called from `driver.go:591,604,692`), but the
+    index path evidently returns a match before the crash watch is armed or without re-checking it.
+- **L07** (Android element swipe flaky under load). Rows: B-A02.2, B-R02.1, B2-K09, N2-17 [android] (one shared 10-run loop,
+  CF-k09).
+  - The swipe starts at the element's far side (~x=250 px, ≈90% across the Lake Tahoe label) and ends at the left edge, as
+    documented, but opens the row in only 5 of 10 runs (1, 2, 4, 5, 8) at load 10-13. The other runs spring back.
+  - B-R02.5 (CLI source check) confirms the element swipe still goes through `adb input swipe 246 500 0 500 300`, not
+    UIAutomator2 `/actions`.
+  - L07's criterion is defined at load ≥ 8, so these rows are valid as recorded. A quiet-host re-run would not close L07.
+- **K111** (Android `record` overrun never trimmed). Rows: B2-K111, N2-01 [android].
+  - The 5 × `--duration 4` repro runs were all 4.000 s (no overrun occurred; `recordedMilliseconds` 0/3059/0/0/0), and
+    `--frames-at 4000` resolves to the last frame.
+  - But AND-079's `--duration 3` recording is 5.663 s (`recordedMilliseconds: 5663`) and untrimmed, and D2-11/02 recorded
+    5253 ms for 4 s.
+  - At c65fc17, `MP4LastFrameHold.swift` has no trim or `stts` shortening. Open, as expected.
 - **Deferred minor: `holdTrack` with a malformed extra track** → N2-20 `fail` [cli], filed as M18.
-- **Deferred minor: SIGHUP under nohup** → N2-18 `fail` [ios]. The runner dies on SIGHUP (M04), and teardown then leaves
-  its session file (M05). The first half of N2-18 holds: a `runner start --detach` from a parent with SIGINT/SIGTERM blocked
-  gets a runner whose blocked mask is 0, and that runner stops on the first signal.
+- **Deferred minor: SIGHUP under nohup** → N2-18 `fail` [ios]. The runner dies on SIGHUP (M04), and teardown then leaves its
+  session file (M05). The first half of N2-18 holds.
+
+## Load-sensitive
+
+Fails whose evidence points at timing on a loaded host or a slow software-rendered AVD. Load is the 1-min average from
+`commands.txt`. The Android slice ran in parallel with the iOS slice: load ranged from about 10 to 394, and the slice notes
+the default AVD was slow until about 12:50 (inputText 13-22 s, first lookup 6-10 s, launchApp up to 1m 43s). Re-run each
+on a quiet host (load < 4, no parallel slice) with the same AVD before writing or extending a brief. Rows whose cluster is
+purely logical (M06, M12, M16, M33, M34, M37, …) are not listed.
+
+| rows | cluster / brief | load and timing seen | what a quiet-host re-run decides |
+|---|---|---|---|
+| AND-107, AND-040, B-A01.1, B-R01.3 | M25 | 6-15; launchApp 4.8-17.1 s (CF-crash-1..3: 5.96/7.43/9.07) | whether `launchApp`'s 1 s settle catches the crash when the app dies fast (round 1: at launchApp, 6.2 s), and so whether M25 is a product fix or a ruling |
+| AND-210 | M26 | 9.1/19.3/12.7 | whether the double tap splits only when injection is slow (round 1 passed) |
+| AND-224 | M28 | 10.9/6.5; 49.8/52.2 s | whether 20 scrolls reach row 70 when the AVD is fast. L03 showed the software AVD moves less per gesture regardless of load, so it may stay a defect |
+| N-12, AND2-OBS-02 | M38 | 40.8 (N-12), 14.3 (AND-108); slow period | whether the blank Home appears only while the AVD is slow (Home was 122 KB later). The settle weakness is logical, but its trigger is timing |
+| AND2-OBS-03 | M32 (detach half) | 10.3; returned after 1.5 s once, 4.7-7.9 s otherwise | whether `--detach` ever returns before the driver is up on a quiet host |
+| AND-213 | L01 | 68.4 at start; `GET /element/active` 35.5 s | whether the 35 s focused-element lookup recurs (2 of 3 runs passed in 7.5/7.2 s) |
+| B2-L02, B2-L05 | L02, L05 | 6-14; slow period | their criteria are wall-clock limits measured on the software AVD; the AVD's slowness, not host load, is the likelier factor, but a quiet-host baseline is needed to tell |
+| B2-L06 (index variant), N2-13 [android] | L06, L02 | 10.9-12.6; 11.75 | the passes against a dead app are logical defects, but whether the crash lands inside or after the wait depends on launch speed |
+| B2-K111, N2-01 (AND-079 overrun) | K111 | 6.85 | the overrun is intermittent (0 of 5 in the repro). Source shows no trim, so it stays open either way; a quiet host only changes how often it shows |
+| B-A02.2, B-R02.1, B2-K09, N2-17 | L07 | 10-14 | not a re-run candidate: L07's criterion requires load ≥ 8, so these results stand |
 
 ## Unassigned
 
 (none)
 
-Rows: 27 + 23 = 50; placed 50. The 31 `fail` rows are in clusters M01-M24 (CLI 14: MCP-046, B-D05.1, B2-K60,
-B2-K107-b, N2-19, N2-20, D2-34, EXTRA-01..07; iOS 17: IOS-121, IOS-138, IOS-141, B2-K16, B2-K37.2, B2-K90-a, B2-K90-b,
-B2-K105, N2-03, N2-05, N2-07, N2-08, N2-13, N2-18, S2-03, D2-13, CLI-049). The 19 triage rows (CLI 13, iOS 6) are in
-§Expectation corrections. D2-34 and N2-18 are each counted once, under M08 and M04, and also cited by M07 and M05.
-Blocked rows (CLI 6, iOS 4, plus CLI-083's blocked half) are not fails and are listed in §Blocked.
+Rows: 27 + 23 + 44 = 94; placed 94.
+
+- **CLI (27):** 14 `fail` rows in clusters (MCP-046, B-D05.1, B2-K60, B2-K107-b, N2-19, N2-20, D2-34, EXTRA-01..07) and 13
+  triage rows in §Expectation corrections.
+- **iOS (23):** 17 `fail` rows in clusters (IOS-121, IOS-138, IOS-141, B2-K16, B2-K37.2, B2-K90-a, B2-K90-b, B2-K105,
+  N2-03, N2-05, N2-07, N2-08, N2-13, N2-18, S2-03, D2-13, CLI-049) and 6 triage rows.
+- **Android (44 = 36 `fail` + 2 triage + 6 extras):**
+  - 8 absorbed into existing clusters: S2-03 → M03; B2-K16, N2-07, D2-13 → M06; B2-K105 → M12; X-022, B2-K17, N2-08 → M16.
+  - 22 in new clusters M25-M40: AND-107, AND-040, B-A01.1, B-R01.3 → M25; AND-210 → M26; AND2-OBS-01 → M27; AND-224 →
+    M28; B2-K106 → M29; N2-15 → M30; AND2-OBS-04 → M31; B2-K100.2, D2-44, AND2-OBS-03 → M32; D2-07 → M33; D2-31 → M34;
+    B-A09.2 → M35; B-C08.2 → M36; B2-K103 → M37; N-12, AND2-OBS-02 → M38; AND2-OBS-05 → M39; AND2-OBS-06 → M40.
+  - 12 under §Carried open items: B2-L01, AND-213 (L01); B2-L02, N2-13 (L02); B2-L05 (L05); B2-L06 (L06); B-A02.2,
+    B-R02.1, B2-K09, N2-17 (L07); B2-K111, N2-01 (K111).
+  - 2 triage rows (AND-223, MCP-026) in §Expectation corrections.
+- **Split rows:** D2-34 and N2-18 are each counted once, under M08 and M04, and also cited by M07 and M05. N2-15 [android]
+  is counted under M30 and cited by M31.
+- **Not counted as fails:** blocked rows (CLI 6, iOS 4, Android 3, plus CLI-083's blocked half), listed in §Blocked;
+  Android n/a AND-069/070 (no physical device).
