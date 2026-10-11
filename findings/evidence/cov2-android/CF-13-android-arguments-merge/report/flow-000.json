@@ -1,0 +1,118 @@
+{
+  "id": "flow-000",
+  "name": "13-android-arguments-merge",
+  "sourceFile": ".maestro/coverage/13-android-arguments-merge.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:27:26.179715-07:00",
+  "endTime": "2026-10-11T10:27:42.905915-07:00",
+  "duration": 16726,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:27:26.202377-07:00",
+      "endTime": "2026-10-11T10:27:33.609377-07:00",
+      "duration": 7407,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:27:33.611662-07:00",
+      "endTime": "2026-10-11T10:27:39.670662-07:00",
+      "duration": 6059,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-011c-0000-003700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:27:39.671436-07:00",
+      "endTime": "2026-10-11T10:27:41.515436-07:00",
+      "duration": 1844,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"merged\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:27:41.516618-07:00",
+      "endTime": "2026-10-11T10:27:42.904618-07:00",
+      "duration": 1388,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "merged"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-011c-0000-004900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 4174,
+    "p50": 1844,
+    "p95": 7407,
+    "max": 7407,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

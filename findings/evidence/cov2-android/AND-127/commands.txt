@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.69 27.79 28.18
+$ $GRANTIVA runner start --detach; echo exit=$?; cat .grantiva/session.json; echo; $GRANTIVA runner dump-hierarchy --format tree | grep -c Landmarks; MCP_STDERR=/dev/null bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/send.sh . - /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/req/tl.jsonl | python3 -I -c "import sys,json; [print(\"tools\",len(json.loads(l)[\"result\"][\"tools\"])) for l in sys.stdin if l.strip().startswith(\"{\") and \"\\\"id\\\":5\" in l.replace(\" \",\"\")]"; $GRANTIVA runner stop; echo exit=$?; adb forward --list | grep -c "tcp:" ; adb forward --list
+rc=0 elapsed=10.2s  (stdout 01.out, stderr 01.err)
+

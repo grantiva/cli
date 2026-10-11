@@ -1,0 +1,63 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/20-park-deeplinks.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 20-park-deeplinks (20-park-deeplinks.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (6.7s, slow)
+    ✓ tapOn: text="Deep Links" (9.1s, slow)
+    ✓ assertVisible: text="Gesture Lab" (30.7s, slow)
+✓ 20-park-deeplinks 46.5s
+
+  [1/1] 20-park-deeplinks (.maestro/coverage/20-park-deeplinks.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (6.7s, slow)
+    ✓ tapOn: text="Deep Links" (9.1s, slow)
+    ✓ assertVisible: text="Gesture Lab" (30.7s, slow)
+✓ 20-park-deeplinks 46.5s
+
+  3 steps passing (46.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  20-park-deeplinks              ✓ PASS       3      3      0      0      46.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       3      3      0      0      46.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=23084-1791743661730131000
+  /tmp/grantiva-sessions/23084-1791743661730131000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing emulator and reaping child processes
+
+  Releasing UIAutomator2 session...

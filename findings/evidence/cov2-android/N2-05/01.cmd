@@ -1,0 +1,1 @@
+pid=$(python3 -I -c "import json;print(json.load(open(\".grantiva/session.json\"))[\"pid\"])"); echo runner=$pid; kill -9 $pid; sleep 1; $GRANTIVA runner stop --json; echo exit=$?; ls /tmp/grantiva-sessions | grep "^$pid" ; ls .grantiva/session.json 2>&1; adb forward --list

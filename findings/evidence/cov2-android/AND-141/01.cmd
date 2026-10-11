@@ -1,0 +1,1 @@
+$GRANTIVA diff capture --app-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/app-free-debug.apk --verbose 2>&1 | grep -E 'apkanalyzer|gradlew|Using pre-built|Installing|Captured' | cut -c1-200; echo exit=${PIPESTATUS[0]}

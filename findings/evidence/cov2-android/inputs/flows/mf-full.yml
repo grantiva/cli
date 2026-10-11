@@ -1,0 +1,21 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- runFlow: sub.yaml
+- takeScreenshot: "Main"
+- tapOn: "Landmarks"
+- scrollUntilVisible:
+    element: "Crater Lake"
+    direction: DOWN
+    timeout: 20000
+- takeScreenshot: "Scrolled"
+- runFlow:
+    file: sub2.yaml
+- runFlow:
+    commands:
+      - tapOn: "Deep Links"
+      - assertVisible: "Caching Demo"
+- extendedWaitUntil:
+    visible: "Caching Demo"
+    timeout: 5000
+- takeScreenshot: "Inline"

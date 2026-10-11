@@ -1,0 +1,75 @@
+{
+  "id": "flow-000",
+  "name": "l06-index0",
+  "sourceFile": ".maestro/coverage/l06-index0.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T14:05:12.122092-07:00",
+  "endTime": "2026-10-11T14:05:30.385013-07:00",
+  "duration": 18262,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T14:05:12.146662-07:00",
+      "endTime": "2026-10-11T14:05:17.674662-07:00",
+      "duration": 5528,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\", index=0",
+      "status": "failed",
+      "startTime": "2026-10-11T14:05:17.676693-07:00",
+      "endTime": "2026-10-11T14:05:23.396693-07:00",
+      "duration": 5720,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Landmarks\", index=0",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 5624,
+    "p50": 5528,
+    "p95": 5720,
+    "max": 5720,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,74 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/09-waits.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k08-2
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 09-waits (09-waits.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.7s, slow)
+    ✓ tapOn: text="Deep Links" (9.6s, slow)
+    ✓ tapOn: text="Slow Screen" (2.3s)
+    ✓ assertVisible: text="Loading…" (1.2s)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (3.0s)
+    ✓ assertVisible: text="Loaded after delay" (337ms)
+    ✓ waitForAnimationToEnd (1.5s)
+    ✓ waitForAnimationToEnd (1.3s)
+✓ 09-waits 26.9s
+
+  [1/1] 09-waits (.maestro/coverage/09-waits.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.7s, slow)
+    ✓ tapOn: text="Deep Links" (9.6s, slow)
+    ✓ tapOn: text="Slow Screen" (2.3s)
+    ✓ assertVisible: text="Loading…" (1.2s)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (3.0s)
+    ✓ assertVisible: text="Loaded after delay" (337ms)
+    ✓ waitForAnimationToEnd (1.5s)
+    ✓ waitForAnimationToEnd (1.3s)
+✓ 09-waits 26.9s
+
+  8 steps passing (26.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  09-waits                       ✓ PASS       8      8      0      0      26.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      26.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k08-2
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k08-2/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k08-2/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k08-2/allure-results
+
+  Built by Grantiva
+

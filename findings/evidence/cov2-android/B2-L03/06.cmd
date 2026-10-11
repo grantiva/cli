@@ -1,0 +1,1 @@
+bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5554 sw-f2 --snapshot full; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-sw-f2/client.log | cut -c1-260

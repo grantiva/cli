@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/22-show-note.yaml --env LANDMARKS_NOTE=hello; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1; adb -s emulator-5554 shell uiautomator dump /sdcard/u.xml >/dev/null; adb -s emulator-5554 shell cat /sdcard/u.xml | grep -o 'text="hello"'

@@ -1,0 +1,1 @@
+$GRANTIVA run --emulator cov2-android --flow .maestro/01-browse.yaml; echo exit=$?; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='emulator-5554'][0])") | grep -o 'qemu-system-aarch64[-a-z]*\|-no-window'

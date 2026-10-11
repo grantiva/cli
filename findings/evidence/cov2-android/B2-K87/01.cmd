@@ -1,0 +1,2 @@
+for i in $(seq 1 10); do out=$($GRANTIVA runner start --detach 2>&1); pid=$(echo "$out" | sed -n "s/.*PID: *//p"); for t in 1 2 3 4 5 6 7 8 9 10; do $GRANTIVA runner dump-hierarchy --format tree >/dev/null 2>&1 && break; sleep 2; done; d=$?; $GRANTIVA runner stop >/dev/null 2>&1; sleep 1; left=$(ls /tmp/grantiva-sessions | grep "^$pid[-.]" | tr "
+" " "); echo "cycle $i runner=$pid dump_rc=$d leftover=[$left] alive=$(kill -0 $pid 2>/dev/null && echo yes || echo no)"; done

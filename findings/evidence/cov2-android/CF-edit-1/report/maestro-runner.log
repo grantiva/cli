@@ -1,0 +1,59 @@
+10:49:35.037562 [INFO] === Test execution started ===
+10:49:35.037621 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/edit-1
+10:49:35.037625 [INFO] Platform: android
+10:49:35.037628 [INFO] Driver: uiautomator2
+10:49:35.037892 [INFO] Validated 1 flow(s)
+10:49:35.037911 [INFO] Single device execution mode
+10:49:35.037916 [INFO] Starting flow execution (parallel: false, devices: [])
+10:49:35.037921 [INFO] Creating driver for single device execution
+10:49:35.037927 [INFO] Connecting to Android device: emulator-5554
+10:49:35.223665 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:49:35.273151 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:49:35.798825 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:49:35.812752 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:49:39.626139 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:49:39.657778 [INFO] Session created successfully: 170d46b2-afc2-4e44-9afc-c353892d4e8b
+10:49:40.175827 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:49:40.181960 [INFO] === Starting flow: 03-edit ===
+10:49:40.181976 [INFO] Flow file: .maestro/03-edit.yaml
+10:49:40.181985 [INFO] Total steps: 9
+10:49:40.196891 [DEBUG] Executing step 0: launchApp
+10:49:44.010354 [DEBUG] Step 0 completed successfully (3813ms): launchApp
+10:49:44.010878 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+10:49:44.011100 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+10:49:44.833456 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:45.401623 [DEBUG] crash check during a lookup in flight for 1.227s: crashed=false (took 225ms)
+10:49:45.806271 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:46.335716 [DEBUG] crash check during a lookup in flight for 2.161s: crashed=false (took 159ms)
+10:49:46.950082 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:47.260582 [DEBUG] crash check during a lookup in flight for 3.086s: crashed=false (took 83ms)
+10:49:49.230138 [DEBUG] crash check during a lookup in flight for 5.055s: crashed=false (took 1.053s)
+10:49:49.646095 [DEBUG] crash check during a lookup in flight for 5.471s: crashed=false (took 416ms)
+10:49:50.109229 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:50.335582 [DEBUG] crash check during a lookup in flight for 6.161s: crashed=false (took 158ms)
+10:49:51.159575 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:51.896307 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:53.146421 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:49:53.146470 [DEBUG] Step 1 completed successfully (9135ms): tapOn: text="Deep Links"
+10:49:53.147260 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+10:49:54.923401 [DEBUG] Step 2 completed successfully (1776ms): tapOn: text="Edit Landmark"
+10:49:54.923842 [DEBUG] Executing step 3: assertVisible: text="Edit Landmark"
+10:49:55.999861 [DEBUG] Step 3 completed successfully (1076ms): assertVisible: text="Edit Landmark"
+10:49:56.000333 [DEBUG] Executing step 4: tapOn: text="Name"
+10:49:56.926847 [DEBUG] Step 4 completed successfully (926ms): tapOn: text="Name"
+10:49:56.927204 [DEBUG] Executing step 5: inputText: " Renamed"
+10:50:09.771589 [DEBUG] Step 5 completed successfully (12844ms): inputText: " Renamed"
+10:50:09.771966 [DEBUG] Executing step 6: tapOn: text="Done"
+10:50:12.290565 [DEBUG] Step 6 completed successfully (2518ms): tapOn: text="Done"
+10:50:12.292099 [DEBUG] Executing step 7: assertVisible: text="Golden Gate Bridge Renamed"
+10:50:15.448727 [DEBUG] Step 7 completed successfully (3156ms): assertVisible: text="Golden Gate Bridge Renamed"
+10:50:15.449648 [DEBUG] Executing step 8: takeScreenshot
+10:50:16.014567 [DEBUG] Step 8 completed successfully (564ms): takeScreenshot
+10:50:16.016534 [INFO] === Flow completed: 03-edit (status: passed, duration: 35832ms, passed: 9, failed: 0, skipped: 0) ===
+10:50:16.807910 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:50:16.820606 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:50:16.820622 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:50:16.820806 [INFO] Generating reports...
+10:50:16.821979 [INFO] Shutting down devices started by maestro-runner...
+10:50:16.821989 [INFO] Shutting down all tracked emulators
+10:50:16.821997 [INFO] Shutting down all tracked simulators

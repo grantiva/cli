@@ -1,0 +1,8 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=40.83 25.80 30.84
+$ $GRANTIVA diff capture --no-build --json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K17/session-capture.json; echo exit=$?; python3 -I -c "
+import json;d=json.load(open(\"/Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K17/session-capture.json\"))
+for s in d[\"screens\"]: print(s[\"screenName\"],[(x[\"action\"],x[\"status\"],x.get(\"duration\")) for x in s[\"steps\"]])"
+rc=0 elapsed=59.1s  (stdout 01.out, stderr 01.err)
+
+# shared evidence: see ../MCP-064/ (session vrt_capture)
+# shared evidence: see ../AND-108/ (CLI capture)

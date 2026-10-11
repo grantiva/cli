@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=3.31 6.29 8.34
+$ rm -rf /tmp/cov2-android-k104; cp -c -R /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android /tmp/cov2-android-k104; rm -rf /tmp/cov2-android-k104/.grantiva; cd /tmp/cov2-android-k104 && bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/ka2.sh /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/D2-30/ka emulator-5554 .maestro/01-browse.yaml; cat /tmp/grantiva-sessions/*.owner.json | python3 -I -c "import sys,json; [print(json.dumps(json.loads(l))) for l in sys.stdin.read().replace('}{','}\n{').splitlines() if 'cov2-android-k104' in l]"
+rc=0 elapsed=26.1s  (stdout 01.out, stderr 01.err)
+
+# cwd=/private/tmp/cov2-android-k104 load=5.42 6.52 8.36
+$ python3 -I inputs/client.py /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/req/sess-probe.json /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/D2-30/mcp-01 /private/tmp/cov2-android-k104 -- /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/cov2-android-k104
+# cwd=/tmp/cov2-android-k104 load=5.38 6.49 8.34
+$ python3 -I inputs/client.py /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/req/sess-probe.json /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/D2-30/mcp-02 /tmp/cov2-android-k104 -- /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /tmp/cov2-android-k104
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.38 6.49 8.34
+$ gp=$(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/D2-30/ka.pid); rp=$(ls /tmp/grantiva-sessions | grep owner | while read f; do python3 -I -c "import json;d=json.load(open('/tmp/grantiva-sessions/$f'));print(d['runnerPid']) if d.get('grantivaPid')==$gp else None"; done); echo grantiva=$gp runner=$rp; kill -9 $gp; t0=$(date +%s); for i in $(seq 1 30); do kill -0 $rp 2>/dev/null || break; sleep 1; done; echo runner-exited-after=$(( $(date +%s)-t0 ))s; cd /tmp/cov2-android-k104 && $GRANTIVA hierarchy --timeout 5 >/dev/null; echo hierarchy-exit=$?; ls /tmp/grantiva-sessions
+rc=0 elapsed=0.1s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.38 6.49 8.34
+$ cd /tmp/cov2-android-k104 && $GRANTIVA runner start --detach >/dev/null 2>&1; cat /tmp/grantiva-sessions/*.owner.json 2>/dev/null | tr '}' '\n' | grep k104; echo; sleep 2; $GRANTIVA hierarchy --format json | head -c 60; echo; $GRANTIVA runner stop; rm -rf /tmp/cov2-android-k104
+rc=0 elapsed=3.0s  (stdout 03.out, stderr 03.err)
+

@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/AND-087/unchanged.json; echo exit=$?

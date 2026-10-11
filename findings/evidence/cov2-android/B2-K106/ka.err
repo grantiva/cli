@@ -1,0 +1,69 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android-2 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (126ms)
+    ✓ assertVisible: text="Featured" (588ms)
+    ✓ takeScreenshot (143ms)
+    ✓ tapOn: text="Golden Gate Bridge" (276ms)
+    ✓ assertVisible: text="San Francisco, CA" (649ms)
+    ✓ assertVisible: text="Plan Visit" (45ms)
+    ✓ takeScreenshot (134ms)
+✓ 01-browse 4.0s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (126ms)
+    ✓ assertVisible: text="Featured" (588ms)
+    ✓ takeScreenshot (143ms)
+    ✓ tapOn: text="Golden Gate Bridge" (276ms)
+    ✓ assertVisible: text="San Francisco, CA" (649ms)
+    ✓ assertVisible: text="Plan Visit" (45ms)
+    ✓ takeScreenshot (134ms)
+✓ 01-browse 4.0s
+
+  8 steps passing (4.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       4.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       4.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=82252-1791750468672782000
+  /tmp/grantiva-sessions/82252-1791750468672782000.grantiva
+    Press Ctrl-C to release.

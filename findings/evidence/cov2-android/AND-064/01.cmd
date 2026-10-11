@@ -1,0 +1,1 @@
+adb -s emulator-5556 forward tcp:0 tcp:6790; adb -s emulator-5554 forward tcp:0 tcp:6790; adb forward --list; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml >/dev/null 2>&1; echo exit=$?; adb forward --list; adb -s emulator-5556 forward --remove-all

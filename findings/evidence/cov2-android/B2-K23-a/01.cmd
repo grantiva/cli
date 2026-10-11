@@ -1,0 +1,1 @@
+cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/flowonly && /Users/kyle/.grantiva-qa/bin/grantiva run --platform android --device emulator-5554 --no-build --flow 16-setpermissions.yaml; echo exit=$?

@@ -1,0 +1,60 @@
+10:36:21.548344 [INFO] === Test execution started ===
+10:36:21.548420 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only
+10:36:21.548427 [INFO] Platform: android
+10:36:21.548431 [INFO] Driver: uiautomator2
+10:36:21.548731 [INFO] Validated 1 flow(s)
+10:36:21.548753 [INFO] Single device execution mode
+10:36:21.548759 [INFO] Starting flow execution (parallel: false, devices: [])
+10:36:21.548764 [INFO] Creating driver for single device execution
+10:36:21.548771 [INFO] Connecting to Android device: emulator-5554
+10:36:21.709523 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:36:21.770477 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:36:22.359339 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:36:22.376853 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:36:26.251826 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:36:26.287973 [INFO] Session created successfully: 6e138ff3-a01f-4aeb-9b15-e023fc87b7a8
+10:36:26.523992 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:36:26.527192 [INFO] === Starting flow: longpress-only ===
+10:36:26.527198 [INFO] Flow file: .maestro/coverage/longpress-only.yaml
+10:36:26.527202 [INFO] Total steps: 7
+10:36:26.561177 [DEBUG] Executing step 0: launchApp
+10:36:33.685880 [DEBUG] Step 0 completed successfully (7124ms): launchApp
+10:36:33.687797 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+10:36:33.688484 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+10:36:34.576405 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:35.681789 [DEBUG] crash check during a lookup in flight for 1.529s: crashed=false (took 527ms)
+10:36:36.343477 [DEBUG] crash check during a lookup in flight for 2.19s: crashed=false (took 188ms)
+10:36:36.424747 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:37.241534 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:37.284235 [DEBUG] crash check during a lookup in flight for 3.131s: crashed=false (took 130ms)
+10:36:37.989594 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:38.609236 [DEBUG] crash check during a lookup in flight for 4.456s: crashed=false (took 454ms)
+10:36:39.950235 [DEBUG] crash check during a lookup in flight for 5.797s: crashed=false (took 795ms)
+10:36:40.470627 [DEBUG] crash check during a lookup in flight for 6.318s: crashed=false (took 316ms)
+10:36:40.598394 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:41.441549 [DEBUG] crash check during a lookup in flight for 7.288s: crashed=false (took 287ms)
+10:36:41.523758 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:42.434309 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:42.493420 [DEBUG] crash check during a lookup in flight for 8.34s: crashed=false (took 338ms)
+10:36:43.133636 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:44.089839 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:36:44.089894 [DEBUG] Step 1 completed successfully (10402ms): tapOn: text="Deep Links"
+10:36:44.090399 [DEBUG] Executing step 2: tapOn: text="Gesture Lab"
+10:36:45.389819 [DEBUG] crash check during a lookup in flight for 1.114s: crashed=false (took 114ms)
+10:36:46.171864 [DEBUG] Step 2 completed successfully (2081ms): tapOn: text="Gesture Lab"
+10:36:46.173404 [DEBUG] Executing step 3: assertVisible: text="Taps: 0"
+10:36:47.608083 [DEBUG] Step 3 completed successfully (1434ms): assertVisible: text="Taps: 0"
+10:36:47.609093 [DEBUG] Executing step 4: longPressOn: id="gesture-pad"
+10:36:55.478296 [DEBUG] Step 4 completed successfully (7869ms): longPressOn: id="gesture-pad"
+10:36:55.478681 [DEBUG] Executing step 5: assertVisible: text="Long presses: 1"
+10:36:55.670832 [DEBUG] Step 5 completed successfully (192ms): assertVisible: text="Long presses: 1"
+10:36:55.671260 [DEBUG] Executing step 6: takeScreenshot
+10:36:56.240628 [DEBUG] Step 6 completed successfully (569ms): takeScreenshot
+10:36:56.244289 [INFO] === Flow completed: longpress-only (status: passed, duration: 29714ms, passed: 7, failed: 0, skipped: 0) ===
+10:36:57.069491 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:36:57.083222 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:36:57.083253 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:36:57.083612 [INFO] Generating reports...
+10:36:57.084410 [INFO] Shutting down devices started by maestro-runner...
+10:36:57.084423 [INFO] Shutting down all tracked emulators
+10:36:57.084431 [INFO] Shutting down all tracked simulators

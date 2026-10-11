@@ -1,0 +1,13 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=173.27 225.53 150.66
+$ adb -s emulator-5554 uninstall com.kylebrowning.landmarks; $GRANTIVA build install --no-launch --no-build --app-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/app-free-debug.apk; echo exit=$?; adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks
+rc=0 elapsed=17.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=138.93 215.37 148.34
+$ $GRANTIVA build install --no-launch --no-build --app-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/app-free-debug.apk --json; echo exit=$?
+rc=0 elapsed=5.5s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=128.53 211.94 147.52
+$ $GRANTIVA build install --no-build --no-launch; echo exit=$?
+rc=0 elapsed=0.3s  (stdout 03.out, stderr 03.err)
+
+# shared evidence: see ../D2-08/ (run / diff capture / ci run)

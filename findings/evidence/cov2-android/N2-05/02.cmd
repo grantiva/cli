@@ -1,0 +1,1 @@
+$GRANTIVA runner stop --json; echo exit=$?; sleep 3; ls /tmp/grantiva-sessions; for p in $(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/AND-052/ka1.pid) $(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/AND-052/ka2.pid); do kill -0 $p 2>/dev/null && echo $p-alive || echo $p-exited; done

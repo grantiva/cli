@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --application-id com.kylebrowning.landmarks.debug --flow .maestro/01-browse.yaml; echo exit=$?; adb -s emulator-5554 shell pm list packages com.kylebrowning

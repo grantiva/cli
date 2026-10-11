@@ -1,0 +1,126 @@
+## crash-1 load: 5.67 4.13 5.43
+rr-crash-1 real 55.81 flow 22660 | launchApp:passed:7243:None assertVisible:failed:7089:app_crash assertVisible:skipped:None:None assertVisible:skipped:None:None | crash->fail 0.5s
+## crash-2 load: 8.58 5.32 5.80
+rr-crash-2 real 57.37 flow 30689 | launchApp:passed:8109:None assertVisible:failed:19187:assertion assertVisible:skipped:None:None assertVisible:skipped:None:None | crash->fail 12.2s
+## crash-3 load: 10.43 6.41 6.17
+rr-crash-3 real 54.34 flow 27643 | launchApp:passed:8046:None assertVisible:failed:10977:app_crash assertVisible:skipped:None:None assertVisible:skipped:None:None | crash->fail 3.6s
+## l06-1 load: 9.56 6.73 6.30
+rr-l06-index0-1 real 47.62 flow 25751 | launchApp:passed:7245:None assertVisible:failed:12535:app_crash tapOn:skipped:None:None | crash->fail 2.0s
+## l06-2 load: 9.60 7.12 6.46
+rr-l06-index0-2 real 32.38 flow 18262 | launchApp:passed:5528:None assertVisible:failed:5720:app_crash tapOn:skipped:None:None | crash->fail 1.6s
+## l06-3 load: 10.75 7.62 6.66
+rr-l06-index0-3 real 32.74 flow 16309 | launchApp:passed:5015:None assertVisible:failed:8154:app_crash tapOn:skipped:None:None | crash->fail 3.8s
+## edit-1 load: 9.10 7.59 6.69
+== CF-rr-edit-1 rc=0 66.1s
+    ✓ launchApp (4.8s)
+    ✓ tapOn: text="Deep Links" (12.4s, slow)
+    ✓ tapOn: text="Edit Landmark" (2.8s)
+14:06:31.588331 POST /session/84fb414d-0efe-4672-8ee6-3ac61ff28f04/element [8.575235291s] ERR:404 body={"strat
+## edit-2 load: 12.47 8.79 7.20
+== CF-rr-edit-2 rc=0 58.3s
+    ✓ launchApp (7.4s, slow)
+    ✓ tapOn: text="Deep Links" (9.6s, slow)
+    ✓ tapOn: text="Edit Landmark" (2.1s)
+14:07:35.090117 POST /session/c52df6c1-13c7-4288-ac07-4a0e1bbfbfad/element [6.869518334s] ERR:404 body={"strat
+## edit-3 load: 12.81 9.60 7.62
+== CF-rr-edit-3 rc=0 59.5s
+    ✓ launchApp (8.5s, slow)
+    ✓ tapOn: text="Deep Links" (9.2s, slow)
+    ✓ tapOn: text="Edit Landmark" (2.6s)
+14:08:35.292517 POST /session/03a49452-5da4-43e3-bd52-999f697bf251/element [6.46704875s] ERR:404 body={"strate
+## gest-1 load: 10.83 9.58 7.74
+== CF-rr-gest-1 rc=1 52.2s
+    ✓ doubleTapOn: id="gesture-pad" (1.3s)
+    ✗ assertVisible: text="Double taps: 1" (17.6s)
+      ╰─ Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+Error: Runner failed (exit 1): 03-gesture-lab-taps: assertVisible: text="Double taps: 1": Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+## gest-2 load: 7.50 8.92 7.60
+== CF-rr-gest-2 rc=1 53.8s
+    ✓ doubleTapOn: id="gesture-pad" (1.3s)
+    ✗ assertVisible: text="Double taps: 1" (17.5s)
+      ╰─ Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+Error: Runner failed (exit 1): 03-gesture-lab-taps: assertVisible: text="Double taps: 1": Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+## gest-3 load: 9.57 9.37 7.86
+== CF-rr-gest-3 rc=1 53.8s
+    ✓ doubleTapOn: id="gesture-pad" (1.6s)
+    ✗ assertVisible: text="Double taps: 1" (17.5s)
+      ╰─ Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+Error: Runner failed (exit 1): 03-gesture-lab-taps: assertVisible: text="Double taps: 1": Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+## scroll-1 load: 8.14 9.15 7.88
+== CF-rr-scroll-1 rc=1 88.8s
+    ✗ scrollUntilVisible: text="Landmark 70" (53.5s)
+      ╰─ Element not found after 20 scrolls (cause: element not found)
+    - scrollUntilVisible: text="Golden Gate Bridge" (skipped)
+Error: Runner failed (exit 1): 08-scroll: scrollUntilVisible: text="Landmark 70": Element not found after 20 scrolls (cause: element not found)
+## scroll-2 load: 10.44 9.58 8.16
+== CF-rr-scroll-2 rc=0 76.0s
+    ✓ scrollUntilVisible: text="Landmark 70" (26.2s, slow)
+    ✓ scrollUntilVisible: text="Golden Gate Bridge" (18.9s, slow)
+## scroll-3 load: 11.28 9.99 8.43
+== CF-rr-scroll-3 rc=0 42.8s
+    ✓ scrollUntilVisible: text="Landmark 70" (17.5s, slow)
+    ✓ scrollUntilVisible: text="Golden Gate Bridge" (19.0s, slow)
+## uni-1 load: 9.64 9.78 8.43
+== CF-rr-uni-1 rc=0 12.2s
+    ✓ inputText: " · Ünïcødé ✓" (1.5s)
+14:15:26.248486 GET /session/305a5e64-5cca-4d41-b696-db834b007366/element/active [180.181959ms] OK body=
+## uni-2 load: 7.88 9.39 8.31
+== CF-rr-uni-2 rc=0 11.9s
+    ✓ inputText: " · Ünïcødé ✓" (1.5s)
+14:15:38.344785 GET /session/a4cb287a-296f-4f77-b253-eb6dc719a7ce/element/active [191.901375ms] OK body=
+## uni-3 load: 7.14 9.18 8.25
+== CF-rr-uni-3 rc=0 12.0s
+    ✓ inputText: " · Ünïcødé ✓" (2.4s)
+14:15:50.389574 GET /session/cc1c6cf3-2d2d-4ca8-bd53-154b15c53aa7/element/active [170.479083ms] OK body=
+## k09 load: 7.42 9.15 8.26
+== CF-rr-k09-1 rc=0 23.9s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.4s)
+    ✓ assertNotVisible: text="Lake Tahoe" (376ms)
+14:16:12.778512 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:16:14.202150 [DEBUG] Step 8 completed successfully (1423ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-2 rc=0 47.6s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.5s)
+    ✓ assertNotVisible: text="Lake Tahoe" (315ms)
+14:17:01.574857 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:17:03.029927 [DEBUG] Step 8 completed successfully (1455ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-3 rc=0 39.4s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.3s)
+    ✓ assertNotVisible: text="Lake Tahoe" (324ms)
+14:17:43.420961 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:17:44.752986 [DEBUG] Step 8 completed successfully (1331ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-4 rc=0 42.3s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.2s)
+    ✓ assertNotVisible: text="Lake Tahoe" (294ms)
+14:18:26.821763 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:18:27.978528 [DEBUG] Step 8 completed successfully (1156ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-5 rc=1 45.0s
+    ✓ swipe: LEFT from text="Lake Tahoe" (860ms)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+14:19:07.598798 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:19:08.459178 [DEBUG] Step 8 completed successfully (860ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-6 rc=1 44.7s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.3s)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+14:19:53.672483 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:19:54.966371 [DEBUG] Step 8 completed successfully (1293ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-7 rc=1 47.5s
+    ✓ swipe: LEFT from text="Lake Tahoe" (2.0s)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+14:20:40.272961 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:20:42.298351 [DEBUG] Step 8 completed successfully (2025ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-8 rc=0 46.3s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.6s)
+    ✓ assertNotVisible: text="Lake Tahoe" (353ms)
+14:21:34.814128 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:21:36.396184 [DEBUG] Step 8 completed successfully (1581ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-9 rc=0 41.2s
+    ✓ swipe: LEFT from text="Lake Tahoe" (918ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (331ms)
+14:22:18.260045 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:22:19.179062 [DEBUG] Step 8 completed successfully (918ms): swipe: LEFT from text="Lake Tahoe"
+== CF-rr-k09-10 rc=0 44.2s
+    ✓ swipe: LEFT from text="Lake Tahoe" (1.3s)
+    ✓ assertNotVisible: text="Lake Tahoe" (318ms)
+14:23:02.803579 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:23:04.113375 [DEBUG] Step 8 completed successfully (1309ms): swipe: LEFT from text="Lake Tahoe"
+FIX1-DONE

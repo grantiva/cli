@@ -1,0 +1,48 @@
+11:10:04.248364 [INFO] === Test execution started ===
+11:10:04.248431 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/single-10-seed-many
+11:10:04.248436 [INFO] Platform: android
+11:10:04.248441 [INFO] Driver: uiautomator2
+11:10:04.248753 [INFO] Validated 1 flow(s)
+11:10:04.248775 [INFO] Single device execution mode
+11:10:04.248781 [INFO] Starting flow execution (parallel: false, devices: [])
+11:10:04.248786 [INFO] Creating driver for single device execution
+11:10:04.248790 [INFO] Connecting to Android device: emulator-5554
+11:10:04.393164 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+11:10:04.445112 [INFO] Starting UIAutomator2 server on device emulator-5554
+11:10:04.990332 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+11:10:05.003605 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+11:10:07.721891 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+11:10:07.757888 [INFO] Session created successfully: 55a241e0-83b8-4c2f-b14a-d0b19afb0e93
+11:10:07.929617 [INFO] Driver created: android on google sdk_gphone64_arm64
+11:10:07.931012 [INFO] === Starting flow: 10-seed-many ===
+11:10:07.931016 [INFO] Flow file: .maestro/10-seed-many.yaml
+11:10:07.931019 [INFO] Total steps: 7
+11:10:07.949762 [DEBUG] Executing step 0: launchApp
+11:10:14.181446 [DEBUG] Step 0 completed successfully (6231ms): launchApp
+11:10:14.182389 [DEBUG] Executing step 1: scroll: DOWN
+11:10:20.628158 [INFO] scroll: waited for com.kylebrowning.landmarks to appear before dragging
+11:10:27.068831 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+11:10:27.068967 [DEBUG] Step 1 completed successfully (12886ms): scroll: DOWN
+11:10:27.070034 [DEBUG] Executing step 2: scroll: DOWN
+11:10:32.401543 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+11:10:32.401560 [DEBUG] Step 2 completed successfully (5331ms): scroll: DOWN
+11:10:32.401924 [DEBUG] Executing step 3: scroll: DOWN
+11:10:37.265837 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+11:10:37.265872 [DEBUG] Step 3 completed successfully (4863ms): scroll: DOWN
+11:10:37.266531 [DEBUG] Executing step 4: scroll: DOWN
+11:10:42.212975 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+11:10:42.212991 [DEBUG] Step 4 completed successfully (4946ms): scroll: DOWN
+11:10:42.213327 [DEBUG] Executing step 5: assertVisible: text="Landmark 28"
+11:10:42.213539 [DEBUG] Flutter: parallel search (text="Landmark 28", id="")
+11:10:42.430365 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+11:10:42.430414 [DEBUG] Step 5 completed successfully (217ms): assertVisible: text="Landmark 28"
+11:10:42.430792 [DEBUG] Executing step 6: takeScreenshot
+11:10:42.738107 [DEBUG] Step 6 completed successfully (307ms): takeScreenshot
+11:10:42.741124 [INFO] === Flow completed: 10-seed-many (status: passed, duration: 34807ms, passed: 7, failed: 0, skipped: 0) ===
+11:10:43.396006 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+11:10:43.408942 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+11:10:43.408971 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+11:10:43.409150 [INFO] Generating reports...
+11:10:43.409872 [INFO] Shutting down devices started by maestro-runner...
+11:10:43.409891 [INFO] Shutting down all tracked emulators
+11:10:43.409898 [INFO] Shutting down all tracked simulators

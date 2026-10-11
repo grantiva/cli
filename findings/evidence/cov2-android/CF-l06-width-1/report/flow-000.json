@@ -1,0 +1,75 @@
+{
+  "id": "flow-000",
+  "name": "l06-width",
+  "sourceFile": ".maestro/coverage/l06-width.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:45:32.44552-07:00",
+  "endTime": "2026-10-11T10:45:50.219452-07:00",
+  "duration": 17773,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:45:32.470322-07:00",
+      "endTime": "2026-10-11T10:45:37.533322-07:00",
+      "duration": 5063,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:45:37.534733-07:00",
+      "endTime": "2026-10-11T10:45:45.149733-07:00",
+      "duration": 7615,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Landmarks') (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Landmarks\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 6339,
+    "p50": 5063,
+    "p95": 7615,
+    "max": 7615,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

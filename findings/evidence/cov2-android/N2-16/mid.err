@@ -1,0 +1,62 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android-2 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/18-long-wait.yaml
+Warning: restoring Android settings left by an interrupted run on emulator-5556
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 18-long-wait (18-long-wait.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.0s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 46.9s
+
+  [1/1] 18-long-wait (.maestro/coverage/18-long-wait.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.0s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 46.9s
+
+  1 steps passing (46.9s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  18-long-wait                   ✗ FAIL       2      1      1      0      46.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      46.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+emulator-5556 left adb; waiting up to 5 s for it to come back before restoring settings
+Warning: could not restore Android settings on emulator-5556: the device left adb and did not come back within 5 s
+Failure screenshot: .grantiva/run-captures/android/failure-1791750542.png
+Error: Runner failed (exit 1): 18-long-wait: extendedWaitUntil: visible text="This never appears": Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

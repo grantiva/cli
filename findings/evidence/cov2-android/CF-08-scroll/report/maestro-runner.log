@@ -1,0 +1,35 @@
+10:23:54.834528 [INFO] === Test execution started ===
+10:23:54.834597 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/08-scroll
+10:23:54.834602 [INFO] Platform: android
+10:23:54.834605 [INFO] Driver: uiautomator2
+10:23:54.834879 [INFO] Validated 1 flow(s)
+10:23:54.834901 [INFO] Single device execution mode
+10:23:54.834907 [INFO] Starting flow execution (parallel: false, devices: [])
+10:23:54.834911 [INFO] Creating driver for single device execution
+10:23:54.834916 [INFO] Connecting to Android device: emulator-5554
+10:23:54.994780 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:23:55.053956 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:23:55.634792 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:23:55.647526 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:23:58.870659 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:23:58.911358 [INFO] Session created successfully: ed1cfb5a-d276-4cc2-9efd-dda2bace9012
+10:23:59.142907 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:23:59.148660 [INFO] === Starting flow: 08-scroll ===
+10:23:59.148690 [INFO] Flow file: .maestro/coverage/08-scroll.yaml
+10:23:59.148702 [INFO] Total steps: 7
+10:23:59.173284 [DEBUG] Executing step 0: launchApp
+10:24:06.140120 [DEBUG] Step 0 completed successfully (6966ms): launchApp
+10:24:06.140564 [DEBUG] Executing step 1: scroll: DOWN
+10:24:13.903699 [INFO] scroll: waited for com.kylebrowning.landmarks to appear before dragging
+10:24:19.620541 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+10:24:19.620595 [DEBUG] Step 1 completed successfully (13480ms): scroll: DOWN
+10:24:19.621280 [DEBUG] Executing step 2: scrollUntilVisible: text="Landmark 70"
+10:25:09.375081 [ERROR] Step 2 failed (49753ms): scrollUntilVisible: text="Landmark 70" - Error: Element not found after 20 scrolls (cause: element not found)
+10:25:09.968459 [INFO] === Flow completed: 08-scroll (status: failed, duration: 70818ms, passed: 2, failed: 1, skipped: 4) ===
+10:25:10.664582 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:25:10.678856 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:25:10.678885 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:25:10.679069 [INFO] Generating reports...
+10:25:10.679888 [INFO] Shutting down devices started by maestro-runner...
+10:25:10.679907 [INFO] Shutting down all tracked emulators
+10:25:10.679918 [INFO] Shutting down all tracked simulators

@@ -1,0 +1,87 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/c-direction-left-from.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] c-direction-left-from (c-direction-left-from.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (4.0s)
+    ✓ tapOn: text="Lake Tahoe" (13.3s, slow)
+    ✓ tapOn: text="Favorite" (1.4s)
+    ✓ assertVisible: text="Unfavorite" (1.2s)
+    ✓ tapOn: text="Landmarks" (1.4s)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (975ms)
+    ✓ takeScreenshot (973ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (672ms)
+    ✓ waitForAnimationToEnd (3.0s)
+    ✓ takeScreenshot (552ms)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+      ╰─ Element still visible: text='Lake Tahoe' after 5s (cause: element should not be visible; still matched "Lake Tahoe" at (42,469 227x63))
+✗ c-direction-left-from 35.3s
+
+  [1/1] c-direction-left-from (.maestro/coverage/c-direction-left-from.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (4.0s)
+    ✓ tapOn: text="Lake Tahoe" (13.3s, slow)
+    ✓ tapOn: text="Favorite" (1.4s)
+    ✓ assertVisible: text="Unfavorite" (1.2s)
+    ✓ tapOn: text="Landmarks" (1.4s)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (975ms)
+    ✓ takeScreenshot (973ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (672ms)
+    ✓ waitForAnimationToEnd (3.0s)
+    ✓ takeScreenshot (552ms)
+    ✗ assertNotVisible: text="Lake Tahoe" (5.1s)
+      ╰─ Element still visible: text='Lake Tahoe' after 5s (cause: element should not be visible; still matched "Lake Tahoe" at (42,469 227x63))
+✗ c-direction-left-from 35.3s
+
+  11 steps passing (35.3s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  c-direction-left-from          ✗ FAIL      12     11      1      0      35.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      12     11      1      0      35.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/k09-7/captures/failure-1791741587.png
+Error: Runner failed (exit 1): c-direction-left-from: assertNotVisible: text="Lake Tahoe": Element still visible: text='Lake Tahoe' after 5s (cause: element should not be visible; still matched "Lake Tahoe" at (42,469 227x63))

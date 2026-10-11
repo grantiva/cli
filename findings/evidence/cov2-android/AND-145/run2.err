@@ -1,0 +1,59 @@
+Resolved: module=app variant=freeDebug device=cov2-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/18-long-wait.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 18-long-wait (18-long-wait.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.1s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 47.1s
+
+  [1/1] 18-long-wait (.maestro/coverage/18-long-wait.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.1s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 47.1s
+
+  1 steps passing (47.1s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  18-long-wait                   ✗ FAIL       2      1      1      0      47.1s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      47.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/android/failure-1791748645.png
+Error: Runner failed (exit 1): 18-long-wait: extendedWaitUntil: visible text="This never appears": Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

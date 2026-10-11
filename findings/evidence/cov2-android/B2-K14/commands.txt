@@ -1,0 +1,13 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.54 44.56 39.27
+$ cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android2 && $GRANTIVA runner stop --json; echo exit=$?; ls /tmp/grantiva-sessions; ps -p $(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-S1/ka.pid) -o pid=,args= | cut -c1-120
+rc=0 elapsed=0.0s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.54 44.56 39.27
+$ $GRANTIVA runner stop; echo exit=$?; sleep 3; ls /tmp/grantiva-sessions; ps -p $(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-S1/ka.pid) -o pid= || echo grantiva-run-exited; cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-S1/ka.ready; tail -5 /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-S1/ka.err; adb forward --list
+rc=0 elapsed=5.2s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=11.22 44.13 39.15
+$ $GRANTIVA runner stop; echo exit=$?; $GRANTIVA runner stop --json; echo exit=$?
+rc=0 elapsed=0.0s  (stdout 03.out, stderr 03.err)
+
+# shared evidence: see ../B2-K14/ (runner stop vs keep-alive)

@@ -1,0 +1,135 @@
+{
+  "id": "flow-000",
+  "name": "08-scroll",
+  "sourceFile": ".maestro/coverage/08-scroll.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:23:59.148658-07:00",
+  "endTime": "2026-10-11T10:25:09.966907-07:00",
+  "duration": 70818,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:23:59.173331-07:00",
+      "endTime": "2026-10-11T10:24:06.139331-07:00",
+      "duration": 6966,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "scroll",
+      "yaml": "scroll: DOWN",
+      "status": "passed",
+      "startTime": "2026-10-11T10:24:06.140569-07:00",
+      "endTime": "2026-10-11T10:24:19.620569-07:00",
+      "duration": 13480,
+      "params": {
+        "direction": "DOWN"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Landmark 70\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:24:19.621293-07:00",
+      "endTime": "2026-10-11T10:25:09.374293-07:00",
+      "duration": 49753,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        },
+        "direction": "DOWN",
+        "timeout": 60000
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found after 20 scrolls (cause: element not found)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmark 70\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Golden Gate Bridge\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        },
+        "direction": "UP",
+        "timeout": 60000
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 23399,
+    "p50": 13480,
+    "p95": 49753,
+    "max": 49753,
+    "slowestType": "scrollUntilVisible"
+  },
+  "artifacts": {}
+}

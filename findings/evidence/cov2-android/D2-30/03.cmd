@@ -1,0 +1,1 @@
+cd /tmp/cov2-android-k104 && $GRANTIVA runner start --detach >/dev/null 2>&1; cat /tmp/grantiva-sessions/*.owner.json 2>/dev/null | tr '}' '\n' | grep k104; echo; sleep 2; $GRANTIVA hierarchy --format json | head -c 60; echo; $GRANTIVA runner stop; rm -rf /tmp/cov2-android-k104

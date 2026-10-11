@@ -1,0 +1,1 @@
+adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks; $GRANTIVA emulator teardown --serial emulator-5554 >/dev/null 2>&1; sleep 3; adb devices; $GRANTIVA emulator ensure --name cov2-android; adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks; echo pm-exit=$?

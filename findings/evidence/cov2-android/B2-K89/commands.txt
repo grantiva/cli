@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=31.59 52.69 47.16
+$ rm -rf .grantiva/baselines/android .grantiva/captures/android; /Users/kyle/.grantiva-qa/bin/grantiva diff capture --device emulator-5554 --no-build; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json; echo exit=$?
+rc=0 elapsed=44.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=17.86 46.12 45.02
+$ /Users/kyle/.grantiva-qa/bin/grantiva diff approve --screen Home; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json | head -5; echo exit=${PIPESTATUS[0]}
+rc=0 elapsed=0.0s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.13 26.71 36.99
+$ mkdir -p /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/bl-save && cp -R .grantiva/baselines/android /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/bl-save/; rm -f ".grantiva/baselines/android/Detail.png" ".grantiva/baselines/android/Favorites.png"; $GRANTIVA diff compare; echo exit=$?; $GRANTIVA diff compare --json | python3 -I -c "import json,sys;d=json.load(sys.stdin);print(\"passed\",d[\"passed\"],[ (s[\"screenName\"],s[\"status\"]) for s in d[\"screens\"]])"; cp -R /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/bl-save/android/. .grantiva/baselines/android/
+rc=0 elapsed=0.3s  (stdout 03.out, stderr 03.err)
+

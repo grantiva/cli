@@ -1,0 +1,6 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.34 7.50 8.95
+$ $GRANTIVA emulator ensure --name cov2-android-2 >/dev/null 2>&1; $GRANTIVA run --device emulator-5556 --no-build --flow .maestro/coverage/18-long-wait.yaml > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/N2-16/mid.out 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/N2-16/mid.err & p=$!; for i in $(seq 1 60); do grep -q 'launchApp' /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/N2-16/mid.err && break; sleep 1; done; sleep 3; t0=$(python3 -I -c 'import time;print(time.time())'); $GRANTIVA emulator teardown --serial emulator-5556 --force; wait $p; echo run-exit=$? secs-after-teardown=$(python3 -I -c "import time;print(round(time.time()-$t0,1))"); grep -E '^Warning|^Error|restor' /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/N2-16/mid.err | cut -c1-250
+rc=0 elapsed=68.4s  (stdout 01.out, stderr 01.err)
+
+# shared evidence: see ../B2-K06/ ((a) fresh boots)
+# shared evidence: see ../N2-16/ ((b) teardown mid-flow)

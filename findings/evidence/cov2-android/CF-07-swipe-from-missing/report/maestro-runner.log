@@ -1,0 +1,37 @@
+10:23:19.632236 [INFO] === Test execution started ===
+10:23:19.632307 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/07-swipe-from-missing
+10:23:19.632313 [INFO] Platform: android
+10:23:19.632318 [INFO] Driver: uiautomator2
+10:23:19.632604 [INFO] Validated 1 flow(s)
+10:23:19.632628 [INFO] Single device execution mode
+10:23:19.632634 [INFO] Starting flow execution (parallel: false, devices: [])
+10:23:19.632647 [INFO] Creating driver for single device execution
+10:23:19.632653 [INFO] Connecting to Android device: emulator-5554
+10:23:19.776786 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:23:19.826023 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:23:20.385312 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:23:20.397204 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:23:23.608315 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:23:23.648232 [INFO] Session created successfully: 62f5d910-887c-46f6-a80f-56aea65c5571
+10:23:23.844577 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:23:23.847033 [INFO] === Starting flow: 07-swipe-from-missing ===
+10:23:23.847042 [INFO] Flow file: .maestro/coverage/07-swipe-from-missing.yaml
+10:23:23.847046 [INFO] Total steps: 2
+10:23:23.876684 [DEBUG] Executing step 0: launchApp
+10:23:31.594073 [DEBUG] Step 0 completed successfully (7717ms): launchApp
+10:23:31.595094 [DEBUG] Executing step 1: swipe: LEFT from text="No Such Row"
+10:23:33.008301 [DEBUG] crash check during a lookup in flight for 1.13s: crashed=false (took 130ms)
+10:23:34.011809 [DEBUG] crash check during a lookup in flight for 2.134s: crashed=false (took 132ms)
+10:23:34.986172 [DEBUG] crash check during a lookup in flight for 3.108s: crashed=false (took 106ms)
+10:23:36.556276 [DEBUG] crash check during a lookup in flight for 4.678s: crashed=false (took 676ms)
+10:23:37.195451 [DEBUG] crash check during a lookup in flight for 5.318s: crashed=false (took 316ms)
+10:23:37.988069 [DEBUG] crash check during a lookup in flight for 6.11s: crashed=false (took 108ms)
+10:23:49.281346 [ERROR] Step 1 failed (17686ms): swipe: LEFT from text="No Such Row" - Error: Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.")
+10:23:50.062759 [INFO] === Flow completed: 07-swipe-from-missing (status: failed, duration: 26214ms, passed: 1, failed: 1, skipped: 0) ===
+10:23:50.793407 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:23:50.806652 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:23:50.806676 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:23:50.806967 [INFO] Generating reports...
+10:23:50.807810 [INFO] Shutting down devices started by maestro-runner...
+10:23:50.807834 [INFO] Shutting down all tracked emulators
+10:23:50.807844 [INFO] Shutting down all tracked simulators

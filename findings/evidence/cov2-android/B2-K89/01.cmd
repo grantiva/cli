@@ -1,0 +1,1 @@
+rm -rf .grantiva/baselines/android .grantiva/captures/android; /Users/kyle/.grantiva-qa/bin/grantiva diff capture --device emulator-5554 --no-build; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json; echo exit=$?

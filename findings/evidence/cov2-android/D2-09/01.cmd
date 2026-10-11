@@ -1,0 +1,1 @@
+$GRANTIVA emulator teardown --serial emulator-5554 >/dev/null 2>&1; sleep 3; adb devices; adb devices; $GRANTIVA diff capture --no-build --app-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/app-free-debug.apk; echo exit=$?; adb devices

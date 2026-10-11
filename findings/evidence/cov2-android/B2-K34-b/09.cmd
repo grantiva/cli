@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva record --device emulator-5554 --duration 4 --verbose --json --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/k34b-$((RANDOM)).mp4 2>&1 | grep -E 'note|Note|Held frame|appears|held|recordedMilliseconds|lastFrame'; echo exit=${PIPESTATUS[0]}

@@ -1,0 +1,1 @@
+$GRANTIVA runner start --detach >/dev/null 2>&1; pid=$(python3 -I -c "import json;print(json.load(open(\".grantiva/session.json\"))[\"pid\"])"); kill -9 $pid; sleep 1; $GRANTIVA runner stop; echo exit=$?

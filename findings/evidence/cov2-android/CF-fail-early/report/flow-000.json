@@ -1,0 +1,83 @@
+{
+  "id": "flow-000",
+  "name": "fail-early",
+  "sourceFile": ".maestro/coverage/fail-early.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:33:36.84275-07:00",
+  "endTime": "2026-10-11T10:34:03.093654-07:00",
+  "duration": 26250,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:33:36.874635-07:00",
+      "endTime": "2026-10-11T10:33:44.067635-07:00",
+      "duration": 7193,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:33:44.068005-07:00",
+      "endTime": "2026-10-11T10:34:02.427005-07:00",
+      "duration": 18359,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Wifi signal full.,No internet\", \"Battery 100 percent.\", \"Half Dome\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 12776,
+    "p50": 7193,
+    "p95": 18359,
+    "max": 18359,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

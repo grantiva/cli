@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/10-seed-many.yaml; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1

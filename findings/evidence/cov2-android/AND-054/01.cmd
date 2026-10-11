@@ -1,0 +1,1 @@
+$GRANTIVA hierarchy --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/AND-054/h.json; echo exit=$?; head -c 600 /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/AND-054/h.json

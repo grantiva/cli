@@ -1,0 +1,58 @@
+{
+  "id": "flow-000",
+  "name": "07-swipe-from-missing",
+  "sourceFile": ".maestro/coverage/07-swipe-from-missing.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:23:23.847033-07:00",
+  "endTime": "2026-10-11T10:23:50.061304-07:00",
+  "duration": 26214,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:23:23.876692-07:00",
+      "endTime": "2026-10-11T10:23:31.593692-07:00",
+      "duration": 7717,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "swipe",
+      "yaml": "swipe: LEFT from text=\"No Such Row\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:23:31.595118-07:00",
+      "endTime": "2026-10-11T10:23:49.281118-07:00",
+      "duration": 17686,
+      "params": {
+        "direction": "LEFT"
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Wifi signal full.,No internet\", \"Phone signal full.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 12701,
+    "p50": 7717,
+    "p95": 17686,
+    "max": 17686,
+    "slowestType": "swipe"
+  },
+  "artifacts": {}
+}

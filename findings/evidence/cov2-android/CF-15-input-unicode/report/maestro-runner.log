@@ -1,0 +1,64 @@
+10:29:57.791679 [INFO] === Test execution started ===
+10:29:57.791765 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/15-input-unicode
+10:29:57.791773 [INFO] Platform: android
+10:29:57.791779 [INFO] Driver: uiautomator2
+10:29:57.792180 [INFO] Validated 1 flow(s)
+10:29:57.792211 [INFO] Single device execution mode
+10:29:57.792219 [INFO] Starting flow execution (parallel: false, devices: [])
+10:29:57.792228 [INFO] Creating driver for single device execution
+10:29:57.792237 [INFO] Connecting to Android device: emulator-5554
+10:29:57.940051 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:29:57.993926 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:29:58.532351 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:29:58.545746 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:30:02.335653 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:30:02.360664 [INFO] Session created successfully: 3a68c64f-fbfd-4365-bf6c-ae17553d39f0
+10:30:02.936332 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:30:02.940335 [INFO] === Starting flow: 15-input-unicode ===
+10:30:02.940348 [INFO] Flow file: .maestro/coverage/15-input-unicode.yaml
+10:30:02.940362 [INFO] Total steps: 10
+10:30:02.975479 [DEBUG] Executing step 0: launchApp
+10:30:12.236320 [DEBUG] Step 0 completed successfully (9260ms): launchApp
+10:30:12.236708 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+10:30:12.236946 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+10:30:17.538450 [DEBUG] crash check during a lookup in flight for 4.925s: crashed=false (took 3.922s)
+10:30:17.675340 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:30:17.703969 [DEBUG] crash check during a lookup in flight for 5.09s: crashed=false (took 165ms)
+10:30:17.844828 [DEBUG] crash check during a lookup in flight for 5.231s: crashed=false (took 141ms)
+10:30:19.213459 [DEBUG] crash check during a lookup in flight for 6.6s: crashed=false (took 597ms)
+10:30:19.602200 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:30:19.762625 [DEBUG] crash check during a lookup in flight for 7.149s: crashed=false (took 147ms)
+10:30:20.593384 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:30:20.855825 [DEBUG] crash check during a lookup in flight for 8.242s: crashed=false (took 241ms)
+10:30:21.827691 [DEBUG] crash check during a lookup in flight for 9.214s: crashed=false (took 212ms)
+10:30:21.971665 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:30:22.938624 [DEBUG] crash check during a lookup in flight for 10.325s: crashed=false (took 323ms)
+10:30:25.365433 [DEBUG] crash check during a lookup in flight for 12.752s: crashed=false (took 1.75s)
+10:30:41.966533 [DEBUG] crash check during a lookup in flight for 29.353s: crashed=false (took 16.601s)
+10:30:43.696656 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:30:43.756855 [DEBUG] crash check during a lookup in flight for 31.143s: crashed=false (took 1.79s)
+10:30:43.997899 [DEBUG] crash check during a lookup in flight for 31.384s: crashed=false (took 241ms)
+10:30:45.027455 [DEBUG] crash check during a lookup in flight for 32.414s: crashed=false (took 413ms)
+10:30:46.127293 [DEBUG] crash check during a lookup in flight for 33.513s: crashed=false (took 512ms)
+10:30:47.360016 [DEBUG] crash check during a lookup in flight for 34.746s: crashed=false (took 744ms)
+10:30:51.607933 [DEBUG] Step 1 completed successfully (39371ms): tapOn: text="Deep Links"
+10:30:51.609416 [DEBUG] Executing step 2: tapOn: text="Edit Landmark"
+10:30:54.137646 [DEBUG] crash check during a lookup in flight for 2.156s: crashed=false (took 1.156s)
+10:30:55.732988 [DEBUG] crash check during a lookup in flight for 3.752s: crashed=false (took 1.595s)
+10:30:55.870532 [DEBUG] crash check during a lookup in flight for 3.889s: crashed=false (took 137ms)
+10:30:56.128036 [DEBUG] crash check during a lookup in flight for 4.147s: crashed=false (took 145ms)
+10:30:57.243869 [DEBUG] crash check during a lookup in flight for 5.263s: crashed=false (took 261ms)
+10:30:59.059710 [DEBUG] Step 2 completed successfully (7450ms): tapOn: text="Edit Landmark"
+10:30:59.060748 [DEBUG] Executing step 3: tapOn: text="Location"
+10:31:01.880825 [DEBUG] crash check during a lookup in flight for 1.254s: crashed=false (took 252ms)
+10:31:02.819782 [DEBUG] Step 3 completed successfully (3759ms): tapOn: text="Location"
+10:31:02.821831 [DEBUG] Executing step 4: inputText: " · Ünïcødé ✓"
+10:31:50.863797 [ERROR] Step 4 failed (48041ms): inputText: " · Ünïcødé ✓" - Error: Failed to input text: UIAutomator2 server on emulator-5554 did not answer POST /actions within 10s
+10:31:56.849854 [INFO] === Flow completed: 15-input-unicode (status: failed, duration: 113907ms, passed: 4, failed: 1, skipped: 5) ===
+10:31:58.248497 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:31:58.260956 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:31:58.260990 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:31:58.261186 [INFO] Generating reports...
+10:31:58.261946 [INFO] Shutting down devices started by maestro-runner...
+10:31:58.261955 [INFO] Shutting down all tracked emulators
+10:31:58.261965 [INFO] Shutting down all tracked simulators

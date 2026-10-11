@@ -1,0 +1,1 @@
+$GRANTIVA build install; echo exit=$?; adb devices; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='emulator-5554'][0])") | grep -o 'qemu-system-aarch64[-a-z]*\|-no-window'

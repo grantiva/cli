@@ -1,0 +1,1 @@
+serial=$($GRANTIVA emulator ensure --name cov2-android-2 --headless); echo $serial; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='$serial'][0])"); $GRANTIVA emulator teardown --serial $serial; echo exit=$?

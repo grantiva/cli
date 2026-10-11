@@ -1,0 +1,61 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android-2 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/05-category.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.6s, slow)
+    ✓ tapOn: text="Lakes" (17.0s, slow)
+    ✓ assertVisible: text="Lake Tahoe" (1.3s)
+    ✓ assertVisible: text="Mono Lake" (401ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (1.2s)
+    ✓ takeScreenshot (1.6s)
+✓ 05-category 29.3s
+
+  [1/1] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.6s, slow)
+    ✓ tapOn: text="Lakes" (17.0s, slow)
+    ✓ assertVisible: text="Lake Tahoe" (1.3s)
+    ✓ assertVisible: text="Mono Lake" (401ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (1.2s)
+    ✓ takeScreenshot (1.6s)
+✓ 05-category 29.3s
+
+  6 steps passing (29.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-category                    ✓ PASS       6      6      0      0      29.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0      29.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

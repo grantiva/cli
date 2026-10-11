@@ -1,0 +1,1 @@
+echo "{\"pid\":99999,\"wdaPort\":1,\"platform\":\"android\",\"udid\":\"emulator-5554\",\"startedAt\":813438038.5,\"bundleId\":\"com.kylebrowning.landmarks\"}" > .grantiva/session.json; kill -0 99999 2>/dev/null || echo pid-99999-dead; $GRANTIVA runner start --detach; echo exit=$?; cat .grantiva/session.json

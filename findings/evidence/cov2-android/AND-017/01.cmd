@@ -1,0 +1,1 @@
+t0=$(date +%s); GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS=5 $GRANTIVA emulator ensure --name cov2-android-2; echo exit=$? secs=$(( $(date +%s)-t0 )); adb devices; $GRANTIVA emulator sessions; sleep 20; $GRANTIVA emulator teardown --serial emulator-5556; echo teardown-exit=$?

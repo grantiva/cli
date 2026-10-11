@@ -1,0 +1,88 @@
+10:25:47.729831 [INFO] === Test execution started ===
+10:25:47.729905 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/10-lifecycle
+10:25:47.729911 [INFO] Platform: android
+10:25:47.729916 [INFO] Driver: uiautomator2
+10:25:47.730189 [INFO] Validated 1 flow(s)
+10:25:47.730213 [INFO] Single device execution mode
+10:25:47.730220 [INFO] Starting flow execution (parallel: false, devices: [])
+10:25:47.730226 [INFO] Creating driver for single device execution
+10:25:47.730233 [INFO] Connecting to Android device: emulator-5554
+10:25:47.902122 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:25:47.953017 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:25:48.524996 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:25:48.540096 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:25:51.777040 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:25:51.811499 [INFO] Session created successfully: edf60809-3147-4791-950e-04d997e19744
+10:25:52.026128 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:25:52.033809 [INFO] === Starting flow: 10-lifecycle ===
+10:25:52.033836 [INFO] Flow file: .maestro/coverage/10-lifecycle.yaml
+10:25:52.033855 [INFO] Total steps: 16
+10:25:52.059023 [DEBUG] Executing step 0: stopApp
+10:25:52.324008 [DEBUG] Step 0 completed successfully (264ms): stopApp
+10:25:52.324911 [DEBUG] Executing step 1: launchApp
+10:25:58.212152 [DEBUG] Step 1 completed successfully (5887ms): launchApp
+10:25:58.212585 [DEBUG] Executing step 2: assertVisible: text="Featured"
+10:25:58.212820 [DEBUG] Flutter: parallel search (text="Featured", id="")
+10:25:58.842652 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:59.477180 [DEBUG] crash check during a lookup in flight for 1.113s: crashed=false (took 111ms)
+10:25:59.688183 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:26:00.479225 [DEBUG] crash check during a lookup in flight for 2.115s: crashed=false (took 113ms)
+10:26:00.942668 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:26:01.504158 [DEBUG] crash check during a lookup in flight for 3.14s: crashed=false (took 138ms)
+10:26:02.036581 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:26:02.599270 [DEBUG] crash check during a lookup in flight for 4.235s: crashed=false (took 233ms)
+10:26:03.828223 [DEBUG] crash check during a lookup in flight for 5.464s: crashed=false (took 462ms)
+10:26:04.546362 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:26:04.568781 [DEBUG] crash check during a lookup in flight for 6.205s: crashed=false (took 203ms)
+10:26:04.621641 [DEBUG] Step 2 completed successfully (6409ms): assertVisible: text="Featured"
+10:26:04.622486 [DEBUG] Executing step 3: tapOn: text="Lake Tahoe"
+10:26:05.768626 [DEBUG] crash check during a lookup in flight for 1.098s: crashed=false (took 97ms)
+10:26:06.738055 [DEBUG] Step 3 completed successfully (2115ms): tapOn: text="Lake Tahoe"
+10:26:06.738432 [DEBUG] Executing step 4: tapOn: text="Favorite"
+10:26:08.131815 [DEBUG] crash check during a lookup in flight for 1.081s: crashed=false (took 79ms)
+10:26:08.861866 [DEBUG] Step 4 completed successfully (2123ms): tapOn: text="Favorite"
+10:26:08.862240 [DEBUG] Executing step 5: assertVisible: text="Unfavorite"
+10:26:09.400760 [DEBUG] Step 5 completed successfully (538ms): assertVisible: text="Unfavorite"
+10:26:09.401298 [DEBUG] Executing step 6: launchApp (clearState)
+10:26:13.011003 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 3.4s)
+10:26:17.314966 [DEBUG] Step 6 completed successfully (7913ms): launchApp (clearState)
+10:26:17.315502 [DEBUG] Executing step 7: tapOn: text="Favorites"
+10:26:19.415244 [DEBUG] crash check during a lookup in flight for 1.084s: crashed=false (took 84ms)
+10:26:20.412867 [DEBUG] crash check during a lookup in flight for 2.082s: crashed=false (took 79ms)
+10:26:21.866224 [DEBUG] crash check during a lookup in flight for 3.535s: crashed=false (took 535ms)
+10:26:22.901547 [DEBUG] crash check during a lookup in flight for 4.57s: crashed=false (took 568ms)
+10:26:23.421861 [DEBUG] crash check during a lookup in flight for 5.091s: crashed=false (took 89ms)
+10:26:24.935014 [DEBUG] Step 7 completed successfully (7619ms): tapOn: text="Favorites"
+10:26:24.936601 [DEBUG] Executing step 8: assertVisible: text="Landmarks you favorite will appear here."
+10:26:25.828544 [DEBUG] Step 8 completed successfully (891ms): assertVisible: text="Landmarks you favorite will appear here."
+10:26:25.829131 [DEBUG] Executing step 9: stopApp
+10:26:26.130924 [DEBUG] Step 9 completed successfully (301ms): stopApp
+10:26:26.132357 [DEBUG] Executing step 10: stopApp
+10:26:26.527121 [DEBUG] Step 10 completed successfully (394ms): stopApp
+10:26:26.528736 [DEBUG] Executing step 11: launchApp
+10:26:31.264380 [DEBUG] Step 11 completed successfully (4735ms): launchApp
+10:26:31.264904 [DEBUG] Executing step 12: assertVisible: text="Featured"
+10:26:34.098919 [DEBUG] crash check during a lookup in flight for 1.504s: crashed=false (took 502ms)
+10:26:34.698739 [DEBUG] crash check during a lookup in flight for 2.104s: crashed=false (took 102ms)
+10:26:36.110606 [DEBUG] crash check during a lookup in flight for 3.516s: crashed=false (took 514ms)
+10:26:37.512625 [DEBUG] crash check during a lookup in flight for 4.918s: crashed=false (took 917ms)
+10:26:38.113741 [DEBUG] crash check during a lookup in flight for 5.519s: crashed=false (took 516ms)
+10:26:38.162652 [DEBUG] Step 12 completed successfully (6897ms): assertVisible: text="Featured"
+10:26:38.163176 [DEBUG] Executing step 13: killApp
+10:26:38.216717 [DEBUG] Step 13 completed successfully (53ms): killApp
+10:26:38.217193 [DEBUG] Executing step 14: launchApp
+10:26:44.201577 [DEBUG] Step 14 completed successfully (5984ms): launchApp
+10:26:44.202733 [DEBUG] Executing step 15: assertVisible: text="Featured"
+10:26:45.953997 [DEBUG] crash check during a lookup in flight for 1.152s: crashed=false (took 150ms)
+10:26:46.884361 [DEBUG] crash check during a lookup in flight for 2.083s: crashed=false (took 81ms)
+10:26:47.934024 [DEBUG] crash check during a lookup in flight for 3.132s: crashed=false (took 130ms)
+10:26:49.166874 [DEBUG] crash check during a lookup in flight for 4.365s: crashed=false (took 363ms)
+10:26:49.890744 [DEBUG] Step 15 completed successfully (5687ms): assertVisible: text="Featured"
+10:26:49.894466 [INFO] === Flow completed: 10-lifecycle (status: passed, duration: 57857ms, passed: 16, failed: 0, skipped: 0) ===
+10:26:50.952054 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:26:50.966128 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:26:50.967379 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:26:50.967628 [INFO] Generating reports...
+10:26:50.968272 [INFO] Shutting down devices started by maestro-runner...
+10:26:50.968279 [INFO] Shutting down all tracked emulators
+10:26:50.968289 [INFO] Shutting down all tracked simulators

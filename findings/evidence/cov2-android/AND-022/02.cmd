@@ -1,0 +1,1 @@
+ls app/build/outputs/apk/free/release/; $ANDROID_HOME/build-tools/$(ls $ANDROID_HOME/build-tools | tail -1)/apksigner verify --print-certs app/build/outputs/apk/free/release/app-free-release.apk 2>&1 | head -3
