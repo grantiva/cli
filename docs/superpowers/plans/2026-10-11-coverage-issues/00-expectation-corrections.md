@@ -12,3 +12,6 @@ Rows and briefs whose expectation, not the product, was wrong. None of these cha
 | MCP-034, IOS-111 | `grantiva_run` prints no `Product:` line | matrix: docs/mcp.md:62 promises none; K94 adds the summary line for consistency |
 | brief C16 (B-C16.1, B-C16.3) | webhook event names are not validated locally; no `events` subcommand | brief corrected: server-side validation is the design; tests assert it |
 | brief I04 (B-I04.3) | the CLI passes no alert policy | brief corrected: #183 removed the opt-out flag; the runner accepts system alerts by default |
+| B-A02.2, B-R02.1, K09 | centre-start swipes open the row only 7 of 10; the far-side start (documented rule) opens it 10 of 10 | matrix and brief criteria rewritten to the documented swipe rule; K09 closed as an expectation correction (round 2 ruling) |
+| N-03 (K07) | Android bare scrolls are deterministic but land on Landmark 28–29, not 30 (target tuned on iOS) | matrix corrected; Android `10-seed-many` asserts `Landmark 28` (landmarks-demo PR) |
+| AND-OBS-04 note | — | see K32 |
