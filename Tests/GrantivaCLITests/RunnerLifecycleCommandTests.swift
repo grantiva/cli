@@ -271,6 +271,62 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234; it ignored SIGINT and SIGTERM and was killed)")
     }
 
+    // MARK: - L04: `runner stop` ends the helpers its runner started
+
+    /// After `terminateGroup` returns `.interrupted`, the process table still
+    /// lists the `simctl diagnose` WebDriverAgent's xcodebuild started for the
+    /// device in a group of its own: stop reaps it, waits, and reports it.
+    func testStopReapsTheDiagnoseTheRunnersXcodebuildLeftAndReportsIt() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let udid = session.udid
+        let runner = "1234     1  1234 /tmp/grantiva-runner --platform ios --device \(udid) --no-ansi server"
+        let xcodebuild = "1240  1234  1234 /usr/bin/xcodebuild test-without-building -destination id=\(udid)"
+        let diagnose = "/Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --output=/elsewhere/simctl_diagnostics --no-archive --udid=\(udid)"
+        let table = LockedValue("\(runner)\n\(xcodebuild)")
+        let signals = LockedValue<[String]>([])
+        let alive = LockedValue<Set<Int32>>([1250])
+
+        var dependencies = dependencies(session: session, events: events, snapshot: "1234 1234 /tmp/grantiva-runner --device \(udid)")
+        dependencies.terminateGroup = { _ in
+            events.append("terminate")
+            table.set("1240     1  1234 /usr/bin/xcodebuild test-without-building -destination id=\(udid)\n1250  1240  1250 \(diagnose)")
+            usleep(200_000)
+            table.set("1250     1  1250 \(diagnose)")
+            return .interrupted
+        }
+        dependencies.helperReaper = RunnerHelperReaper(
+            snapshot: { table.value },
+            signal: { pid, signal in signals.append("\(signal) \(pid)"); alive.set(alive.value.subtracting([abs(pid)])) },
+            isAlive: { alive.value.contains($0) },
+            runnerBases: [], gracePeriod: 0.5, pollInterval: .milliseconds(10)
+        )
+
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        let reaped = ReapedProcess(pid: 1250, processGroup: 1250, kind: .diagnose, command: diagnose, killed: true)
+        XCTAssertEqual(result, .stopped(pid: 1234, udid: udid, killed: false, reaped: [reaped]))
+        XCTAssertEqual(signals.value.first, "\(SIGINT) 1250")
+        XCTAssertFalse(alive.value.contains(1250), "stop returned before the helper exited")
+
+        let json = try decode(RunnerStopCommand.document(result))
+        let list = try XCTUnwrap(json["reaped"] as? [[String: Any]])
+        XCTAssertEqual(list.count, 1)
+        XCTAssertEqual(list.first?["kind"] as? String, "diagnose")
+        XCTAssertEqual(list.first?["pid"] as? Int, 1250)
+        XCTAssertEqual(list.first?["command"] as? String, diagnose)
+        XCTAssertEqual(
+            RunnerStopCommand.render(result),
+            "Runner stopped (pid 1234)\nAlso stopped diagnose pid 1250, which the runner left running for \(udid)."
+        )
+    }
+
+    func testStopReportsAnEmptyReapedListWhenTheRunnerLeftNothing() async throws {
+        let result = RunnerStopCommand.Result.stopped(pid: 1234, udid: makeSession().udid, killed: false)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual((json["reaped"] as? [Any])?.count, 0)
+        XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234)")
+    }
+
     // MARK: - K14: `runner stop` finds a `run --keep-alive` session
 
     func testStopReleasesAKeepAliveSessionFromThisDirectory() async throws {

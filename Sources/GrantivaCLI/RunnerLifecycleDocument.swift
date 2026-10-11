@@ -19,6 +19,8 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
     var alreadyExited: Bool?
     /// Every session `runner stop` released, when it released more than one.
     var sessions: [RunnerLifecycleDocument]?
+    /// Device helpers `runner stop` ended after the runner (L04).
+    var reaped: [ReapedProcess]?
 
     init(
         status: String, pid: Int32? = nil, port: UInt16? = nil, appID: String? = nil,
@@ -44,6 +46,7 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
         try container.encodeIfPresent(killed, forKey: "killed")
         try container.encodeIfPresent(alreadyExited, forKey: "alreadyExited")
         try container.encodeIfPresent(sessions, forKey: "sessions")
+        try container.encodeIfPresent(reaped, forKey: "reaped")
         let android = platform == .android
         if let appID {
             if android {

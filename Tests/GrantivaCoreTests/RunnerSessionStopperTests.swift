@@ -94,6 +94,39 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertEqual(events.value, ["terminate 701", "files 701", "orphans emulator-5554", "lease emulator-5554"])
     }
 
+    /// L04: a detached session's runner group is stopped while its helpers
+    /// are watched; the device helper it left is reaped and reported.
+    func testATerminatedRunnersDeviceHelperIsReapedAndReported() async throws {
+        let alive = Locked<Set<Int32>>([701, 750])
+        let events = Locked<[String]>([])
+        let udid = udid
+        let diagnose = "/usr/bin/simctl diagnose --no-archive --udid=\(udid)"
+        let table = Locked("701 1 701 /x/grantiva-runner --device \(udid)\n740 701 701 /x/xcodebuild test-without-building -destination id=\(udid)")
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.terminateGroup = { pid in
+            events.append("terminate \(pid)")
+            table.mutate { $0 = "740 1 701 /x/xcodebuild test-without-building -destination id=\(udid)\n750 740 750 \(diagnose)" }
+            usleep(200_000)
+            table.mutate { $0 = "750 1 750 \(diagnose)" }
+            alive.mutate { $0.remove(pid) }
+            return .interrupted
+        }
+        stopper.helperReaper = RunnerHelperReaper(
+            snapshot: { table.value },
+            signal: { pid, _ in events.append("signal \(pid)"); alive.mutate { $0.remove(abs(pid)) } },
+            isAlive: { alive.value.contains($0) },
+            runnerBases: [], gracePeriod: 0.5, pollInterval: .milliseconds(10)
+        )
+        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 9, detached: true)
+
+        let outcome = try await stopper.stop(session)
+        XCTAssertEqual(outcome, .terminated(runnerPid: 701, udid: udid, killed: false, reaped: [
+            ReapedProcess(pid: 750, processGroup: 750, kind: .diagnose, command: diagnose, killed: true),
+        ]))
+        XCTAssertTrue(events.value.contains("signal 750"), "\(events.value)")
+        XCTAssertFalse(alive.value.contains(750))
+    }
+
     func testStopSessionsOnADeviceStopsOnlyThatDevicesSessions() async throws {
         try writeRunnerFile(pid: 701)
         try writeRunnerFile(pid: 801)

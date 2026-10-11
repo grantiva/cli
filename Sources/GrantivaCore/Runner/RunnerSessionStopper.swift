@@ -13,19 +13,27 @@ import Foundation
 public struct RunnerSessionStopper: Sendable {
     public enum Outcome: Equatable, Sendable {
         /// The grantiva process holding the session got SIGINT and exited.
-        case released(grantivaPid: Int32, runnerPid: Int32, udid: String)
+        /// `reaped`: device helpers the runner left running, ended here (L04).
+        case released(grantivaPid: Int32, runnerPid: Int32, udid: String, reaped: [ReapedProcess] = [])
         /// The runner's group was terminated; `killed` when it took SIGKILL.
-        case terminated(runnerPid: Int32, udid: String, killed: Bool)
+        case terminated(runnerPid: Int32, udid: String, killed: Bool, reaped: [ReapedProcess] = [])
 
         public var runnerPid: Int32 {
             switch self {
-            case .released(_, let pid, _), .terminated(let pid, _, _): return pid
+            case .released(_, let pid, _, _), .terminated(let pid, _, _, _): return pid
             }
         }
 
         public var udid: String {
             switch self {
-            case .released(_, _, let udid), .terminated(_, let udid, _): return udid
+            case .released(_, _, let udid, _), .terminated(_, let udid, _, _): return udid
+            }
+        }
+
+        /// Device helpers the runner left running that the stop ended.
+        public var reaped: [ReapedProcess] {
+            switch self {
+            case .released(_, _, _, let reaped), .terminated(_, _, _, let reaped): return reaped
             }
         }
     }
@@ -42,6 +50,8 @@ public struct RunnerSessionStopper: Sendable {
     public var removeSessionFiles: @Sendable (Int32) -> Void
     public var releaseLease: @Sendable (String) -> Void
     public var cleanupOrphans: @Sendable (String) async -> Void
+    /// Ends the device helpers (`simctl diagnose`, …) a stopped runner left.
+    public var helperReaper: RunnerHelperReaper
     /// How long a grantiva process gets to exit after SIGINT. Its own
     /// shutdown gives the runner 5 s before escalating.
     public var waitTimeout: TimeInterval
@@ -58,6 +68,7 @@ public struct RunnerSessionStopper: Sendable {
         removeSessionFiles: @escaping @Sendable (Int32) -> Void,
         releaseLease: @escaping @Sendable (String) -> Void,
         cleanupOrphans: @escaping @Sendable (String) async -> Void,
+        helperReaper: RunnerHelperReaper = .inert,
         waitTimeout: TimeInterval = 30,
         pollInterval: Duration = .milliseconds(100)
     ) {
@@ -71,6 +82,7 @@ public struct RunnerSessionStopper: Sendable {
         self.removeSessionFiles = removeSessionFiles
         self.releaseLease = releaseLease
         self.cleanupOrphans = cleanupOrphans
+        self.helperReaper = helperReaper
         self.waitTimeout = waitTimeout
         self.pollInterval = pollInterval
     }
@@ -89,7 +101,8 @@ public struct RunnerSessionStopper: Sendable {
             cleanupOrphans: { serial in
                 guard let platform = try? AndroidPlatform.live() else { return }
                 await platform.cleanupOrphans(deviceID: serial)
-            }
+            },
+            helperReaper: .live()
         )
     }
 
@@ -103,15 +116,18 @@ public struct RunnerSessionStopper: Sendable {
         if let owner = session.ownerPid, owner > 1, owner != getpid(), session.detached != true,
            isProcessAlive(owner), parentPid(session.pid) == owner,
            await isRunnerProcess(session.pid), await isGrantivaProcess(owner) {
-            interrupt(owner)
-            guard await waitForExit(owner, timeout: waitTimeout) else {
+            let (exited, reaped) = await helperReaper.stopping(runnerPid: session.pid, udid: udid) { [self] in
+                interrupt(owner)
+                return await waitForExit(owner, timeout: waitTimeout)
+            }
+            guard exited else {
                 throw GrantivaError.unavailable(
                     "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of SIGINT. "
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }
             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
-            return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid)
+            return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
         return await terminate(runnerPid: session.pid, udid: udid)
     }
@@ -121,14 +137,20 @@ public struct RunnerSessionStopper: Sendable {
     /// removed.
     func terminate(runnerPid: Int32, udid: String) async -> Outcome {
         var killed = false
+        var reaped: [ReapedProcess] = []
         if isProcessAlive(runnerPid), await isRunnerProcess(runnerPid) {
-            killed = terminateGroup(runnerPid) == .killed
-            _ = await waitForExit(runnerPid, timeout: 3)
+            (killed, reaped) = await helperReaper.stopping(runnerPid: runnerPid, udid: udid) { [self] in
+                let killed = terminateGroup(runnerPid) == .killed
+                _ = await waitForExit(runnerPid, timeout: 3)
+                return killed
+            }
+        } else if !udid.isEmpty {
+            reaped = await helperReaper.sweep(exitedRunnerPid: runnerPid, udid: udid)
         }
         removeSessionFiles(runnerPid)
         if DeviceID.isAndroidSerial(udid) { await cleanupOrphans(udid) }
         if !udid.isEmpty { releaseLease(udid) }
-        return .terminated(runnerPid: runnerPid, udid: udid, killed: killed)
+        return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: reaped)
     }
 
     /// Every session on `udid`, orphans included, plus the `runner start`

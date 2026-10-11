@@ -93,7 +93,6 @@ public enum SimulatorReaper {
         psOutput: String,
         excludingPID: Int32 = 0
     ) -> [ReapedProcess] {
-        let needle = udid.lowercased()
         var found: [ReapedProcess] = []
 
         for line in psOutput.split(separator: "\n", omittingEmptySubsequences: true) {
@@ -103,37 +102,37 @@ public enum SimulatorReaper {
                   let pgid = Int32(fields[1])
             else { continue }
             let command = String(fields[2])
-            guard pid != excludingPID else { continue }
-            let haystack = command.lowercased()
-            guard haystack.contains(needle) else { continue }
-            // Never match the teardown invocation that is doing the reaping.
-            if haystack.contains("simulator teardown") { continue }
-
-            let kind: ReapedProcess.Kind
-            if haystack.contains("grantiva-runner") {
-                guard haystack.contains("--device \(needle)") || haystack.contains("--device=\(needle)") else { continue }
-                kind = .runner
-            } else if haystack.contains("test-without-building") {
-                guard haystack.contains("id=\(needle)") else { continue }
-                kind = .webDriverAgent
-            } else if haystack.contains("diagnose") && haystack.contains("simctl") {
-                guard haystack.contains("--udid=\(needle)") || haystack.contains("--udid \(needle)")
-                    || haystack.contains(needle)
-                else { continue }
-                kind = .diagnose
-            } else if haystack.contains("grantiva ") || haystack.hasSuffix("grantiva") {
-                // A live `grantiva run` still holding the lease. This is the
-                // usual culprit when `kill -INT` was ignored by a backgrounded
-                // run, and it is the process the lease names.
-                kind = .grantiva
-            } else {
-                continue
-            }
-
+            guard pid != excludingPID, let kind = kind(of: command, owning: udid) else { continue }
             found.append(ReapedProcess(pid: pid, processGroup: pgid, kind: kind, command: command))
         }
 
         return found.sorted { $0.pid < $1.pid }
+    }
+
+    /// What `command` is when it is a process holding `udid`, or nil. The
+    /// matching rules of `processes(owning:)`, for one command line.
+    static func kind(of command: String, owning udid: String) -> ReapedProcess.Kind? {
+        let needle = udid.lowercased()
+        let haystack = command.lowercased()
+        guard haystack.contains(needle) else { return nil }
+        // Never match the teardown invocation that is doing the reaping.
+        if haystack.contains("simulator teardown") { return nil }
+
+        if haystack.contains("grantiva-runner") {
+            guard haystack.contains("--device \(needle)") || haystack.contains("--device=\(needle)") else { return nil }
+            return .runner
+        } else if haystack.contains("test-without-building") {
+            guard haystack.contains("id=\(needle)") else { return nil }
+            return .webDriverAgent
+        } else if haystack.contains("diagnose") && haystack.contains("simctl") {
+            return .diagnose
+        } else if haystack.contains("grantiva ") || haystack.hasSuffix("grantiva") {
+            // A live `grantiva run` still holding the lease. This is the
+            // usual culprit when `kill -INT` was ignored by a backgrounded
+            // run, and it is the process the lease names.
+            return .grantiva
+        }
+        return nil
     }
 
     /// Snapshot of the host's processes in the format `processes(owning:)` parses.

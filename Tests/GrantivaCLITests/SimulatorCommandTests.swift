@@ -314,6 +314,45 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "other", force: false, managed: [record]), [])
     }
 
+    // MARK: - L04: teardown names a leftover device process it did not start
+
+    func testTeardownReportsALeftoverDeviceProcessByPidAndCommand() throws {
+        typealias T = SimulatorCommand.Teardown
+        let udid = "AD257930-C4D0-4C0F-9DAA-DAA6C335AF8F"
+        let ps = """
+         4806  4806 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --no-archive --udid=\(udid)
+         4900  4900 /usr/bin/xcrun simctl diagnose --udid=OTHER-DEVICE
+         4999  4999 /opt/homebrew/bin/grantiva simulator teardown --udid \(udid)
+        """
+        let leftovers = T.leftoverProcesses(udids: [udid], psOutput: ps)
+        XCTAssertEqual(leftovers[udid]?.map(\.pid), [4806])
+        XCTAssertEqual(leftovers[udid]?.first?.killed, false)
+
+        let lines = T.leftoverWarnings(leftovers)
+        XCTAssertEqual(lines.count, 1)
+        XCTAssertTrue(lines[0].contains("pid 4806"), lines[0])
+        XCTAssertTrue(lines[0].contains("simctl diagnose -l -b --timeout=600"), lines[0])
+        XCTAssertTrue(lines[0].contains("grantiva simulator teardown --udid \(udid) --force"), lines[0])
+
+        let outcome = SimulatorTeardownOutcome(udid: udid, session: nil, deleted: false)
+        let marked = T.marking([outcome], stopped: [], leftovers: leftovers)
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(marked[0])) as? [String: Any])
+        let list = try XCTUnwrap(object["leftoverProcesses"] as? [[String: Any]])
+        XCTAssertEqual(list.first?["pid"] as? Int, 4806)
+        XCTAssertEqual(list.first?["kind"] as? String, "diagnose")
+    }
+
+    /// A non-force `--udid` with no ledger record deletes nothing, so it has
+    /// nothing to warn about; a managed device or session is checked.
+    func testLeftoverCheckCoversOnlyDevicesTheTeardownDeletes() {
+        typealias T = SimulatorCommand.Teardown
+        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+        XCTAssertEqual(T.leftoverCheckTargets(udid: "UNMANAGED", sessionId: nil, managed: [record]), [])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: "MANAGED", sessionId: nil, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: nil, sessionId: "S1", managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: nil, sessionId: "other", managed: [record]), [])
+    }
+
     func testTeardownOutcomeEncodesRunnerSessionStopped() throws {
         var outcome = SimulatorTeardownOutcome(
             session: ManagedSimulatorSession(

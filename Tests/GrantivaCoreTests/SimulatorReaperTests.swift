@@ -432,3 +432,15 @@ private final class SnapshotSequence: @unchecked Sendable {
         lock.withLock { outputs.count > 1 ? outputs.removeFirst() : (outputs.first ?? "") }
     }
 }
+
+/// L04: the exact command line of the `simctl diagnose` the repro captured.
+final class SimulatorReaperDiagnoseLineTests: XCTestCase {
+    func testMatchesTheDiagnoseCommandLineCapturedByTheRepro() {
+        let udid = "AD257930-C4D0-4C0F-9DAA-DAA6C335AF8F"
+        let line = " 4806  4806 /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix3-cli/runner-home/versions/1.1.28-grantiva.10+android-drivers-2/devices/\(udid)/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/\(udid)/run-4685-1791728323714722000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=\(udid)"
+        let found = SimulatorReaper.processes(owning: udid, psOutput: line)
+        XCTAssertEqual(found.map(\.pid), [4806])
+        XCTAssertEqual(found.first?.kind, .diagnose)
+        XCTAssertEqual(found.first?.processGroup, 4806)
+    }
+}

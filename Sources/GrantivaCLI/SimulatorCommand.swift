@@ -100,7 +100,7 @@ struct SimulatorCommand: AsyncParsableCommand {
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists.",
-            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped."
+            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped. Without --force, a process still holding a simulator the teardown deletes or shuts down that it did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed: a warning on stderr names its pid and command, --json lists it in leftoverProcesses, and the teardown goes on. --force reclaims such processes."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -110,7 +110,7 @@ struct SimulatorCommand: AsyncParsableCommand {
         @Option(name: .long, help: "Simulator UDID to reclaim. Use with --force when a run was killed and left processes owning the device.")
         var udid: String?
 
-        @Flag(name: .long, help: "Reclaim by live process inspection instead of the session ledger: kills the grantiva-runner, WebDriverAgent xcodebuild, and simctl diagnose processes holding the simulator, breaks the lease, and reconciles the session registry.")
+        @Flag(name: .long, help: "Reclaim by live process inspection instead of the session ledger: kills the grantiva-runner, WebDriverAgent xcodebuild, and simctl diagnose processes holding the simulator, breaks the lease, and reconciles the session registry. Without it, such processes are only named (a stderr warning and leftoverProcesses in --json).")
         var force = false
 
         func validate() throws {
@@ -149,13 +149,52 @@ struct SimulatorCommand: AsyncParsableCommand {
                 try await runForce()
                 return
             }
+
+            // What still holds the devices now is not this teardown's to
+            // kill (L04): name it rather than proceed silently.
+            let devices = Self.leftoverCheckTargets(udid: target, sessionId: session, managed: managed)
+            let leftovers = Self.leftoverProcesses(
+                udids: devices, psOutput: (try? await SimulatorReaper.processSnapshot()) ?? "", excludingPID: getpid()
+            )
+            for line in Self.leftoverWarnings(leftovers) {
+                FileHandle.standardError.write(Data("Warning: \(line)\n".utf8))
+            }
+
             if let target {
                 let result = try await SimulatorManager.live.teardown(udid: target)
-                try report(outcomes: Self.marking(result, stopped: stopped.stopped), subject: target)
+                try report(outcomes: Self.marking(result, stopped: stopped.stopped, leftovers: leftovers), subject: target)
                 return
             }
             let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
-            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped), subject: session ?? "")
+            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped, leftovers: leftovers), subject: session ?? "")
+        }
+
+        /// The devices a non-force teardown checks for leftover processes:
+        /// those it deletes or shuts down. A `--udid` with no ledger record
+        /// deletes nothing, so there is nothing to warn about.
+        static func leftoverCheckTargets(udid: String?, sessionId: String?, managed: [ManagedSimulatorSession]) -> [String] {
+            runnerStopTargets(udid: udid, sessionId: sessionId, force: false, managed: managed)
+        }
+
+        /// Processes holding each of `udids` (the reaper's rules: a runner,
+        /// WebDriverAgent's xcodebuild, `simctl diagnose`, a grantiva run).
+        static func leftoverProcesses(udids: [String], psOutput: String, excludingPID: Int32 = 0) -> [String: [ReapedProcess]] {
+            var found: [String: [ReapedProcess]] = [:]
+            for udid in udids {
+                let processes = SimulatorReaper.processes(owning: udid, psOutput: psOutput, excludingPID: excludingPID)
+                if !processes.isEmpty { found[udid] = processes }
+            }
+            return found
+        }
+
+        /// One line per leftover process, naming its pid and command.
+        static func leftoverWarnings(_ leftovers: [String: [ReapedProcess]]) -> [String] {
+            leftovers.keys.sorted().flatMap { udid in
+                (leftovers[udid] ?? []).map { process in
+                    "\(udid) is still held by \(process.kind.rawValue) pid \(process.pid), which this teardown did not start: \(process.command). "
+                        + "Stop it, or reclaim the simulator with `grantiva simulator teardown --udid \(udid) --force`."
+                }
+            }
         }
 
         /// The devices whose runner sessions teardown stops: only those it
@@ -185,10 +224,13 @@ struct SimulatorCommand: AsyncParsableCommand {
             return (stopped, lines)
         }
 
-        static func marking(_ outcomes: [SimulatorTeardownOutcome], stopped: [String]) -> [SimulatorTeardownOutcome] {
+        static func marking(
+            _ outcomes: [SimulatorTeardownOutcome], stopped: [String], leftovers: [String: [ReapedProcess]] = [:]
+        ) -> [SimulatorTeardownOutcome] {
             outcomes.map { outcome in
                 var outcome = outcome
                 outcome.runnerSessionStopped = stopped.contains(outcome.udid)
+                outcome.leftoverProcesses = leftovers[outcome.udid] ?? []
                 return outcome
             }
         }
