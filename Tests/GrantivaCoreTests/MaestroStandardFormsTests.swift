@@ -92,7 +92,9 @@ final class MaestroStandardFormsTests: XCTestCase {
         }
     }
 
-    func testExtendedWaitUntilVisibleBecomesAssertVisible() throws {
+    /// K109: the wait keeps its `timeout`, and only a step without one is a
+    /// plain assertion.
+    func testExtendedWaitUntilKeepsItsTimeout() throws {
         let steps = try steps("""
         - extendedWaitUntil:
             visible: "Featured"
@@ -106,9 +108,12 @@ final class MaestroStandardFormsTests: XCTestCase {
         XCTAssertEqual(steps.count, 3)
         XCTAssertEqual(steps[0].assertVisible, "Featured")
         XCTAssertFalse(steps[0].assertVisibleById)
+        XCTAssertEqual(steps[0].waitTimeout, 5000)
         XCTAssertEqual(steps[1].assertVisible, "hero")
         XCTAssertTrue(steps[1].assertVisibleById)
+        XCTAssertNil(steps[1].waitTimeout)
         XCTAssertEqual(steps[2].assertNotVisible, "Spinner")
+        XCTAssertNil(steps[2].waitTimeout)
     }
 
     func testBareWaitForAnimationToEndIsASettleStep() throws {
@@ -307,13 +312,16 @@ final class MaestroStandardFormsTests: XCTestCase {
         // the generated settle after the tap rather than doubling it.
         XCTAssertEqual(yaml, """
         appId: "com.kylebrowning.Landmarks"
+        name: "screens"
         ---
         - launchApp
         - tapOn:
             id: "landmark-row"
         - waitForAnimationToEnd:
             timeout: 5000
-        - assertVisible: "Featured"
+        - extendedWaitUntil:
+            visible: "Featured"
+            timeout: 5000
         - waitForAnimationToEnd:
             timeout: 5000
         - takeScreenshot: "Detail"

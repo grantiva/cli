@@ -2,6 +2,10 @@ import Foundation
 
 /// Generates Maestro YAML flow files from grantiva.yml screen configs.
 public enum FlowGenerator {
+    /// The name the generated screens flow carries, so the runner, the ready
+    /// file and the report call the screens session `screens`, not `flow`.
+    public static let screensFlowName = "screens"
+
     /// Generate a single Maestro YAML flow that navigates all screens and takes screenshots.
     public static func generate(
         screens: [GrantivaConfig.Screen],
@@ -9,10 +13,38 @@ public enum FlowGenerator {
         environment: [String: String] = [:],
         platform: Platform = .ios
     ) -> String {
+        generateWithMap(screens: screens, bundleId: bundleId, environment: environment, platform: platform).yaml
+    }
+
+    /// Which configured screen (and which of its steps) a generated
+    /// top-level command came from. `step` is nil for the launch, the settle
+    /// before a screenshot and the screenshot itself.
+    public struct CommandOwner: Sendable, Equatable {
+        public let screen: String
+        public let step: Int?
+    }
+
+    /// The generated flow plus the owner of each of its top-level commands, in
+    /// order, so the runner's per-command report can be read back per screen
+    /// and per step.
+    public static func generateWithMap(
+        screens: [GrantivaConfig.Screen],
+        bundleId: String,
+        environment: [String: String] = [:],
+        platform: Platform = .ios
+    ) -> (yaml: String, owners: [CommandOwner]) {
         var lines: [String] = []
+        var owners: [CommandOwner] = []
+        func commandCount() -> Int { lines.filter { $0.hasPrefix("- ") }.count }
+        func claim(_ owner: CommandOwner) {
+            let count = commandCount()
+            if count < owners.count { owners.removeLast(owners.count - count) }
+            owners += Array(repeating: owner, count: count - owners.count)
+        }
 
         // Header
         lines.append("appId: \(FlowEnvironment.quoted(bundleId))")
+        lines.append("name: \(FlowEnvironment.quoted(screensFlowName))")
         lines.append("---")
 
         // launchApp creates the WDA session — required before any interaction.
@@ -28,9 +60,11 @@ public enum FlowGenerator {
             }
         }
 
-        for screen in screens {
+        for (screenIndex, screen) in screens.enumerated() {
+            if screenIndex == 0 { claim(CommandOwner(screen: screen.name, step: nil)) }
             if case .steps(let steps) = screen.path {
-                for step in steps {
+                for (stepIndex, step) in steps.enumerated() {
+                    defer { claim(CommandOwner(screen: screen.name, step: stepIndex)) }
                     if let label = step.tap {
                         appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
                         appendSettle(to: &lines)
@@ -72,12 +106,24 @@ public enum FlowGenerator {
                         lines.append("    timeout: \(Int(seconds * 1000))")
                     }
                     if let label = step.assertVisible {
-                        appendSelector("assertVisible", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+                        if step.scrollUntilVisible {
+                            appendScrollUntilVisible(label, step: step, to: &lines)
+                        } else if let timeout = step.waitTimeout {
+                            appendExtendedWait("visible", label, byId: step.assertVisibleById,
+                                               exact: step.assertVisibleExact, timeout: timeout, to: &lines)
+                        } else {
+                            appendSelector("assertVisible", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+                        }
                     }
                     if let label = step.assertNotVisible {
-                        appendSelector(
-                            "assertNotVisible", label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, to: &lines
-                        )
+                        if let timeout = step.waitTimeout {
+                            appendExtendedWait("notVisible", label, byId: step.assertNotVisibleById,
+                                               exact: step.assertNotVisibleExact, timeout: timeout, to: &lines)
+                        } else {
+                            appendSelector(
+                                "assertNotVisible", label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, to: &lines
+                            )
+                        }
                     }
                     if let path = step.runFlow {
                         lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
@@ -87,9 +133,18 @@ public enum FlowGenerator {
             }
             appendSettle(to: &lines)
             lines.append("- takeScreenshot: \(FlowEnvironment.quoted(screen.name))")
+            claim(CommandOwner(screen: screen.name, step: nil))
         }
 
-        return lines.joined(separator: "\n") + "\n"
+        return (lines.joined(separator: "\n") + "\n", owners)
+    }
+
+    /// The `Wait Ns` labels of the generated `wait:` steps, in flow order.
+    public static func waitLabels(for screens: [GrantivaConfig.Screen]) -> [String] {
+        screens.flatMap { screen -> [String] in
+            guard case .steps(let steps) = screen.path else { return [] }
+            return steps.compactMap(\.wait).map(waitLabel(seconds:))
+        }
     }
 
     /// Write a flow to a temporary file, returning the path.
@@ -98,20 +153,42 @@ public enum FlowGenerator {
         bundleId: String,
         environment: [String: String] = [:],
         platform: Platform = .ios,
-        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath
+        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
+        fileName: String = "flow.yaml"
     ) throws -> String {
+        try writeTempWithMap(
+            screens: screens, bundleId: bundleId, environment: environment, platform: platform,
+            runFlowBaseDirectory: runFlowBaseDirectory, fileName: fileName
+        ).path
+    }
+
+    /// `writeTemp` plus each rewritten `runFlow` path mapped back to the
+    /// path as written in the config, for output rewriting.
+    static func writeTempWithMap(
+        screens: [GrantivaConfig.Screen],
+        bundleId: String,
+        environment: [String: String] = [:],
+        platform: Platform = .ios,
+        runFlowBaseDirectory: String = FileManager.default.currentDirectoryPath,
+        fileName: String = "flow.yaml"
+    ) throws -> (path: String, asWritten: [String: String], owners: [CommandOwner]) {
         // One directory per call: concurrent runs against different simulators
         // must not share (and delete) each other's generated flow.
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("grantiva-flows-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        var asWritten: [String: String] = [:]
+        let generated = generateWithMap(screens: screens, bundleId: bundleId, environment: environment, platform: platform)
         let yaml = try FlowReferenceResolver.resolve(
-            in: generate(screens: screens, bundleId: bundleId, environment: environment, platform: platform),
-            relativeTo: runFlowBaseDirectory
+            in: generated.yaml,
+            relativeTo: runFlowBaseDirectory,
+            asWritten: &asWritten
         )
-        let flowPath = tempDir.appendingPathComponent("flow.yaml").path
+        // Named like the config file, so the runner's own lines read
+        // `screens (grantiva.yml)` rather than naming a generated file.
+        let flowPath = tempDir.appendingPathComponent(fileName).path
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
-        return flowPath
+        return (flowPath, asWritten, generated.owners)
     }
 
     /// Upper bound for the settle wait after a tap, swipe, or typed text and
@@ -143,6 +220,43 @@ public enum FlowGenerator {
             lines.append("    exact: true")
         } else {
             lines.append("- \(command): \(FlowEnvironment.quoted(label))")
+        }
+    }
+
+    /// Maestro `extendedWaitUntil` kept as written, so its `timeout` is the
+    /// wait's real bound rather than the runner's default for an assertion.
+    private static func appendExtendedWait(
+        _ key: String, _ label: String, byId: Bool, exact: Bool, timeout: Int, to lines: inout [String]
+    ) {
+        lines.append("- extendedWaitUntil:")
+        appendNestedSelector(key, label, byId: byId, exact: exact, to: &lines)
+        lines.append("    timeout: \(timeout)")
+    }
+
+    /// Maestro `scrollUntilVisible` kept as a scroll, with its direction and
+    /// timeout when the source gave them.
+    private static func appendScrollUntilVisible(_ label: String, step: GrantivaConfig.Screen.Step, to lines: inout [String]) {
+        lines.append("- scrollUntilVisible:")
+        appendNestedSelector("element", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+        if let direction = step.scrollDirection {
+            lines.append("    direction: \(direction.uppercased())")
+        }
+        if let timeout = step.waitTimeout {
+            lines.append("    timeout: \(timeout)")
+        }
+        appendSettle(to: &lines)
+    }
+
+    private static func appendNestedSelector(_ key: String, _ label: String, byId: Bool, exact: Bool, to lines: inout [String]) {
+        if byId {
+            lines.append("    \(key):")
+            lines.append("      id: \(FlowEnvironment.quoted(label))")
+        } else if exact {
+            lines.append("    \(key):")
+            lines.append("      text: \(FlowEnvironment.quoted(label))")
+            lines.append("      exact: true")
+        } else {
+            lines.append("    \(key): \(FlowEnvironment.quoted(label))")
         }
     }
 

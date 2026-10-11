@@ -141,6 +141,10 @@ struct TargetOptions: ParsableArguments {
     /// The ID of the app to install and test once the build (or `--app-file`)
     /// is known. iOS keeps the resolved bundle ID first; Android applies
     /// `androidAppID` and hands any disagreement to `warn`.
+    ///
+    /// On Android the flow's own `appId:` header (carried in
+    /// `resolved.bundleId` for `--flow`) comes after the flag, the app's own
+    /// ID and the config, as README documents for both platforms.
     func installedAppID(
         platform: Platform, config: GrantivaConfig?, resolved: ResolvedProject, binaryID: String?,
         purpose: AndroidProject.Purpose = .testing, warn: (String) -> Void
@@ -148,7 +152,7 @@ struct TargetOptions: ParsableArguments {
         guard platform == .android else { return resolved.bundleId ?? binaryID }
         let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId, purpose: purpose)
         if let warning { warn(warning) }
-        return id
+        return id ?? resolved.bundleId
     }
 
     /// The ID to install (and to uninstall on an incompatible update) under:
@@ -158,8 +162,13 @@ struct TargetOptions: ParsableArguments {
         platform == .android ? binaryID ?? testID : testID
     }
 
-    static func appIDMessage(for platform: Platform) -> String {
+    static func appIDMessage(for platform: Platform, noBuild: Bool = false) -> String {
         switch platform {
+        case .ios where noBuild:
+            // Project detection reads the bundle ID from the build settings,
+            // which only a build consults.
+            return "Bundle ID is required to run flows. Project detection runs only when building, and --no-build skips it.\n"
+                + "Pass --bundle-id or set appId (the flow header) or bundle_id in grantiva.yml."
         case .ios:
             return "Bundle ID is required to run flows. Pass --bundle-id or set bundle_id in grantiva.yml."
         case .android:

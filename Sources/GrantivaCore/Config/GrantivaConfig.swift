@@ -52,6 +52,15 @@ public struct GrantivaConfig: Sendable, Codable {
             /// Maestro `waitForAnimationToEnd`: wait until the screen is still,
             /// for at most this many seconds. Unlike `wait`, it returns early.
             public var settle: Double? = nil
+            /// Maestro `extendedWaitUntil: {visible|notVisible, timeout}`: the
+            /// assertion waits up to this many milliseconds. Set only by the
+            /// Maestro parser; emitted as `extendedWaitUntil`.
+            public var waitTimeout: Int? = nil
+            /// Maestro `scrollUntilVisible`: scroll until `assertVisible`'s
+            /// element is on screen. Emitted as `scrollUntilVisible`, with
+            /// `scrollDirection` and `waitTimeout` when the source gave them.
+            public var scrollUntilVisible: Bool = false
+            public var scrollDirection: String? = nil
 
             /// The directions a swipe step takes, lowercased.
             static let swipeDirectionNames = ["up", "down", "left", "right"]
@@ -272,7 +281,7 @@ public struct GrantivaConfig: Sendable, Codable {
 
         if fm.fileExists(atPath: configURL.path) {
             let contents = try String(contentsOf: configURL, encoding: .utf8)
-            let config = try parse(contents, platform: platform, fileName: platform.configFileName)
+            let config = try parse(contents, platform: platform, fileName: platform.configFileName, directory: directory)
             for warning in config.warnings {
                 GrantivaLog.logger.warning("\(warning)")
             }
@@ -288,7 +297,7 @@ public struct GrantivaConfig: Sendable, Codable {
         return nil
     }
 
-    static func parse(_ contents: String, platform: Platform, fileName: String) throws -> GrantivaConfig {
+    static func parse(_ contents: String, platform: Platform, fileName: String, directory: URL? = nil) throws -> GrantivaConfig {
         // An empty, whitespace-only, or comments-only file has no YAML
         // document; treat it as "all defaults". Only the first document is
         // read, since Maestro-format files carry several (`Yams.load` throws
@@ -302,9 +311,17 @@ public struct GrantivaConfig: Sendable, Codable {
         if firstDocument == nil {
             return GrantivaConfig(platform: platform, android: platform == .android ? AndroidProject() : nil)
         }
-        if platform == .ios, MaestroFlowParser.isMaestroFormat(contents) {
+        // Both platforms read the Maestro form. On Android the header's
+        // `appId:` is the application ID and the Gradle side takes its
+        // defaults (module `app`, variant `debug`).
+        if MaestroFlowParser.isMaestroFormat(contents) {
             do {
-                return try MaestroFlowParser.parse(contents, sourceName: fileName)
+                var config = try MaestroFlowParser.parse(contents, sourceName: fileName, baseDirectory: directory)
+                config.platform = platform
+                if platform == .android {
+                    config.android = AndroidProject(applicationId: config.bundleId)
+                }
+                return config
             } catch let error as GrantivaError {
                 // Already names the file and line.
                 throw error

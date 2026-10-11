@@ -98,6 +98,7 @@ final class FlowGeneratorTests: XCTestCase {
         ]
         let expected = """
             appId: "com.example"
+            name: "screens"
             ---
             - launchApp
             - waitForAnimationToEnd:
