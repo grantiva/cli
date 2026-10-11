@@ -1,0 +1,588 @@
+{
+  "id": "flow-000",
+  "name": "01-selectors",
+  "sourceFile": ".maestro/coverage/01-selectors.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:18:39.333758-07:00",
+  "endTime": "2026-10-11T10:20:10.048024-07:00",
+  "duration": 90714,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:18:39.358649-07:00",
+      "endTime": "2026-10-11T10:18:44.899649-07:00",
+      "duration": 5541,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Golden Gate.*\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:18:44.901134-07:00",
+      "endTime": "2026-10-11T10:18:54.880134-07:00",
+      "duration": 9979,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 541,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"San Francisco, CA\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:18:54.880923-07:00",
+      "endTime": "2026-10-11T10:18:55.277923-07:00",
+      "duration": 397,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "San Francisco, CA"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-008a-0000-00a400000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:18:55.279229-07:00",
+      "endTime": "2026-10-11T10:19:02.468229-07:00",
+      "duration": 7189,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate.*\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:02.470108-07:00",
+      "endTime": "2026-10-11T10:19:08.656108-07:00",
+      "duration": 6186,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-008c-0000-003f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Golden Gate.*\", exact=true",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:08.658001-07:00",
+      "endTime": "2026-10-11T10:19:09.693001-07:00",
+      "duration": 1035,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate.*"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\", exact=true",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:09.693529-07:00",
+      "endTime": "2026-10-11T10:19:10.489529-07:00",
+      "duration": 796,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Lakes",
+        "bounds": {
+          "x": 0,
+          "y": 1175,
+          "width": 1080,
+          "height": 147
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\".*Lake.*\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:10.490276-07:00",
+      "endTime": "2026-10-11T10:19:11.888276-07:00",
+      "duration": 1398,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": ".*Lake.*"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-008c-0000-00a600000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Lake\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:11.889078-07:00",
+      "endTime": "2026-10-11T10:19:12.237078-07:00",
+      "duration": 348,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-009",
+      "index": 9,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lake Tahoe\", exact=true",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:12.238171-07:00",
+      "endTime": "2026-10-11T10:19:13.085171-07:00",
+      "duration": 847,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake Tahoe"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Lake Tahoe",
+        "bounds": {
+          "x": 0,
+          "y": 432,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-010",
+      "index": 10,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Sierra Nevada, CA\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:13.08855-07:00",
+      "endTime": "2026-10-11T10:19:13.83855-07:00",
+      "duration": 750,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Sierra Nevada, CA"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-008c-0000-00d400000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-011",
+      "index": 11,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:13.839374-07:00",
+      "endTime": "2026-10-11T10:19:19.935374-07:00",
+      "duration": 6096,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-012",
+      "index": 12,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:19.936207-07:00",
+      "endTime": "2026-10-11T10:19:26.725207-07:00",
+      "duration": 6789,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Lakes",
+        "bounds": {
+          "x": 0,
+          "y": 1175,
+          "width": 1080,
+          "height": 147
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-013",
+      "index": 13,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"(Lake .*|.* Lake)\", index=1",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:26.725998-07:00",
+      "endTime": "2026-10-11T10:19:28.275998-07:00",
+      "duration": 1550,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "(Lake .*|.* Lake)"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Mono Lake",
+        "bounds": {
+          "x": 0,
+          "y": 621,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-014",
+      "index": 14,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Lee Vining, CA\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:28.276761-07:00",
+      "endTime": "2026-10-11T10:19:30.273761-07:00",
+      "duration": 1997,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lee Vining, CA"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-008e-0000-00d400000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-015",
+      "index": 15,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:30.275774-07:00",
+      "endTime": "2026-10-11T10:19:37.103774-07:00",
+      "duration": 6828,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-016",
+      "index": 16,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:37.104784-07:00",
+      "endTime": "2026-10-11T10:19:45.976784-07:00",
+      "duration": 8872,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-017",
+      "index": 17,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mountains → Yosemite Valley\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:45.977921-07:00",
+      "endTime": "2026-10-11T10:19:48.086921-07:00",
+      "duration": 2109,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mountains → Yosemite Valley"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Mountains → Yosemite Valley",
+        "bounds": {
+          "x": 42,
+          "y": 1273,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-018",
+      "index": 18,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Yosemite Valley\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:48.087545-07:00",
+      "endTime": "2026-10-11T10:19:48.908545-07:00",
+      "duration": 821,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Yosemite Valley"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0090-0000-00c100000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-019",
+      "index": 19,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:48.909286-07:00",
+      "endTime": "2026-10-11T10:19:57.030286-07:00",
+      "duration": 8121,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-020",
+      "index": 20,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:19:57.032318-07:00",
+      "endTime": "2026-10-11T10:20:04.464318-07:00",
+      "duration": 7432,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-021",
+      "index": 21,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Caching Demo\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:20:04.465319-07:00",
+      "endTime": "2026-10-11T10:20:07.300319-07:00",
+      "duration": 2835,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Caching Demo"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Caching Demo",
+        "bounds": {
+          "x": 42,
+          "y": 622,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-022",
+      "index": 22,
+      "type": "assertVisible",
+      "yaml": "assertVisible: id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:20:07.302847-07:00",
+      "endTime": "2026-10-11T10:20:08.444847-07:00",
+      "duration": 1142,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "clock"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0092-0000-00dd00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-023",
+      "index": 23,
+      "type": "tapOn",
+      "yaml": "tapOn: id=\"clock\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:20:08.44633-07:00",
+      "endTime": "2026-10-11T10:20:09.25233-07:00",
+      "duration": 806,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "clock"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0092-0000-00dd00000004",
+        "text": "10:20:07",
+        "bounds": {
+          "x": 42,
+          "y": 1075,
+          "width": 364,
+          "height": 116
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-024",
+      "index": 24,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-11T10:20:09.255432-07:00",
+      "endTime": "2026-10-11T10:20:10.046432-07:00",
+      "duration": 791,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-024-Selectors.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 25,
+    "mean": 3626,
+    "p50": 1997,
+    "p95": 8872,
+    "max": 9979,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

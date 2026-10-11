@@ -1,0 +1,11 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=293.77 230.38 134.68
+$ $GRANTIVA doctor --platform android --json > $E/X-017/android.json; echo rc=$?; $GRANTIVA doctor --platform ios --json > $E/X-017/ios.json; echo rc=$?; python3 -I -c "
+import json
+for p in [\"android\",\"ios\"]:
+  d=json.load(open(\"$E/X-017/\"+p+\".json\"))
+  print(p, type(d).__name__, sorted(d.keys()) if isinstance(d,dict) else \"\")
+  checks=d[\"checks\"] if isinstance(d,dict) else d
+  print(\" keysets\", sorted({tuple(sorted(c.keys())) for c in checks}), \"statuses\", sorted({c[\"status\"] for c in checks}))
+"
+rc=0 elapsed=0.3s  (stdout 01.out, stderr 01.err)
+

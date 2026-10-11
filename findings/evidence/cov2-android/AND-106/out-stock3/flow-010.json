@@ -1,0 +1,153 @@
+{
+  "id": "flow-010",
+  "name": "11-slow",
+  "sourceFile": ".maestro/11-slow.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:14:37.415484-07:00",
+  "endTime": "2026-10-11T10:14:59.513444-07:00",
+  "duration": 22097,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:37.432667-07:00",
+      "endTime": "2026-10-11T10:14:45.534667-07:00",
+      "duration": 8102,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:45.536533-07:00",
+      "endTime": "2026-10-11T10:14:53.050533-07:00",
+      "duration": 7514,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:53.051717-07:00",
+      "endTime": "2026-10-11T10:14:55.246717-07:00",
+      "duration": 2195,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Slow Screen",
+        "bounds": {
+          "x": 42,
+          "y": 1420,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:55.24746-07:00",
+      "endTime": "2026-10-11T10:14:56.19746-07:00",
+      "duration": 950,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0065-0000-00c900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Loaded after delay\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:56.198413-07:00",
+      "endTime": "2026-10-11T10:14:58.935413-07:00",
+      "duration": 2737,
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0065-0000-00c900000004",
+        "text": "Loaded after delay",
+        "bounds": {
+          "x": 359,
+          "y": 1217,
+          "width": 363,
+          "height": 63
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-11T10:14:58.937289-07:00",
+      "endTime": "2026-10-11T10:14:59.512289-07:00",
+      "duration": 575,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-010/cmd-005-Slow Loaded.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 3678,
+    "p50": 2195,
+    "p95": 8102,
+    "max": 8102,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

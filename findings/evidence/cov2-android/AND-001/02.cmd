@@ -1,0 +1,1 @@
+grep -E "hw.gpu|hw.device.name|image.sysdir" ~/.android/avd/cov2-android.avd/config.ini; cat ~/.grantiva/android/created-avds.json; echo; cat ~/.grantiva/android/started.json; ps -o args= -p $(python3 -I -c "import json,os;print(json.load(open(os.path.expanduser(\"~/.grantiva/android/started.json\")))[0][\"pid\"])")

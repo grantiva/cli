@@ -1,0 +1,89 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": ".maestro/99-crash.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:15:58.460165-07:00",
+  "endTime": "2026-10-11T10:16:29.412694-07:00",
+  "duration": 30952,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:15:58.490309-07:00",
+      "endTime": "2026-10-11T10:16:15.625309-07:00",
+      "duration": 17135,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:16:15.626273-07:00",
+      "endTime": "2026-10-11T10:16:24.907273-07:00",
+      "duration": 9281,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 13208,
+    "p50": 9281,
+    "p95": 17135,
+    "max": 17135,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,108 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/01-selectors.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/01-selectors
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-selectors (01-selectors.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (5.5s, slow)
+    ✓ tapOn: text="Golden Gate.*" (10.0s, slow)
+    ✓ assertVisible: text="San Francisco, CA" (397ms)
+    ✓ launchApp (7.2s, slow)
+    ✓ assertVisible: text="Golden Gate.*" (6.2s, slow)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (1.0s)
+    ✓ tapOn: text="Lakes", exact=true (796ms)
+    ✓ assertVisible: text=".*Lake.*" (1.4s)
+    ✓ assertNotVisible: text="Lake" (348ms)
+    ✓ tapOn: text="Lake Tahoe", exact=true (847ms)
+    ✓ assertVisible: text="Sierra Nevada, CA" (750ms)
+    ✓ launchApp (6.1s, slow)
+    ✓ tapOn: text="Lakes" (6.8s, slow)
+    ✓ tapOn: text="(Lake .*|.* Lake)", index=1 (1.6s)
+    ✓ assertVisible: text="Lee Vining, CA" (2.0s)
+    ✓ launchApp (6.8s, slow)
+    ✓ tapOn: text="Deep Links" (8.9s, slow)
+    ✓ tapOn: text="Mountains → Yosemite Valley" (2.1s)
+    ✓ assertVisible: text="Yosemite Valley" (821ms)
+    ✓ launchApp (8.1s, slow)
+    ✓ tapOn: text="Deep Links" (7.4s, slow)
+    ✓ tapOn: text="Caching Demo" (2.8s)
+    ✓ assertVisible: id="clock" (1.1s)
+    ✓ tapOn: id="clock" (806ms)
+    ✓ takeScreenshot (791ms)
+✓ 01-selectors 1m 30s
+
+  [1/1] 01-selectors (.maestro/coverage/01-selectors.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (5.5s, slow)
+    ✓ tapOn: text="Golden Gate.*" (10.0s, slow)
+    ✓ assertVisible: text="San Francisco, CA" (397ms)
+    ✓ launchApp (7.2s, slow)
+    ✓ assertVisible: text="Golden Gate.*" (6.2s, slow)
+    ✓ assertNotVisible: text="Golden Gate.*", exact=true (1.0s)
+    ✓ tapOn: text="Lakes", exact=true (796ms)
+    ✓ assertVisible: text=".*Lake.*" (1.4s)
+    ✓ assertNotVisible: text="Lake" (348ms)
+    ✓ tapOn: text="Lake Tahoe", exact=true (847ms)
+    ✓ assertVisible: text="Sierra Nevada, CA" (750ms)
+    ✓ launchApp (6.1s, slow)
+    ✓ tapOn: text="Lakes" (6.8s, slow)
+    ✓ tapOn: text="(Lake .*|.* Lake)", index=1 (1.6s)
+    ✓ assertVisible: text="Lee Vining, CA" (2.0s)
+    ✓ launchApp (6.8s, slow)
+    ✓ tapOn: text="Deep Links" (8.9s, slow)
+    ✓ tapOn: text="Mountains → Yosemite Valley" (2.1s)
+    ✓ assertVisible: text="Yosemite Valley" (821ms)
+    ✓ launchApp (8.1s, slow)
+    ✓ tapOn: text="Deep Links" (7.4s, slow)
+    ✓ tapOn: text="Caching Demo" (2.8s)
+    ✓ assertVisible: id="clock" (1.1s)
+    ✓ tapOn: id="clock" (806ms)
+    ✓ takeScreenshot (791ms)
+✓ 01-selectors 1m 30s
+
+  25 steps passing (1m 30s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-selectors                   ✓ PASS      25     25      0      0     1m 30s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      25     25      0      0     1m 30s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/01-selectors
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/01-selectors/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/01-selectors/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/01-selectors/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,60 @@
+10:20:56.307222 [INFO] === Test execution started ===
+10:20:56.307283 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/03-gesture-lab-taps
+10:20:56.307289 [INFO] Platform: android
+10:20:56.307293 [INFO] Driver: uiautomator2
+10:20:56.307614 [INFO] Validated 1 flow(s)
+10:20:56.307635 [INFO] Single device execution mode
+10:20:56.307640 [INFO] Starting flow execution (parallel: false, devices: [])
+10:20:56.307645 [INFO] Creating driver for single device execution
+10:20:56.307656 [INFO] Connecting to Android device: emulator-5554
+10:20:56.441224 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:20:56.507721 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:20:57.008491 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:20:57.022642 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:21:00.820911 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:21:00.856773 [INFO] Session created successfully: c6229e54-fbb5-4291-bc2c-0204d6eec170
+10:21:01.463386 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:21:01.470600 [INFO] === Starting flow: 03-gesture-lab-taps ===
+10:21:01.470624 [INFO] Flow file: .maestro/coverage/03-gesture-lab-taps.yaml
+10:21:01.470639 [INFO] Total steps: 12
+10:21:01.511492 [DEBUG] Executing step 0: launchApp
+10:21:09.652271 [DEBUG] Step 0 completed successfully (8140ms): launchApp
+10:21:09.652751 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+10:21:09.653010 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+10:21:10.072199 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:11.132236 [DEBUG] crash check during a lookup in flight for 1.326s: crashed=false (took 324ms)
+10:21:11.332826 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:11.943719 [DEBUG] crash check during a lookup in flight for 2.138s: crashed=false (took 136ms)
+10:21:12.099707 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:12.766191 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:12.917329 [DEBUG] crash check during a lookup in flight for 3.111s: crashed=false (took 109ms)
+10:21:14.346436 [DEBUG] crash check during a lookup in flight for 4.541s: crashed=false (took 539ms)
+10:21:14.551528 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:15.135257 [DEBUG] crash check during a lookup in flight for 5.329s: crashed=false (took 327ms)
+10:21:15.949024 [DEBUG] crash check during a lookup in flight for 6.143s: crashed=false (took 141ms)
+10:21:16.073914 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:16.974091 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:17.703459 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:18.572085 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:21:18.572127 [DEBUG] Step 1 completed successfully (8919ms): tapOn: text="Deep Links"
+10:21:18.572721 [DEBUG] Executing step 2: tapOn: text="Gesture Lab"
+10:21:20.215988 [DEBUG] crash check during a lookup in flight for 1.079s: crashed=false (took 78ms)
+10:21:20.859403 [DEBUG] Step 2 completed successfully (2286ms): tapOn: text="Gesture Lab"
+10:21:20.859794 [DEBUG] Executing step 3: assertVisible: text="Taps: 0"
+10:21:21.732723 [DEBUG] Step 3 completed successfully (872ms): assertVisible: text="Taps: 0"
+10:21:21.733121 [DEBUG] Executing step 4: tapOn: id="gesture-pad"
+10:21:22.500970 [DEBUG] Step 4 completed successfully (767ms): tapOn: id="gesture-pad"
+10:21:22.501837 [DEBUG] Executing step 5: assertVisible: text="Taps: 1"
+10:21:23.023248 [DEBUG] Step 5 completed successfully (521ms): assertVisible: text="Taps: 1"
+10:21:23.023678 [DEBUG] Executing step 6: doubleTapOn: id="gesture-pad"
+10:21:24.466013 [DEBUG] Step 6 completed successfully (1442ms): doubleTapOn: id="gesture-pad"
+10:21:24.466465 [DEBUG] Executing step 7: assertVisible: text="Double taps: 1"
+10:21:41.920139 [ERROR] Step 7 failed (17453ms): assertVisible: text="Double taps: 1" - Error: Element not visible: text='Double taps: 1' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Double taps: 0", "Taps: 3", "Last tap: center")
+10:21:42.735262 [INFO] === Flow completed: 03-gesture-lab-taps (status: failed, duration: 41262ms, passed: 7, failed: 1, skipped: 4) ===
+10:21:43.476376 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:21:43.488168 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:21:43.488191 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:21:43.488381 [INFO] Generating reports...
+10:21:43.489068 [INFO] Shutting down devices started by maestro-runner...
+10:21:43.489091 [INFO] Shutting down all tracked emulators
+10:21:43.489102 [INFO] Shutting down all tracked simulators

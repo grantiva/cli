@@ -1,0 +1,191 @@
+{
+  "id": "flow-000",
+  "name": "04-point-taps",
+  "sourceFile": ".maestro/coverage/04-point-taps.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:21:51.767469-07:00",
+  "endTime": "2026-10-11T10:22:14.763437-07:00",
+  "duration": 22995,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:21:51.782898-07:00",
+      "endTime": "2026-10-11T10:21:58.622898-07:00",
+      "duration": 6840,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:21:58.626347-07:00",
+      "endTime": "2026-10-11T10:22:07.626347-07:00",
+      "duration": 9000,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:07.627972-07:00",
+      "endTime": "2026-10-11T10:22:09.527972-07:00",
+      "duration": 1900,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Gesture Lab",
+        "bounds": {
+          "x": 42,
+          "y": 475,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "tapOn",
+      "yaml": "tapOn: point=\"50%,50%\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:09.528667-07:00",
+      "endTime": "2026-10-11T10:22:10.378667-07:00",
+      "duration": 850,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Last tap: center\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:10.379117-07:00",
+      "endTime": "2026-10-11T10:22:11.093117-07:00",
+      "duration": 714,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Last tap: center"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00b6-0000-00ce00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Taps: 1\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:11.094462-07:00",
+      "endTime": "2026-10-11T10:22:11.231462-07:00",
+      "duration": 137,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Taps: 1"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00b6-0000-00ca00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: point=\"100%,100%\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:11.232735-07:00",
+      "endTime": "2026-10-11T10:22:11.901735-07:00",
+      "duration": 669,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "tapOn",
+      "yaml": "tapOn: point=\"0%,0%\"",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:11.902442-07:00",
+      "endTime": "2026-10-11T10:22:14.128442-07:00",
+      "duration": 2226,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-11T10:22:14.129606-07:00",
+      "endTime": "2026-10-11T10:22:14.761606-07:00",
+      "duration": 632,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-008-Point Taps.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 9,
+    "mean": 2552,
+    "p50": 850,
+    "p95": 9000,
+    "max": 9000,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

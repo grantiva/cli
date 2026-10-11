@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=80.53 122.47 69.60
+$ $GRANTIVA run --device emulator-5554 --no-build --report-dir $S/out-stock1 --ready-file $S/out-stock1.ready
+rc=1 elapsed=92.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=38.02 97.92 65.76
+$ $GRANTIVA run --device emulator-5554 --no-build --report-dir $S/out-stock2 --ready-file $S/out-stock2.ready
+rc=1 elapsed=76.8s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=17.98 76.71 60.68
+$ adb -s emulator-5554 shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS; sleep 60; uptime; adb -s emulator-5554 shell uiautomator dump /sdcard/u.xml >/dev/null; adb -s emulator-5554 shell cat /sdcard/u.xml | grep -oE "(text|content-desc)=\"[^\"]+\"" | tr "\n" " "
+rc=0 elapsed=221.1s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=52.65 173.49 137.81
+$ $GRANTIVA run --device emulator-5554 --no-build --report-dir $S/out-stock3 --ready-file $S/out-stock3.ready
+rc=0 elapsed=372.8s  (stdout 04.out, stderr 04.err)
+

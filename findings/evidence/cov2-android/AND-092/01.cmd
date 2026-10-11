@@ -1,0 +1,1 @@
+JAVA_HOME=/nonexistent $GRANTIVA doctor --platform android --json > $E/AND-092/doc.json; echo exit=$?; python3 -I -m json.tool $E/AND-092/doc.json >/dev/null && echo valid-json; grep -B2 -A4 -i jdk $E/AND-092/doc.json | head -30

@@ -1,0 +1,72 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/longpress-only.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] longpress-only (longpress-only.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.1s, slow)
+    ✓ tapOn: text="Deep Links" (10.4s, slow)
+    ✓ tapOn: text="Gesture Lab" (2.1s)
+    ✓ assertVisible: text="Taps: 0" (1.4s)
+    ✓ longPressOn: id="gesture-pad" (7.9s, slow)
+    ✓ assertVisible: text="Long presses: 1" (192ms)
+    ✓ takeScreenshot (569ms)
+✓ longpress-only 29.7s
+
+  [1/1] longpress-only (.maestro/coverage/longpress-only.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.1s, slow)
+    ✓ tapOn: text="Deep Links" (10.4s, slow)
+    ✓ tapOn: text="Gesture Lab" (2.1s)
+    ✓ assertVisible: text="Taps: 0" (1.4s)
+    ✓ longPressOn: id="gesture-pad" (7.9s, slow)
+    ✓ assertVisible: text="Long presses: 1" (192ms)
+    ✓ takeScreenshot (569ms)
+✓ longpress-only 29.7s
+
+  7 steps passing (29.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  longpress-only                 ✓ PASS       7      7      0      0      29.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0      29.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/longpress-only/allure-results
+
+  Built by Grantiva
+

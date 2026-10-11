@@ -1,0 +1,58 @@
+10:25:14.749757 [INFO] === Test execution started ===
+10:25:14.749818 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/09-waits
+10:25:14.749823 [INFO] Platform: android
+10:25:14.749827 [INFO] Driver: uiautomator2
+10:25:14.750114 [INFO] Validated 1 flow(s)
+10:25:14.750130 [INFO] Single device execution mode
+10:25:14.750134 [INFO] Starting flow execution (parallel: false, devices: [])
+10:25:14.750142 [INFO] Creating driver for single device execution
+10:25:14.750146 [INFO] Connecting to Android device: emulator-5554
+10:25:14.874153 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:25:14.966766 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:25:15.506371 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:25:15.518555 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:25:18.968027 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:25:19.025639 [INFO] Session created successfully: 2b2eb45c-ef4a-4526-b32a-6d15861bdd34
+10:25:19.653283 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:25:19.659124 [INFO] === Starting flow: 09-waits ===
+10:25:19.659146 [INFO] Flow file: .maestro/coverage/09-waits.yaml
+10:25:19.659154 [INFO] Total steps: 8
+10:25:19.677202 [DEBUG] Executing step 0: launchApp
+10:25:26.570418 [DEBUG] Step 0 completed successfully (6893ms): launchApp
+10:25:26.570830 [DEBUG] Executing step 1: tapOn: text="Deep Links"
+10:25:26.571093 [DEBUG] Flutter: parallel search (text="Deep Links", id="")
+10:25:27.099226 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:27.877077 [DEBUG] crash check during a lookup in flight for 1.143s: crashed=false (took 141ms)
+10:25:28.259766 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:28.938042 [DEBUG] crash check during a lookup in flight for 2.204s: crashed=false (took 202ms)
+10:25:29.328107 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:30.239296 [DEBUG] crash check during a lookup in flight for 3.505s: crashed=false (took 503ms)
+10:25:31.376713 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:31.394168 [DEBUG] crash check during a lookup in flight for 4.66s: crashed=false (took 659ms)
+10:25:31.991472 [DEBUG] crash check during a lookup in flight for 5.257s: crashed=false (took 255ms)
+10:25:32.596914 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:32.833617 [DEBUG] crash check during a lookup in flight for 6.099s: crashed=false (took 97ms)
+10:25:33.409431 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:34.722194 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:25:34.722239 [DEBUG] Step 1 completed successfully (8151ms): tapOn: text="Deep Links"
+10:25:34.722626 [DEBUG] Executing step 2: tapOn: text="Slow Screen"
+10:25:36.141566 [DEBUG] crash check during a lookup in flight for 1.196s: crashed=false (took 194ms)
+10:25:37.132788 [DEBUG] Step 2 completed successfully (2410ms): tapOn: text="Slow Screen"
+10:25:37.134410 [DEBUG] Executing step 3: assertVisible: text="Loading…"
+10:25:37.895740 [DEBUG] Step 3 completed successfully (761ms): assertVisible: text="Loading…"
+10:25:37.896484 [DEBUG] Executing step 4: extendedWaitUntil: notVisible text="Loading…"
+10:25:41.129733 [DEBUG] Step 4 completed successfully (3233ms): extendedWaitUntil: notVisible text="Loading…"
+10:25:41.130520 [DEBUG] Executing step 5: assertVisible: text="Loaded after delay"
+10:25:41.331053 [DEBUG] Step 5 completed successfully (200ms): assertVisible: text="Loaded after delay"
+10:25:41.331479 [DEBUG] Executing step 6: waitForAnimationToEnd
+10:25:42.404831 [DEBUG] Step 6 completed successfully (1073ms): waitForAnimationToEnd
+10:25:42.405155 [DEBUG] Executing step 7: waitForAnimationToEnd
+10:25:43.519650 [DEBUG] Step 7 completed successfully (1114ms): waitForAnimationToEnd
+10:25:43.520848 [INFO] === Flow completed: 09-waits (status: passed, duration: 23860ms, passed: 8, failed: 0, skipped: 0) ===
+10:25:44.189296 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:25:44.201106 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:25:44.201132 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:25:44.201295 [INFO] Generating reports...
+10:25:44.201868 [INFO] Shutting down devices started by maestro-runner...
+10:25:44.201884 [INFO] Shutting down all tracked emulators
+10:25:44.201895 [INFO] Shutting down all tracked simulators
