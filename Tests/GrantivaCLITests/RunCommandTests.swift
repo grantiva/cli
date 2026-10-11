@@ -502,6 +502,36 @@ final class RunCommandTests: XCTestCase {
         )
     }
 
+    /// D07: with no device configured or passed, the narration never prints
+    /// an empty `device=` or `Booting emulator: `.
+    func testNarrationWithoutADeviceSaysSoInsteadOfAnEmptySerial() {
+        let android = ResolvedProject(
+            scheme: nil, project: nil, workspace: nil, bundleId: nil, buildSettings: [],
+            simulator: "", screens: [], flows: ["flow.yaml"],
+            android: AndroidProject(module: "app", variant: "freeDebug")
+        )
+        XCTAssertEqual(
+            RunCommand.resolvedNarration(platform: .android, resolved: android),
+            "Resolved: module=app variant=freeDebug device=(none) screens=0 flows=1"
+        )
+        XCTAssertEqual(
+            RunCommand.bootNarration(platform: .android, target: ""),
+            "No emulator named; using the running emulator or the only AVD"
+        )
+        XCTAssertEqual(RunCommand.bootNarration(platform: .android, target: "Pixel_8_API_35"), "Booting emulator: Pixel_8_API_35")
+        XCTAssertEqual(RunCommand.bootNarration(platform: .ios, target: "iPhone 17"), "Booting simulator: iPhone 17")
+    }
+
+    /// A10: Ctrl-C releasing a `--keep-alive` run whose flows all passed is
+    /// not a flow failure, so no failure screenshot is taken.
+    func testNoFailureScreenshotAfterAPassedRunIsInterrupted() {
+        let error = GrantivaError.commandFailed("Runner interrupted:\n", 130)
+        let report = RunnerFailureReport()
+        XCTAssertTrue(RunCommand.wantsFailureScreenshot(error: error, report: report))
+        report.markPassedBeforeInterrupt()
+        XCTAssertFalse(RunCommand.wantsFailureScreenshot(error: error, report: report))
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

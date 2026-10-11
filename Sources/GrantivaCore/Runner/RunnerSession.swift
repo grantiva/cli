@@ -16,7 +16,8 @@ public enum RunnerSession {
     /// the runner streams to the terminal, so say where the detail went.
     static func failureMessage(reason: String, stderr: String) -> String {
         let detail = stderr.suffix(2000).trimmingCharacters(in: .whitespacesAndNewlines)
-        guard detail.isEmpty else { return "\(reason):\n\(detail)" }
+        // A reason that is already a sentence takes no colon before the detail.
+        guard detail.isEmpty else { return reason.hasSuffix(".") ? "\(reason)\n\(detail)" : "\(reason):\n\(detail)" }
         return reason.hasSuffix(".") ? reason : "\(reason); see the runner output above."
     }
 

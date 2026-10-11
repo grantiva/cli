@@ -92,6 +92,11 @@ final class GrantivaCoreTests: XCTestCase {
             RunnerSession.failureMessage(reason: "Runner failed (exit 1)", stderr: "boom\n"),
             "Runner failed (exit 1):\nboom"
         )
+        // A06: a reason that is already a sentence takes no colon.
+        XCTAssertEqual(
+            RunnerSession.failureMessage(reason: "grantiva killed the runner after 30s. See above.", stderr: "Received interrupt\n"),
+            "grantiva killed the runner after 30s. See above.\nReceived interrupt"
+        )
     }
 
     func testNetworkErrorContainsStatusCode() {
