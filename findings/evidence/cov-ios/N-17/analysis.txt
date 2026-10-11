@@ -1,0 +1,17 @@
+IOS-127/without-cli.err live block:
+[1/1] 12-env-precedence-cli (12-env-precedence-cli.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✗ assertVisible: text="from-cli" (12.5s)
+      ╰─ Element not visible: text='from-cli' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "from step", "Link", "link")
+
+summary block:
+[1/1] 12-env-precedence-cli (.maestro/coverage/12-env-precedence-cli.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.9s)
+    ✗ assertVisible (13.2s)
+      ╰─ Element not visible: text='from-cli' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "from step", "Link", "link")
+
+IOS-117/stock-26.err: live line '✓ 01-browse 7.7s' present: True | summary block '✓ 01-browse 5.0s' present: True | table 7.7s
