@@ -95,6 +95,19 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertNil(TargetOptions.androidAppID(flag: nil, binary: nil, configured: nil).id)
     }
 
+    /// K26: `build install` installs; only `run` tests.
+    func testAppIDWarningFitsTheCommand() {
+        let free = "com.kylebrowning.landmarks", paid = "com.kylebrowning.landmarks.paid"
+        let install = try? XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .installing).warning)
+        XCTAssertEqual(install, "application_id \(free) in grantiva-android.yml differs from the app's own application ID \(paid); installing \(paid). Update application_id to match.")
+        let run = AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .testing).warning
+        XCTAssertTrue(run?.contains("testing \(paid)") == true, "\(String(describing: run))")
+        let flagged = AndroidProject.applicationID(override: free, binary: paid, configured: nil, purpose: .installing).warning ?? ""
+        XCTAssertTrue(flagged.contains("installing \(paid)"), flagged)
+        XCTAssertFalse(flagged.contains("testing"), flagged)
+        XCTAssertEqual(AndroidProject.applicationID(override: nil, binary: paid, configured: free).warning, run, "testing is the default")
+    }
+
     func testInstalledAppIDPrefersTheBuiltVariantsIDOnAndroidOnly() throws {
         let config = GrantivaConfig(platform: .android, android: AndroidProject(applicationId: "com.cfg"))
         let resolved = ResolvedProject(bundleId: "com.cfg", android: AndroidProject(applicationId: "com.cfg"))

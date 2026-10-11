@@ -30,18 +30,34 @@ public struct AndroidProject: Sendable, Codable, Equatable {
     /// from the APK or the Gradle output metadata) wins over `application_id`
     /// in the config, so the run tests the app it installed. An explicit
     /// override (`--application-id`) still wins; a disagreement either way is
-    /// returned as a warning naming both IDs.
-    public static func applicationID(override: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
+    /// returned as a warning naming both IDs, worded for what the command does
+    /// with the app (`purpose`).
+    public static func applicationID(override: String?, binary: String?, configured: String?, purpose: Purpose = .testing) -> (id: String?, warning: String?) {
         if let override {
             guard let binary, binary != override else { return (override, nil) }
-            return (override, "--application-id \(override) differs from the app's own application ID \(binary); testing \(override). Drop --application-id to test \(binary).")
+            switch purpose {
+            case .testing:
+                return (override, "--application-id \(override) differs from the app's own application ID \(binary); testing \(override). Drop --application-id to test \(binary).")
+            case .installing:
+                // The APK is installed under its own ID; the flag only picks what is launched.
+                return (override, "--application-id \(override) differs from the app's own application ID \(binary); installing \(binary) and launching \(override). Drop --application-id to launch \(binary).")
+            }
         }
         if let binary {
             guard let configured, configured != binary else { return (binary, nil) }
-            return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
+            switch purpose {
+            case .testing:
+                return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); testing \(binary). Update application_id or pass --application-id to override.")
+            case .installing:
+                return (binary, "application_id \(configured) in grantiva-android.yml differs from the app's own application ID \(binary); installing \(binary). Update application_id to match.")
+            }
         }
         return (configured, nil)
     }
+
+    /// What the command does with the app, for the wording of the warning:
+    /// `run`, `diff capture` and `ci run` test it; `build install` installs it.
+    public enum Purpose: Sendable { case testing, installing }
 
     enum CodingKeys: String, CodingKey, CaseIterable {
         case module, variant, emulator

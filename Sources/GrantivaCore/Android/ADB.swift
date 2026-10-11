@@ -80,8 +80,46 @@ public struct ADB: Sendable {
         }
     }
 
+    /// Starts the app's launcher activity with `monkey`. Both of monkey's
+    /// streams are read (its abort line is on stdout, its argument trace on
+    /// stderr) and a failure is reported in one line, never as the trace.
     public func launch(serial: String, applicationId: String) async throws {
-        _ = try await execute(line(serial, "shell monkey -p \(shellQuoted(applicationId)) -c android.intent.category.LAUNCHER --pct-syskeys 0 1"))
+        let output: String
+        do {
+            output = try await execute(line(serial, "shell monkey -p \(shellQuoted(applicationId)) -c android.intent.category.LAUNCHER --pct-syskeys 0 1 2>&1"))
+        } catch GrantivaError.commandFailed(let message, _) {
+            throw Self.launchFailure(output: message, applicationId: applicationId, serial: serial)
+        }
+        if output.contains(Self.monkeyNoActivities) {
+            throw Self.launchFailure(output: output, applicationId: applicationId, serial: serial)
+        }
+    }
+
+    static let monkeyNoActivities = "No activities found to run"
+
+    /// monkey says "No activities found" for a package that is not installed
+    /// (or has no launcher activity); anything else is reported by monkey's
+    /// own last status line, without its argument trace.
+    static func launchFailure(output: String, applicationId: String, serial: String) -> GrantivaError {
+        if output.contains(monkeyNoActivities) {
+            return .unavailable("\(applicationId) is not installed on \(serial) (or has no launcher activity). Install it first, e.g. grantiva build install --device \(serial).")
+        }
+        let meaningful = output.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { line in
+                !line.isEmpty && !line.hasPrefix("args:") && !line.hasPrefix("arg:") && !line.hasPrefix("arg=")
+                    && !line.hasPrefix("data=") && !line.hasPrefix("bash arg:")
+            }
+        let status = meaningful.last { $0.hasPrefix("**") } ?? meaningful.last
+        let reason = status.map { $0.drop { $0 == "*" }.trimmingCharacters(in: .whitespaces) } ?? "monkey failed"
+        return .commandFailed("Could not launch \(applicationId) on \(serial): \(reason)", 1)
+    }
+
+    /// True when `pm list packages` lists exactly this package (the listing
+    /// is a substring match).
+    public func isInstalled(serial: String, applicationId: String) async throws -> Bool {
+        let output = try await shell(serial: serial, "pm list packages \(shellQuoted(applicationId))")
+        return output.components(separatedBy: .newlines).contains { $0.trimmingCharacters(in: .whitespaces) == "package:\(applicationId)" }
     }
 
     public func forceStop(serial: String, applicationId: String) async throws {

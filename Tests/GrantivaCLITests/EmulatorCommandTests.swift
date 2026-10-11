@@ -92,4 +92,75 @@ final class EmulatorCommandTests: XCTestCase {
     func testEmulatorIsARootSubcommand() {
         XCTAssertTrue(GrantivaCommand.configuration.subcommands.contains { ObjectIdentifier($0) == ObjectIdentifier(EmulatorCommand.self) })
     }
+
+    // MARK: - K28 teardown bookkeeping
+
+    /// A refused teardown still forgets created AVDs that are gone from disk.
+    func testRefusedTeardownStillPrunesCreatedAVDsGoneFromDisk() async throws {
+        let (ledger, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        do {
+            _ = try await EmulatorCommand.Teardown.teardown(manager, serial: "emulator-5598", force: false)
+            XCTFail("expected the not-started-by-Grantiva refusal")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("was not started by Grantiva"), "\(error)")
+        }
+        XCTAssertEqual(try ledger.createdAVDs(), ["Kept"])
+    }
+
+    func testTeardownOutcomeWording() {
+        typealias T = EmulatorCommand.Teardown
+        XCTAssertEqual(T.render(EmulatorTeardownOutcome(serial: "emulator-5554", avd: "A", killed: true, recorded: true)), "Killed emulator-5554 (A).")
+        XCTAssertEqual(T.render(EmulatorTeardownOutcome(serial: "emulator-5554", avd: "A", killed: false, recorded: true)), "emulator-5554 (A) was already gone; dropped its record.")
+        XCTAssertEqual(T.render(EmulatorTeardownOutcome(serial: "emulator-5598", avd: nil, killed: false, recorded: false)), "emulator-5598 is not attached and has no record; nothing to do.")
+    }
+
+    func testForcedTeardownOfAnUnknownSerialReportsNoRecord() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let outcomes = try await EmulatorCommand.Teardown.teardown(manager, serial: "emulator-5598", force: true)
+        XCTAssertEqual(outcomes, [EmulatorTeardownOutcome(serial: "emulator-5598", avd: nil, killed: false, recorded: false)])
+    }
+
+    // MARK: - K30 delete --json
+
+    func testDeleteJSONIsPrettyPrintedLikeItsSiblings() throws {
+        let rendered = try EmulatorCommand.Delete.renderJSON(name: "fix-k30")
+        XCTAssertEqual(rendered, "{\n  \"deleted\" : true,\n  \"name\" : \"fix-k30\"\n}")
+        XCTAssertEqual(rendered, try JSONOutput.string(EmulatorDeleteResult(name: "fix-k30", deleted: true)))
+    }
+
+    /// No command prints a compact hand-made JSON document: a
+    /// JSONSerialization call (for `[String: Any]` trees) is pretty-printed
+    /// and key-sorted like JSONOutput.
+    func testNoCommandPrintsCompactJSONSerializationOutput() throws {
+        let commands = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/GrantivaCLI")
+        let files = try FileManager.default.contentsOfDirectory(atPath: commands.path).filter { $0.hasSuffix(".swift") }
+        XCTAssertFalse(files.isEmpty)
+        for file in files {
+            let source = try String(contentsOf: commands.appendingPathComponent(file), encoding: .utf8)
+            for line in source.components(separatedBy: "\n") where line.contains("JSONSerialization.data(withJSONObject") {
+                XCTAssertTrue(line.contains(".prettyPrinted") && line.contains(".sortedKeys"), "\(file): \(line)")
+            }
+        }
+    }
+
+    // MARK: - K27 headless rule in help and docs
+
+    func testHeadlessHelpAndDocsStateTheRule() throws {
+        let variable = EmulatorManager.headlessVariable
+        XCTAssertTrue(EmulatorCommand.Ensure.helpMessage().contains(variable), EmulatorCommand.Ensure.helpMessage())
+        XCTAssertTrue(InstallCommand.helpMessage().contains(variable), InstallCommand.helpMessage())
+        let doc = try String(
+            contentsOf: URL(fileURLWithPath: #filePath)
+                .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+                .appendingPathComponent("docs/android.md"),
+            encoding: .utf8
+        )
+        XCTAssertTrue(doc.contains(variable), "docs/android.md names \(variable)")
+        let flat = doc.split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        XCTAssertTrue(flat.contains("even when stdout is not a terminal"), "docs/android.md states the rule")
+    }
 }

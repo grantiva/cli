@@ -39,7 +39,7 @@ final class ADBTests: XCTestCase {
             "'/sdk/platform-tools/adb' devices -l",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' emu avd name",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell getprop 'ro.product.cpu.abi'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell monkey -p 'com.example.app' -c android.intent.category.LAUNCHER --pct-syskeys 0 1",
+            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell monkey -p 'com.example.app' -c android.intent.category.LAUNCHER --pct-syskeys 0 1 2>&1",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell pm uninstall 'com.example.app'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' exec-out screencap -p > '/tmp/shot'\\''s.png'",
@@ -153,5 +153,74 @@ final class ADBTests: XCTestCase {
             "'/sdk/platform-tools/adb' -s 'emulator-5554' pull '/sdcard/grantiva-record.mp4' '/tmp/out dir/rec.mp4'",
             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell rm -f '/sdcard/grantiva-record.mp4'",
         ])
+    }
+
+    // MARK: - K32 launch failures
+
+    /// What `adb shell monkey` prints for a package that is not installed
+    /// (exit 252): the argument trace, then the abort line.
+    static let monkeyTrace = """
+    args: [-p, com.example.app, -c, android.intent.category.LAUNCHER, --pct-syskeys, 0, 1]
+     arg: "-p"
+     arg: "com.example.app"
+    data="com.example.app"
+    data="android.intent.category.LAUNCHER"
+    arg="--pct-syskeys" mCurArgData="null" mNextArg=5 argwas="--pct-syskeys" nextarg="0"
+    data="0"
+      bash arg: -p
+    ** No activities found to run, monkey aborted.
+    """
+
+    func testLaunchOfAPackageThatIsNotInstalledSaysSoWithoutTheMonkeyTrace() async throws {
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(Self.monkeyTrace, 252))])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix("com.example.app is not installed on emulator-5554"), message)
+            XCTAssertFalse(message.contains("arg="), message)
+            XCTAssertFalse(message.contains("data="), message)
+            XCTAssertFalse(message.contains("\n"), "one line: \(message)")
+        }
+    }
+
+    /// monkey has exited 0 after aborting on some builds; the abort line still counts.
+    func testLaunchThatPrintsTheAbortLineWithExitZeroStillFails() async throws {
+        let shell = ScriptedShell([.success(Self.monkeyTrace)])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("is not installed"), error.localizedDescription)
+        }
+    }
+
+    func testLaunchFailingForAnotherReasonShowsOnlyTheLastMeaningfulLine() async throws {
+        let output = """
+        args: [-p, com.example.app]
+         arg: "-p"
+        data="com.example.app"
+        ** Monkey aborted due to error.
+        Events injected: 0
+        """
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(output, 251))])
+        do {
+            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, "Could not launch com.example.app on emulator-5554: Monkey aborted due to error.")
+        }
+    }
+
+    func testIsInstalledMatchesTheExactPackageOnly() async throws {
+        let listed = ScriptedShell([.success("package:com.example.app.paid\npackage:com.example.app")])
+        let adb = ADB(path: adbPath, execute: listed.execute)
+        let installed = try await adb.isInstalled(serial: "emulator-5554", applicationId: "com.example.app")
+        XCTAssertTrue(installed)
+        XCTAssertEqual(listed.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'pm list packages '\\''com.example.app'\\'''"])
+        let other = ScriptedShell([.success("package:com.example.app.paid")])
+        let otherInstalled = try await ADB(path: adbPath, execute: other.execute).isInstalled(serial: "emulator-5554", applicationId: "com.example.app")
+        XCTAssertFalse(otherInstalled)
     }
 }

@@ -319,7 +319,7 @@ grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
 grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
 grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
-grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or the AVD name with --no-boot
+grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
 grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
 grantiva emulator sessions  List the emulators Grantiva started
 grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all

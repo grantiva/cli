@@ -159,7 +159,7 @@ struct InstallCommand: AsyncParsableCommand {
             builtAppID = result.applicationId
         }
 
-        guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) else {
+        guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, purpose: .installing, warn: { GrantivaLog.logger.warning("\($0)") }) else {
             throw GrantivaError.invalidArgument(
                 platform == .ios
                     ? "No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml."
@@ -172,10 +172,17 @@ struct InstallCommand: AsyncParsableCommand {
             options.note("[grantiva] Installing \(installID)...")
             try await device.install(appID: installID, productPath: productPath, deviceID: booted.udid)
         }
+        let installed = productPath != nil
+
+        // Never launch an app this command did not install and the device
+        // does not have: say so in one line instead.
+        if !installed, !noLaunch, await device.isInstalled(appID: bid, deviceID: booted.udid) == false {
+            throw GrantivaError.unavailable(Self.notInstalledMessage(appID: bid, deviceName: booted.name, serial: booted.udid))
+        }
 
         let dataContainerPath = try await Self.dataContainerPath(platform: platform, bundleId: bid, deviceID: booted.udid)
 
-        let status = try await completeInstall {
+        let status = try await completeInstall(installed: installed) {
             options.note("[grantiva] Launching \(bid)...")
             try await device.launch(appID: bid, deviceID: booted.udid)
         }
@@ -197,19 +204,13 @@ struct InstallCommand: AsyncParsableCommand {
                 dataContainerPath: dataContainerPath
             )
             Output.line(try JSONOutput.string(result))
-        } else if noLaunch {
-            Output.line(Self.completionMessage(
-                status: .installed,
-                bundleId: bid,
-                deviceName: booted.name,
-                dataContainerPath: dataContainerPath
-            ))
         } else {
             Output.line(Self.completionMessage(
-                status: .launched,
+                status: status,
                 bundleId: bid,
                 deviceName: booted.name,
-                dataContainerPath: dataContainerPath
+                dataContainerPath: dataContainerPath,
+                installSkipped: !installed
             ))
         }
     }
@@ -226,21 +227,34 @@ struct InstallCommand: AsyncParsableCommand {
         }
     }
 
+    /// `installed` is false when nothing was installed (`--no-build`); not
+    /// launching then is `skipped`, not `installed`.
     func completeInstall(
+        installed: Bool = true,
         launch: () async throws -> Void
     ) async throws -> InstallResult.Status {
-        guard !noLaunch else { return .installed }
+        guard !noLaunch else { return installed ? .installed : .skipped }
         try await launch()
         return .launched
+    }
+
+    static func notInstalledMessage(appID: String, deviceName: String, serial: String) -> String {
+        "\(appID) is not installed on \(deviceName) (\(serial)); install it first (drop --no-build, or pass --app-file) or pass --no-launch."
     }
 
     static func completionMessage(
         status: InstallResult.Status,
         bundleId: String,
         deviceName: String,
-        dataContainerPath: String?
+        dataContainerPath: String?,
+        installSkipped: Bool = false
     ) -> String {
-        let action = status == .installed ? "installed on \(deviceName) (not launched)" : "running on \(deviceName)"
+        let action = switch (status, installSkipped) {
+        case (.launched, false): "running on \(deviceName)"
+        case (.launched, true): "running on \(deviceName) (install skipped)"
+        case (.installed, _): "installed on \(deviceName) (not launched)"
+        case (.skipped, _): "on \(deviceName) (install skipped, not launched)"
+        }
         let done = "[grantiva] Done — \(bundleId) \(action)"
         guard let dataContainerPath else { return done }
         return "\(done)\nData container: \(dataContainerPath)"
@@ -248,9 +262,13 @@ struct InstallCommand: AsyncParsableCommand {
 }
 
 struct InstallResult: Codable, Equatable {
+    /// `installed`: installed, not launched. `launched`: running (installed
+    /// by this command, or already there with `--no-build`). `skipped`:
+    /// `--no-build --no-launch`, nothing done to the app.
     enum Status: String, Codable {
         case installed
         case launched
+        case skipped
     }
 
     struct Simulator: Codable, Equatable {
