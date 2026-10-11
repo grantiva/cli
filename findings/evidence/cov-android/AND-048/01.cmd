@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --report-dir $S/out-048 >/dev/null 2>&1; echo rc=$?; ls $S/out-048 $S/out-048/captures; ls -la .grantiva/captures/android > $E/AND-048/captures-after.txt; diff $E/AND-048/captures-before.txt $E/AND-048/captures-after.txt && echo captures-unchanged

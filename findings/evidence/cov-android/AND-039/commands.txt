@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/cov-tmp/09-noheader.yaml --env LANDMARKS_SEED=empty 2>&1 | grep -E "PASS|FAIL|╰"; $S/tools/launchlog.sh
+rc=0 elapsed=4.5s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/09-seed-empty.yaml 2>&1 | grep -E "PASS|FAIL|╰"; $S/tools/launchlog.sh
+rc=0 elapsed=4.7s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/cov-tmp/09-noheader.yaml 2>&1 | grep -E "PASS|FAIL|╰" | head -3
+rc=0 elapsed=21.6s  (stdout 03.out, stderr 03.err)
+

@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/02-exact-negative.yaml --snapshot failure --report-dir $S/out-snap-failure >/dev/null 2>&1; echo rc=$?; find $S/out-snap-failure/assets -type f | sed 's|.*/assets/||' | sort

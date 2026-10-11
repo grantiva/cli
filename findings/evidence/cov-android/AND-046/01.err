@@ -1,0 +1,359 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=13
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 13 flow(s)...
+Running 13 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml, .maestro/01-browse.yaml, .maestro/02-favorite.yaml, .maestro/03-edit.yaml, .maestro/04-discard.yaml, .maestro/05-category.yaml, .maestro/06-visit.yaml, .maestro/07-deeplink.yaml, .maestro/08-caching.yaml, .maestro/09-seed-empty.yaml, .maestro/10-seed-many.yaml, .maestro/11-slow.yaml, .maestro/12-quote-label.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 13 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B8E6EE80-41A9-4EC7-B3AB-334BE5F58CBA
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/13] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (1.7s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+✗ 99-crash 2.8s
+
+  [2/13] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Landmarks" (87ms)
+    ✓ assertVisible: text="Featured" (580ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn: text="Golden Gate Bridge" (236ms)
+    ✓ assertVisible: text="San Francisco, CA" (627ms)
+    ✓ assertVisible: text="Plan Visit" (37ms)
+    ✓ takeScreenshot (130ms)
+✓ 01-browse 3.7s
+
+  [3/13] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (837ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (47ms)
+    ✓ tapOn: text="Landmarks" (160ms)
+    ✓ tapOn: text="Favorites" (802ms)
+    ✓ assertVisible: text="Lake Tahoe" (488ms)
+    ✓ takeScreenshot (133ms)
+    ✓ swipe: LEFT (340ms)
+    ✓ tapOn: text="Remove" (133ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (677ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (24ms)
+    ✓ takeScreenshot (130ms)
+✓ 02-favorite 6.9s
+
+  [4/13] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (846ms)
+    ✓ tapOn: text="Edit Landmark" (799ms)
+    ✓ assertVisible: text="Edit Landmark" (621ms)
+    ✓ tapOn: text="Name" (143ms)
+    ✓ inputText: " Renamed" (2.0s)
+    ✓ tapOn: text="Done" (203ms)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (701ms)
+    ✓ takeScreenshot (135ms)
+✓ 03-edit 7.4s
+
+  [5/13] 04-discard (04-discard.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (821ms)
+    ✓ tapOn: text="Edit Landmark" (785ms)
+    ✓ tapOn: text="Location" (783ms)
+    ✓ inputText: "X" (1.5s)
+    ✓ tapOn: text="Cancel" (206ms)
+    ✓ assertVisible: text="You have unsaved changes that will be lost." (1.3s)
+    ✓ takeScreenshot (137ms)
+    ✓ tapOn: text="Keep Editing" (105ms)
+    ✓ assertVisible: text="Edit Landmark" (664ms)
+    ✓ tapOn: text="Cancel" (217ms)
+    ✓ tapOn: text="Discard" (1.4s)
+    ✓ assertVisible: text="Deep Links" (548ms)
+✓ 04-discard 10.5s
+
+  [6/13] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lakes" (919ms)
+    ✓ assertVisible: text="Lake Tahoe" (615ms)
+    ✓ assertVisible: text="Mono Lake" (31ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (83ms)
+    ✓ takeScreenshot (129ms)
+✓ 05-category 3.7s
+
+  [7/13] 06-visit (06-visit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Half Dome" (852ms)
+    ✓ tapOn: text="Plan Visit" (763ms)
+    ✓ assertVisible: text="Visit Scheduled!" (45ms)
+    ✓ assertVisible: text="You're all set to visit Half Dome." (29ms)
+    ✓ takeScreenshot (130ms)
+    ✓ tapOn: text="Done" (160ms)
+    ✓ assertVisible: text="Half Dome" (64ms)
+✓ 06-visit 4.0s
+
+  [8/13] 07-deeplink (07-deeplink.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (819ms)
+    ✓ tapOn: text="landmarks://category/lakes" (797ms)
+    ✓ assertVisible: text="Mono Lake" (614ms)
+    ✓ takeScreenshot (137ms)
+✓ 07-deeplink 4.3s
+
+  [9/13] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (842ms)
+    ✓ tapOn: text="Caching Demo" (761ms)
+    ✓ assertVisible: text="Cache Policy" (619ms)
+    ✓ tapOn: text="Fetch with Policy" (146ms)
+    ✓ takeScreenshot (136ms)
+    ✓ tapOn: text="Clear Cache" (164ms)
+✓ 08-caching 4.6s
+
+  [10/13] 09-seed-empty (09-seed-empty.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="No landmarks yet" (51ms)
+    ✓ takeScreenshot (135ms)
+✓ 09-seed-empty 2.1s
+
+  [11/13] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll: DOWN (344ms)
+    ✓ scroll: DOWN (344ms)
+    ✓ scroll: DOWN (347ms)
+    ✓ scroll: DOWN (333ms)
+    ✓ assertVisible: text="Landmark 30" (133ms)
+    ✓ takeScreenshot (176ms)
+✓ 10-seed-many 3.6s
+
+  [12/13] 11-slow (11-slow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Deep Links" (852ms)
+    ✓ tapOn: text="Slow Screen" (819ms)
+    ✓ assertVisible: text="Loading…" (601ms)
+    ✓ extendedWaitUntil: visible text="Loaded after delay" (2.5s)
+    ✓ takeScreenshot (137ms)
+✓ 11-slow 6.9s
+
+  [13/13] 12-quote-label (12-quote-label.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Mountains" (839ms)
+    ✓ tapOn: text="Mount "Denali"" (732ms)
+    ✓ assertVisible: text="Alaska" (63ms)
+    ✓ takeScreenshot (134ms)
+✓ 12-quote-label 3.7s
+
+  [1/13] 99-crash (.maestro/99-crash.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (2.8s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+✗ 99-crash 2.8s
+
+  [2/13] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible (87ms)
+    ✓ assertVisible (580ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn (236ms)
+    ✓ assertVisible (627ms)
+    ✓ assertVisible (37ms)
+    ✓ takeScreenshot (130ms)
+✓ 01-browse 3.7s
+
+  [3/13] 02-favorite (.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (837ms)
+    ✓ tapOn (1.2s)
+    ✓ assertVisible (47ms)
+    ✓ tapOn (160ms)
+    ✓ tapOn (802ms)
+    ✓ assertVisible (488ms)
+    ✓ takeScreenshot (133ms)
+    ✓ swipe (340ms)
+    ✓ tapOn (133ms)
+    ✓ assertNotVisible (677ms)
+    ✓ assertVisible (24ms)
+    ✓ takeScreenshot (130ms)
+✓ 02-favorite 6.9s
+
+  [4/13] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (846ms)
+    ✓ tapOn (799ms)
+    ✓ assertVisible (621ms)
+    ✓ tapOn (143ms)
+    ✓ inputText (2.0s)
+    ✓ tapOn (203ms)
+    ✓ assertVisible (701ms)
+    ✓ takeScreenshot (135ms)
+✓ 03-edit 7.4s
+
+  [5/13] 04-discard (.maestro/04-discard.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (821ms)
+    ✓ tapOn (785ms)
+    ✓ tapOn (783ms)
+    ✓ inputText (1.5s)
+    ✓ tapOn (206ms)
+    ✓ assertVisible (1.3s)
+    ✓ takeScreenshot (137ms)
+    ✓ tapOn (105ms)
+    ✓ assertVisible (664ms)
+    ✓ tapOn (217ms)
+    ✓ tapOn (1.4s)
+    ✓ assertVisible (548ms)
+✓ 04-discard 10.5s
+
+  [6/13] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (919ms)
+    ✓ assertVisible (615ms)
+    ✓ assertVisible (31ms)
+    ✓ assertNotVisible (83ms)
+    ✓ takeScreenshot (129ms)
+✓ 05-category 3.7s
+
+  [7/13] 06-visit (.maestro/06-visit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (852ms)
+    ✓ tapOn (763ms)
+    ✓ assertVisible (45ms)
+    ✓ assertVisible (29ms)
+    ✓ takeScreenshot (130ms)
+    ✓ tapOn (160ms)
+    ✓ assertVisible (64ms)
+✓ 06-visit 4.0s
+
+  [8/13] 07-deeplink (.maestro/07-deeplink.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (819ms)
+    ✓ tapOn (797ms)
+    ✓ assertVisible (614ms)
+    ✓ takeScreenshot (137ms)
+✓ 07-deeplink 4.3s
+
+  [9/13] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (842ms)
+    ✓ tapOn (761ms)
+    ✓ assertVisible (619ms)
+    ✓ tapOn (146ms)
+    ✓ takeScreenshot (136ms)
+    ✓ tapOn (164ms)
+✓ 08-caching 4.6s
+
+  [10/13] 09-seed-empty (.maestro/09-seed-empty.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible (51ms)
+    ✓ takeScreenshot (135ms)
+✓ 09-seed-empty 2.1s
+
+  [11/13] 10-seed-many (.maestro/10-seed-many.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll (344ms)
+    ✓ scroll (344ms)
+    ✓ scroll (347ms)
+    ✓ scroll (333ms)
+    ✓ assertVisible (133ms)
+    ✓ takeScreenshot (176ms)
+✓ 10-seed-many 3.6s
+
+  [12/13] 11-slow (.maestro/11-slow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (852ms)
+    ✓ tapOn (819ms)
+    ✓ assertVisible (601ms)
+    ✓ extendedWaitUntil (2.5s)
+    ✓ takeScreenshot (137ms)
+✓ 11-slow 6.9s
+
+  [13/13] 12-quote-label (.maestro/12-quote-label.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (839ms)
+    ✓ tapOn (733ms)
+    ✓ assertVisible (63ms)
+    ✓ takeScreenshot (134ms)
+✓ 12-quote-label 3.7s
+
+  90 steps passing (1m 4s)
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      0      1      3       2.8s  google sdk_gphone64_arm64 (...
+  01-browse                      ✓ PASS       8      8      0      0       3.7s  google sdk_gphone64_arm64 (...
+  02-favorite                    ✓ PASS      13     13      0      0       6.9s  google sdk_gphone64_arm64 (...
+  03-edit                        ✓ PASS       9      9      0      0       7.4s  google sdk_gphone64_arm64 (...
+  04-discard                     ✓ PASS      13     13      0      0      10.5s  google sdk_gphone64_arm64 (...
+  05-category                    ✓ PASS       6      6      0      0       3.7s  google sdk_gphone64_arm64 (...
+  06-visit                       ✓ PASS       8      8      0      0       4.0s  google sdk_gphone64_arm64 (...
+  07-deeplink                    ✓ PASS       5      5      0      0       4.3s  google sdk_gphone64_arm64 (...
+  08-caching                     ✓ PASS       7      7      0      0       4.6s  google sdk_gphone64_arm64 (...
+  09-seed-empty                  ✓ PASS       3      3      0      0       2.1s  google sdk_gphone64_arm64 (...
+  10-seed-many                   ✓ PASS       7      7      0      0       3.6s  google sdk_gphone64_arm64 (...
+  11-slow                        ✓ PASS       6      6      0      0       6.9s  google sdk_gphone64_arm64 (...
+  12-quote-label                 ✓ PASS       5      5      0      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                           12/13      94     90      1      3      1m 4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B8E6EE80-41A9-4EC7-B3AB-334BE5F58CBA
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B8E6EE80-41A9-4EC7-B3AB-334BE5F58CBA/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B8E6EE80-41A9-4EC7-B3AB-334BE5F58CBA/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B8E6EE80-41A9-4EC7-B3AB-334BE5F58CBA/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/android/failure-1791702553.png
+Error: Runner failed (exit 1); see the runner output above.

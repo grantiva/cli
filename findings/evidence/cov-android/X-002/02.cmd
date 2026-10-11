@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/02-exact-negative.yaml --json --report-dir $S/out-x002f 2>/dev/null | python3 -c "import json,sys;d=json.load(sys.stdin);print(sorted(d.keys()));print(d.get(\"reportDir\"))"; echo rc=${PIPESTATUS[0]}
