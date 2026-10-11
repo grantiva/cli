@@ -1,5 +1,5 @@
 import sys,zlib,struct
-# perturb.py <png> <mode>: mode 0 = paint a 300x300 black square (large diff), 1 = flip ~0.5% of pixels (pixel-only diff)
+# perturb.py <png> <mode>: mode >=2 shifts the red channel by <mode> over rows 300-2100 (pixel-only change); mode 0 = paint a 300x300 black square (large diff), 1 = flip ~0.5% of pixels (pixel-only diff)
 # minimal PNG RGBA/RGB 8-bit non-interlaced re-encoder using zlib
 p=sys.argv[1]; mode=int(sys.argv[2]); data=open(p,'rb').read(); assert data[:8]==b'\x89PNG\r\n\x1a\n'
 pos=8; chunks=[]
@@ -21,6 +21,13 @@ for y in range(h):
 if mode==0:
     for y in range(900,1200):
         for x in range(300,600): rows[y][x*bpp:x*bpp+3]=b'\x00\x00\x00'
+elif mode>=2:
+    d=mode
+    for y in range(300,2100):
+        r=rows[y]
+        for x in range(0,w):
+            i=x*bpp
+            r[i]=min(255,r[i]+d) if r[i]<128 else r[i]-d
 else:
     n=0
     for y in range(400,2000,7):

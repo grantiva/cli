@@ -1,0 +1,43 @@
+14:01:37.525735 [INFO] === Test execution started ===
+14:01:37.525805 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/rr-crash-1
+14:01:37.525812 [INFO] Platform: android
+14:01:37.525817 [INFO] Driver: uiautomator2
+14:01:37.526120 [INFO] Validated 1 flow(s)
+14:01:37.526148 [INFO] Single device execution mode
+14:01:37.526154 [INFO] Starting flow execution (parallel: false, devices: [])
+14:01:37.526160 [INFO] Creating driver for single device execution
+14:01:37.526165 [INFO] Connecting to Android device: emulator-5554
+14:01:38.029859 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:01:42.994973 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:01:43.879610 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:01:43.902068 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:01:52.673662 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:01:52.838193 [INFO] Session created successfully: 7a3f52f2-6841-4179-b3fa-7c91ce87270d
+14:01:53.619363 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:01:53.629359 [INFO] === Starting flow: 99-crash ===
+14:01:53.629386 [INFO] Flow file: .maestro/99-crash.yaml
+14:01:53.629401 [INFO] Total steps: 4
+14:01:53.668469 [DEBUG] Executing step 0: launchApp
+14:02:00.912139 [DEBUG] Step 0 completed successfully (7243ms): launchApp
+14:02:00.914288 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:02:00.915914 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:02:02.345374 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:02.996686 [DEBUG] crash check during a lookup in flight for 1.462s: crashed=false (took 459ms)
+14:02:03.835408 [DEBUG] crash check during a lookup in flight for 2.3s: crashed=false (took 298ms)
+14:02:04.386183 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:04.808961 [DEBUG] crash check during a lookup in flight for 3.274s: crashed=false (took 272ms)
+14:02:05.259125 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:05.808375 [DEBUG] crash check during a lookup in flight for 4.273s: crashed=false (took 271ms)
+14:02:06.509690 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:07.193608 [DEBUG] crash check during a lookup in flight for 5.658s: crashed=false (took 656ms)
+14:02:07.979980 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:08.004206 [DEBUG] crash check during a lookup in flight for 6.469s: crashed=true (took 467ms)
+14:02:08.004265 [ERROR] Step 1 failed (7089ms): assertVisible: text="Landmarks" - Error: app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed after launch)
+14:02:16.291630 [INFO] === Flow completed: 99-crash (status: failed, duration: 22660ms, passed: 1, failed: 1, skipped: 2) ===
+14:02:17.139963 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:02:17.151958 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:02:17.151991 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:02:17.152173 [INFO] Generating reports...
+14:02:17.152910 [INFO] Shutting down devices started by maestro-runner...
+14:02:17.152915 [INFO] Shutting down all tracked emulators
+14:02:17.152925 [INFO] Shutting down all tracked simulators

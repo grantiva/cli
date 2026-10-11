@@ -1,0 +1,1 @@
+uptime; adb -s emulator-5554 shell sync; $GRANTIVA emulator teardown --serial emulator-5554; sleep 3; avdmanager delete avd -n cov2-android; echo avd-delete-exit=$?; adb devices; avdmanager list avd -c; $GRANTIVA emulator sessions --json; cat ~/.grantiva/android/created-avds.json; echo; ls $GRANTIVA_RUNNER_HOME/locks | grep emulator-; ls /tmp/grantiva-sessions

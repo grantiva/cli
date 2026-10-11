@@ -1,0 +1,67 @@
+14:18:39.948593 [INFO] === Test execution started ===
+14:18:39.948841 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/rr-k09-5
+14:18:39.948860 [INFO] Platform: android
+14:18:39.948873 [INFO] Driver: uiautomator2
+14:18:39.949671 [INFO] Validated 1 flow(s)
+14:18:39.949737 [INFO] Single device execution mode
+14:18:39.949750 [INFO] Starting flow execution (parallel: false, devices: [])
+14:18:39.949763 [INFO] Creating driver for single device execution
+14:18:39.949775 [INFO] Connecting to Android device: emulator-5554
+14:18:40.360577 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:18:40.425131 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:18:41.014552 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:18:41.033405 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:18:44.791308 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:18:44.833981 [INFO] Session created successfully: c890abe9-08c1-4666-9e59-80b7ef4bfe69
+14:18:45.066104 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:18:45.076188 [INFO] === Starting flow: c-direction-left-from ===
+14:18:45.076218 [INFO] Flow file: .maestro/coverage/c-direction-left-from.yaml
+14:18:45.076234 [INFO] Total steps: 12
+14:18:45.104063 [DEBUG] Executing step 0: launchApp
+14:18:49.569756 [DEBUG] Step 0 completed successfully (4465ms): launchApp
+14:18:49.570261 [DEBUG] Executing step 1: tapOn: text="Lake Tahoe"
+14:18:49.570545 [DEBUG] Flutter: parallel search (text="Lake Tahoe", id="")
+14:18:50.130688 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:51.193360 [DEBUG] crash check during a lookup in flight for 1.427s: crashed=false (took 426ms)
+14:18:51.391190 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:51.901165 [DEBUG] crash check during a lookup in flight for 2.135s: crashed=false (took 135ms)
+14:18:52.197296 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:53.177376 [DEBUG] crash check during a lookup in flight for 3.411s: crashed=false (took 410ms)
+14:18:54.448021 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:55.217356 [DEBUG] crash check during a lookup in flight for 5.451s: crashed=false (took 1.45s)
+14:18:55.773451 [DEBUG] crash check during a lookup in flight for 6.007s: crashed=false (took 556ms)
+14:18:55.926378 [DEBUG] crash check during a lookup in flight for 6.16s: crashed=false (took 153ms)
+14:18:56.167609 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:56.930132 [DEBUG] crash check during a lookup in flight for 7.164s: crashed=false (took 163ms)
+14:18:57.397584 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:58.951238 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:18:58.951508 [DEBUG] Step 1 completed successfully (9381ms): tapOn: text="Lake Tahoe"
+14:18:58.953612 [DEBUG] Executing step 2: tapOn: text="Favorite"
+14:19:00.821077 [DEBUG] Step 2 completed successfully (1867ms): tapOn: text="Favorite"
+14:19:00.823082 [DEBUG] Executing step 3: assertVisible: text="Unfavorite"
+14:19:02.080145 [DEBUG] Step 3 completed successfully (1257ms): assertVisible: text="Unfavorite"
+14:19:02.081234 [DEBUG] Executing step 4: tapOn: text="Landmarks"
+14:19:03.384448 [DEBUG] Step 4 completed successfully (1303ms): tapOn: text="Landmarks"
+14:19:03.386368 [DEBUG] Executing step 5: tapOn: text="Favorites"
+14:19:05.019821 [DEBUG] crash check during a lookup in flight for 1.127s: crashed=false (took 126ms)
+14:19:06.275777 [DEBUG] Step 5 completed successfully (2889ms): tapOn: text="Favorites"
+14:19:06.277945 [DEBUG] Executing step 6: assertVisible: text="Lake Tahoe"
+14:19:06.976808 [DEBUG] Step 6 completed successfully (698ms): assertVisible: text="Lake Tahoe"
+14:19:06.978882 [DEBUG] Executing step 7: takeScreenshot
+14:19:07.597409 [DEBUG] Step 7 completed successfully (618ms): takeScreenshot
+14:19:07.598798 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+14:19:08.459178 [DEBUG] Step 8 completed successfully (860ms): swipe: LEFT from text="Lake Tahoe"
+14:19:08.461431 [DEBUG] Executing step 9: waitForAnimationToEnd
+14:19:10.604254 [DEBUG] Step 9 completed successfully (2142ms): waitForAnimationToEnd
+14:19:10.604669 [DEBUG] Executing step 10: takeScreenshot
+14:19:11.196724 [DEBUG] Step 10 completed successfully (592ms): takeScreenshot
+14:19:11.198163 [DEBUG] Executing step 11: assertNotVisible: text="Lake Tahoe"
+14:19:16.329790 [ERROR] Step 11 failed (5131ms): assertNotVisible: text="Lake Tahoe" - Error: Element still visible: text='Lake Tahoe' after 5s (cause: element should not be visible; still matched "Lake Tahoe" at (42,353 227x63))
+14:19:17.059949 [INFO] === Flow completed: c-direction-left-from (status: failed, duration: 31977ms, passed: 11, failed: 1, skipped: 0) ===
+14:19:17.773727 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:19:17.787761 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:19:17.787784 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:19:17.787986 [INFO] Generating reports...
+14:19:17.789152 [INFO] Shutting down devices started by maestro-runner...
+14:19:17.789167 [INFO] Shutting down all tracked emulators
+14:19:17.789178 [INFO] Shutting down all tracked simulators

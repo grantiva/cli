@@ -1,0 +1,57 @@
+14:02:26.413979 [INFO] === Test execution started ===
+14:02:26.414155 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/rr-crash-2
+14:02:26.414170 [INFO] Platform: android
+14:02:26.414180 [INFO] Driver: uiautomator2
+14:02:26.414910 [INFO] Validated 1 flow(s)
+14:02:26.414981 [INFO] Single device execution mode
+14:02:26.414998 [INFO] Starting flow execution (parallel: false, devices: [])
+14:02:26.415012 [INFO] Creating driver for single device execution
+14:02:26.415026 [INFO] Connecting to Android device: emulator-5554
+14:02:26.634990 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+14:02:26.738498 [INFO] Starting UIAutomator2 server on device emulator-5554
+14:02:27.899486 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:02:27.920772 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:02:37.094989 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+14:02:37.240771 [INFO] Session created successfully: 20b25df6-b91c-41f8-8f86-1f211c89ad77
+14:02:38.171437 [INFO] Driver created: android on google sdk_gphone64_arm64
+14:02:38.180180 [INFO] === Starting flow: 99-crash ===
+14:02:38.180210 [INFO] Flow file: .maestro/99-crash.yaml
+14:02:38.180236 [INFO] Total steps: 4
+14:02:38.303427 [DEBUG] Executing step 0: launchApp
+14:02:46.413286 [DEBUG] Step 0 completed successfully (8109ms): launchApp
+14:02:46.413866 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+14:02:46.414134 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+14:02:47.625011 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:48.632151 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:49.071804 [DEBUG] crash check during a lookup in flight for 1.271s: crashed=false (took 268ms)
+14:02:49.573196 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:49.923726 [DEBUG] crash check during a lookup in flight for 2.123s: crashed=false (took 120ms)
+14:02:50.341368 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:50.881347 [DEBUG] crash check during a lookup in flight for 3.08s: crashed=false (took 78ms)
+14:02:51.346881 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:51.962891 [DEBUG] crash check during a lookup in flight for 4.162s: crashed=false (took 161ms)
+14:02:52.585155 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:53.150945 [DEBUG] crash check during a lookup in flight for 5.35s: crashed=false (took 348ms)
+14:02:54.835862 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:54.836075 [DEBUG] crash check during a lookup in flight for 7.035s: crashed=false (took 1.033s)
+14:02:55.124229 [DEBUG] crash check during a lookup in flight for 7.323s: crashed=false (took 288ms)
+14:02:57.022329 [DEBUG] crash check during a lookup in flight for 9.221s: crashed=false (took 1.219s)
+14:02:57.580889 [DEBUG] crash check during a lookup in flight for 9.78s: crashed=false (took 558ms)
+14:02:58.384634 [DEBUG] crash check during a lookup in flight for 10.583s: crashed=false (took 582ms)
+14:02:59.163713 [DEBUG] crash check during a lookup in flight for 11.362s: crashed=false (took 360ms)
+14:02:59.216965 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:02:59.898199 [DEBUG] crash check during a lookup in flight for 12.097s: crashed=false (took 95ms)
+14:03:01.087362 [DEBUG] crash check during a lookup in flight for 13.286s: crashed=false (took 285ms)
+14:03:02.261633 [DEBUG] crash check during a lookup in flight for 14.46s: crashed=false (took 460ms)
+14:03:02.516824 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:03:03.346809 [DEBUG] crash check during a lookup in flight for 15.546s: crashed=false (took 543ms)
+14:03:03.863945 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+14:03:05.601292 [ERROR] Step 1 failed (19187ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks keeps stopping")
+14:03:08.871940 [INFO] === Flow completed: 99-crash (status: failed, duration: 30689ms, passed: 1, failed: 1, skipped: 2) ===
+14:03:10.586076 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+14:03:10.600959 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+14:03:10.600985 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+14:03:10.601200 [INFO] Generating reports...
+14:03:10.602104 [INFO] Shutting down devices started by maestro-runner...
+14:03:10.602123 [INFO] Shutting down all tracked emulators
+14:03:10.602135 [INFO] Shutting down all tracked simulators

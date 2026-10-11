@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.64 8.77 8.90
+$ uptime; t0=$(python3 -I -c 'import time;print(time.time())'); $GRANTIVA runner start --detach >/dev/null 2>&1; t1=$(python3 -I -c 'import time;print(time.time())'); n=0; until $GRANTIVA runner dump-hierarchy --format tree >/dev/null 2>&1; do n=$((n+1)); sleep 0.5; [ $n -gt 120 ] && break; done; t2=$(python3 -I -c 'import time;print(time.time())'); python3 -I -c "print('detach returned after %.1fs; first successful dump %.1fs after return (%d failed tries)'%($t1-$t0,$t2-$t1,$n))"; $GRANTIVA runner stop
+rc=0 elapsed=8.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=5.72 8.68 8.87
+$ uptime; t0=$(python3 -I -c 'import time;print(time.time())'); $GRANTIVA runner start --detach >/dev/null 2>&1; t1=$(python3 -I -c 'import time;print(time.time())'); n=0; until $GRANTIVA runner dump-hierarchy --format tree >/dev/null 2>&1; do n=$((n+1)); sleep 0.5; [ $n -gt 120 ] && break; done; t2=$(python3 -I -c 'import time;print(time.time())'); python3 -I -c "print('detach returned after %.1fs; first successful dump %.1fs after return (%d failed tries)'%($t1-$t0,$t2-$t1,$n))"; $GRANTIVA runner stop
+rc=0 elapsed=6.6s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=6.30 8.75 8.89
+$ uptime; t0=$(python3 -I -c 'import time;print(time.time())'); $GRANTIVA runner start --detach >/dev/null 2>&1; t1=$(python3 -I -c 'import time;print(time.time())'); n=0; until $GRANTIVA runner dump-hierarchy --format tree >/dev/null 2>&1; do n=$((n+1)); sleep 0.5; [ $n -gt 120 ] && break; done; t2=$(python3 -I -c 'import time;print(time.time())'); python3 -I -c "print('detach returned after %.1fs; first successful dump %.1fs after return (%d failed tries)'%($t1-$t0,$t2-$t1,$n))"; $GRANTIVA runner stop
+rc=0 elapsed=6.4s  (stdout 03.out, stderr 03.err)
+
