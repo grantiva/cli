@@ -118,6 +118,29 @@ final class ChildProcessTests: XCTestCase {
         let text = try String(contentsOfFile: outPath, encoding: .utf8)
         XCTAssertTrue(text.contains("/tmp"), text)
     }
+    /// CI hands the test process SIGINT/SIGTERM blocked; posix_spawn would
+    /// pass that mask on, and the runner could never be interrupted.
+    func testAChildStartsWithTerminationSignalsDeliverableWhateverTheParentBlocks() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        var blocked = sigset_t(), previous = sigset_t()
+        sigemptyset(&blocked)
+        sigaddset(&blocked, SIGINT)
+        sigaddset(&blocked, SIGTERM)
+        pthread_sigmask(SIG_BLOCK, &blocked, &previous)
+        let child: ChildProcess
+        do {
+            child = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+        } catch {
+            pthread_sigmask(SIG_SETMASK, &previous, nil)
+            throw error
+        }
+        pthread_sigmask(SIG_SETMASK, &previous, nil)
+        defer { child.terminateGroup(gracePeriod: 1) }
+        child.signalGroup(SIGINT)
+        XCTAssertEqual(child.wait(), SIGINT)
+    }
+
     // MARK: - K79: the runner's lifetime is bound to grantiva's
 
     /// Closing the watchdog's pipe is exactly what the kernel does when

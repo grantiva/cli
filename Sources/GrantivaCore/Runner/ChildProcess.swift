@@ -63,8 +63,20 @@ public final class ChildProcess: @unchecked Sendable {
         defer { posix_spawnattr_destroy(&attributes) }
         posix_spawnattr_setflags(
             &attributes,
-            Int16(POSIX_SPAWN_SETPGROUP | POSIX_SPAWN_CLOEXEC_DEFAULT)
+            Int16(POSIX_SPAWN_SETPGROUP | POSIX_SPAWN_CLOEXEC_DEFAULT | POSIX_SPAWN_SETSIGMASK | POSIX_SPAWN_SETSIGDEF)
         )
+        // The child starts with no signal blocked and the termination signals
+        // at their defaults, whatever this process inherited (a CI runner or
+        // a script's `&` can hand grantiva SIGINT blocked or ignored). Without
+        // this, the runner and the lifetime watchdog could not be interrupted:
+        // a shell cannot even trap a signal that was ignored on entry.
+        var emptyMask = sigset_t()
+        sigemptyset(&emptyMask)
+        posix_spawnattr_setsigmask(&attributes, &emptyMask)
+        var defaults = sigset_t()
+        sigemptyset(&defaults)
+        for signal in [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE] { sigaddset(&defaults, signal) }
+        posix_spawnattr_setsigdefault(&attributes, &defaults)
         // 0 == "make the child the leader of a new group whose id is its pid".
         posix_spawnattr_setpgroup(&attributes, processGroup)
 
