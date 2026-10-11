@@ -1,0 +1,70 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="Landmarks" (135ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+✗ 99-crash 4.8s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="Landmarks" (135ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+    - assertVisible: text="Featured" (skipped)
+    - assertVisible: text="This never appears" (skipped)
+✗ 99-crash 4.8s
+
+  1 steps passing (4.8s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      1      1      2       4.8s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      1      1      2       4.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n213/crash1/captures/failure-1791747025.png
+Error: Runner failed (exit 1): 99-crash: assertVisible: text="Landmarks": Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)

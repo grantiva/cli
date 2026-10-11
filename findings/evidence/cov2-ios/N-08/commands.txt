@@ -1,0 +1,14 @@
+# uptime: 11:59  up 4 days,  3:26, 5 users, load averages: 76.00 46.94 33.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ touch $S/n08.marker; sleep 1; echo "PATH has dev dir: $(echo $PATH | tr : "
+" | grep -c maestro-runner)"; find ~/.maestro-runner -maxdepth 3 -exec stat -f "%Sm %N" {} \; | sort > $S/n08-before.txt; wc -l < $S/n08-before.txt
+# exit=0 elapsed=1.090s -> before.out / before.err
+# uptime: 11:59  up 4 days,  3:26, 5 users, load averages: 76.00 46.94 33.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ env PATH=$(echo $PATH | tr : "
+" | grep -v maestro-runner | paste -sd: -) $GRANTIVA run --no-build --simulator $U1 --flow .maestro/01-browse.yaml; echo exit=$?
+# exit=0 elapsed=11.983s -> run.out / run.err
+# uptime: 11:59  up 4 days,  3:26, 5 users, load averages: 65.24 45.59 33.42
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ find ~/.maestro-runner -newer $S/n08.marker | wc -l; find ~/.maestro-runner -maxdepth 3 -exec stat -f "%Sm %N" {} \; | sort > $S/n08-after.txt; diff $S/n08-before.txt $S/n08-after.txt && echo unchanged
+# exit=0 elapsed=.075s -> after.out / after.err

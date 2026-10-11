@@ -1,0 +1,27 @@
+appId: com.kylebrowning.Landmarks
+env:
+  LANDMARKS_SEED: many
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Landmark 30"
+    direction: DOWN
+    timeout: 30000
+- takeScreenshot: "Scrolled"
+- runFlow: sub.yaml
+- runFlow:
+    file: back.yaml
+- runFlow:
+    commands:
+      - tapOn: "Favorites"
+- extendedWaitUntil:
+    visible: "Landmarks you favorite will appear here."
+    timeout: 4000
+- takeScreenshot: "Favs"
+appId: com.kylebrowning.Landmarks
+---
+- tapOn: "Deep Links"
+- takeScreenshot: "SubShot"
+appId: com.kylebrowning.Landmarks
+---
+- tapOn: "Landmarks"

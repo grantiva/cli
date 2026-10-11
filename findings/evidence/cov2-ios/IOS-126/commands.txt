@@ -1,0 +1,25 @@
+# project $S/p126: grantiva.yml bundle_id com.example.wrong; appvar.yaml with appId: ${APP_ID}
+# uptime: 11:16  up 4 days,  2:43, 5 users, load averages: 11.43 10.91 13.79
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cat grantiva.yml appvar.yaml
+# exit=0 elapsed=.008s -> files.out / files.err
+# uptime: 11:16  up 4 days,  2:43, 5 users, load averages: 11.43 10.91 13.79
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow appvar.yaml --bundle-id com.kylebrowning.Landmarks
+# exit=0 elapsed=9.808s -> flag-wins.out / flag-wins.err
+# uptime: 11:16  up 4 days,  2:43, 5 users, load averages: 12.78 11.21 13.86
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow appvar.yaml
+# exit=1 elapsed=.946s -> config-next.out / config-next.err
+# uptime: 11:16  up 4 days,  2:43, 5 users, load averages: 12.78 11.21 13.86
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ sed -i "" "/^bundle_id/d" grantiva.yml; $GRANTIVA run --simulator $U1 --flow appvar.yaml --app-file $S/apps/Landmarks.app
+# exit=0 elapsed=8.885s -> appfile-next.out / appfile-next.err
+# uptime: 11:16  up 4 days,  2:43, 5 users, load averages: 12.21 11.13 13.80
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow appvar.yaml --verbose
+# exit=1 elapsed=.849s -> var-ignored.out / var-ignored.err
+# uptime: 11:16  up 4 days,  2:44, 5 users, load averages: 10.71 10.85 13.67
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p126  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --simulator $U1 --flow appvar.yaml
+# exit=0 elapsed=15.937s -> detection.out / detection.err

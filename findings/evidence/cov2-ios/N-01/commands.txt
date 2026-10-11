@@ -1,0 +1,21 @@
+# uptime: 11:47  up 4 days,  3:15, 5 users, load averages: 10.48 23.83 29.70
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/ka.ready  > ka.out 2> ka.err &
+# ready after 12s pid=48088: {
+  "finishedAt" : "2026-10-11T18:47:53Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 11:47  up 4 days,  3:15, 5 users, load averages: 11.59 23.64 29.56
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop
+# exit=0 elapsed=.390s -> stop.out / stop.err
+# uptime: 11:47  up 4 days,  3:15, 5 users, load averages: 10.90 23.30 29.40
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ kill -0 48088 2>/dev/null && echo keepalive-alive || echo keepalive-gone; ls /tmp/grantiva-sessions; cat $S/ka.ready
+# exit=0 elapsed=.012s -> after.out / after.err

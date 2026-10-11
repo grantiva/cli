@@ -1,0 +1,272 @@
+10:21:15.710685 [INFO] === Test execution started ===
+10:21:15.710749 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-26/10-lifecycle
+10:21:15.710755 [INFO] Platform: ios
+10:21:15.710760 [INFO] Driver: wda
+10:21:15.711064 [INFO] Validated 1 flow(s)
+10:21:15.819353 [INFO] Single device execution mode
+10:21:15.819364 [INFO] Starting flow execution (parallel: false, devices: [])
+10:21:15.819370 [INFO] Creating driver for single device execution
+10:21:15.819374 [INFO] Using specified iOS device: 7E846901-F93F-4220-A153-7043061033D7
+10:21:15.922149 [INFO] Device 7E846901-F93F-4220-A153-7043061033D7 is a simulator
+10:21:15.922213 [INFO] Building WDA for device 7E846901-F93F-4220-A153-7043061033D7 (team ID: )
+10:21:16.128567 [INFO] WDA build reused from cache
+10:21:16.128584 [INFO] Starting WDA on device 7E846901-F93F-4220-A153-7043061033D7 (port: 8987)
+10:21:16.366447 [INFO] Starting GrantivaAgent (attempt 1/4)
+10:21:18.369698 [INFO] GrantivaAgent started
+10:21:18.369765 [INFO] WDA started successfully on port 8987
+10:21:18.721003 [DEBUG] WDA GET /window/size
+10:21:18.781063 [DEBUG] WDA GET /window/size completed (60ms, status: 200)
+10:21:18.781136 [INFO] Driver created: ios on cov2-ios-1
+10:21:18.782820 [INFO] === Starting flow: 10-lifecycle ===
+10:21:18.782826 [INFO] Flow file: .maestro/coverage/10-lifecycle.yaml
+10:21:18.782829 [INFO] Total steps: 16
+10:21:18.782952 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:21:18.783563 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+10:21:18.783620 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+10:21:21.432158 [DEBUG] WDA POST /session completed (2648ms, status: 200)
+10:21:21.432216 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+10:21:21.432909 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:21.432976 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:21:21.433450 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:21.433931 [DEBUG] Executing step 0: stopApp
+10:21:21.434164 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:22.486532 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (1052ms, status: 200)
+10:21:22.486687 [DEBUG] Step 0 completed successfully (1052ms): stopApp
+10:21:22.487801 [DEBUG] Executing step 1: launchApp
+10:21:22.906774 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=["--flag" "true"] env=map[]
+10:21:22.906881 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:21:22.907593 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:22.907666 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:22.908100 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (0ms, status: 200)
+10:21:22.908125 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch body={"arguments":["--flag","true"],"bundleId":"com.kylebrowning.Landmarks"}
+10:21:24.434142 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch completed (1526ms, status: 200)
+10:21:24.434256 [DEBUG] Step 1 completed successfully (1946ms): launchApp
+10:21:24.435662 [DEBUG] Executing step 2: assertVisible: text="Featured"
+10:21:24.570839 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+10:21:24.570859 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text
+10:21:24.708424 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text completed (137ms, status: 404)
+10:21:24.708505 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Featured' OR value ==[c] 'Featured')"}
+10:21:24.809859 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (101ms, status: 200)
+10:21:24.809952 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/text
+10:21:24.809984 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/name
+10:21:24.810011 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/rect
+10:21:24.810041 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/displayed
+10:21:24.854223 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/text completed (44ms, status: 200)
+10:21:24.899930 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/name completed (89ms, status: 200)
+10:21:24.943983 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/rect completed (134ms, status: 200)
+10:21:24.991876 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-F381-010000000000/displayed completed (181ms, status: 200)
+10:21:24.991989 [DEBUG] Step 2 completed successfully (556ms): assertVisible: text="Featured"
+10:21:24.993486 [DEBUG] Executing step 3: tapOn: text="Lake Tahoe"
+10:21:24.994461 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+10:21:24.994518 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Lake Tahoe' OR value ==[c...
+10:21:24.994557 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Lake Tahoe' OR valu...
+10:21:24.994591 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Lake Tahoe')`]"}
+10:21:25.038558 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (44ms, status: 404)
+10:21:25.082940 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (88ms, status: 404)
+10:21:25.124602 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (130ms, status: 404)
+10:21:25.166855 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (172ms, status: 404)
+10:21:25.167166 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label == 'Lake Tahoe' OR value == 'Lake Tahoe')"}
+10:21:25.257311 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (90ms, status: 200)
+10:21:25.257402 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/name
+10:21:25.257443 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/rect
+10:21:25.257492 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/text
+10:21:25.257548 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/displayed
+10:21:25.301002 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/name completed (43ms, status: 200)
+10:21:25.344038 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/rect completed (86ms, status: 200)
+10:21:25.384991 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/text completed (127ms, status: 200)
+10:21:25.431033 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/AB000000-0000-0000-F381-010000000000/displayed completed (173ms, status: 200)
+10:21:25.431148 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap body={"x":133,"y":756}
+10:21:25.868882 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap completed (437ms, status: 200)
+10:21:25.868938 [DEBUG] Step 3 completed successfully (875ms): tapOn: text="Lake Tahoe"
+10:21:25.869666 [DEBUG] Executing step 4: tapOn: text="Favorite"
+10:21:25.870349 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:25.954914 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (84ms, status: 200)
+10:21:25.966637 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.054946 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (88ms, status: 200)
+10:21:26.065977 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.155309 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (89ms, status: 200)
+10:21:26.164710 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.250500 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (85ms, status: 200)
+10:21:26.258196 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.341281 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (83ms, status: 200)
+10:21:26.345323 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.430710 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (85ms, status: 200)
+10:21:26.434261 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.519834 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (85ms, status: 200)
+10:21:26.524112 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.611658 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (87ms, status: 200)
+10:21:26.616238 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.701120 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (84ms, status: 200)
+10:21:26.704548 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:26.789021 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (84ms, status: 200)
+10:21:26.793059 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text
+10:21:26.912739 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text completed (119ms, status: 404)
+10:21:26.912826 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+10:21:26.912842 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Favorite' OR value ==[c] ...
+10:21:26.912855 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Favorite' OR value ...
+10:21:26.912882 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Favorite')`]"}
+10:21:26.980922 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (68ms, status: 200)
+10:21:27.011809 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (98ms, status: 404)
+10:21:27.074276 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (161ms, status: 200)
+10:21:27.104551 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (191ms, status: 404)
+10:21:27.104633 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/name
+10:21:27.104657 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/rect
+10:21:27.104675 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/text
+10:21:27.104693 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/displayed
+10:21:27.135647 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/name completed (31ms, status: 200)
+10:21:27.166704 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/rect completed (62ms, status: 200)
+10:21:27.195706 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/text completed (91ms, status: 200)
+10:21:27.234479 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/BB000000-0000-0000-F381-010000000000/displayed completed (129ms, status: 200)
+10:21:27.234527 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap body={"x":364,"y":84}
+10:21:27.636605 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap completed (402ms, status: 200)
+10:21:27.636703 [DEBUG] Step 4 completed successfully (1767ms): tapOn: text="Favorite"
+10:21:27.638598 [DEBUG] Executing step 5: assertVisible: text="Unfavorite"
+10:21:27.639350 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Unfavorite' OR value ==[c] 'Unfavorite')"}
+10:21:27.673949 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (34ms, status: 404)
+10:21:27.674115 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/source
+10:21:28.056245 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/source completed (382ms, status: 200)
+10:21:28.109446 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Unfavorite' OR value ==[c] 'Unfavorite')"}
+10:21:28.179509 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (70ms, status: 200)
+10:21:28.179591 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/name
+10:21:28.179619 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/rect
+10:21:28.179668 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/text
+10:21:28.179710 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/displayed
+10:21:28.210932 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/name completed (31ms, status: 200)
+10:21:28.241482 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/rect completed (61ms, status: 200)
+10:21:28.270731 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/text completed (91ms, status: 200)
+10:21:28.309732 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/B8000000-0000-0000-F381-010000000000/displayed completed (130ms, status: 200)
+10:21:28.309820 [DEBUG] Step 5 completed successfully (671ms): assertVisible: text="Unfavorite"
+10:21:28.311893 [DEBUG] Executing step 6: launchApp (clearState)
+10:21:28.313267 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:29.353803 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (1040ms, status: 200)
+10:21:29.925386 [INFO] [wda] clearState com.kylebrowning.Landmarks: uninstalled and reinstalled from /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/maestro-runner-clearstate-3357870911/Landmarks.app (0.3s)
+10:21:30.142150 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+10:21:30.142254 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:21:30.143005 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:30.143076 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:30.146767 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (3ms, status: 200)
+10:21:30.146808 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:31.680862 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch completed (1534ms, status: 200)
+10:21:31.681093 [DEBUG] Step 6 completed successfully (3369ms): launchApp (clearState)
+10:21:31.683019 [DEBUG] Executing step 7: tapOn: text="Favorites"
+10:21:31.683889 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text
+10:21:31.835937 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text completed (152ms, status: 404)
+10:21:31.836052 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:31.906073 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (70ms, status: 200)
+10:21:31.907719 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:31.976654 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (68ms, status: 200)
+10:21:31.979322 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.046386 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (67ms, status: 200)
+10:21:32.048245 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.124187 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (75ms, status: 200)
+10:21:32.129658 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.201494 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (71ms, status: 200)
+10:21:32.202808 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.271402 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (68ms, status: 200)
+10:21:32.273795 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.343286 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (69ms, status: 200)
+10:21:32.347180 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.413461 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (66ms, status: 200)
+10:21:32.417957 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.484371 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (66ms, status: 200)
+10:21:32.488614 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.553161 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (64ms, status: 200)
+10:21:32.558077 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.627880 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (69ms, status: 200)
+10:21:32.630411 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot
+10:21:32.695611 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/screenshot completed (65ms, status: 200)
+10:21:32.699386 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Favorites')`]"}
+10:21:32.699475 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Favorites' OR value ==[c]...
+10:21:32.699517 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Favorites' OR value...
+10:21:32.699799 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+10:21:32.794086 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (94ms, status: 200)
+10:21:32.835771 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (136ms, status: 404)
+10:21:32.924465 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (225ms, status: 200)
+10:21:32.965927 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (266ms, status: 404)
+10:21:32.966130 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/name
+10:21:32.966171 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/rect
+10:21:32.966225 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/displayed
+10:21:32.966275 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/text
+10:21:33.012266 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/name completed (46ms, status: 200)
+10:21:33.055840 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/rect completed (89ms, status: 200)
+10:21:33.103314 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/displayed completed (137ms, status: 200)
+10:21:33.146167 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/1D000000-0000-0000-3683-010000000000/text completed (180ms, status: 200)
+10:21:33.146229 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap body={"x":201,"y":822}
+10:21:33.598936 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/tap completed (452ms, status: 200)
+10:21:33.599008 [DEBUG] Step 7 completed successfully (1915ms): tapOn: text="Favorites"
+10:21:33.599609 [DEBUG] Executing step 8: assertVisible: text="Landmarks you favorite will appear here."
+10:21:33.600019 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks you favorite will appear here.' OR valu...
+10:21:33.656517 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (56ms, status: 200)
+10:21:33.656571 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/name
+10:21:33.656589 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/rect
+10:21:33.656609 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/text
+10:21:33.656626 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/displayed
+10:21:33.679207 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/name completed (22ms, status: 200)
+10:21:33.703320 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/rect completed (46ms, status: 200)
+10:21:33.724921 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/text completed (68ms, status: 200)
+10:21:33.750889 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/C8000000-0000-0000-3683-010000000000/displayed completed (94ms, status: 200)
+10:21:33.750944 [DEBUG] Step 8 completed successfully (151ms): assertVisible: text="Landmarks you favorite will appear here."
+10:21:33.751289 [DEBUG] Executing step 9: stopApp
+10:21:33.751496 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:34.761747 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (1010ms, status: 200)
+10:21:34.761919 [DEBUG] Step 9 completed successfully (1010ms): stopApp
+10:21:34.763446 [DEBUG] Executing step 10: stopApp
+10:21:34.764087 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:34.765694 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (1ms, status: 200)
+10:21:34.765823 [DEBUG] Step 10 completed successfully (2ms): stopApp
+10:21:34.766746 [DEBUG] Executing step 11: launchApp
+10:21:35.160804 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+10:21:35.160856 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:21:35.161649 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:35.161739 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:35.162202 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (0ms, status: 200)
+10:21:35.162224 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:36.693977 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch completed (1531ms, status: 200)
+10:21:36.694120 [DEBUG] Step 11 completed successfully (1927ms): launchApp
+10:21:36.695538 [DEBUG] Executing step 12: assertVisible: text="Featured"
+10:21:36.698543 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text
+10:21:36.851940 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text completed (153ms, status: 404)
+10:21:36.852024 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Featured' OR value ==[c] 'Featured')"}
+10:21:36.951634 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (99ms, status: 200)
+10:21:36.951875 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/name
+10:21:36.951922 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/rect
+10:21:36.951977 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/text
+10:21:36.952062 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/displayed
+10:21:36.995954 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/name completed (44ms, status: 200)
+10:21:37.039692 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/rect completed (87ms, status: 200)
+10:21:37.084049 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/text completed (132ms, status: 200)
+10:21:37.131100 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-4284-010000000000/displayed completed (179ms, status: 200)
+10:21:37.131207 [DEBUG] Step 12 completed successfully (435ms): assertVisible: text="Featured"
+10:21:37.132497 [DEBUG] Executing step 13: killApp
+10:21:37.133397 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:38.208475 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (1075ms, status: 200)
+10:21:38.208646 [DEBUG] Step 13 completed successfully (1076ms): killApp
+10:21:38.210418 [DEBUG] Executing step 14: launchApp
+10:21:38.627000 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+10:21:38.627064 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:21:38.627813 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/appium/settings completed (0ms, status: 200)
+10:21:38.627891 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:38.628399 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/terminate completed (0ms, status: 200)
+10:21:38.628421 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+10:21:40.154624 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/wda/apps/launch completed (1526ms, status: 200)
+10:21:40.154895 [DEBUG] Step 14 completed successfully (1944ms): launchApp
+10:21:40.156434 [DEBUG] Executing step 15: assertVisible: text="Featured"
+10:21:40.157183 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text
+10:21:40.304574 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/alert/text completed (147ms, status: 404)
+10:21:40.304725 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element body={"using":"predicate string","value":"(label ==[c] 'Featured' OR value ==[c] 'Featured')"}
+10:21:40.404585 [DEBUG] WDA POST /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element completed (99ms, status: 200)
+10:21:40.404677 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/name
+10:21:40.404699 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/rect
+10:21:40.404741 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/text
+10:21:40.404829 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/displayed
+10:21:40.448897 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/name completed (44ms, status: 200)
+10:21:40.493118 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/rect completed (88ms, status: 200)
+10:21:40.536592 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/text completed (131ms, status: 200)
+10:21:40.588020 [DEBUG] WDA GET /session/8CA935E6-290D-4344-8EB9-3F3A9B7BB53B/element/87000000-0000-0000-D084-010000000000/displayed completed (183ms, status: 200)
+10:21:40.588071 [DEBUG] Step 15 completed successfully (431ms): assertVisible: text="Featured"
+10:21:40.589423 [INFO] === Flow completed: 10-lifecycle (status: passed, duration: 21805ms, passed: 16, failed: 0, skipped: 0) ===
+10:21:40.665363 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:21:40.665549 [INFO] Generating reports...
+10:21:40.666372 [INFO] Shutting down devices started by maestro-runner...
+10:21:40.666381 [INFO] Shutting down all tracked emulators
+10:21:40.666391 [INFO] Shutting down all tracked simulators

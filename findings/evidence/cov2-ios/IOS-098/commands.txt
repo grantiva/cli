@@ -1,0 +1,6 @@
+# fresh project copy $S/pdiff (stock grantiva.yml, simulator: cov2-ios-1, no .grantiva)
+# same $S/pdiff
+# uptime: 11:07  up 4 days,  2:34, 5 users, load averages: 12.46 11.57 16.34
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pdiff  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ stat -f "%m %N" .grantiva/baselines/*.png > $E/IOS-098/b-before.txt; sleep 1.2; $GRANTIVA diff approve Home; echo exit=$?; stat -f "%m %N" .grantiva/baselines/*.png > $E/IOS-098/b-after.txt; diff $E/IOS-098/b-before.txt $E/IOS-098/b-after.txt
+# exit=1 elapsed=1.269s -> approve-home.out / approve-home.err

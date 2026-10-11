@@ -1,0 +1,18 @@
+# uptime: 10:15  up 4 days,  1:42, 5 users, load averages: 18.54 61.73 94.69
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/coverage/08-scroll.yaml --keep-alive --ready-file $S/ka.ready --env LANDMARKS_SEED=many --env LANDMARKS_NOTE=x > ka.out 2> ka.err &
+# ready after 29s pid=79048: {
+  "finishedAt" : "2026-10-11T17:15:43Z",
+  "flows" : [
+    {
+      "name" : "08-scroll",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# uptime: 10:15  up 4 days,  1:43, 5 users, load averages: 15.22 57.46 92.19
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA hierarchy --udid $U1 > $E/IOS-037/h037.xml; echo exit=$?; grep -o "<XCUIElementTypeStaticText[^>]*label=\"x\"[^>]*>" $E/IOS-037/h037.xml; grep -o "label=\"Deep Links\"" $E/IOS-037/h037.xml | head -2
+# exit=0 elapsed=.681s -> hierarchy.out / hierarchy.err
+# kill -INT 79048; exited rc=130 after 1s

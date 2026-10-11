@@ -1,0 +1,122 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=2 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Capturing 2 screen(s), then running 1 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (1.2s)
+    ✓ takeScreenshot (210ms)
+    ✗ tapOn: text="No Such Element" (13.0s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+✗ screens 19.7s
+
+  [1/1] screens (grantiva.yml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (1.2s)
+    ✓ takeScreenshot (210ms)
+    ✗ tapOn: text="No Such Element" (13.0s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 19.7s
+
+  3 steps passing (19.7s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       6      3      1      2      19.7s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      19.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Running the flows in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (539ms)
+    ✓ assertVisible: text="Featured" (269ms)
+    ✓ takeScreenshot (77ms)
+    ✓ tapOn: text="Golden Gate Bridge" (879ms)
+    ✓ assertVisible: text="San Francisco, CA" (400ms)
+    ✓ assertVisible: text="Plan Visit" (324ms)
+    ✓ takeScreenshot (99ms)
+✓ 01-browse 7.2s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (539ms)
+    ✓ assertVisible: text="Featured" (269ms)
+    ✓ takeScreenshot (77ms)
+    ✓ tapOn: text="Golden Gate Bridge" (879ms)
+    ✓ assertVisible: text="San Francisco, CA" (400ms)
+    ✓ assertVisible: text="Plan Visit" (324ms)
+    ✓ takeScreenshot (99ms)
+✓ 01-browse 7.2s
+
+  8 steps passing (7.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       7.2s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       7.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+

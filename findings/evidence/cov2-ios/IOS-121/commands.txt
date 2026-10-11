@@ -1,0 +1,41 @@
+# uptime: 10:28  up 4 days,  1:56, 5 users, load averages: 124.37 42.32 53.06
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/*
+# exit=0 elapsed=.011s -> homes-before.out / homes-before.err
+# uptime: 10:28  up 4 days,  1:56, 5 users, load averages: 124.37 42.32 53.06
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U3 --json
+# exit=0 elapsed=.400s -> teardown.out / teardown.err
+# uptime: 10:28  up 4 days,  1:56, 5 users, load averages: 124.37 42.32 53.06
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/*
+# exit=0 elapsed=.010s -> homes-after-teardown.out / homes-after-teardown.err
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 117.70 43.61 53.40
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U3 --flow .maestro/01-browse.yaml
+# exit=0 elapsed=12.267s -> run2.out / run2.err
+# failure probe: lock a file inside the device home (chflags uchg) so removal fails
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 101.19 43.61 53.22
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ touch /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/devices/E7A72E2F-ACE1-416B-9194-7DFC126FC6D3/cov2-locked; chflags uchg /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/devices/E7A72E2F-ACE1-416B-9194-7DFC126FC6D3/cov2-locked; ls -lO /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/devices/E7A72E2F-ACE1-416B-9194-7DFC126FC6D3/cov2-locked
+# exit=0 elapsed=.017s -> lock.out / lock.err
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 101.19 43.61 53.22
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U3 --json
+# exit=1 elapsed=.391s -> teardown-locked.out / teardown-locked.err
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 101.19 43.61 53.22
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ chflags nouchg /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/devices/E7A72E2F-ACE1-416B-9194-7DFC126FC6D3/cov2-locked; ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/*
+# exit=0 elapsed=.013s -> unlock.out / unlock.err
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 101.19 43.61 53.22
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U3 --flow .maestro/01-browse.yaml
+# exit=0 elapsed=11.723s -> run3.out / run3.err
+# uptime: 10:29  up 4 days,  1:56, 5 users, load averages: 91.61 43.44 53.05
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator delete --name "cov2-ios-3 iPhone 17"
+# exit=0 elapsed=3.449s -> delete.out / delete.err
+# uptime: 10:29  up 4 days,  1:57, 5 users, load averages: 86.12 43.10 52.88
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/*; xcrun simctl list devices | grep -c cov2-ios-3
+# exit=1 elapsed=.135s -> homes-after-delete.out / homes-after-delete.err

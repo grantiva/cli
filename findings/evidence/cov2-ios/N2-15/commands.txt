@@ -1,0 +1,16 @@
+# uptime: 12:26  up 4 days,  3:54, 5 users, load averages: 13.98 55.37 58.03
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ timeout -s INT 20 $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --quiet; echo exit=$?
+# exit=0 elapsed=20.125s -> fg-quiet.out / fg-quiet.err
+# uptime: 12:27  up 4 days,  3:54, 5 users, load averages: 13.07 51.20 56.43
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I $S/fg.py int $GRANTIVA $U1
+# exit=0 elapsed=16.924s -> fg-int.out / fg-int.err
+# uptime: 12:27  up 4 days,  3:55, 5 users, load averages: 12.12 48.50 55.34
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I $S/fg.py stop $GRANTIVA $U1
+# exit=0 elapsed=17.088s -> fg-stop.out / fg-stop.err
+# uptime: 12:28  up 4 days,  3:55, 5 users, load averages: 10.44 46.35 54.45
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I $S/fg.py int $GRANTIVA $U1 --json
+# exit=0 elapsed=16.907s -> fg-json-int.out / fg-json-int.err

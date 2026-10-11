@@ -1,0 +1,9 @@
+# project $S/p132: grantiva.yml = stock config without flows (5 screens only)
+# uptime: 10:56  up 4 days,  2:23, 5 users, load averages: 12.34 12.94 22.21
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p132  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cat grantiva.yml
+# exit=0 elapsed=.009s -> config.out / config.err
+# uptime: 10:56  up 4 days,  2:23, 5 users, load averages: 12.34 12.94 22.21
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p132  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ rm -rf out; $GRANTIVA run --no-build --simulator $U1 --snapshot full --report-dir out; echo exit=$?; find out -name "*.png" | grep -v allure | wc -l; find out -name "*.png" | grep -v allure | sort | head -30
+# exit=0 elapsed=23.826s -> run.out / run.err

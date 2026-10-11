@@ -1,0 +1,26 @@
+# project $S/pn12: stock config with simulator: cov2-ios-2; runner start session on cov2-ios-1 from that dir
+# uptime: 11:56  up 4 days,  3:24, 5 users, load averages: 14.34 13.63 21.01
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12
+$ python3 -I $S/mcp/client.py session/requests.json session/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12 -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12 
+# elapsed=16s -> session/transcript.txt, stdout.raw, server.stderr
+# uptime: 11:56  up 4 days,  3:24, 5 users, load averages: 11.90 13.13 20.70
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build --simulator $U1
+# exit=0 elapsed=22.025s -> cli-capture.out / cli-capture.err
+# uptime: 11:57  up 4 days,  3:24, 5 users, load averages: 59.88 23.85 24.32
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff compare
+# exit=1 elapsed=.024s -> compare.out / compare.err
+# session/: the vrt call 10 s after runner start still got 'session is starting' (host load); session2/ retries; cli-capture/compare re-run after it
+# uptime: 11:57  up 4 days,  3:24, 5 users, load averages: 69.75 27.15 25.49
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12
+$ python3 -I $S/mcp/client.py session2/requests.json session2/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12 -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12 
+# elapsed=52s -> session2/transcript.txt, stdout.raw, server.stderr
+# uptime: 11:58  up 4 days,  3:25, 5 users, load averages: 102.98 45.90 32.70
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build --simulator $U1
+# exit=0 elapsed=22.004s -> cli-capture2.out / cli-capture2.err
+# uptime: 11:58  up 4 days,  3:26, 5 users, load averages: 98.64 48.81 34.07
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff compare
+# exit=0 elapsed=.261s -> compare2.out / compare2.err

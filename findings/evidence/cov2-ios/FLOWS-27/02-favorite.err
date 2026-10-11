@@ -1,0 +1,84 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=BEE381AC-0D32-4D84-B304-068815F08B2F screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: BEE381AC-0D32-4D84-B304-068815F08B2F
+Simulator booted: cov2-ios-2 (BEE381AC-0D32-4D84-B304-068815F08B2F)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/02-favorite
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios27.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8819
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✓ tapOn: text="Lake Tahoe" (1.4s)
+    ✓ tapOn: text="Favorite" (1.5s)
+    ✓ assertVisible: text="Unfavorite" (448ms)
+    ✓ tapOn: text="Landmarks" (616ms)
+    ✓ tapOn: text="Favorites" (1.5s)
+    ✓ assertVisible: text="Lake Tahoe" (186ms)
+    ✓ takeScreenshot (68ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (659ms)
+    ✓ tapOn: text="Remove" (1.4s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (191ms)
+    ✓ takeScreenshot (68ms)
+✓ 02-favorite 17.4s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: cov2-ios-2 (ios 27.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✓ tapOn: text="Lake Tahoe" (1.4s)
+    ✓ tapOn: text="Favorite" (1.5s)
+    ✓ assertVisible: text="Unfavorite" (448ms)
+    ✓ tapOn: text="Landmarks" (616ms)
+    ✓ tapOn: text="Favorites" (1.5s)
+    ✓ assertVisible: text="Lake Tahoe" (186ms)
+    ✓ takeScreenshot (68ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (659ms)
+    ✓ tapOn: text="Remove" (1.4s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (191ms)
+    ✓ takeScreenshot (68ms)
+✓ 02-favorite 17.4s
+
+  13 steps passing (17.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      17.4s  cov2-ios-2 (ios 27.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      17.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/02-favorite
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/02-favorite/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/02-favorite/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/02-favorite/allure-results
+
+  Built by Grantiva
+

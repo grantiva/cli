@@ -1,0 +1,88 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": ".maestro/99-crash.yaml",
+  "device": {
+    "id": "7E846901-F93F-4220-A153-7043061033D7",
+    "name": "cov2-ios-1",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T11:49:09.307394-07:00",
+  "endTime": "2026-10-11T11:49:14.14468-07:00",
+  "duration": 4837,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T11:49:11.904865-07:00",
+      "endTime": "2026-10-11T11:49:13.831865-07:00",
+      "duration": 1927,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-11T11:49:13.834263-07:00",
+      "endTime": "2026-10-11T11:49:13.985263-07:00",
+      "duration": 151,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1039,
+    "p50": 151,
+    "p95": 1927,
+    "max": 1927,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

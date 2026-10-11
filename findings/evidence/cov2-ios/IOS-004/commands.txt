@@ -1,0 +1,16 @@
+# uptime: 10:02  up 4 days,  1:29, 5 users, load averages: 414.33 176.45 100.21
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-4 R26 iPhone 17" --runtime 26.0
+# exit=0 elapsed=24.031s -> r26.out / r26.err
+# uptime: 10:02  up 4 days,  1:30, 5 users, load averages: 373.26 185.63 105.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-4 R99 iPhone 17" --runtime 99.9
+# exit=1 elapsed=.215s -> r99.out / r99.err
+# uptime: 10:02  up 4 days,  1:30, 5 users, load averages: 373.26 185.63 105.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl list devices | grep -E "^-- |cov2-ios-4"
+# exit=0 elapsed=.168s -> simctl.out / simctl.err
+# uptime: 10:02  up 4 days,  1:30, 5 users, load averages: 373.26 185.63 105.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator delete --name "cov2-ios-4 R26 iPhone 17"
+# exit=0 elapsed=3.459s -> delete.out / delete.err

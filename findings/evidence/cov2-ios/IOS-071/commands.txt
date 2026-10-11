@@ -1,0 +1,4 @@
+# uptime: 10:53  up 4 days,  2:20, 5 users, load averages: 13.87 13.26 24.29
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ rm -rf .grantiva/captures out071; $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/02-exact-negative.yaml --report-dir out071; echo run_exit=$?; echo "-- var/folders hits:"; grep -rl /var/folders out071; grep -rho "\"sourceFile\" *: *\"[^\"]*\"" out071 | sort -u; grep -o "file=\"[^\"]*\"" out071/junit-report.xml | sort -u
+# exit=0 elapsed=24.103s -> run.out / run.err

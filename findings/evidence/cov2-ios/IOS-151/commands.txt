@@ -1,0 +1,9 @@
+# cwd $S/noconf holds only a copy of 21-system-alert-maps.yaml (no grantiva.yml, so the flow appId com.apple.Maps is used)
+# uptime: 10:23  up 4 days,  1:51, 5 users, load averages: 10.12 19.76 56.37
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/noconf  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --simulator $U1 --flow 21-system-alert-maps.yaml --report-dir $S/reports/IOS-151
+# exit=1 elapsed=.018s -> maps.out / maps.err
+# uptime: 10:24  up 4 days,  1:51, 5 users, load averages: 9.48 19.30 55.78
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/noconf  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl privacy $U1 reset location com.apple.Maps; $GRANTIVA run --no-build --simulator $U1 --flow 21-system-alert-maps.yaml --report-dir $S/reports/IOS-151
+# exit=0 elapsed=19.359s -> maps-nobuild.out / maps-nobuild.err

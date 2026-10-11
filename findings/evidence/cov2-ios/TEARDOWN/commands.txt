@@ -1,0 +1,17 @@
+# uptime: 12:53  up 4 days,  4:21, 5 users, load averages: 5.22 11.34 24.98
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ uptime; $GRANTIVA simulator sessions; ls /tmp/grantiva-sessions; ps -axo pid,command | grep -E "7E846901|BEE381AC" | grep -v grep | grep -vE "launchd_sim|Containers/Bundle" | cut -c1-120; echo end
+# exit=0 elapsed=.208s -> before.out / before.err
+# not using teardown --session-id cov2-ios: the session also holds the user's iPhone 18 Pro (booted by MCP-031, see B2-K37.2), which must not be touched; the two slice simulators are deleted by name instead
+# uptime: 12:53  up 4 days,  4:21, 5 users, load averages: 5.06 11.10 24.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator delete --name cov2-ios-1
+# exit=0 elapsed=3.474s -> delete-1.out / delete-1.err
+# uptime: 12:53  up 4 days,  4:21, 5 users, load averages: 5.06 11.10 24.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator delete --name cov2-ios-2
+# exit=0 elapsed=3.440s -> delete-2.out / delete-2.err
+# uptime: 12:53  up 4 days,  4:21, 5 users, load averages: 5.13 11.01 24.63
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ echo simctl_count=$(xcrun simctl list devices | grep -c cov2-ios); ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/* 2>&1; for u in 7E846901-F93F-4220-A153-7043061033D7 BEE381AC-0D32-4D84-B304-068815F08B2F; do ls $GRANTIVA_RUNNER_HOME/locks/$u.lock 2>&1; done; echo locks_total=$(ls $GRANTIVA_RUNNER_HOME/locks | wc -l); ls $GRANTIVA_RUNNER_HOME/locks | grep -c -E "cov2|7E846901|BEE381AC"; ls /tmp/grantiva-sessions; $GRANTIVA simulator sessions; python3 -I -c "import json,os; print([d[\"name\"] for d in json.load(open(os.path.expanduser(\"~/.grantiva/simulator-capacity/created.json\"))) if d[\"name\"].startswith(\"cov2\")])"
+# exit=0 elapsed=.312s -> after.out / after.err

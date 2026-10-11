@@ -1,0 +1,16 @@
+# uptime: 12:38  up 4 days,  4:06, 5 users, load averages: 9.97 15.00 31.75
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ( GRANTIVA_SESSION_ID=cov2-d221 $GRANTIVA simulator ensure --name cov2-ios-3 --device-type "iPhone 17" > $E/D2-21/a.out 2> $E/D2-21/a.err; echo a=$? ) & ( GRANTIVA_SESSION_ID=cov2-d221 $GRANTIVA simulator ensure --name cov2-ios-3 --device-type "iPhone 17" > $E/D2-21/b.out 2> $E/D2-21/b.err; echo b=$? ) & wait; echo count=$(xcrun simctl list devices | grep -c "cov2-ios-3 ")
+# exit=0 elapsed=22.836s -> concurrent.out / concurrent.err
+# uptime: 12:38  up 4 days,  4:06, 5 users, load averages: 68.30 27.65 35.88
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I -c "import json,os; [print(d[\"name\"], d[\"udid\"]) for d in json.load(open(os.path.expanduser(\"~/.grantiva/simulator-capacity/created.json\"))) if d[\"name\"].startswith(\"cov2\")]"
+# exit=0 elapsed=.165s -> ledger.out / ledger.err
+# uptime: 12:38  up 4 days,  4:06, 5 users, load averages: 68.30 27.65 35.88
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ GRANTIVA_SESSION_ID=cov2-d221 $GRANTIVA simulator teardown --session-id cov2-d221 --json
+# exit=0 elapsed=6.831s -> teardown.out / teardown.err
+# uptime: 12:39  up 4 days,  4:06, 5 users, load averages: 97.57 35.48 38.58
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl list devices | grep -c "cov2-ios-3 "; python3 -I -c "import json,os; print([d[\"name\"] for d in json.load(open(os.path.expanduser(\"~/.grantiva/simulator-capacity/created.json\"))) if d[\"name\"].startswith(\"cov2\")])"
+# exit=0 elapsed=.149s -> after.out / after.err

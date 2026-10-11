@@ -1,0 +1,272 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=5 flows=12
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Capturing 5 screen(s), then running 12 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (687ms)
+    ✓ takeScreenshot (206ms)
+    ✓ tapOn: text="Favorites" (981ms)
+    ✓ waitForAnimationToEnd (886ms)
+    ✓ takeScreenshot (148ms)
+    ✓ tapOn: text="Deep Links" (535ms)
+    ✓ waitForAnimationToEnd (731ms)
+    ✓ takeScreenshot (82ms)
+    ✓ tapOn: text="Landmarks" (844ms)
+    ✓ waitForAnimationToEnd (747ms)
+    ✓ tapOn: text="Lakes" (951ms)
+    ✓ waitForAnimationToEnd (630ms)
+    ✓ takeScreenshot (63ms)
+    ✓ tapOn: text="Landmarks" (685ms)
+    ✓ waitForAnimationToEnd (1.2s)
+    ✓ tapOn: text="Golden Gate Bridge" (976ms)
+    ✓ waitForAnimationToEnd (854ms)
+    ✓ assertVisible: text="Plan Visit" (205ms)
+    ✓ waitForAnimationToEnd (295ms)
+    ✓ takeScreenshot (201ms)
+✓ screens 16.5s
+
+  [1/1] screens (grantiva.yml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (687ms)
+    ✓ takeScreenshot (206ms)
+    ✓ tapOn: text="Favorites" (981ms)
+    ✓ waitForAnimationToEnd (886ms)
+    ✓ takeScreenshot (148ms)
+    ✓ tapOn: text="Deep Links" (535ms)
+    ✓ waitForAnimationToEnd (731ms)
+    ✓ takeScreenshot (82ms)
+    ✓ tapOn: text="Landmarks" (844ms)
+    ✓ waitForAnimationToEnd (747ms)
+    ✓ tapOn: text="Lakes" (951ms)
+    ✓ waitForAnimationToEnd (630ms)
+    ✓ takeScreenshot (63ms)
+    ✓ tapOn: text="Landmarks" (685ms)
+    ✓ waitForAnimationToEnd (1.2s)
+    ✓ tapOn: text="Golden Gate Bridge" (976ms)
+    ✓ waitForAnimationToEnd (854ms)
+    ✓ assertVisible: text="Plan Visit" (205ms)
+    ✓ waitForAnimationToEnd (295ms)
+    ✓ takeScreenshot (201ms)
+✓ screens 16.5s
+
+  21 steps passing (16.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✓ PASS      21     21      0      0      16.5s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      21     21      0      0      16.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Running the flows in one GrantivaAgent session: .maestro/coverage/02-exact-negative.yaml, .maestro/02-favorite.yaml, .maestro/03-edit.yaml, .maestro/04-discard.yaml, .maestro/05-category.yaml, .maestro/06-visit.yaml, .maestro/07-deeplink.yaml, .maestro/08-caching.yaml, .maestro/09-seed-empty.yaml, .maestro/10-seed-many.yaml, .maestro/11-slow.yaml, .maestro/12-quote-label.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 12 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/12] 02-exact-negative (02-exact-negative.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Golden Gate.*" (960ms)
+    ✗ assertVisible: text="Golden Gate.*", exact=true (12.5s)
+      ╰─ Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+✗ 02-exact-negative 18.7s
+
+  [1/12] 02-exact-negative (.maestro/coverage/02-exact-negative.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Golden Gate.*" (960ms)
+    ✗ assertVisible: text="Golden Gate.*", exact=true (12.5s)
+      ╰─ Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+✗ 02-exact-negative 18.7s
+
+  [2/12] 02-favorite (.maestro/02-favorite.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Lake Tahoe" (skipped)
+    - tapOn: text="Favorite" (skipped)
+    - assertVisible: text="Unfavorite" (skipped)
+    - tapOn: text="Landmarks" (skipped)
+    - tapOn: text="Favorites" (skipped)
+    - assertVisible: text="Lake Tahoe" (skipped)
+    - takeScreenshot (skipped)
+    - swipe: LEFT from text="Lake Tahoe" (skipped)
+    - tapOn: text="Remove" (skipped)
+    - assertNotVisible: text="Lake Tahoe" (skipped)
+    - assertVisible: text="Landmarks you favorite will appear here." (skipped)
+    - takeScreenshot (skipped)
+
+  [3/12] 03-edit (.maestro/03-edit.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - tapOn: text="Edit Landmark" (skipped)
+    - assertVisible: text="Edit Landmark" (skipped)
+    - tapOn: text="Name" (skipped)
+    - inputText: " Renamed" (skipped)
+    - tapOn: text="Done" (skipped)
+    - assertVisible: text="Golden Gate Bridge Renamed" (skipped)
+    - takeScreenshot (skipped)
+
+  [4/12] 04-discard (.maestro/04-discard.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - tapOn: text="Edit Landmark" (skipped)
+    - tapOn: text="Location" (skipped)
+    - inputText: "X" (skipped)
+    - tapOn: text="Cancel" (skipped)
+    - assertVisible: text="You have unsaved changes that will be lost." (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Keep Editing" (skipped)
+    - assertVisible: text="Edit Landmark" (skipped)
+    - tapOn: text="Cancel" (skipped)
+    - tapOn: text="Discard" (skipped)
+    - assertVisible: text="Deep Links" (skipped)
+
+  [5/12] 05-category (.maestro/05-category.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Lakes" (skipped)
+    - assertVisible: text="Lake Tahoe" (skipped)
+    - assertVisible: text="Mono Lake" (skipped)
+    - assertNotVisible: text="Golden Gate Bridge" (skipped)
+    - takeScreenshot (skipped)
+
+  [6/12] 06-visit (.maestro/06-visit.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Half Dome" (skipped)
+    - tapOn: text="Plan Visit" (skipped)
+    - assertVisible: text="Visit Scheduled!" (skipped)
+    - assertVisible: text="You're all set to visit Half Dome." (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Done" (skipped)
+    - assertVisible: text="Half Dome" (skipped)
+
+  [7/12] 07-deeplink (.maestro/07-deeplink.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - tapOn: text="landmarks://category/lakes" (skipped)
+    - assertVisible: text="Mono Lake" (skipped)
+    - takeScreenshot (skipped)
+
+  [8/12] 08-caching (.maestro/08-caching.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - tapOn: text="Caching Demo" (skipped)
+    - assertVisible: text="Cache Policy" (skipped)
+    - tapOn: text="Fetch with Policy" (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Clear Cache" (skipped)
+
+  [9/12] 09-seed-empty (.maestro/09-seed-empty.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - assertVisible: text="No landmarks yet" (skipped)
+    - takeScreenshot (skipped)
+
+  [10/12] 10-seed-many (.maestro/10-seed-many.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - scroll: DOWN (skipped)
+    - scroll: DOWN (skipped)
+    - scroll: DOWN (skipped)
+    - scroll: DOWN (skipped)
+    - assertVisible: text="Landmark 30" (skipped)
+    - takeScreenshot (skipped)
+
+  [11/12] 11-slow (.maestro/11-slow.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - tapOn: text="Slow Screen" (skipped)
+    - assertVisible: text="Loading…" (skipped)
+    - extendedWaitUntil: visible text="Loaded after delay" (skipped)
+    - takeScreenshot (skipped)
+
+  [12/12] 12-quote-label (.maestro/12-quote-label.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - tapOn: text="Mountains" (skipped)
+    - tapOn: text="Mount "Denali"" (skipped)
+    - assertVisible: text="Alaska" (skipped)
+    - takeScreenshot (skipped)
+
+  2 steps passing (18.7s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-exact-negative              ✗ FAIL       3      2      1      0      18.7s  cov2-ios-1 (ios 26.0 Simula...
+  02-favorite                    - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  03-edit                        - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  04-discard                     - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  05-category                    - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  06-visit                       - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  07-deeplink                    - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  08-caching                     - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  09-seed-empty                  - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  10-seed-many                   - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  11-slow                        - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+  12-quote-label                 - SKIP       0      0      0      0        0ms  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                            0/12       3      2      1      0      18.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/failure-1791747277.png
+Error: Runner failed (exit 1): 02-exact-negative: assertVisible: text="Golden Gate.*", exact=true: Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
