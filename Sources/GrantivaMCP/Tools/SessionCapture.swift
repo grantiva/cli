@@ -8,7 +8,7 @@ import MCP
 /// second WebDriverAgent on a device the session already drives, so the device
 /// lease refuses it. With a live session the capture goes through the
 /// session instead: the app is relaunched on the session's device, each
-/// screen's steps run through the session's driver, and the platform
+/// screen's steps run through the session's driver, and the driver's
 /// screenshot is written where `diff capture` writes it.
 @available(macOS 15, *)
 extension VRTTools {
@@ -19,14 +19,16 @@ extension VRTTools {
     /// The longest wait for the screen to stop changing after an action and
     /// before each screenshot, as in the generated runner flow.
     static let settleTimeout = 5.0
-    /// How long an `assert_visible` or `assert_not_visible` step waits.
-    static let assertionTimeout = 5.0
+    /// How long a tap, `assert_visible` or `assert_not_visible` step waits
+    /// for its element.
+    static let lookupTimeout = 5.0
 
     /// Steps only the runner can run; nil when the session's driver can.
     static func runnerOnlyStep(_ step: GrantivaConfig.Screen.Step) -> String? {
         if step.runFlow != nil { return "runFlow" }
         if step.swipeFrom != nil { return "a swipe from an element" }
         if step.swipeStart != nil || step.swipeEnd != nil { return "a swipe between points" }
+        if step.swipeDuration != nil { return "a swipe with a duration" }
         return nil
     }
 
@@ -44,7 +46,7 @@ extension VRTTools {
         session: RunnerSessionInfo,
         driver attach: @Sendable () async throws -> DriverClient,
         device: any DevicePlatform,
-        outputDir: String,
+        projectDirectory: URL,
         pause: @escaping @Sendable (Double) async -> Void = { try? await Task.sleep(for: .seconds($0)) }
     ) async -> CallTool.Result {
         guard let config else { return captureFailure(missingConfig) }
@@ -83,6 +85,9 @@ extension VRTTools {
 
         let udid = session.udid
         let start = Date()
+        // Written under the project, reported relative to it as `diff capture --json` does.
+        let relativeDir = captureDirectory(for: platform)
+        let outputDir = projectDirectory.appendingPathComponent(relativeDir).path
         do {
             let booted = try await device.bootDevice(named: udid)
             let target = CaptureSimulatorTarget(
@@ -106,8 +111,14 @@ extension VRTTools {
             await device.restoreAfterCapture(deviceID: udid)
 
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: target.pixelDimensions)
+            let reported = captures.map {
+                ScreenCapture(
+                    screenName: $0.screenName, path: "\(relativeDir)/\(ScreenArtifact.fileName(for: $0.screenName))",
+                    sizeBytes: $0.sizeBytes, timestamp: $0.timestamp, steps: $0.steps
+                )
+            }
             let result = CaptureResult(
-                screens: captures, directory: outputDir, duration: Date().timeIntervalSince(start), simulator: target
+                screens: reported, directory: relativeDir, duration: Date().timeIntervalSince(start), simulator: target
             )
             return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
         } catch let failure as StepFailure {
@@ -146,8 +157,12 @@ extension VRTTools {
             }
             await settle(driver: driver, timeout: settleTimeout, pause: pause)
             let path = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
-            try await device.screenshot(deviceID: udid, to: path)
-            let size = (try? FileManager.default.attributesOfItem(atPath: path)[.size] as? Int) ?? 0
+            // From the driver, as the runner's takeScreenshot does: the
+            // platform screenshot (simctl) differs in its corner pixels, so
+            // it would not compare clean against runner-made baselines.
+            let image = try await driver.screenshot()
+            try image.write(to: URL(fileURLWithPath: path))
+            let size = image.count
             captures.append(ScreenCapture(screenName: screen.name, path: path, sizeBytes: size, steps: results))
         }
         return captures
@@ -158,7 +173,14 @@ extension VRTTools {
         _ step: GrantivaConfig.Screen.Step, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
     ) async throws {
         if let label = step.tap {
-            try await driver.tapByLabel(label)
+            let selector = Selector(pattern: label, byId: step.tapById, exact: step.tapExact)
+            guard let element = try await waitForElement(selector, driver: driver, pause: pause) else {
+                throw GrantivaError.elementNotFound(label)
+            }
+            guard let point = center(of: element) else {
+                throw GrantivaError.notFound("\"\(label)\" has no frame to tap.")
+            }
+            try await driver.tapByCoordinate(point.x, point.y)
             await settle(driver: driver, timeout: settleTimeout, pause: pause)
         }
         if let direction = step.swipe {
@@ -176,41 +198,101 @@ extension VRTTools {
             await settle(driver: driver, timeout: seconds, pause: pause)
         }
         if let label = step.assertVisible {
-            guard try await waitFor(label, visible: true, byId: step.assertVisibleById, exact: step.assertVisibleExact, driver: driver, pause: pause) else {
-                throw GrantivaError.notFound("\"\(label)\" is not visible after \(Int(assertionTimeout))s.")
+            let selector = Selector(pattern: label, byId: step.assertVisibleById, exact: step.assertVisibleExact)
+            guard try await waitForElement(selector, driver: driver, pause: pause) != nil else {
+                throw GrantivaError.notFound("\"\(label)\" is not visible after \(Int(lookupTimeout))s.")
             }
         }
         if let label = step.assertNotVisible {
-            guard try await waitFor(label, visible: false, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, driver: driver, pause: pause) else {
-                throw GrantivaError.notFound("\"\(label)\" is still visible after \(Int(assertionTimeout))s.")
+            let selector = Selector(pattern: label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact)
+            guard try await waitForAbsence(selector, driver: driver, pause: pause) else {
+                throw GrantivaError.notFound("\"\(label)\" is still visible after \(Int(lookupTimeout))s.")
             }
         }
     }
 
-    /// Polls the hierarchy until `label` is (or is not) on screen.
-    private static func waitFor(
-        _ label: String, visible: Bool, byId: Bool, exact: Bool, driver: DriverClient,
-        pause: @escaping @Sendable (Double) async -> Void
-    ) async throws -> Bool {
-        let deadline = Date().addingTimeInterval(assertionTimeout)
+    /// A step's element selector, matched as grantiva-runner matches it:
+    /// text is a case-insensitive regex over the whole value (literal
+    /// equality also matches); `exact` is the whole value in its own case;
+    /// an id is the accessibility identifier.
+    struct Selector {
+        let pattern: String
+        let byId: Bool
+        let exact: Bool
+
+        func matches(_ element: [String: Any]) -> Bool {
+            if byId {
+                if let identifier = element["identifier"] as? String, SelectorMatch.id(pattern, identifier) { return true }
+                // WDA reports the accessibility identifier as `name`; the
+                // runner looks it up with an exact name predicate.
+                return element["name"] as? String == pattern
+            }
+            return ["label", "name", "value", "text"].contains { key in
+                guard let value = element[key] as? String, !value.isEmpty else { return false }
+                return exact ? SelectorMatch.exactText(pattern, value) : SelectorMatch.text(pattern, value)
+            }
+        }
+    }
+
+    /// The first visible element `selector` matches, waiting
+    /// up to `lookupTimeout` for it to appear. Of several, one written in
+    /// the selector's own case wins.
+    static func waitForElement(
+        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+    ) async throws -> [String: Any]? {
+        let deadline = Date().addingTimeInterval(lookupTimeout)
         while true {
-            let found = contains(try await driver.hierarchy(), label: label, byId: byId, exact: exact)
-            if found == visible { return true }
+            let found = visibleMatches(selector, in: try await driver.hierarchy())
+            let preferred = found.first { element in
+                ["label", "name", "value", "text"].contains { element[$0] as? String == selector.pattern }
+            } ?? found.first
+            if let preferred { return preferred }
+            if Date() >= deadline { return nil }
+            await pause(0.25)
+        }
+    }
+
+    /// Whether no visible element matches `selector`, waiting up to
+    /// `lookupTimeout` for the last one to go.
+    static func waitForAbsence(
+        _ selector: Selector, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+    ) async throws -> Bool {
+        let deadline = Date().addingTimeInterval(lookupTimeout)
+        while true {
+            if visibleMatches(selector, in: try await driver.hierarchy()).isEmpty { return true }
             if Date() >= deadline { return false }
             await pause(0.25)
         }
     }
 
-    /// Whether any element carries `label`: by identifier, or by text, which
-    /// matches the whole value when `exact` and any part of it otherwise.
-    static func contains(_ element: [String: Any], label: String, byId: Bool, exact: Bool) -> Bool {
-        let keys = byId ? ["identifier", "name"] : ["label", "name", "value", "text"]
-        for key in keys {
-            guard let value = element[key] as? String, !value.isEmpty else { continue }
-            if value == label || (!byId && !exact && value.contains(label)) { return true }
+    /// Matching elements in document order, skipping hidden ones and the
+    /// application element (its label is the app's name).
+    static func visibleMatches(_ selector: Selector, in element: [String: Any]) -> [[String: Any]] {
+        var found: [[String: Any]] = []
+        let isApplication = element["type"] as? String == "XCUIElementTypeApplication"
+        if !isApplication, element["visible"] as? Bool != false, selector.matches(element) {
+            found.append(element)
         }
-        let children = element["children"] as? [[String: Any]] ?? []
-        return children.contains { contains($0, label: label, byId: byId, exact: exact) }
+        for child in element["children"] as? [[String: Any]] ?? [] {
+            found += visibleMatches(selector, in: child)
+        }
+        return found
+    }
+
+    /// The middle of an element's frame, in the unit the driver taps in.
+    static func center(of element: [String: Any]) -> (x: Double, y: Double)? {
+        guard let frame = element["frame"] as? [String: Any],
+              let x = number(frame["x"]), let y = number(frame["y"]),
+              let width = number(frame["width"]), let height = number(frame["height"]) else { return nil }
+        return (x + width / 2, y + height / 2)
+    }
+
+    private static func number(_ value: Any?) -> Double? {
+        switch value {
+        case let number as NSNumber: return number.doubleValue
+        case let string as String: return Double(string)
+        default: return nil
+        }
     }
 
     /// Waits until two consecutive driver screenshots match, for at most
@@ -233,5 +315,47 @@ extension VRTTools {
 
     private static func captureFailure(_ message: String) -> CallTool.Result {
         CallTool.Result(content: [.text(text: "Capture failed:\n\(message)", annotations: nil, _meta: nil)], isError: true)
+    }
+}
+
+/// grantiva-runner's selector text rules, so a capture through the session
+/// finds the same elements a `diff capture` run does.
+enum SelectorMatch {
+    /// A text selector: a regex that must match the whole value, ignoring
+    /// case, with `.` matching line breaks; a value equal to the pattern
+    /// matches too, and each value is also tried with line breaks as spaces.
+    /// A pattern that is not a valid regex matches literally.
+    static func text(_ pattern: String, _ value: String) -> Bool {
+        guard !pattern.isEmpty else { return false }
+        let flat = value.replacingOccurrences(of: "\n", with: " ")
+        if value == pattern || flat == pattern { return true }
+        let regex = wholeRegex(pattern)
+        return wholeMatch(regex, value) || wholeMatch(regex, flat)
+    }
+
+    /// `exact: true`: the whole value in the selector's own case.
+    static func exactText(_ pattern: String, _ value: String) -> Bool {
+        value == pattern || value.replacingOccurrences(of: "\n", with: " ") == pattern
+    }
+
+    /// An id selector: the same regex over the whole identifier, or over
+    /// the part after its last `/` (`login` finds `com.app:id/login`).
+    static func id(_ pattern: String, _ identifier: String) -> Bool {
+        guard !pattern.isEmpty, !identifier.isEmpty else { return false }
+        let regex = wholeRegex(pattern)
+        let suffix = identifier.split(separator: "/", omittingEmptySubsequences: false).last.map(String.init) ?? identifier
+        return wholeMatch(regex, identifier) || wholeMatch(regex, suffix)
+    }
+
+    private static func wholeRegex(_ pattern: String) -> NSRegularExpression {
+        let options: NSRegularExpression.Options = [.caseInsensitive, .dotMatchesLineSeparators, .anchorsMatchLines]
+        if let regex = try? NSRegularExpression(pattern: "\\A(?:\(pattern))\\z", options: options) { return regex }
+        let literal = NSRegularExpression.escapedPattern(for: pattern)
+        // An escaped pattern always compiles.
+        return try! NSRegularExpression(pattern: "\\A(?:\(literal))\\z", options: options)
+    }
+
+    private static func wholeMatch(_ regex: NSRegularExpression, _ value: String) -> Bool {
+        regex.firstMatch(in: value, range: NSRange(value.startIndex..., in: value)) != nil
     }
 }

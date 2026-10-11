@@ -152,8 +152,12 @@ struct ToolRegistry: Sendable {
                 result = await VRTTools.captureThroughSession(
                     config: config, missingConfig: missingConfig, platform: platform, session: session,
                     driver: { [connection] in try await connection.current().driver },
-                    device: device,
-                    outputDir: projectDirectory.appendingPathComponent(VRTTools.captureDirectory(for: platform)).path
+                    device: device, projectDirectory: projectDirectory
+                )
+            } else if config == nil {
+                // Say so here rather than start `diff capture` to find out.
+                result = CallTool.Result(
+                    content: [.text(text: "Capture failed:\n\(missingConfig)", annotations: nil, _meta: nil)], isError: true
                 )
             } else {
                 result = try await VRTTools.capture(platform: platform, arguments: arguments)

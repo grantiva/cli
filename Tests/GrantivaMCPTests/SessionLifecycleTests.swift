@@ -259,7 +259,12 @@ final class SessionLifecycleTests: XCTestCase {
         )
     }
 
-    private static let plannedHierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","label":"Plan Visit","children":[]}]}"#
+    private static let plannedHierarchy = #"""
+        {"type":"XCUIElementTypeApplication","label":"Landmarks","children":[
+          {"type":"XCUIElementTypeButton","label":"Landmarks","frame":{"x":"20","y":"800","width":"60","height":"40"},"children":[]},
+          {"type":"XCUIElementTypeButton","label":"Plan Visit","frame":{"x":"0","y":"0","width":"10","height":"10"},"children":[]}
+        ]}
+        """#
 
     func testVRTCaptureRunsThroughTheLiveSessionInsteadOfStartingAnotherRunner() async throws {
         let directory = try temporaryDirectory()
@@ -280,13 +285,14 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertNil(result.isError, text)
         XCTAssertFalse(text.contains("already owned"), text)
 
-        // The app is relaunched on the session's device, the steps go through
-        // the session's driver, and each screen is shot from that device.
+        // The app is relaunched on the session's device; the steps and the
+        // screenshots go through the session's driver, as the runner's do.
         XCTAssertEqual(device.calls.filter { !$0.hasPrefix("displayGeometry") }, [
-            "bootDevice(\(udid))", "prepare", "terminate(com.example.app)", "launch(com.example.app)",
-            "screenshot(\(udid))", "screenshot(\(udid))", "restore",
+            "bootDevice(\(udid))", "prepare", "terminate(com.example.app)", "launch(com.example.app)", "restore",
         ])
-        XCTAssertTrue(recorder.calls.contains("tapByLabel(Landmarks)"), "\(recorder.calls)")
+        XCTAssertTrue(recorder.calls.contains("screenshot"), "\(recorder.calls)")
+        // The tab, at its frame's center; not the application element that shares its label.
+        XCTAssertTrue(recorder.calls.contains("tapByCoordinate(50.0,820.0)"), "\(recorder.calls)")
         let captures = directory.appendingPathComponent(".grantiva/captures")
         for name in ["Home", "Detail"] {
             XCTAssertTrue(FileManager.default.fileExists(atPath: captures.appendingPathComponent("\(name).png").path), name)
@@ -297,12 +303,14 @@ final class SessionLifecycleTests: XCTestCase {
         let screens = try XCTUnwrap(json["screens"] as? [[String: Any]])
         XCTAssertEqual(screens.compactMap { $0["screen_name"] as? String }, ["Home", "Detail"])
         XCTAssertEqual((json["simulator"] as? [String: Any])?["udid"] as? String, udid)
+        // Relative to the project, as `diff capture --json` reports them.
+        XCTAssertEqual(json["directory"] as? String, ".grantiva/captures")
+        XCTAssertEqual(screens.compactMap { $0["path"] as? String }, [".grantiva/captures/Home.png", ".grantiva/captures/Detail.png"])
     }
 
     func testVRTCaptureThroughTheSessionReportsTheFailingStepAndRestoresTheStatusBar() async throws {
         let directory = try temporaryDirectory()
-        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
-        driver.tapByLabel = { label in throw GrantivaError.elementNotFound(label) }
+        let driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
         let device = MCPFakeDevicePlatform(platform: .ios)
         let config = screensConfig([
             .init(name: "Home", path: .launch),
@@ -330,6 +338,115 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertTrue(text.contains("Login"), text)
         XCTAssertTrue(text.contains("runFlow"), text)
         XCTAssertTrue(text.contains("grantiva runner stop"), text)
+        XCTAssertTrue(device.calls.isEmpty, "\(device.calls)")
+    }
+
+    // MARK: - Selectors in a capture through the session
+
+    /// One screen whose single step is `step`, captured through a session
+    /// whose hierarchy is `hierarchy`; returns the result and the driver calls.
+    private func captureOneStep(
+        _ step: GrantivaConfig.Screen.Step, hierarchy: String
+    ) async throws -> (CallTool.Result, [String]) {
+        let directory = try temporaryDirectory()
+        let recorder = WDARecorder()
+        let registry = liveRegistry(
+            directory: directory, config: screensConfig([.init(name: "Screen", path: .steps([step]))]),
+            driver: MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: hierarchy),
+            device: MCPFakeDevicePlatform(platform: .ios)
+        )
+        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        return (result, recorder.calls)
+    }
+
+    private func assertSucceeded(_ result: CallTool.Result, file: StaticString = #filePath, line: UInt = #line) throws {
+        let text = try textContent(of: result, file: file, line: line)
+        XCTAssertNil(result.isError, text, file: file, line: line)
+    }
+
+    private static let loginHierarchy = #"""
+        {"type":"XCUIElementTypeApplication","children":[
+          {"type":"XCUIElementTypeOther","identifier":"com.app:id/login_button","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},
+          {"type":"XCUIElementTypeButton","identifier":"com.app:id/login","label":"Sign in","frame":{"x":100,"y":200,"width":40,"height":20},"children":[]},
+          {"type":"XCUIElementTypeStaticText","label":"Not advertising","frame":{"x":0,"y":300,"width":200,"height":20},"children":[]}
+        ]}
+        """#
+
+    func testTapByIdMatchesTheWholeIdentifierNotALabel() async throws {
+        var byId = GrantivaConfig.Screen.Step(tap: "login")
+        byId.tapById = true
+        let (result, calls) = try await captureOneStep(byId, hierarchy: Self.loginHierarchy)
+        try assertSucceeded(result)
+        XCTAssertTrue(calls.contains("tapByCoordinate(120.0,210.0)"), "\(calls)")
+
+        // The same text without `id:` looks at labels, where "login" is not.
+        let (byText, _) = try await captureOneStep(.init(tap: "login"), hierarchy: Self.loginHierarchy)
+        XCTAssertEqual(byText.isError, true)
+        XCTAssertTrue(try textContent(of: byText).contains("Element not found: \"login\""))
+    }
+
+    func testTextTapMatchesTheWholeValueIgnoringCaseLikeTheRunner() async throws {
+        let (caseless, calls) = try await captureOneStep(.init(tap: "sign IN"), hierarchy: Self.loginHierarchy)
+        try assertSucceeded(caseless)
+        XCTAssertTrue(calls.contains("tapByCoordinate(120.0,210.0)"), "\(calls)")
+
+        // Plain text is not a substring match: "advertising" is not "Not advertising".
+        let (partial, _) = try await captureOneStep(.init(tap: "advertising"), hierarchy: Self.loginHierarchy)
+        XCTAssertEqual(partial.isError, true)
+        let (regex, regexCalls) = try await captureOneStep(.init(tap: ".*advertising"), hierarchy: Self.loginHierarchy)
+        try assertSucceeded(regex)
+        XCTAssertTrue(regexCalls.contains("tapByCoordinate(100.0,310.0)"), "\(regexCalls)")
+    }
+
+    func testExactTapNeedsTheWholeValueInItsOwnCase() async throws {
+        var exact = GrantivaConfig.Screen.Step(tap: "Not advertising")
+        exact.tapExact = true
+        let (match, _) = try await captureOneStep(exact, hierarchy: Self.loginHierarchy)
+        try assertSucceeded(match)
+
+        var otherCase = GrantivaConfig.Screen.Step(tap: "not advertising")
+        otherCase.tapExact = true
+        let (miss, _) = try await captureOneStep(otherCase, hierarchy: Self.loginHierarchy)
+        XCTAssertEqual(miss.isError, true)
+    }
+
+    func testAssertionsUseTheSameSelectorRules() async throws {
+        let (partial, _) = try await captureOneStep(.init(assertVisible: "advertising"), hierarchy: Self.loginHierarchy)
+        XCTAssertEqual(partial.isError, true)
+        XCTAssertTrue(try textContent(of: partial).contains("is not visible"))
+        var byId = GrantivaConfig.Screen.Step(assertVisible: "login")
+        byId.assertVisibleById = true
+        let (found, _) = try await captureOneStep(byId, hierarchy: Self.loginHierarchy)
+        try assertSucceeded(found)
+        let (absent, _) = try await captureOneStep(.init(assertNotVisible: "Sign out"), hierarchy: Self.loginHierarchy)
+        try assertSucceeded(absent)
+    }
+
+    func testASwipeWithADurationIsRefusedBeforeTouchingTheDevice() async throws {
+        let directory = try temporaryDirectory()
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        var step = GrantivaConfig.Screen.Step(swipe: "up")
+        step.swipeDuration = 400
+        let registry = liveRegistry(
+            directory: directory, config: screensConfig([.init(name: "Feed", path: .steps([step]))]),
+            driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()), device: device
+        )
+        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(result.isError, true)
+        XCTAssertTrue(try textContent(of: result).contains("a swipe with a duration"))
+        XCTAssertTrue(device.calls.isEmpty, "\(device.calls)")
+    }
+
+    /// R04 repro: an empty directory and no session.
+    func testVRTCaptureWithoutASessionOrConfigNamesTheMissingFile() async throws {
+        let directory = try temporaryDirectory()
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let registry = configlessRegistry(directory: directory, device: device)
+        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(result.isError, true)
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("grantiva.yml not found at \(directory.path)/grantiva.yml"), text)
+        XCTAssertTrue(text.contains("grantiva init"), text)
         XCTAssertTrue(device.calls.isEmpty, "\(device.calls)")
     }
 

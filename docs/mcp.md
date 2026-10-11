@@ -17,7 +17,8 @@ until one exists they return an error (`isError`) naming `grantiva runner start`
 `grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
 is replaced). In the seconds after `grantiva runner start --detach` returns, while WDA has no session yet,
 they return an error (`isError`) saying the session is starting and to retry in a few seconds; a call
-made once WDA is ready attaches as usual. Session tools report every failure as an `isError` result,
+made once WDA is ready attaches as usual. `grantiva_screenshot` is the exception when the session records
+its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it succeeds during that window. Session tools report every failure as an `isError` result,
 never as a JSON-RPC error.
 
 Tools that need a config file (`grantiva_build`, `grantiva_run`, `grantiva_test`, `grantiva_vrt_capture`)
@@ -84,6 +85,6 @@ there is no session.
 
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
-| `grantiva_vrt_capture` | iOS, Android | when live | Capture screenshots for all configured screens. Without a session, equivalent to `grantiva diff capture --no-build --json`; assumes the app is installed on the device. With a live runner session, captures through that session on its device instead of starting another runner (which the session's device lease refuses): relaunches the app, runs each screen's steps through the session's driver, and writes the same captures and JSON. Steps only the runner can run (`runFlow`, swipes from an element or between points) are refused with a message to stop the session first. |
+| `grantiva_vrt_capture` | iOS, Android | when live | Capture screenshots for all configured screens. Without a session, equivalent to `grantiva diff capture --no-build --json`; assumes the app is installed on the device. With a live runner session it does not start another runner (the session's device lease would refuse it): it captures on the session's device, ignoring `simulator:` or `emulator:` in the config file, relaunches the app, runs each screen's steps through the session's driver, takes each screenshot through that driver as grantiva-runner does, and returns the same JSON as `diff capture --json`. Text, `id:` and `exact` selectors match as grantiva-runner matches them (text is a case-insensitive regex over the whole value). Screens with `runFlow`, a swipe from an element, a swipe between points, or a swipe with a duration are refused before anything runs; stop the session with `grantiva runner stop` to capture those. |
 | `grantiva_vrt_compare` | iOS, Android | no | Compare current captures against baselines. Equivalent to `grantiva diff compare --json`. |
 | `grantiva_vrt_approve` | iOS, Android | no | Promote current captures to baselines. Equivalent to `grantiva diff approve [screens] --json`; approves all screens if none are specified. |
