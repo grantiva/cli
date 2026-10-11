@@ -53,6 +53,8 @@ final class EmulatorManagerTests: XCTestCase {
     /// when the scripted shell sees `emu kill` for its serial.
     private final class EmulatorProcesses: @unchecked Sendable {
         private var processes: [String: Process] = [:]
+        /// Children already killed and reaped here; their pids may be reused.
+        private var reaped: Set<Int32> = []
         let shell: ScriptedShell
         init(_ shell: ScriptedShell) { self.shell = shell }
 
@@ -75,14 +77,20 @@ final class EmulatorManagerTests: XCTestCase {
                 // the launching thread's run loop, which an `await` in the
                 // teardown can leave on another thread. `waitpid` returns
                 // once the child is gone (or at once if Foundation reaped it).
+                guard !reaped.contains(process.processIdentifier) else { continue }
                 kill(process.processIdentifier, SIGKILL)
                 var status: Int32 = 0
                 _ = waitpid(process.processIdentifier, &status, 0)
+                reaped.insert(process.processIdentifier)
             }
             return try await shell.execute(command)
         }
 
-        deinit { processes.values.forEach { if $0.isRunning { $0.terminate() } } }
+        deinit {
+            processes.values
+                .filter { !reaped.contains($0.processIdentifier) && $0.isRunning }
+                .forEach { $0.terminate() }
+        }
     }
 
     private func manager(_ emulators: EmulatorProcesses) -> EmulatorManager {
@@ -773,7 +781,7 @@ final class EmulatorManagerTests: XCTestCase {
             "'/sdk/platform-tools/adb' -s 'emulator-5556' shell am force-stop 'io.appium.uiautomator2.server.test'",
             "'/sdk/platform-tools/adb' -s 'emulator-5556' forward --list",
             "'/sdk/platform-tools/adb' devices -l",
-            "'/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'",
+            "/usr/bin/perl -e 'alarm shift; exec @ARGV' 1 '/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'",
             "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill",
             "'/sdk/platform-tools/adb' devices -l",
         ])
@@ -1146,7 +1154,7 @@ final class EmulatorManagerTests: XCTestCase {
         let outcome = try await manager(shell).teardown(serial: "emulator-5556", force: true)
         XCTAssertTrue(outcome.killed)
         let commands = shell.commands
-        let sync = try XCTUnwrap(commands.firstIndex(of: "'/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'"), "\(commands)")
+        let sync = try XCTUnwrap(commands.firstIndex(of: "/usr/bin/perl -e 'alarm shift; exec @ARGV' 1 '/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'"), "\(commands)")
         let kill = try XCTUnwrap(commands.firstIndex(of: "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill"), "\(commands)")
         XCTAssertLessThan(sync, kill)
     }
@@ -1170,5 +1178,8 @@ final class EmulatorManagerTests: XCTestCase {
         let outcome = try await manager.teardown(serial: "emulator-5556", force: true)
         XCTAssertTrue(outcome.killed)
         XCTAssertLessThan(Date().timeIntervalSince(started), 5)
+        // The adb child carries its own alarm, so a hung sync is killed, not left behind.
+        XCTAssertTrue(calls.commands.contains { $0.hasPrefix("/usr/bin/perl -e 'alarm shift; exec @ARGV' 1 ") && $0.hasSuffix("shell 'sync'") },
+                      "\(calls.commands)")
     }
 }

@@ -181,6 +181,20 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertEqual(handed.values, ["emulator-5556 27331", "emulator-5554 27331"])
     }
 
+    /// L36: teardown removes the session file before it signals the runner,
+    /// as `runner stop` does, so a foreground `runner start` ends in order.
+    func testTeardownRemovesTheSessionFileBeforeStoppingTheRunner() async {
+        let events = LockedList()
+        let file = RunnerSessionInfo(pid: 27331, wdaPort: 53095, bundleId: "b", udid: "emulator-5556", startedAt: Date(), platform: .android)
+        let sessions = DeviceRunnerSessions(
+            loadSession: { file },
+            removeSession: { events.append("remove") },
+            stopSessions: { udid, _ in events.append("stop"); return [.terminated(runnerPid: 27331, udid: udid, killed: false)] }
+        )
+        _ = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(events.values, ["remove", "stop"])
+    }
+
     // MARK: - L12/L35: what a teardown cleaned up is listed
 
     func testTeardownListsTheDeadRunnersSessionFilesAndTheTempDirectories() async throws {
@@ -200,6 +214,14 @@ final class EmulatorCommandTests: XCTestCase {
         let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(outcomes).utf8)) as? [[String: Any]])
         XCTAssertEqual(json.first?["sessionFilesRemoved"] as? [String], ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
         XCTAssertEqual(json.first?["temporaryDirectoriesRemoved"] as? [String], [])
+    }
+
+    func testTeardownTextDoesNotAttributeStaleSessionFilesToTheSerial() {
+        var outcome = EmulatorTeardownOutcome(serial: "emulator-5556", avd: "A", killed: true, recorded: true)
+        outcome.sessionFilesRemoved = ["/tmp/grantiva-sessions/12109-1.grantiva"]
+        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+            "Removed 1 stale keep-alive session file(s) of runners that are no longer running.",
+        ])
     }
 
     func testTeardownTextNamesTheRemovedTempDirectories() {

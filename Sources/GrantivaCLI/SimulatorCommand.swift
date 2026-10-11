@@ -284,7 +284,7 @@ struct SimulatorCommand: AsyncParsableCommand {
                     lines.append("Kept the session record for \(kept.udid) under \(kept.sessionId): \(kept.reason).")
                 }
                 if !result.sessionFilesRemoved.isEmpty {
-                    lines.append("Removed \(result.sessionFilesRemoved.count) keep-alive session file(s) for \(result.udid).")
+                    lines.append("Removed \(result.sessionFilesRemoved.count) stale keep-alive session file(s) of runners that are no longer running.")
                 }
                 for home in result.deviceHomesRemoved {
                     lines.append("Removed the runner home \(home).")

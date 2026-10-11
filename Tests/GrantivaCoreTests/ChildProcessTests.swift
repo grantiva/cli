@@ -388,4 +388,16 @@ final class ChildProcessTests: XCTestCase {
         XCTAssertEqual(sleeper.wait(), SIGHUP)
         XCTAssertEqual(sleeper.terminatingSignal, SIGHUP)
     }
+
+    /// Someone else reaped the child and nothing recorded its status: wait()
+    /// reports a failure, never 0.
+    func testWaitAfterAnUnrecordedReapIsAFailureNotZero() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+        var raw: Int32 = 0
+        XCTAssertEqual(waitpid(child.pid, &raw, 0), child.pid)
+        XCTAssertEqual(child.wait(), ChildProcess.unknownExitStatus)
+        XCTAssertNotEqual(ChildProcess.unknownExitStatus, 0)
+    }
 }

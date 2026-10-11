@@ -237,7 +237,7 @@ even when it refuses the serial. `teardown --force` of a serial that is neither 
 recorded says so and exits 0. `teardown` stops a runner session on the emulator it kills
 (`runner start` or `run --keep-alive`) and removes its session files; `--json` reports it as
 `runnerSessionStopped`. Before it kills the emulator it flushes the guest's writes
-(`adb shell sync`, bounded at 10 s), so an app installed seconds earlier is still installed after
+(`adb shell sync`, bounded at 5 s within the 30 s teardown limit), so an app installed seconds earlier is still installed after
 the next boot (`emu kill` stops the guest without a shutdown, and boots use `-no-snapshot-save`).
 After a run on the serial was killed (`kill -9`), teardown also removes what that run could not:
 the session files of its dead runner (`sessionFilesRemoved`) and the temp directories its lease

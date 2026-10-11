@@ -312,6 +312,7 @@ public struct AndroidPlatform: DevicePlatform {
         return DriverAttachment(
             client: .uiAutomator2(endpoint: endpoint, scale: geometry.scale, transport: transport),
             port: endpoint.localPort,
+            sessionID: endpoint.sessionID,
             detach: { if forwarded { _ = try? await adb.removeForward(serial: deviceID, localPort: endpoint.localPort) } }
         )
     }

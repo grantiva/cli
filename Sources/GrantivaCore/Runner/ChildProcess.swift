@@ -186,13 +186,25 @@ public final class ChildProcess: @unchecked Sendable {
             result = waitpid(pid, &raw, 0)
         } while result < 0 && errno == EINTR
         if result < 0 {
-            // Reaped by a concurrent `poll()`: its record is the answer.
-            stateLock.lock()
-            defer { stateLock.unlock() }
-            return exitStatus ?? Self.terminationStatus(raw: raw)
+            // ECHILD: reaped by a concurrent `poll()`, which records the
+            // status just after its waitpid returns. Wait for that record;
+            // never report an exit status nobody saw (it would read as 0).
+            let deadline = Date().addingTimeInterval(2)
+            repeat {
+                stateLock.lock()
+                let recorded = exitStatus
+                stateLock.unlock()
+                if let recorded { return recorded }
+                usleep(10_000)
+            } while Date() < deadline
+            return Self.unknownExitStatus
         }
         return record(raw: raw)
     }
+
+    /// What `wait()` returns when someone else reaped the child and its
+    /// status was never recorded: a failure, never 0.
+    static let unknownExitStatus: Int32 = 255
 
     /// The exit status if the child has exited, without blocking; nil while
     /// it runs. A child that has exited is reaped here, and `wait()` then

@@ -94,7 +94,8 @@ public struct EmulatorManager: Sendable {
     private let killTimeout: TimeInterval
     private let consolePortBound: @Sendable (Int) -> Bool
     private let consolePortOwners: @Sendable (Int) async -> [Int32]?
-    /// How long teardown waits for `adb shell sync` before killing anyway.
+    /// How long teardown waits for `adb shell sync` before killing anyway;
+    /// part of `killTimeout`, not added to it.
     private let flushTimeout: TimeInterval
     /// Where runs on a serial record their lease claim; nil is the runner home's.
     private let leaseDirectory: String?
@@ -149,7 +150,7 @@ public struct EmulatorManager: Sendable {
         killTimeout: TimeInterval = 30,
         consolePortBound: @escaping @Sendable (Int) -> Bool = EmulatorManager.isLocalPortBound,
         consolePortOwners: @escaping @Sendable (Int) async -> [Int32]? = EmulatorManager.listeningPIDs,
-        flushTimeout: TimeInterval = 10,
+        flushTimeout: TimeInterval = 5,
         leaseDirectory: String? = nil
     ) {
         self.sdk = sdk
@@ -639,12 +640,16 @@ public struct EmulatorManager: Sendable {
             // `emu kill` stops the guest without a shutdown: whatever its page
             // cache still holds (an app installed seconds ago) is lost on the
             // next boot. Flush it first, bounded so a wedged guest cannot hold
-            // the teardown (L46).
+            // the teardown (L46). The flush counts against `killTimeout`, so
+            // the whole stop stays within it; a hung `adb shell sync` is ended
+            // by its own alarm, and the race below is the backstop.
             let adb = self.adb
-            await Self.bounded(seconds: flushTimeout) { _ = try? await adb.sync(serial: serial) }
+            let started = Date()
+            let flushSeconds = max(1, Int(flushTimeout.rounded(.up)))
+            await Self.bounded(seconds: flushTimeout) { _ = try? await adb.sync(serial: serial, timeoutSeconds: flushSeconds) }
             _ = try? await adb.emuKill(serial: serial)
             killed = true
-            let deadline = Date().addingTimeInterval(killTimeout)
+            let deadline = started.addingTimeInterval(killTimeout)
             while true {
                 listed = try await adb.devices().contains { $0.serial == serial }
                 let processGone = record.map { !Self.isRecordedProcessAlive($0) } ?? true

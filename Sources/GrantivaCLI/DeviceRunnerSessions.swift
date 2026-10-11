@@ -18,13 +18,15 @@ struct DeviceRunnerSessions: Sendable {
         }
     )
 
+    /// The session file is removed before any runner is signalled, as
+    /// `runner stop` does: a foreground `runner start` holding it reads the
+    /// missing file as a requested stop and ends in order (L36).
     func stop(udid: String) async -> [RunnerSessionStopper.Outcome] {
         let file = loadSession()
-        let outcomes = await stopSessions(udid, file)
         if let file, file.udid.caseInsensitiveCompare(udid) == .orderedSame {
             removeSession()
         }
-        return outcomes
+        return await stopSessions(udid, file)
     }
 
     static func render(_ outcome: RunnerSessionStopper.Outcome) -> String {

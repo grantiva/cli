@@ -630,6 +630,16 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         )
     }
 
+    func testAForegroundRunnerKilledUnpromptedFailsWhateverTheSignal() {
+        for status in [SIGKILL, SIGTERM, SIGINT, 128 + SIGINT] {
+            XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: status, pid: 1234, stopRequested: false), "status \(status)") {
+                XCTAssertEqual($0.localizedDescription, "The runner exited with status \(status); the session has ended.")
+            }
+        }
+        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: SIGKILL, pid: 1234, stopRequested: true),
+                       "Runner stopped (pid 1234); the session has ended.")
+    }
+
     func testAForegroundRunnerThatExitsOneUnpromptedStillFails() {
         XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
             XCTAssertEqual($0.localizedDescription, "The runner exited with status 1; the session has ended.")
@@ -663,17 +673,53 @@ final class RunnerLifecycleCommandTests: XCTestCase {
 
     // MARK: - L38-b: a new runner never adopts an orphaned UIAutomator2 server
 
-    /// `runner start` holds the device's lease when it gets here, so any
-    /// UIAutomator2 server on the device is a leftover (a `kill -9`'d keep-alive
-    /// run's): it is cleared before the runner is spawned, so the readiness
-    /// wait can only attach to the new runner's own session.
-    func testAnAndroidStartClearsALeftoverServerBeforeSpawningTheRunner() async {
-        let android = FakeDevicePlatform(platform: .android)
-        await RunnerStartCommand.clearOrphanedDriver(android, deviceID: "emulator-5558")
-        XCTAssertEqual(android.calls, ["cleanupOrphans"])
+    /// The device still holds the session of a `kill -9`'d keep-alive run's
+    /// server ("old") until the new runner restarts it: the wait skips "old"
+    /// and returns the new runner's own session, without clearing anything.
+    func testTheWaitSkipsTheSessionTheDeviceHeldBeforeTheRunnerStarted() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: {
+                polls.set(polls.value + 1)
+                let id = polls.value <= 3 ? "old" : "new"
+                return DriverAttachment(client: .failing, port: 61000 + polls.value, sessionID: id, detach: { detached.set(detached.value + 1) })
+            },
+            timeout: 5,
+            staleSessionID: "old",
+            sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertEqual(polls.value, 4)
+        XCTAssertEqual(detached.value, 3, "each rejected attachment's forward is removed")
+    }
+
+    func testWithoutAStaleSessionTheFirstAttachmentIsTaken() async {
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "only", detach: {}) },
+            timeout: 5, sleep: {}
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "only")
+    }
+
+    func testTheStaleSessionIsReadWithoutClearingTheDevice() async {
         let ios = FakeDevicePlatform(platform: .ios)
-        await RunnerStartCommand.clearOrphanedDriver(ios, deviceID: "6A186B51-AE17-4808-8EB3-11972382F715")
-        XCTAssertEqual(ios.calls, [])
+        let none = await RunnerStartCommand.currentDriverSession(ios, deviceID: "6A186B51-AE17-4808-8EB3-11972382F715")
+        XCTAssertNil(none)
+        XCTAssertEqual(ios.calls, [], "nothing is probed on iOS")
+        let android = FakeDevicePlatform(platform: .android)
+        _ = await RunnerStartCommand.currentDriverSession(android, deviceID: "emulator-5558")
+        XCTAssertFalse(android.calls.contains("cleanupOrphans"), "\(android.calls)")
+    }
+
+    // MARK: - L48: the wait scales with a raised driver start limit
+
+    func testTheUIAutomator2WaitIsTwiceTheDriverLimitPlusThirtyWithA90SecondFloor() {
+        let key = AndroidPlatform.driverStartTimeoutVariable
+        XCTAssertEqual(RunnerStartCommand.uiAutomator2WaitTimeout(environment: [:]), 90)
+        XCTAssertEqual(RunnerStartCommand.uiAutomator2WaitTimeout(environment: [key: "30"]), 90)
+        XCTAssertEqual(RunnerStartCommand.uiAutomator2WaitTimeout(environment: [key: "45"]), 120)
+        XCTAssertEqual(RunnerStartCommand.uiAutomator2WaitTimeout(environment: [key: "120"]), 270)
     }
 
     // MARK: - L48: the start wait ends when the runner dies

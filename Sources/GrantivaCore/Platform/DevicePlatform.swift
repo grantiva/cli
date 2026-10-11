@@ -73,10 +73,14 @@ public struct DriverAttachment: Sendable {
     /// The local port the client talks to.
     public let port: Int
     public let detach: @Sendable () async -> Void
+    /// The driver session attached to, when the driver names one (the
+    /// UIAutomator2 session id on Android).
+    public let sessionID: String?
 
-    public init(client: DriverClient, port: Int, detach: @escaping @Sendable () async -> Void) {
+    public init(client: DriverClient, port: Int, sessionID: String? = nil, detach: @escaping @Sendable () async -> Void) {
         self.client = client
         self.port = port
+        self.sessionID = sessionID
         self.detach = detach
     }
 }

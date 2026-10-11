@@ -221,12 +221,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
         let runnerArgs = Self.runnerArguments(platform: platformDevice, deviceID: booted.udid, flowPath: flowPath)
         let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
-        let launch = Launch(
+        var launch = Launch(
             runnerBin: runnerBin, runnerDir: runnerDir, runnerArgs: runnerArgs,
             environment: environment.isEmpty ? nil : environment,
             appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice
         )
-        await Self.clearOrphanedDriver(platformDevice, deviceID: booted.udid)
+        // A UIAutomator2 session already on the device belongs to no runner
+        // this command starts (a `kill -9`'d keep-alive run leaves one): its
+        // id is recorded so the readiness wait never accepts it (L38-b).
+        launch.staleSessionID = await Self.currentDriverSession(platformDevice, deviceID: booted.udid)
         if detach {
             let runnerPid = try await startDetached(launch)
             simulatorLease.handOff(to: runnerPid)
@@ -288,16 +291,26 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// port `session.json` records and `dump-hierarchy` and the MCP server use.
     /// `runnerExit` (the spawned runner's status once it has exited) ends the
     /// wait at the next poll: a runner that gave up is not waited on (L48).
+    /// `staleSessionID`, the session the device held before the runner was
+    /// spawned, is never accepted: it belongs to a server the new runner is
+    /// about to restart (L38-b).
     static func waitForUIAutomator2(
         attach: @Sendable () async throws -> DriverAttachment,
         timeout: TimeInterval,
+        staleSessionID: String? = nil,
         runnerExit: @Sendable () -> Int32? = { nil },
         sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
     ) async -> UIAutomator2Wait {
         let deadline = Date().addingTimeInterval(timeout)
         repeat {
             if let status = runnerExit() { return UIAutomator2Wait(exitStatus: status) }
-            if let attachment = try? await attach() { return UIAutomator2Wait(attachment: attachment) }
+            if let attachment = try? await attach() {
+                if let stale = staleSessionID, attachment.sessionID == stale {
+                    await attachment.detach()
+                } else {
+                    return UIAutomator2Wait(attachment: attachment)
+                }
+            }
             await sleep()
         } while Date() < deadline
         return UIAutomator2Wait(exitStatus: runnerExit())
@@ -332,10 +345,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
         return .commandFailed("The runner could not start UIAutomator2 on \(serial): \(reason).\(remedy)\(log)", 1)
     }
 
-    /// How long `runner start` waits for the UIAutomator2 session: 90 s, or
-    /// a minute past a raised `GRANTIVA_DRIVER_START_TIMEOUT`.
+    /// How long `runner start` waits for the UIAutomator2 session:
+    /// max(90, 2n + 30) seconds, where n is the `--driver-start-timeout`
+    /// passed from `GRANTIVA_DRIVER_START_TIMEOUT`.
     static func uiAutomator2WaitTimeout(environment: [String: String] = ProcessInfo.processInfo.environment) -> TimeInterval {
-        max(90, TimeInterval(AndroidPlatform.driverStartTimeout(environment: environment) ?? 0) + 60)
+        let limit = TimeInterval(AndroidPlatform.driverStartTimeout(environment: environment) ?? 0)
+        return max(90, 2 * limit + 30)
     }
 
     struct Launch {
@@ -347,6 +362,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let device: BootedDevice
         let platform: Platform
         let platformDevice: any DevicePlatform
+        /// The UIAutomator2 session on the device before this runner started.
+        var staleSessionID: String? = nil
     }
 
     /// The local end of the forward to the runner's UIAutomator2 session. The
@@ -357,20 +374,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let wait = await Self.waitForUIAutomator2(
             attach: { try await device.attachDriver(deviceID: serial, port: nil) },
             timeout: uiAutomator2WaitTimeout(),
+            staleSessionID: launch.staleSessionID,
             runnerExit: { child.poll() }
         )
         return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus)
     }
 
-    /// On Android, stops a UIAutomator2 server left on the device and drops
-    /// its forwards before the runner is spawned. This command holds the
-    /// device's lease by now, so any server there belongs to no live session
-    /// (a `kill -9`'d keep-alive run leaves one); without this, the readiness
-    /// wait attaches to that server at once, and the new runner then restarts
-    /// it under every client (L38-b).
-    static func clearOrphanedDriver(_ platform: any DevicePlatform, deviceID: String) async {
-        guard platform.platform == .android else { return }
-        await platform.cleanupOrphans(deviceID: deviceID)
+    /// The UIAutomator2 session already on the device before the runner is
+    /// spawned, if any; nothing is stopped or cleared (L38-b). The probe's
+    /// forward is removed again.
+    static func currentDriverSession(_ platform: any DevicePlatform, deviceID: String) async -> String? {
+        guard platform.platform == .android,
+              let attachment = try? await platform.attachDriver(deviceID: deviceID, port: nil) else { return nil }
+        await attachment.detach()
+        return attachment.sessionID
     }
 
     /// Hands the runner's group to the interrupt relay, naming the device
@@ -496,7 +513,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
             startedAt: Date(),
             platform: launch.platform
         )
-        try Self.record(session: session)
+        // A `runner stop` that came during the start removed the starting
+        // file; the runner is on its way out, so do not bring it back.
+        if !Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load()) {
+            try Self.record(session: session)
+        }
 
         if options.json {
             Output.line(try JSONOutput.string(RunnerLifecycleDocument(
@@ -599,8 +620,15 @@ struct RunnerStartCommand: AsyncParsableCommand {
             )
             output.endStartup()
             guard case .port(let found)? = startup else {
+                // `runner stop` removed the session file before stopping it.
+                let requested = Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load())
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
+                if requested {
+                    let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stopRequested: true)
+                    options.note(ending)
+                    return
+                }
                 throw Self.wdaStartupError(startup, logPath: nil)
             }
             port = found
@@ -681,10 +709,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
         return status
     }
 
-    /// A runner that exited 0, or was stopped by a signal (`runner stop`,
-    /// teardown), ended the session in order.
+    /// Without a stop request, only a runner that exited 0 ended the session
+    /// in order. `runner stop` and teardown remove `.grantiva/session.json`
+    /// before they signal, so their stops are told apart by that, not by the
+    /// status; a runner killed by a signal nobody asked for is a failure (L36).
     static func isOrderlyRunnerExit(_ status: Int32) -> Bool {
-        [0, SIGINT, SIGTERM, SIGKILL, 128 + SIGINT, 128 + SIGTERM].contains(status)
+        status == 0
     }
 
     // MARK: - Helpers

@@ -174,7 +174,7 @@ struct EmulatorCommand: AsyncParsableCommand {
         static func cleanupLines(_ outcome: EmulatorTeardownOutcome) -> [String] {
             var lines: [String] = []
             if !outcome.sessionFilesRemoved.isEmpty {
-                lines.append("Removed \(outcome.sessionFilesRemoved.count) keep-alive session file(s) for \(outcome.serial).")
+                lines.append("Removed \(outcome.sessionFilesRemoved.count) stale keep-alive session file(s) of runners that are no longer running.")
             }
             for directory in outcome.temporaryDirectoriesRemoved {
                 lines.append("Removed the killed run's temp directory \(directory).")
