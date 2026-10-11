@@ -81,6 +81,40 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertTrue(fake.calls.contains("build(module=mobile,variant=freeDebug,args=[])"), "\(fake.calls)")
     }
 
+    /// `build build` compiles only: the config's `emulator:` is irrelevant
+    /// and no device is resolved or booted.
+    func testBuildBuildOnAndroidNeverBootsTheConfiguredEmulator() async throws {
+        var command = try BuildOnlyCommand.parse(["--variant", "paidDebug"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("bootDevice") || $0 == "defaultDevice" }, "\(fake.calls)")
+        XCTAssertEqual(fake.calls, ["build(module=app,variant=paidDebug,args=[])"])
+        XCTAssertEqual(fake.lastBuildDeviceID, "", "no device: the build reads no device ABI")
+    }
+
+    /// An explicit `--device` only lends its ABI to the APK choice; it is
+    /// never booted or resolved through the emulator path.
+    func testBuildBuildOnAndroidWithADevicePassesTheSerialWithoutBooting() async throws {
+        var command = try BuildOnlyCommand.parse(["--device", "emulator-5554"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("bootDevice") }, "\(fake.calls)")
+        XCTAssertEqual(fake.calls.first, "attachedDevice(emulator-5554)", "the serial is checked as attached first")
+        XCTAssertEqual(fake.lastBuildDeviceID, "emulator-5554")
+    }
+
+    /// `build install` still boots the configured AVD (the platform logs
+    /// "Booting AVD <name> as <serial>" when it starts one).
+    func testBuildInstallOnAndroidBootsTheConfiguredAVD() async throws {
+        var command = try InstallCommand.parse(["--no-launch"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertEqual(fake.calls.first, "bootDevice(Pixel_8_API_35)", "\(fake.calls)")
+    }
+
     func testBuildInstallOnAndroidUsesTheBuiltApplicationID() async throws {
         var command = try InstallCommand.parse(["--no-launch", "--module", "mobile", "--variant", "freeDebug"])
         let fake = FakeDevicePlatform(platform: .android)
@@ -106,6 +140,44 @@ final class AndroidCommandTests: XCTestCase {
         let device = try XCTUnwrap(json["device"] as? [String: Any])
         XCTAssertEqual(device["name"] as? String, "Fake")
         XCTAssertEqual(device["serial"] as? String, "emulator-5598")
+    }
+
+    /// A full `diff capture` announces the capture once, not once per branch.
+    func testDiffCaptureAnnouncesTheCaptureOnce() async throws {
+        try """
+        module: app
+        emulator: Pixel_8_API_35
+        screens:
+          - name: Home
+            path: launch
+        """.write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        var command = try DiffCommand.CaptureCommand.parse([])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        let notes = NoteSink()
+        command.notes = notes
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.built)"), "\(fake.calls)")
+        XCTAssertEqual(notes.lines.filter { $0.hasPrefix("Capturing ") }, ["Capturing 1 screen(s)..."], "\(notes.lines)")
+    }
+
+    /// A13: `diff capture --json` on Android adds an `emulator` object beside
+    /// the `simulator` one; iOS documents are unchanged.
+    func testCaptureResultOnAndroidAddsTheEmulatorObject() throws {
+        let target = CaptureSimulatorTarget(
+            name: "fix-6-android", udid: "emulator-5554",
+            geometry: SimulatorDisplayGeometry(points: [411, 914], pixels: [1080, 2400], scale: 2.625)
+        )
+        let android = DiffCommand.captureResult(screens: [], directory: "d", duration: 1, target: target, platform: .android)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(try JSONOutput.string(android).utf8)) as? [String: Any])
+        let emulator = try XCTUnwrap(json["emulator"] as? [String: Any], "\(json)")
+        XCTAssertEqual(emulator["name"] as? String, "fix-6-android")
+        XCTAssertEqual(emulator["udid"] as? String, "emulator-5554")
+        XCTAssertNotNil(json["simulator"], "the simulator key stays")
+        let ios = DiffCommand.captureResult(screens: [], directory: "d", duration: 1, target: target, platform: .ios)
+        let iosJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(try JSONOutput.string(ios).utf8)) as? [String: Any])
+        XCTAssertNil(iosJSON["emulator"])
     }
 
     /// Points fd 1 at a temporary file while `body` runs.

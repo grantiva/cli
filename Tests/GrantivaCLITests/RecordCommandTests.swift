@@ -162,6 +162,10 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertEqual(fake.calls, ["bootDevice(Pixel_8_API_35)", "recordVideo(emulator-5598,1.0)", "displayGeometry(emulator-5598)"])
         let report = try String(contentsOfFile: ".grantiva/recordings/recording.json", encoding: .utf8)
         XCTAssertTrue(report.contains(#""simulator" : "Fake""#), report)
+        XCTAssertTrue(report.contains(#""udid" : "emulator-5598""#), report)
+        // A05: Android names the emulator and serial too; the old keys stay.
+        XCTAssertTrue(report.contains(#""emulator" : "Fake""#), report)
+        XCTAssertTrue(report.contains(#""serial" : "emulator-5598""#), report)
         XCTAssertTrue(report.contains(#""video" : ".grantiva\/recordings\/recording.mp4""#), report)
     }
 

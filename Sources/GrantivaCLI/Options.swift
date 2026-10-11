@@ -108,6 +108,26 @@ struct InjectedDevicePlatform: Decodable {
     }
 }
 
+/// Test seam for a command's progress notes, carried as a plain stored
+/// property like `InjectedDevicePlatform`. Decoded (the real command), it
+/// forwards to `GlobalOptions.note`; made with `init()` in a test, it keeps
+/// the lines instead.
+final class NoteSink: Decodable, @unchecked Sendable {
+    private let lock = NSLock()
+    private let collecting: Bool
+    private var collected: [String] = []
+
+    init() { collecting = true }
+    init(from decoder: Decoder) throws { collecting = false }
+
+    var lines: [String] { lock.withLock { collected } }
+
+    func note(_ message: String, options: GlobalOptions) {
+        guard collecting else { return options.note(message) }
+        lock.withLock { collected.append(message) }
+    }
+}
+
 struct PlatformOptions: ParsableArguments {
     @Option(name: .long, help: "Target platform: ios or android. Defaults to whichever of grantiva.yml / grantiva-android.yml exists, else the project files in this directory. GRANTIVA_PLATFORM also sets it.")
     var platform: Platform?

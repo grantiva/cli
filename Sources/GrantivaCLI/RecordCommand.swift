@@ -159,6 +159,8 @@ struct RecordCommand: AsyncParsableCommand {
         let report = RecordReport(
             simulator: booted.name,
             udid: booted.udid,
+            emulator: platform == .android ? booted.name : nil,
+            serial: platform == .android ? booted.udid : nil,
             video: outputPath,
             requestedDurationSeconds: duration,
             frames: frames
@@ -230,9 +232,14 @@ struct RecordCommand: AsyncParsableCommand {
     }
 }
 
+/// `simulator` and `udid` name the device on both platforms (kept for
+/// compatibility); Android adds the same values as `emulator` (the AVD name,
+/// or the serial of a physical device) and `serial`.
 private struct RecordReport: Codable {
     let simulator: String
     let udid: String
+    let emulator: String?
+    let serial: String?
     let video: String
     let requestedDurationSeconds: Double
     let frames: [RecordFrame]

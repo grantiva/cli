@@ -88,6 +88,9 @@ public protocol DevicePlatform: Sendable {
     var platform: Platform { get }
 
     func bootDevice(named nameOrID: String) async throws -> BootedDevice
+    /// The attached device with this serial, never booting anything. Only
+    /// Android has serials; elsewhere the ID is taken as given.
+    func attachedDevice(serial: String) async throws -> BootedDevice
     func displayGeometry(deviceID: String) async throws -> DeviceGeometry
 
     func build(_ request: PlatformBuildRequest) async throws -> BuildResult
@@ -135,6 +138,10 @@ public protocol DevicePlatform: Sendable {
 }
 
 extension DevicePlatform {
+    public func attachedDevice(serial: String) async throws -> BootedDevice {
+        BootedDevice(udid: serial, name: serial)
+    }
+
     public func isInstalled(appID: String, deviceID: String) async -> Bool? { nil }
 }
 

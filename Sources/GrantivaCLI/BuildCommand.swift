@@ -43,17 +43,31 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             )
         }
 
-        let booted = try await device.bootDevice(named: resolved.simulator)
+        // iOS builds for a simulator destination. Android only compiles: the
+        // config's `emulator:` is irrelevant and nothing is booted; an
+        // explicit --device only lends its ABI to the choice of split APK.
+        let deviceID: String
+        let deviceName: String?
+        switch platform {
+        case .ios:
+            let booted = try await device.bootDevice(named: resolved.simulator)
+            deviceID = booted.udid
+            deviceName = booted.name
+        case .android:
+            let attached = if let serial = target.device { try await device.attachedDevice(serial: serial) } else { nil as BootedDevice? }
+            deviceID = attached?.udid ?? ""
+            deviceName = attached?.name
+        }
 
         let buildTarget = resolved.scheme ?? GradleBuildRunner.taskName(
             module: resolved.android?.module ?? "app", variant: resolved.android?.variant ?? "debug"
         )
-        options.note("[grantiva] Building \(buildTarget) for \(booted.name)...")
+        options.note("[grantiva] Building \(buildTarget)\(deviceName.map { " for \($0)" } ?? "")...")
 
         let result = try await device.build(PlatformBuildRequest(
             config: config ?? GrantivaConfig(),
             resolved: resolved,
-            deviceID: booted.udid,
+            deviceID: deviceID,
             extraBuildSettings: target.extraBuildSettings(
                 platform: platform, derivedDataPath: derivedDataPath, resolved: resolved
             )

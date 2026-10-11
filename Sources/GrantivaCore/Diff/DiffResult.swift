@@ -52,12 +52,19 @@ public struct CaptureResult: Sendable, Codable {
     public let directory: String
     public let duration: Double
     public let simulator: CaptureSimulatorTarget?
+    /// Android only: the same target as `simulator`, under the platform's
+    /// own name. `simulator` stays for compatibility.
+    public let emulator: CaptureSimulatorTarget?
 
-    public init(screens: [ScreenCapture], directory: String, duration: Double, simulator: CaptureSimulatorTarget? = nil) {
+    public init(
+        screens: [ScreenCapture], directory: String, duration: Double,
+        simulator: CaptureSimulatorTarget? = nil, emulator: CaptureSimulatorTarget? = nil
+    ) {
         self.screens = screens
         self.directory = directory
         self.duration = duration
         self.simulator = simulator
+        self.emulator = emulator
     }
 }
 
