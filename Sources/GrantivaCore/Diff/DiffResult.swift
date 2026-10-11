@@ -10,10 +10,12 @@ public enum StepStatus: String, Sendable, Codable {
 public struct StepResult: Sendable, Codable {
     public let action: String
     public let status: StepStatus
-    public let duration: Double
+    /// Seconds the runner measured for the step. Nil (and omitted from JSON)
+    /// when no runner command can be matched to the step.
+    public let duration: Double?
     public let message: String?
 
-    public init(action: String, status: StepStatus, duration: Double, message: String? = nil) {
+    public init(action: String, status: StepStatus, duration: Double?, message: String? = nil) {
         self.action = action
         self.status = status
         self.duration = duration
@@ -29,13 +31,38 @@ public struct ScreenCapture: Sendable, Codable {
     public let sizeBytes: Int
     public let timestamp: Date
     public let steps: [StepResult]
+    /// A configured screen, or a flow run with `run` (whose `takeScreenshot`
+    /// captures are in `screenshots`). Not part of the capture JSON.
+    public var kind: Kind = .screen
+    /// For a flow: the named screenshots it took, in order.
+    public var screenshots: [Screenshot] = []
 
-    public init(screenName: String, path: String, sizeBytes: Int, timestamp: Date = Date(), steps: [StepResult] = []) {
+    public enum Kind: String, Sendable, Codable {
+        case screen
+        case flow
+    }
+
+    public struct Screenshot: Sendable, Codable, Equatable {
+        public let name: String
+        public let path: String
+
+        public init(name: String, path: String) {
+            self.name = name
+            self.path = path
+        }
+    }
+
+    public init(
+        screenName: String, path: String, sizeBytes: Int, timestamp: Date = Date(), steps: [StepResult] = [],
+        kind: Kind = .screen, screenshots: [Screenshot] = []
+    ) {
         self.screenName = screenName
         self.path = path
         self.sizeBytes = sizeBytes
         self.timestamp = timestamp
         self.steps = steps
+        self.kind = kind
+        self.screenshots = screenshots
     }
 
     enum CodingKeys: String, CodingKey {
@@ -45,6 +72,40 @@ public struct ScreenCapture: Sendable, Codable {
         case timestamp
         case steps
     }
+
+    /// camelCase keys like every other `--json` document, plus the original
+    /// snake_case keys, kept for existing consumers (see `LegacyJSONKeys`).
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try c.encode(screenName, forKey: "screenName")
+        try c.encode(path, forKey: "path")
+        try c.encode(sizeBytes, forKey: "sizeBytes")
+        try c.encode(timestamp, forKey: "timestamp")
+        try c.encode(steps, forKey: "steps")
+        try c.encode(screenName, forKey: "screen_name")
+        try c.encode(sizeBytes, forKey: "size_bytes")
+    }
+}
+
+/// A free-form key for documents that write each value under its camelCase
+/// key and, for one deprecation period, under the snake_case key it had
+/// before every `--json` document moved to camelCase.
+public struct LegacyJSONKeys: CodingKey, ExpressibleByStringLiteral {
+    public let stringValue: String
+    public var intValue: Int? { nil }
+    public init(stringValue: String) { self.stringValue = stringValue }
+    public init?(intValue: Int) { nil }
+    public init(stringLiteral value: String) { self.stringValue = value }
+
+    /// Every snake_case key still written, by its camelCase twin.
+    public static let aliases: [String: String] = [
+        "screen_name": "screenName", "size_bytes": "sizeBytes",
+        "point_dimensions": "pointDimensions", "pixel_dimensions": "pixelDimensions", "display_scale": "displayScale",
+        "pixel_diff_percent": "pixelDiffPercent", "perceptual_distance": "perceptualDistance",
+        "pixel_threshold": "pixelThreshold", "perceptual_threshold": "perceptualThreshold",
+        "baseline_path": "baselinePath", "capture_path": "capturePath", "diff_image_path": "diffImagePath",
+        "approved_screens": "approvedScreens", "baseline_directory": "baselineDirectory",
+    ]
 }
 
 public struct CaptureResult: Sendable, Codable {
@@ -100,6 +161,19 @@ public struct CaptureSimulatorTarget: Sendable, Codable, Equatable {
         case pointDimensions = "point_dimensions"
         case pixelDimensions = "pixel_dimensions"
         case displayScale = "display_scale"
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try c.encode(name, forKey: "name")
+        try c.encode(udid, forKey: "udid")
+        for (camel, snake) in [("pointDimensions", "point_dimensions"), ("pixelDimensions", "pixel_dimensions")] {
+            let value = camel == "pointDimensions" ? pointDimensions : pixelDimensions
+            try c.encode(value, forKey: LegacyJSONKeys(stringValue: camel))
+            try c.encode(value, forKey: LegacyJSONKeys(stringValue: snake))
+        }
+        try c.encode(displayScale, forKey: "displayScale")
+        try c.encode(displayScale, forKey: "display_scale")
     }
 }
 
@@ -159,6 +233,24 @@ public struct ScreenDiff: Sendable, Codable {
         case capturePath = "capture_path"
         case diffImagePath = "diff_image_path"
         case message
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try c.encode(status, forKey: "status")
+        try c.encode(message, forKey: "message")
+        func both<T: Encodable>(_ value: T?, _ camel: String, _ snake: String) throws {
+            try c.encodeIfPresent(value, forKey: LegacyJSONKeys(stringValue: camel))
+            try c.encodeIfPresent(value, forKey: LegacyJSONKeys(stringValue: snake))
+        }
+        try both(screenName, "screenName", "screen_name")
+        try both(pixelDiffPercent, "pixelDiffPercent", "pixel_diff_percent")
+        try both(perceptualDistance, "perceptualDistance", "perceptual_distance")
+        try both(pixelThreshold, "pixelThreshold", "pixel_threshold")
+        try both(perceptualThreshold, "perceptualThreshold", "perceptual_threshold")
+        try both(baselinePath, "baselinePath", "baseline_path")
+        try both(capturePath, "capturePath", "capture_path")
+        try both(diffImagePath, "diffImagePath", "diff_image_path")
     }
 }
 
@@ -231,5 +323,13 @@ public struct ApproveResult: Sendable, Codable {
         case approvedScreens = "approved_screens"
         case baselineDirectory = "baseline_directory"
         case ignored
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try c.encode(approvedScreens, forKey: "approvedScreens")
+        try c.encode(baselineDirectory, forKey: "baselineDirectory")
+        try c.encode(approvedScreens, forKey: "approved_screens")
+        try c.encode(baselineDirectory, forKey: "baseline_directory")
     }
 }

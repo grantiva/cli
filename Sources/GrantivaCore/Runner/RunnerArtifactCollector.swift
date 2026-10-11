@@ -25,6 +25,12 @@ enum RunnerArtifactCollector {
         let assetsDir: String
     }
 
+    /// One entry per flow, in report order: the runner's commands as steps
+    /// (status, measured duration, failure message) and the flow's named
+    /// `takeScreenshot` captures, copied to `outputDir` as
+    /// `<flow>-<artifact>.png`. The runner's per-step trace shots
+    /// (`cmd-NNN-before|after.png`) are not captures and are left to the trace
+    /// export.
     static func collect(
         reportDir: String,
         outputDir: String,
@@ -37,8 +43,9 @@ enum RunnerArtifactCollector {
             requestedFlowPaths: requestedFlowPaths,
             stagedPathMap: stagedPathMap
         )
+        let reportFlows = RunnerReportSteps.report(in: reportDir)?.flows ?? []
 
-        var captures: [ScreenCapture] = []
+        var entries: [ScreenCapture] = []
         var assignedDestinations: Set<String> = []
 
         try fileManager.createDirectory(
@@ -47,52 +54,52 @@ enum RunnerArtifactCollector {
         )
 
         for flow in attributedFlows {
+            var screenshots: [ScreenCapture.Screenshot] = []
             var isDirectory: ObjCBool = false
-            guard fileManager.fileExists(atPath: flow.assetsURL.path, isDirectory: &isDirectory),
-                  isDirectory.boolValue else {
-                continue
+            if fileManager.fileExists(atPath: flow.assetsURL.path, isDirectory: &isDirectory), isDirectory.boolValue {
+                let screenshotFiles = try fileManager.contentsOfDirectory(atPath: flow.assetsURL.path)
+                    .filter { $0.lowercased().hasSuffix(".png") && !RunnerTraceTrimmer.isStepShot($0) }
+                    .sorted()
+
+                for file in screenshotFiles {
+                    let sourceURL = try confinedURL(
+                        relativePath: file,
+                        beneath: flow.assetsURL,
+                        description: "screenshot for \(flow.id)"
+                    )
+                    let artifactName = sourceURL.deletingPathExtension().lastPathComponent
+                    let screenshotName = "\(flow.userName)-\(artifactName)"
+                    let destinationURL = URL(fileURLWithPath: outputDir, isDirectory: true)
+                        .appendingPathComponent("\(screenshotName).png")
+                        .standardizedFileURL
+
+                    guard assignedDestinations.insert(destinationURL.path).inserted else {
+                        throw invalidReport("multiple artifacts resolve to \(destinationURL.lastPathComponent)")
+                    }
+                    if fileManager.fileExists(atPath: destinationURL.path) {
+                        try fileManager.removeItem(at: destinationURL)
+                    }
+                    try fileManager.copyItem(at: sourceURL, to: destinationURL)
+                    screenshots.append(.init(name: screenshotName, path: destinationURL.path))
+                }
             }
 
-            let screenshotFiles = try fileManager.contentsOfDirectory(atPath: flow.assetsURL.path)
-                .filter { $0.lowercased().hasSuffix(".png") }
-                .sorted()
-
-            for file in screenshotFiles {
-                let sourceURL = try confinedURL(
-                    relativePath: file,
-                    beneath: flow.assetsURL,
-                    description: "screenshot for \(flow.id)"
-                )
-                let artifactName = sourceURL.deletingPathExtension().lastPathComponent
-                let screenshotName = "\(flow.userName)-\(artifactName)"
-                let destinationURL = URL(fileURLWithPath: outputDir, isDirectory: true)
-                    .appendingPathComponent("\(screenshotName).png")
-                    .standardizedFileURL
-
-                guard assignedDestinations.insert(destinationURL.path).inserted else {
-                    throw invalidReport("multiple artifacts resolve to \(destinationURL.lastPathComponent)")
-                }
-                if fileManager.fileExists(atPath: destinationURL.path) {
-                    try fileManager.removeItem(at: destinationURL)
-                }
-                try fileManager.copyItem(at: sourceURL, to: destinationURL)
-                let data = try Data(contentsOf: destinationURL)
-                captures.append(ScreenCapture(
-                    screenName: screenshotName,
-                    path: destinationURL.path,
-                    sizeBytes: data.count,
-                    steps: [
-                        StepResult(
-                            action: "Run flow \"\(flow.userName)\"",
-                            status: .passed,
-                            duration: 0
-                        ),
-                    ]
-                ))
+            let reportFlow = reportFlows.first { $0.id == flow.id }
+            var steps = reportFlow.map { RunnerReportSteps.steps(RunnerReportSteps.commands(of: $0, in: reportDir)) } ?? []
+            if steps.isEmpty {
+                let passed = reportFlow?.status.map { $0 == "passed" } ?? true
+                steps = [StepResult(
+                    action: "Run flow \"\(flow.userName)\"", status: passed ? .passed : .failed,
+                    duration: nil, message: passed ? nil : reportFlow?.error
+                )]
             }
+            entries.append(ScreenCapture(
+                screenName: flow.userName, path: "", sizeBytes: 0, steps: steps,
+                kind: .flow, screenshots: screenshots
+            ))
         }
 
-        return captures
+        return entries
     }
 
     static func attributedFlows(

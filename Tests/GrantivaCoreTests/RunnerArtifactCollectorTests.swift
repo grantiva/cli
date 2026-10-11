@@ -35,8 +35,9 @@ final class RunnerArtifactCollectorTests: XCTestCase {
             ]
         )
 
-        XCTAssertEqual(captures.map(\.screenName), ["first-shot", "second-shot"])
-        XCTAssertEqual(try captures.map(contents), ["first", "second"])
+        XCTAssertEqual(captures.map(\.screenName), ["first", "second"])
+        XCTAssertEqual(shots(captures).map(\.name), ["first-shot", "second-shot"])
+        XCTAssertEqual(try shots(captures).map(contents), ["first", "second"])
     }
 
     func testIgnoresUnlistedAssetDirectories() throws {
@@ -50,8 +51,8 @@ final class RunnerArtifactCollectorTests: XCTestCase {
             paths: ["current.yaml"], map: ["/staged/current.yaml": "current.yaml"]
         )
 
-        XCTAssertEqual(captures.map(\.screenName), ["current-shot"])
-        XCTAssertEqual(try captures.map(contents), ["current"])
+        XCTAssertEqual(shots(captures).map(\.name), ["current-shot"])
+        XCTAssertEqual(try shots(captures).map(contents), ["current"])
     }
 
     func testDuplicateBasenamesReceiveStableSuffixesWithoutOverwriting() throws {
@@ -70,9 +71,9 @@ final class RunnerArtifactCollectorTests: XCTestCase {
             ]
         )
 
-        XCTAssertEqual(captures.map(\.screenName), ["login-1-shot", "login-2-shot"])
-        XCTAssertEqual(try captures.map(contents), ["smoke", "regression"])
-        XCTAssertEqual(Set(captures.map(\.path)).count, 2)
+        XCTAssertEqual(shots(captures).map(\.name), ["login-1-shot", "login-2-shot"])
+        XCTAssertEqual(try shots(captures).map(contents), ["smoke", "regression"])
+        XCTAssertEqual(Set(shots(captures).map(\.path)).count, 2)
     }
 
     func testRejectsAssetDirectoryTraversal() throws {
@@ -103,7 +104,7 @@ final class RunnerArtifactCollectorTests: XCTestCase {
             ]
         )
 
-        XCTAssertEqual(captures.map(\.screenName), ["checkout-shot", "profile-shot"])
+        XCTAssertEqual(shots(captures).map(\.name), ["checkout-shot", "profile-shot"])
     }
 
     private func collect(paths: [String], map: [String: String]) throws -> [ScreenCapture] {
@@ -115,8 +116,12 @@ final class RunnerArtifactCollectorTests: XCTestCase {
         )
     }
 
-    private func contents(_ capture: ScreenCapture) throws -> String {
-        try String(contentsOfFile: capture.path, encoding: .utf8)
+    private func shots(_ captures: [ScreenCapture]) -> [ScreenCapture.Screenshot] {
+        captures.flatMap(\.screenshots)
+    }
+
+    private func contents(_ shot: ScreenCapture.Screenshot) throws -> String {
+        try String(contentsOfFile: shot.path, encoding: .utf8)
     }
 
     private func writeAsset(_ contents: String, directory: String) throws {

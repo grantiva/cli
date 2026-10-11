@@ -92,7 +92,7 @@ struct CIComparisonPipeline {
             let steps = capture.steps.map {
                 RunStepUpload(
                     action: $0.action, status: $0.status.rawValue,
-                    duration: $0.duration, message: $0.message
+                    duration: $0.duration ?? 0, message: $0.message
                 )
             }
 
