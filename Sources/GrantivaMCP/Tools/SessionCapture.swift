@@ -101,7 +101,7 @@ extension VRTTools {
             let captures: [ScreenCapture]
             do {
                 captures = try await captureScreens(
-                    config.screens, appID: appID, udid: udid, driver: driver, device: device,
+                    config.screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
                     outputDir: outputDir, pause: pause
                 )
             } catch {
@@ -131,12 +131,13 @@ extension VRTTools {
     /// One continuous pass, like the generated runner flow: launch the app
     /// once, then each screen's steps followed by its screenshot.
     private static func captureScreens(
-        _ screens: [GrantivaConfig.Screen], appID: String, udid: String, driver: DriverClient,
+        _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
         device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {
         try? await device.terminate(appID: appID, deviceID: udid)
         try await device.launch(appID: appID, deviceID: udid)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
+        let rules = await SelectorRules.current(platform: platform, driver: driver)
 
         var captures: [ScreenCapture] = []
         for screen in screens {
@@ -146,7 +147,7 @@ extension VRTTools {
                     let action = RunnerSession.stepAction(for: step)
                     let stepStart = Date()
                     do {
-                        try await run(step, driver: driver, pause: pause)
+                        try await run(step, rules: rules, driver: driver, pause: pause)
                     } catch {
                         throw StepFailure(screen: screen.name, step: index + 1, action: action, reason: describe(error))
                     }
@@ -170,10 +171,11 @@ extension VRTTools {
 
     /// Runs the actions a step carries, in the order the runner flow does.
     private static func run(
-        _ step: GrantivaConfig.Screen.Step, driver: DriverClient, pause: @escaping @Sendable (Double) async -> Void
+        _ step: GrantivaConfig.Screen.Step, rules: SelectorRules, driver: DriverClient,
+        pause: @escaping @Sendable (Double) async -> Void
     ) async throws {
         if let label = step.tap {
-            let selector = Selector(pattern: label, byId: step.tapById, exact: step.tapExact)
+            let selector = Selector(pattern: label, byId: step.tapById, exact: step.tapExact, rules: rules)
             guard let element = try await waitForElement(selector, driver: driver, pause: pause) else {
                 throw GrantivaError.elementNotFound(label)
             }
@@ -198,36 +200,67 @@ extension VRTTools {
             await settle(driver: driver, timeout: seconds, pause: pause)
         }
         if let label = step.assertVisible {
-            let selector = Selector(pattern: label, byId: step.assertVisibleById, exact: step.assertVisibleExact)
+            let selector = Selector(pattern: label, byId: step.assertVisibleById, exact: step.assertVisibleExact, rules: rules)
             guard try await waitForElement(selector, driver: driver, pause: pause) != nil else {
                 throw GrantivaError.notFound("\"\(label)\" is not visible after \(Int(lookupTimeout))s.")
             }
         }
         if let label = step.assertNotVisible {
-            let selector = Selector(pattern: label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact)
+            let selector = Selector(pattern: label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, rules: rules)
             guard try await waitForAbsence(selector, driver: driver, pause: pause) else {
                 throw GrantivaError.notFound("\"\(label)\" is still visible after \(Int(lookupTimeout))s.")
             }
         }
     }
 
-    /// A step's element selector, matched as grantiva-runner matches it:
-    /// text is a case-insensitive regex over the whole value (literal
-    /// equality also matches); `exact` is the whole value in its own case;
-    /// an id is the accessibility identifier.
+    /// Which element attributes a selector reads on this device, as the
+    /// bundled grantiva-runner (1.1.28-grantiva.9) reads them.
+    struct SelectorRules: Sendable {
+        let platform: Platform
+        /// iOS: the agent reports the `identifier` attribute (on every
+        /// element, empty when unset). Without it an `id:` reads WDA's
+        /// `name`, which falls back to the label.
+        let identifierReported: Bool
+
+        static func current(platform: Platform, driver: DriverClient) async -> SelectorRules {
+            guard platform == .ios else { return SelectorRules(platform: platform, identifierReported: true) }
+            let source = (try? await driver.hierarchyXML()) ?? ""
+            let reported = source.contains(" identifier=\"")
+            if !reported {
+                GrantivaLog.logger.warning(
+                    "WebDriverAgent does not report accessibility identifiers; id: selectors match WDA's name, which is the label when an element has no identifier."
+                )
+            }
+            return SelectorRules(platform: platform, identifierReported: reported)
+        }
+    }
+
+    /// A step's element selector, matched per platform as grantiva-runner
+    /// matches it. iOS: text reads label and value; `id:` reads the
+    /// accessibility identifier, ignoring case. Android: text reads text and
+    /// content-desc; `id:` reads the resource id, whole or after its last
+    /// `/`. Text is a case-insensitive regex over the whole value; `exact`
+    /// is the whole value as written.
     struct Selector {
         let pattern: String
         let byId: Bool
         let exact: Bool
+        let rules: SelectorRules
 
         func matches(_ element: [String: Any]) -> Bool {
             if byId {
-                if let identifier = element["identifier"] as? String, SelectorMatch.id(pattern, identifier) { return true }
-                // WDA reports the accessibility identifier as `name`; the
-                // runner looks it up with an exact name predicate.
-                return element["name"] as? String == pattern
+                switch rules.platform {
+                case .ios:
+                    let key = rules.identifierReported ? "identifier" : "name"
+                    return SelectorMatch.iosID(pattern, element[key] as? String ?? "")
+                case .android:
+                    return SelectorMatch.androidID(pattern, element["identifier"] as? String ?? "")
+                }
             }
-            return ["label", "name", "value", "text"].contains { key in
+            // UIAutomator2HierarchyParser puts text in `value` and
+            // content-desc in `name`.
+            let keys = rules.platform == .ios ? ["label", "value"] : ["value", "name"]
+            return keys.contains { key in
                 guard let value = element[key] as? String, !value.isEmpty else { return false }
                 return exact ? SelectorMatch.exactText(pattern, value) : SelectorMatch.text(pattern, value)
             }
@@ -244,7 +277,7 @@ extension VRTTools {
         while true {
             let found = visibleMatches(selector, in: try await driver.hierarchy())
             let preferred = found.first { element in
-                ["label", "name", "value", "text"].contains { element[$0] as? String == selector.pattern }
+                ["label", "name", "value"].contains { element[$0] as? String == selector.pattern }
             } ?? found.first
             if let preferred { return preferred }
             if Date() >= deadline { return nil }
@@ -318,37 +351,51 @@ extension VRTTools {
     }
 }
 
-/// grantiva-runner's selector text rules, so a capture through the session
-/// finds the same elements a `diff capture` run does.
+/// grantiva-runner's selector rules (1.1.28-grantiva.9), so a capture
+/// through the session finds the elements a `diff capture` run finds.
 enum SelectorMatch {
-    /// A text selector: a regex that must match the whole value, ignoring
-    /// case, with `.` matching line breaks; a value equal to the pattern
-    /// matches too, and each value is also tried with line breaks as spaces.
-    /// A pattern that is not a valid regex matches literally.
+    /// A text selector, on both platforms: a regex that must match the whole
+    /// value, ignoring case, with `.` matching line breaks; a value equal to
+    /// the pattern matches too, and each value is also tried with line
+    /// breaks as spaces. A pattern that is not a valid regex matches
+    /// literally. Both sides are NFC-normalized.
     static func text(_ pattern: String, _ value: String) -> Bool {
-        guard !pattern.isEmpty else { return false }
+        guard !pattern.isEmpty, !value.isEmpty else { return false }
+        let pattern = pattern.precomposedStringWithCanonicalMapping
+        let value = value.precomposedStringWithCanonicalMapping
         let flat = value.replacingOccurrences(of: "\n", with: " ")
         if value == pattern || flat == pattern { return true }
-        let regex = wholeRegex(pattern)
+        let regex = wholeRegex(pattern, options: [.caseInsensitive, .dotMatchesLineSeparators, .anchorsMatchLines])
         return wholeMatch(regex, value) || wholeMatch(regex, flat)
     }
 
-    /// `exact: true`: the whole value in the selector's own case.
+    /// `exact: true`: the whole value as written, case and all, never a regex.
     static func exactText(_ pattern: String, _ value: String) -> Bool {
-        value == pattern || value.replacingOccurrences(of: "\n", with: " ") == pattern
+        !value.isEmpty && value.precomposedStringWithCanonicalMapping == pattern.precomposedStringWithCanonicalMapping
     }
 
-    /// An id selector: the same regex over the whole identifier, or over
-    /// the part after its last `/` (`login` finds `com.app:id/login`).
-    static func id(_ pattern: String, _ identifier: String) -> Bool {
+    /// iOS `id:`: the accessibility identifier, ignoring case; an id that is
+    /// a regex must match the whole identifier. An element without one
+    /// matches no id.
+    static func iosID(_ pattern: String, _ identifier: String) -> Bool {
         guard !pattern.isEmpty, !identifier.isEmpty else { return false }
-        let regex = wholeRegex(pattern)
+        if pattern.caseInsensitiveCompare(identifier) == .orderedSame { return true }
+        guard NSRegularExpression.escapedPattern(for: pattern) != pattern,
+              let regex = try? NSRegularExpression(pattern: "\\A(?:\(pattern))\\z", options: [.caseInsensitive])
+        else { return false }
+        return wholeMatch(regex, identifier)
+    }
+
+    /// Android `id:`: the text rule's regex over the whole resource id, or
+    /// over the part after its last `/` (`login` finds `com.app:id/login`).
+    static func androidID(_ pattern: String, _ identifier: String) -> Bool {
+        guard !pattern.isEmpty, !identifier.isEmpty else { return false }
+        let regex = wholeRegex(pattern, options: [.caseInsensitive, .dotMatchesLineSeparators, .anchorsMatchLines])
         let suffix = identifier.split(separator: "/", omittingEmptySubsequences: false).last.map(String.init) ?? identifier
         return wholeMatch(regex, identifier) || wholeMatch(regex, suffix)
     }
 
-    private static func wholeRegex(_ pattern: String) -> NSRegularExpression {
-        let options: NSRegularExpression.Options = [.caseInsensitive, .dotMatchesLineSeparators, .anchorsMatchLines]
+    private static func wholeRegex(_ pattern: String, options: NSRegularExpression.Options) -> NSRegularExpression {
         if let regex = try? NSRegularExpression(pattern: "\\A(?:\(pattern))\\z", options: options) { return regex }
         let literal = NSRegularExpression.escapedPattern(for: pattern)
         // An escaped pattern always compiles.

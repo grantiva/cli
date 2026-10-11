@@ -249,11 +249,15 @@ final class SessionLifecycleTests: XCTestCase {
     }
 
     private func liveRegistry(
-        directory: URL, config: GrantivaConfig?, driver: DriverClient, device: MCPFakeDevicePlatform
+        directory: URL, config: GrantivaConfig?, driver: DriverClient, device: MCPFakeDevicePlatform,
+        platform: Platform = .ios
     ) -> ToolRegistry {
-        let session = RunnerSessionInfo(pid: getpid(), wdaPort: port, bundleId: "com.example.app", udid: udid, startedAt: Date(), platform: .ios)
+        let session = RunnerSessionInfo(
+            pid: getpid(), wdaPort: platform == .ios ? port : 0, bundleId: "com.example.app",
+            udid: platform == .ios ? udid : "emulator-5554", startedAt: Date(), platform: platform
+        )
         return ToolRegistry(
-            connection: .fixed(driver: driver, session: session), platform: .ios, device: device, config: config,
+            connection: .fixed(driver: driver, session: session), platform: platform, device: device, config: config,
             simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: nil,
             projectDirectory: directory
         )
@@ -346,14 +350,16 @@ final class SessionLifecycleTests: XCTestCase {
     /// One screen whose single step is `step`, captured through a session
     /// whose hierarchy is `hierarchy`; returns the result and the driver calls.
     private func captureOneStep(
-        _ step: GrantivaConfig.Screen.Step, hierarchy: String
+        _ step: GrantivaConfig.Screen.Step, hierarchy: String, platform: Platform = .ios,
+        sourceXML: String = #"<XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Demo" identifier="" label="Demo"/>"#
     ) async throws -> (CallTool.Result, [String]) {
         let directory = try temporaryDirectory()
         let recorder = WDARecorder()
+        var driver = MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: hierarchy)
+        driver.hierarchyXML = { sourceXML }
         let registry = liveRegistry(
             directory: directory, config: screensConfig([.init(name: "Screen", path: .steps([step]))]),
-            driver: MCPTestSupport.fakeDriver(recorder: recorder, hierarchyJSON: hierarchy),
-            device: MCPFakeDevicePlatform(platform: .ios)
+            driver: driver, device: MCPFakeDevicePlatform(platform: platform), platform: platform
         )
         let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
         return (result, recorder.calls)
@@ -366,8 +372,8 @@ final class SessionLifecycleTests: XCTestCase {
 
     private static let loginHierarchy = #"""
         {"type":"XCUIElementTypeApplication","children":[
-          {"type":"XCUIElementTypeOther","identifier":"com.app:id/login_button","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},
-          {"type":"XCUIElementTypeButton","identifier":"com.app:id/login","label":"Sign in","frame":{"x":100,"y":200,"width":40,"height":20},"children":[]},
+          {"type":"XCUIElementTypeOther","identifier":"login_button","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},
+          {"type":"XCUIElementTypeButton","identifier":"login","name":"login","label":"Sign in","frame":{"x":100,"y":200,"width":40,"height":20},"children":[]},
           {"type":"XCUIElementTypeStaticText","label":"Not advertising","frame":{"x":0,"y":300,"width":200,"height":20},"children":[]}
         ]}
         """#
@@ -420,6 +426,83 @@ final class SessionLifecycleTests: XCTestCase {
         try assertSucceeded(found)
         let (absent, _) = try await captureOneStep(.init(assertNotVisible: "Sign out"), hierarchy: Self.loginHierarchy)
         try assertSucceeded(absent)
+    }
+
+    // MARK: Per-platform rules (the bundled runner, 1.1.28-grantiva.9)
+
+    func testIOSTextMatchesLabelAndValueOnlyNeverTheName() async throws {
+        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","name":"settings_button","label":"Gear","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},{"type":"XCUIElementTypeTextField","value":"Search","frame":{"x":0,"y":50,"width":10,"height":10},"children":[]}]}"#
+        let (byName, _) = try await captureOneStep(.init(tap: "settings_button"), hierarchy: hierarchy)
+        XCTAssertEqual(byName.isError, true, "an iOS text selector does not read name")
+        let (byValue, calls) = try await captureOneStep(.init(tap: "search"), hierarchy: hierarchy)
+        try assertSucceeded(byValue)
+        XCTAssertTrue(calls.contains("tapByCoordinate(5.0,55.0)"), "\(calls)")
+    }
+
+    func testPlainTextIsAWholeValueMatchOnBothPlatforms() async throws {
+        let ios = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeStaticText","label":"Talk · Open","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]}]}"#
+        let android = #"{"type":"android.widget.FrameLayout","children":[{"type":"android.widget.TextView","label":"Talk · Open","value":"Talk · Open","frame":{"x":"0","y":"0","width":"10","height":"10"},"children":[]}]}"#
+        let (onIOS, _) = try await captureOneStep(.init(tap: "Open"), hierarchy: ios)
+        XCTAssertEqual(onIOS.isError, true)
+        let (onAndroid, _) = try await captureOneStep(.init(tap: "Open"), hierarchy: android, platform: .android)
+        XCTAssertEqual(onAndroid.isError, true)
+    }
+
+    func testIOSIdMatchesTheIdentifierIgnoringCaseWithoutASuffixRule() async throws {
+        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","identifier":"com.app/Login","label":"Sign in","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},{"type":"XCUIElementTypeButton","identifier":"LoginButton","name":"LoginButton","label":"Go","frame":{"x":0,"y":40,"width":10,"height":10},"children":[]}]}"#
+        var exactCase = GrantivaConfig.Screen.Step(tap: "loginbutton")
+        exactCase.tapById = true
+        let (found, calls) = try await captureOneStep(exactCase, hierarchy: hierarchy)
+        try assertSucceeded(found)
+        XCTAssertTrue(calls.contains("tapByCoordinate(5.0,45.0)"), "\(calls)")
+        var suffix = GrantivaConfig.Screen.Step(tap: "Login")
+        suffix.tapById = true
+        let (miss, _) = try await captureOneStep(suffix, hierarchy: hierarchy)
+        XCTAssertEqual(miss.isError, true, "iOS ids have no last-component rule")
+    }
+
+    /// The agent reports `identifier` on every element (empty when unset):
+    /// an element with only a label matches no id, although WDA's `name`
+    /// falls back to that label.
+    func testIOSIdNeverMatchesTheLabelFallbackWhenTheAgentReportsIdentifiers() async throws {
+        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeCell","name":"General","label":"General","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]}]}"#
+        var step = GrantivaConfig.Screen.Step(tap: "General")
+        step.tapById = true
+        let (result, _) = try await captureOneStep(step, hierarchy: hierarchy)
+        XCTAssertEqual(result.isError, true)
+    }
+
+    /// An agent without the identifier attribute: the runner falls back to
+    /// `name`, ignoring case.
+    func testIOSIdFallsBackToNameWhenTheAgentDoesNotReportIdentifiers() async throws {
+        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeCell","name":"General","label":"General","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]}]}"#
+        var step = GrantivaConfig.Screen.Step(tap: "general")
+        step.tapById = true
+        let (result, calls) = try await captureOneStep(
+            step, hierarchy: hierarchy, sourceXML: #"<XCUIElementTypeApplication type="XCUIElementTypeApplication" name="Demo" label="Demo"/>"#
+        )
+        try assertSucceeded(result)
+        XCTAssertTrue(calls.contains("tapByCoordinate(5.0,5.0)"), "\(calls)")
+    }
+
+    func testAndroidTextMatchesTextOrContentDescAndIdKeepsTheSuffixRule() async throws {
+        // label/name carry content-desc, value carries text (UIAutomator2HierarchyParser).
+        let hierarchy = #"{"type":"android.widget.FrameLayout","children":[{"type":"android.widget.Button","label":"Submit form","name":"Submit form","value":"Send","identifier":"com.app:id/login","frame":{"x":"10","y":"20","width":"40","height":"20"},"children":[]}]}"#
+        let (byText, calls) = try await captureOneStep(.init(tap: "send"), hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(byText)
+        XCTAssertTrue(calls.contains("tapByCoordinate(30.0,30.0)"), "\(calls)")
+        let (byDesc, _) = try await captureOneStep(.init(tap: "submit FORM"), hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(byDesc)
+        var byId = GrantivaConfig.Screen.Step(tap: "login")
+        byId.tapById = true
+        let (suffix, _) = try await captureOneStep(byId, hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(suffix)
+        let (textIsNotId, _) = try await captureOneStep(.init(tap: "com.app:id/login"), hierarchy: hierarchy, platform: .android)
+        XCTAssertEqual(textIsNotId.isError, true)
+        var exact = GrantivaConfig.Screen.Step(tap: "send")
+        exact.tapExact = true
+        let (exactMiss, _) = try await captureOneStep(exact, hierarchy: hierarchy, platform: .android)
+        XCTAssertEqual(exactMiss.isError, true)
     }
 
     func testASwipeWithADurationIsRefusedBeforeTouchingTheDevice() async throws {
