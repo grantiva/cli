@@ -1,0 +1,82 @@
+## runner start
+OVERVIEW: Start the runner with WDA (UIAutomator2 on Android) and keep it alive
+for interactive use.
+
+## runner
+OVERVIEW: Manage the embedded UI automation runner.
+
+USAGE: grantiva runner <subcommand>
+--
+  start                   Start the runner with WDA (UIAutomator2 on Android)
+                          and keep it alive for interactive use.
+  stop                    Stop the running runner session.
+## runner dump-hierarchy
+OVERVIEW: Dump the view hierarchy from a running app for agent inspection.
+
+USAGE: grantiva runner dump-hierarchy [--json] [--verbose] [--quiet] [--port <port>] [--format <format>] [--udid <udid>]
+
+OPTIONS:
+--
+  -p, --port <port>       Driver port: WDA on iOS, the forwarded UIAutomator2
+                          port on Android (auto-detected from the active
+                          session if omitted)
+## hierarchy
+OVERVIEW: Dump the UI hierarchy of a booted simulator or emulator without
+relaunching the app.
+
+--
+USAGE: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+
+OPTIONS:
+--
+  --timeout <timeout>     Seconds to wait for GrantivaAgent's (iOS) or
+                          UIAutomator2's (Android) page-source response.
+                          Default: 60. (default: 60.0)
+## run
+OVERVIEW: Run Maestro flows against a simulator or emulator. No visual
+regression — reports step pass/fail and captures a screenshot on failure.
+
+--
+  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
+                          (iOS), .apk (Android). Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the device. With --app-file, that file is
+                          installed (only the build is skipped).
+  --derived-data-path <derived-data-path>
+--
+  --timeout <timeout>     Max seconds to wait for the runner subprocess before
+                          killing it with SIGTERM. Default: 600 (10 min).
+                          Minimum 30. Ignored under --keep-alive. Bump this for
+## build install
+OVERVIEW: Build and install the app on a simulator or emulator, then optionally
+launch it.
+
+--
+  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
+                          (iOS), .apk (Android). Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the device. With --app-file, that file is
+                          installed (only the build is skipped).
+  --derived-data-path <derived-data-path>
+## diff capture
+OVERVIEW: Navigate to configured screens and capture screenshots.
+
+USAGE: grantiva diff capture <options>
+--
+  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
+                          (iOS), .apk (Android). Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the device. With --app-file, that file is
+                          installed (only the build is skipped).
+  --derived-data-path <derived-data-path>
+## ci run
+OVERVIEW: Run full CI pipeline: capture screenshots, compare against baselines,
+upload results.
+
+--
+  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
+                          (iOS), .apk (Android). Skips the build step.
+  --no-build              Skip building and installing — assume the app is
+                          already on the device. With --app-file, that file is
+                          installed (only the build is skipped).
+  --derived-data-path <derived-data-path>

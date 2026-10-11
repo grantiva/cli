@@ -1,0 +1,32 @@
+
+extension GrantivaError {
+    /// The one "no session" error (K46) for `hierarchy`, `runner
+    /// dump-hierarchy` and the MCP session tools: what is missing, then how to
+    /// start one. `sessionFile` and `directory` name where the MCP server
+    /// looked; `orPassPort` adds dump-hierarchy's escape hatch; `ignored`
+    /// counts keep-alive sessions passed over because they belong elsewhere.
+    public static func noRunnerSession(
+        sessionFile: String? = nil, directory: String? = nil, orPassPort: Bool = false, ignored: Int = 0
+    ) -> GrantivaError {
+        var text = "No active runner session"
+        if let sessionFile { text += " at \(sessionFile)" }
+        text += ". Start one with `grantiva runner start` or `grantiva run --keep-alive`"
+        if let directory { text += " in \(directory)" }
+        if orPassPort { text += ", or pass --port" }
+        text += "."
+        if ignored > 0 {
+            text += " \(ignored) keep-alive session(s) started from another project directory or for another platform were ignored."
+        }
+        return .notFound(text)
+    }
+}
+docs/dump-hierarchy.md:57:`grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--ke
+docs/mcp.md:29:``Error: No active runner session at <project>/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in <project>.``
+docs/mcp.md:118:`No active runner session ... Start one with ...` or `The runner session is starting ... Retry in a few
+Tests/GrantivaMCPTests/SessionLifecycleTests.swift
+Tests/GrantivaMCPTests/MCPTransportTests.swift
+Tests/GrantivaMCPTests/MCPServerTests.swift
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift
+Tests/GrantivaCoreTests/KeepAliveSessionStoreTests.swift
+Tests/GrantivaCLITests/HierarchyCommandTests.swift
+Tests/GrantivaCLITests/DumpHierarchyCommandTests.swift

@@ -1,0 +1,163 @@
+OK README.md:7 [mcp] grantiva mcp
+OK README.md:27 [runner_install] grantiva runner install
+OK README.md:38 [doctor] grantiva doctor
+OK README.md:41 [init] grantiva init
+OK README.md:44 [runner_install] grantiva runner install
+OK README.md:47 [run] grantiva run --flow flows/onboarding.yaml
+OK README.md:50 [auth_login] grantiva auth login
+OK README.md:53 [ci_run] grantiva ci run
+OK README.md:76 [run] grantiva run --flow flows/onboarding.yaml --keep-alive --logs
+OK README.md:79 [hierarchy] grantiva hierarchy > state.xml
+OK README.md:86 [run] grantiva run --flow flows/advertise.yaml --keep-alive --ready-file /tmp/advertise.ready
+OK README.md:97 [hierarchy] grantiva hierarchy
+OK README.md:98 [runner_start] grantiva runner start
+OK README.md:98 [runner_stop] grantiva runner stop
+OK README.md:109 [init] grantiva init
+OK README.md:178 [run] grantiva run --flow
+OK README.md:192 [runner_install] grantiva runner install
+OK README.md:214 [ci_run] grantiva ci run
+OK README.md:223 [ci_run] grantiva ci run --app-file ./build/MyApp.app
+OK README.md:226 [ci_run] grantiva ci run --app-file ./artifacts/MyApp.ipa
+OK README.md:229 [ci_run] grantiva ci run --no-build
+OK README.md:236 [build_install] grantiva build install --no-launch
+OK README.md:251 [run] grantiva run \
+OK README.md:279 [runner_start] grantiva runner start
+OK README.md:282 [runner_stop] grantiva runner stop
+OK README.md:286 [init] grantiva init
+OK README.md:324 [ci_run] grantiva ci run --app-file ./app/MyApp.app
+CHECK README.md:332 [run] grantiva run                Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow  unknown flags ['--keep-alive,', '--logs,']
+OK README.md:333 [record] grantiva record             Record a simulator or emulator and extract PNG frames at exact requested timestamps
+OK README.md:334 [hierarchy] grantiva hierarchy          Dump the UI hierarchy of a booted simulator or emulator without relaunching the app (reads a
+OK README.md:335 [build] grantiva build
+OK README.md:335 [build_build] grantiva build build        Build the app for a simulator (xcodebuild
+OK README.md:335 [build] grantiva build
+OK README.md:336 [build_install] grantiva build install      Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip
+OK README.md:337 [ci_run] grantiva ci run             Run full CI pipeline: capture screenshots, compare against baselines, upload results
+OK README.md:338 [diff_capture] grantiva diff capture       Navigate to configured screens and capture screenshots
+OK README.md:339 [diff_compare] grantiva diff compare       Diff current captures against baselines
+OK README.md:340 [diff_approve] grantiva diff approve       Promote current captures to baselines
+OK README.md:341 [simulator_ensure] grantiva simulator ensure   Create or reuse a named simulator and boot it (--name alone reuses an existing one
+OK README.md:342 [simulator_delete] grantiva simulator delete   Explicitly delete a named simulator
+OK README.md:343 [simulator_sessions] grantiva simulator sessions List Grantiva-managed simulator capacity slots
+OK README.md:344 [simulator_teardown] grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force
+OK README.md:345 [simulator_cleanup] grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
+OK README.md:346 [emulator_ensure] grantiva emulator ensure    Create the AVD when missing (installing its system image first
+OK README.md:347 [emulator_delete] grantiva emulator delete    Delete an AVD Grantiva created
+OK README.md:348 [emulator_sessions] grantiva emulator sessions  List the emulators Grantiva started
+CHECK README.md:349 [emulator_teardown] grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all  unknown flags ['--serial,']
+OK README.md:350 [console] grantiva console --help
+OK README.md:350 [console] grantiva console            Manage your Grantiva dashboard from the terminal (see
+OK README.md:350 [console] grantiva console --help
+OK README.md:351 [auth_login] grantiva auth login         Authenticate with Grantiva API
+OK README.md:352 [auth_status] grantiva auth status        Show current authentication status
+OK README.md:353 [auth_logout] grantiva auth logout        Remove saved authentication credentials
+OK README.md:354 [doctor] grantiva doctor             Check environment and dependencies (non-zero exit if a required check fails
+OK README.md:355 [runner_install] grantiva runner install     Extract or update the embedded runner binary
+OK README.md:356 [runner_version] grantiva runner version     Show the embedded runner version
+OK README.md:357 [runner_start] grantiva runner start       Start the runner with WDA (UIAutomator2 on Android
+OK README.md:358 [runner_stop] grantiva runner stop        Stop the running runner session
+OK README.md:359 [runner_dump-hierarchy] grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
+OK README.md:360 [mcp] grantiva mcp                Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md
+OK README.md:361 [init] grantiva init               Generate grantiva.yml (iOS
+OK README.md:364 [record] grantiva record --duration <s> --frames-at <ms,...>
+OK README.md:376 [console] grantiva console
+OK README.md:384 [console] grantiva console --help
+OK README.md:385 [console_flags] grantiva console flags --help
+OK README.md:388 [console_analytics_overview] grantiva console analytics overview --days 30
+OK README.md:389 [console_vrt_runs_list] grantiva console vrt runs list my-project
+OK README.md:390 [console_webhooks_list] grantiva console webhooks list
+OK README.md:394 [grantiva] grantiva <command> --help
+OK README.md:438 [simulator_ensure] grantiva simulator ensure --name "iPhone 17 Pro"
+OK README.md:439 [doctor] grantiva doctor --json
+OK README.md:442 [doctor] grantiva doctor
+OK README.md:501 [doctor] grantiva doctor --json --quiet | jq
+OK README.md:518 [simulator_ensure] grantiva simulator ensure --name "APP-652 iPhone 17 Pro"
+OK README.md:520 [simulator_teardown] grantiva simulator teardown --session-id APP-652
+OK README.md:527 [simulator_ensure] grantiva simulator ensure --name "iPhone 17 Pro"
+OK README.md:528 [run] grantiva run --simulator "$udid" --flow flows/login.yaml
+OK README.md:551 [simulator_teardown] grantiva simulator teardown --udid "$UDID" --force
+OK README.md:577 [runner_start] grantiva runner start
+OK README.md:578 [runner_stop] grantiva runner stop
+OK README.md:584 [run] grantiva run
+OK README.md:617 [simulator_teardown] grantiva simulator teardown --session-id <id>
+OK README.md:625 [diff_capture] grantiva diff capture
+OK README.md:628 [diff_compare] grantiva diff compare
+OK README.md:631 [diff_approve] grantiva diff approve
+OK README.md:636 [run] grantiva run
+OK README.md:641 [diff_approve] grantiva diff approve
+OK docs/android-environment.md:20 [ci_run] grantiva ci run --platform android
+OK docs/android-environment.md:23 [diff_capture] grantiva diff capture
+OK docs/android-environment.md:23 [diff_compare] grantiva diff compare
+OK docs/android-environment.md:24 [diff_approve] grantiva diff approve
+OK docs/android.md:12 [init] grantiva init --platform android
+OK docs/android.md:13 [doctor] grantiva doctor
+OK docs/android.md:52 [emulator_ensure] grantiva emulator ensure 
+OK docs/android.md:54 [build_build] grantiva build build
+OK docs/android.md:58 [build_install] grantiva build install
+OK docs/android.md:97 [run] grantiva run
+OK docs/android.md:112 [run] grantiva run --logs
+OK docs/android.md:131 [run] grantiva run --keep-alive
+OK docs/android.md:132 [hierarchy] grantiva hierarchy
+OK docs/android.md:133 [hierarchy] grantiva hierarchy --format json
+OK docs/android.md:142 [record] grantiva record --duration 5 --frames-at 0,1000,3000
+OK docs/android.md:166 [runner_start] grantiva runner start --detach
+OK docs/android.md:167 [runner_dump-hierarchy] grantiva runner dump-hierarchy --format tree
+OK docs/android.md:168 [mcp] grantiva mcp
+OK docs/android.md:169 [runner_stop] grantiva runner stop
+OK docs/android.md:174 [mcp] grantiva mcp --platform ios|android
+OK docs/android.md:187 [runner_start] grantiva runner start
+OK docs/android.md:187 [run] grantiva run --keep-alive
+OK docs/android.md:191 [runner_start] grantiva runner start
+OK docs/android.md:192 [run] grantiva run --keep-alive
+OK docs/android.md:201 [emulator_ensure] grantiva emulator ensure --name Pixel_8_API_35
+OK docs/android.md:202 [emulator_ensure] grantiva emulator ensure --name Pixel_8_API_35 --no-boot
+OK docs/android.md:203 [emulator_sessions] grantiva emulator sessions
+OK docs/android.md:204 [emulator_teardown] grantiva emulator teardown --serial emulator-5554
+OK docs/android.md:205 [emulator_teardown] grantiva emulator teardown --all
+OK docs/android.md:206 [emulator_delete] grantiva emulator delete --name Pixel_8_API_35
+OK docs/dump-hierarchy.md:7 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:9 [run] grantiva run --keep-alive
+OK docs/dump-hierarchy.md:13 [run] grantiva run --keep-alive --flow flows/onboarding.yaml
+OK docs/dump-hierarchy.md:16 [hierarchy] grantiva hierarchy > state.xml
+OK docs/dump-hierarchy.md:18 [hierarchy] grantiva hierarchy --format json > state.json
+OK docs/dump-hierarchy.md:21 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:21 [runner_stop] grantiva runner stop
+OK docs/dump-hierarchy.md:23 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:30 [runner_dump-hierarchy] grantiva runner dump-hierarchy --format json
+OK docs/dump-hierarchy.md:41 [runner_dump-hierarchy] grantiva runner dump-hierarchy
+OK docs/dump-hierarchy.md:43 [runner_start] grantiva runner start
+OK docs/dump-hierarchy.md:43 [runner_stop] grantiva runner stop
+OK docs/dump-hierarchy.md:46 [runner_start] grantiva runner start --bundle-id com.example.myapp
+OK docs/dump-hierarchy.md:47 [runner_dump-hierarchy] grantiva runner dump-hierarchy --format json
+OK docs/dump-hierarchy.md:48 [runner_stop] grantiva runner stop
+OK docs/dump-hierarchy.md:53 [run] grantiva run --keep-alive
+OK docs/dump-hierarchy.md:53 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:57 [runner_dump-hierarchy] grantiva runner dump-hierarchy
+OK docs/dump-hierarchy.md:57 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:57 [runner_start] grantiva runner start
+OK docs/dump-hierarchy.md:57 [runner_start] grantiva runner start
+OK docs/dump-hierarchy.md:57 [run] grantiva run --keep-alive
+OK docs/dump-hierarchy.md:57 [hierarchy] grantiva hierarchy
+OK docs/dump-hierarchy.md:59 [runner_stop] grantiva runner stop
+OK docs/dump-hierarchy.md:59 [run] grantiva run --keep-alive
+OK docs/dump-hierarchy.md:59 [simulator_teardown] grantiva simulator teardown
+OK docs/dump-hierarchy.md:59 [emulator_teardown] grantiva emulator teardown
+OK docs/dump-hierarchy.md:73 [run] grantiva run
+OK docs/mcp.md:3 [mcp] grantiva mcp
+OK docs/mcp.md:6 [mcp] grantiva mcp --platform ios|android
+OK docs/mcp.md:14 [mcp] grantiva mcp
+OK docs/mcp.md:16 [runner_start] grantiva runner start
+OK docs/mcp.md:17 [run] grantiva run --keep-alive
+OK docs/mcp.md:18 [runner_start] grantiva runner start --detach
+OK docs/mcp.md:29 [runner_start] grantiva runner start
+OK docs/mcp.md:29 [run] grantiva run --keep-alive
+OK docs/mcp.md:34 [emulator_teardown] grantiva emulator teardown --serial emulator-5554
+OK docs/mcp.md:43 [runner_start] grantiva runner start
+OK docs/mcp.md:44 [run] grantiva run --keep-alive
+OK docs/mcp.md:74 [build_build] grantiva build build
+OK docs/mcp.md:101 [diff_capture] grantiva diff capture --no-build --json
+OK docs/mcp.md:101 [runner_stop] grantiva runner stop
+OK docs/mcp.md:102 [diff_compare] grantiva diff compare --json
+OK docs/mcp.md:102 [run] grantiva run
+OK docs/mcp.md:103 [diff_approve] grantiva diff approve [screens] --json
+# 162 examples, 2 to check

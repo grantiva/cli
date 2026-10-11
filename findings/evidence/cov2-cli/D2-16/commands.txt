@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-16
+$ DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --platform ios --json | jq -c "[.[].status] | unique"
+# exit=0 elapsed=.038s -> statuses.out / statuses.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-16
+$ DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --platform ios --json | jq -c ".[] | select(.status == \"error\") | .name"
+# exit=0 elapsed=.034s -> readme_filter.out / readme_filter.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-16
+$ $GRANTIVA doctor --json > w.json; echo doctor_rc=$?; jq -c "[.[].status] | unique" w.json
+# exit=0 elapsed=.248s -> warnings_only.out / warnings_only.err

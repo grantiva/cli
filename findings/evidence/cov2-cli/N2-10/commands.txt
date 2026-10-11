@@ -1,0 +1,12 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/N2-10
+$ $GRANTIVA init
+# exit=0 elapsed=.974s -> init.out / init.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/N2-10
+$ DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --json | jq -c ".[] | select(.name==\"Booted Simulator\")"
+# exit=0 elapsed=.036s -> doctor_advice.out / doctor_advice.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n -E 'timeout' Sources/GrantivaCore/Simulator/DefaultSimulator.swift | head
+# exit=0 elapsed=.011s -> timeout_source.out / timeout_source.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n 'DefaultSimulator' Sources/GrantivaCore/Doctor/DoctorRunner.swift
+# exit=0 elapsed=.009s -> doctor_source.out / doctor_source.err

@@ -1,0 +1,8 @@
+6:/// `udid` on iOS, `applicationId` + `serial` on Android). `bundle_id`, and
+7:/// `udid` on Android, are the 2.1 names, kept for one release (deprecated).
+53:                // `applicationId` is Android's name; `bundle_id` stays beside
+55:                try container.encode(appID, forKey: "applicationId")
+56:                try container.encode(appID, forKey: "bundle_id")
+58:                try container.encodeWithAlias(appID, "bundleId")
+62:            try container.encode(deviceID, forKey: "udid")
+63:            if android { try container.encode(deviceID, forKey: "serial") }

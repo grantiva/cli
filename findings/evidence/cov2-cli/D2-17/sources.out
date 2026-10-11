@@ -1,0 +1,72 @@
+Sources/GrantivaCore/Output/LegacyJSONKeys.swift
+Sources/GrantivaCore/Diff/DiffResult.swift
+Sources/GrantivaCore/Simulator/SimulatorDevice.swift
+Sources/GrantivaCLI/RunnerLifecycleDocument.swift
+20:    public static let renamed: [(camel: String, snake: String, commands: String)] = [
+21-        ("screenName", "screen_name", "diff capture, diff compare"),
+22-        ("sizeBytes", "size_bytes", "diff capture"),
+23-        ("pointDimensions", "point_dimensions", "diff capture, simulator ensure"),
+24-        ("pixelDimensions", "pixel_dimensions", "diff capture, simulator ensure"),
+25-        ("displayScale", "display_scale", "diff capture, simulator ensure"),
+26-        ("deviceType", "device_type", "simulator ensure"),
+27-        ("pixelDiffPercent", "pixel_diff_percent", "diff compare"),
+28-        ("perceptualDistance", "perceptual_distance", "diff compare"),
+29-        ("pixelThreshold", "pixel_threshold", "diff compare"),
+30-        ("perceptualThreshold", "perceptual_threshold", "diff compare"),
+31-        ("baselinePath", "baseline_path", "diff compare"),
+32-        ("capturePath", "capture_path", "diff compare"),
+33-        ("diffImagePath", "diff_image_path", "diff compare"),
+34-        ("approvedScreens", "approved_screens", "diff approve"),
+35-        ("baselineDirectory", "baseline_directory", "diff approve"),
+36-        ("bundleId", "bundle_id", "runner start, runner stop"),
+37-    ]
+38-
+39-    /// Aliases whose camelCase twin depends on the platform: on Android
+40-    /// `runner start/stop` write `bundle_id` beside `applicationId`.
+41-    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+42-
+43-    /// snake_case alias → its camelCase key.
+44-    public static let aliases: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.snake, $0.camel) })
+45-
+46-    /// camelCase key → its snake_case alias.
+47-    static let aliasOf: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.camel, $0.snake) })
+48-}
+49-
+50-extension KeyedEncodingContainer where K == LegacyJSONKeys {
+51-    /// Writes `value` under `key` and, when `LegacyJSONKeys.renamed` lists
+52-    /// one, under its snake_case alias too.
+53-    public mutating func encodeWithAlias<T: Encodable>(_ value: T, _ key: String) throws {
+54-        try encode(value, forKey: LegacyJSONKeys(stringValue: key))
+55-        if let alias = LegacyJSONKeys.aliasOf[key] {
+56-            try encode(value, forKey: LegacyJSONKeys(stringValue: alias))
+57-        }
+58-    }
+59-
+60-    /// `encodeWithAlias` for an optional, omitting both keys when nil.
+41:    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
+42-
+43-    /// snake_case alias → its camelCase key.
+44-    public static let aliases: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.snake, $0.camel) })
+45-
+46-    /// camelCase key → its snake_case alias.
+47-    static let aliasOf: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.camel, $0.snake) })
+48-}
+49-
+Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+
+452:- `screen_name` → `screenName` (diff capture, diff compare)
+453:- `size_bytes` → `sizeBytes` (diff capture)
+454:- `point_dimensions` → `pointDimensions` (diff capture, simulator ensure)
+455:- `pixel_dimensions` → `pixelDimensions` (diff capture, simulator ensure)
+456:- `display_scale` → `displayScale` (diff capture, simulator ensure)
+457:- `device_type` → `deviceType` (simulator ensure)
+458:- `pixel_diff_percent` → `pixelDiffPercent` (diff compare)
+459:- `perceptual_distance` → `perceptualDistance` (diff compare)
+460:- `pixel_threshold` → `pixelThreshold` (diff compare)
+461:- `perceptual_threshold` → `perceptualThreshold` (diff compare)
+462:- `baseline_path` → `baselinePath` (diff compare)
+463:- `capture_path` → `capturePath` (diff compare)
+464:- `diff_image_path` → `diffImagePath` (diff compare)
+465:- `approved_screens` → `approvedScreens` (diff approve)
+466:- `baseline_directory` → `baselineDirectory` (diff approve)
+467:- `bundle_id` → `bundleId` (runner start, runner stop; `applicationId` on Android)

@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-157
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva doctor --json | jq '.[] | select(.status == "error")'; echo "jq_rc=$?"
+# exit=0 elapsed=.196s -> readme_filter.out / readme_filter.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-157
+$ grantiva() { "$GRANTIVA" "$@"; }; DEVELOPER_DIR=/nonexistent grantiva doctor --json | jq -c '.[] | select(.status == "error")'; echo "jq_rc=$?"
+# exit=0 elapsed=.033s -> readme_filter_failing.out / readme_filter_failing.err

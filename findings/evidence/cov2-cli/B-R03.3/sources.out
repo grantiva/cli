@@ -1,0 +1,16 @@
+- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `fu
+- **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
+- **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`)
+  --snapshot <snapshot>   Snapshot policy: failure (default — one shot after
+                          failure), trailing (last-good step + failure step),
+                          full (every step). (values: failure, trailing, full;
+                          default: failure)
+  --continue-on-failure   Keep running remaining flows after a failure. Default
+                          is fail-fast — stop the suite on the first broken
+                          flow, which matches CI semantics and avoids wasting
+                          cycles.
+--
+  --timeout <timeout>     Max seconds to wait for the runner subprocess before
+                          killing it with SIGTERM. Default: 600 (10 min).
+                          Minimum 30. Ignored under --keep-alive. Bump this for
+                          long multi-flow suites. (default: 600)

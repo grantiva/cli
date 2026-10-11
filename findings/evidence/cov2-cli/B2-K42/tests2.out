@@ -1,0 +1,20 @@
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-142-        XCTAssertThrowsError(try SimulatorCommand.Teardown.parse(["--udid", "", "--force"])) { error in
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-143-            let message = String(describing: error)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:144:            XCTAssertTrue(message.contains("--udid is empty"), message)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-145-        }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-146-    }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-147-
+--
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-257-    func testTeardownUsageErrorsCarryNoInvalidArgumentPrefix() {
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-258-        let cases: [([String], String)] = [
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:259:            (["--udid", "", "--force"], "--udid is empty"),
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-260-            (["--udid", "not-a-udid-at-all", "--force"], "--udid not-a-udid-at-all is not a simulator UDID"),
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-261-            (["--session-id", ""], "--session-id is empty"),
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-262-        ]
+--
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-275-            let message = HierarchyCommand.message(for: error)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-276-            XCTAssertFalse(message.contains("Invalid argument"), message)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift:277:            XCTAssertTrue(message.hasPrefix("--udid is empty"), message)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-278-            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-279-        }
+Tests/GrantivaCLITests/SimulatorCommandTests.swift-280-        XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--udid", ""])) { error in

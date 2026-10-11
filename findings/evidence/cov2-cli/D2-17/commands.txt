@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -l 'LegacyJSONKeys' Sources | head; grep -n -A40 'static let renamed' $(grep -rl 'enum LegacyJSONKeys\|struct LegacyJSONKeys' Sources) | head -50; grep -n -A8 'platformTwins' $(grep -rl 'enum LegacyJSONKeys\|struct LegacyJSONKeys' Sources) | head -14; sed -n '/camelCase keys/,/^$/p' README.md; grep -n -E '^- .* → ' README.md
+# exit=0 elapsed=2.509s -> sources.out / sources.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n -E 'udid|serial|bundle_id|applicationId|encodeWithAlias' Sources/GrantivaCLI/RunnerLifecycleDocument.swift | head -20
+# exit=0 elapsed=.010s -> lifecycle_doc.out / lifecycle_doc.err

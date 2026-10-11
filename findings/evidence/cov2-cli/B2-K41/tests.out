@@ -1,0 +1,5 @@
+796:    func testANegativeTimeoutIsTheRangeErrorNotAMissingValue() throws {
+797-        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "-1"])) { error in
+798-            let message = RunCommand.message(for: error)
+799-            XCTAssertEqual(message, "--timeout must be at least 30 seconds.")
+800-            XCTAssertEqual(RunCommand.exitCode(for: error), .validationFailure)

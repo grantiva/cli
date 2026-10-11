@@ -1,0 +1,13 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-046
+$ $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.021s -> capture.out / capture.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-046
+$ $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.020s -> run.out / run.err
+# first fixture wrongly put 'launch' as a list item (README documents 'path: launch' as the scalar form); the capture/run above are that fixture's error. Fixed fixture follows (grantiva.yml replaced)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-046
+$ $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.259s -> capture_fixed.out / capture_fixed.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-046
+$ $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.258s -> run_fixed.out / run_fixed.err

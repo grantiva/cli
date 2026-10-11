@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -E 'leaseDirectory|leaseDir|runnerHome:' Sources/GrantivaCore/Runner/RunnerSession*.swift | cut -c1-200 | head -8; grep -rn -E 'TestHygiene|func testSuiteDoesNotWriteIntoTheRunnerHome|GRANTIVA_RUNNER_HOME' Tests .github/workflows/ci.yml | cut -c1-200 | head -12
+# exit=0 elapsed=.054s -> source.out / source.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -c 'leaseDirectory' Tests | grep -v ':0'; grep -rn -E 'leaseDirectory' Sources/GrantivaCore/Runner/RunnerManager.swift | head -5; grep -n -i -E 'runner_home|RUNNER_HOME|swift test' .github/workflows/ci.yml; grep -rln -E 'Hygiene|RunnerHome.*Empty|DoesNotWriteInto' Tests
+# exit=1 elapsed=.059s -> tests.out / tests.err
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression
+$ ls $GRANTIVA_RUNNER_HOME/locks | grep -c -E "FAKE|TEST-REPORT"; stat -f "%Sm %N" -t "%Y-%m-%dT%H:%M" $GRANTIVA_RUNNER_HOME/locks/FAKE-* $GRANTIVA_RUNNER_HOME/locks/TEST-REPORT-* 2>/dev/null | cut -c1-16 | sort | uniq -c | tail -6
+# exit=0 elapsed=.030s -> qa_home_locks.out / qa_home_locks.err

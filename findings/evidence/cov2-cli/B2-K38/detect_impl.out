@@ -1,0 +1,19 @@
+    }
+
+    /// The project's schemes, from the same `xcodebuild -list` detection
+    /// the resolver uses (`ProjectDetector.listSchemes`), so `init` and
+    /// `run` never disagree. nil when the directory has no Xcode project.
+    static func detectSchemes(in directory: String) async -> DetectedSchemes? {
+        let fm = FileManager.default
+        guard let contents = try? fm.contentsOfDirectory(atPath: directory) else { return nil }
+        let container = contents.sorted().first { $0.hasSuffix(".xcworkspace") && !$0.hasPrefix(".") }
+            ?? contents.sorted().first { $0.hasSuffix(".xcodeproj") && !$0.hasPrefix(".") }
+        guard let container else { return nil }
+        let name = (container as NSString).deletingPathExtension
+        let schemes = (try? await ProjectDetector.listSchemes(inDirectory: directory).schemes) ?? []
+        return DetectedSchemes(container: name, schemes: schemes)
+    }
+}
+70:        detector: ProjectDetector = .live,
+71:        loadCache: @Sendable () -> DetectedProject? = { ProjectDetector.loadCache() },
+72:        saveCache: @Sendable (DetectedProject) -> Void = { ProjectDetector.saveCache($0) },

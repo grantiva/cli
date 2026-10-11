@@ -1,0 +1,30 @@
+## Devices
+
+`emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
+With no `emulator:`, the order is: the one running emulator, else the one emulator still
+booting (waited on), else the only existing AVD (booted); otherwise the command fails and
+lists the AVDs. `--device <serial>` targets any attached device, including
+a physical one; it is used as is and never booted (`run` says `Using emulator: <name> (<serial>)`),
+and a serial that is not attached is an error naming the attached devices. On a physical device the demo-mode and animation settings are skipped
+unless `--allow-device-settings` is given. `--headless` boots without a window, and so do
+`GRANTIVA_EMULATOR_HEADLESS=1` (or `true`/`yes`) and `CI` set to any value other than empty,
+`0` or `false` (as CI services set it). Nothing else makes a boot windowless: without one of
+them an emulator Grantiva boots gets a window, even when stdout is not a terminal
+(`serial=$(grantiva emulator ensure ...)`, a pipe, an agent).
+
+`grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
+not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s
+ABI when given, else for this host's emulators (`arm64-v8a` on Apple silicon). A `--device`
+serial must already be attached; otherwise the command fails naming the attached devices.
+`grantiva build install` resolves the device as above and logs `Booting AVD <name> as
+<serial>` when it has to boot one.
+
+The application ID a run installs and tests is the app's own: the Gradle output metadata's
+`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+`application_id` in the config is used only when there is no app to read it from
+(`--no-build`); when it disagrees with the app, the app wins and a warning names both.
+`--application-id` overrides the test target, with a warning when it disagrees with the app;
+the APK is still installed under its own ID.
+
+`--no-build` skips the Gradle build and assumes the app is already installed: nothing is
+installed, and `build install --no-build` says `(install skipped)` in its `Done` line. With

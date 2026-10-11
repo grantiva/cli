@@ -1,0 +1,14 @@
+6c6,10
+< reports it as runnerSessionStopped.
+---
+> reports it as runnerSessionStopped. Without --force, a process still holding a
+> simulator the teardown deletes or shuts down that it did not start (a runner,
+> WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed:
+> a warning on stderr names its pid and command, --json lists it in
+> leftoverProcesses, and the teardown goes on. --force reclaims such processes.
+25c29,31
+<                           and reconciles the session registry.
+---
+>                           and reconciles the session registry. Without it, such
+>                           processes are only named (a stderr warning and
+>                           leftoverProcesses in --json).

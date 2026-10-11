@@ -1,0 +1,19 @@
+OVERVIEW: Start the Grantiva MCP server for AI agent integration.
+
+The server starts without a runner session or a config file. Device tools
+(grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot,
+grantiva_a11y_*, grantiva_script) need a runner session and return an error
+until one exists; they pick it up on the next call. The session is the
+project's .grantiva/session.json (grantiva runner start), or a grantiva run
+--keep-alive or runner start session started from the same project directory
+for the same platform. Sessions from other projects or the other platform are
+never used. Simulator, emulator, build, context, and VRT tools work without a
+session.
+
+The MCP server starts without a runner session and without a config file, so an agent can
+list tools and provision a device first. Only the device tools (`grantiva_tap`,
+`grantiva_swipe`, `grantiva_type`, `grantiva_screenshot`, `grantiva_a11y_tree`,
+`grantiva_a11y_check`, `grantiva_script`) need a session: until one exists they return an
+error naming `grantiva runner start` and `grantiva run --keep-alive`, and they pick up a
+session on the next call once it starts. Tools that need a config file say which file is
+missing.

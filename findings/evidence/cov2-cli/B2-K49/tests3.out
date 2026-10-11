@@ -1,0 +1,21 @@
+            .appendingPathComponent("grantiva-diff-approve-missing-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["Missing"], availableArtifacts: [], captureDirectory: directory.path, store: .failing
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            // K49: one sentence naming the screen and the directory, not
+            // the directory message wrapped around it.
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No capture found for \"Missing\" in \(directory.path). Run: grantiva diff capture"
+            )
+            XCTAssertFalse(error.localizedDescription.contains("No captures found in"))
+        }
+    }
+
+    // MARK: - K108: the failure line names the threshold that was exceeded

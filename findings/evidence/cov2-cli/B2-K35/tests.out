@@ -1,0 +1,15 @@
+Tests/GrantivaCoreTests/DoctorTests.swift:97:    func testAFailedRequiredCheckIsAFailure() {
+Tests/GrantivaCoreTests/DoctorTests.swift:103:    func testOptionalChecksAloneAreNotAFailure() {
+Tests/GrantivaCoreTests/DoctorTests.swift:139:    func testFooterCountsFailuresAlongsidePassedAndOptional() {
+Tests/GrantivaCoreTests/DoctorTests.swift:155:    func testAndroidSDKCheckIsAnErrorOnlyWhenAndroidIsRequired() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:160:        let missingOptional = runner.checkAndroidSDK(sdk: nil, required: false)
+Tests/GrantivaCoreTests/DoctorTests.swift:304:    func testRunAllChecksWithBothPlatformsOptionalNeverFails() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:305:        let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
+Tests/GrantivaCoreTests/DoctorTests.swift:311:    func testAdvisoryToolchainChecksAreNeverUnderRequired() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:312:        let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
+Tests/GrantivaCoreTests/DoctorTests.swift:321:    func testBootedSimulatorIsAdvisoryEvenForARequiredProject() async {
+Tests/GrantivaCoreTests/DoctorTests.swift:328:    func testAdvisorySectionIsPrintedUnderItsOwnHeadingAndEncoded() throws {
+Tests/GrantivaCoreTests/DoctorTests.swift:346:    func testNeverFailingChecksReportTheAdvisorySection() async throws {
+Tests/GrantivaCLITests/DoctorSelectionTests.swift:7:    func testSelectionFollowsFlagEnvConfigDirectoryThenBoth() throws {
+Tests/GrantivaCLITests/DoctorSelectionTests.swift:46:    func testBothProjectsDetectedWithoutAFlagIsAdviceNotAFailure() throws {
+Tests/GrantivaCLITests/DoctorSelectionTests.swift:64:    func testBothProjectsDetectedPutsNoAdvisoryCheckUnderRequired() async throws {

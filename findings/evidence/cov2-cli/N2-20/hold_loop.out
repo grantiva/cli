@@ -1,0 +1,75 @@
+        let timing: Timing
+        switch videoTiming(of: moov) {
+        case .success(let value): timing = value
+        case .failure(let error): return .failure(error)
+        }
+        guard var mvhd = moov.child("mvhd") else { return .failure(Unreadable("the moov has no mvhd box")) }
+        guard let movieScale = mvhd.timescale(), movieScale > 0, let movieDuration = mvhd.duration() else {
+            return .failure(Unreadable("the mvhd box is too short or has a zero timescale"))
+        }
+        let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
+
+        var heldAny = false
+        for index in moov.children.indices where moov.children[index].type == "trak" {
+            switch holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
+            case .failure(let error): return .failure(error)
+            case .success(let didHold): heldAny = heldAny || didHold
+            }
+        }
+        guard heldAny else { return .success(.unchanged(timing)) }
+        if movieDuration < movieTarget { mvhd.setDuration(movieTarget) }
+        moov.replaceChild(mvhd)
+
+        let oldSize = top[moovIndex].end - top[moovIndex].start
+        var newMoov = moov.serialized()
+        let growth = Int64(newMoov.count) - Int64(oldSize)
+        if growth != 0 {
+            // Chunk offsets that point past the moov move with it.
+            guard (try? moov.shiftChunkOffsets(after: UInt64(top[moovIndex].start), by: growth)) != nil else {
+                return .failure(Unreadable("a stco/co64 chunk offset leaves its range when the moov grows"))
+            }
+            newMoov = moov.serialized()
+        }
+        var output = [UInt8]()
+        output.reserveCapacity(bytes.count + newMoov.count - oldSize)
+        output += bytes[0..<top[moovIndex].start]
+        output += newMoov
+        output += bytes[top[moovIndex].end..<bytes.count]
+        return .success(.held(Held(data: Data(output), timing: timing)))
+    }
+
+    private static func parseMovie(_ bytes: [UInt8]) -> Result<(top: [Box], moovIndex: Int), Unreadable> {
+    /// for a track that is not video or already long enough, or the atom
+    /// that stopped it.
+    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Result<Bool, Unreadable> {
+        guard var mdia = trak.child("mdia") else { return .failure(Unreadable("a track has no mdia box")) }
+        guard mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .success(false) }
+        guard var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0, mdhd.duration() != nil else {
+            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
+        }
+        guard var tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration() else {
+            return .failure(Unreadable("the video track's tkhd box is missing or too short"))
+        }
+        guard var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
+              var entries = stts.sttsEntries(), !entries.isEmpty
+        else { return .failure(Unreadable("the video track has no readable stts box")) }
+        let mediaTarget = UInt64((seconds * Double(mediaScale)).rounded())
+        var current: UInt64 = 0
+        for entry in entries {
+            let (sum, overflow) = current.addingReportingOverflow(UInt64(entry.count) * UInt64(entry.delta))
+            guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
+            current = sum
+        }
+8:    func testSingleZeroLengthFrameIsHeldToTheRequestedDuration() throws {
+21:    func testRunOfEqualDeltasIsSplitAndChunkOffsetsFollowTheGrownMoov() throws {
+32:    func testRecordingAlreadyAsLongAsRequestedIsLeftAlone() {
+38:    func testVersion1BoxesAreHeldThroughTheir64BitFields() throws {
+52:    func testRecordedSecondsIsTheTrackLengthBeforeTheHold() throws {
+59:    func testShortHeaderBoxesAreLeftAloneInsteadOfTrapping() {
+71:    func testTimingReportsTheLastFramesStartAndTheTrackEnd() throws {
+82:    func testASingleFrameStartsAndEndsAtZero() throws {
+93:    func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
+106:    func testHoldFileReportsTheTimingOfAHeldTrack() throws {
+119:    func testAFileThatCannotBeParsedReportsWhy() throws {
+139:    func testOutOfRangeLengthAndMissingAtomsAreNamed() throws {
+164:    func testNonMP4InputIsLeftAlone() {

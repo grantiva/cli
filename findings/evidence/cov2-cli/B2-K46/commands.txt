@@ -1,0 +1,15 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn 'No active runner session' Sources | cut -c1-200; grep -rn -E 'case noActiveSession|noRunnerSession|static func noSession' Sources | cut -c1-160 | head
+# exit=0 elapsed=1.767s -> source.out / source.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ sed -n 100,125p Sources/GrantivaCore/GrantivaError.swift; grep -n 'No active runner session' docs/*.md | cut -c1-250; grep -rn -l 'No active runner session' Tests
+# exit=0 elapsed=.020s -> builder.out / builder.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-086
+$ $GRANTIVA runner dump-hierarchy
+# exit=1 elapsed=.019s -> cli_dump.out / cli_dump.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-086
+$ $GRANTIVA hierarchy
+# exit=1 elapsed=.018s -> cli_hierarchy.out / cli_hierarchy.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-086
+$ MCP_STDERR=/Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/evidence/cov2-cli/B2-K46/mcp.err bash findings/evidence/cov2-cli/inputs/send.sh /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K46-mcp - /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/evidence/cov2-cli/B2-K46/mcp.requests.jsonl > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/evidence/cov2-cli/B2-K46/mcp.out
+# exit=0

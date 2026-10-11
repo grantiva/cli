@@ -1,0 +1,12 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-011
+$ $GRANTIVA doctor --json
+# exit=0 elapsed=.256s -> doctor_json.out / doctor_json.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-011
+$ $GRANTIVA doctor --json | jq -e "type==\"array\" and all(.[]; has(\"status\"))"
+# exit=0 elapsed=.245s -> jq_valid.out / jq_valid.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-011
+$ env -u JAVA_HOME DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --json | jq -c ".[] | select(.status == \"error\")"; echo "pipestatus=${PIPESTATUS[*]}"
+# exit=0 elapsed=.054s -> readme_filter_failing.out / readme_filter_failing.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-011
+$ env -u JAVA_HOME DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --json | jq -c ".[] | select(.status == \"fail\")"; echo "pipestatus=${PIPESTATUS[*]}"
+# exit=0 elapsed=.046s -> row_filter_fail.out / row_filter_fail.err

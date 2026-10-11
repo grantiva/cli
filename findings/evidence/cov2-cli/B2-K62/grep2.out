@@ -1,0 +1,14 @@
+---
+11:///     grantiva doctor --json | jq '.[] | select(.status == "error")'
+
+```bash
+udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
+grantiva doctor --json | jq '.[] | select(.status == "error")'
+```
+
+Each doctor check's `status` is `ok`, `warning` or `error`. Only `error` makes `grantiva doctor` exit non-zero;
+a `warning` (an advisory check such as no booted simulator) never does.
+
+Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+
+Tests/GrantivaCoreTests/DoctorTests.swift:376:    func testTheEncodedStatusesAreExactlyOkWarningAndError() throws {
