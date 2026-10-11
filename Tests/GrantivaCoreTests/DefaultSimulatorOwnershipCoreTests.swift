@@ -78,6 +78,14 @@ final class DefaultSimulatorOwnershipCoreTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory))
     }
 
+    /// Devices sharing a name come back in one order whatever order simctl's
+    /// runtime dictionary has (doctor's fix line names the first).
+    func testDevicesSharingANameAreOrderedDeterministically() throws {
+        let json = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-27-0":[{"name":"iPhone 17 Pro","udid":"B","state":"Shutdown","isAvailable":true}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17 Pro","udid":"C","state":"Shutdown","isAvailable":true},{"name":"iPhone 17 Pro","udid":"A","state":"Shutdown","isAvailable":true}]}}"#
+        let devices = try JSONDecoder().decode(SimctlDeviceList.self, from: Data(json.utf8)).allDevices
+        XCTAssertEqual(devices.map(\.udid), ["A", "C", "B"])
+    }
+
     // MARK: - L21
 
     func testRuntimesReadAsNames() {

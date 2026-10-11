@@ -153,9 +153,12 @@ final class OutputStreamContractTests: XCTestCase {
     // MARK: - --quiet silences diagnostics, never results
 
     func testQuietLeavesProgramOutputUntouched() throws {
+        // No toolchain for simctl: doctor's simulator checks then read the
+        // same on every host, whatever simulators it has.
+        let hostIndependent: [String: String?] = ["DEVELOPER_DIR": "/nonexistent-grantiva-quiet-test"]
         for arguments in [["runner", "version"], ["simulator", "sessions"], ["doctor", "--json"]] {
-            let normal = try grantiva(arguments)
-            let quiet = try grantiva(arguments + ["--quiet"])
+            let normal = try grantiva(arguments, environment: hostIndependent)
+            let quiet = try grantiva(arguments + ["--quiet"], environment: hostIndependent)
             XCTAssertEqual(
                 quiet.stdout, normal.stdout,
                 "--quiet changed the program output of \(arguments)"

@@ -553,6 +553,9 @@ struct SimctlDeviceList: Decodable {
                 )
             }
         }
-        .sorted { $0.name < $1.name }
+        // A total order: simctl's JSON is a dictionary keyed by runtime, so
+        // devices sharing a name would otherwise come back in a different
+        // order from one process to the next.
+        .sorted { ($0.name, $0.runtime, $0.udid) < ($1.name, $1.runtime, $1.udid) }
     }
 }
