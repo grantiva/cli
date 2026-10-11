@@ -1,0 +1,4 @@
+# Note: commands here that end in `echo rc=$?` (or run_rc=, jq_rc=, doctor_rc=) record exit=0 for the echo; the real exit code of the grantiva command is the rc=... line in the matching .out file.
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ grep -rn 'APP_ALERTS\|AppAlerts\|alert' Sources/GrantivaCore Tests/GrantivaCoreTests | head; echo cli_rc=$?
+# exit=0 elapsed=1.171s -> grep.out / grep.err

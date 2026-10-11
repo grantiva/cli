@@ -1,0 +1,5 @@
+7:Android: `init`, `doctor`, `build`, `run`, `diff`, `hierarchy`, `record`, `runner start/stop`, `emulator`, and the MCP server (`grantiva mcp`) work against an Android emulator. See `docs/android.md`.
+85:  Two guarantees make that loop safe. The file is **deleted at startup**, before any project, build, or simulator work, so a file left by a previous run can never be read as this one's verdict — and an unwritable path fails immediately rather than at the end of a long suite. And it is **always written**: a failure before the runner starts (no project, bad scheme, build failure, no simulator) records `failed` rather than leaving the loop, which has no timeout, spinning until CI's global limit; a usage error such as `--timeout 5` records `failed` with an `error` field.
+333:grantiva runner start       Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+368:as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
+442:dying runner starts), releases the lease, removes the killed runner's keep-alive

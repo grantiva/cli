@@ -1,0 +1,24 @@
+OVERVIEW: Turn notifications on or off.
+
+Example:
+  grantiva console alerts notifications set flagToggle=off usageAlert=on
+featureVoteThresholdCount=25
+Toggles: newFeatureRequest, featureVoteThreshold, featureStatusChange,
+newSupportTicket, ticketAdminReply, ticketResolved, ticketUserReply,
+flagToggle, teamInvite, usageAlert
+
+USAGE: grantiva console alerts notifications set [--json] [--verbose] [--quiet] <settings> ...
+
+ARGUMENTS:
+  <settings>              name=on|off pairs, or featureVoteThresholdCount=<n>.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --version               Show the version.
+  -h, --help              Show help information.
+

@@ -1,0 +1,23 @@
+# Note: commands here that end in `echo rc=$?` (or run_rc=, jq_rc=, doctor_rc=) record exit=0 for the echo; the real exit code of the grantiva command is the rc=... line in the matching .out file.
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./build/MyApp.app; echo rc=$?
+# exit=0 elapsed=.023s -> cirunappfilebuildMyAppapp.out / cirunappfilebuildMyAppapp.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./artifacts/MyApp.ipa; echo rc=$?
+# exit=0 elapsed=.022s -> cirunappfileartifactsMyAppipa.out / cirunappfileartifactsMyAppipa.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --no-build; echo rc=$?
+# exit=0 elapsed=.021s -> cirunnobuild.out / cirunnobuild.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./app/MyApp.app; echo rc=$?
+# exit=0 elapsed=.022s -> cirunappfileappMyAppapp.out / cirunappfileappMyAppapp.err
+# fixtures: build/MyApp.app and app/MyApp.app are copies of landmarks-demo's Debug-iphonesimulator Landmarks.app; artifacts/MyApp.ipa zips it under Payload/
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./build/MyApp.app; echo rc=$?
+# exit=0 elapsed=.021s -> withfile_cirunappfilebuildMyAppapp.out / withfile_cirunappfilebuildMyAppapp.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./artifacts/MyApp.ipa; echo rc=$?
+# exit=0 elapsed=.049s -> withfile_cirunappfileartifactsMyAppipa.out / withfile_cirunappfileartifactsMyAppipa.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-156
+$ $GRANTIVA ci run --app-file ./app/MyApp.app; echo rc=$?
+# exit=0 elapsed=.021s -> withfile_cirunappfileappMyAppapp.out / withfile_cirunappfileappMyAppapp.err

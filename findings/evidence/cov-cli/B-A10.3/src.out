@@ -1,0 +1,7 @@
+        case .configNotFound:
+            return "grantiva.yml not found. Run: grantiva init"
+        case .commandFailed(let message, _):
+            // The message is the whole sentence; call sites that report a
+            // subprocess exit say so themselves (see `shell`).
+            return message
+        case .invalidArgument(let msg):

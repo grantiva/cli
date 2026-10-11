@@ -1,0 +1,11 @@
+# Note: commands here that end in `echo rc=$?` (or run_rc=, jq_rc=, doctor_rc=) record exit=0 for the echo; the real exit code of the grantiva command is the rc=... line in the matching .out file.
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-011
+$ $GRANTIVA doctor --json
+# exit=0 elapsed=.322s -> json.out / json.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-011
+$ /Users/kyle/.grantiva-qa/bin/grantiva doctor --json | jq '.[] | select(.status == "fail")'
+# exit=0 elapsed=.284s -> jq.out / jq.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-019-ios
+$ DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --json | jq '.[] | select(.status == "fail")'; echo "jq_rc=$?"; DEVELOPER_DIR=/nonexistent $GRANTIVA doctor --json | jq -c '[.[].status] | unique'
+# exit=0 elapsed=.071s -> jq_on_failing_doctor.out / jq_on_failing_doctor.err
+# cwd above is a copy of landmarks-demo/ios (iOS project) so the Xcode check is required and errors

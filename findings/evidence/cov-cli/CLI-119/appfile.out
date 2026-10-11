@@ -1,0 +1,12 @@
+findings/help/run.txt:13:  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+findings/help/run.txt-14-                          Skips the build step.
+--
+findings/help/diff_capture.txt:12:  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+findings/help/diff_capture.txt-13-                          Skips the build step.
+--
+findings/help/build_install.txt:13:  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+findings/help/build_install.txt-14-                          Skips the build step.
+
+The application ID a run installs and tests is the app's own: the Gradle output metadata's
+`applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
+`application_id` in the config is used only when there is no app to read it from

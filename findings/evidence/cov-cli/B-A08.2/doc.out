@@ -1,0 +1,18 @@
+54:  --logs-level <logs-level>
+55-                          Log level for --logs: default, info, debug. Defaults
+56-                          to `default`. iOS passes it to `log stream --level`;
+57-                          on Android default and info keep logcat priority I
+58-                          and above, debug adds D. (values: default, info,
+59-                          debug)
+
+`grantiva run --logs` streams `logcat` filtered to the app's uid, starting at the device's
+current time (the logcat buffer is not cleared). `--logs-tag <tag>` keeps one tag.
+`--logs-level` maps to a minimum logcat priority, for the tag or for every tag:
+
+| `--logs-level`      | logcat filter |
+|---------------------|---------------|
+| (none) or `default` | `*:I`         |
+| `info`              | `*:I`         |
+| `debug`             | `*:D`         |
+
+Any other value is rejected. `--logs-predicate` is iOS-only.

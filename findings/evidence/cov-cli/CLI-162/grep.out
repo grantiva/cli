@@ -1,0 +1,8 @@
+grep_rc=1
+- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
+- **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
+- **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). The timeout itself is ignored under `--keep-alive`, where the session is held until you release it, but the 30 s minimum is still validated.
+- **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
+- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
+
+## Configuration

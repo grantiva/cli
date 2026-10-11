@@ -1,0 +1,12 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-030
+$ $GRANTIVA run --platform android --no-build --device emulator-9999
+# exit=1 elapsed=.049s -> run_flag_android.out / run_flag_android.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-030
+$ GRANTIVA_PLATFORM=ios $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.120s -> run_env_ios.out / run_env_ios.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-030
+$ $GRANTIVA doctor --platform android | grep -A3 "Required\|Project"
+# exit=0 elapsed=.061s -> doctor_flag_android.out / doctor_flag_android.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-030
+$ GRANTIVA_PLATFORM=ios $GRANTIVA doctor | grep -A3 "Required\|Project"
+# exit=0 elapsed=.167s -> doctor_env_ios.out / doctor_env_ios.err

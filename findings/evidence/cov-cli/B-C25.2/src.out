@@ -1,0 +1,34 @@
+    public init(from decoder: Decoder) throws { self = .live }
+    public var load: @Sendable () -> AuthCredentials?
+    public var save: @Sendable (AuthCredentials) throws -> Void
+    /// Removes stored credentials; returns false when there were none.
+    public var delete: @Sendable () throws -> Bool
+
+    public init(
+        load: @escaping @Sendable () -> AuthCredentials?,
+        save: @escaping @Sendable (AuthCredentials) throws -> Void,
+        delete: @escaping @Sendable () throws -> Bool
+    ) {
+        self.load = load
+        self.save = save
+        self.delete = delete
+    }
+}
+
+        },
+        save: { credentials in
+            try saveSecurely(credentials, directory: directory, path: path)
+        },
+        delete: {
+            let fm = FileManager.default
+            guard fm.fileExists(atPath: path) else { return false }
+            try fm.removeItem(atPath: path)
+            return true
+        }
+        )
+    }
+
+    public static let live = file(directory: authDir, path: authPath)
+
+    static func saveSecurely(_ credentials: AuthCredentials, directory: String, path: String) throws {
+        let fm = FileManager.default

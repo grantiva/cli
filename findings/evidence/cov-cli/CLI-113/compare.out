@@ -1,0 +1,9 @@
+grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
+OVERVIEW: Delete Grantiva-created simulators that are shut down and not part of
+3:_2026-08-22. Status: code fix landed on branch `simulator-lifecycle-cleanup`; release and agent-fleet actions below still open._
+16:## What is already fixed (branch `simulator-lifecycle-cleanup`, commit `90d2acb`)
+21:- **New GC command.** `grantiva simulator cleanup` deletes every Grantiva-created simulator that is shut down and not part of an active managed session, and prunes ledger entries for devices that no longer exist. Safe to run any time, including from cron or an agent heartbeat.
+28:1. **Review and merge** `simulator-lifecycle-cleanup` into `main` (self-review model applies; this is CLI-only, no SDK API or migration surface).
+29:2. **Ship 1.6.5** so the installed Homebrew binary (`/opt/homebrew/bin/grantiva`, currently 1.6.4) picks up the fix. Follow the usual release process, then verify with `grantiva --version` and a `simulator cleanup` dry run on the host.
+30:3. Optional hardening: schedule `grantiva simulator cleanup` periodically (launchd or a Paperclip routine) so any future leak self-heals.
+48:grantiva simulator cleanup

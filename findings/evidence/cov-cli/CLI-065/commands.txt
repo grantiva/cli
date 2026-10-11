@@ -1,0 +1,16 @@
+# Note: commands here that end in `echo rc=$?` (or run_rc=, jq_rc=, doctor_rc=) record exit=0 for the echo; the real exit code of the grantiva command is the rc=... line in the matching .out file.
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-065
+$ cat -n back.yml | sed -n 5p; cp back.yml grantiva.yml && $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; echo rc=$?; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | tail -1
+# exit=0 elapsed=.039s -> back.out / back.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-065
+$ cat -n setPermissions.yml | sed -n 5p; cp setPermissions.yml grantiva.yml && $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; echo rc=$?; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | tail -1
+# exit=0 elapsed=.045s -> setPermissions.out / setPermissions.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-065
+$ cat -n evalScript.yml | sed -n 5p; cp evalScript.yml grantiva.yml && $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; echo rc=$?; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | tail -1
+# exit=0 elapsed=.062s -> evalScript.out / evalScript.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-065
+$ cat -n pressKey.yml | sed -n 5p; cp pressKey.yml grantiva.yml && $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; echo rc=$?; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | tail -1
+# exit=0 elapsed=.041s -> pressKey.out / pressKey.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-065
+$ cat -n openLink.yml | sed -n 5p; cp openLink.yml grantiva.yml && $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; echo rc=$?; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | tail -1
+# exit=0 elapsed=.046s -> openLink.out / openLink.err

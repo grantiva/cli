@@ -1,0 +1,5 @@
+public let grantivaVersion = "2.1.0"
+2.1.0
+13:1. **Stale flow scripts bypassed Grantiva entirely.** The pre-1.6.0 `Scripts/flows/run-flow.sh` (still present in old card-of-war worktrees `app-813`, `app801`, `app-812`, `app459`) "reuses" a simulator via a UDID cache file at `$TMPDIR/tienlen-flow-sessions/<session>/simulator-udid`. Paperclip agent runs get a fresh `TMPDIR` each run, so the cache is never found, and the script falls through to a raw `xcrun simctl create "TienLen Flow $SESSION_KEY"` on every run. Its `--teardown` reads the same missing cache, so it can never clean up either.
+29:2. **Ship 1.6.5** so the installed Homebrew binary (`/opt/homebrew/bin/grantiva`, currently 1.6.4) picks up the fix. Follow the usual release process, then verify with `grantiva --version` and a `simulator cleanup` dry run on the host.
+ls: CHANGELOG.md: No such file or directory

@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-082
+$ ANDROID_HOME=/nonexistent $GRANTIVA doctor --platform android | grep -A1 "Android SDK"; ANDROID_HOME=/nonexistent $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.130s -> home.out / home.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-082
+$ env -u ANDROID_HOME ANDROID_SDK_ROOT=/nonexistent $GRANTIVA doctor --platform android | grep -A1 "Android SDK"; env -u ANDROID_HOME ANDROID_SDK_ROOT=/nonexistent $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.131s -> sdkroot.out / sdkroot.err

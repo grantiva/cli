@@ -1,0 +1,12 @@
+## CI
+
+`grantiva ci run --platform android` is refused today, on any machine: Android baselines
+are local only until the Grantiva backend supports platforms ("Android baselines are local
+only until the Grantiva backend supports platforms; use local baselines"). Use the local
+commands instead: `grantiva diff capture`, `grantiva diff compare`, and
+`grantiva diff approve`.
+Android captures go to `.grantiva/captures/android/` and baselines to
+`.grantiva/baselines/android/`. Baselines are local only for now: `ci run` and remote
+baselines refuse Android with "Android baselines are local only until the Grantiva backend
+supports platforms; use local baselines". `diff capture`, `diff compare`, and
+`diff approve` work locally. On Android, `diff capture` prints `Emulator: <AVD> (<serial>)`,

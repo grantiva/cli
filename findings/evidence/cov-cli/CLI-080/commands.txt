@@ -1,0 +1,12 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078
+$ env -u ANDROID_HOME -u ANDROID_SDK_ROOT $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.070s -> unset_both.out / unset_both.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078
+$ env -u ANDROID_HOME ANDROID_SDK_ROOT=$HOME/Library/Android/sdk $GRANTIVA doctor --platform android --verbose --json 2>&1 >/dev/null | head -3; env -u ANDROID_HOME ANDROID_SDK_ROOT=$HOME/Library/Android/sdk $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.119s -> sdkroot_only.out / sdkroot_only.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078
+$ env -u ANDROID_HOME ANDROID_SDK_ROOT=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078/altsdk $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.069s -> sdkroot_alt.out / sdkroot_alt.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078
+$ ANDROID_HOME=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-078/altsdk ANDROID_SDK_ROOT=$HOME/Library/Android/sdk $GRANTIVA doctor --platform android --json | jq -c ".[]|select(.name==\"Android SDK\")"
+# exit=0 elapsed=.069s -> home_alt.out / home_alt.err

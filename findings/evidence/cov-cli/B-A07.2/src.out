@@ -1,0 +1,26 @@
+
+        process = p
+        stdoutPipe = outPipe
+        stderrPipe = errPipe
+        stdoutDecoder = outDecoder
+        stderrDecoder = errDecoder
+        stopped = false
+        // Ctrl-C reaches SignalRelay, which runs its cleanups and calls exit,
+        // so a caller's `defer { stop() }` never runs and the log process
+        // (`adb logcat`, `log stream`) would be reparented to launchd.
+        terminationCleanup = SignalRelay.shared.onTermination { [self] in stop() }
+    }
+
+    /// Stops the log stream subprocess. Safe to call multiple times.
+    public func stop() {
+        lock.lock()
+        defer { lock.unlock() }
+
+        guard !stopped else { return }
+        stopped = true
+        if let terminationCleanup {
+            SignalRelay.shared.removeCleanup(terminationCleanup)
+            self.terminationCleanup = nil
+        }
+
+        stdoutPipe?.fileHandleForReading.readabilityHandler = nil
