@@ -1,6 +1,6 @@
 # Dumping the UI Hierarchy
 
-Grantiva exposes the live UI accessibility tree of a running simulator so agents and developers can inspect state, find selectors, and diagnose failed assertions — without touching the app.
+Grantiva exposes the live UI accessibility tree of a running simulator or emulator so agents and developers can inspect state, find selectors, and diagnose failed assertions — without touching the app.
 
 There are two ways to read the hierarchy, depending on how you started the session.
 
@@ -33,7 +33,7 @@ If no keep-alive session is live, the command fails fast with an actionable erro
 
 | Flag | Description |
 |------|-------------|
-| `--udid` | Target a specific simulator's session, resolved through grantiva's `<pid>.owner.json` sidecar (defaults to the newest live keep-alive session). |
+| `--udid` | Target a specific simulator's (UDID) or emulator's (adb serial) session, resolved through grantiva's `<pid>.owner.json` sidecar (defaults to the newest live keep-alive session). |
 | `--format` | `xml` (default) or `json`. |
 | `--json` | Same as `--format json`. Combining it with `--format xml` is a usage error. |
 | `--timeout` | Seconds to wait for GrantivaAgent's page-source response (default 60). |
@@ -54,7 +54,7 @@ This path is preserved for backward compatibility and MCP integration. New flows
 
 `runner start` holds the session with the runner's `--keep-alive` until `runner stop`. The first start on an iOS runtime the runner tarball has no prebuilt GrantivaAgent for (it ships 26.2, 26.4, and 27.0) builds the agent from source, which takes several minutes; `runner start` waits up to ten minutes for that build and reports "WebDriverAgent failed to build" with the log path if it fails. Later starts on that runtime reuse the cached build.
 
-`grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--keep-alive` session (`dump-hierarchy --udid <UDID>` selects a specific simulator).
+`grantiva runner dump-hierarchy` and the MCP server's hierarchy tool share the same discovery as `grantiva hierarchy`: when no `grantiva runner start` session is active in the project, both fall back to the newest live `--keep-alive` session (`dump-hierarchy --udid <UDID or adb serial>` selects a specific simulator or emulator).
 
 ## Agent integration
 
