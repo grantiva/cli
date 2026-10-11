@@ -1,0 +1,75 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7B532319-7EA9-481A-80A0-115A161B02D4
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="Landmarks" (12.2s)
+      ╰─ Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+✗ 99-crash 17.0s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible (12.4s)
+      ╰─ Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+✗ 99-crash 14.4s
+
+  1 steps passing (17.0s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      1      1      2      17.0s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      1      1      2      17.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7B532319-7EA9-481A-80A0-115A161B02D4
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7B532319-7EA9-481A-80A0-115A161B02D4/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7B532319-7EA9-481A-80A0-115A161B02D4/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7B532319-7EA9-481A-80A0-115A161B02D4/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791702372.png
+Error: Runner failed (exit 1); see the runner output above.

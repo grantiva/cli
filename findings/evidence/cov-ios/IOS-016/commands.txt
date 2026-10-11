@@ -1,0 +1,28 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/ka.ready  > ka.out 2> ka.err &
+# ready after 14s pid=44528: {
+  "finishedAt" : "2026-10-11T06:54:59Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ps -axo pid,ppid,command | grep -E 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF|grantiva-runner|GrantivaAgent' | grep -v grep | cut -c1-250
+# exit=0 elapsed=.064s -> procs-before.out / procs-before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ls -la /tmp/grantiva-sessions/
+# exit=0 elapsed=.013s -> sessions-dir.out / sessions-dir.err
+# kill -9 44528 (the grantiva keep-alive run)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ps -axo pid,ppid,command | grep -E 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF|grantiva-runner|GrantivaAgent' | grep -v grep | cut -c1-250
+# exit=0 elapsed=.060s -> procs-after-kill.out / procs-after-kill.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force --json
+# exit=0 elapsed=3.360s -> teardown.out / teardown.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ps -axo pid,ppid,command | grep -E 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF|grantiva-runner|GrantivaAgent' | grep -v grep | cut -c1-250; ls -la /tmp/grantiva-sessions/; ls $GRANTIVA_RUNNER_HOME/versions/*/devices/; xcrun simctl list devices | grep cov-ios-1; $GRANTIVA simulator sessions
+# exit=0 elapsed=.292s -> procs-after-teardown.out / procs-after-teardown.err

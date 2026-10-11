@@ -1,0 +1,93 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+[debug] 2026-10-11T07:17:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl get_app_container 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/16-setpermissions.yaml
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T07:17:12Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/16-setpermissions
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] 16-setpermissions (16-setpermissions.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ setPermissions (1.6s)
+    ✓ launchApp (1.9s)
+    ✓ scroll: DOWN (1.7s)
+    ✓ takeScreenshot (99ms)
+✓ 16-setpermissions 9.9s
+
+  [1/1] 16-setpermissions (.maestro/coverage/16-setpermissions.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ setPermissions (1.6s)
+    ✓ launchApp (1.9s)
+    ✓ scroll (1.7s)
+    ✓ takeScreenshot (99ms)
+✓ 16-setpermissions 7.3s
+
+  5 steps passing (9.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  16-setpermissions              ✓ PASS       5      5      0      0       9.9s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       5      5      0      0       9.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/16-setpermissions
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/16-setpermissions/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/16-setpermissions/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/16-setpermissions/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-11T07:17:26Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear
+[debug] 2026-10-11T07:17:26Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear

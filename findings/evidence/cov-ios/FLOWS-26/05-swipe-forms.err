@@ -1,0 +1,119 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+[debug] 2026-10-11T07:13:15Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:15Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:15Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:15Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:15Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl get_app_container 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/05-swipe-forms.yaml
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T07:13:16Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/05-swipe-forms
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] 05-swipe-forms (05-swipe-forms.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.8s)
+    ✓ tapOn: text="Gesture Lab" (2.3s)
+    ✓ swipe: LEFT (1.4s)
+    ✓ assertVisible: text="Last swipe: left" (244ms)
+    ✓ swipe: RIGHT (495ms)
+    ✓ assertVisible: text="Last swipe: right" (161ms)
+    ✓ swipe: UP (494ms)
+    ✓ assertVisible: text="Last swipe: up" (154ms)
+    ✓ swipe: DOWN (493ms)
+    ✓ assertVisible: text="Last swipe: down" (223ms)
+    ✓ swipe (496ms)
+    ✓ assertVisible: text="Last swipe: left" (136ms)
+    ✓ swipe: RIGHT (1.9s)
+    ✓ assertVisible: text="Last swipe: right" (229ms)
+    ✓ swipe: UP (635ms)
+    ✓ assertVisible: text="Last swipe: up" (157ms)
+    ✓ takeScreenshot (65ms)
+✓ 05-swipe-forms 16.0s
+
+  [1/1] 05-swipe-forms (.maestro/coverage/05-swipe-forms.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.8s)
+    ✓ tapOn (2.3s)
+    ✓ swipe (1.4s)
+    ✓ assertVisible (244ms)
+    ✓ swipe (495ms)
+    ✓ assertVisible (161ms)
+    ✓ swipe (494ms)
+    ✓ assertVisible (154ms)
+    ✓ swipe (493ms)
+    ✓ assertVisible (223ms)
+    ✓ swipe (496ms)
+    ✓ assertVisible (136ms)
+    ✓ swipe (1.9s)
+    ✓ assertVisible (229ms)
+    ✓ swipe (636ms)
+    ✓ assertVisible (157ms)
+    ✓ takeScreenshot (65ms)
+✓ 05-swipe-forms 13.4s
+
+  18 steps passing (16.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-swipe-forms                 ✓ PASS      18     18      0      0      16.0s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      18     18      0      0      16.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/05-swipe-forms
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/05-swipe-forms/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/05-swipe-forms/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/26/05-swipe-forms/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-11T07:13:36Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear
+[debug] 2026-10-11T07:13:36Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear
