@@ -54,7 +54,7 @@ One round = fix wave → repack → smoke → full coverage pass → triage. The
 ## Status of the round-2 coverage pass (see the ledger copy for detail)
 - Task 1 matrix: complete.
 - Task 3 CLI slice: complete (cov2/cli 33c3a4e): 335 pass / 7 fail / 13 fail-triage / 6 blocked / 4 n/a + EXTRA-01..07.
-- Task 4 iOS slice: fix round 1 done (cov2/ios 7bed447): 415 pass / 17 fail / 6 triage / 4 blocked; 39 @27.0 pass; 5 handed CLI rows 4 pass / 1 fail; scoped re-review pending.
+- Task 4 iOS slice: complete (cov2/ios 7bed447): 415 pass / 17 fail / 6 triage / 4 blocked; 39 @27.0 pass; 5 handed CLI rows 4 pass / 1 fail.
 - Task 5 Android slice: running (device `cov2-android`, session `cov2-android`).
 - Triage prep: `findings/ledgers/cluster-map-round2.md` covers CLI + iOS fails (24 clusters M01–M24, 19 expectation corrections); Android folds in when its slice lands.
 - Task 6 (next): `git merge --no-ff cov2/cli cov2/ios cov2/android` into `coverage-campaign`; one brief per fail in `docs/superpowers/plans/2026-10-12-coverage-issues-round2/` (continue the L numbering from L08; format as the K/L briefs); expectation corrections for the `fail (matrix/brief error — triage)` rows; report `docs/superpowers/plans/2026-10-12-round2-coverage-report.md` with the verdict `ROUND 2: <n> findings — round 3 fix wave required`; push; then write `2026-10-13-round3-fix-wave.md` (writing-plans) and execute it (runner + CLI PRs, repack .12, smoke, round-3 coverage pass).
