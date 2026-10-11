@@ -1,0 +1,4 @@
+# uptime: 11:01  up 4 days,  2:29, 5 users, load averages: 13.58 12.76 18.95
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/10-seed-many.yaml > $E/IOS-136/flow.out 2> $E/IOS-136/flow.err & P=$!; sleep 9; $GRANTIVA record --simulator $U1 --duration 3 --frames-at 500,1500 --json; echo rec_exit=$?; wait $P; echo flow_exit=$?
+# exit=0 elapsed=21.276s -> rec.out / rec.err

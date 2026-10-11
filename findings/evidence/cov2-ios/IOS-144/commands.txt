@@ -1,0 +1,9 @@
+# project $S/p143 (stock config without simulator:), no runner session
+# uptime: 11:14  up 4 days,  2:42, 5 users, load averages: 7.73 9.79 13.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p143  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl list devices booted | grep -v "^--"; ls .grantiva/session.json 2>&1; $GRANTIVA diff capture --no-build; echo exit=$?
+# exit=0 elapsed=.327s -> several-booted.out / several-booted.err
+# uptime: 11:14  up 4 days,  2:42, 5 users, load averages: 7.73 9.79 13.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p143  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl spawn $U2 launchctl list | grep -ci WebDriverAgent
+# exit=1 elapsed=.291s -> u-check.out / u-check.err

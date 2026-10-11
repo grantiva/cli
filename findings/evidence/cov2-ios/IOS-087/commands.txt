@@ -1,0 +1,16 @@
+# uptime: 11:03  up 4 days,  2:31, 5 users, load averages: 10.03 11.35 17.52
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls /tmp/grantiva-sessions/; cat .grantiva/session.json; echo; ps -axo pid,command | grep 'grantiva-runner' | grep 7E846901-F93F-4220-A153-7043061033D7 | grep -v grep | cut -c1-100; ls $GRANTIVA_RUNNER_HOME/locks/7E846901-F93F-4220-A153-7043061033D7.lock 2>&1
+# exit=0 elapsed=.061s -> before.out / before.err
+# uptime: 11:03  up 4 days,  2:31, 5 users, load averages: 10.03 11.35 17.52
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop
+# exit=0 elapsed=.289s -> stop.out / stop.err
+# uptime: 11:03  up 4 days,  2:31, 5 users, load averages: 10.03 11.35 17.52
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ sleep 1; ls /tmp/grantiva-sessions/; ls .grantiva/session.json 2>&1; echo runners=$(ps -axo command | grep grantiva-runner | grep -c 7E846901-F93F-4220-A153-7043061033D7); ls $GRANTIVA_RUNNER_HOME/locks/7E846901-F93F-4220-A153-7043061033D7.lock 2>&1; $GRANTIVA simulator sessions
+# exit=0 elapsed=1.217s -> after.out / after.err
+# uptime: 11:04  up 4 days,  2:31, 5 users, load averages: 9.59 11.20 17.40
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -axo pid,command | grep '[g]rantiva-runner' | grep 7E846901-F93F-4220-A153-7043061033D7 | cut -c1-120; ps -p 81569 >/dev/null && echo 81569-alive || echo 81569-gone
+# exit=0 elapsed=.058s -> after-procs.out / after-procs.err
