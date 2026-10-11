@@ -177,6 +177,52 @@ final class DiffCommandTests: XCTestCase {
         }
     }
 
+    /// L16: several missing screens are all named in one error.
+    func testApproveNamesEveryMissingScreen() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-missing3-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["A", "B", "C"], availableArtifacts: [], captureDirectory: directory.path, store: .failing
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            XCTAssertEqual(
+                error.localizedDescription,
+                "No captures found for \"A\", \"B\", \"C\" in \(directory.path). Run: grantiva diff capture"
+            )
+        }
+    }
+
+    /// L16: an approve that fails saves nothing, even for the screens that
+    /// were captured.
+    func testApproveWithAMissingScreenSavesNothing() async throws {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-diff-approve-partial-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try Data("Home".utf8).write(to: directory.appendingPathComponent("Home.png"))
+        let recorder = BaselineSaveRecorder()
+        let store = BaselineStore(
+            save: { name, data in await recorder.save(name, data) },
+            load: { _ in nil }, list: { [] }, delete: { _ in }, baselineDirectory: { "/baselines" }
+        )
+
+        do {
+            _ = try await DiffCommand.approve(
+                ["Home", "Missing"], availableArtifacts: [], captureDirectory: directory.path, store: store
+            )
+            XCTFail("Expected a missing-capture error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("\"Missing\""), error.localizedDescription)
+        }
+        let saved = await recorder.recordedNames()
+        XCTAssertEqual(saved, [])
+    }
+
     // MARK: - K108: the failure line names the threshold that was exceeded
 
     func testFailureMessageNamesTheExceededThreshold() async throws {
