@@ -1,0 +1,1 @@
+rm -rf .grantiva/recordings; /Users/kyle/.grantiva-qa/bin/grantiva record --duration 5 --frames-at 0,1000,3000; echo exit=$?; ls -la .grantiva/recordings; ffprobe -v error -show_entries format=duration:stream=nb_frames,duration -of compact .grantiva/recordings/recording.mp4; cat .grantiva/recordings/recording.json 2>/dev/null

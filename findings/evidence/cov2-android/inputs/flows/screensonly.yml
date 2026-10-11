@@ -1,0 +1,24 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov2-android
+screens:
+  - name: Home
+    path: launch
+  - name: Favorites
+    path:
+      - tap: "Favorites"
+  - name: Deep Links
+    path:
+      - tap: "Deep Links"
+  - name: Lakes
+    path:
+      - tap: "Landmarks"
+      - tap: "Lakes"
+  - name: Detail
+    path:
+      - tap: "Landmarks"
+      - tap: "Golden Gate Bridge"
+      - assert_visible: "Plan Visit"
+

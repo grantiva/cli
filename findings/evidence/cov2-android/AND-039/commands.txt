@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.44 46.35 54.45
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/env-empty.yaml --env LANDMARKS_SEED=empty; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1; /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/09-seed-empty.yaml; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1
+rc=0 elapsed=39.2s  (stdout 01.out, stderr 01.err)
+

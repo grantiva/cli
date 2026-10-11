@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=11.60 24.45 41.56
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs >/dev/null 2>&1; echo success-exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=31.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=11.29 23.10 40.48
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --logs >/dev/null 2>&1; echo failure-exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=22.3s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=12.44 22.38 39.71
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/intrun.sh /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/logint 25 --device emulator-5554 --no-build --flow .maestro/11-slow.yaml --logs; sleep 2; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process; tail -3 /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/logint.err
+rc=0 elapsed=28.6s  (stdout 03.out, stderr 03.err)
+

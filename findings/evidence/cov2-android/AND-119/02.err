@@ -1,0 +1,141 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=2 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov2-android (emulator-5554)
+Skipping build and install (--no-build)
+Capturing 2 screen(s), then running 1 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/screens
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (10.4s, slow)
+    ✓ waitForAnimationToEnd (2.8s)
+    ✓ takeScreenshot (1.4s)
+    ✗ tapOn: text="No Such Element" (17.9s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Battery 100 percent.", "Half Dome")
+✗ screens 33.5s
+
+  [1/1] screens (grantiva-android.yml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (10.4s, slow)
+    ✓ waitForAnimationToEnd (2.8s)
+    ✓ takeScreenshot (1.4s)
+    ✗ tapOn: text="No Such Element" (17.9s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Battery 100 percent.", "Half Dome")
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 33.5s
+
+  3 steps passing (33.5s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       6      3      1      2      33.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      33.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/screens
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/screens/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/screens/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/screens/allure-results
+
+  Built by Grantiva
+
+Running the flows in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.1s, slow)
+    ✓ assertVisible: text="Landmarks" (5.5s, slow)
+    ✓ assertVisible: text="Featured" (184ms)
+    ✓ takeScreenshot (938ms)
+    ✓ tapOn: text="Golden Gate Bridge" (1.2s)
+    ✓ assertVisible: text="San Francisco, CA" (697ms)
+    ✓ assertVisible: text="Plan Visit" (404ms)
+    ✓ takeScreenshot (430ms)
+✓ 01-browse 16.5s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.1s, slow)
+    ✓ assertVisible: text="Landmarks" (5.5s, slow)
+    ✓ assertVisible: text="Featured" (184ms)
+    ✓ takeScreenshot (938ms)
+    ✓ tapOn: text="Golden Gate Bridge" (1.2s)
+    ✓ assertVisible: text="San Francisco, CA" (697ms)
+    ✓ assertVisible: text="Plan Visit" (404ms)
+    ✓ takeScreenshot (430ms)
+✓ 01-browse 16.5s
+
+  8 steps passing (16.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0      16.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      16.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cof/allure-results
+
+  Built by Grantiva
+

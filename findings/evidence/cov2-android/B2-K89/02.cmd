@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff approve --screen Home; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare; echo exit=$?; /Users/kyle/.grantiva-qa/bin/grantiva diff compare --json | head -5; echo exit=${PIPESTATUS[0]}

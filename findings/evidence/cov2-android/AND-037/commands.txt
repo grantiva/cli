@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=16.88 61.79 60.32
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/22-show-note.yaml --env LANDMARKS_NOTE=hello; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | grep 'launch action' | tail -1; adb -s emulator-5554 shell uiautomator dump /sdcard/u.xml >/dev/null; adb -s emulator-5554 shell cat /sdcard/u.xml | grep -o 'text="hello"'
+rc=0 elapsed=27.8s  (stdout 01.out, stderr 01.err)
+
