@@ -181,9 +181,13 @@ public final class ReadyFileSignal: @unchecked Sendable {
     private let lock = NSLock()
     private let writer: @Sendable (RunReadyState, String) throws -> Void
     private var written = false
+    /// Entries from an earlier session of the same suite (the screens
+    /// session), listed before this session's flows in every write.
+    private let leadingFlows: [RunReadyState.Flow]
 
-    public init(path: String?) {
+    public init(path: String?, leadingFlows: [RunReadyState.Flow] = []) {
         self.path = path
+        self.leadingFlows = leadingFlows
         self.writer = { state, path in
             try ReadyFile.write(state, to: path)
         }
@@ -191,10 +195,24 @@ public final class ReadyFileSignal: @unchecked Sendable {
 
     init(
         path: String?,
+        leadingFlows: [RunReadyState.Flow] = [],
         writer: @escaping @Sendable (RunReadyState, String) throws -> Void
     ) {
         self.path = path
+        self.leadingFlows = leadingFlows
         self.writer = writer
+    }
+
+    /// `state` with the leading entries in front; a failed leading entry
+    /// turns a `passed` verdict into `failed`.
+    func merged(_ state: RunReadyState) -> RunReadyState {
+        guard !leadingFlows.isEmpty else { return state }
+        let leadingFailed = leadingFlows.contains { $0.status != "passed" && $0.status != "skipped" }
+        let status = state.status == "passed" && leadingFailed ? "failed" : state.status
+        return RunReadyState(
+            status: status, flows: leadingFlows + state.flows, finishedAt: state.finishedAt,
+            reportDir: state.reportDir, error: state.error
+        )
     }
 
     /// Writes the terminal state unless it was already written. Returns whether
@@ -212,7 +230,7 @@ public final class ReadyFileSignal: @unchecked Sendable {
             // competing write until this one either succeeds or fails. Only a
             // successful write consumes the signal, so transient I/O failures
             // remain retryable.
-            try writer(state, path)
+            try writer(merged(state), path)
             written = true
             lock.unlock()
             return true

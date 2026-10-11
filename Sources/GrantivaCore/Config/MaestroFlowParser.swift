@@ -21,10 +21,16 @@ public struct MaestroFlowParser {
     // MARK: - Public API
 
     /// Parse a Maestro flow YAML string into a GrantivaConfig.
+    ///
+    /// `baseDirectory` is where relative `runFlow` paths are read from. A
+    /// sub-flow that takes screenshots is expanded in place, so each of its
+    /// `takeScreenshot`s is a screen like one in the parent; other sub-flows
+    /// stay a single `runFlow` step.
     public static func parse(
         _ content: String,
         sourceName: String = "<input>",
-        allowUnsupportedCommands: Bool = false
+        allowUnsupportedCommands: Bool = false,
+        baseDirectory: URL? = nil
     ) throws -> GrantivaConfig {
         let (configSection, commandsSection) = splitDocuments(content)
 
@@ -48,7 +54,8 @@ public struct MaestroFlowParser {
                 flowName: flowName,
                 sourceName: sourceName,
                 lineNumbers: commandLineNumbers(in: content),
-                allowUnsupportedCommands: allowUnsupportedCommands
+                allowUnsupportedCommands: allowUnsupportedCommands,
+                baseDirectory: baseDirectory
             )
         }
 
@@ -72,7 +79,7 @@ public struct MaestroFlowParser {
         for file in files {
             let filePath = directory.appendingPathComponent(file)
             let contents = try String(contentsOf: filePath, encoding: .utf8)
-            let flowConfig = try parse(contents, sourceName: filePath.path)
+            let flowConfig = try parse(contents, sourceName: filePath.path, baseDirectory: directory)
 
             if bundleId == nil {
                 bundleId = flowConfig.bundleId
@@ -173,44 +180,72 @@ public struct MaestroFlowParser {
     // MARK: - Command → Screen Conversion
 
     /// Convert a flat list of Maestro commands into Grantiva screens.
-    /// Each `takeScreenshot` creates a screen boundary.
+    /// Each `takeScreenshot` creates a screen boundary, including one inside a
+    /// `runFlow` sub-flow (read from `baseDirectory`) or an inline
+    /// `runFlow: {commands: [...]}` block.
     static func convertToScreens(
         _ commands: [Any],
         flowName: String?,
         sourceName: String,
         lineNumbers: [Int],
-        allowUnsupportedCommands: Bool
+        allowUnsupportedCommands: Bool,
+        baseDirectory: URL? = nil
     ) throws -> [GrantivaConfig.Screen] {
         var screens: [GrantivaConfig.Screen] = []
         var currentSteps: [GrantivaConfig.Screen.Step] = []
         var screenIndex = 0
+        // Which file each screen name came from, to refuse a name used twice
+        // across a parent and its sub-flow (one capture would overwrite the other).
+        var origins: [String: String] = [:]
 
-        for (index, raw) in commands.enumerated() {
-            guard let command = parseCommand(raw) else { continue }
+        func addScreen(_ screen: GrantivaConfig.Screen, from source: String) throws {
+            if let earlier = origins[screen.name], earlier != source {
+                throw GrantivaError.invalidArgument(
+                    "\(source): screen \"\(screen.name)\" is also taken in \(earlier); give one of the takeScreenshot steps another name."
+                )
+            }
+            origins[screen.name] = source
+            screens.append(screen)
+        }
 
-            switch command {
-            case .takeScreenshot(let name):
-                let screenName = name ?? "\(flowName ?? "Screen")_\(screenIndex)"
-                if currentSteps.isEmpty {
-                    screens.append(.init(name: screenName, path: .launch))
-                } else {
-                    screens.append(.init(name: screenName, path: .steps(currentSteps)))
-                    currentSteps = []
+        func walk(_ commands: [Any], source: String, lines: [Int], directory: URL?, stack: [String]) throws {
+            for (index, raw) in commands.enumerated() {
+                if let expansion = expandableSubFlow(raw, source: source, line: lines[safe: index], directory: directory, stack: stack) {
+                    try walk(
+                        expansion.commands, source: expansion.source, lines: expansion.lines,
+                        directory: expansion.directory, stack: expansion.path.map { stack + [$0] } ?? stack
+                    )
+                    continue
                 }
-                screenIndex += 1
+                guard let command = parseCommand(raw) else { continue }
 
-            case .launchApp, .stopApp:
-                break
+                switch command {
+                case .takeScreenshot(let name):
+                    let screenName = name ?? "\(flowName ?? "Screen")_\(screenIndex)"
+                    if currentSteps.isEmpty {
+                        try addScreen(.init(name: screenName, path: .launch), from: source)
+                    } else {
+                        try addScreen(.init(name: screenName, path: .steps(currentSteps)), from: source)
+                        currentSteps = []
+                    }
+                    screenIndex += 1
 
-            case .unsupported(let name):
-                guard allowUnsupportedCommands else {
-                    throw unsupportedCommand(name, sourceName: sourceName, line: lineNumbers[safe: index])
+                case .launchApp, .stopApp:
+                    break
+
+                case .unsupported(let name):
+                    guard allowUnsupportedCommands else {
+                        throw unsupportedCommand(name, sourceName: source, line: lines[safe: index])
+                    }
+
+                case .step(let step):
+                    currentSteps.append(step)
                 }
-
-            case .step(let step):
-                currentSteps.append(step)
             }
         }
+
+        let rootPath = baseDirectory.map { $0.appendingPathComponent((sourceName as NSString).lastPathComponent).standardizedFileURL.path }
+        try walk(commands, source: sourceName, lines: lineNumbers, directory: baseDirectory, stack: rootPath.map { [$0] } ?? [])
 
         // Remaining steps after the last takeScreenshot → one more screen
         if !currentSteps.isEmpty {
@@ -224,6 +259,44 @@ public struct MaestroFlowParser {
         }
 
         return screens
+    }
+
+    private struct SubFlowExpansion {
+        let commands: [Any]
+        let source: String
+        let lines: [Int]
+        let directory: URL?
+        /// The sub-flow file, nil for an inline block.
+        let path: String?
+    }
+
+    /// A `runFlow` whose commands take a screenshot, to be walked in place.
+    /// Anything else (no screenshot, a `when:` condition, a missing file, a
+    /// cycle) stays a plain `runFlow` step for the runner to execute and report.
+    private static func expandableSubFlow(_ raw: Any, source: String, line: Int?, directory: URL?, stack: [String]) -> SubFlowExpansion? {
+        guard let dict = raw as? [String: Any], dict.count == 1, let value = dict["runFlow"] else { return nil }
+        if let options = value as? [String: Any], options["file"] == nil, options["when"] == nil,
+           let inline = options["commands"] as? [Any] {
+            // Inline commands live in the parent file: an error in one names
+            // the parent and the line of its `runFlow`.
+            let parentLines = line.map { Array(repeating: $0, count: inline.count) } ?? []
+            return SubFlowExpansion(commands: inline, source: source, lines: parentLines, directory: directory, path: nil)
+        }
+        let file = (value as? String) ?? ((value as? [String: Any]).flatMap { $0["when"] == nil ? $0["file"] as? String : nil })
+        guard let file, let directory else { return nil }
+        let url = NSString(string: file).isAbsolutePath
+            ? URL(fileURLWithPath: file)
+            : directory.appendingPathComponent(file)
+        let path = url.standardizedFileURL.path
+        guard !stack.contains(path),
+              let contents = try? String(contentsOfFile: path, encoding: .utf8) else { return nil }
+        let section = splitDocuments(contents).commands ?? ""
+        guard let commands = (try? Yams.load(yaml: section)) as? [Any],
+              commands.contains(where: { ($0 as? [String: Any])?["takeScreenshot"] != nil }) else { return nil }
+        return SubFlowExpansion(
+            commands: commands, source: file, lines: commandLineNumbers(in: contents),
+            directory: url.deletingLastPathComponent(), path: path
+        )
     }
 
     // MARK: - Command Parsing
@@ -343,7 +416,11 @@ public struct MaestroFlowParser {
 
         if let val = dict["scrollUntilVisible"] as? [String: Any] {
             if let (label, byId) = selector(val["element"]) ?? selector(val) {
-                return .step(.init(assertVisible: label, assertVisibleById: byId))
+                var step = GrantivaConfig.Screen.Step(assertVisible: label, assertVisibleById: byId)
+                step.scrollUntilVisible = true
+                step.scrollDirection = (val["direction"] as? String)?.lowercased()
+                step.waitTimeout = asInt(val["timeout"])
+                return .step(step)
             }
             return .unsupported("scrollUntilVisible")
         }
@@ -357,16 +434,25 @@ public struct MaestroFlowParser {
             return .step(.init(settle: seconds))
         }
 
+        // `timeout:` is kept: it bounds the wait, and the runner's default
+        // for a plain assertion is a different number.
         if let val = dict["extendedWaitUntil"] as? [String: Any] {
-            if let (label, byId) = selector(val["visible"]) {
-                return .step(.init(assertVisible: label, assertVisibleById: byId))
+            let timeout = asInt(val["timeout"])
+            if let (label, byId, exact) = exactSelector(val["visible"]) {
+                var step = GrantivaConfig.Screen.Step(assertVisible: label, assertVisibleById: byId, assertVisibleExact: exact)
+                step.waitTimeout = timeout
+                return .step(step)
             }
-            if let (label, byId) = selector(val["notVisible"]) {
-                return .step(.init(assertNotVisible: label, assertNotVisibleById: byId))
+            if let (label, byId, exact) = exactSelector(val["notVisible"]) {
+                var step = GrantivaConfig.Screen.Step(assertNotVisible: label, assertNotVisibleById: byId, assertNotVisibleExact: exact)
+                step.waitTimeout = timeout
+                return .step(step)
             }
             // Older Grantiva form: `extendedWaitUntil: {text: X}`.
             if let (label, byId) = selector(val) {
-                return .step(.init(assertVisible: label, assertVisibleById: byId))
+                var step = GrantivaConfig.Screen.Step(assertVisible: label, assertVisibleById: byId)
+                step.waitTimeout = timeout
+                return .step(step)
             }
             return .unsupported("extendedWaitUntil")
         }
@@ -423,6 +509,13 @@ public struct MaestroFlowParser {
         if let text = obj["text"] as? String { return (text, false) }
         if let id = obj["id"] as? String { return (id, true) }
         return nil
+    }
+
+    /// `selector` plus `exact: true` on the mapping form.
+    private static func exactSelector(_ val: Any?) -> (label: String, byId: Bool, exact: Bool)? {
+        guard let (label, byId) = selector(val) else { return nil }
+        let exact = ((val as? [String: Any])?["exact"] as? Bool) ?? false
+        return (label, byId, !byId && exact)
     }
 
     /// A swipe point: Maestro's `"x%, y%"` string, or `{x:, y:}`.

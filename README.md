@@ -86,13 +86,13 @@ grantiva hierarchy > state.xml
 
   Missing parent directories of the path are created (`--ready-file out/ci/x.ready` creates `out/ci/`), so a typo in the directory part makes a new directory rather than failing; only an uncreatable or unwritable location is an error.
 
-  `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present only when `--report-dir` was given: the default report directory is deleted when the run exits.
+  `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present whenever `--report-dir` was given and the directory exists, pass or fail: the default report directory is deleted when the run exits. When a run has both `screens:` and `flows:`, `flows` lists the screens session as `screens` ahead of the flows.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<runner version>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed runner version, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown; when the owner is a `grantiva runner start` session the message says so and names `grantiva runner stop`. A run's lease file (`<runner home>/locks/<udid>.lock`) is removed when the run ends, and a deleted simulator's when it is deleted.
 - **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
-- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs. Without `--report-dir`, `run` writes its `takeScreenshot` shots and the failure screenshot (`failure-<timestamp>.png`) to `.grantiva/run-captures/` (`.grantiva/run-captures/android/` on Android), never to `.grantiva/captures/`, so `diff approve` and `diff compare` never take a run artefact for a screen.
+- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs. Without `--report-dir`, `run` writes its `takeScreenshot` shots and the failure screenshot (`failure-<timestamp>.png`) to `.grantiva/run-captures/` (`.grantiva/run-captures/android/` on Android), never to `.grantiva/captures/`, so `diff approve` and `diff compare` never take a run artefact for a screen. With `--report-dir`, `trailing` also trims the report directory's `assets/` and `allure-results/` to that set. Step shots go to `captures/trace/`; only `takeScreenshot` captures are listed as screenshots.
 - **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
 - **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). The timeout itself is ignored under `--keep-alive`, where the session is held until you release it, but the 30 s minimum is still validated.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
@@ -169,9 +169,9 @@ appId: com.example.myapp
 - takeScreenshot: "Welcome"
 ```
 
-Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible`, `runFlow`, `extendedWaitUntil` (`visible:` or `notVisible:`), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.
+Each `takeScreenshot` becomes a named screen capture point. Commands between screenshots become navigation steps. Supported Maestro commands: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, optionally with `from:`, or `start:`/`end:` as `"x%, y%"`, plus `duration:`), `scroll`, `scrollUntilVisible` (kept as a scroll, with its `direction:` and `timeout:`), `runFlow` (a file, `{file: ...}`, or inline `{commands: [...]}`; a `takeScreenshot` inside a sub-flow is a screen like one in the parent), `extendedWaitUntil` (`visible:` or `notVisible:`, with its `timeout:` kept), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, and `takeScreenshot`. `grantiva-android.yml` may be written in the same Maestro format; its `appId:` is the application ID. Selectors accept a string or `{text: ...}` (matches text) or `{id: ...}` (matches the accessibility identifier). Any other command (`back`, scripting, permissions, etc.) is rejected before the run starts, with an error naming the file and line: `grantiva.yml:5: unsupported Maestro command 'back'`. Flows run with `grantiva run --flow` go to the runner as written and are not limited to this list.
 
-The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection.
+The app a `run --flow` run launches is chosen in this order: `--bundle-id` / `--application-id`, then `bundle_id` / `application_id` in the config file, then the ID read from `--app-file`, then the flow's own `appId:` header (ignored when it is a `${VARIABLE}` reference), then project detection (iOS). Project detection runs only when building: with `--no-build` it is skipped, so pass `--bundle-id` or give the flow a literal `appId:`.
 
 A flow header `env:` block defines `${VAR}` values and is also passed to the app at launch, like `--env`: the runner gets it in every `launchApp` step's `environment:` (iOS) or `arguments:` (Android). `--env` wins over a value the step sets, which wins over the header.
 
@@ -402,20 +402,71 @@ udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
 grantiva doctor --json | jq '.[] | select(.status == "fail")'
 ```
 
-A failing `run --json` still prints its document, with `"allPassed": false`, the
-failed step and its message, an `error` field, and `reportDir` when
-`--report-dir` was given; a failure before any flow ran prints
+Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+(`runner start` and `runner stop` complete the rule in a sibling change.)
+
+Some documents used snake_case keys before. For one deprecation period they
+write each of those values twice, under the camelCase key and under the old
+snake_case key beside it; read the camelCase key, as the snake_case one will be
+removed in a later release. The keys still written in both spellings:
+
+- `screen_name` → `screenName` (diff capture, diff compare)
+- `size_bytes` → `sizeBytes` (diff capture)
+- `point_dimensions` → `pointDimensions` (diff capture, simulator ensure)
+- `pixel_dimensions` → `pixelDimensions` (diff capture, simulator ensure)
+- `display_scale` → `displayScale` (diff capture, simulator ensure)
+- `device_type` → `deviceType` (simulator ensure)
+- `pixel_diff_percent` → `pixelDiffPercent` (diff compare)
+- `perceptual_distance` → `perceptualDistance` (diff compare)
+- `pixel_threshold` → `pixelThreshold` (diff compare)
+- `perceptual_threshold` → `perceptualThreshold` (diff compare)
+- `baseline_path` → `baselinePath` (diff compare)
+- `capture_path` → `capturePath` (diff compare)
+- `diff_image_path` → `diffImagePath` (diff compare)
+- `approved_screens` → `approvedScreens` (diff approve)
+- `baseline_directory` → `baselineDirectory` (diff approve)
+
+`run --json` has the same shape whether the run passed or failed. `screens`
+holds one entry per configured screen (`"kind": "screen"`) and one per flow
+(`"kind": "flow"`); each entry has `name`, `kind`, `passed`, `steps` (the
+runner's commands with `action`, `status`, `duration` in seconds — `null`
+when the runner measured none — and, on failure, `message`) and `screenshots`
+(`name` and `path` of each `takeScreenshot` capture; the path is relative to
+the working directory when the file is under it, absolute otherwise). The
+same `duration` rule holds for `diff capture --json` steps. `reportDir` is present whenever `--report-dir` was
+given and the directory exists; `error` appears only on failure:
+
+```json
+{"allPassed": true, "reportDir": "/ci/out", "screens": [
+  {"name": "01-browse", "kind": "flow", "passed": true,
+   "steps": [{"action": "launchApp", "status": "passed", "duration": 1.9}],
+   "screenshots": [{"name": "01-browse-cmd-003-Home", "path": ".grantiva/run-captures/01-browse-cmd-003-Home.png"}]}]}
+{"allPassed": false, "reportDir": "/ci/out", "error": "Runner failed (exit 1): 02-exact-negative: assertVisible: ...", "screens": [
+  {"name": "02-exact-negative", "kind": "flow", "passed": false,
+   "steps": [{"action": "assertVisible: ...", "status": "failed", "duration": 12.6, "message": "Element not visible: ..."}],
+   "screenshots": []}]}
+```
+
+The `error` names the failed step and its message, so it stands on its own
+under `--json`. A failure before any flow ran prints
 `{"allPassed": false, "screens": [], "error": "..."}`. The exit status stays non-zero.
 
 Two flags adjust the stderr side only; neither changes stdout:
 
 - **`--verbose`** — adds debug-level detail, with timestamps and labels, including every subprocess Grantiva runs and its exit status.
-- **`--quiet`** — silences progress narration. Warnings and errors still print,
-  and the command's result on stdout is untouched, so
+- **`--quiet`** — silences progress narration, including the runner's own
+  output (banner, step lines, summary, report paths). Warnings and errors still
+  print — a failing run's `Error:` line names the failed step — and the
+  command's result on stdout is untouched, so
   `grantiva doctor --json --quiet | jq` is still valid JSON.
 
-`--json` already suppresses narration on its own: asking for a machine-readable
-result does not ask for a running commentary.
+`--json` already suppresses narration on its own, the runner's included: asking
+for a machine-readable result does not ask for a running commentary. `--verbose`
+shows the runner's output again.
+
+Without `--report-dir` the runner's report goes to a temporary directory that
+is deleted when the command exits, so its paths are not printed; the run says
+`Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.`
 
 Grantiva admits at most four Grantiva-booted simulators at once. A fifth boot
 waits for up to ten minutes and reports the sessions occupying capacity. Set

@@ -28,13 +28,23 @@ means Android, an `.xcodeproj` or `.xcworkspace` means iOS. With both, pass `--p
     flows: [...]
     diff: {...}
 
+`grantiva-android.yml` may instead be written in Maestro format, as `grantiva.yml` can on iOS
+(see the README's Maestro Compatibility section): the `appId:` header is the application ID,
+the Gradle side takes its defaults (module `app`, variant `debug`), and each `takeScreenshot`
+is a screen. Selectors take `{id: ...}` there (`tapOn: {id: clock}`), which UIAutomator2
+matches against the resource ID or test tag.
+
+A `run --flow` with no config and no `--application-id` launches the app the flow's literal
+`appId:` header names.
+
 ## Devices
 
 `emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
 With no `emulator:`, the order is: the one running emulator, else the one emulator still
 booting (waited on), else the only existing AVD (booted); otherwise the command fails and
 lists the AVDs. `--device <serial>` targets any attached device, including
-a physical one. On a physical device the demo-mode and animation settings are skipped
+a physical one; it is used as is and never booted (`run` says `Using emulator: <name> (<serial>)`),
+and a serial that is not attached is an error naming the attached devices. On a physical device the demo-mode and animation settings are skipped
 unless `--allow-device-settings` is given. `--headless` boots without a window, and so do
 `GRANTIVA_EMULATOR_HEADLESS=1` (or `true`/`yes`) and `CI` set to any value other than empty,
 `0` or `false` (as CI services set it). Nothing else makes a boot windowless: without one of

@@ -39,6 +39,14 @@ enum RunnerExecution {
         /// How long, after the flows finish, to wait for the runner's keep-alive
         /// session file before publishing the ready file anyway.
         var sessionFileGrace: TimeInterval = 10
+        /// Line edits applied to the relayed output after path rewriting
+        /// (ephemeral report paths, generated wait steps).
+        var outputFilter = RunnerOutputFilter()
+        /// True when the relayed output must not reach the terminal
+        /// (`--quiet`, `--json`); read once when the request is made.
+        var silenced: Bool = RunnerNarration.isSilenced
+        /// Where relayed output goes. Overridable for tests.
+        var narrationSink: @Sendable (String) -> Void = RunnerNarration.sink
     }
 
     static func run(_ request: Request) async -> Outcome {
@@ -87,6 +95,7 @@ enum RunnerExecution {
         // it started — and then releases the lease so the next run is not
         // refused by a lock whose owner is gone.
         SignalRelay.shared.track(group: child.processGroup)
+        SignalRelay.shared.deviceNoun = request.platform == .android ? "emulator" : "simulator"
         let lease = request.lease
         let readyFile = request.readyFile
         let cleanupToken = SignalRelay.shared.onTermination {
@@ -107,24 +116,28 @@ enum RunnerExecution {
         let stdoutFD = stdoutPipe.fileHandleForReading.fileDescriptor
         let stderrFD = stderrPipe.fileHandleForReading.fileDescriptor
         let pathMap = request.pathMap
+        let initialFilter = request.outputFilter
+        let silenced = request.silenced
+        let sink = request.narrationSink
 
+        // Every chunk goes through RunnerSession.narrate, the one place that
+        // honours --quiet/--json for runner output.
         async let relayFinished: Void = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 var rewriter = OutputRewriter(replacements: pathMap)
+                var filter = initialFilter
                 let handle = FileHandle(fileDescriptor: stdoutFD, closeOnDealloc: false)
                 while true {
                     let chunk = handle.availableData
                     if chunk.isEmpty { break }
                     let text = String(decoding: chunk, as: UTF8.self)
-                    let emit = rewriter.isEmpty ? text : rewriter.consume(text)
-                    if !emit.isEmpty {
-                        FileHandle.standardError.write(Data(emit.utf8))
-                    }
+                    let rewritten = rewriter.isEmpty ? text : rewriter.consume(text)
+                    let emit = filter.isEmpty ? rewritten : filter.consume(rewritten)
+                    RunnerSession.narrate(emit, silenced: silenced, sink: sink)
                 }
                 let remainder = rewriter.flush()
-                if !remainder.isEmpty {
-                    FileHandle.standardError.write(Data(remainder.utf8))
-                }
+                let tail = filter.isEmpty ? remainder : filter.consume(remainder) + filter.flush()
+                RunnerSession.narrate(tail, silenced: silenced, sink: sink)
                 continuation.resume()
             }
         }

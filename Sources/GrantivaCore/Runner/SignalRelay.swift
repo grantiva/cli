@@ -35,8 +35,20 @@ public final class SignalRelay: @unchecked Sendable {
     private var cleanups: [(id: UInt64, body: @Sendable () -> Void)] = []
     private var nextID: UInt64 = 1
     private var terminating = false
+    private var noun = "simulator"
 
     private init() {}
+
+    /// What the interrupt notice says is being released: `simulator` on iOS,
+    /// `emulator` on Android. Set by whoever starts the runner.
+    public var deviceNoun: String {
+        get { lock.withLock { noun } }
+        set { lock.withLock { noun = newValue } }
+    }
+
+    static func announcement(signalName: String, deviceNoun: String) -> String {
+        "\n[grantiva] received \(signalName) — releasing \(deviceNoun) and reaping child processes\n"
+    }
 
     /// Installs handlers for SIGINT and SIGTERM. Safe to call repeatedly.
     public func install() {
@@ -158,9 +170,7 @@ public final class SignalRelay: @unchecked Sendable {
         lock.unlock()
 
         if let signalName {
-            FileHandle.standardError.write(Data(
-                "\n[grantiva] received \(signalName) — releasing simulator and reaping child processes\n".utf8
-            ))
+            FileHandle.standardError.write(Data(Self.announcement(signalName: signalName, deviceNoun: deviceNoun).utf8))
         }
 
         for pgid in trackedGroups {

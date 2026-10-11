@@ -33,6 +33,15 @@ struct GlobalOptions: ParsableArguments {
         guard !json else { return }
         GrantivaLog.logger.info("\(message())")
     }
+
+    /// Applies `--quiet`/`--json`/`--verbose` to the runner's relayed output
+    /// (see `RunnerSession.narrate`). Commands that start the runner call
+    /// this before they do.
+    func applyRunnerNarration() {
+        RunnerNarration.isSilenced = RunnerNarration.shouldSilence(
+            json: json, quiet: verbosity.quiet, verbose: verbosity.verbose
+        )
+    }
 }
 
 struct BuildOptions: ParsableArguments {

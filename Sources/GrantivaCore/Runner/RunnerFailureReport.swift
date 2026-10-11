@@ -10,6 +10,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
     private var storedCaptures: [ScreenCapture] = []
     private var storedReportDir: String?
     private var earlierCaptures: [ScreenCapture] = []
+    private var storedScreens: [ScreenCapture] = []
     private var passedBeforeInterrupt = false
 
     public init() {}
@@ -19,7 +20,22 @@ public final class RunnerFailureReport: @unchecked Sendable {
     public var captures: [ScreenCapture] {
         lock.lock()
         defer { lock.unlock() }
-        return earlierCaptures + storedCaptures
+        return earlierCaptures + storedScreens + storedCaptures
+    }
+
+    /// The per-screen rows a failed screens session left (captured, failed,
+    /// not reached), for `--continue-on-failure` and `--json`.
+    public var screenCaptures: [ScreenCapture] {
+        lock.lock()
+        defer { lock.unlock() }
+        return storedScreens
+    }
+
+    func recordScreens(_ captures: [ScreenCapture], preservedReportDir: String?) {
+        lock.lock()
+        defer { lock.unlock() }
+        storedScreens = captures
+        if storedReportDir == nil { storedReportDir = preservedReportDir }
     }
 
     /// True when the run's verdict was already `passed` (every expected flow
@@ -52,85 +68,37 @@ public final class RunnerFailureReport: @unchecked Sendable {
         return storedReportDir
     }
 
-    func record(reportDir: String, preservedReportDir: String?) {
-        let captures = Self.captures(reportDir: reportDir)
+    func record(reportDir: String, preservedReportDir: String?, screenshots: [String: [ScreenCapture.Screenshot]] = [:]) {
+        let captures = Self.captures(reportDir: reportDir).map { capture -> ScreenCapture in
+            var capture = capture
+            capture.screenshots = screenshots[capture.screenName] ?? []
+            return capture
+        }
         lock.lock()
         defer { lock.unlock() }
         storedCaptures = captures
         storedReportDir = preservedReportDir
     }
 
-    private struct Report: Decodable {
-        struct Flow: Decodable {
-            let name: String?
-            let status: String?
-            let error: String?
-            let dataFile: String?
-        }
-        let flows: [Flow]?
-    }
-
-    private struct FlowData: Decodable {
-        struct Command: Decodable {
-            struct Failure: Decodable {
-                let message: String?
-            }
-            let type: String?
-            let yaml: String?
-            let status: String?
-            let error: Failure?
-        }
-        let commands: [Command]?
-    }
-
     static func captures(reportDir: String) -> [ScreenCapture] {
-        let root = URL(fileURLWithPath: reportDir, isDirectory: true).standardizedFileURL
-        guard let data = FileManager.default.contents(atPath: root.appendingPathComponent("report.json").path),
-              let report = try? JSONDecoder().decode(Report.self, from: data) else {
-            return []
-        }
+        guard let report = RunnerReportSteps.report(in: reportDir) else { return [] }
         return (report.flows ?? []).map { flow in
             let name = flow.name ?? "flow"
-            var steps: [StepResult] = commands(of: flow, in: root).compactMap { command in
-                let action = command.yaml ?? command.type ?? "step"
-                switch command.status {
-                case "passed":
-                    return StepResult(action: action, status: .passed, duration: 0)
-                case "failed", "error":
-                    return StepResult(action: action, status: .failed, duration: 0, message: command.error?.message)
-                case "running":
-                    return StepResult(action: action, status: .failed, duration: 0, message: "Did not finish")
-                default:
-                    // skipped / pending: never ran.
-                    return nil
-                }
-            }
+            var steps = RunnerReportSteps.steps(RunnerReportSteps.commands(of: flow, in: reportDir))
             // A flow that did not pass must show a failed step even when no
             // command failed (setup error, skipped after fail-fast, cut off).
             if flow.status != "passed", !steps.contains(where: { $0.status == .failed }) {
                 steps.append(StepResult(
                     action: "Run flow \"\(name)\"",
                     status: .failed,
-                    duration: 0,
+                    duration: nil,
                     message: flow.error ?? flow.status
                 ))
             }
             if steps.isEmpty {
-                steps.append(StepResult(action: "Run flow \"\(name)\"", status: .passed, duration: 0))
+                steps.append(StepResult(action: "Run flow \"\(name)\"", status: .passed, duration: nil))
             }
-            return ScreenCapture(screenName: name, path: "", sizeBytes: 0, steps: steps)
+            return ScreenCapture(screenName: name, path: "", sizeBytes: 0, steps: steps, kind: .flow)
         }
-    }
-
-    private static func commands(of flow: Report.Flow, in root: URL) -> [FlowData.Command] {
-        guard let dataFile = flow.dataFile else { return [] }
-        let url = root.appendingPathComponent(dataFile).standardizedFileURL
-        // The report names the file; never read outside the report dir.
-        guard url.path.hasPrefix(root.path + "/"),
-              let data = FileManager.default.contents(atPath: url.path),
-              let flowData = try? JSONDecoder().decode(FlowData.self, from: data) else {
-            return []
-        }
-        return flowData.commands ?? []
     }
 }
