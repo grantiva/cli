@@ -2,12 +2,13 @@ import json,sys,collections
 base=sys.argv[1]; out=sys.argv[2]; final=len(sys.argv)>3
 rows=json.load(open(base+'/cli_rows.json'))
 res={}
-extra=[]
+extra=[]; s3=[]
 for ln in open(base+'/results.tsv'):
     ln=ln.rstrip('\n')
     if not ln: continue
     i,r,e,n=ln.split('\t')
     if i.startswith('EXTRA-'): extra.append((i,r,e,n)); continue
+    if i.startswith('S3-'): s3.append((i,r,e,n)); continue
     res[i]=(r,e,n)
 def key(rid): return rid.split(' ')[0]
 H=open(base+'/header.md').read()
@@ -22,6 +23,9 @@ for r in rows:
         c=rr.split(' ')[0]; cnt['fail' if c.startswith('fail') else c]+=1
     else: missing.append(k)
 unknown=set(res)-ids
+if s3:
+    L+=['','## Task 3 Step 3: README and docs command examples vs the help corpus','','| ID | result | evidence | note |','|---|---|---|---|']
+    for i,r,e,n in s3: L.append(f'| {i} | {r} | {e} | {n.replace("|","\\|")} |')
 if extra:
     L+=['','## Findings outside the matrix rows (recorded as fail for triage)','','| ID | result | evidence | note |','|---|---|---|---|']
     for i,r,e,n in extra: L.append(f'| {i} | {r} | {e} | {n.replace("|","\\|")} |')

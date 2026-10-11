@@ -1,0 +1,23 @@
+## Install
+
+### Homebrew
+
+```bash
+brew install grantiva/tap/grantiva
+```
+
+### From source
+
+```bash
+git clone https://github.com/grantiva/cli.git
+cd cli
+swift build -c release
+cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/
+```
+
+Copy `grantiva_GrantivaCore.bundle` together with the binary and keep the two side by side: the bundle carries the
+embedded runner, and `grantiva runner install` (and every command that needs a device) extracts it from beside the
+`grantiva` executable. A binary copied on its own fails with `The grantiva_GrantivaCore.bundle resource bundle was not
+found next to the grantiva executable`. To install into a prefix instead, copy both into one directory and link the
+binary onto your `PATH`.
+

@@ -1,0 +1,87 @@
+README:332 [PREFIX] run
+   README: Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow)
+   help:   Run Maestro flows against a simulator or emulator. No visual regression — reports step pass/fail and captures a screenshot on failure.
+README:333 [EXACT] record
+   README: Record a simulator or emulator and extract PNG frames at exact requested timestamps
+   help:   Record a simulator or emulator and extract PNG frames at exact requested timestamps.
+README:334 [PREFIX] hierarchy
+   README: Dump the UI hierarchy of a booted simulator or emulator without relaunching the app (reads a `run --keep-alive` session)
+   help:   Dump the UI hierarchy of a booted simulator or emulator without relaunching the app.
+README:335 [PREFIX] build build
+   README: Build the app for a simulator (xcodebuild) or emulator (Gradle); `grantiva build` alone runs this
+   help:   Build the app for a simulator (xcodebuild) or emulator (Gradle).
+README:336 [PREFIX] build install
+   README: Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip)
+   help:   Build and install the app on a simulator or emulator, then optionally launch it.
+README:337 [EXACT] ci run
+   README: Run full CI pipeline: capture screenshots, compare against baselines, upload results
+   help:   Run full CI pipeline: capture screenshots, compare against baselines, upload results.
+README:338 [EXACT] diff capture
+   README: Navigate to configured screens and capture screenshots
+   help:   Navigate to configured screens and capture screenshots.
+README:339 [EXACT] diff compare
+   README: Diff current captures against baselines
+   help:   Diff current captures against baselines.
+README:340 [EXACT] diff approve
+   README: Promote current captures to baselines
+   help:   Promote current captures to baselines.
+README:341 [DIFF] simulator ensure
+   README: Create or reuse a named simulator and boot it (--name alone reuses an existing one)
+   help:   Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a device model ("iPhone 17") or --device-type must be given; the newest installed runtime is used unless --runtime is passed.
+README:342 [EXACT] simulator delete
+   README: Explicitly delete a named simulator
+   help:   Explicitly delete a named simulator.
+343 UNPARSED grantiva simulator sessions List Grantiva-managed simulator capacity slots
+344 UNPARSED grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
+README:345 [EXACT] simulator cleanup
+   README: Delete Grantiva-created simulators that are shut down and not part of an active session
+   help:   Delete Grantiva-created simulators that are shut down and not part of an active session.
+README:346 [EXACT] emulator ensure
+   README: Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
+   help:   Create the AVD when missing (installing its system image first) and boot it. stdout is the serial, or with --no-boot the AVD name (the serial when it is already running).
+README:347 [EXACT] emulator delete
+   README: Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
+   help:   Delete an AVD Grantiva created. Others need --force. A running AVD is never deleted.
+README:348 [EXACT] emulator sessions
+   README: List the emulators Grantiva started
+   help:   List the emulators Grantiva started.
+README:349 [PREFIX] emulator teardown
+   README: Kill emulators Grantiva started: one by --serial, or --all
+   help:   Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.
+README:350 [PREFIX] console
+   README: Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
+   help:   Manage your Grantiva dashboard from the terminal.
+README:351 [EXACT] auth login
+   README: Authenticate with Grantiva API
+   help:   Authenticate with Grantiva API.
+README:352 [EXACT] auth status
+   README: Show current authentication status
+   help:   Show current authentication status.
+README:353 [EXACT] auth logout
+   README: Remove saved authentication credentials
+   help:   Remove saved authentication credentials.
+README:354 [PREFIX] doctor
+   README: Check environment and dependencies (non-zero exit if a required check fails)
+   help:   Check environment and dependencies.
+README:355 [EXACT] runner install
+   README: Extract or update the embedded runner binary
+   help:   Extract or update the embedded runner binary.
+README:356 [EXACT] runner version
+   README: Show the embedded runner version
+   help:   Show the embedded runner version.
+README:357 [EXACT] runner start
+   README: Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+   help:   Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use.
+README:358 [EXACT] runner stop
+   README: Stop the running runner session
+   help:   Stop the running runner session.
+README:359 [EXACT] runner dump-hierarchy
+   README: Dump the view hierarchy from a running app for agent inspection
+   help:   Dump the view hierarchy from a running app for agent inspection.
+README:360 [PREFIX] mcp
+   README: Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md)
+   help:   Start the Grantiva MCP server for AI agent integration.
+README:361 [EXACT] init
+   README: Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory
+   help:   Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory.
+LEAVES NOT LISTED (excluding console subgroups): ['simulator_sessions', 'simulator_teardown']

@@ -1,0 +1,7 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows
+$ python3 -I /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/evidence/cov2-cli/inputs/step3.py /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17 /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/help
+# exit=0 elapsed=.043s -> examples.out / examples.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows
+$ for f in --scheme --simulator --bundle-id --derived-data-path --no-launch --json; do grep -q -- "$f" /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/help/build_install.txt && echo "build_install has $f" || echo "build_install MISSING $f"; done; for f in --no-build --flow --simulator --bundle-id; do grep -q -- "$f" /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/help/run.txt && echo "run has $f" || echo "run MISSING $f"; done
+# exit=0 elapsed=.024s -> multiline.out / multiline.err
+# README.md and docs/*.md read at c65fc17; help corpus findings/help (7593fab). The 2 CHECK lines are parser false positives from trailing commas in the README Commands block (--keep-alive, --logs, --serial exist on run/emulator teardown); the multi-line README:240-255 example checked by hand (multiline.out)
