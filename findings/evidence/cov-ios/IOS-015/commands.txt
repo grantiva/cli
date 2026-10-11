@@ -1,0 +1,20 @@
+# setup: cov-ios-3 iPhone 17 (from IOS-001) deleted to free capacity; 'cov-ios-3 Pre iPhone 17' created with plain simctl (pre-existing, not Grantiva-created)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl create "cov-ios-3 Pre iPhone 17" "iPhone 17" com.apple.CoreSimulator.SimRuntime.iOS-26-0
+# exit=0 elapsed=.213s -> simctl-create.out / simctl-create.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ GRANTIVA_SESSION_ID=cov-ios-tmp $GRANTIVA simulator ensure --name "cov-ios-4 Tmp iPhone 17"
+# exit=0 elapsed=19.665s -> ensure-created.out / ensure-created.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ GRANTIVA_SESSION_ID=cov-ios-tmp $GRANTIVA simulator ensure --name "cov-ios-3 Pre iPhone 17"
+# exit=0 elapsed=49.729s -> ensure-preexisting.out / ensure-preexisting.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ GRANTIVA_SESSION_ID=cov-ios-tmp $GRANTIVA simulator sessions
+# exit=0 elapsed=.639s -> sessions.out / sessions.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ GRANTIVA_SESSION_ID=cov-ios-tmp $GRANTIVA simulator teardown --session-id cov-ios-tmp --json
+# exit=0 elapsed=7.535s -> teardown.out / teardown.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl list devices | grep -E "cov-ios-(3|4)"
+# exit=0 elapsed=.181s -> after.out / after.err
+# cleanup: xcrun simctl delete 6181AAC5 (cov-ios-3 Pre iPhone 17)

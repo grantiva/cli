@@ -1,0 +1,15 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ unset GRANTIVA_SESSION_ID; $GRANTIVA simulator sessions --json > $S/s-before.json; $GRANTIVA run --no-build --simulator A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF --flow .maestro/01-browse.yaml & P=$!; sleep 20; echo '--- sessions during run'; $GRANTIVA simulator sessions --json; wait $P; echo run_exit=$?; echo '--- sessions after run'; $GRANTIVA simulator sessions --json; echo '--- before'; cat $S/s-before.json
+# exit=0 elapsed=20.425s -> run.out / run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl create "cov-ios-3 iPhone 17" "iPhone 17" com.apple.CoreSimulator.SimRuntime.iOS-26-0
+# exit=0 elapsed=.208s -> create3.out / create3.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl boot 7062C1E5-DE78-4FD4-A9D3-D6A3CFFBFB42 && xcrun simctl bootstatus 7062C1E5-DE78-4FD4-A9D3-D6A3CFFBFB42 -b | tail -1
+# exit=0 elapsed=20.874s -> boot3.out / boot3.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ unset GRANTIVA_SESSION_ID; $GRANTIVA run --simulator 7062C1E5-DE78-4FD4-A9D3-D6A3CFFBFB42 --flow .maestro/01-browse.yaml & P=$!; sleep 22; echo '--- sessions during run'; $GRANTIVA simulator sessions --json; wait $P; echo run_exit=$?; echo '--- sessions after run'; $GRANTIVA simulator sessions --json
+# exit=0 elapsed=26.778s -> run3.out / run3.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA simulator delete --name "cov-ios-3 iPhone 17"
+# exit=0 elapsed=3.444s -> cleanup-delete.out / cleanup-delete.err

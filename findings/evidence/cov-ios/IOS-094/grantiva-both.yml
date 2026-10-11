@@ -1,0 +1,46 @@
+scheme: "Landmarks (UI Testing)"
+simulator: cov-ios-1
+bundle_id: com.kylebrowning.Landmarks
+screens:
+  - name: Home
+    path: launch
+  - name: Lakes Exact
+    path:
+      - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - assert_visible: "Golden Gate.*"
+      - assert_not_visible: {text: "Golden Gate.*", exact: true}
+      - tap: {text: "Lakes", exact: true}
+      - assert_visible: {text: "Mono Lake", exact: true}
+  - name: Caching
+    path:
+      - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - tap: "Deep Links"
+      - tap: "Caching Demo"
+      - wait: 3
+      - assert_visible: "Cache Policy"
+  - name: Edit Typed
+    path:
+      - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - tap: "Deep Links"
+      - tap: "Edit Landmark"
+      - tap: "Name"
+      - type: " typed"
+      - tap: "Done"
+      - assert_visible: "Golden Gate Bridge typed"
+  - name: Gestures Swiped
+    path:
+      - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - tap: "Deep Links"
+      - tap: "Gesture Lab"
+      - swipe: up
+      - swipe: DOWN
+      - swipe: Left
+      - swipe: right
+      - assert_visible: "Last swipe: right"
+  - name: Sub Flow
+    path:
+      - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - run_flow: ".maestro/coverage/14-runflow-sub.yaml"
+diff:
+  threshold: 1.0
+  perceptual_threshold: 80.0

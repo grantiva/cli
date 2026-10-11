@@ -1,0 +1,28 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff approve; echo exit=$?; ls -la .grantiva/baselines
+# exit=0 elapsed=.024s -> approve.out / approve.err
+# fix round 1 re-evidence (2026-10-11T09:06:31Z): fresh project copy $S/p092 (no .grantiva), cov-ios-1 = 3F0B20E7-982A-425C-B814-75864BA60E2A; outputs under fix1/
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/02-exact-negative.yaml; echo exit=$?
+# exit=0 elapsed=23.791s -> fix1/1-run-fail.out / fix1/1-run-fail.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/01-browse.yaml; echo exit=$?
+# exit=0 elapsed=11.763s -> fix1/2-run-pass.out / fix1/2-run-pass.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ls -la .grantiva/captures
+# exit=0 elapsed=.011s -> fix1/3-ls-captures.out / fix1/3-ls-captures.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build --simulator $U1; echo exit=$?
+# exit=0 elapsed=20.833s -> fix1/4-diff-capture.out / fix1/4-diff-capture.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ls -la .grantiva/captures
+# exit=0 elapsed=.011s -> fix1/5-ls-captures.out / fix1/5-ls-captures.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff approve; echo exit=$?
+# exit=0 elapsed=.021s -> fix1/6-approve.out / fix1/6-approve.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ ls -la .grantiva/baselines
+# exit=0 elapsed=.012s -> fix1/7-ls-baselines.out / fix1/7-ls-baselines.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/p092  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff compare; echo exit=$?
+# exit=0 elapsed=.406s -> fix1/8-compare.out / fix1/8-compare.err

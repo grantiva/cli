@@ -1,0 +1,16 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA simulator sessions --json
+# exit=0 elapsed=.118s -> sessions-before.out / sessions-before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA simulator teardown --session-id cov-ios --json
+# exit=0 elapsed=7.063s -> teardown.out / teardown.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ echo cov_ios_count=$(xcrun simctl list devices | grep -c cov-ios); ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/* 2>&1; grep -c "cov-" ~/.grantiva/simulator-capacity/created.json; cat ~/.grantiva/simulator-capacity/sessions.json; xcrun simctl list devices booted | grep -v "^--"
+# exit=0 elapsed=.244s -> after.out / after.err
+# removed stale /tmp/grantiva-sessions/15919-1791707634281100000.grantiva (left by runner stop in N-05, see IOS-087) after copying it into IOS-087/stale-session-file.txt
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA simulator teardown --session-id cov-ios --json
+# exit=0 elapsed=3.498s -> fix1-teardown.out / fix1-teardown.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios  (U1=3F0B20E7-982A-425C-B814-75864BA60E2A cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ echo cov_ios_count=$(xcrun simctl list devices | grep -c cov-ios); ls -d $GRANTIVA_RUNNER_HOME/versions/*/devices/* 2>&1; echo dlrun=$(find $GRANTIVA_RUNNER_HOME -name "dlrun-*" | wc -l); grep -c "cov-" ~/.grantiva/simulator-capacity/created.json; cat ~/.grantiva/simulator-capacity/sessions.json; ls -A /tmp/grantiva-sessions; xcrun simctl list devices booted | grep -v "^--"
+# exit=0 elapsed=.542s -> fix1-after.out / fix1-after.err

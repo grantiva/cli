@@ -1,0 +1,70 @@
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-E0EDAA18-04AE-4E7A-AD03-D124E3C534EA
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (741ms)
+    ✓ takeScreenshot (206ms)
+    ✗ tapOn: text="No Such Element" (12.9s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+✗ flow 19.1s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-456346AA-F96B-456A-982B-4D091BDCBB8C/flow.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (741ms)
+    ✓ takeScreenshot (206ms)
+    ✗ tapOn (13.6s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 16.5s
+
+  3 steps passing (19.1s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL       6      3      1      2      19.1s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      19.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-E0EDAA18-04AE-4E7A-AD03-D124E3C534EA
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-E0EDAA18-04AE-4E7A-AD03-D124E3C534EA/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-E0EDAA18-04AE-4E7A-AD03-D124E3C534EA/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-E0EDAA18-04AE-4E7A-AD03-D124E3C534EA/allure-results
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1); see the runner output above.

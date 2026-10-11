@@ -1,0 +1,18 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF --flow .maestro/01-browse.yaml --keep-alive --ready-file $S/kaI15.ready  > kaI15.out 2> kaI15.err &
+# ready after 12s pid=23632: {
+  "finishedAt" : "2026-10-11T08:41:37Z",
+  "flows" : [
+    {
+      "name" : "01-browse",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl spawn $U1 launchctl list | grep -i -E 'webdriver|xctrunner|GrantivaAgent'
+# exit=0 elapsed=.316s -> wda-proc.out / wda-proc.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ xcrun simctl terminate $U1 com.facebook.WebDriverAgentRunner.xctrunner; sleep 2; $GRANTIVA hierarchy --udid $U1 --timeout 10; echo exit=$?
+# exit=0 elapsed=2.189s -> kill-agent.out / kill-agent.err

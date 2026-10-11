@@ -1,0 +1,70 @@
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7231C4E5-63D3-4058-8943-05E24FF7B736
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Favorites" (1.9s)
+    ✓ waitForAnimationToEnd (904ms)
+    ✗ tapOn: id="favoritesTab" (12.1s)
+      ╰─ Element not found: id='favoritesTab' (cause: context deadline exceeded: no elements match selector)
+✗ flow 19.7s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-0A46A4F1-02AB-4469-9421-E4B77AB6AC87/flow.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (1.9s)
+    ✓ waitForAnimationToEnd (904ms)
+    ✗ tapOn (12.3s)
+      ╰─ Element not found: id='favoritesTab' (cause: context deadline exceeded: no elements match selector)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 17.1s
+
+  3 steps passing (19.7s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL       6      3      1      2      19.7s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      19.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7231C4E5-63D3-4058-8943-05E24FF7B736
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7231C4E5-63D3-4058-8943-05E24FF7B736/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7231C4E5-63D3-4058-8943-05E24FF7B736/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7231C4E5-63D3-4058-8943-05E24FF7B736/allure-results
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1); see the runner output above.

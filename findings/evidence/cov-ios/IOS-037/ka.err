@@ -1,0 +1,85 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/08-scroll.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-880F8E5B-8D70-44C2-B713-CF1EB14FE78A
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] 08-scroll (08-scroll.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll: DOWN (1.7s)
+    ⚠ scrollUntilVisible: text="Landmark 70" (33.1s)
+    ✓ assertVisible: text="Landmark 70" (471ms)
+    ⚠ scrollUntilVisible: text="Golden Gate Bridge" (35.2s)
+    ✓ assertVisible: text="Golden Gate Bridge" (276ms)
+    ✓ tapOn: text="Deep Links" (876ms)
+✓ 08-scroll 1m 16s
+
+  [1/1] 08-scroll (.maestro/coverage/08-scroll.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ scroll (1.7s)
+    ⚠ scrollUntilVisible (33.1s)
+    ✓ assertVisible (471ms)
+    ⚠ scrollUntilVisible (35.2s)
+    ✓ assertVisible (276ms)
+    ✓ tapOn (876ms)
+✓ 08-scroll 1m 13s
+
+  7 steps passing (1m 16s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-scroll                      ✓ PASS       7      7      0      0     1m 16s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0     1m 16s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-880F8E5B-8D70-44C2-B713-CF1EB14FE78A
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-880F8E5B-8D70-44C2-B713-CF1EB14FE78A/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-880F8E5B-8D70-44C2-B713-CF1EB14FE78A/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-880F8E5B-8D70-44C2-B713-CF1EB14FE78A/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8235 session=68942-1791702567260157000
+  /tmp/grantiva-sessions/68942-1791702567260157000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

@@ -1,0 +1,3 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ rm -rf .grantiva/captures; $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/02-exact-negative.yaml --report-dir out071; echo run_exit=$?; echo "-- var/folders hits:"; grep -rl /var/folders out071; grep -rho "\"sourceFile\" *: *\"[^\"]*\"" out071 | sort -u; grep -o "name=\"file\" value=\"[^\"]*\"" out071/junit-report.xml; ls -d .grantiva/captures 2>&1
+# exit=1 elapsed=24.041s -> failing.out / failing.err

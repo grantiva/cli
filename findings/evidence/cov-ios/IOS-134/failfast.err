@@ -1,0 +1,78 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=2 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+Skipping build and install (--no-build)
+Running 2 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-A9409B93-10F7-4157-8B03-2BED0CB1E4ED
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (211ms)
+    ✓ takeScreenshot (218ms)
+    ✗ tapOn: text="No Such Element" (12.6s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+✗ flow 18.3s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-836D50F9-3EF6-48BE-AB77-9DB3D3DFC403/flow.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ waitForAnimationToEnd (211ms)
+    ✓ takeScreenshot (218ms)
+    ✗ tapOn (13.3s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 15.7s
+
+  3 steps passing (18.3s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL       6      3      1      2      18.3s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      18.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-A9409B93-10F7-4157-8B03-2BED0CB1E4ED
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-A9409B93-10F7-4157-8B03-2BED0CB1E4ED/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-A9409B93-10F7-4157-8B03-2BED0CB1E4ED/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-A9409B93-10F7-4157-8B03-2BED0CB1E4ED/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791704807.png
+Error: Runner failed (exit 1); see the runner output above.

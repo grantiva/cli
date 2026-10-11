@@ -1,0 +1,27 @@
+exit=1
+{
+    "allPassed": false,
+    "error": "Runner failed (exit 1); see the runner output above.",
+    "reportDir": "/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios/out074",
+    "screens": [
+        {
+            "name": "02-exact-negative",
+            "passed": false,
+            "steps": [
+                {
+                    "action": "launchApp",
+                    "status": "passed"
+                },
+                {
+                    "action": "assertVisible: text=\"Golden Gate.*\"",
+                    "status": "passed"
+                },
+                {
+                    "action": "assertVisible: text=\"Golden Gate.*\", exact=true",
+                    "message": "Element not visible: text='Golden Gate.*' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"Golden Gate Bridge, San Francisco, CA\", \"Categories\")",
+                    "status": "failed"
+                }
+            ]
+        }
+    ]
+}
