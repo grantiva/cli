@@ -502,6 +502,37 @@ final class DiffCommandTests: XCTestCase {
         }
     }
 
+    /// No `--simulator` and no `simulator:`: the session tier picks the
+    /// session's device, and the capture goes through the session.
+    func testNoBuildCaptureWithNoDeviceNamedUsesTheSessionTierThroughTheSession() async throws {
+        try await inTemporaryDirectory { dir in
+            try """
+            bundle_id: com.example.app
+            screens:
+              - name: Home
+                path: launch
+            """.write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+            let fake = FakeDevicePlatform(platform: .ios)
+            fake.bootedID = "B27D7D31-0000-4000-8000-00000000F1A6"; fake.bootedName = "Held"
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            let lookups = LookupCounter()
+            command.sessionLookup = RunnerSessionLookup { _ in
+                lookups.increment()
+                return RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "com.example.app", udid: "B27D7D31-0000-4000-8000-00000000F1A6", startedAt: Date(), platform: .ios)
+            }
+
+            try await command.run()
+
+            XCTAssertEqual(fake.calls.first, "bootDevice(B27D7D31-0000-4000-8000-00000000F1A6)", "\(fake.calls)")
+            XCTAssertFalse(fake.calls.contains("defaultDevice"), "\(fake.calls)")
+            XCTAssertTrue(fake.calls.contains("attachDriver(B27D7D31-0000-4000-8000-00000000F1A6,8123)"), "\(fake.calls)")
+            XCTAssertEqual(lookups.count, 1, "the session is read once")
+            let capture = dir.appendingPathComponent(".grantiva/captures/\(ScreenArtifact.fileName(for: "Home"))")
+            XCTAssertTrue(FileManager.default.fileExists(atPath: capture.path))
+        }
+    }
+
     func testOnlyTheSessionsOwnDeviceIsCapturedThroughIt() {
         let session = RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "b", udid: "HELD-UDID", startedAt: Date(), platform: .ios)
         XCTAssertNotNil(DiffCommand.session(session, holding: "HELD-UDID"))
@@ -509,7 +540,9 @@ final class DiffCommandTests: XCTestCase {
         XCTAssertNil(DiffCommand.session(nil, holding: "HELD-UDID"))
     }
 
-    /// The runner session is only consulted when neither the flag nor the config names a device.
+    /// `noBuildDevice` consults the session tier only when neither the flag nor
+    /// the config names a device. (`diff capture` still reads the session once
+    /// afterwards, to capture through it when it holds the named device.)
     func testNoBuildDoesNotLookUpTheSessionWhenADeviceIsNamed() async throws {
         let fake = FakeDevicePlatform(platform: .ios)
         _ = try await DiffCommand.noBuildDevice(
@@ -660,4 +693,11 @@ final class DiffCommandTests: XCTestCase {
             }
         }
     }
+}
+
+private final class LookupCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = 0
+    var count: Int { lock.withLock { value } }
+    func increment() { lock.withLock { value += 1 } }
 }

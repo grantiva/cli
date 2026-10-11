@@ -93,13 +93,38 @@ public final class SimulatorLease: @unchecked Sendable {
 
     /// Test hook: runs between `open` and `flock` in `acquire`, where a
     /// holder releasing (and unlinking) the file is the race to survive.
+    /// Unsynchronized: it assumes XCTest runs tests serially (the default
+    /// for `swift test`), so only the test that sets it can observe it.
     nonisolated(unsafe) static var afterOpenForTesting: ((String) -> Void)?
+
+    /// Test hook: called with the UDID whenever `acquire` is about to use the
+    /// default directory (`<runner home>/locks`). Test bundles install one
+    /// that fails the test and throws. Set once before tests run.
+    nonisolated(unsafe) public static var defaultDirectoryUseForTesting: ((String) throws -> Void)?
+
+    /// Whether XCTest is loaded in this process. The grantiva binary never
+    /// loads it; a test bundle always does.
+    static let runningUnderXCTest = NSClassFromString("XCTestCase") != nil
+
+    /// Under XCTest a lease without an explicit directory is refused, hook
+    /// or not, so no test can take a lease in, or create, the user's runner
+    /// home (K107-b) even when run alone with `--filter`.
+    static func checkDefaultDirectoryUse(udid: String) throws {
+        if let hook = defaultDirectoryUseForTesting {
+            try hook(udid)
+        } else if runningUnderXCTest {
+            throw GrantivaError.commandFailed(
+                "A test asked for the simulator lease for \(udid) in the default directory \(directory()); give it a temp lease directory.", 1
+            )
+        }
+    }
 
     public static func acquire(
         udid: String,
         platform: Platform = .ios,
         directory: String? = nil
     ) throws -> SimulatorLease {
+        if directory == nil { try checkDefaultDirectoryUse(udid: udid) }
         let directory = Self.directory(directory)
         try FileManager.default.createDirectory(
             atPath: directory,
@@ -310,8 +335,32 @@ public final class SimulatorLease: @unchecked Sendable {
     @discardableResult
     public static func forceRelease(udid: String, directory: String? = nil) -> Bool {
         let held = isHeld(udid: udid, directory: directory)
-        try? FileManager.default.removeItem(atPath: leasePath(udid: udid, directory: directory))
+        removeLeaseFile(udid: udid, directory: directory)
         return held
+    }
+
+    /// Unlinks the lease file whoever holds it (see `forceRelease`).
+    static func removeLeaseFile(udid: String, directory: String? = nil) {
+        try? FileManager.default.removeItem(atPath: leasePath(udid: udid, directory: directory))
+    }
+
+    /// Why a device is in use, for commands that leave a busy device alone:
+    /// who holds it and how that holder is ended, never a forced reclaim.
+    static func inUseMessage(udid: String, holder: SimulatorLeaseClaim?) -> String {
+        guard let holder else {
+            return "Simulator \(udid) is in use by another Grantiva run; it was left as it is. Run teardown again once that run ends."
+        }
+        if holder.isRunnerStartSession {
+            var message = "Simulator \(udid) is in use by a `grantiva runner start` session (grantiva-runner pid \(holder.runnerPID ?? holder.pid)); it was left as it is. "
+                + "Stop it with `grantiva runner stop`"
+            if let directory = holder.projectDirectory { message += " (from \(directory))" }
+            return message + ", then run teardown again."
+        }
+        var owner = "grantiva pid \(holder.pid)"
+        if let runnerPID = holder.runnerPID { owner += ", grantiva-runner pid \(runnerPID)" }
+        if holder.keepAlive { owner += ", --keep-alive" }
+        return "Simulator \(udid) is in use by a Grantiva run (\(owner)); it was left as it is. "
+            + "End that run (Ctrl-C), then run teardown again."
     }
 
     /// Whether someone holds the lease: its `flock` is taken by another open

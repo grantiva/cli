@@ -319,8 +319,16 @@ public struct SimulatorManager: Sendable, Decodable {
         let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
         guard records.isEmpty else { return try await end(records, devices: devices) }
         // Holding the lease keeps a run from starting in the device's home
-        // while it is removed; a device a run holds is not idle.
-        guard let lease = try? SimulatorLease.acquire(udid: udid, directory: leaseDirectory) else { return [] }
+        // while it is removed. A device a run holds is not idle: say who
+        // holds it rather than leave the caller guessing.
+        let lease: SimulatorLease
+        do {
+            lease = try SimulatorLease.acquire(udid: udid, directory: leaseDirectory)
+        } catch where SimulatorLease.isOwnershipRefusal(error) {
+            throw GrantivaError.unavailable(SimulatorLease.inUseMessage(
+                udid: udid, holder: SimulatorLease.claim(udid: udid, directory: leaseDirectory)
+            ))
+        }
         defer { lease.release() }
         let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid)
         guard !homes.removed.isEmpty || !homes.failures.isEmpty else { return [] }

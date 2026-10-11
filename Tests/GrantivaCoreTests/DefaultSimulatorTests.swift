@@ -23,6 +23,20 @@ final class DefaultSimulatorTests: XCTestCase {
         XCTAssertEqual(DefaultSimulator.name(catalogJSON: Data("not json".utf8)), DefaultSimulator.fallback)
     }
 
+    func testASlowSimctlIsKilledAndTheDefaultFallsBack() {
+        let start = Date()
+        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+        XCTAssertNil(data)
+        XCTAssertLessThan(Date().timeIntervalSince(start), 5)
+        XCTAssertEqual(DefaultSimulator.name(catalogJSON: data), DefaultSimulator.fallback)
+    }
+
+    func testAFastCommandsOutputIsReturned() {
+        let data = DefaultSimulator.catalogJSON(executable: "/bin/echo", arguments: ["hello"], timeout: 5)
+        XCTAssertEqual(data.map { String(decoding: $0, as: UTF8.self) }, "hello\n")
+        XCTAssertNil(DefaultSimulator.catalogJSON(executable: "/usr/bin/false", arguments: [], timeout: 5))
+    }
+
     func testTheProcessWideNameIsResolvedOrTheFallback() {
         XCTAssertEqual(DefaultSimulator.name, DefaultSimulator.resolved ?? DefaultSimulator.fallback)
         XCTAssertFalse(DefaultSimulator.name.isEmpty)

@@ -32,7 +32,7 @@ enum SimTools {
                 "properties": .object([
                     "name": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name or UDID to boot (default: '\(DefaultSimulator.name)')"),
+                        "description": .string("Simulator name or UDID to boot (default: \(DefaultSimulator.description))"),
                     ]),
                 ]),
             ]),

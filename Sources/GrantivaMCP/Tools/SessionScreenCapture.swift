@@ -7,6 +7,9 @@ import GrantivaCore
 /// the device lease refuses.
 @available(macOS 15, *)
 public enum SessionScreenCapture {
+    /// As `RunnerSession.run`'s default `--timeout` for a screens run.
+    public static let defaultTimeoutSeconds: UInt64 = 300
+
     /// Captures `screens` into `outputDir` through `driver` on `udid` and
     /// returns them as `RunnerSession.run` would. Throws, naming the screen
     /// and step, when a step fails or only the runner can run it.
@@ -18,7 +21,8 @@ public enum SessionScreenCapture {
         driver: DriverClient,
         device: any DevicePlatform,
         outputDir: String,
-        expectedPixels: SimulatorProvisionResult.Dimensions?
+        expectedPixels: SimulatorProvisionResult.Dimensions?,
+        timeoutSeconds: UInt64 = defaultTimeoutSeconds
     ) async throws -> [ScreenCapture] {
         for screen in screens {
             guard case .steps(let steps) = screen.path else { continue }
@@ -36,10 +40,12 @@ public enum SessionScreenCapture {
         await device.prepareForCapture(deviceID: udid)
         let captures: [ScreenCapture]
         do {
-            captures = try await VRTTools.captureScreens(
-                screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
-                outputDir: outputDir, pause: { try? await Task.sleep(for: .seconds($0)) }
-            )
+            captures = try await withTimeout(seconds: timeoutSeconds) {
+                try await VRTTools.captureScreens(
+                    screens, appID: appID, udid: udid, platform: platform, driver: driver, device: device,
+                    outputDir: outputDir, pause: { try? await Task.sleep(for: .seconds($0)) }
+                )
+            }
         } catch let failure as VRTTools.StepFailure {
             await device.restoreAfterCapture(deviceID: udid)
             throw GrantivaError.commandFailed(
@@ -54,5 +60,24 @@ public enum SessionScreenCapture {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
         }
         return captures
+    }
+
+    /// Runs `body`, failing once `seconds` pass: a wedged driver must not
+    /// hang the capture forever.
+    static func withTimeout<T: Sendable>(
+        seconds: UInt64, _ body: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
+        try await withThrowingTaskGroup(of: T.self) { group in
+            group.addTask { try await body() }
+            group.addTask {
+                try await Task.sleep(for: .seconds(seconds))
+                throw GrantivaError.commandFailed(
+                    "Capturing through the runner session timed out after \(seconds)s.", 1
+                )
+            }
+            defer { group.cancelAll() }
+            guard let first = try await group.next() else { throw CancellationError() }
+            return first
+        }
     }
 }

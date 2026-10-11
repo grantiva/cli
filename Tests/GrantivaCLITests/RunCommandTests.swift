@@ -271,7 +271,10 @@ final class RunCommandTests: XCTestCase {
         chmod(runner, 0o755)
         fileManager.changeCurrentDirectoryPath(dir.path)
         unsetenv("GRANTIVA_PLATFORM")
-        try await body(dir, RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path }))
+        try await body(dir, RunnerManager(
+            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path },
+            leaseDirectory: dir.appendingPathComponent("locks").path
+        ))
     }
 
     func testJSONRunnerFailureStillPrintsTheResultWithTheFailedStep() async throws {
@@ -823,7 +826,8 @@ final class RunCommandTests: XCTestCase {
         command.runnerManager = RunnerManager(
             ensureAvailable: {},
             runnerPath: { runnerUsed.set(); return "/usr/bin/false" },
-            runnerDir: { runnerUsed.set(); return NSTemporaryDirectory() }
+            runnerDir: { runnerUsed.set(); return NSTemporaryDirectory() },
+            leaseDirectory: scratch.appendingPathComponent("locks").path
         )
         do {
             try await command.run()

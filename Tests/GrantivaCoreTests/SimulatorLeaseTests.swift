@@ -183,7 +183,7 @@ extension SimulatorLeaseTests {
         }
         let deadline = Date().addingTimeInterval(5)
         while Date() < deadline {
-            if (try? SimulatorLease.acquire(udid: udid, directory: leaseDirectory)) == nil { return child }
+            if SimulatorLease.isHeld(udid: udid, directory: leaseDirectory) { return child }
             usleep(20_000)
         }
         XCTFail("lockf never took the lock")

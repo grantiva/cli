@@ -208,7 +208,9 @@ public enum SimulatorReaper {
             targets += late
         }
 
-        let leaseReleased = SimulatorLease.forceRelease(udid: udid, directory: leaseDirectory) || leaseHeld
+        // `leaseHeld` was read before reaping; the file goes either way.
+        SimulatorLease.removeLeaseFile(udid: udid, directory: leaseDirectory)
+        let leaseReleased = leaseHeld
 
         // A killed run never ran its cleanup: remove the temp dirs its claim
         // named, once the run and its runner are gone.

@@ -21,7 +21,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name for destination (default: '\(DefaultSimulator.name)')"),
+                        "description": .string("Simulator name for destination (default: \(DefaultSimulator.description))"),
                     ]),
                     "module": .object([
                         "type": .string("string"),
@@ -51,7 +51,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name (default: '\(DefaultSimulator.name)')"),
+                        "description": .string("Simulator name (default: \(DefaultSimulator.description))"),
                     ]),
                     "module": .object([
                         "type": .string("string"),
@@ -81,7 +81,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name for destination (default: '\(DefaultSimulator.name)')"),
+                        "description": .string("Simulator name for destination (default: \(DefaultSimulator.description))"),
                     ]),
                 ]),
             ]),

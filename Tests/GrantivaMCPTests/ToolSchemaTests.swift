@@ -35,8 +35,9 @@ final class ToolSchemaTests: XCTestCase {
             let tool = try XCTUnwrap(tools[name], name)
             let properties = try XCTUnwrap(object(object(tool.inputSchema)?["properties"]), name)
             let description = try XCTUnwrap(string(object(properties[property])?["description"]), "\(name).\(property)")
-            XCTAssertTrue(description.contains("default: '\(DefaultSimulator.name)'"), "\(name): \(description)")
-            XCTAssertFalse(description.contains("iPhone 16") && DefaultSimulator.name != "iPhone 16", "\(name): \(description)")
+            // Static text: building a schema must never run simctl.
+            XCTAssertTrue(description.contains("default: \(DefaultSimulator.description)"), "\(name): \(description)")
+            XCTAssertNil(description.range(of: #"iPhone \d"#, options: .regularExpression), "\(name): \(description)")
         }
     }
 

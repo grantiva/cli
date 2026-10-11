@@ -75,8 +75,7 @@ final class RunnerSessionReportTests: XCTestCase {
             let reportDir = "out-\(exitCode)"
             _ = try? await RunnerSession.runFlowFiles(
                 at: ["flows/login.yaml"], bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: runner, outputDir: "captures", reportDir: reportDir, timeoutSeconds: 30,
-                leaseDirectory: leaseDirectory
+                runner: runner, outputDir: "captures", reportDir: reportDir, timeoutSeconds: 30
             )
             for file in ["report.json", "flows/flow-000.json", "junit-report.xml", "maestro-runner.log"] {
                 let text = try String(contentsOfFile: "\(scratch.path)/\(reportDir)/\(file)", encoding: .utf8)
@@ -112,8 +111,7 @@ final class RunnerSessionReportTests: XCTestCase {
         let runner = try makeRunner(exitCode: 1)
         _ = try? await RunnerSession.runFlowFiles(
             at: ["qa/a/same.yaml", "qa/b/same.yaml"], bundleId: "com.example", udid: udid(),
-            platform: StubPlatform(), runner: runner, outputDir: "captures", timeoutSeconds: 30,
-            leaseDirectory: leaseDirectory
+            platform: StubPlatform(), runner: runner, outputDir: "captures", timeoutSeconds: 30
         )
         let staged0 = try String(contentsOfFile: "\(scratch.path)/seen/flow-0.yaml", encoding: .utf8)
         let staged1 = try String(contentsOfFile: "\(scratch.path)/seen/flow-1.yaml", encoding: .utf8)
@@ -135,7 +133,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Deep Links", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: try makeRunner(exitCode: 1), outputDir: captures.path, leaseDirectory: leaseDirectory
+                runner: try makeRunner(exitCode: 1), outputDir: captures.path
             )
             XCTFail("expected the runner failure to be thrown")
         } catch {
@@ -152,7 +150,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: try makeRunner(exitCode: 0), outputDir: "captures", leaseDirectory: leaseDirectory
+                runner: try makeRunner(exitCode: 0), outputDir: "captures"
             )
             XCTFail("expected the missing screenshots to be thrown")
         } catch {
@@ -169,7 +167,7 @@ final class RunnerSessionReportTests: XCTestCase {
             screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
             bundleId: "com.example", udid: udid(), platform: StubPlatform(),
             runner: runner, outputDir: "out/captures",
-            failFast: true, reportDir: "out", timeoutSeconds: 30, leaseDirectory: leaseDirectory
+            failFast: true, reportDir: "out", timeoutSeconds: 30
         )
         let reportDir = "\(scratch.path)/out"
         XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"), "report dir must survive the run")
@@ -192,7 +190,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: runner, outputDir: "captures", timeoutSeconds: 1, leaseDirectory: leaseDirectory
+                runner: runner, outputDir: "captures", timeoutSeconds: 1
             )
             XCTFail("expected a timeout")
         } catch {
@@ -252,7 +250,7 @@ final class RunnerSessionReportTests: XCTestCase {
         """.write(to: script, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
         let dir = scratch.path
-        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir })
+        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir }, leaseDirectory: leaseDirectory)
     }
 }
 

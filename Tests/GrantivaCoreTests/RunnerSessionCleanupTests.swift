@@ -325,7 +325,10 @@ struct FakeRunnerScratch {
         try script.write(toFile: runner, atomically: true, encoding: .utf8)
         chmod(runner, 0o755)
 
-        let manager = RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path })
+        let manager = RunnerManager(
+            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { root.path },
+            leaseDirectory: root.appendingPathComponent("locks").path
+        )
         let flow = root.appendingPathComponent("smoke.yaml").path
         return try await RunnerSession.runFlowFiles(
             at: Array(repeating: flow, count: flowCount),
@@ -337,8 +340,7 @@ struct FakeRunnerScratch {
             reportDir: reportDir,
             timeoutSeconds: 30,
             readyFile: readyFile,
-            failureReport: failureReport,
-            leaseDirectory: root.appendingPathComponent("locks").path
+            failureReport: failureReport
         )
     }
 }

@@ -132,16 +132,20 @@ struct DiffCommand: AsyncParsableCommand {
             } else {
                 // --no-build honours flag > config > runner session, and only
                 // then the platform default, which on iOS refuses to pick among
-                // several booted simulators.
-                let session = await sessionLookup.find(platform)
+                // several booted simulators. The session is looked up at most
+                // once: for the session tier, and then to learn whether it
+                // holds the device being captured (a named device can be the
+                // session's too). Without `.grantiva/session.json` the lookup
+                // returns at once, with no `ps`.
+                let session = SessionOnce(lookup: sessionLookup, platform: platform)
                 booted = try await DiffCommand.noBuildDevice(
                     platform: platform,
                     explicit: target.simulator ?? target.device ?? target.emulator,
                     config: config,
-                    sessionUDID: { DiffCommand.sessionUDID(session?.udid, for: platform) },
+                    sessionUDID: { DiffCommand.sessionUDID(await session.value()?.udid, for: platform) },
                     device: device
                 )
-                holdingSession = DiffCommand.session(session, holding: booted.udid)
+                holdingSession = DiffCommand.session(await session.value(), holding: booted.udid)
                 appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
             }
 
@@ -171,7 +175,8 @@ struct DiffCommand: AsyncParsableCommand {
                     captures = try await SessionScreenCapture.capture(
                         screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
                         driver: attachment.client, device: device, outputDir: outputDir,
-                        expectedPixels: captureTarget.pixelDimensions
+                        expectedPixels: captureTarget.pixelDimensions,
+                        timeoutSeconds: SessionScreenCapture.defaultTimeoutSeconds
                     )
                 } catch {
                     await attachment.detach()
@@ -251,6 +256,25 @@ struct DiffCommand: AsyncParsableCommand {
               let snapshot = try? await SimulatorReaper.processSnapshot(),
               session.ownsRunnerProcess(in: snapshot) else { return nil }
         return session
+    }
+
+    /// A session lookup run at most once per command.
+    actor SessionOnce {
+        private let lookup: RunnerSessionLookup
+        private let platform: Platform
+        private var result: RunnerSessionInfo??
+
+        init(lookup: RunnerSessionLookup, platform: Platform) {
+            self.lookup = lookup
+            self.platform = platform
+        }
+
+        func value() async -> RunnerSessionInfo? {
+            if let result { return result }
+            let found = await lookup.find(platform)
+            result = .some(found)
+            return found
+        }
     }
 
     /// `session`, when the device it holds is `udid`.

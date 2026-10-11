@@ -38,14 +38,13 @@ public enum RunnerSession {
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 300,
-        leaseDirectory: String? = nil
+        timeoutSeconds: UInt64 = 300
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: leaseDirectory)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
         // Ensure runner is extracted
@@ -331,13 +330,12 @@ public enum RunnerSession {
         environment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
-        failureReport: RunnerFailureReport? = nil,
-        leaseDirectory: String? = nil
+        failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: leaseDirectory)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
         // Resolve relative paths against the working directory where the CLI was invoked,

@@ -541,7 +541,7 @@ extension SimulatorManagerTests {
         XCTAssertFalse(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")))
     }
 
-    func testTeardownWithoutARecordLeavesTheHomeOfABusyDevice() async throws {
+    func testTeardownWithoutARecordSaysWhoIsUsingABusyDevice() async throws {
         let simctl = FakeSimctl(devices: [
             .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
         ])
@@ -549,11 +549,30 @@ extension SimulatorManagerTests {
         let home = try makeVersionedDeviceHome(capacity, stamp: "v1", "MANUAL-1")
         let run = try SimulatorLease.acquire(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")
         defer { run.release() }
+        run.recordRunner(pid: 4242, keepAlive: true)
 
-        let outcomes = try await manager.teardown(udid: "MANUAL-1")
-
-        XCTAssertEqual(outcomes, [])
+        do {
+            _ = try await manager.teardown(udid: "MANUAL-1")
+            XCTFail("a busy device is not torn down silently")
+        } catch {
+            let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            XCTAssertTrue(message.contains("MANUAL-1 is in use by a Grantiva run"), message)
+            XCTAssertTrue(message.contains("grantiva pid \(getpid())"), message)
+            XCTAssertTrue(message.contains("grantiva-runner pid 4242"), message)
+            XCTAssertFalse(message.contains("--force"), message)
+        }
         XCTAssertTrue(FileManager.default.fileExists(atPath: home), "a run is using it")
+    }
+
+    func testInUseMessageForARunnerStartSessionNamesRunnerStop() {
+        let claim = SimulatorLeaseClaim(
+            pid: 77, udid: "S-1", startedAt: Date(), runnerPID: 77, keepAlive: true,
+            handedOff: true, projectDirectory: "/tmp/p"
+        )
+        let message = SimulatorLease.inUseMessage(udid: "S-1", holder: claim)
+        XCTAssertTrue(message.contains("`grantiva runner start` session (grantiva-runner pid 77)"), message)
+        XCTAssertTrue(message.contains("`grantiva runner stop` (from /tmp/p)"), message)
+        XCTAssertFalse(message.contains("--force"), message)
     }
 
     func testTeardownWithoutARecordOrHomeReportsNothing() async throws {

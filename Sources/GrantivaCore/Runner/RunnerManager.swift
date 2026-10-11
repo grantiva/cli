@@ -7,15 +7,21 @@ public struct RunnerManager: Sendable, Decodable {
     public var ensureAvailable: @Sendable () async throws -> Void
     public var runnerPath: @Sendable () -> String
     public var runnerDir: @Sendable () -> String
+    /// Where a run takes its simulator lease; nil is `<runner home>/locks`.
+    /// Tests that inject a fake runner point it at a temp directory so they
+    /// never write into the user's runner home.
+    public var leaseDirectory: String?
 
     public init(
         ensureAvailable: @escaping @Sendable () async throws -> Void,
         runnerPath: @escaping @Sendable () -> String,
-        runnerDir: @escaping @Sendable () -> String
+        runnerDir: @escaping @Sendable () -> String,
+        leaseDirectory: String? = nil
     ) {
         self.ensureAvailable = ensureAvailable
         self.runnerPath = runnerPath
         self.runnerDir = runnerDir
+        self.leaseDirectory = leaseDirectory
     }
 }
 
