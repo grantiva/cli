@@ -1,0 +1,6 @@
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ ls -la scripts/android-env.sh; bash -n scripts/android-env.sh && echo syntax-ok
+# exit=0 elapsed=.014s -> script.out / script.err
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ env -i HOME=$HOME PATH=/usr/bin:/bin:/opt/homebrew/bin zsh -c 'export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"; export ANDROID_HOME="$HOME/Library/Android/sdk"; export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"; ls -d $JAVA_HOME; which adb emulator avdmanager'
+# exit=0 elapsed=.031s -> exports.out / exports.err

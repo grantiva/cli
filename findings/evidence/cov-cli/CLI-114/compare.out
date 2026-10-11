@@ -1,0 +1,20 @@
+SUBCOMMANDS:
+  ensure                  Create or reuse a named simulator and boot it.
+                          `--name` alone reuses an existing simulator with that
+                          name. To create one, the name must contain a device
+                          model ("iPhone 17") or --device-type must be given;
+                          the newest installed runtime is used unless --runtime
+                          is passed.
+  delete                  Explicitly delete a named simulator.
+  sessions                List Grantiva-managed simulator capacity slots.
+  teardown                End a managed session, or reclaim one simulator by
+                          UDID when no ledger entry exists.
+  cleanup                 Delete Grantiva-created simulators that are shut down
+                          and not part of an active session.
+
+  See 'grantiva help simulator <subcommand>' for detailed help.
+grantiva simulator ensure   Create or reuse a named simulator and boot it (--name alone reuses an existing one)
+grantiva simulator delete   Explicitly delete a named simulator
+grantiva simulator sessions List Grantiva-managed simulator capacity slots
+grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
+grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session

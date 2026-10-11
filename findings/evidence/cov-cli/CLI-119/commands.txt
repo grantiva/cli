@@ -1,0 +1,7 @@
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ for f in grantiva run build_build record hierarchy; do printf "%s: " $f; sed -n "1,2p" findings/help/$f.txt | tr "
+" " "; echo; done; sed -n 3p README.md; grep -rn "no-build" findings/help/*.txt | grep -v "^.*console" | sed -n 1,20p | cut -c1-150; grep -A1 -- "--no-build" findings/help/*.txt | grep -i "simulator" | head
+# exit=0 elapsed=.045s -> overviews.out / overviews.err
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ grep -n -A1 -- '--app-file' findings/help/run.txt findings/help/diff_capture.txt findings/help/build_install.txt; sed -n 46,49p docs/android.md
+# exit=0 elapsed=.012s -> appfile.out / appfile.err

@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-155
+$ cat grantiva.yml
+# exit=0 elapsed=.009s -> cfg.out / cfg.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-155
+$ $GRANTIVA diff capture --no-build --simulator 00000000-0000-0000-0000-0000000000C1; $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 2>&1 | head -1; $GRANTIVA doctor --json | jq -c ".[]|select(.name==\"grantiva.yml\")"
+# exit=0 elapsed=.320s -> capture.out / capture.err

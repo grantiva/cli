@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli
+$ $GRANTIVA console --help >/dev/null; echo rc=$?; $GRANTIVA console flags --help >/dev/null; echo rc=$?
+# exit=0 elapsed=.026s -> console.out / console.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli
+$ for c in "analytics overview --days 30" "vrt runs list my-project" "webhooks list"; do $GRANTIVA console $c; echo "rc=$?"; done
+# exit=0 elapsed=.037s -> creds_needed.out / creds_needed.err
