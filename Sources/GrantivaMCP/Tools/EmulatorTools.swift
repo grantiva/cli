@@ -99,20 +99,26 @@ enum EmulatorTools {
     static func boot(deps: EmulatorToolDependencies?, config: GrantivaConfig?, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let deps else { return unavailable() }
         let name = arguments["name"]?.stringValue ?? config?.android?.emulator ?? ""
+        // What was running before: the platform returns a running match
+        // without booting, and the result says which happened (L45).
+        let running = Set(((try? await deps.listDevices()) ?? []).filter { $0.isEmulator && $0.isUsable }.map(\.serial))
         let device = try await deps.boot(name)
-        return CallTool.Result(content: [.text(text: "Emulator booted: \(device.name) (\(device.udid))", annotations: nil, _meta: nil)])
+        let text = running.contains(device.udid)
+            ? "Emulator reused: \(device.name) (\(device.udid)), already running"
+            : "Emulator booted: \(device.name) (\(device.udid))"
+        return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)])
     }
 
     static func ensure(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let deps else { return unavailable() }
-        guard let name = arguments["name"]?.stringValue else { return toolError("'name' is required.") }
+        guard let name = arguments["name"]?.stringValue else { return toolError("Invalid argument: 'name' is required.") }
         let result = try await deps.ensure(name, arguments["system_image"]?.stringValue, arguments["boot"]?.boolValue ?? false)
         return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
     }
 
     static func delete(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let deps else { return unavailable() }
-        guard let name = arguments["name"]?.stringValue else { return toolError("'name' is required.") }
+        guard let name = arguments["name"]?.stringValue else { return toolError("Invalid argument: 'name' is required.") }
         do {
             try await deps.delete(name, arguments["force"]?.boolValue ?? false)
         } catch GrantivaError.invalidArgument(let message) where message == EmulatorManager.notCreatedRefusal(avd: name) {

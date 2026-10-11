@@ -286,7 +286,7 @@ struct CICommand: AsyncParsableCommand {
                 // 1. Boot → Build → Install → Launch → Capture
                 let deviceNoun = platform == .ios ? "simulator" : "emulator"
                 rlog(RunCommand.bootNarration(platform: platform, target: resolved.simulator))
-                let booted = try await device.bootDevice(named: resolved.simulator)
+                let booted = try await device.bootDevice(for: resolved)
                 rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
 
                 var productPath: String?

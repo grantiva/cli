@@ -138,6 +138,26 @@ public struct SimulatorManager: Sendable, Decodable {
         return try await exactDevice(nameOrUDID: device.udid)
     }
 
+    /// Boots the default simulator `name`, which nothing named: only one
+    /// Grantiva created (it is in the created-simulator ledger). A simulator
+    /// of that name the user created is refused, booted or not, before any
+    /// slot is reserved or `simctl boot` runs; the refusal names it and how to
+    /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
+    public func bootDefault(name: String, ephemeral: Bool = false, override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await exactDevice(nameOrUDID: name)
+        guard try provenance.contains(udid: device.udid) else {
+            throw GrantivaError.invalidArgument(
+                DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
+            )
+        }
+        return try await boot(nameOrUDID: device.udid, ephemeral: ephemeral)
+    }
+
+    /// The UDIDs in the created-simulator ledger; empty when it cannot be read.
+    public func createdUDIDs() -> Set<String> {
+        Set(((try? provenance.all()) ?? []).map(\.udid))
+    }
+
     /// Resolves only the requested name or UDID. It never substitutes an arbitrary booted device.
     public func exactDevice(nameOrUDID: String) async throws -> SimulatorDevice {
         let matches = try await listDevices().filter { $0.name == nameOrUDID || $0.udid == nameOrUDID }
@@ -201,7 +221,12 @@ public struct SimulatorManager: Sendable, Decodable {
                 let runtimeMatches = pinnedRuntime.map { existing.runtime == $0.shortName } ?? true
                 guard typeMatches && runtimeMatches else {
                     let requested = [requestedType?.name, pinnedRuntime?.name].compactMap { $0 }.joined(separator: ", ")
-                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(requested)")
+                    // Names, as the result reports them; the identifier only
+                    // when the catalog has no name for it.
+                    let typeName = catalog.deviceTypes.first { $0.identifier == existing.deviceTypeIdentifier }?.name
+                        ?? existing.deviceTypeIdentifier ?? "unknown"
+                    let runtimeName = catalog.runtimes.first { $0.shortName == existing.runtime }?.name ?? existing.runtimeName
+                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(typeName), runtime: \(runtimeName)); requested \(requested)")
                 }
                 return (false, existing.udid)
             }

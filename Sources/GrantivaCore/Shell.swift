@@ -5,7 +5,12 @@ import Foundation
 /// The child's stdin is the null device, never Grantiva's own: `grantiva mcp`
 /// speaks JSON-RPC on stdin, and a child such as `adb shell` forwards whatever
 /// it inherits to the device, swallowing the client's queued requests.
-public func shell(_ command: String, environment: [String: String]? = nil) async throws -> String {
+///
+/// `terminateOnCancel` stops the child (SIGTERM) when the calling task is
+/// cancelled while it runs, as a cancelled MCP `grantiva_build` must stop its
+/// xcodebuild or Gradle (L14). A task already cancelled when the command
+/// starts (cleanup after a cancellation) still runs it to the end.
+public func shell(_ command: String, environment: [String: String]? = nil, terminateOnCancel: Bool = false) async throws -> String {
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/bin/zsh")
     process.arguments = ["-c", command]
@@ -23,6 +28,7 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     // first thing anyone asks for.
     GrantivaLog.logger.debug("$ \(command)")
 
+    let stopOnCancel = terminateOnCancel && !Task.isCancelled
     try process.run()
 
     // Drain both pipes concurrently. Reading either stream to EOF first can
@@ -30,7 +36,11 @@ public func shell(_ command: String, environment: [String: String]? = nil) async
     async let data = readToEndOfFile(pipe.fileHandleForReading)
     async let errData = readToEndOfFile(errorPipe.fileHandleForReading)
 
-    process.waitUntilExit()
+    await withTaskCancellationHandler {
+        process.waitUntilExit()
+    } onCancel: {
+        if stopOnCancel, process.isRunning { process.terminate() }
+    }
     let (outputData, errorData) = await (data, errData)
     GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
 

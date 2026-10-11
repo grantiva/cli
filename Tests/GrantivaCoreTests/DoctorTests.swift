@@ -253,6 +253,21 @@ final class DoctorTests: XCTestCase {
         XCTAssertTrue(check.fix?.contains("DEVELOPER_DIR") ?? false, check.fix ?? "")
     }
 
+    /// L08: `ensure --name <default>` would reuse and boot a simulator the
+    /// user created with that name, so the fix line names a Grantiva one.
+    func testNoBootedSimulatorFixAvoidsAUserSimulatorWithTheDefaultName() {
+        let mine = SimulatorDevice(name: "iPhone 18 Pro", udid: "USER-1", state: "Shutdown", runtime: "iOS-26-0", isAvailable: true)
+        XCTAssertEqual(
+            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: []).fix,
+            "Run: grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\" and set simulator: Grantiva iPhone 18 Pro in grantiva.yml "
+                + "(\"iPhone 18 Pro\" (USER-1) was not created by Grantiva, so it is not used as the default)"
+        )
+        XCTAssertEqual(
+            DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro", devices: [mine], createdByGrantiva: ["USER-1"]).fix,
+            "Run: grantiva simulator ensure --name \"iPhone 18 Pro\""
+        )
+    }
+
     func testBootedSimulatorCheckWithNothingBootedIsUnchanged() async {
         let simulators = SimulatorManager(execute: { _ in #"{"devices": {}}"# })
         let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
@@ -265,7 +280,7 @@ final class DoctorTests: XCTestCase {
         let list = #"{"devices": {"com.apple.CoreSimulator.SimRuntime.iOS-26-0": [{"name": "Mine", "udid": "U-1", "state": "Booted", "isAvailable": true}]}}"#
         let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
         XCTAssertEqual(check.status, .ok)
-        XCTAssertEqual(check.message, "Mine — iOS-26-0")
+        XCTAssertEqual(check.message, "Mine — iOS 26.0")
     }
 
     // A mono-repo's android/ subproject is inside the work tree; advising

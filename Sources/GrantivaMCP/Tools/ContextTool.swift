@@ -33,7 +33,9 @@ enum ContextTool {
         listSimulators: @Sendable () async throws -> [SimulatorDevice],
         emulators: EmulatorToolDependencies?,
         configSource: String? = nil,
-        driverPort: Int? = nil
+        driverPort: Int? = nil,
+        projectDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath),
+        platformDetected: Bool = false
     ) async throws -> CallTool.Result {
         var sections: [String] = []
 
@@ -61,7 +63,7 @@ enum ContextTool {
             configLines.append("  screens: \(config.screens.count)")
             sections.append(configLines.joined(separator: "\n"))
         } else {
-            sections.append("[Config]\n  No \(platform.configFileName) found in current directory.")
+            sections.append("[Config]\n  \(missingConfigLine(platform: platform, directory: projectDirectory, platformDetected: platformDetected))")
         }
 
         switch platform {
@@ -99,14 +101,24 @@ enum ContextTool {
         return CallTool.Result(content: [.text(text: sections.joined(separator: "\n\n"), annotations: nil, _meta: nil)])
     }
 
+    /// The directory that was searched and the file names that would have
+    /// counted (L17): both platforms' files when the platform was detected
+    /// from the directory rather than forced.
+    static func missingConfigLine(platform: Platform, directory: URL, platformDetected: Bool) -> String {
+        guard platformDetected else { return GrantivaConfig.missingFileMessage(platform: platform, directory: directory) }
+        return "Neither grantiva.yml nor grantiva-android.yml found in \(directory.path). "
+            + "Create one with grantiva init (or grantiva init --platform android)."
+    }
+
     // MARK: - Device sections
 
     private static func describe(_ device: SimulatorDevice, source: String) -> String {
         "[Simulator]\n  name: \(device.name)\n  udid: \(device.udid)\n  runtime: \(SimTools.runtimeName(device.runtime))\n  state: \(device.state)\n  source: \(source)"
     }
 
-    /// The session's simulator; else the configured one; else the first
-    /// booted simulator, labelled as such.
+    /// The session's simulator; else the configured one; else none, with the
+    /// booted simulators listed as a hint (the UI tools act only on a runner
+    /// session's device, so none of them is "the device").
     static func simulatorSection(
         session: RunnerSessionInfo?,
         configured: String?,
@@ -134,10 +146,11 @@ enum ContextTool {
             }
             return "[Simulator]\n  Configured simulator \"\(configured)\" is not booted. No runner session."
         }
-        if let booted = devices.first(where: \.isBooted) {
-            return describe(booted, source: "first booted simulator (no runner session, no simulator in grantiva.yml)")
-        }
-        return "[Simulator]\n  No simulator booted."
+        let booted = devices.filter(\.isBooted)
+        guard !booted.isEmpty else { return "[Simulator]\n  No runner session and no simulator in grantiva.yml. No simulator booted." }
+        let hint = booted.map { "\($0.name) (\($0.udid))" }.joined(separator: ", ")
+        return "[Simulator]\n  No runner session and no simulator in grantiva.yml.\n"
+            + "  Booted (a hint only; the UI tools use only a runner session's device): \(hint)"
     }
 
     /// The session's serial; else the configured AVD's serial if it is

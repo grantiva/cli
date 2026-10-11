@@ -71,6 +71,7 @@ public struct GrantivaMCPServer: Sendable {
             buildRunner: XcodeBuildRunner(),
             emulators: try? EmulatorToolDependencies.live(),
             projectDirectory: projectDirectory,
+            platformDetected: self.platform == nil && (try? PlatformResolver().environmentPlatform()) == nil,
             loadConfig: { try GrantivaConfig.loadIfPresent(platform: platform, from: projectDirectory) }
         )
 
@@ -98,14 +99,9 @@ public struct GrantivaMCPServer: Sendable {
             ListTools.Result(tools: allTools)
         }
 
-        // Register tools/call handler
-        await server.withMethodHandler(CallTool.self) { params in
-            let result = try await tools.call(
-                name: params.name,
-                arguments: params.arguments ?? [:],
-                server: server
-            )
-            return result
+        // Register tools/call handler; a cancelled call gets no response (L14).
+        await Self.registerToolCalls(on: server) { name, arguments in
+            try await tools.call(name: name, arguments: arguments, server: server)
         }
 
         // Register resources/list handler

@@ -21,18 +21,38 @@ made once WDA is ready attaches as usual. `grantiva_screenshot` is the exception
 its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it succeeds during that window.
 
 Every tool, with or without a session, reports every failure as an `isError` result whose text starts
-with `Error: `, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a failed build,
-a missing config file, a VRT command that fails. JSON-RPC errors are left for protocol faults (an
-unknown method, a malformed request). Cancelling a call still cancels it.
+with `Error: ` exactly once, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a
+failed build (`Error: Build FAILED`), a missing config file, a VRT command that fails, an unknown tool
+name (`Error: Unknown tool: <name>`). JSON-RPC errors are left for protocol faults (an unknown method, a
+malformed request). A `tools/call` cancelled with `notifications/cancelled` gets no response at all,
+whether the cancel arrives while the tool runs or right behind the request; a build in progress is
+stopped (its `xcodebuild` or Gradle process is terminated). A cancel for an unknown or finished request
+changes nothing.
 
 The texts read as follows. With no session, a session tool says
 ``Error: No active runner session at <project>/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in <project>.``
 (adding how many keep-alive sessions from another directory or platform were ignored, when there
-were any). A failure caused by an argument, such as a simulator or AVD that does not exist or an AVD
-that is still running, carries the label `Invalid argument: ` after `Error: `, for example
-`Error: Invalid argument: Simulator not found: "no-such-sim"` or
+were any). A failure caused by an argument, such as a simulator or AVD that does not exist, an AVD
+that is still running, or a required argument that is missing, carries the label `Invalid argument: `
+after `Error: `, for example `Error: Invalid argument: Simulator not found: "no-such-sim"`,
 ``Error: Invalid argument: AVD "x" is running as emulator-5554. Run `grantiva emulator teardown --serial emulator-5554` first.``
-The resource reads below report the same conditions without that label.
+or `Error: Invalid argument: 'name' is required.` A no-session text never carries the label (a session
+tool reports the missing session before it looks at its arguments). The resource reads below report the
+same conditions without that label.
+
+## Default simulator
+
+`grantiva_build`, `grantiva_run`, `grantiva_test` and `grantiva_sim_boot` called without a simulator
+(no `simulator` or `name` argument, no `simulator:` in `grantiva.yml`) use the default name, the newest
+installed iPhone type (for example `iPhone 18 Pro`). That is a stock name, so it may be a simulator you
+created for something else: the default is used only when Grantiva created that simulator (it is in
+Grantiva's created-simulator ledger, see the README). Otherwise the call boots nothing and returns
+``Error: Invalid argument: Simulator "iPhone 18 Pro" (<udid>) was not created by Grantiva. It has the default simulator's name, and Grantiva does not take a simulator you created as its default. Pass the 'simulator' argument "iPhone 18 Pro" to use it anyway, or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name "Grantiva iPhone 18 Pro").``
+(`grantiva_sim_boot` names its `name` argument). A simulator you name is used as named. Every
+`grantiva_build`, `grantiva_run` and `grantiva_test` result on iOS names the simulator it used:
+`Simulator: <name> (<udid>)` (`Device: <name> (<serial>)` for `grantiva_run` on Android; an Android
+`grantiva_build` boots nothing). The CLI's `run`, `build`, `diff capture`, `ci` and `runner start`
+follow the same rule for their default, naming `--simulator`.
 
 Tools that need a config file (`grantiva_build`, `grantiva_run`, `grantiva_test`, `grantiva_vrt_capture`)
 return an error naming the file and where it was looked for, for example
@@ -45,7 +65,12 @@ else a `grantiva run --keep-alive` (or `runner start`) session started from the 
 (`--project-dir`, default the current directory) for the same platform. Sessions started from another
 directory, for the other platform, or by an earlier Grantiva that did not record the directory are
 never used. `grantiva_context` reports the session's simulator or emulator, or the configured one when
-there is no session.
+there is no session. With neither, its `[Simulator]` section says `No runner session and no simulator in
+grantiva.yml.` and lists the booted simulators only as a hint: the UI tools act on none of them. Without
+a config file its `[Config]` section names the file it looked for and where, for example
+`grantiva.yml not found at /path/to/project/grantiva.yml. Create one with grantiva init.` (both
+`grantiva.yml` and `grantiva-android.yml` when the platform was not set with `--platform` or
+`GRANTIVA_PLATFORM`).
 
 | Session | Meaning |
 | --- | --- |
@@ -71,9 +96,9 @@ there is no session.
 
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
-| `grantiva_build` | iOS, Android | no | Build the project: xcodebuild on iOS (for a booted simulator destination), Gradle on Android (compile only, like `grantiva build build`: no emulator is booted). Returns success status, duration, warnings, errors, and `Product: <path>`. |
-| `grantiva_run` | iOS, Android | no | Build, install, and launch the app on the simulator or emulator (booting it if needed). Returns `App built and launched.`, the scheme (iOS) or module and variant (Android), the bundle or application ID, the device, and the same `Product: <path>` line as `grantiva_build`. Without a config file a `scheme` argument is enough on iOS: the bundle ID is read from the built app's `Info.plist` (`bundle_id` in `grantiva.yml` wins when present). |
-| `grantiva_test` | iOS only | no | Run the project's test suite using `xcodebuild test`. Returns pass/fail counts and output. |
+| `grantiva_build` | iOS, Android | no | Build the project: xcodebuild on iOS (for a booted simulator destination), Gradle on Android (compile only, like `grantiva build build`: no emulator is booted). Returns success status, duration, warnings, errors, `Simulator: <name> (<udid>)` on iOS, and `Product: <path>`. Without a simulator it uses the default only when Grantiva created it (see Default simulator). |
+| `grantiva_run` | iOS, Android | no | Build, install, and launch the app on the simulator or emulator (booting it if needed). Returns `App built and launched.`, the scheme (iOS) or module and variant (Android), the bundle or application ID, the device (`Simulator: <name> (<udid>)` or `Device: <name> (<serial>)`), and the same `Product: <path>` line as `grantiva_build`. Without a config file a `scheme` argument is enough on iOS: the bundle ID is read from the built app's `Info.plist` (`bundle_id` in `grantiva.yml` wins when present). |
+| `grantiva_test` | iOS only | no | Run the project's test suite using `xcodebuild test`. Returns pass/fail counts, `Simulator: <name> (<udid>)`, and output. |
 | `grantiva_context` | iOS, Android | no | Get current project context: config (with `source:` naming where it came from, `grantiva.yml` or `.maestro/ (no grantiva.yml)`; an Android-only directory never supplies an iOS config), the device the UI tools act on (the runner session's simulator or emulator; without a session, the configured one), Xcode or Android SDK, and runner session status (pid, driver port, app ID, device; `(unknown)` for a value an older Grantiva did not record, `(forwarded on attach)` for an Android keep-alive port). |
 
 ### Simulators (iOS)
@@ -81,7 +106,7 @@ there is no session.
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
 | `grantiva_sim_list` | iOS | no | List iOS simulators (other platforms' devices are left out) as `Name \| UDID \| State \| Runtime \| Available`: state as `simctl` reports it (`Booted`, `Shutdown`, `Booting`, ...), runtime as `iOS 26.0`, and `no` under Available when the simulator's runtime is not installed. `filter`: `all` (default), `booted`, or `shutdown`. |
-| `grantiva_sim_boot` | iOS | no | Boot an iOS simulator by name or UDID. |
+| `grantiva_sim_boot` | iOS | no | Boot an iOS simulator by name or UDID. Without `name`, the default simulator, only when Grantiva created it (see Default simulator). Returns `Simulator booted: <name> (<udid>)` and `Runtime: iOS 26.0`. |
 | `grantiva_sim_ensure` | iOS | no | Create or reuse an exact named simulator, optionally booting it to readiness. Only `name` is required. |
 | `grantiva_sim_delete` | iOS | no | Explicitly delete one simulator by its exact name or UDID. |
 
@@ -90,7 +115,7 @@ there is no session.
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
 | `grantiva_emulator_list` | Android only | no | List Android Virtual Devices with the serial of each one that is running. |
-| `grantiva_emulator_boot` | Android only | no | Boot an Android emulator by AVD name, or use it if it is already running. Defaults to `emulator` in `grantiva-android.yml`. |
+| `grantiva_emulator_boot` | Android only | no | Boot an Android emulator by AVD name, or use it if it is already running. Defaults to `emulator` in `grantiva-android.yml`. Says which happened: `Emulator booted: <avd> (<serial>)` when it booted the AVD, `Emulator reused: <avd> (<serial>), already running` when it was running (nothing is booted). |
 | `grantiva_emulator_ensure` | Android only | no | Create an AVD when missing (installing its system image first) and optionally boot it. Only `name` is required. |
 | `grantiva_emulator_delete` | Android only | no | Delete an AVD Grantiva created. Pass `force: true` to delete one it did not create (the refusal says so). A running AVD is never deleted. |
 

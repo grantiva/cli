@@ -256,4 +256,86 @@ final class ToolErrorContractTests: XCTestCase {
             XCTAssertTrue((error.errorDescription ?? "").contains("com.example.app is not running"), error.errorDescription ?? "")
         }
     }
+
+    // MARK: - L15: one prefix, and the argument label on missing arguments
+
+    private func text(_ result: CallTool.Result) -> String {
+        result.content.compactMap { content -> String? in
+            if case .text(let text, _, _) = content { return text }
+            return nil
+        }.joined(separator: "\n")
+    }
+
+    func testMissingRequiredArgumentsReadAsArgumentFailures() async throws {
+        let session = MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()))
+        let registry = failingRegistry(
+            platform: .ios, device: MCPFakeDevicePlatform(platform: .ios), emulators: throwingEmulators(GrantivaError.unavailable("unused"))
+        )
+        let server = MCPTestSupport.disconnectedServer()
+        let expected: [(ToolRegistry, String, String)] = [
+            (registry, "grantiva_sim_ensure", "Error: Invalid argument: 'name' is required."),
+            (registry, "grantiva_sim_delete", "Error: Invalid argument: 'name' is required."),
+            (registry, "grantiva_emulator_ensure", "Error: Invalid argument: 'name' is required."),
+            (registry, "grantiva_emulator_delete", "Error: Invalid argument: 'name' is required."),
+            (session, "grantiva_script", "Error: Invalid argument: 'steps' array is required."),
+            (session, "grantiva_swipe", "Error: Invalid argument: 'direction' is required."),
+            (session, "grantiva_type", "Error: Invalid argument: 'text' is required."),
+            (session, "grantiva_tap", "Error: Invalid argument: Provide either 'label' or both 'x' and 'y' coordinates."),
+        ]
+        for (target, name, message) in expected {
+            let result = try await target.call(name: name, arguments: [:], server: server)
+            XCTAssertEqual(result.isError, true, name)
+            XCTAssertEqual(text(result), message, name)
+        }
+    }
+
+    func testAnUnknownToolCarriesTheErrorPrefix() async throws {
+        let registry = failingRegistry(platform: .ios, device: MCPFakeDevicePlatform(platform: .ios), emulators: nil)
+        let result = try await registry.call(name: "grantiva_bogus_tool", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(text(result), "Error: Unknown tool: grantiva_bogus_tool")
+    }
+
+    func testANoSessionTextCarriesNoArgumentLabel() async throws {
+        let registry = failingRegistry(platform: .ios, device: MCPFakeDevicePlatform(platform: .ios), emulators: nil)
+        let swipe = try await registry.call(name: "grantiva_swipe", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(swipe.isError, true)
+        XCTAssertFalse(text(swipe).contains("'direction' is required"), text(swipe))
+    }
+
+    /// Every tool called with no arguments: an isError text starts with
+    /// `Error: ` and carries it once. The VRT tools are left out: they start
+    /// `grantiva diff` as a subprocess.
+    func testEveryToolsEmptyArgumentFailureHasOneErrorPrefix() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        device.bootFailure = GrantivaError.invalidArgument(#"Simulator not found: "x""#)
+        let failing = failingRegistry(platform: .ios, device: device, emulators: throwingEmulators(GrantivaError.invalidArgument("no adb")))
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.hierarchy = { throw GrantivaError.unavailable("WDA is not answering.") }
+        let session = MCPTestSupport.registry(driver: driver)
+        let server = MCPTestSupport.disconnectedServer()
+        let skipped: Set<String> = ["grantiva_vrt_capture", "grantiva_vrt_compare", "grantiva_vrt_approve", "grantiva_context"]
+        var checked = 0
+        for tool in failing.allTools() where !skipped.contains(tool.name) {
+            for registry in [failing, session] {
+                let result = try await registry.call(name: tool.name, arguments: [:], server: server)
+                guard result.isError == true else { continue }
+                checked += 1
+                let body = text(result)
+                XCTAssertTrue(body.hasPrefix("Error: "), "\(tool.name): \(body)")
+                XCTAssertEqual(body.components(separatedBy: "Error: ").count - 1, 1, "\(tool.name): \(body)")
+            }
+        }
+        XCTAssertGreaterThan(checked, 15)
+    }
+
+    func testFailedBuildAndTestResultsStartWithTheErrorPrefix() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        device.buildResult = BuildResult(success: false, duration: 0, warnings: [], errors: ["error: boom"], productPath: nil)
+        let config = GrantivaConfig(scheme: "Demo", simulator: "qa", bundleId: "com.example")
+        let build = try await BuildTools.build(device: device, platform: .ios, config: config, arguments: [:])
+        XCTAssertTrue(text(build).hasPrefix("Error: Build FAILED\n"), text(build))
+        let run = try await BuildTools.run(device: device, platform: .ios, config: config, arguments: [:])
+        XCTAssertTrue(text(run).hasPrefix("Error: Build failed:\n"), text(run))
+    }
 }

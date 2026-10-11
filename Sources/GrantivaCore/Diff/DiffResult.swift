@@ -10,8 +10,8 @@ public enum StepStatus: String, Sendable, Codable {
 public struct StepResult: Sendable, Codable {
     public let action: String
     public let status: StepStatus
-    /// Seconds the runner measured for the step. Nil (and omitted from JSON)
-    /// when no runner command can be matched to the step.
+    /// Seconds measured for the step. Nil (encoded as `null`, never omitted)
+    /// when nothing was measured for it.
     public let duration: Double?
     public let message: String?
 

@@ -28,6 +28,11 @@ public struct IOSPlatform: DevicePlatform {
         return BootedDevice(udid: device.udid, name: device.name)
     }
 
+    public func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+        let device = try await simulators.bootDefault(name: name, ephemeral: true, override: override)
+        return BootedDevice(udid: device.udid, name: device.name)
+    }
+
     public func displayGeometry(deviceID: String) async throws -> DeviceGeometry {
         let geometry = try await simulators.displayGeometry(udid: deviceID)
         return DeviceGeometry(pixelWidth: geometry.pixels[0], pixelHeight: geometry.pixels[1], scale: geometry.scale)

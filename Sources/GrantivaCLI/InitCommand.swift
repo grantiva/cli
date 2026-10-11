@@ -43,10 +43,19 @@ struct InitCommand: AsyncParsableCommand {
             let yaml = Self.androidTemplate(
                 module: Self.detectModule(in: cwd),
                 applicationId: applicationId,
-                emulator: "Pixel_8_API_35"
+                emulator: DefaultEmulator.name
             )
+            // The iOS check's twin: no SDK (or no answer from it) is no warning.
+            var warning: String?
+            if let platform = try? AndroidPlatform.live(), let avds = try? await platform.emulators.listAVDs() {
+                warning = Self.existingAVDWarning(
+                    name: DefaultEmulator.name, avds: avds,
+                    createdByGrantiva: Set((try? AndroidProvenance.live.createdAVDs()) ?? [])
+                )
+            }
             try yaml.write(toFile: configPath, atomically: true, encoding: .utf8)
             GrantivaLog.logger.info("Created grantiva-android.yml")
+            if let warning { GrantivaLog.logger.warning("\(warning)") }
             return
         }
 
@@ -170,11 +179,36 @@ struct InitCommand: AsyncParsableCommand {
         name: String, devices: [SimulatorDevice], createdByGrantiva: Set<String>
     ) -> String? {
         let theirs = devices.filter { $0.name == name && !createdByGrantiva.contains($0.udid) }
-        guard !theirs.isEmpty else { return nil }
-        let listed = theirs.map { "\"\($0.name)\" (\($0.udid))" }.joined(separator: ", ")
-        return "A simulator named \(listed) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
-            + "To keep them off it, set simulator: in grantiva.yml to a name of your own, for example \"Grantiva \(name)\" "
-            + "(created on first use with `grantiva simulator ensure --name \"Grantiva \(name)\"`)."
+        return existingDeviceWarning(
+            kind: .simulator, name: name, listed: theirs.map { "\"\($0.name)\" (\($0.udid))" }
+        )
+    }
+
+    /// The Android twin (L09): the default AVD exists and is not in the
+    /// created-AVDs ledger.
+    static func existingAVDWarning(name: String, avds: [String], createdByGrantiva: Set<String>) -> String? {
+        let theirs = avds.contains(name) && !createdByGrantiva.contains(name)
+        return existingDeviceWarning(kind: .emulator, name: name, listed: theirs ? ["\"\(name)\""] : [])
+    }
+
+    enum DeviceKind {
+        case simulator, emulator
+    }
+
+    /// One sentence shape for both platforms: the device(s) named, what runs
+    /// from this directory would do to them, and a Grantiva-specific name.
+    static func existingDeviceWarning(kind: DeviceKind, name: String, listed: [String]) -> String? {
+        guard !listed.isEmpty else { return nil }
+        let (noun, key, suggested, ensure) = switch kind {
+        case .simulator:
+            ("simulator", "simulator: in grantiva.yml", "Grantiva \(name)", "grantiva simulator ensure --name \"Grantiva \(name)\"")
+        case .emulator:
+            ("AVD", "emulator: in grantiva-android.yml", DefaultEmulator.grantivaName(for: name),
+             "grantiva emulator ensure --name \(DefaultEmulator.grantivaName(for: name))")
+        }
+        let article = noun.first.map { "AEIOU".contains($0) } == true ? "An" : "A"
+        return "\(article) \(noun) named \(listed.joined(separator: ", ")) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+            + "To keep them off it, set \(key) to a name of your own, for example \"\(suggested)\" (create it with `\(ensure)`)."
     }
 
     /// Rejects a flag from the other platform by name, as `run` does,

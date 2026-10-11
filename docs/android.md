@@ -14,6 +14,10 @@ and `ANDROID_HOME` as it prints, then in your project:
 
 `init` picks the platform from the directory: a `settings.gradle` or `settings.gradle.kts`
 means Android, an `.xcodeproj` or `.xcworkspace` means iOS. With both, pass `--platform`.
+It writes `emulator: Pixel_8_API_35`; when an AVD of that name already exists and Grantiva did
+not create it (`grantiva emulator ensure` records the AVDs it creates), `init` warns that runs
+from the directory will boot and drive it and suggests a name of your own, such as
+`Grantiva_Pixel_8_API_35` (`grantiva emulator ensure --name Grantiva_Pixel_8_API_35`).
 
 ## Config
 

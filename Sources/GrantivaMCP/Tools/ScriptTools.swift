@@ -77,7 +77,7 @@ enum ScriptTools {
     ) async throws -> (result: CallTool.Result, stepsRun: Int) {
         guard let stepsValue = arguments["steps"]?.arrayValue else {
             return (CallTool.Result(
-                content: [.text(text: "Error: 'steps' array is required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: 'steps' array is required.", annotations: nil, _meta: nil)],
                 isError: true
             ), 0)
         }

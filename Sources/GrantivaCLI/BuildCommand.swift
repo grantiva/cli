@@ -50,7 +50,7 @@ struct BuildOnlyCommand: AsyncParsableCommand {
         let deviceName: String?
         switch platform {
         case .ios:
-            let booted = try await device.bootDevice(named: resolved.simulator)
+            let booted = try await device.bootDevice(for: resolved)
             deviceID = booted.udid
             deviceName = booted.name
         case .android:
@@ -118,7 +118,7 @@ struct InstallCommand: AsyncParsableCommand {
             platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
         )
 
-        let booted = try await device.bootDevice(named: resolved.simulator)
+        let booted = try await device.bootDevice(for: resolved)
 
         var productPath: String?
         var builtAppID: String?

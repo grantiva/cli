@@ -132,7 +132,8 @@ struct RunCommand: AsyncParsableCommand {
     /// an AVD name is used if running and booted otherwise, and the boot
     /// itself is narrated where it happens.
     static func targetDevice(
-        platform: Platform, device: any DevicePlatform, target: String, serialFlag: String?, log: (String) -> Void
+        platform: Platform, device: any DevicePlatform, target: String, serialFlag: String?,
+        targetIsDefault: Bool = false, log: (String) -> Void
     ) async throws -> BootedDevice {
         if platform == .android, let serial = serialFlag {
             let attached: BootedDevice
@@ -150,7 +151,9 @@ struct RunCommand: AsyncParsableCommand {
             return booted
         }
         log(bootNarration(platform: platform, target: target))
-        let booted = try await device.bootDevice(named: target)
+        let booted = targetIsDefault
+            ? try await device.bootDefaultDevice(named: target, override: "--simulator")
+            : try await device.bootDevice(named: target)
         log("\(platform == .ios ? "Simulator" : "Emulator") booted: \(booted.name) (\(booted.udid))")
         return booted
     }
@@ -365,6 +368,7 @@ struct RunCommand: AsyncParsableCommand {
                 ),
                 buildSettings: resolved.buildSettings,
                 simulator: resolved.simulator,
+                simulatorIsDefault: resolved.simulatorIsDefault,
                 screens: [],
                 flows: [flow],
                 android: resolved.android
@@ -387,7 +391,8 @@ struct RunCommand: AsyncParsableCommand {
 
         // Boot simulator
         let booted = try await Self.targetDevice(
-            platform: platform, device: device, target: resolved.simulator, serialFlag: target.device, log: log
+            platform: platform, device: device, target: resolved.simulator, serialFlag: target.device,
+            targetIsDefault: resolved.simulatorIsDefault, log: log
         )
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions

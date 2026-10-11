@@ -16,6 +16,10 @@ struct ToolRegistry: Sendable {
     /// The project root: where the config file is looked for, and where
     /// captures are written.
     var projectDirectory = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    /// True when the platform came from the project directory, not from
+    /// `--platform` or `GRANTIVA_PLATFORM`: a missing config is then either
+    /// platform's file.
+    var platformDetected = false
     /// Reads the config file again when there was none at start, so a file
     /// created while the server runs is used.
     var loadConfig: (@Sendable () throws -> GrantivaConfig?)? = nil
@@ -163,7 +167,8 @@ struct ToolRegistry: Sendable {
                 listSimulators: { [simulatorManager] in try await simulatorManager.listDevices() },
                 emulators: emulators,
                 configSource: Self.configSource(platform: platform, config: config, directory: projectDirectory),
-                driverPort: await connection.attachedPort()
+                driverPort: await connection.attachedPort(),
+                projectDirectory: projectDirectory, platformDetected: platformDetected
             )
 
         // VRT Tools
@@ -189,7 +194,7 @@ struct ToolRegistry: Sendable {
 
         default:
             return CallTool.Result(
-                content: [.text(text: "Unknown tool: \(name)", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Unknown tool: \(name)", annotations: nil, _meta: nil)],
                 isError: true
             )
         }

@@ -105,19 +105,33 @@ public struct DoctorRunner: Sendable {
                 section: .advisory
             )
         }
-        guard let device = devices.first(where: \.isBooted) else { return Self.noBootedSimulatorCheck() }
+        guard let device = devices.first(where: \.isBooted) else {
+            return Self.noBootedSimulatorCheck(devices: devices, createdByGrantiva: simulators.createdUDIDs())
+        }
         return DoctorCheck(
             name: "Booted Simulator", status: .ok,
-            message: "\(device.name) — \(device.runtime)", fix: nil, section: .advisory
+            message: "\(device.name) — \(device.runtimeName)", fix: nil, section: .advisory
         )
     }
 
     /// Names the default simulator every command uses (see `DefaultSimulator`).
-    static func noBootedSimulatorCheck(name: String = DefaultSimulator.name) -> DoctorCheck {
-        DoctorCheck(
+    /// When a simulator of that name exists that Grantiva did not create,
+    /// `ensure --name <default>` would boot the user's device and the default
+    /// path refuses it (L08), so the fix line names a Grantiva-specific one.
+    static func noBootedSimulatorCheck(
+        name: String = DefaultSimulator.name, devices: [SimulatorDevice] = [], createdByGrantiva: Set<String> = []
+    ) -> DoctorCheck {
+        let fix: String
+        if let theirs = devices.first(where: { $0.name == name && !createdByGrantiva.contains($0.udid) }) {
+            fix = "Run: grantiva simulator ensure --name \"Grantiva \(name)\" and set simulator: Grantiva \(name) in grantiva.yml "
+                + "(\"\(name)\" (\(theirs.udid)) was not created by Grantiva, so it is not used as the default)"
+        } else {
+            fix = "Run: grantiva simulator ensure --name \"\(name)\""
+        }
+        return DoctorCheck(
             name: "Booted Simulator", status: .warning,
             message: "No simulator booted",
-            fix: "Run: grantiva simulator ensure --name \"\(name)\"",
+            fix: fix,
             section: .advisory
         )
     }
@@ -200,7 +214,7 @@ public struct DoctorRunner: Sendable {
     func checkAVDs(list: () async -> [String]) async -> DoctorCheck {
         let avds = await list()
         guard !avds.isEmpty else {
-            return DoctorCheck(name: "Android AVDs", status: .warning, message: "No AVD exists", fix: "Run: scripts/android-env.sh (creates Pixel_8_API_35)", section: .advisory)
+            return DoctorCheck(name: "Android AVDs", status: .warning, message: "No AVD exists", fix: "Run: scripts/android-env.sh (creates \(DefaultEmulator.name))", section: .advisory)
         }
         return DoctorCheck(name: "Android AVDs", status: .ok, message: avds.joined(separator: ", "), fix: nil, section: .advisory)
     }
@@ -208,7 +222,7 @@ public struct DoctorRunner: Sendable {
     func checkRunningEmulator(adb: ADB) async -> DoctorCheck {
         let running = ((try? await adb.devices()) ?? []).filter { $0.isEmulator && $0.isUsable }
         guard !running.isEmpty else {
-            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd Pixel_8_API_35", section: .advisory)
+            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd \(DefaultEmulator.name)", section: .advisory)
         }
         return DoctorCheck(name: "Running Emulator", status: .ok, message: running.map(\.serial).joined(separator: ", "), fix: nil, section: .advisory)
     }
