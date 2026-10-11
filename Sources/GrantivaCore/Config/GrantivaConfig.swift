@@ -251,6 +251,14 @@ public struct GrantivaConfig: Sendable, Codable {
         return config
     }
 
+    /// What a command that needs the config file says when there is none:
+    /// the file, where it was looked for, and how to create it.
+    public static func missingFileMessage(platform: Platform, directory: URL) -> String {
+        let path = directory.appendingPathComponent(platform.configFileName).path
+        let initCommand = platform == .ios ? "grantiva init" : "grantiva init --platform \(platform.rawValue)"
+        return "\(platform.configFileName) not found at \(path). Create one with \(initCommand)."
+    }
+
     /// Like `load(platform:from:)` but returns nil when no file exists.
     /// `includeMaestroDirectory: false` skips the `.maestro/` fallback, for a
     /// run that names its own flow and must not parse unrelated files.

@@ -300,7 +300,7 @@ final class MCPServerTests: XCTestCase {
             let result = try await client.callTool(name: "grantiva_build", arguments: [:])
             XCTAssertEqual(result.isError, true)
             let text = result.content.compactMap { if case .text(let t, _, _) = $0 { return t } else { return nil } }.joined()
-            XCTAssertTrue(text.contains("grantiva.yml"), text)
+            XCTAssertTrue(text.contains("grantiva.yml not found at \(directory.standardizedFileURL.path)/grantiva.yml"), text)
         }
     }
 

@@ -59,7 +59,7 @@ struct DiffCommand: AsyncParsableCommand {
             )
 
             guard !resolved.screens.isEmpty else {
-                throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
+                throw DiffCommand.noScreensError(platform: platform, config: config)
             }
 
             let outputDir = DiffCommand.captureDirectory(for: platform)
@@ -274,7 +274,7 @@ struct DiffCommand: AsyncParsableCommand {
                 )
 
                 guard !resolved.screens.isEmpty else {
-                    throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
+                    throw DiffCommand.noScreensError(platform: platform, config: config)
                 }
 
                 let booted = try await device.bootDevice(named: resolved.simulator)
@@ -643,6 +643,18 @@ struct DiffCommand: AsyncParsableCommand {
     static let androidLocalOnlyMessage =
         "Android baselines are local only until the Grantiva backend supports platforms; use local baselines"
 
+    /// Why there is nothing to capture: no config file (named, with its
+    /// path), or a file without screens.
+    static func noScreensError(
+        platform: Platform, config: GrantivaConfig?,
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+    ) -> GrantivaError {
+        guard config != nil else {
+            return .notFound(GrantivaConfig.missingFileMessage(platform: platform, directory: directory))
+        }
+        return .invalidArgument("No screens configured in \(platform.configFileName)")
+    }
+
     static func captureDirectory(for platform: Platform) -> String {
         platform == .ios ? ".grantiva/captures" : ".grantiva/captures/android"
     }
@@ -675,13 +687,6 @@ struct DiffCommand: AsyncParsableCommand {
     /// `SimulatorManager.displayGeometry` derives it: points are pixels over
     /// scale, rounded.
     static func simulatorGeometry(_ geometry: DeviceGeometry) -> SimulatorDisplayGeometry {
-        SimulatorDisplayGeometry(
-            points: [
-                Int((Double(geometry.pixelWidth) / geometry.scale).rounded()),
-                Int((Double(geometry.pixelHeight) / geometry.scale).rounded()),
-            ],
-            pixels: [geometry.pixelWidth, geometry.pixelHeight],
-            scale: geometry.scale
-        )
+        SimulatorDisplayGeometry(geometry)
     }
 }

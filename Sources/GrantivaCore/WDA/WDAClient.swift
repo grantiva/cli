@@ -70,15 +70,15 @@ extension DriverClient {
                 return WDAStatus(sessionId: sessionId, ready: ready)
             },
             hierarchy: {
-                let xml = try await fetchHierarchyXML(base: base, transport: transport)
+                let xml = try await fetchHierarchyXML(base: base, port: port, transport: transport)
                 let parser = WDAHierarchyXMLParser(xml: xml)
                 return try parser.parse()
             },
             hierarchyXML: {
-                try await fetchHierarchyXML(base: base, transport: transport)
+                try await fetchHierarchyXML(base: base, port: port, transport: transport)
             },
             tapByLabel: { label in
-                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
                 // Match the accessibility label first (what VoiceOver reads and
                 // what `grantiva_a11y_tree` shows as `label`), then fall back to
                 // the element name. "link text" matched only the name, so a tab
@@ -121,7 +121,7 @@ extension DriverClient {
                 }
             },
             tapByCoordinate: { x, y in
-                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
                 let body: [String: Any] = [
                     "actions": [
                         [
@@ -143,7 +143,7 @@ extension DriverClient {
                 }
             },
             typeText: { text in
-                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
                 let body: [String: Any] = ["value": Array(text).map { String($0) }]
                 // GrantivaAgent (WebDriverAgent) serves keystrokes at /wda/keys;
                 // /keys is the W3C path some drivers use, kept as a fallback.
@@ -156,7 +156,7 @@ extension DriverClient {
                 }
             },
             swipe: { direction in
-                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
                 // Get window size first for calculating swipe coordinates
                 let (sizeData, _) = try await send(transport, "GET", "\(base)/session/\(sessionId)/window/size")
                 let sizeJson = try JSONSerialization.jsonObject(with: sizeData) as? [String: Any] ?? [:]
@@ -206,7 +206,7 @@ extension DriverClient {
                 }
             },
             screenshot: {
-                let sessionId = try await resolveSessionId(base: base, transport: transport)
+                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
                 let (data, status) = try await send(transport, "GET", "\(base)/session/\(sessionId)/screenshot")
                 guard status == 200 else {
                     throw GrantivaError.commandFailed("Failed to take screenshot via WDA", 1)
@@ -251,20 +251,30 @@ extension DriverClient {
         return try await transport.send(request)
     }
 
-    private static func resolveSessionId(base: String, transport: UIAutomator2Transport) async throws -> String {
+    /// The session WDA holds. Between `grantiva runner start --detach`
+    /// returning and the runner opening its session, `/status` answers with
+    /// no `sessionId`; that is a state to wait out, and the error says so.
+    private static func resolveSessionId(base: String, port: UInt16, transport: UIAutomator2Transport) async throws -> String {
         let (data, status) = try await send(transport, "GET", "\(base)/status")
         guard status == 200 else {
-            throw GrantivaError.commandFailed("WDA not responding", 1)
+            throw GrantivaError.unavailable(
+                "WDA on port \(port) is not responding (HTTP \(status)). If the runner session just started, retry in a few seconds; otherwise restart it with grantiva runner stop and grantiva runner start."
+            )
         }
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] ?? [:]
         if let sid = json["sessionId"] as? String {
             return sid
         }
-        throw GrantivaError.commandFailed("No active WDA session", 1)
+        throw GrantivaError.unavailable(sessionStartingMessage(port: port))
     }
 
-    private static func fetchHierarchyXML(base: String, transport: UIAutomator2Transport) async throws -> String {
-        let sessionId = try await resolveSessionId(base: base, transport: transport)
+    /// The runner session exists but WDA has not opened its session yet.
+    public static func sessionStartingMessage(port: UInt16) -> String {
+        "The runner session is starting (WDA on port \(port) has no session yet). Retry in a few seconds."
+    }
+
+    private static func fetchHierarchyXML(base: String, port: UInt16, transport: UIAutomator2Transport) async throws -> String {
+        let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
         let (data, status) = try await send(transport, "GET", "\(base)/session/\(sessionId)/source")
         guard status == 200 else {
             throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1)
