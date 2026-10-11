@@ -5,6 +5,9 @@ public struct IOSPlatform: DevicePlatform {
     private let simulators: SimulatorManager
     private let xcodebuild: XcodeBuildRunner
     private let execute: @Sendable (String) async throws -> String
+    /// Where the device-home prune takes simulator leases; nil is the runner
+    /// home's `locks/`. Tests point it at their own temp directory.
+    var leaseDirectory: String?
 
     public init(
         simulators: SimulatorManager = .live,
@@ -150,7 +153,7 @@ public struct IOSPlatform: DevicePlatform {
         if let xcconfig = WDABuildConfig.install(in: runnerHome) {
             environment["XCODE_XCCONFIG_FILE"] = xcconfig
         }
-        if let deviceHome = WDADeviceHome.prepare(runnerHome: runnerHome, deviceID: deviceID) {
+        if let deviceHome = WDADeviceHome.prepare(runnerHome: runnerHome, deviceID: deviceID, leaseDirectory: leaseDirectory) {
             environment["MAESTRO_RUNNER_HOME"] = deviceHome
         }
         return environment

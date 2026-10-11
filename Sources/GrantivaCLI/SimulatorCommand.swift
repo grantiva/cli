@@ -204,6 +204,9 @@ struct SimulatorCommand: AsyncParsableCommand {
                 for home in result.deviceHomesRemoved {
                     lines.append("Removed the runner home \(home).")
                 }
+                for directory in result.temporaryDirectoriesRemoved {
+                    lines.append("Removed the killed run's temp directory \(directory).")
+                }
             }
             return (lines, error)
         }
@@ -228,7 +231,14 @@ struct SimulatorCommand: AsyncParsableCommand {
                 )
             } else {
                 for outcome in outcomes {
-                    let session = outcome.session
+                    guard let session = outcome.session else {
+                        // No Grantiva session held the device; only its runner homes went.
+                        Output.line("No Grantiva session held \(outcome.udid); the simulator was left as it is.")
+                        for home in outcome.deviceHomesRemoved {
+                            Output.line("Removed the runner home \(home).")
+                        }
+                        continue
+                    }
                     let action = outcome.deleted ? "Deleted Grantiva-created" : "Shut down"
                     Output.line("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
                 }

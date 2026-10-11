@@ -110,6 +110,25 @@ struct InjectedDevicePlatform: Decodable {
     }
 }
 
+/// Test seam for the live `runner start` session a command may capture
+/// through, carried as a plain stored property like `InjectedDevicePlatform`.
+struct RunnerSessionLookup: Decodable, Sendable {
+    private let lookup: (@Sendable (Platform) async -> RunnerSessionInfo?)?
+
+    init(_ lookup: (@Sendable (Platform) async -> RunnerSessionInfo?)? = nil) {
+        self.lookup = lookup
+    }
+
+    init(from decoder: Decoder) throws {
+        lookup = nil
+    }
+
+    func find(_ platform: Platform) async -> RunnerSessionInfo? {
+        if let lookup { return await lookup(platform) }
+        return await DiffCommand.liveSession(for: platform)
+    }
+}
+
 /// Test seam for a command's progress notes, carried as a plain stored
 /// property like `InjectedDevicePlatform`. Decoded (the real command), it
 /// forwards to `GlobalOptions.note`; made with `init()` in a test, it keeps

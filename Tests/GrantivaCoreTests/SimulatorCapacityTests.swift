@@ -162,6 +162,54 @@ final class SimulatorCapacityTests: XCTestCase {
         XCTAssertEqual(acquired.udid, second.udid)
     }
 
+    // MARK: - K67: waiting on a twin is not a capacity wait
+
+    func testAPendingRecordOfAnotherLiveProcessUnderTheLimitIsADeviceWait() async throws {
+        let capacity = SimulatorCapacity(directory: directory, maximum: 6, waitTimeout: 0.05, pollInterval: 0.01)
+        let simulator = device(1, state: "Shutdown")
+        let owner = capacity.sessionId ?? "simulator:\(simulator.udid)"
+        let twin = ManagedSimulatorSession(
+            udid: simulator.udid, name: simulator.name, sessionId: owner,
+            ownerPID: 1, acquiredAt: Date(), state: .pending
+        )
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode([twin]).write(to: URL(fileURLWithPath: "\(directory!)/sessions.json"))
+
+        let waits = WaitLog()
+        do {
+            _ = try await capacity.reserve(device: simulator, devices: { [simulator] }) { wait, _ in waits.add(wait) }
+            XCTFail("the twin never finished, so the wait times out")
+        } catch {}
+
+        let seen = waits.all
+        XCTAssertFalse(seen.isEmpty)
+        for wait in seen {
+            guard case .deviceBusy(let holder) = wait else { return XCTFail("reported as \(wait)") }
+            XCTAssertEqual(holder.ownerPID, 1)
+        }
+    }
+
+    // MARK: - K70: the refusal says how to use or free the device
+
+    func testForeignSessionRefusalNamesBothWaysOut() async throws {
+        let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 0)
+        let simulator = device(1, state: "Booted")
+        let foreign = record(simulator, sessionId: "cov-ios", pid: 1)
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode([foreign]).write(to: URL(fileURLWithPath: "\(directory!)/sessions.json"))
+
+        do {
+            _ = try await capacity.reserve(device: simulator, devices: { [simulator] })
+            XCTFail("expected the foreign session to refuse the run")
+        } catch {
+            let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            XCTAssertTrue(message.contains("belongs to Grantiva session cov-ios"), message)
+            XCTAssertTrue(message.contains("GRANTIVA_SESSION_ID=cov-ios"), message)
+            XCTAssertTrue(message.contains("`grantiva simulator teardown --session-id cov-ios`"), message)
+            XCTAssertFalse(message.contains("Teardown that session"), message)
+        }
+    }
+
     private func record(_ device: SimulatorDevice, sessionId: String, pid: Int32, ephemeral: Bool? = nil) -> ManagedSimulatorSession {
         ManagedSimulatorSession(
             udid: device.udid, name: device.name, sessionId: sessionId,
@@ -175,4 +223,11 @@ final class SimulatorCapacityTests: XCTestCase {
             runtime: "iOS-27-0", isAvailable: true
         )
     }
+}
+
+private final class WaitLog: @unchecked Sendable {
+    private let lock = NSLock()
+    private var waits: [SimulatorCapacity.Wait] = []
+    var all: [SimulatorCapacity.Wait] { lock.withLock { waits } }
+    func add(_ wait: SimulatorCapacity.Wait) { lock.withLock { waits.append(wait) } }
 }

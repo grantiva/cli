@@ -90,11 +90,27 @@ public struct SimulatorCapacity: Sendable {
         return value.flatMap { $0.isEmpty ? nil : $0 }
     }
 
+    /// Why `reserve` is waiting.
+    public enum Wait: Sendable {
+        /// The host is at its limit; these records hold the slots.
+        case capacity([ManagedSimulatorSession])
+        /// Another live Grantiva process reserved this same device and is
+        /// still booting it (a concurrent `ensure` of the same name).
+        case deviceBusy(ManagedSimulatorSession)
+    }
+
+    /// The refusal for a device another Grantiva session owns.
+    static func foreignSessionMessage(device: SimulatorDevice, sessionId: String) -> String {
+        "Simulator \(device.name) (\(device.udid)) belongs to Grantiva session \(sessionId). "
+            + "Run with GRANTIVA_SESSION_ID=\(sessionId), end that session with "
+            + "`grantiva simulator teardown --session-id \(sessionId)`, or select another simulator."
+    }
+
     public func reserve(
         device: SimulatorDevice,
         ephemeral: Bool = false,
         devices: @Sendable () async throws -> [SimulatorDevice],
-        onWait: @Sendable ([ManagedSimulatorSession], TimeInterval) -> Void = { _, _ in }
+        onWait: @Sendable (Wait, TimeInterval) -> Void = { _, _ in }
     ) async throws -> ManagedSimulatorSession {
         let owner = sessionId ?? Self.sessionlessOwner(udid: device.udid)
         let start = Date()
@@ -110,13 +126,11 @@ public struct SimulatorCapacity: Sendable {
                     let existing = records[index]
                     guard existing.sessionId == owner else {
                         throw GrantivaError.commandFailed(
-                            "Simulator \(device.name) (\(device.udid)) belongs to Grantiva session "
-                                + "\(existing.sessionId). Teardown that session or select another simulator.",
-                            1
+                            Self.foreignSessionMessage(device: device, sessionId: existing.sessionId), 1
                         )
                     }
                     if existing.state == .pending && existing.ownerPID != getpid() {
-                        return ReservationOutcome.full(records)
+                        return ReservationOutcome.busy(existing, records)
                     }
                     return ReservationOutcome.acquired(existing)
                 }
@@ -151,7 +165,18 @@ public struct SimulatorCapacity: Sendable {
                         1
                     )
                 }
-                onWait(records, elapsed)
+                onWait(.capacity(records), elapsed)
+                try await Task.sleep(for: .seconds(pollInterval))
+            case .busy(let holder, _):
+                let elapsed = Date().timeIntervalSince(start)
+                guard elapsed < waitTimeout else {
+                    throw GrantivaError.commandFailed(
+                        "Timed out after \(Int(waitTimeout))s waiting for Grantiva process \(holder.ownerPID) "
+                            + "to finish booting \(holder.name) (\(holder.udid)).",
+                        1
+                    )
+                }
+                onWait(.deviceBusy(holder), elapsed)
                 try await Task.sleep(for: .seconds(pollInterval))
             }
         }
@@ -272,6 +297,7 @@ public struct SimulatorCapacity: Sendable {
     private enum ReservationOutcome {
         case acquired(ManagedSimulatorSession)
         case full([ManagedSimulatorSession])
+        case busy(ManagedSimulatorSession, [ManagedSimulatorSession])
     }
 
     private var registryPath: String { "\(directory)/sessions.json" }

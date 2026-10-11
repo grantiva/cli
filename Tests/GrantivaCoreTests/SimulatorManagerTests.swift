@@ -175,7 +175,7 @@ final class SimulatorManagerTests: XCTestCase {
 
         let outcomes = try await manager.teardown(udid: "MINE-1")
 
-        XCTAssertEqual(outcomes.map(\.session.udid), ["MINE-1"], "the session is still released")
+        XCTAssertEqual(outcomes.map(\.udid), ["MINE-1"], "the session is still released")
         let failures = outcomes.flatMap(\.deviceHomeFailures)
         XCTAssertEqual(failures.count, 1)
         XCTAssertTrue(failures.first?.contains(stuck) == true, "\(failures)")
@@ -233,7 +233,7 @@ final class SimulatorManagerTests: XCTestCase {
         XCTAssertEqual(try capacity.sessions(devices: devices).map(\.udid), ["MINE-1"])
 
         let outcomes = try await manager.teardown(udid: "MINE-1")
-        XCTAssertEqual(outcomes.map(\.session.udid), ["MINE-1"])
+        XCTAssertEqual(outcomes.map(\.udid), ["MINE-1"])
         XCTAssertTrue(simctl.commands.contains("xcrun simctl shutdown 'MINE-1'"))
     }
 
@@ -258,7 +258,7 @@ final class SimulatorManagerTests: XCTestCase {
 
         let outcomes = try await manager.teardown(sessionId: "qa-ios-manual")
 
-        XCTAssertEqual(outcomes.map(\.session.udid), ["LEGACY-1"])
+        XCTAssertEqual(outcomes.map(\.udid), ["LEGACY-1"])
         XCTAssertEqual(outcomes.map(\.deleted), [false])
         XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
         XCTAssertEqual(simctl.device("LEGACY-1")?.state, "Booted")
@@ -454,6 +454,172 @@ final class SimulatorManagerTests: XCTestCase {
 
         XCTAssertFalse(simctl.commands.contains { $0.contains("simctl delete") }, "\(simctl.commands)")
         XCTAssertNotNil(simctl.device("REUSED-1"))
+    }
+}
+
+extension SimulatorManagerTests {
+    private func tempRoot() -> String {
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("grantiva-manager-tests-\(UUID().uuidString)").path
+        addTeardownBlock { try? FileManager.default.removeItem(atPath: directory) }
+        return directory
+    }
+
+    // MARK: - K67: a twin's boot is waited on, not repeated
+
+    func testBootWaitingOnATwinsBootIssuesNoSecondBoot() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Race", udid: "RACE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let directory = tempRoot()
+        let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 10, pollInterval: 0.02)
+        let manager = SimulatorManager(
+            execute: simctl.execute, capacity: capacity, provenance: SimulatorProvenance(directory: directory),
+            runnerHome: "\(directory)/runner"
+        )
+        // The twin (another live Grantiva process: pid 1 always exists)
+        // reserved the device and is booting it.
+        let twin = ManagedSimulatorSession(
+            udid: "RACE-1", name: "Race", sessionId: capacity.sessionId ?? "simulator:RACE-1",
+            ownerPID: 1, acquiredAt: Date(), state: .pending, ephemeral: false
+        )
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode([twin]).write(to: URL(fileURLWithPath: "\(directory)/sessions.json"))
+
+        let finisher = Task {
+            try await Task.sleep(for: .milliseconds(200))
+            _ = try await simctl.execute("xcrun simctl boot RACE-1")
+            try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
+        }
+
+        let device = try await manager.boot(nameOrUDID: "RACE-1")
+        try await finisher.value
+
+        XCTAssertEqual(device.state, "Booted")
+        let boots = simctl.commands.filter { $0.hasPrefix("xcrun simctl boot ") }
+        XCTAssertEqual(boots.count, 1, "only the twin booted the device: \(simctl.commands)")
+        let record = try XCTUnwrap(try capacity.records(udid: "RACE-1").first)
+        XCTAssertEqual(record.state, .active)
+        XCTAssertEqual(record.bootedByGrantiva, true)
+    }
+
+    func testATwinWaitIsNotReportedAsACapacityWait() {
+        let twin = ManagedSimulatorSession(
+            udid: "RACE-1", name: "Race iPhone 17", sessionId: "qa", ownerPID: 4242, acquiredAt: Date(), state: .pending
+        )
+        let wait = SimulatorManager.waitMessage(.deviceBusy(twin), maximum: 6)
+        XCTAssertFalse(wait.message.contains("capacity"), wait.message)
+        XCTAssertTrue(wait.message.contains("Race iPhone 17 (RACE-1)"), wait.message)
+        XCTAssertTrue(wait.message.contains("another Grantiva process (pid 4242) is booting it"), wait.message)
+
+        let full = SimulatorManager.waitMessage(.capacity([twin]), maximum: 6)
+        XCTAssertEqual(full.message, SimulatorManager.capacityWait(sessions: [twin], maximum: 6).message)
+    }
+
+    // MARK: - K69: teardown --udid without a record still removes the home
+
+    func testTeardownWithoutARecordRemovesTheDeviceHomeAndReportsIt() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        let home = try makeVersionedDeviceHome(capacity, stamp: "v1", "MANUAL-1")
+        let other = try makeVersionedDeviceHome(capacity, stamp: "v1", "OTHER-1")
+
+        let outcomes = try await manager.teardown(udid: "MANUAL-1")
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: home))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: other))
+        XCTAssertEqual(outcomes.count, 1)
+        XCTAssertEqual(outcomes.first?.udid, "MANUAL-1")
+        XCTAssertNil(outcomes.first?.session)
+        XCTAssertEqual(outcomes.first?.deviceHomesRemoved, [home])
+        XCTAssertFalse(simctl.commands.contains { $0.contains("shutdown") || $0.contains("delete") }, "\(simctl.commands)")
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcomes)) as? [[String: Any]])
+        XCTAssertEqual(object.first?["deviceHomesRemoved"] as? [String], [home])
+        XCTAssertEqual(object.first?["udid"] as? String, "MANUAL-1")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")))
+    }
+
+    func testTeardownWithoutARecordSaysWhoIsUsingABusyDevice() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        let home = try makeVersionedDeviceHome(capacity, stamp: "v1", "MANUAL-1")
+        let run = try SimulatorLease.acquire(udid: "MANUAL-1", directory: "\(capacity.directory)/runner/locks")
+        defer { run.release() }
+        run.recordRunner(pid: 4242, keepAlive: true)
+
+        do {
+            _ = try await manager.teardown(udid: "MANUAL-1")
+            XCTFail("a busy device is not torn down silently")
+        } catch {
+            let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            XCTAssertTrue(message.contains("MANUAL-1 is in use by a Grantiva run"), message)
+            XCTAssertTrue(message.contains("grantiva pid \(getpid())"), message)
+            XCTAssertTrue(message.contains("grantiva-runner pid 4242"), message)
+            XCTAssertFalse(message.contains("--force"), message)
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: home), "a run is using it")
+    }
+
+    // A lease failure that is not "someone holds it" (here the locks
+    // directory cannot be created) is an error, not an empty result.
+    func testTeardownWithoutARecordReportsALeaseItCannotTake() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        let home = try makeVersionedDeviceHome(capacity, stamp: "v1", "MANUAL-1")
+        // A file where the locks directory should be.
+        try Data().write(to: URL(fileURLWithPath: "\(capacity.directory)/runner/locks"))
+
+        do {
+            let outcomes = try await manager.teardown(udid: "MANUAL-1")
+            XCTFail("expected the lease failure to propagate, got \(outcomes)")
+        } catch {
+            XCTAssertFalse(SimulatorLease.isOwnershipRefusal(error), "\(error)")
+            XCTAssertFalse("\(error)".contains("is in use"), "\(error)")
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: home), "nothing removed without the lease")
+    }
+
+    func testInUseMessageForARunnerStartSessionNamesRunnerStop() {
+        let claim = SimulatorLeaseClaim(
+            pid: 77, udid: "S-1", startedAt: Date(), runnerPID: 77, keepAlive: true,
+            handedOff: true, projectDirectory: "/tmp/p"
+        )
+        let message = SimulatorLease.inUseMessage(udid: "S-1", holder: claim)
+        XCTAssertTrue(message.contains("`grantiva runner start` session (grantiva-runner pid 77)"), message)
+        XCTAssertTrue(message.contains("`grantiva runner stop` (from /tmp/p)"), message)
+        XCTAssertFalse(message.contains("--force"), message)
+    }
+
+    func testTeardownWithoutARecordOrHomeReportsNothing() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, _, _) = makeManager(simctl)
+        let outcomes = try await manager.teardown(udid: "MANUAL-1")
+        XCTAssertEqual(outcomes, [])
+    }
+
+    // MARK: - K107-a: deleting a device removes its lock file
+
+    func testDeleteRemovesTheDevicesLockFile() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Gone", udid: "GONE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        let locks = "\(capacity.directory)/runner/locks"
+        try FileManager.default.createDirectory(atPath: locks, withIntermediateDirectories: true)
+        let path = SimulatorLease.leasePath(udid: "GONE-1", directory: locks)
+        FileManager.default.createFile(atPath: path, contents: Data())
+
+        _ = try await manager.delete(name: "Gone")
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: path))
     }
 }
 

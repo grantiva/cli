@@ -233,9 +233,39 @@ final class DoctorTests: XCTestCase {
         XCTAssertEqual(check.message, "Found")
     }
 
-    func testNoBootedSimulatorFixNamesAnInstalledDeviceType() {
-        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
-        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).fix, "Run: grantiva simulator ensure --name \"iPhone 17 Pro\"")
+    func testNoBootedSimulatorFixNamesTheSharedDefaultSimulator() {
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(name: "iPhone 18 Pro").fix, "Run: grantiva simulator ensure --name \"iPhone 18 Pro\"")
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+    }
+
+    // MARK: - K36: a list failure is not "nothing booted"
+
+    func testBootedSimulatorCheckSaysWhenTheSimulatorListCannotBeRead() async {
+        let simulators = SimulatorManager(execute: { command in
+            throw GrantivaError.commandFailed("xcrun: error: invalid DEVELOPER_DIR path (/nonexistent)", 1)
+        })
+        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+        XCTAssertEqual(check.name, "Booted Simulator")
+        XCTAssertTrue(check.message.hasPrefix("Could not list simulators: "), check.message)
+        XCTAssertTrue(check.message.contains("invalid DEVELOPER_DIR path"), check.message)
+        XCTAssertFalse(check.message.contains("No simulator booted"), check.message)
+        XCTAssertFalse(check.fix?.contains("simulator ensure") ?? false, check.fix ?? "")
+        XCTAssertTrue(check.fix?.contains("DEVELOPER_DIR") ?? false, check.fix ?? "")
+    }
+
+    func testBootedSimulatorCheckWithNothingBootedIsUnchanged() async {
+        let simulators = SimulatorManager(execute: { _ in #"{"devices": {}}"# })
+        let check = await DoctorRunner().checkBootedSimulator(simulators: simulators)
+        XCTAssertEqual(check.status, .warning)
+        XCTAssertEqual(check.message, "No simulator booted")
+        XCTAssertEqual(check.fix, "Run: grantiva simulator ensure --name \"\(DefaultSimulator.name)\"")
+    }
+
+    func testBootedSimulatorCheckNamesTheBootedDevice() async {
+        let list = #"{"devices": {"com.apple.CoreSimulator.SimRuntime.iOS-26-0": [{"name": "Mine", "udid": "U-1", "state": "Booted", "isAvailable": true}]}}"#
+        let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
+        XCTAssertEqual(check.status, .ok)
+        XCTAssertEqual(check.message, "Mine — iOS-26-0")
     }
 
     // A mono-repo's android/ subproject is inside the work tree; advising
@@ -292,7 +322,7 @@ final class DoctorTests: XCTestCase {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios], required: true)
         XCTAssertEqual(checks.first { $0.name == "Booted Simulator" }?.section, .advisory)
         XCTAssertEqual(checks.first { $0.name == "Xcode" }?.section, .required)
-        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).section, .advisory)
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().section, .advisory)
     }
 
     func testAdvisorySectionIsPrintedUnderItsOwnHeadingAndEncoded() throws {
@@ -325,7 +355,7 @@ final class DoctorTests: XCTestCase {
             await runner.checkAVDs(list: { [] }),
             await runner.checkAVDs(list: { ["Pixel"] }),
             await runner.checkRunningEmulator(adb: ADB(path: dir.appendingPathComponent("no-adb").path)),
-            DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil),
+            DoctorRunner.noBootedSimulatorCheck(),
         ]
         FileManager.default.createFile(atPath: binary, contents: Data())
         try "v1".write(toFile: version, atomically: true, encoding: .utf8)

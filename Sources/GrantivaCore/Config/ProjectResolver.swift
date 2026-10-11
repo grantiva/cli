@@ -22,7 +22,7 @@ public struct ResolvedProject: Sendable {
         workspace: String? = nil,
         bundleId: String? = nil,
         buildSettings: [String] = [],
-        simulator: String = "iPhone 16",
+        simulator: String = DefaultSimulator.name,
         screens: [GrantivaConfig.Screen] = [],
         flows: [String] = [],
         diff: GrantivaConfig.DiffConfig = .init(),
@@ -130,7 +130,7 @@ extension ResolvedProject {
         let bundleId = bundleIdFlag ?? config?.bundleId ?? appBundleId ?? detected?.bundleId
         let workspace = config?.workspace ?? detected?.workspace
         let project = config?.project ?? detected?.project
-        let simulator = flagSim ?? configSim ?? "iPhone 16"
+        let simulator = flagSim ?? configSim ?? DefaultSimulator.name
 
         return ResolvedProject(
             scheme: scheme,

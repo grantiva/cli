@@ -28,7 +28,13 @@ final class AndroidCommandTests: XCTestCase {
         try? FileManager.default.removeItem(at: dir)
     }
 
-    private let stubRunner = RunnerManager(ensureAvailable: {}, runnerPath: { "/usr/bin/false" }, runnerDir: { NSTemporaryDirectory() })
+    /// Leases go under the test's own directory, never the runner home.
+    private var stubRunner: RunnerManager {
+        RunnerManager(
+            ensureAvailable: {}, runnerPath: { "/usr/bin/false" }, runnerDir: { NSTemporaryDirectory() },
+            leaseDirectory: dir.appendingPathComponent("locks").path
+        )
+    }
 
     func testRunOnAndroidRejectsAnIOSFlagBeforeTouchingADevice() async throws {
         var command = try RunCommand.parse(["--no-build", "--scheme", "Demo"])

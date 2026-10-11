@@ -215,7 +215,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
     static func target(platform: Platform, simulator: String?, emulator: String?, device: String?, config: GrantivaConfig?) -> String {
         switch platform {
-        case .ios: return simulator ?? config?.simulator ?? "iPhone 16"
+        case .ios: return simulator ?? config?.simulator ?? DefaultSimulator.name
         case .android: return device ?? emulator ?? config?.android?.emulator ?? ""
         }
     }

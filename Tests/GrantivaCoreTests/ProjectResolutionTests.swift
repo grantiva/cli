@@ -26,6 +26,16 @@ final class ProjectResolutionTests: XCTestCase {
         XCTAssertEqual(result.buildSettings, ["A=B"])
     }
 
+    // K37: one default simulator name, shared by every command.
+    func testNoSimulatorFlagOrConfigResolvesToTheSharedDefault() async throws {
+        let result = try await ResolvedProject.resolve(
+            config: GrantivaConfig(scheme: "Demo"), detector: .failing, loadCache: { nil }, saveCache: { _ in },
+            skipBuild: true
+        )
+        XCTAssertEqual(result.simulator, DefaultSimulator.name)
+        XCTAssertEqual(ResolvedProject().simulator, DefaultSimulator.name)
+    }
+
     func testBinaryBundleIdPrecedesDetectedBundleId() async throws {
         let detected = DetectedProject(scheme: "Detected", bundleId: "com.detected")
         let result = try await ResolvedProject.resolve(

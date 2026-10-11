@@ -2,6 +2,7 @@ import ArgumentParser
 import Foundation
 import GrantivaCore
 import GrantivaAPI
+import GrantivaMCP
 
 struct DiffCommand: AsyncParsableCommand {
     struct ComparisonOutcome {
@@ -44,6 +45,8 @@ struct DiffCommand: AsyncParsableCommand {
         var devicePlatform = InjectedDevicePlatform()
         var runnerManager: RunnerManager = .live
         var notes = NoteSink()
+        /// The live `runner start` session in this directory; tests inject one.
+        var sessionLookup = RunnerSessionLookup()
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
@@ -75,6 +78,8 @@ struct DiffCommand: AsyncParsableCommand {
             var booted: BootedDevice
             var builtAppID: String?
             var appID: String?
+            /// The `runner start` session holding the device, when there is one.
+            var holdingSession: RunnerSessionInfo?
 
             if !buildOptions.shouldSkipInstall {
                 // Full lifecycle: boot → build → install → launch → capture
@@ -127,14 +132,20 @@ struct DiffCommand: AsyncParsableCommand {
             } else {
                 // --no-build honours flag > config > runner session, and only
                 // then the platform default, which on iOS refuses to pick among
-                // several booted simulators.
+                // several booted simulators. The session is looked up at most
+                // once: for the session tier, and then to learn whether it
+                // holds the device being captured (a named device can be the
+                // session's too). Without `.grantiva/session.json` the lookup
+                // returns at once, with no `ps`.
+                let session = SessionOnce(lookup: sessionLookup, platform: platform)
                 booted = try await DiffCommand.noBuildDevice(
                     platform: platform,
                     explicit: target.simulator ?? target.device ?? target.emulator,
                     config: config,
-                    sessionUDID: { await DiffCommand.liveSessionUDID(for: platform) },
+                    sessionUDID: { DiffCommand.sessionUDID(await session.value()?.udid, for: platform) },
                     device: device
                 )
+                holdingSession = DiffCommand.session(await session.value(), holding: booted.udid)
                 appID = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") })
             }
 
@@ -153,15 +164,36 @@ struct DiffCommand: AsyncParsableCommand {
 
             notes.note("Capturing \(resolved.screens.count) screen(s)...", options: options)
 
-            let captures = try await RunnerSession.run(
-                screens: resolved.screens,
-                bundleId: bid,
-                udid: booted.udid,
-                platform: device,
-                runner: runnerManager,
-                outputDir: outputDir,
-                expectedPixels: captureTarget.pixelDimensions
-            )
+            let captures: [ScreenCapture]
+            if let holdingSession {
+                // The session's runner holds the device lease; a second
+                // runner would be refused, so capture through the session.
+                notes.note("Capturing through the runner session (grantiva-runner pid \(holdingSession.pid)).", options: options)
+                let port = holdingSession.wdaPort > 0 ? holdingSession.wdaPort : nil
+                let attachment = try await device.attachDriver(deviceID: booted.udid, port: port)
+                do {
+                    captures = try await SessionScreenCapture.capture(
+                        screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
+                        driver: attachment.client, device: device, outputDir: outputDir,
+                        expectedPixels: captureTarget.pixelDimensions,
+                        timeoutSeconds: SessionScreenCapture.defaultTimeoutSeconds
+                    )
+                } catch {
+                    await attachment.detach()
+                    throw error
+                }
+                await attachment.detach()
+            } else {
+                captures = try await RunnerSession.run(
+                    screens: resolved.screens,
+                    bundleId: bid,
+                    udid: booted.udid,
+                    platform: device,
+                    runner: runnerManager,
+                    outputDir: outputDir,
+                    expectedPixels: captureTarget.pixelDimensions
+                )
+            }
 
             // Print step-by-step results
             if !options.json {
@@ -217,13 +249,38 @@ struct DiffCommand: AsyncParsableCommand {
         return try await device.defaultDevice()
     }
 
-    /// The device of the runner session in this directory, if its runner is
-    /// still the process that owns it and the device belongs to `platform`.
-    static func liveSessionUDID(for platform: Platform) async -> String? {
-        guard let session = try? RunnerSessionInfo.load(), session.isAlive,
+    /// The runner session in this directory, if its runner is still the
+    /// process that owns it and it drives `platform`.
+    static func liveSession(for platform: Platform) async -> RunnerSessionInfo? {
+        guard let session = try? RunnerSessionInfo.load(), session.isAlive, session.drivesPlatform(platform),
               let snapshot = try? await SimulatorReaper.processSnapshot(),
               session.ownsRunnerProcess(in: snapshot) else { return nil }
-        return sessionUDID(session.udid, for: platform)
+        return session
+    }
+
+    /// A session lookup run at most once per command.
+    actor SessionOnce {
+        private let lookup: RunnerSessionLookup
+        private let platform: Platform
+        private var result: RunnerSessionInfo??
+
+        init(lookup: RunnerSessionLookup, platform: Platform) {
+            self.lookup = lookup
+            self.platform = platform
+        }
+
+        func value() async -> RunnerSessionInfo? {
+            if let result { return result }
+            let found = await lookup.find(platform)
+            result = .some(found)
+            return found
+        }
+    }
+
+    /// `session`, when the device it holds is `udid`.
+    static func session(_ session: RunnerSessionInfo?, holding udid: String) -> RunnerSessionInfo? {
+        guard let session, !session.udid.isEmpty, session.udid == udid else { return nil }
+        return session
     }
 
     static func sessionUDID(_ udid: String?, for platform: Platform) -> String? {

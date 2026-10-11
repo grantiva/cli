@@ -32,7 +32,7 @@ enum SimTools {
                 "properties": .object([
                     "name": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name or UDID to boot (default: 'iPhone 16')"),
+                        "description": .string("Simulator name or UDID to boot (default: \(DefaultSimulator.description))"),
                     ]),
                 ]),
             ]),
@@ -105,7 +105,7 @@ enum SimTools {
         simManager: SimulatorManager,
         arguments: [String: Value]
     ) async throws -> CallTool.Result {
-        let name = arguments["name"]?.stringValue ?? "iPhone 16"
+        let name = arguments["name"]?.stringValue ?? DefaultSimulator.name
         let device = try await simManager.boot(nameOrUDID: name)
 
         return CallTool.Result(

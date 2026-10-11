@@ -131,7 +131,7 @@ extension VRTTools {
 
     /// One continuous pass, like the generated runner flow: launch the app
     /// once, then each screen's steps followed by its screenshot.
-    private static func captureScreens(
+    static func captureScreens(
         _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
         device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {

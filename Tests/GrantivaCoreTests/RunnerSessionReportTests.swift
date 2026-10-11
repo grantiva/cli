@@ -204,6 +204,9 @@ final class RunnerSessionReportTests: XCTestCase {
 
     private func udid() -> String { "TEST-REPORT-\(UUID().uuidString)" }
 
+    /// Leases go under the scratch dir, never the real runner home (K107-b).
+    private var leaseDirectory: String { scratch.appendingPathComponent("locks").path }
+
     private func writeFlow(_ path: String) throws {
         let url = scratch.appendingPathComponent(path)
         try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
@@ -247,7 +250,7 @@ final class RunnerSessionReportTests: XCTestCase {
         """.write(to: script, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
         let dir = scratch.path
-        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir })
+        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir }, leaseDirectory: leaseDirectory)
     }
 }
 

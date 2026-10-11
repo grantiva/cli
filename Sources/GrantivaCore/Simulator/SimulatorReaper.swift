@@ -40,6 +40,9 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     public var deviceHomesRemoved: [String]
     /// One "<path>: <reason>" line per runner home that could not be removed.
     public var deviceHomeFailures: [String]
+    /// Temp directories of the killed run (staged flows, ephemeral report
+    /// dir) that its lease claim named and that were removed.
+    public var temporaryDirectoriesRemoved: [String]
     /// Whether this teardown actually took something back. A `--force` run that
     /// found nothing is a success — the device was already free — but it is not
     /// the same event as one that killed a stranded runner, and a script that
@@ -55,7 +58,8 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
         capacityRecordsKept: [KeptCapacityRecord] = [],
         sessionFilesRemoved: [String] = [],
         deviceHomesRemoved: [String] = [],
-        deviceHomeFailures: [String] = []
+        deviceHomeFailures: [String] = [],
+        temporaryDirectoriesRemoved: [String] = []
     ) {
         self.udid = udid
         self.processes = processes
@@ -65,6 +69,7 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
         self.sessionFilesRemoved = sessionFilesRemoved
         self.deviceHomesRemoved = deviceHomesRemoved
         self.deviceHomeFailures = deviceHomeFailures
+        self.temporaryDirectoriesRemoved = temporaryDirectoriesRemoved
         self.reclaimed = !processes.isEmpty || leaseReleased || capacityRecordsCleared > 0
     }
 }
@@ -168,11 +173,15 @@ public enum SimulatorReaper {
         }
         let psOutput = try await takeSnapshot()
         var targets = processes(owning: udid, psOutput: psOutput, excludingPID: getpid())
+        // Before anything is reaped: whether the lease is held is a question
+        // about the processes that are about to be killed.
+        let leaseHeld = SimulatorLease.isHeld(udid: udid, directory: leaseDirectory)
+        let claim = SimulatorLease.claim(udid: udid, directory: leaseDirectory)
 
         // The lease names its owner even when the command line does not carry
         // the UDID (a run started via `grantiva.yml` names the simulator, not
         // its UDID), so fold that pid in too.
-        if let claim = SimulatorLease.claim(udid: udid, directory: leaseDirectory),
+        if let claim,
            claim.pid != getpid(),
            !targets.contains(where: { $0.pid == claim.pid }),
            isGrantivaProcess(pid: claim.pid, psOutput: psOutput),
@@ -199,7 +208,13 @@ public enum SimulatorReaper {
             targets += late
         }
 
-        let leaseReleased = SimulatorLease.forceRelease(udid: udid, directory: leaseDirectory)
+        // `leaseHeld` was read before reaping; the file goes either way.
+        SimulatorLease.removeLeaseFile(udid: udid, directory: leaseDirectory)
+        let leaseReleased = leaseHeld
+
+        // A killed run never ran its cleanup: remove the temp dirs its claim
+        // named, once the run and its runner are gone.
+        let temporaryDirectoriesRemoved = claim.map(removeTemporaryDirectories(of:)) ?? []
 
         // Clear only stale capacity records for this device. The record of a
         // session that still owns other simulators is not stale: dropping it
@@ -221,8 +236,31 @@ public enum SimulatorReaper {
             capacityRecordsKept: kept,
             sessionFilesRemoved: removedFiles,
             deviceHomesRemoved: homes.removed,
-            deviceHomeFailures: homes.failures
+            deviceHomeFailures: homes.failures,
+            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
         )
+    }
+
+    /// Removes the temp directories `claim` recorded when neither its process
+    /// nor its runner is alive. Only directories Grantiva creates in the temp
+    /// directory (`grantiva-…`) are touched, so a claim can never name a
+    /// preserved `--report-dir` or anything else for removal.
+    static func removeTemporaryDirectories(of claim: SimulatorLeaseClaim) -> [String] {
+        guard !claim.isLive else { return [] }
+        let fm = FileManager.default
+        let temp = fm.temporaryDirectory.resolvingSymlinksInPath().path
+        var removed: [String] = []
+        for path in claim.temporaryDirectories ?? [] {
+            let url = URL(fileURLWithPath: path).standardizedFileURL
+            let resolved = url.resolvingSymlinksInPath().path
+            guard url.lastPathComponent.hasPrefix("grantiva-"),
+                  resolved.hasPrefix(temp + "/"),
+                  fm.fileExists(atPath: path),
+                  (try? fm.removeItem(atPath: path)) != nil
+            else { continue }
+            removed.append(path)
+        }
+        return removed
     }
 
     /// SIGINT each target (and its process group, unless it is ours), wait up
