@@ -35,6 +35,8 @@ public struct RunnerSessionStopper: Sendable {
     public var parentPid: @Sendable (Int32) -> Int32?
     /// True when `pid` is a grantiva-runner process (pids are reused).
     public var isRunnerProcess: @Sendable (Int32) async -> Bool
+    /// True when `pid` is a grantiva process.
+    public var isGrantivaProcess: @Sendable (Int32) async -> Bool
     public var interrupt: @Sendable (Int32) -> Void
     public var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
     public var removeSessionFiles: @Sendable (Int32) -> Void
@@ -50,6 +52,7 @@ public struct RunnerSessionStopper: Sendable {
         isProcessAlive: @escaping @Sendable (Int32) -> Bool,
         parentPid: @escaping @Sendable (Int32) -> Int32?,
         isRunnerProcess: @escaping @Sendable (Int32) async -> Bool,
+        isGrantivaProcess: @escaping @Sendable (Int32) async -> Bool,
         interrupt: @escaping @Sendable (Int32) -> Void,
         terminateGroup: @escaping @Sendable (Int32) -> ChildProcess.GroupTermination,
         removeSessionFiles: @escaping @Sendable (Int32) -> Void,
@@ -62,6 +65,7 @@ public struct RunnerSessionStopper: Sendable {
         self.isProcessAlive = isProcessAlive
         self.parentPid = parentPid
         self.isRunnerProcess = isRunnerProcess
+        self.isGrantivaProcess = isGrantivaProcess
         self.interrupt = interrupt
         self.terminateGroup = terminateGroup
         self.removeSessionFiles = removeSessionFiles
@@ -77,6 +81,7 @@ public struct RunnerSessionStopper: Sendable {
             isProcessAlive: KeepAliveSessionStore.processIsAlive,
             parentPid: { ProcessLookup.parentPid(of: $0) },
             isRunnerProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva-runner" },
+            isGrantivaProcess: { ProcessLookup.name(of: $0)?.lowercased() == "grantiva" },
             interrupt: { _ = kill($0, SIGINT) },
             terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
             removeSessionFiles: { store.removeSessionFiles(runnerPid: $0) },
@@ -92,8 +97,12 @@ public struct RunnerSessionStopper: Sendable {
     /// exit within `waitTimeout` of SIGINT.
     public func stop(_ session: KeepAliveSession) async throws -> Outcome {
         let udid = session.udid ?? ""
+        // Every pid is checked before it is signalled: the owner must still
+        // be a grantiva process and the runner's parent, and the runner must
+        // still be a grantiva-runner (pids are reused).
         if let owner = session.ownerPid, owner > 1, owner != getpid(), session.detached != true,
-           isProcessAlive(owner), parentPid(session.pid) == owner {
+           isProcessAlive(owner), parentPid(session.pid) == owner,
+           await isRunnerProcess(session.pid), await isGrantivaProcess(owner) {
             interrupt(owner)
             guard await waitForExit(owner, timeout: waitTimeout) else {
                 throw GrantivaError.unavailable(

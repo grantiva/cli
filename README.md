@@ -394,9 +394,17 @@ as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
 (`started`, `already_running`, `stopped`, `exited`, `not_running`), `pid` and
 `port` as numbers, `platform`, and the platform's own names for the app and the
 device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
-(`log` with `--detach`; `runnerPid` when `stop` released a `run --keep-alive`
-session, whose `pid` is that grantiva process). `bundle_id`, and `udid` on
-Android, are the 2.1 names, kept for one release and deprecated.
+(`log` with `--detach`). For `runner stop`, `runnerPid` is the stable field: it
+is always the runner's pid, while `pid` is the grantiva process that was
+holding a released `run --keep-alive` session. A stop that found the runner
+already gone is still `stopped`, with `"alreadyExited": true`; one that released
+several keep-alive sessions lists them all under `sessions`. `bundle_id`, and
+`udid` on Android, are the 2.1 names, kept for one release and deprecated.
+
+`runner stop` releases a `run --keep-alive` session started from the current
+directory as Ctrl-C would. If that run's flows had already finished, its
+`--ready-file` keeps the `passed` or `failed` it wrote (the ready file is
+written once); the `stopped` result of `runner stop` is the record of the release.
 
 ```json
 {"pid": 64253, "platform": "ios", "port": 8235, "status": "started",

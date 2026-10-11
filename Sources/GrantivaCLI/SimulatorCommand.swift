@@ -140,13 +140,8 @@ struct SimulatorCommand: AsyncParsableCommand {
         func run() async throws {
             // Runner sessions on the devices go first (K15): the runner gets
             // to release WebDriverAgent before its simulator disappears.
-            let udids: [String]
-            if let target {
-                udids = [target]
-            } else {
-                udids = (try? await SimulatorManager.live.managedSessions())?
-                    .filter { $0.sessionId == session }.map(\.udid) ?? []
-            }
+            let managed = (try? await SimulatorManager.live.managedSessions()) ?? []
+            let udids = Self.runnerStopTargets(udid: target, sessionId: session, force: force, managed: managed)
             let stopped = await Self.stopRunnerSessions(udids: udids) { await DeviceRunnerSessions.live.stop(udid: $0) }
             if !options.json { stopped.lines.forEach(Output.line) }
 
@@ -161,6 +156,18 @@ struct SimulatorCommand: AsyncParsableCommand {
             }
             let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
             try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped), subject: session ?? "")
+        }
+
+        /// The devices whose runner sessions teardown stops: only those it
+        /// will act on. A `--udid` without `--force` and without a ledger
+        /// record is a no-op teardown, so it stops nothing either.
+        static func runnerStopTargets(
+            udid: String?, sessionId: String?, force: Bool, managed: [ManagedSimulatorSession]
+        ) -> [String] {
+            if let udid {
+                return force || managed.contains(where: { $0.udid == udid }) ? [udid] : []
+            }
+            return managed.filter { $0.sessionId == sessionId }.map(\.udid)
         }
 
         /// Stops the runner sessions on each of `udids`; returns the devices

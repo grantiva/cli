@@ -62,7 +62,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     func testForegroundPortDiscoveryTimesOutWhenRunnerIsSilent() async {
         let pipe = Pipe()
         defer { try? pipe.fileHandleForWriting.close() }
-        let stream = RunnerStartCommand.outputStream(from: pipe.fileHandleForReading)
+        let stream = Self.outputStream(from: pipe.fileHandleForReading)
 
         let port = await RunnerStartCommand.waitForForegroundWDAPort(
             chunks: stream,
@@ -242,8 +242,20 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
         dependencies.isAlive = { _ in false }
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(result, .exited(pid: 1234))
+        XCTAssertEqual(result, .exited(pid: 1234, udid: makeSession().udid))
         XCTAssertEqual(RunnerStopCommand.render(result), "No running runner (pid 1234 had exited); cleaned up its session.")
+        // Ruling (c): still `stopped`, flagged, with the platform's keys.
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["status"] as? String, "stopped")
+        XCTAssertEqual(json["alreadyExited"] as? Bool, true)
+        XCTAssertEqual(json["runnerPid"] as? Int, 1234)
+        XCTAssertEqual(json["pid"] as? Int, 1234)
+        XCTAssertEqual(json["platform"] as? String, "ios")
+        XCTAssertEqual(json["udid"] as? String, makeSession().udid)
+
+        let android = try decode(RunnerStopCommand.document(.exited(pid: 9, udid: "emulator-5554")))
+        XCTAssertEqual(android["serial"] as? String, "emulator-5554")
+        XCTAssertEqual(android["platform"] as? String, "android")
     }
 
     // MARK: - K87: SIGKILL escalation still removes the runner's session file
@@ -276,7 +288,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         }
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
         XCTAssertEqual(events.value, ["stop 4267"])
-        XCTAssertEqual(result, .keepAlive(.released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!)))
+        XCTAssertEqual(result, .keepAlive([.released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!)]))
         XCTAssertEqual(
             RunnerStopCommand.render(result),
             "Stopped keep-alive session (pid 4163, \(keepAlive.udid!))"
@@ -285,6 +297,28 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual(json["status"] as? String, "stopped")
         XCTAssertEqual(json["pid"] as? Int, 4163)
         XCTAssertEqual(json["runnerPid"] as? Int, 4267)
+    }
+
+    func testStopReleasesEveryKeepAliveSessionFromThisDirectory() async throws {
+        let events = LockedValue<[String]>([])
+        let sessions = [4267, 5267].map { pid in
+            KeepAliveSession(
+                sessionId: "s\(pid)", port: 8100, pid: Int32(pid), udid: makeSession().udid, path: "/x",
+                projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: Int32(pid - 100), detached: false
+            )
+        }
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { sessions }
+        dependencies.stopKeepAlive = { session in
+            events.append("stop \(session.pid)")
+            return .released(grantivaPid: session.ownerPid!, runnerPid: session.pid, udid: session.udid ?? "")
+        }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["stop 4267", "stop 5267"])
+        XCTAssertEqual(RunnerStopCommand.render(result).split(separator: "\n").count, 2)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual((json["sessions"] as? [[String: Any]])?.compactMap { $0["runnerPid"] as? Int }, [4267, 5267])
     }
 
     func testStopLeavesAKeepAliveSessionFromAnotherDirectoryAlone() async throws {
@@ -320,7 +354,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
     // MARK: - K16: numbers for pid and port, platform-neutral keys
 
     func testStartDocumentsUseNumbersAndThePlatformsKeys() throws {
-        let ios = try decode(RunnerStartCommand.document(
+        let ios = try decode(RunnerLifecycleDocument(
             status: "started", pid: 64253, port: 8235, appID: "com.example", deviceID: "921A0945-7157-4533-BA1F-21E8132D3E40",
             platform: .ios, log: "/tmp/r.log"
         ))
@@ -334,7 +368,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertNil(ios["applicationId"])
         XCTAssertNil(ios["serial"])
 
-        let android = try decode(RunnerStartCommand.document(
+        let android = try decode(RunnerLifecycleDocument(
             status: "already_running", pid: 7067, port: 57776, appID: "com.example", deviceID: "emulator-5554",
             platform: .android, log: nil
         ))
@@ -352,6 +386,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let json = try decode(RunnerStopCommand.document(result))
         XCTAssertEqual(json["status"] as? String, "stopped")
         XCTAssertEqual(json["pid"] as? Int, 6630)
+        XCTAssertEqual(json["runnerPid"] as? Int, 6630)
         XCTAssertFalse(json["pid"] is String)
         XCTAssertEqual(json["serial"] as? String, "emulator-5554")
         XCTAssertEqual(json["platform"] as? String, "android")
@@ -434,6 +469,27 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             XCTAssertTrue(help.contains("Path to a pre-built app: .app bundle or .ipa archive (iOS), .apk (Android). Skips the build step."), help)
         }
         XCTAssertTrue(RunCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+    }
+
+    /// Convert process output into a cancellable stream. `availableData` blocks
+    /// when called directly, which can otherwise prevent the startup timeout
+    /// from ever firing for a silent or wedged runner.
+    static func outputStream(from handle: FileHandle) -> AsyncStream<Data> {
+        AsyncStream { continuation in
+            handle.readabilityHandler = { readableHandle in
+                let data = readableHandle.availableData
+                if data.isEmpty {
+                    readableHandle.readabilityHandler = nil
+                    continuation.finish()
+                } else {
+                    continuation.yield(data)
+                }
+            }
+            continuation.onTermination = { _ in
+                handle.readabilityHandler = nil
+                try? handle.close()
+            }
+        }
     }
 
     private func decode<T: Encodable>(_ value: T) throws -> [String: Any] {

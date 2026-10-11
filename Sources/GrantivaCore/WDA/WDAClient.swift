@@ -361,8 +361,10 @@ public class WDAHierarchyXMLParser: NSObject, XMLParserDelegate {
         if let visible = attributes["visible"] {
             node["visible"] = visible == "true"
         }
-        if let x = attributes["x"], let y = attributes["y"],
-           let w = attributes["width"], let h = attributes["height"] {
+        // Numbers, not the XML's strings: whole points as integers,
+        // fractional ones as doubles.
+        if let x = Self.number(attributes["x"]), let y = Self.number(attributes["y"]),
+           let w = Self.number(attributes["width"]), let h = Self.number(attributes["height"]) {
             node["frame"] = ["x": x, "y": y, "width": w, "height": h]
         }
 
@@ -373,6 +375,12 @@ public class WDAHierarchyXMLParser: NSObject, XMLParserDelegate {
         }
 
         stack.append(node)
+    }
+
+    static func number(_ text: String?) -> NSNumber? {
+        guard let text, let value = Double(text), value.isFinite else { return nil }
+        if value == value.rounded(), abs(value) < Double(Int.max) { return NSNumber(value: Int(value)) }
+        return NSNumber(value: value)
     }
 
     public func parser(_ parser: XMLParser, didEndElement elementName: String,

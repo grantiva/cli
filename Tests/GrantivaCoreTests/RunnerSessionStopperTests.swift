@@ -57,6 +57,31 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertEqual(events.value, ["terminate 701", "files 701", "lease \(udid)"])
     }
 
+    func testAnOwnerThatIsNoLongerGrantivaIsNeverSignalled() async throws {
+        let alive = Locked<Set<Int32>>([700, 701])
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.parentPid = { _ in 700 }
+        stopper.isGrantivaProcess = { _ in false }
+        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+
+        _ = try await stopper.stop(session)
+        XCTAssertFalse(events.value.contains("interrupt 700"), "\(events.value)")
+    }
+
+    func testARunnerPidThatIsNoLongerARunnerIsNeverSignalled() async throws {
+        let alive = Locked<Set<Int32>>([700, 701])
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.parentPid = { _ in 700 }
+        stopper.isRunnerProcess = { _ in false }
+        let session = KeepAliveSession(sessionId: "s", port: 8100, pid: 701, udid: udid, path: "/x", ownerPid: 700, detached: false)
+
+        let outcome = try await stopper.stop(session)
+        XCTAssertEqual(outcome, .terminated(runnerPid: 701, udid: udid, killed: false))
+        XCTAssertEqual(events.value, ["files 701", "lease \(udid)"], "neither pid is signalled")
+    }
+
     func testADetachedSessionHasItsRunnerGroupTerminatedAndItsFilesRemoved() async throws {
         let alive = Locked<Set<Int32>>([701])
         let events = Locked<[String]>([])
@@ -118,6 +143,7 @@ final class RunnerSessionStopperTests: XCTestCase {
             isProcessAlive: { alive.value.contains($0) },
             parentPid: { _ in nil },
             isRunnerProcess: { alive.value.contains($0) },
+            isGrantivaProcess: { alive.value.contains($0) },
             interrupt: { events.append("interrupt \($0)") },
             terminateGroup: { pid in events.append("terminate \(pid)"); alive.mutate { $0.remove(pid) }; return .interrupted },
             removeSessionFiles: { events.append("files \($0)") },

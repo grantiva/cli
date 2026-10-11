@@ -225,36 +225,41 @@ public final class ChildProcess: @unchecked Sendable {
     /// The watchdog `bindLifetimeToParent` starts. It joins the runner's
     /// process group and blocks reading a pipe whose only write end grantiva
     /// holds. The kernel closes that end when grantiva exits for any reason,
-    /// `kill -9` included; the watchdog then interrupts the group, waits up to
-    /// ten seconds for the runner to release WebDriverAgent, and terminates
-    /// whatever is left; once the runner is gone it removes the runner's
-    /// keep-alive session files from `sessionDirectory`, which neither the
-    /// dead grantiva nor an interrupted runner may have done. Being a member
-    /// of the group, it keeps the group id
-    /// from being reused while it waits, and a SIGINT or SIGTERM grantiva
-    /// itself sends to the group ends it at once.
+    /// `kill -9` included. While it waits, a SIGINT, SIGTERM or SIGHUP (from
+    /// grantiva signalling the group, or a closing terminal) ends it at once
+    /// without touching the runner: grantiva is alive and in charge then.
+    /// Once the pipe closes it ignores those signals and: interrupts the
+    /// group, waits up to `$3` tenths of a second (default 100) for the runner
+    /// to release WebDriverAgent, then SIGTERMs the group and waits as long
+    /// again, then SIGKILLs the runner; it removes the runner's keep-alive
+    /// session files from `$2` whichever way the runner went (neither the dead
+    /// grantiva nor a killed runner removes them); and finally SIGTERMs
+    /// whatever is left in the group. Being a member of the group, it keeps
+    /// the group id from being reused while it works.
     static let watchdogScript = """
     trap 'exit 0' INT TERM HUP
     read _ignored
-    trap '' INT
+    trap '' INT TERM HUP
+    ticks=${3:-100}
+    wait_runner() { i=0; while kill -0 "$1" 2>/dev/null && [ "$i" -lt "$ticks" ]; do sleep 0.1; i=$((i+1)); done; }
     kill -INT -"$1" 2>/dev/null
-    trap 'exit 0' INT
-    i=0
-    while kill -0 "$1" 2>/dev/null && [ "$i" -lt 100 ]; do sleep 0.1; i=$((i+1)); done
-    if [ -n "$2" ] && ! kill -0 "$1" 2>/dev/null; then
-      rm -f "$2/$1".owner.json "$2/$1"-*.grantiva
-    fi
-    trap '' TERM
+    wait_runner "$1"
+    if kill -0 "$1" 2>/dev/null; then kill -TERM -"$1" 2>/dev/null; wait_runner "$1"; fi
+    if kill -0 "$1" 2>/dev/null; then kill -KILL "$1" 2>/dev/null; sleep 0.2; fi
+    if [ -n "$2" ]; then rm -f "$2/$1".owner.json "$2/$1"-*.grantiva; fi
     kill -TERM -"$1" 2>/dev/null
+    exit 0
     """
 
     /// Ties the child's process group to this process: when this process
-    /// dies, however it dies, the group is interrupted. Returns the write end
-    /// of the watchdog's pipe (kept open for the life of this process; tests
-    /// close it to simulate that death), or nil when the watchdog could not be
-    /// started, in which case the child simply is not bound.
+    /// dies, however it dies, the group is interrupted (see `watchdogScript`).
+    /// Returns the write end of the watchdog's pipe; close it once the child
+    /// has been waited for (tests close it early to simulate this process
+    /// dying). Nil when the watchdog could not be started, in which case the
+    /// child simply is not bound. `graceTicks` (tenths of a second per stage)
+    /// is shortened by tests.
     @discardableResult
-    public func bindLifetimeToParent(sessionDirectory: String? = nil) -> Int32? {
+    public func bindLifetimeToParent(sessionDirectory: String? = nil, graceTicks: Int = 100) -> Int32? {
         var fds: [Int32] = [-1, -1]
         guard pipe(&fds) == 0 else { return nil }
         _ = fcntl(fds[0], F_SETFD, FD_CLOEXEC)
@@ -268,7 +273,7 @@ public final class ChildProcess: @unchecked Sendable {
         do {
             let watchdog = try Self.spawn(
                 executable: "/bin/sh",
-                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? ""],
+                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? "", String(graceTicks)],
                 stdin: fds[0], stdout: output, stderr: output,
                 processGroup: processGroup, logged: false
             )

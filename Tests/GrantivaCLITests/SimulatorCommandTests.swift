@@ -302,6 +302,18 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertEqual(lines.lines, ["Stopped runner session (pid 4267) for A."])
     }
 
+    /// Fix round 1, item 5: an unmanaged UDID without --force is a no-op
+    /// teardown, so its runner sessions are left alone.
+    func testRunnerSessionsAreStoppedOnlyOnDevicesTheTeardownActsOn() {
+        typealias T = SimulatorCommand.Teardown
+        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+        XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: false, managed: [record]), [])
+        XCTAssertEqual(T.runnerStopTargets(udid: "UNMANAGED", sessionId: nil, force: true, managed: [record]), ["UNMANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: "MANAGED", sessionId: nil, force: false, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "S1", force: false, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.runnerStopTargets(udid: nil, sessionId: "other", force: false, managed: [record]), [])
+    }
+
     func testTeardownOutcomeEncodesRunnerSessionStopped() throws {
         var outcome = SimulatorTeardownOutcome(
             session: ManagedSimulatorSession(

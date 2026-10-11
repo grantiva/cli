@@ -78,7 +78,7 @@ enum RunnerExecution {
         request.lease.recordRunner(pid: child.pid, keepAlive: request.keepAlive)
         // If grantiva dies without running its cleanups (`kill -9`), the
         // runner's group is interrupted rather than left holding the device.
-        child.bindLifetimeToParent(sessionDirectory: request.keepAlive ? request.sessions.directory : nil)
+        let lifeline = child.bindLifetimeToParent(sessionDirectory: request.keepAlive ? request.sessions.directory : nil)
 
         // The runner's own session file (/tmp/grantiva-sessions/<pid>-<ts>.grantiva)
         // carries no simulator UDID. Record udid -> runner pid now, before the
@@ -212,8 +212,10 @@ enum RunnerExecution {
         // runner killed by an interrupt is already visible as one here.
         let interrupted = SignalRelay.shared.isTerminating
         // The runner is gone; make sure nothing it started is still holding the
-        // simulator. Harmless when the group is already empty.
+        // simulator (this also ends the watchdog). Harmless when the group is
+        // already empty.
         child.signalGroup(SIGTERM)
+        if let lifeline { close(lifeline) }
 
         await relayFinished
         let stderr = await stderrText

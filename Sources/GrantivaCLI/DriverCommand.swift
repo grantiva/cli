@@ -152,7 +152,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
            let snapshot = try? await SimulatorReaper.processSnapshot(),
            existing.ownsRunnerProcess(in: snapshot) {
             if options.json {
-                Output.line(try JSONOutput.string(Self.document(
+                Output.line(try JSONOutput.string(RunnerLifecycleDocument(
                     status: "already_running", pid: existing.pid, port: existing.wdaPort,
                     appID: existing.bundleId, deviceID: existing.udid,
                     platform: existing.platform ?? (DeviceID.isAndroidSerial(existing.udid) ? .android : .ios), log: nil
@@ -229,15 +229,6 @@ struct RunnerStartCommand: AsyncParsableCommand {
             // (or the interrupt cleanup) releases it.
             try await startForeground(launch, lease: simulatorLease)
         }
-    }
-
-    /// The `--json` document for `runner start` (and, through
-    /// `RunnerStopCommand.document`, `runner stop`): numbers for pid and
-    /// port, the platform's own key names.
-    static func document(
-        status: String, pid: Int32?, port: UInt16?, appID: String?, deviceID: String?, platform: Platform?, log: String?
-    ) -> RunnerLifecycleDocument {
-        RunnerLifecycleDocument(status: status, pid: pid, port: port, appID: appID, deviceID: deviceID, platform: platform, log: log)
     }
 
     static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
@@ -392,7 +383,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         try Self.record(session: session)
 
         if options.json {
-            Output.line(try JSONOutput.string(Self.document(
+            Output.line(try JSONOutput.string(RunnerLifecycleDocument(
                 status: "started", pid: runnerPid, port: port, appID: launch.appID,
                 deviceID: launch.device.udid, platform: launch.platform, log: logPath
             )))
@@ -427,7 +418,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
         // `kill -9` of this process must not leave the runner holding the device.
-        child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
+        let lifeline = child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
         Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
         lease.recordRunner(pid: child.pid, keepAlive: true)
 
@@ -443,6 +434,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             SignalRelay.shared.untrack(group: child.processGroup)
             SignalRelay.shared.removeCleanup(startupInterrupt)
         }
+        // Each exit path that gets here has stopped or waited for the
+        // runner; this is the only place the lifeline closes.
+        defer { if let lifeline { Darwin.close(lifeline) } }
 
         let output = RunnerOutputForwarder(echo: !options.json && GrantivaLogLevel.current <= .info)
         output.attach(stdoutPipe.fileHandleForReading)
@@ -487,7 +481,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
 
         if options.json {
-            Output.line(try JSONOutput.string(Self.document(
+            Output.line(try JSONOutput.string(RunnerLifecycleDocument(
                 status: "started", pid: child.pid, port: port, appID: launch.appID,
                 deviceID: launch.device.udid, platform: launch.platform, log: nil
             )))
@@ -547,27 +541,6 @@ struct RunnerStartCommand: AsyncParsableCommand {
     }
 
     // MARK: - Helpers
-
-    /// Convert process output into a cancellable stream. `availableData` blocks
-    /// when called directly, which can otherwise prevent the startup timeout
-    /// from ever firing for a silent or wedged runner.
-    static func outputStream(from handle: FileHandle) -> AsyncStream<Data> {
-        AsyncStream { continuation in
-            handle.readabilityHandler = { readableHandle in
-                let data = readableHandle.availableData
-                if data.isEmpty {
-                    readableHandle.readabilityHandler = nil
-                    continuation.finish()
-                } else {
-                    continuation.yield(data)
-                }
-            }
-            continuation.onTermination = { _ in
-                handle.readabilityHandler = nil
-                try? handle.close()
-            }
-        }
-    }
 
     /// What the runner's output says about WebDriverAgent so far.
     enum WDAStartup: Equatable {
@@ -731,9 +704,12 @@ struct RunnerStopCommand: AsyncParsableCommand {
         Stops the session `grantiva runner start` recorded in .grantiva/session.json: \
         the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and \
         its session files and device lease are removed. Without one, it releases a \
-        `grantiva run --keep-alive` session started from this directory the way \
-        Ctrl-C would, by sending that grantiva process SIGINT, and waits for it to \
-        exit. Sessions started from other directories are left alone. With no \
+        `grantiva run --keep-alive` session started from this directory (every \
+        one, if there are several) the way Ctrl-C would, by sending that grantiva \
+        process SIGINT, and waits for it to exit. A run whose flows had already \
+        finished keeps the ready file it wrote (`passed` or `failed`): the ready \
+        file is written once, and the `stopped` result here is the record of the \
+        release. Sessions started from other directories are left alone. With no \
         session at all it prints "No active session found." and exits 0.
         """
     )
@@ -745,9 +721,11 @@ struct RunnerStopCommand: AsyncParsableCommand {
         /// The `runner start` session's runner was stopped; `killed` when it
         /// took SIGKILL.
         case stopped(pid: Int32, udid: String, killed: Bool)
-        /// The `runner start` session's runner had already exited.
-        case exited(pid: Int32)
-        case keepAlive(RunnerSessionStopper.Outcome)
+        /// The `runner start` session's runner had already exited; its
+        /// session was cleaned up.
+        case exited(pid: Int32, udid: String)
+        /// Every keep-alive session started from this directory.
+        case keepAlive([RunnerSessionStopper.Outcome])
     }
 
     func run() async throws {
@@ -765,13 +743,17 @@ struct RunnerStopCommand: AsyncParsableCommand {
     func perform(dependencies: RunnerStopDependencies) async throws -> Result {
         guard let session = try? dependencies.loadSession() else {
             let here = KeepAliveOwner.canonicalDirectory(dependencies.currentDirectory())
-            guard let keepAlive = dependencies.keepAliveSessions()
-                .first(where: { $0.projectDirectory.map(KeepAliveOwner.canonicalDirectory) == here })
-            else { return .notRunning }
-            return .keepAlive(try await dependencies.stopKeepAlive(keepAlive))
+            let sessions = dependencies.keepAliveSessions()
+                .filter { $0.projectDirectory.map(KeepAliveOwner.canonicalDirectory) == here }
+            guard !sessions.isEmpty else { return .notRunning }
+            var outcomes: [RunnerSessionStopper.Outcome] = []
+            for session in sessions {
+                outcomes.append(try await dependencies.stopKeepAlive(session))
+            }
+            return .keepAlive(outcomes)
         }
 
-        var outcome: Result = .exited(pid: session.pid)
+        var outcome: Result = .exited(pid: session.pid, udid: session.udid)
         if dependencies.isAlive(session) {
             let snapshot = try await dependencies.processSnapshot()
             if session.ownsRunnerProcess(in: snapshot) {
@@ -803,12 +785,17 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return killed
                 ? "Runner stopped (pid \(pid); it ignored SIGINT and SIGTERM and was killed)"
                 : "Runner stopped (pid \(pid))"
-        case .exited(let pid):
+        case .exited(let pid, _):
             return "No running runner (pid \(pid) had exited); cleaned up its session."
-        case .keepAlive(.released(let grantivaPid, _, let udid)):
-            return "Stopped keep-alive session (pid \(grantivaPid), \(udid))"
-        case .keepAlive(.terminated(let runnerPid, let udid, _)):
-            return "Stopped keep-alive session (pid \(runnerPid), \(udid))"
+        case .keepAlive(let outcomes):
+            return outcomes.map { outcome in
+                switch outcome {
+                case .released(let grantivaPid, _, let udid):
+                    return "Stopped keep-alive session (pid \(grantivaPid), \(udid))"
+                case .terminated(let runnerPid, let udid, _):
+                    return "Stopped keep-alive session (pid \(runnerPid), \(udid))"
+                }
+            }.joined(separator: "\n")
         }
     }
 
@@ -819,19 +806,31 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return RunnerLifecycleDocument(status: "not_running")
         case .stopped(let pid, let udid, let killed):
             var document = RunnerLifecycleDocument(status: "stopped", pid: pid, deviceID: udid, platform: platform(udid))
+            document.runnerPid = pid
             document.killed = killed
             return document
-        case .exited(let pid):
-            return RunnerLifecycleDocument(status: "exited", pid: pid)
-        case .keepAlive(.released(let grantivaPid, let runnerPid, let udid)):
-            var document = RunnerLifecycleDocument(status: "stopped", pid: grantivaPid, deviceID: udid, platform: platform(udid))
-            document.runnerPid = runnerPid
+        case .exited(let pid, let udid):
+            var document = RunnerLifecycleDocument(status: "stopped", pid: pid, deviceID: udid, platform: platform(udid))
+            document.runnerPid = pid
+            document.alreadyExited = true
             return document
-        case .keepAlive(.terminated(let runnerPid, let udid, let killed)):
-            var document = RunnerLifecycleDocument(status: "stopped", pid: runnerPid, deviceID: udid, platform: platform(udid))
-            document.runnerPid = runnerPid
-            document.killed = killed
-            return document
+        case .keepAlive(let outcomes):
+            let documents = outcomes.map { outcome -> RunnerLifecycleDocument in
+                switch outcome {
+                case .released(let grantivaPid, let runnerPid, let udid):
+                    var document = RunnerLifecycleDocument(status: "stopped", pid: grantivaPid, deviceID: udid, platform: platform(udid))
+                    document.runnerPid = runnerPid
+                    return document
+                case .terminated(let runnerPid, let udid, let killed):
+                    var document = RunnerLifecycleDocument(status: "stopped", pid: runnerPid, deviceID: udid, platform: platform(udid))
+                    document.runnerPid = runnerPid
+                    document.killed = killed
+                    return document
+                }
+            }
+            guard var first = documents.first else { return RunnerLifecycleDocument(status: "not_running") }
+            if documents.count > 1 { first.sessions = documents }
+            return first
         }
     }
 }
@@ -872,112 +871,6 @@ struct RunnerStopDependencies: Sendable {
         stopKeepAlive: { try await RunnerSessionStopper.live().stop($0) },
         currentDirectory: { FileManager.default.currentDirectoryPath }
     )
-}
-
-/// The `--json` document of `runner start` and `runner stop`: pid and port
-/// are numbers; the app and device keys follow the platform (`bundleId` +
-/// `udid` on iOS, `applicationId` + `serial` on Android). `bundle_id`, and
-/// `udid` on Android, are the 2.1 names, kept for one release (deprecated).
-struct RunnerLifecycleDocument: Encodable, Equatable {
-    let status: String
-    var pid: Int32?
-    var runnerPid: Int32?
-    var port: UInt16?
-    var appID: String?
-    var deviceID: String?
-    var platform: Platform?
-    var log: String?
-    var killed: Bool?
-
-    init(
-        status: String, pid: Int32? = nil, port: UInt16? = nil, appID: String? = nil,
-        deviceID: String? = nil, platform: Platform? = nil, log: String? = nil
-    ) {
-        self.status = status
-        self.pid = pid
-        self.port = port
-        self.appID = appID
-        self.deviceID = deviceID
-        self.platform = platform
-        self.log = log
-    }
-
-    private struct Key: CodingKey {
-        let stringValue: String
-        init(_ value: String) { stringValue = value }
-        init?(stringValue: String) { self.stringValue = stringValue }
-        var intValue: Int? { nil }
-        init?(intValue: Int) { nil }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Key.self)
-        try container.encode(status, forKey: Key("status"))
-        try container.encodeIfPresent(pid, forKey: Key("pid"))
-        try container.encodeIfPresent(runnerPid, forKey: Key("runnerPid"))
-        try container.encodeIfPresent(port, forKey: Key("port"))
-        try container.encodeIfPresent(platform?.rawValue, forKey: Key("platform"))
-        try container.encodeIfPresent(log, forKey: Key("log"))
-        try container.encodeIfPresent(killed, forKey: Key("killed"))
-        let android = platform == .android
-        if let appID {
-            try container.encode(appID, forKey: Key(android ? "applicationId" : "bundleId"))
-            try container.encode(appID, forKey: Key("bundle_id"))
-        }
-        if let deviceID {
-            try container.encode(deviceID, forKey: Key("udid"))
-            if android { try container.encode(deviceID, forKey: Key("serial")) }
-        }
-    }
-}
-
-/// Runs a cleanup at most once, from whichever path gets there first.
-final class Once: @unchecked Sendable {
-    private let lock = NSLock()
-    private var body: (@Sendable () -> Void)?
-
-    init(_ body: @escaping @Sendable () -> Void) { self.body = body }
-
-    func run() {
-        let pending: (@Sendable () -> Void)? = lock.withLock {
-            defer { body = nil }
-            return body
-        }
-        pending?()
-    }
-}
-
-/// The foreground runner's stdout: echoed to stderr as it arrives, and fed to
-/// the startup parser until `endStartup()`. Reading continues after startup,
-/// so the runner never writes into a pipe nobody drains.
-final class RunnerOutputForwarder: @unchecked Sendable {
-    let chunks: AsyncStream<Data>
-    private let continuation: AsyncStream<Data>.Continuation
-    private let echo: Bool
-
-    init(echo: Bool) {
-        (chunks, continuation) = AsyncStream<Data>.makeStream()
-        self.echo = echo
-    }
-
-    func attach(_ handle: FileHandle) {
-        let continuation = continuation
-        let echo = echo
-        handle.readabilityHandler = { readable in
-            let data = readable.availableData
-            guard !data.isEmpty else {
-                readable.readabilityHandler = nil
-                continuation.finish()
-                return
-            }
-            if echo { FileHandle.standardError.write(data) }
-            continuation.yield(data)
-        }
-    }
-
-    func endStartup() {
-        continuation.finish()
-    }
 }
 
 // MARK: - Dump Hierarchy

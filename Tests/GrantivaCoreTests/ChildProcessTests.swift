@@ -168,6 +168,45 @@ final class ChildProcessTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: sessions.appendingPathComponent(other).path))
     }
 
+    /// A runner that ignores SIGINT and SIGTERM is SIGKILLed, and its files
+    /// are removed anyway.
+    func testTheWatchdogEscalatesToSIGKILLAndStillRemovesTheFiles() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let sessions = scratch.appendingPathComponent("sessions-kill")
+        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+            stdout: output, stderr: output
+        )
+        defer { child.terminateGroup(gracePeriod: 1) }
+        let file = sessions.appendingPathComponent("\(child.pid)-1.grantiva")
+        FileManager.default.createFile(atPath: file.path, contents: Data("{}".utf8))
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent(sessionDirectory: sessions.path, graceTicks: 3))
+        usleep(200_000)
+        Darwin.close(lifeline)
+        XCTAssertEqual(child.wait(), SIGKILL)
+        let deadline = Date().addingTimeInterval(5)
+        while Date() < deadline, FileManager.default.fileExists(atPath: file.path) { usleep(50_000) }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: file.path))
+    }
+
+    /// A hang-up while grantiva is alive ends the watchdog, not the runner.
+    func testAHangUpEndsTheWatchdogWithoutTouchingTheRunner() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "trap '' HUP; sleep 30"], stdout: output, stderr: output
+        )
+        defer { child.terminateGroup(gracePeriod: 1); child.wait() }
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+        defer { Darwin.close(lifeline) }
+        usleep(300_000)
+        child.signalGroup(SIGHUP)
+        usleep(500_000)
+        XCTAssertTrue(child.isRunning, "SIGHUP to the group must not take the runner down via the watchdog")
+    }
+
     func testTheWatchdogJoinsTheRunnersProcessGroup() throws {
         let output = try devNullOutput()
         defer { Darwin.close(output) }
