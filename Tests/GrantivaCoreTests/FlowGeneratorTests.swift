@@ -142,6 +142,16 @@ final class FlowGeneratorTests: XCTestCase {
         )
     }
 
+    /// L42-a: a native `{id:}` step is emitted with `id:`.
+    func testAnIdStepIsEmittedAsAnIdSelector() {
+        let screens = [GrantivaConfig.Screen(name: "Clock", path: .steps([
+            .init(tap: "clock", tapById: true), .init(assertVisible: "clock", assertVisibleById: true),
+        ]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    id: \"clock\""), yaml)
+    }
+
     func testSwipeAndTypeAreFollowedBySettle() {
         let screens = [GrantivaConfig.Screen(name: "S", path: .steps([
             .init(swipe: "Up"), .init(type: "abc"), .init(assertVisible: "Done"),

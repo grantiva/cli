@@ -149,7 +149,9 @@ Each screen has a `name` and a `path`. The path describes how to navigate there:
 A label is a case-insensitive regular expression matched against an element's whole text, on iOS and Android alike:
 `tap: "Open"` matches an element whose text is "Open" or "open", not "Talk · Open" (write `.*Open.*` to match part of
 the text). `tap`, `assert_visible`, and `assert_not_visible` also take `{text: "Landmarks", exact: true}` to require
-the element's text to equal the label exactly as written.
+the element's text to equal the label exactly as written, or `{id: "clock"}` to select by identifier instead of text
+(the accessibility identifier on iOS, the resource id or Compose test tag on Android). A mapping names `text` or `id`,
+not both; a step that does not decode is a config error naming the file, line and key, and what the key takes.
 
 Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
 and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows

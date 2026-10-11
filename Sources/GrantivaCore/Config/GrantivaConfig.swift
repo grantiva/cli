@@ -34,9 +34,10 @@ public struct GrantivaConfig: Sendable, Codable {
             public var assertVisible: String?
             public var assertNotVisible: String?
             public var runFlow: String?
-            /// Set when the Maestro source selected by `id:`: the label is an
-            /// accessibility identifier, not text. Only the Maestro parser
-            /// sets these; they are not grantiva.yml keys.
+            /// Set when the step selects by `id:` (`tap: {id: "clock"}` in the
+            /// native form, or `id:` in a Maestro source): the label is an
+            /// accessibility identifier (iOS) or resource id / test tag
+            /// (Android), not text.
             public var tapById: Bool = false
             public var assertVisibleById: Bool = false
             public var assertNotVisibleById: Bool = false
@@ -107,28 +108,64 @@ public struct GrantivaConfig: Sendable, Codable {
                 case runFlow = "run_flow"
             }
 
-            /// `tap:`, `assert_visible:` and `assert_not_visible:` take either a
-            /// bare label or `{text: "Label", exact: true}`.
+            /// `tap:`, `assert_visible:` and `assert_not_visible:` take a bare
+            /// label, `{text: "Label", exact: true}`, or `{id: "identifier"}`
+            /// (L42-a). A mapping names exactly one of `text` and `id`.
             struct Label: Codable {
-                var text: String
+                var text: String?
+                var id: String?
                 var exact: Bool?
 
                 enum CodingKeys: String, CodingKey, CaseIterable {
-                    case text, exact
+                    case text, id, exact
+                }
+
+                /// What a label mapping accepts, for config errors.
+                static let acceptedForms = #"a label, {text: "…", exact: true} or {id: "…"}"#
+
+                init(text: String? = nil, id: String? = nil, exact: Bool? = nil) {
+                    self.text = text
+                    self.id = id
+                    self.exact = exact
+                }
+
+                init(from decoder: Decoder) throws {
+                    let c = try decoder.container(keyedBy: CodingKeys.self)
+                    text = try c.decodeIfPresent(String.self, forKey: .text)
+                    id = try c.decodeIfPresent(String.self, forKey: .id)
+                    exact = try c.decodeIfPresent(Bool.self, forKey: .exact)
+                    if text != nil, id != nil {
+                        throw DecodingError.dataCorrupted(.init(
+                            codingPath: decoder.codingPath, debugDescription: "takes text or id, not both"
+                        ))
+                    }
+                    if text == nil, id == nil {
+                        throw DecodingError.dataCorrupted(.init(
+                            codingPath: decoder.codingPath, debugDescription: "takes \(Self.acceptedForms)"
+                        ))
+                    }
+                }
+
+                func encode(to encoder: Encoder) throws {
+                    var c = encoder.container(keyedBy: CodingKeys.self)
+                    try c.encodeIfPresent(text, forKey: .text)
+                    try c.encodeIfPresent(id, forKey: .id)
+                    try c.encodeIfPresent(exact, forKey: .exact)
                 }
             }
 
             public init(from decoder: Decoder) throws {
                 let c = try decoder.container(keyedBy: CodingKeys.self)
-                func label(_ key: CodingKeys) throws -> (String?, Bool) {
-                    guard c.contains(key), try !c.decodeNil(forKey: key) else { return (nil, false) }
-                    if let text = try? c.decode(String.self, forKey: key) { return (text, false) }
+                func label(_ key: CodingKeys) throws -> (String?, Bool, Bool) {
+                    guard c.contains(key), try !c.decodeNil(forKey: key) else { return (nil, false, false) }
+                    if let text = try? c.decode(String.self, forKey: key) { return (text, false, false) }
                     let mapped = try c.decode(Label.self, forKey: key)
-                    return (mapped.text, mapped.exact ?? false)
+                    if let id = mapped.id { return (id, false, true) }
+                    return (mapped.text, mapped.exact ?? false, false)
                 }
-                (tap, tapExact) = try label(.tap)
-                (assertVisible, assertVisibleExact) = try label(.assertVisible)
-                (assertNotVisible, assertNotVisibleExact) = try label(.assertNotVisible)
+                (tap, tapExact, tapById) = try label(.tap)
+                (assertVisible, assertVisibleExact, assertVisibleById) = try label(.assertVisible)
+                (assertNotVisible, assertNotVisibleExact, assertNotVisibleById) = try label(.assertNotVisible)
                 swipe = try c.decodeIfPresent(String.self, forKey: .swipe)
                 type = try c.decodeIfPresent(String.self, forKey: .type)
                 wait = try c.decodeIfPresent(Double.self, forKey: .wait)
@@ -137,20 +174,22 @@ public struct GrantivaConfig: Sendable, Codable {
 
             public func encode(to encoder: Encoder) throws {
                 var c = encoder.container(keyedBy: CodingKeys.self)
-                func label(_ text: String?, exact: Bool, _ key: CodingKeys) throws {
+                func label(_ text: String?, exact: Bool, byId: Bool, _ key: CodingKeys) throws {
                     guard let text else { return }
-                    if exact {
+                    if byId {
+                        try c.encode(Label(id: text), forKey: key)
+                    } else if exact {
                         try c.encode(Label(text: text, exact: true), forKey: key)
                     } else {
                         try c.encode(text, forKey: key)
                     }
                 }
-                try label(tap, exact: tapExact, .tap)
+                try label(tap, exact: tapExact, byId: tapById, .tap)
                 try c.encodeIfPresent(swipe, forKey: .swipe)
                 try c.encodeIfPresent(type, forKey: .type)
                 try c.encodeIfPresent(wait, forKey: .wait)
-                try label(assertVisible, exact: assertVisibleExact, .assertVisible)
-                try label(assertNotVisible, exact: assertNotVisibleExact, .assertNotVisible)
+                try label(assertVisible, exact: assertVisibleExact, byId: assertVisibleById, .assertVisible)
+                try label(assertNotVisible, exact: assertNotVisibleExact, byId: assertNotVisibleById, .assertNotVisible)
                 try c.encodeIfPresent(runFlow, forKey: .runFlow)
             }
         }
@@ -314,7 +353,7 @@ public struct GrantivaConfig: Sendable, Codable {
         do {
             firstDocument = try Parser(yaml: contents).nextRoot()
         } catch {
-            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+            throw GrantivaError.configuration("\(fileName) could not be parsed: \(error)")
         }
         if firstDocument == nil {
             return GrantivaConfig(platform: platform, android: platform == .android ? AndroidProject() : nil)
@@ -334,20 +373,23 @@ public struct GrantivaConfig: Sendable, Codable {
                 // Already names the file and line.
                 throw error
             } catch {
-                throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+                throw GrantivaError.configuration("\(fileName) could not be parsed: \(error)")
             }
         }
-        // Unknown keys are dropped by the decoder; report them, and attach
-        // them to a decoding error since a misspelled key is often its cause.
-        let warnings = firstDocument.map {
-            ConfigKeyValidator.unknownKeyWarnings(in: $0, platform: platform, fileName: fileName)
+        // Unknown keys are dropped by the decoder; report them, and fold them
+        // into a decoding error since a misspelled key is often its cause.
+        let unknownKeys = firstDocument.map {
+            ConfigKeyValidator.unknownKeys(in: $0, platform: platform, fileName: fileName)
         } ?? []
+        let warnings = unknownKeys.map(\.message)
         var config: GrantivaConfig
         do {
             config = try YAMLDecoder().decode(GrantivaConfig.self, from: contents)
         } catch {
-            let hints = warnings.map { "\n\($0)" }.joined()
-            throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)\(hints)")
+            // A plain config error naming the file, line and key (L42-b).
+            throw GrantivaError.configuration(ConfigDecodingErrorRenderer.message(
+                for: error, root: firstDocument, fileName: fileName, unknownKeys: unknownKeys
+            ))
         }
         config.warnings = warnings
         if let declared = (try? YAMLDecoder().decode(DeclaredPlatform.self, from: contents))?.platform,
@@ -362,7 +404,9 @@ public struct GrantivaConfig: Sendable, Codable {
             do {
                 config.android = try YAMLDecoder().decode(AndroidProject.self, from: contents)
             } catch {
-                throw GrantivaError.invalidArgument("\(fileName) could not be parsed: \(error)")
+                throw GrantivaError.configuration(ConfigDecodingErrorRenderer.message(
+                    for: error, root: firstDocument, fileName: fileName, unknownKeys: unknownKeys
+                ))
             }
         }
         return config
