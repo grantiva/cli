@@ -215,7 +215,7 @@ extension VRTTools {
     }
 
     /// Which element attributes a selector reads on this device, as the
-    /// bundled grantiva-runner (1.1.28-grantiva.10) reads them.
+    /// bundled grantiva-runner (1.1.28-grantiva.11) reads them.
     struct SelectorRules: Sendable {
         let platform: Platform
         /// iOS: the agent reports the `identifier` attribute (on every
@@ -378,7 +378,7 @@ extension VRTTools {
     }
 }
 
-/// grantiva-runner's selector rules (1.1.28-grantiva.10), so a capture
+/// grantiva-runner's selector rules (1.1.28-grantiva.11), so a capture
 /// through the session finds the elements a `diff capture` run finds.
 enum SelectorMatch {
     /// A text selector, on both platforms: a regex that must match the whole
