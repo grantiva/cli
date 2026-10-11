@@ -164,6 +164,12 @@ extension RunnerManager {
                 cacheDir: cacheDir,
                 version: installStamp,
                 lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
+                verify: {
+                    try verifyRunnerVersion(
+                        at: $0, expected: runnerVersion,
+                        bundlePath: resourceBundle?.bundlePath ?? "\(resourceBundleName).bundle"
+                    )
+                },
                 onInstalled: {
                     pruneStaleInstalls(
                         versionsDir: "\(baseDir)/versions",
@@ -192,6 +198,8 @@ extension RunnerManager {
     /// With `lockPath`, the install runs under an exclusive `flock` on it and
     /// re-checks the stamp once the lock is held, so concurrent first runs of
     /// one stamp extract once instead of swapping entries under each other.
+    /// `verify` is handed the extracted runner binary while it is still in
+    /// staging; when it throws, nothing is swapped in and no stamp is written.
     /// Every call touches `baseDir/.last-used`; `onInstalled` runs after a
     /// fresh install.
     static func installIfNeeded(
@@ -201,6 +209,7 @@ extension RunnerManager {
         cacheDir: String,
         version: String,
         lockPath: String? = nil,
+        verify: (String) throws -> Void = { _ in },
         onInstalled: () -> Void = {},
         extract: (String) throws -> Void
     ) throws {
@@ -240,7 +249,7 @@ extension RunnerManager {
 
         try installUnlocked(
             baseDir: baseDir, binaryPath: binaryPath, versionFilePath: versionFilePath,
-            cacheDir: cacheDir, version: version, extract: extract
+            cacheDir: cacheDir, version: version, verify: verify, extract: extract
         )
         touchLastUsed(baseDir)
         onInstalled()
@@ -252,6 +261,7 @@ extension RunnerManager {
         versionFilePath: String,
         cacheDir: String,
         version: String,
+        verify: (String) throws -> Void,
         extract: (String) throws -> Void
     ) throws {
         let fm = FileManager.default
@@ -262,6 +272,15 @@ extension RunnerManager {
         defer { try? fm.removeItem(atPath: staging) }
 
         try extract(staging)
+
+        // A stale resource bundle beside the binary carries another release's
+        // runner. Check what was extracted before anything is swapped in, so
+        // a mismatch leaves the previous install and its stamp as they were.
+        let stagedBinary = "\(staging)/\((binaryPath as NSString).lastPathComponent)"
+        if fm.fileExists(atPath: stagedBinary) {
+            try fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: stagedBinary)
+        }
+        try verify(stagedBinary)
 
         // Swap the extracted entries in, keeping the replaced ones aside until
         // every move has succeeded so a failure can put them back.
@@ -294,6 +313,55 @@ extension RunnerManager {
         try linkCache(cacheDir, into: baseDir)
         mergeMissing(from: "\(staging)/cache", into: cacheDir, depth: 1)
         try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
+    }
+
+    /// Throws unless the runner at `path` reports `expected` from
+    /// `--version`. `bundlePath` names the resource bundle it came from, so
+    /// the message points at the file that is out of date.
+    static func verifyRunnerVersion(
+        at path: String,
+        expected: String,
+        bundlePath: String,
+        reportedVersion: (String) -> String? = { reportedVersion(ofRunnerAt: $0) }
+    ) throws {
+        let found = reportedVersion(path)
+        guard found != expected else { return }
+        let what = found.map { "is version \($0)" } ?? "did not report a version"
+        throw GrantivaError.unavailable(
+            "The grantiva-runner in \(bundlePath) \(what), but this grantiva expects \(expected). "
+                + "The resource bundle beside the grantiva binary is from another release. "
+                + "Reinstall grantiva so the binary and its bundle match. The installed runner was left as it was."
+        )
+    }
+
+    /// The version `<path> --version` prints on its first line
+    /// (`grantiva-runner 1.1.28-grantiva.8`), or nil when the binary cannot
+    /// be run, exits non-zero, prints nothing, or does not exit in `timeout`.
+    static func reportedVersion(ofRunnerAt path: String, timeout: TimeInterval = 30) -> String? {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: path)
+        process.arguments = ["--version"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        process.standardInput = FileHandle.nullDevice
+        let exited = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in exited.signal() }
+        do { try process.run() } catch { return nil }
+        // `--version` prints a few lines, well under the pipe buffer, so
+        // waiting for exit before reading cannot deadlock.
+        if exited.wait(timeout: .now() + timeout) == .timedOut {
+            process.terminate()
+            return nil
+        }
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        guard process.terminationStatus == 0,
+              let firstLine = String(decoding: data, as: UTF8.self)
+                  .split(whereSeparator: \.isNewline).first
+        else { return nil }
+        let words = firstLine.split(whereSeparator: \.isWhitespace)
+        guard let last = words.last else { return nil }
+        return words.count >= 2 ? String(words[1]) : String(last)
     }
 
     static let lastUsedFileName = ".last-used"
