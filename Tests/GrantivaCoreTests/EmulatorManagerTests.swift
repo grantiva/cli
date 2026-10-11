@@ -536,6 +536,29 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertEqual(try ledger.createdAVDs(), ["fix-6-android"])
     }
 
+    /// A concurrent `ensure` that registers its AVD after this listing ran
+    /// keeps its name: only names already in the ledger before the listing
+    /// can be pruned.
+    func testPruneKeepsANameRegisteredWhileTheListingRan() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("Gone")
+        let directory = scratch.path
+        let execute: @Sendable (String) async throws -> String = { command in
+            if command.hasSuffix("-list-avds") {
+                // Another process creates and registers its AVD mid-listing.
+                try AndroidProvenance(directory: directory).registerCreatedAVD("Racer")
+            }
+            return ""
+        }
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
+            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:]
+        )
+        let removed = try await manager.pruneCreatedAVDs()
+        XCTAssertEqual(removed, ["Gone"])
+        XCTAssertEqual(try ledger.createdAVDs(), ["Racer"])
+    }
+
     /// A failed listing proves nothing: the ledger is left alone.
     func testPruneCreatedAVDsLeavesTheLedgerWhenTheListingFails() async throws {
         let ledger = AndroidProvenance(directory: scratch.path)

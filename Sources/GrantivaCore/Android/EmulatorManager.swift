@@ -353,8 +353,7 @@ public struct EmulatorManager: Sendable {
     /// that is missing too), then boots it unless `boot` is false.
     public func ensure(avd: String, systemImage: String?, boot: Bool) async throws -> EmulatorProvisionResult {
         var created = false
-        let existing = try await listAVDs()
-        try await pruneCreatedAVDs(existing: existing)
+        let existing = try await listAVDsPruningLedger().avds
         if !existing.contains(avd) {
             let image = systemImage ?? Self.defaultSystemImage
             let java = await javaPrefix()
@@ -379,10 +378,18 @@ public struct EmulatorManager: Sendable {
     /// name is not taken for one Grantiva created. Returns the names dropped.
     /// A listing that fails leaves the ledger as it is.
     @discardableResult
-    public func pruneCreatedAVDs(existing: [String]? = nil) async throws -> [String] {
-        let onDisk: [String]
-        if let existing { onDisk = existing } else { onDisk = try await listAVDs() }
-        return try provenance.pruneCreatedAVDs(keeping: onDisk)
+    public func pruneCreatedAVDs() async throws -> [String] {
+        try await listAVDsPruningLedger().removed
+    }
+
+    /// Lists the AVDs and prunes the ledger against that listing. The ledger
+    /// is read before listing and only those names can be dropped, so an
+    /// `ensure` in another process that registers its AVD meanwhile keeps it.
+    private func listAVDsPruningLedger() async throws -> (avds: [String], removed: [String]) {
+        let candidates = try provenance.createdAVDs()
+        let avds = try await listAVDs()
+        let removed = try provenance.pruneCreatedAVDs(keeping: avds, among: candidates)
+        return (avds, removed)
     }
 
     /// Deletes an AVD Grantiva created; others need `force`. A running AVD
@@ -405,8 +412,7 @@ public struct EmulatorManager: Sendable {
                 )
             }
         }
-        let avds = try await listAVDs()
-        try await pruneCreatedAVDs(existing: avds)
+        let avds = try await listAVDsPruningLedger().avds
         guard avds.contains(name) else {
             throw GrantivaError.invalidArgument(
                 "No AVD named \"\(name)\". Existing AVDs: \(avds.isEmpty ? "(none)" : avds.joined(separator: ", "))."
