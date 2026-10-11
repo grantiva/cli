@@ -210,7 +210,7 @@ public struct MaestroFlowParser {
 
         func walk(_ commands: [Any], source: String, lines: [Int], directory: URL?, stack: [String]) throws {
             for (index, raw) in commands.enumerated() {
-                if let expansion = expandableSubFlow(raw, source: source, directory: directory, stack: stack) {
+                if let expansion = expandableSubFlow(raw, source: source, line: lines[safe: index], directory: directory, stack: stack) {
                     try walk(
                         expansion.commands, source: expansion.source, lines: expansion.lines,
                         directory: expansion.directory, stack: expansion.path.map { stack + [$0] } ?? stack
@@ -273,11 +273,14 @@ public struct MaestroFlowParser {
     /// A `runFlow` whose commands take a screenshot, to be walked in place.
     /// Anything else (no screenshot, a `when:` condition, a missing file, a
     /// cycle) stays a plain `runFlow` step for the runner to execute and report.
-    private static func expandableSubFlow(_ raw: Any, source: String, directory: URL?, stack: [String]) -> SubFlowExpansion? {
+    private static func expandableSubFlow(_ raw: Any, source: String, line: Int?, directory: URL?, stack: [String]) -> SubFlowExpansion? {
         guard let dict = raw as? [String: Any], dict.count == 1, let value = dict["runFlow"] else { return nil }
         if let options = value as? [String: Any], options["file"] == nil, options["when"] == nil,
            let inline = options["commands"] as? [Any] {
-            return SubFlowExpansion(commands: inline, source: source, lines: [], directory: directory, path: nil)
+            // Inline commands live in the parent file: an error in one names
+            // the parent and the line of its `runFlow`.
+            let parentLines = line.map { Array(repeating: $0, count: inline.count) } ?? []
+            return SubFlowExpansion(commands: inline, source: source, lines: parentLines, directory: directory, path: nil)
         }
         let file = (value as? String) ?? ((value as? [String: Any]).flatMap { $0["when"] == nil ? $0["file"] as? String : nil })
         guard let file, let directory else { return nil }

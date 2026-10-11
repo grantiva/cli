@@ -92,6 +92,8 @@ struct CIComparisonPipeline {
             let steps = capture.steps.map {
                 RunStepUpload(
                     action: $0.action, status: $0.status.rawValue,
+                    // The upload API takes a number; 0 stands in for "not
+                    // measured" until the API accepts null.
                     duration: $0.duration ?? 0, message: $0.message
                 )
             }
@@ -357,8 +359,9 @@ struct CICommand: AsyncParsableCommand {
                 )
                 rlog("Capture complete")
 
-                // Print step-by-step results (Maestro-style)
-                if !options.json {
+                // Print step-by-step results (Maestro-style). Progress
+                // narration on stderr, so --quiet silences it like --json.
+                if !options.json, !options.verbosity.quiet || options.verbosity.verbose {
                     for capture in screenCaptures {
                         FileHandle.standardError.write(Data("\n  \(capture.screenName)\n".utf8))
                         for step in capture.steps {

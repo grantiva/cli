@@ -113,7 +113,10 @@ final class RunSessionContractTests: XCTestCase {
             let fake = FakeDevicePlatform(platform: .ios)
             var command = try RunCommand.parse(["--no-build", "--flow", "missing.yaml"])
             command.devicePlatform = InjectedDevicePlatform(fake)
-            command.runnerManager = RunnerManager(ensureAvailable: {}, runnerPath: { "/usr/bin/false" }, runnerDir: { NSTemporaryDirectory() })
+            command.runnerManager = RunnerManager(
+                ensureAvailable: {}, runnerPath: { "/usr/bin/false" }, runnerDir: { NSTemporaryDirectory() },
+                leaseDirectory: FileManager.default.temporaryDirectory.appendingPathComponent("locks-\(UUID().uuidString)").path
+            )
             do {
                 try await command.run()
                 XCTFail("expected an error")
@@ -179,7 +182,7 @@ final class RunSessionContractTests: XCTestCase {
             "perm.yaml": "appId: com.kylebrowning.landmarks\n---\n- launchApp\n",
         ]) { dir in
             let runner = try Self.runner(in: dir, passing: true)
-            var command = try RunCommand.parse(["--platform", "android", "--no-build", "--flow", "perm.yaml", "--device", "emulator-5554"])
+            var command = try RunCommand.parse(["--platform", "android", "--no-build", "--flow", "perm.yaml", "--device", Self.fakeSerial()])
             command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .android))
             command.runnerManager = runner
             command.resultOutput = ResultOutput { _ in }
@@ -244,7 +247,7 @@ final class RunSessionContractTests: XCTestCase {
             "smoke.yaml": "appId: com.placeholder\n---\n- launchApp\n- takeScreenshot: Home\n",
         ]) { dir in
             let runner = try Self.runner(in: dir, passing: passing)
-            var arguments = ["--json", "--no-build", "--application-id", "com.fake", "--device", "emulator-5554"]
+            var arguments = ["--json", "--no-build", "--application-id", "com.fake", "--device", Self.fakeSerial()]
             if let reportDir { arguments += ["--report-dir", reportDir] }
             var command = try RunCommand.parse(arguments)
             command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .android))
@@ -288,8 +291,15 @@ final class RunSessionContractTests: XCTestCase {
         exit \(passing ? 0 : 1)
         """.write(toFile: runner, atomically: true, encoding: .utf8)
         chmod(runner, 0o755)
-        return RunnerManager(ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path })
+        return RunnerManager(
+            ensureAvailable: {}, runnerPath: { runner }, runnerDir: { dir.path },
+            leaseDirectory: dir.appendingPathComponent("locks").path
+        )
     }
+
+    /// A serial no real device has, so a test lease can never meet another
+    /// run's.
+    static func fakeSerial() -> String { "emulator-test-\(UUID().uuidString)" }
 
     private func inProject(files: [String: String], _ body: (URL) async throws -> Void) async throws {
         let fileManager = FileManager.default

@@ -139,12 +139,23 @@ public enum FlowGenerator {
         return (lines.joined(separator: "\n") + "\n", owners)
     }
 
-    /// The `Wait Ns` labels of the generated `wait:` steps, in flow order.
-    public static func waitLabels(for screens: [GrantivaConfig.Screen]) -> [String] {
-        screens.flatMap { screen -> [String] in
-            guard case .steps(let steps) = screen.path else { return [] }
-            return steps.compactMap(\.wait).map(waitLabel(seconds:))
+    /// The `Wait Ns` label of each generated `wait:` step, keyed by its
+    /// top-level command index in the generated flow.
+    public static func waitLabels(inGenerated yaml: String) -> [Int: String] {
+        let body = yaml.components(separatedBy: "\n---\n").last ?? yaml
+        var labels: [Int: String] = [:]
+        var index = -1
+        var inEvalScript = false
+        for line in body.components(separatedBy: "\n") {
+            if line.hasPrefix("- ") {
+                index += 1
+                inEvalScript = line == "- evalScript:"
+            } else if inEvalScript, line.hasPrefix("    label: ") {
+                let raw = String(line.dropFirst("    label: ".count))
+                labels[index] = raw.hasPrefix("\"") && raw.hasSuffix("\"") && raw.count >= 2 ? String(raw.dropFirst().dropLast()) : raw
+            }
         }
+        return labels
     }
 
     /// Write a flow to a temporary file, returning the path.

@@ -77,4 +77,20 @@ public struct SimulatorProvisionResult: Sendable, Codable, Equatable {
         case pixelDimensions = "pixel_dimensions"
         case displayScale = "display_scale"
     }
+
+    /// camelCase keys, plus the snake_case aliases listed in
+    /// `LegacyJSONKeys.renamed` for existing consumers. Decoding still reads
+    /// the snake_case keys.
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try c.encodeWithAlias(name, "name")
+        try c.encodeWithAlias(udid, "udid")
+        try c.encodeWithAlias(deviceType, "deviceType")
+        try c.encodeWithAlias(runtime, "runtime")
+        try c.encodeWithAlias(created, "created")
+        try c.encodeWithAlias(state, "state")
+        try c.encodeIfPresentWithAlias(pointDimensions, "pointDimensions")
+        try c.encodeIfPresentWithAlias(pixelDimensions, "pixelDimensions")
+        try c.encodeIfPresentWithAlias(displayScale, "displayScale")
+    }
 }

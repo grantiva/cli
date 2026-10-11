@@ -9,7 +9,8 @@ import GrantivaCore
 /// Each fixture encodes a representative value the way its command does.
 /// Commands add theirs to `fixtures`. The only other keys allowed are the
 /// snake_case aliases a document still writes next to its camelCase twin for
-/// existing consumers (`LegacyJSONKeys.aliases`); each must have that twin.
+/// existing consumers (`LegacyJSONKeys.renamed`); each must have that twin.
+/// `runner start`/`runner stop` join in a sibling change (K16).
 final class JSONKeyCasingContractTests: XCTestCase {
     static func isCamelCase(_ key: String) -> Bool { key.wholeMatch(of: /[a-z][A-Za-z0-9]*/) != nil }
 
@@ -74,6 +75,24 @@ final class JSONKeyCasingContractTests: XCTestCase {
             ("emulator teardown", try JSONOutput.string([EmulatorTeardownOutcome(
                 serial: "emulator-5554", avd: "fix2-4-android", killed: true, recorded: true
             )])),
+            ("emulator delete", try EmulatorCommand.Delete.renderJSON(name: "fix2-4-android")),
+            ("simulator ensure", try JSONOutput.string(SimulatorProvisionResult(
+                name: "fix2-4-ios", udid: session.udid, deviceType: "iPhone 17", runtime: "iOS 26.0", created: true,
+                state: "Booted", pointWidth: 402, pointHeight: 874, pixelWidth: 1206, pixelHeight: 2622, displayScale: 3
+            ))),
+            ("build install (iOS)", try JSONOutput.string(InstallResult(
+                status: .installed, scheme: "Landmarks", bundleId: "com.kylebrowning.Landmarks",
+                simulator: .init(name: "fix2-4-ios", udid: session.udid), appPath: "/b/Landmarks.app", dataContainerPath: "/d"
+            ))),
+            ("build install (Android)", try JSONOutput.string(AndroidInstallResult(
+                status: .installed, applicationId: "com.kylebrowning.landmarks",
+                device: .init(name: "fix2-4-android", serial: "emulator-5554"), appPath: "/b/app.apk"
+            ))),
+            ("record", try JSONOutput.string(RecordReport(
+                simulator: "fix2-4-ios", udid: session.udid, emulator: nil, serial: nil, video: "out.mp4",
+                requestedDurationSeconds: 3, lastFrameMilliseconds: 2900, recordedMilliseconds: 3000,
+                frames: [RecordFrame(requestedMilliseconds: 1000, actualMilliseconds: 1000, path: "out-1000ms.png")]
+            ))),
         ]
     }
 
@@ -89,6 +108,33 @@ final class JSONKeyCasingContractTests: XCTestCase {
     func testTheCheckCatchesASnakeCaseKey() throws {
         let object = try JSONSerialization.jsonObject(with: Data(#"{"bundle_id": "x", "ok": {"report_dir": 1}}"#.utf8))
         XCTAssertEqual(Self.casingProblems(in: object, path: "$").count, 2)
+    }
+
+    /// The README paragraph lists every key still written in both spellings,
+    /// with its replacement; the encoders and this test read the same table.
+    func testTheReadmeListsEveryLegacyAlias() throws {
+        let readme = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("README.md")
+        let text = try String(contentsOf: readme, encoding: .utf8)
+        for entry in LegacyJSONKeys.renamed {
+            XCTAssertTrue(text.contains("`\(entry.snake)` → `\(entry.camel)`"), "README misses \(entry.snake)")
+        }
+    }
+
+    func testAStepWithoutAMeasuredDurationWritesNull() throws {
+        let json = try JSONOutput.string(StepResult(action: "Launch app", status: .passed, duration: nil))
+        XCTAssertTrue(json.contains("\"duration\" : null"), json)
+        let run = try JSONOutput.string(RunCommand.RunResult.ScreenResult(ScreenCapture(
+            screenName: "S", path: "", sizeBytes: 0, steps: [StepResult(action: "a", status: .passed, duration: nil)]
+        )))
+        XCTAssertTrue(run.contains("\"duration\" : null"), run)
+    }
+
+    func testScreenshotPathsAreRelativeUnderTheWorkingDirectory() {
+        XCTAssertEqual(RunCommand.displayPath("/p/proj/.grantiva/run-captures/a.png", cwd: "/p/proj"), ".grantiva/run-captures/a.png")
+        XCTAssertEqual(RunCommand.displayPath("/elsewhere/out/captures/a.png", cwd: "/p/proj"), "/elsewhere/out/captures/a.png")
+        XCTAssertEqual(RunCommand.displayPath(".grantiva/run-captures/a.png", cwd: "/p/proj"), ".grantiva/run-captures/a.png")
     }
 
     func testRunJSONNamesTheReportDirectoryInCamelCase() throws {

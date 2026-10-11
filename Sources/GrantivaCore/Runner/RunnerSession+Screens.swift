@@ -36,6 +36,7 @@ extension RunnerSession {
         failedScreen: String?
     ) -> [ScreenCapture] {
         let fm = FileManager.default
+        // A failure here shows up as a copy error on each captured screen.
         try? fm.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
         let report = RunnerReportSteps.report(in: reportDir)
         let commands = report?.flows?.first.map { RunnerReportSteps.commands(of: $0, in: reportDir) } ?? []
@@ -63,10 +64,20 @@ extension RunnerSession {
                let file = files.first(where: { screenshotName(in: $0) == screen.name }) {
                 let source = "\(screenshotDir)/\(file)"
                 let destination = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
-                try? fm.removeItem(atPath: destination)
-                if (try? fm.copyItem(atPath: source, toPath: destination)) != nil,
-                   let size = (try? fm.attributesOfItem(atPath: destination))?[.size] as? Int {
+                do {
+                    if fm.fileExists(atPath: destination) { try fm.removeItem(atPath: destination) }
+                    try fm.copyItem(atPath: source, toPath: destination)
+                    let size = try fm.attributesOfItem(atPath: destination)[.size] as? Int ?? 0
                     return ScreenCapture(screenName: screen.name, path: destination, sizeBytes: size, steps: steps)
+                } catch {
+                    // The runner took the shot but it could not be kept: say
+                    // why instead of reporting it as never taken.
+                    return ScreenCapture(screenName: screen.name, path: "", sizeBytes: 0, steps: steps + [
+                        StepResult(
+                            action: "Take screenshot", status: .failed, duration: nil,
+                            message: "Could not copy \(file) to \(destination): \(error.localizedDescription)"
+                        ),
+                    ])
                 }
             }
 

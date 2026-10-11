@@ -219,12 +219,38 @@ final class RunnerSessionOutputTests: XCTestCase {
 
     func testTheLiveLineOfAGeneratedWaitCarriesItsLabel() {
         let screens = [GrantivaConfig.Screen(name: "Caching", path: .steps([.init(tap: "Caching Demo"), .init(wait: 3)]))]
-        let labels = FlowGenerator.waitLabels(for: screens)
-        XCTAssertEqual(labels, ["Wait 3s"])
+        let labels = FlowGenerator.waitLabels(inGenerated: FlowGenerator.generate(screens: screens, bundleId: "x"))
+        // launchApp, tapOn, settle, evalScript (index 3), settle, takeScreenshot
+        XCTAssertEqual(labels, [3: "Wait 3s"])
         let filter = RunnerOutputFilter(waitLabels: labels)
-        let relayed = filter.apply("    ✓ tapOn: text=\"Caching Demo\" (884ms)\n    ✓ evalScript (3.0s)\n")
-        XCTAssertEqual(relayed, "    ✓ tapOn: text=\"Caching Demo\" (884ms)\n    ✓ Wait 3s (3.0s)\n")
+        let relayed = filter.apply("""
+          [1/1] screens (grantiva.yml)
+            ✓ launchApp (1.0s)
+            ✓ tapOn: text="Caching Demo" (884ms)
+            ✓ waitForAnimationToEnd (700ms)
+            ✓ evalScript (3.0s)
+
+        """)
+        XCTAssertTrue(relayed.contains("    ✓ Wait 3s (3.0s)\n"), relayed)
         XCTAssertFalse(relayed.contains("evalScript"))
+    }
+
+    func testOnlyTheGeneratedWaitIsRelabelledNotAnotherEvalScript() {
+        // A nested sub-flow's own evalScript is indented further and the
+        // top-level one at another index keeps its name.
+        let filter = RunnerOutputFilter(waitLabels: [2: "Wait 1s"])
+        let relayed = filter.apply("""
+          [1/1] screens (grantiva.yml)
+            ✓ launchApp (1.0s)
+                ✓ evalScript (10ms)
+            ✓ runFlow (20ms)
+            ✓ evalScript (1.0s)
+            ✓ evalScript (5ms)
+
+        """)
+        XCTAssertTrue(relayed.contains("        ✓ evalScript (10ms)"), relayed)
+        XCTAssertTrue(relayed.contains("    ✓ Wait 1s (1.0s)"), relayed)
+        XCTAssertTrue(relayed.contains("    ✓ evalScript (5ms)"), relayed)
     }
 
     // MARK: - K11: the interrupt notice names the device
@@ -380,7 +406,10 @@ final class RunnerSessionOutputTests: XCTestCase {
         """.write(to: script, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: script.path)
         let dir = scratch.path
-        return RunnerManager(ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir })
+        return RunnerManager(
+            ensureAvailable: {}, runnerPath: { script.path }, runnerDir: { dir },
+            leaseDirectory: scratch.appendingPathComponent("locks").path
+        )
     }
 }
 

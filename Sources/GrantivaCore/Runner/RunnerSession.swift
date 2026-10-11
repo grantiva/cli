@@ -210,7 +210,11 @@ public enum RunnerSession {
                 platform: platform.platform,
                 outputFilter: RunnerOutputFilter(
                     ephemeralReportDir: preserveReportDir ? nil : reportDir,
-                    waitLabels: FlowGenerator.waitLabels(for: screens)
+                    waitLabels: FlowGenerator.waitLabels(
+                        inGenerated: FlowGenerator.generate(
+                            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+                        )
+                    )
                 )
             ))
         }
@@ -874,16 +878,6 @@ public enum RunnerSession {
         }
         lines.insert("name: \(FlowEnvironment.quoted(name))", at: separator)
         return lines.joined(separator: "\n")
-    }
-
-    /// Build synthetic step results from the screen config.
-    private static func buildStepResults(for screen: GrantivaConfig.Screen) -> [StepResult] {
-        switch screen.path {
-        case .launch:
-            return [StepResult(action: "Launch app", status: .passed, duration: 0)]
-        case .steps(let steps):
-            return steps.map { StepResult(action: stepAction(for: $0), status: .passed, duration: 0) }
-        }
     }
 
     /// How a screen step is named in capture results.

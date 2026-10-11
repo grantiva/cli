@@ -403,20 +403,44 @@ grantiva doctor --json | jq '.[] | select(.status == "fail")'
 ```
 
 Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+(`runner start` and `runner stop` complete the rule in a sibling change.)
+
+Some documents used snake_case keys before. For one deprecation period they
+write each of those values twice, under the camelCase key and under the old
+snake_case key beside it; read the camelCase key, as the snake_case one will be
+removed in a later release. The keys still written in both spellings:
+
+- `screen_name` → `screenName` (diff capture, diff compare)
+- `size_bytes` → `sizeBytes` (diff capture)
+- `point_dimensions` → `pointDimensions` (diff capture, simulator ensure)
+- `pixel_dimensions` → `pixelDimensions` (diff capture, simulator ensure)
+- `display_scale` → `displayScale` (diff capture, simulator ensure)
+- `device_type` → `deviceType` (simulator ensure)
+- `pixel_diff_percent` → `pixelDiffPercent` (diff compare)
+- `perceptual_distance` → `perceptualDistance` (diff compare)
+- `pixel_threshold` → `pixelThreshold` (diff compare)
+- `perceptual_threshold` → `perceptualThreshold` (diff compare)
+- `baseline_path` → `baselinePath` (diff compare)
+- `capture_path` → `capturePath` (diff compare)
+- `diff_image_path` → `diffImagePath` (diff compare)
+- `approved_screens` → `approvedScreens` (diff approve)
+- `baseline_directory` → `baselineDirectory` (diff approve)
 
 `run --json` has the same shape whether the run passed or failed. `screens`
 holds one entry per configured screen (`"kind": "screen"`) and one per flow
 (`"kind": "flow"`); each entry has `name`, `kind`, `passed`, `steps` (the
-runner's commands with `action`, `status`, `duration` in seconds and, on
-failure, `message`) and `screenshots` (`name` and `path` of each
-`takeScreenshot` capture). `reportDir` is present whenever `--report-dir` was
+runner's commands with `action`, `status`, `duration` in seconds — `null`
+when the runner measured none — and, on failure, `message`) and `screenshots`
+(`name` and `path` of each `takeScreenshot` capture; the path is relative to
+the working directory when the file is under it, absolute otherwise). The
+same `duration` rule holds for `diff capture --json` steps. `reportDir` is present whenever `--report-dir` was
 given and the directory exists; `error` appears only on failure:
 
 ```json
 {"allPassed": true, "reportDir": "/ci/out", "screens": [
   {"name": "01-browse", "kind": "flow", "passed": true,
    "steps": [{"action": "launchApp", "status": "passed", "duration": 1.9}],
-   "screenshots": [{"name": "01-browse-cmd-003-Home", "path": ".grantiva/captures/01-browse-cmd-003-Home.png"}]}]}
+   "screenshots": [{"name": "01-browse-cmd-003-Home", "path": ".grantiva/run-captures/01-browse-cmd-003-Home.png"}]}]}
 {"allPassed": false, "reportDir": "/ci/out", "error": "Runner failed (exit 1): 02-exact-negative: assertVisible: ...", "screens": [
   {"name": "02-exact-negative", "kind": "flow", "passed": false,
    "steps": [{"action": "assertVisible: ...", "status": "failed", "duration": 12.6, "message": "Element not visible: ..."}],
