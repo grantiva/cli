@@ -420,6 +420,28 @@ final class RunnerManagerTests: XCTestCase {
         }
     }
 
+    func testArchTarballsShipPrebuiltAgentCachesUnderTheNamesTheRunnerLooksFor() throws {
+        // The runner accepts a WebDriverAgent build cache by name only, and the
+        // name carries the bundled agent's revision. A cache under any other
+        // name is ignored and every first run on that runtime rebuilds the agent.
+        let configs = ["26.0", "26.2", "26.4", "27.0"].map { "sim-ios\($0)-iphone-wda16.12.8-r1" }
+        for arch in ["arm64", "amd64"] {
+            let url = try XCTUnwrap(RunnerManager.embeddedTarballURL(arch: arch))
+            let listing = try listTarball(url)
+            for config in configs {
+                XCTAssertTrue(
+                    listing.contains { $0.hasPrefix("./cache/wda-builds/\(config)/DerivedData/Build/Products/") && $0.hasSuffix(".xctestrun") },
+                    "\(arch) is missing a prebuilt \(config)"
+                )
+            }
+            let shipped = Set(listing.compactMap { entry -> String? in
+                let parts = entry.split(separator: "/")
+                return parts.count > 3 && parts[1] == "cache" && parts[2] == "wda-builds" ? String(parts[3]) : nil
+            })
+            XCTAssertEqual(shipped, Set(configs), "only caches the runner reads ship: \(arch)")
+        }
+    }
+
     func testEmbeddedDriversTarballContainsTheUIAutomator2APKs() throws {
         let url = try XCTUnwrap(RunnerManager.embeddedDriversTarballURL())
         let listing = try listTarball(url)
@@ -430,8 +452,8 @@ final class RunnerManagerTests: XCTestCase {
     }
 
     func testInstallStampChangesWhenDriversMoveButRunnerVersionDoesNot() {
-        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.8")
-        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.8+android-drivers-2")
+        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.9")
+        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.9+android-drivers-2")
     }
 
     func testLiveExtractionLaysOutBothTarballs() throws {
