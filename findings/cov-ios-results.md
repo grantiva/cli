@@ -388,3 +388,5 @@ Error: No captures found in No capture found for "Home; touch …/pwn-cov". Run:
 | IOS-237@27.0 | pass | FLOWS-27/16-setpermissions.* | 27.0: setPermissions + bare scroll pass |
 | IOS-238@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: runner log `argv=["--flag" "true"]` (the env leak of IOS-077 too) |
 | IOS-239@27.0 | pass | FLOWS-27/21-system-alert-maps.* | 27.0 (from a dir without config): Maps location prompt accepted (`alert/accept … Allow Once`), flow passes |
+| N-09 | pass | N-09/ | no `dlrun-*` under the runner home after the iOS stock set (count 0) or after the final teardown (count 0) |
+| TEARDOWN | pass | TEARDOWN/ | `simulator teardown --session-id cov-ios --json`: cov-ios-1 and cov-ios-2 `deleted: true`, each device home removed, no failures; `xcrun simctl list devices | grep -c cov-ios` = 0; no `versions/*/devices/*` left; created.json has no cov- entry; the user's iPhone 17 Pro still Booted, never commanded |
