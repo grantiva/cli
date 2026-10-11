@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --verbose > $S/r137-verbose.out 2> $S/r137-verbose.err; echo rc=$?; wc -l < $S/r137-verbose.err; grep -c '^\[debug\]' $S/r137-verbose.err; head -3 $S/r137-verbose.err

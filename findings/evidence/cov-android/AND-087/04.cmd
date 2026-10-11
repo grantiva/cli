@@ -1,0 +1,1 @@
+$GRANTIVA diff compare --json | python3 -c "import json,sys;d=json.load(sys.stdin);print(\"passed\",d[\"passed\"]);[print(s[\"screen_name\"],s[\"status\"],s[\"pixel_diff_percent\"],s[\"perceptual_distance\"],s.get(\"diff_path\"),s[\"message\"]) for s in d[\"screens\"]]"; echo rc=${PIPESTATUS[0]}

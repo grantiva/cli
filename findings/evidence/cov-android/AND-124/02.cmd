@@ -1,0 +1,1 @@
+for i in 1 2 3 4; do $GRANTIVA record --duration 4 --output $S/r124-$i.mp4 >/dev/null 2>$S/r124-$i.err; echo "run $i rc=$? note=$(grep -c held $S/r124-$i.err) frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 $S/r124-$i.mp4)"; done

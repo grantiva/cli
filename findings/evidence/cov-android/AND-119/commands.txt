@@ -1,0 +1,8 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ rm -rf $S/out-119; $GRANTIVA run --device emulator-5554 --no-build --continue-on-failure --report-dir $S/out-119 --ready-file $S/r119.ready > $E/AND-119/cof.out 2> $E/AND-119/cof.err; echo rc=$?; grep -E "Running|PASS|FAIL|Screens:|Error|Broken|No Such" $E/AND-119/cof.err $E/AND-119/cof.out | cut -c1-200; cat $S/r119.ready; ls $S/out-119 $S/out-119/screens
+rc=0 elapsed=29.0s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ rm -rf $S/out-119s; $GRANTIVA run --device emulator-5554 --no-build --timeout 30 --report-dir $S/out-119s --ready-file $S/r119s.ready > $E/AND-119/slow.out 2> $E/AND-119/slow.err; echo rc=$?; tail -4 $E/AND-119/slow.err; cat $E/AND-119/slow.out; cat $S/r119s.ready; ls $S/out-119s
+rc=0 elapsed=31.4s  (stdout 02.out, stderr 02.err)
+

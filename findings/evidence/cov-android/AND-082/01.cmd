@@ -1,0 +1,1 @@
+cat .grantiva/session.json; echo; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; P1=$(python3 -c "import json;print(json.load(open(\".grantiva/session.json\"))[\"pid\"])"); $GRANTIVA runner stop; echo rc=$?; sleep 1; ps -p $P1 -o pid= || echo runner-gone; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; ls .grantiva

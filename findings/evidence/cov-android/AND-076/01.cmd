@@ -1,0 +1,1 @@
+$GRANTIVA record --duration 5 --frames-at 0,1000,3000; echo rc=$?; ls -la .grantiva/recordings/; ffprobe -v error -show_entries format=duration -of csv=p=0 .grantiva/recordings/recording.mp4 2>/dev/null || mdls -name kMDItemDurationSeconds .grantiva/recordings/recording.mp4; cat .grantiva/recordings/recording.json 2>/dev/null | head -60

@@ -1,0 +1,87 @@
+^DResolved: module=app variant=freeDebug device=cov-android screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: cov-android
+Booting AVD cov-android as emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-9309383D-4A90-48D6-8C32-9B79545397AC
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (157ms)
+    ✓ assertVisible: text="Featured" (572ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn: text="Golden Gate Bridge" (249ms)
+    ✓ assertVisible: text="San Francisco, CA" (613ms)
+    ✓ assertVisible: text="Plan Visit" (26ms)
+    ✓ takeScreenshot (127ms)
+✓ 01-browse 3.9s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible (157ms)
+    ✓ assertVisible (572ms)
+    ✓ takeScreenshot (141ms)
+    ✓ tapOn (249ms)
+    ✓ assertVisible (613ms)
+    ✓ assertVisible (26ms)
+    ✓ takeScreenshot (127ms)
+✓ 01-browse 3.8s
+
+  8 steps passing (3.9s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-9309383D-4A90-48D6-8C32-9B79545397AC
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-9309383D-4A90-48D6-8C32-9B79545397AC/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-9309383D-4A90-48D6-8C32-9B79545397AC/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-9309383D-4A90-48D6-8C32-9B79545397AC/allure-results
+
+  Built by Grantiva
+
+
+  01-browse-cmd-003-Home
+    ✓ Run flow "01-browse"
+
+  01-browse-cmd-007-Landmark Detail
+    ✓ Run flow "01-browse"
+
+  Screens: 2 total, 2 passed, 0 failed
+  Screenshots: .grantiva/captures/android/
+

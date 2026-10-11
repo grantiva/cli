@@ -1,0 +1,26 @@
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1); see the runner output above.",
+  "screens" : [
+    {
+      "name" : "02-exact-negative",
+      "passed" : false,
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Golden Gate.*\"",
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Golden Gate.*\", exact=true",
+          "message" : "Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}
+rc=1

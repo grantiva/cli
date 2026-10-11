@@ -1,0 +1,7 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ rm -rf $S/r02c2; $GRANTIVA run --device emulator-5554 --no-build --flow /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/android/A02/probes/c2-abs-px-row.yaml --report-dir $S/r02c2 2>&1 | grep -E "✓|✗|╰|swipe\]" | head -20; ls $S/r02c2/captures
+rc=0 elapsed=8.9s  (stdout 01.out, stderr 01.err)
+
+# shared evidence: see ../CF-06-swipe-absolute/ (pad)
+# shared evidence: see ../B-R02.4/ (c2 probe)
+# *-small.png / *-crop.png are PIL crops (rows 300-900 of the 1080x2400 capture) made for reading; *-full.png is the unmodified capture copied from the scratch report dir

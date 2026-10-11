@@ -1,0 +1,83 @@
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B199FB3C-BD94-4689-AD9B-115C9D9253A3
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✗ waitForAnimationToEnd (532ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/b9af19b9-8f13-4a15-bd7c-1c4f1e94a444/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused (cause: send request: Get "http://localhost/session/b9af19b9-8f13-4a15-bd7c-1c4f1e94a444/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused)
+✗ flow 2.9s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-D2FD09B6-A3C8-4695-81ED-3837554359F8/flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✗ waitForAnimationToEnd (545ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/b9af19b9-8f13-4a15-bd7c-1c4f1e94a444/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused (cause: send request: Get "http://localhost/session/b9af19b9-8f13-4a15-bd7c-1c4f1e94a444/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ assertVisible (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 2.9s
+
+  1 steps passing (2.9s)
+  1 steps failing
+  19 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL      21      1      1     19       2.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      21      1      1     19       2.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B199FB3C-BD94-4689-AD9B-115C9D9253A3
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B199FB3C-BD94-4689-AD9B-115C9D9253A3/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B199FB3C-BD94-4689-AD9B-115C9D9253A3/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B199FB3C-BD94-4689-AD9B-115C9D9253A3/allure-results
+
+  Built by Grantiva
+
+Warning: could not restore global/sysui_demo_allowed on emulator-5556: commandFailed("adb: device offline", 1)
+Error: Runner failed (exit 1); see the runner output above.

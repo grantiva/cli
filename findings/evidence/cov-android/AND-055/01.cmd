@@ -1,0 +1,1 @@
+$GRANTIVA hierarchy --json | python3 -c "import json,sys;d=json.load(sys.stdin);print(sorted(d.keys()))"; echo rc=${PIPESTATUS[0]}; $GRANTIVA hierarchy --json | cmp - $S/h054.json && echo same-as-format-json

@@ -1,0 +1,9 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --duration 4 >/dev/null; echo rc=$?; ffprobe -v error -show_entries format=duration -of csv=p=0 .grantiva/recordings/recording.mp4
+rc=0 elapsed=4.4s  (stdout 01.out, stderr 01.err)
+
+# note: 01: no note printed on stderr (01.err empty). Repeating to see whether it is consistent.
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ for i in 1 2 3 4; do $GRANTIVA record --duration 4 --output $S/r124-$i.mp4 >/dev/null 2>$S/r124-$i.err; echo "run $i rc=$? note=$(grep -c held $S/r124-$i.err) frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 $S/r124-$i.mp4)"; done
+rc=0 elapsed=17.6s  (stdout 02.out, stderr 02.err)
+

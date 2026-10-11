@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/22-show-note.yaml --env LANDMARKS_NOTE=hello 2>&1 | grep -E "PASS|FAIL"; $S/tools/ui.sh | grep -o "text=\"hello\""; $S/tools/launchlog.sh

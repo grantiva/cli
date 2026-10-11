@@ -1,0 +1,1 @@
+$GRANTIVA emulator sessions --json

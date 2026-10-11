@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 06-swipe-absolute; cp $S/out-cf-06-swipe-absolute.stderr $S/out-cf-06-swipe-absolute.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-06-swipe-absolute/ 2>/dev/null; true

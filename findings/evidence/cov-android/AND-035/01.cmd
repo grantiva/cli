@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/22-show-note.yaml --env "LANDMARKS_NOTE=a=b c"; echo rc=$?; adb -s emulator-5554 shell uiautomator dump /sdcard/u.xml >/dev/null; adb -s emulator-5554 shell cat /sdcard/u.xml | grep -o "text=\"[^\"]*\"" | head -30; adb -s emulator-5554 logcat -d | grep -i "extras=" | tail -3

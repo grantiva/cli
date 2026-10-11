@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner stop --json; echo rc=$?
+rc=0 elapsed=1.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner start --detach --json --device emulator-5554; echo rc=$?
+rc=0 elapsed=2.3s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner stop; $GRANTIVA runner start --detach --headless --device emulator-5554; echo rc=$?; $GRANTIVA runner stop --json
+rc=0 elapsed=2.6s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner stop --json; echo rc=$?; $GRANTIVA runner stop; echo rc=$?
+rc=0 elapsed=0.0s  (stdout 04.out, stderr 04.err)
+

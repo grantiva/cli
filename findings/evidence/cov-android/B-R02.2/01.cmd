@@ -1,0 +1,1 @@
+rm -rf $S/r02f; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/02-favorite.yaml --snapshot full --report-dir $S/r02f 2>&1 | grep -E "✓|✗|╰|swipe\]" | head -20; ls $S/r02f/assets/flow-000 | grep cmd-008; adb -s emulator-5554 shell settings put system pointer_location 0

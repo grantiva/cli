@@ -1,0 +1,11 @@
+[2.38] $ $GRANTIVA runner start --detach -> rc=0
+--- after runner start
+round 0 ok=[True, False, True, True, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+round 1 ok=[True, True, True, True, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[8.29] $ $GRANTIVA runner stop -> rc=0
+[10.55] $ $GRANTIVA runner start --detach -> rc=0
+--- after replacement
+round 0 ok=[True, False, True, True, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+round 1 ok=[True, True, True, True, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+rounds_until_all_ok first=1 replaced=1
+server exit 0

@@ -1,0 +1,1 @@
+rm -rf $S/out-119s; $GRANTIVA run --device emulator-5554 --no-build --timeout 30 --report-dir $S/out-119s --ready-file $S/r119s.ready > $E/AND-119/slow.out 2> $E/AND-119/slow.err; echo rc=$?; tail -4 $E/AND-119/slow.err; cat $E/AND-119/slow.out; cat $S/r119s.ready; ls $S/out-119s

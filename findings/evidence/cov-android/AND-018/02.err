@@ -1,0 +1,90 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5556
+Emulator booted: cov-android-2 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-75C86657-09C0-4ABD-8DE6-E75794278B9D
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (1.3s)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks"
+data="android.intent.category.LAUNCHER"
+)
+✗ 01-browse 2.3s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (2.3s)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks"
+data="android.intent.category.LAUNCHER"
+)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 01-browse 2.3s
+
+  1 steps failing
+  7 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✗ FAIL       8      0      1      7       2.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       8      0      1      7       2.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-75C86657-09C0-4ABD-8DE6-E75794278B9D
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-75C86657-09C0-4ABD-8DE6-E75794278B9D/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-75C86657-09C0-4ABD-8DE6-E75794278B9D/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-75C86657-09C0-4ABD-8DE6-E75794278B9D/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/android/failure-1791701139.png
+Error: Runner failed (exit 1); see the runner output above.

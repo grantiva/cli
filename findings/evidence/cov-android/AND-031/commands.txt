@@ -1,0 +1,5 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ cp grantiva-android.yml $S/p-orig.yml; python3 -c "
+p=\"grantiva-android.yml\"; s=open(p).read(); open(p,\"w\").write(s[:s.index(\"screens:\")]+\"flows: []\n\")"; cat grantiva-android.yml; rm -rf $S/out031 $S/out031.ready; adb devices; $GRANTIVA run --report-dir $S/out031 --ready-file $S/out031.ready; echo rc=$?; ls $S/out031 2>&1; cat $S/out031.ready; cp $S/p-orig.yml grantiva-android.yml
+rc=0 elapsed=0.1s  (stdout 01.out, stderr 01.err)
+

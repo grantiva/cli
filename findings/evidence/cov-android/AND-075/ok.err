@@ -1,0 +1,97 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DDF8C2D0-1911-4B1C-A82A-FA169F616500
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-11 00:17:20.758 I/wning.landmarks(30163): Late-enabling -Xcheck:jni
+[log] 10-11 00:17:20.787 I/wning.landmarks(30163): Using CollectorTypeCMC GC.
+[log] 10-11 00:17:20.834 W/ziparchive(30163): Unable to open '/data/app/~~pz4r2C4ceke7so83zDKqNA==/com.kylebrowning.landmarks-VSMmvJ0dN8ryGG2zK3fI_w==/base.dm': No such file or directory
+[log] 10-11 00:17:20.834 W/ziparchive(30163): Unable to open '/data/app/~~pz4r2C4ceke7so83zDKqNA==/com.kylebrowning.landmarks-VSMmvJ0dN8ryGG2zK3fI_w==/base.dm': No such file or directory
+[log] 10-11 00:17:21.047 I/Landmarks(30163): launch action=android.intent.action.MAIN data=null extras=[none] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+[log] 10-11 00:17:21.049 W/wning.landmarks(30163): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:21.049 W/wning.landmarks(30163): Common causes for lock verification issues are non-optimized dex code
+[log] 10-11 00:17:21.049 W/wning.landmarks(30163): and incorrect proguard optimizations.
+[log] 10-11 00:17:21.049 W/wning.landmarks(30163): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-11 00:17:21.050 W/wning.landmarks(30163): Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:21.050 W/wning.landmarks(30163): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:21.050 W/wning.landmarks(30163): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-11 00:17:21.077 W/HWUI    (30163): Unknown dataspace 0
+[log] 10-11 00:17:21.214 I/wning.landmarks(30163): Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals()
+[log] 10-11 00:17:21.370 I/EGL_emulation(30163): Opening libGLESv1_CM_emulation.so
+[log] 10-11 00:17:21.371 I/EGL_emulation(30163): Opening libGLESv2_emulation.so
+[log] 10-11 00:17:21.376 W/HWUI    (30163): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+[log] 10-11 00:17:21.376 W/HWUI    (30163): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+[log] 10-11 00:17:21.394 I/Gralloc4(30163): mapper 4.x is not supported
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.0s)
+    ✓ tapOn: text="Caching Demo" (655ms)
+[log] 10-11 00:17:23.640 W/WindowOnBackDispatcher(30163): OnBackInvokedCallback is not enabled for the application.
+[log] 10-11 00:17:23.640 W/WindowOnBackDispatcher(30163): Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+    ✓ assertVisible: text="Cache Policy" (639ms)
+    ✓ tapOn: text="Fetch with Policy" (143ms)
+    ✓ takeScreenshot (131ms)
+    ✓ tapOn: text="Clear Cache" (170ms)
+✓ 08-caching 4.7s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.0s)
+    ✓ tapOn (655ms)
+    ✓ assertVisible (639ms)
+    ✓ tapOn (143ms)
+    ✓ takeScreenshot (131ms)
+    ✓ tapOn (170ms)
+✓ 08-caching 4.7s
+
+  7 steps passing (4.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       4.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       4.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DDF8C2D0-1911-4B1C-A82A-FA169F616500
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DDF8C2D0-1911-4B1C-A82A-FA169F616500/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DDF8C2D0-1911-4B1C-A82A-FA169F616500/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-DDF8C2D0-1911-4B1C-A82A-FA169F616500/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,1 @@
+$GRANTIVA diff capture --device emulator-5554 --no-build --json --verbose > $S/c138-verbose.json 2> $S/c138-verbose.err; echo rc=$?; wc -l < $S/c138-verbose.err; grep -c '^\[debug\]' $S/c138-verbose.err

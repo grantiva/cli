@@ -1,0 +1,1 @@
+adb -s emulator-5554 shell am force-stop com.kylebrowning.landmarks; $GRANTIVA build install --no-launch --json --device emulator-5554; echo rc=$?; adb -s emulator-5554 shell pidof com.kylebrowning.landmarks || echo "not running"

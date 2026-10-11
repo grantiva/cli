@@ -1,0 +1,77 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs (tag: Landmarks)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/08-caching.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4A204900-05E6-41D3-A546-E5ACA6460696
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 08-caching (08-caching.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-11 00:17:58.521 I/Landmarks(31134): launch action=android.intent.action.MAIN data=null extras=[none] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+    ✓ launchApp (1.8s)
+    ✓ tapOn: text="Deep Links" (822ms)
+    ✓ tapOn: text="Caching Demo" (817ms)
+    ✓ assertVisible: text="Cache Policy" (623ms)
+    ✓ tapOn: text="Fetch with Policy" (156ms)
+    ✓ takeScreenshot (127ms)
+    ✓ tapOn: text="Clear Cache" (139ms)
+✓ 08-caching 4.5s
+
+  [1/1] 08-caching (.maestro/08-caching.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.8s)
+    ✓ tapOn (822ms)
+    ✓ tapOn (817ms)
+    ✓ assertVisible (623ms)
+    ✓ tapOn (156ms)
+    ✓ takeScreenshot (127ms)
+    ✓ tapOn (139ms)
+✓ 08-caching 4.5s
+
+  7 steps passing (4.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  08-caching                     ✓ PASS       7      7      0      0       4.5s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0       4.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4A204900-05E6-41D3-A546-E5ACA6460696
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4A204900-05E6-41D3-A546-E5ACA6460696/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4A204900-05E6-41D3-A546-E5ACA6460696/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-4A204900-05E6-41D3-A546-E5ACA6460696/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,1 @@
+for i in $(seq 1 10); do $GRANTIVA diff capture --no-build --device emulator-5554 >/dev/null 2>&1; echo "$i rc=$? home=$(md5 -q .grantiva/captures/android/Home.png) deeplinks=$(md5 -q ".grantiva/captures/android/Deep Links.png")"; done

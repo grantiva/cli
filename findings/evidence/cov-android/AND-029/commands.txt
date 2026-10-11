@@ -1,0 +1,17 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $S/tools/down.sh
+rc=0 elapsed=7.6s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --emulator cov-android --no-build --flow .maestro/01-browse.yaml; echo rc=$?; adb devices
+rc=0 elapsed=78.6s  (stdout 02.out, stderr 02.err)
+
+# note: 02: booted and ran, but a "System UI isnt responding" dialog (fresh cold boot) covered the app, assertVisible Landmarks timed out (failure-02-small.png). Status-bar clock 11:59 (demo mode not visible). Retrying once.
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $S/tools/down.sh
+rc=0 elapsed=7.4s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --emulator cov-android --no-build --flow .maestro/01-browse.yaml; echo rc=$?; adb devices
+rc=0 elapsed=27.2s  (stdout 04.out, stderr 04.err)
+

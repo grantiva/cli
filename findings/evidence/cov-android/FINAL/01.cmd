@@ -1,0 +1,1 @@
+sleep 3; avdmanager delete avd -n cov-android; adb devices; avdmanager list avd | grep Name; avdmanager list avd | grep -c "cov-"; cat ~/.grantiva/android/created-avds.json; echo; cat ~/.grantiva/android/started.json; echo; ps -axo command | grep -c "[q]emu.*cov-android"

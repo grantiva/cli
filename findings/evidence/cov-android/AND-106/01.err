@@ -1,0 +1,98 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=5 flows=12
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 13 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/screens
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✓ waitForAnimationToEnd (535ms)
+    ✓ takeScreenshot (641ms)
+    ✓ tapOn: text="Favorites" (1.4s)
+    ✗ waitForAnimationToEnd (346ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/b99f06c7-46ab-469d-876f-5adbaf46f543/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused (cause: send request: Get "http://localhost/session/b99f06c7-46ab-469d-876f-5adbaf46f543/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused)
+✗ flow 5.4s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-8E59A492-65C5-4CB1-9569-F5649256E1C2/flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.4s)
+    ✓ waitForAnimationToEnd (535ms)
+    ✓ takeScreenshot (641ms)
+    ✓ tapOn (1.4s)
+    ✗ waitForAnimationToEnd (363ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/b99f06c7-46ab-469d-876f-5adbaf46f543/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused (cause: send request: Get "http://localhost/session/b99f06c7-46ab-469d-876f-5adbaf46f543/screenshot": dial unix /tmp/uia2-emulator-5554.sock: connect: connection refused)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ assertVisible (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 5.4s
+
+  4 steps passing (5.4s)
+  1 steps failing
+  16 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL      21      4      1     16       5.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      21      4      1     16       5.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/screens
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/screens/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/screens/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/screens/allure-results
+
+  Built by Grantiva
+
+Warning: could not restore global/sysui_demo_allowed on emulator-5554: commandFailed("adb: device \'emulator-5554\' not found", 1)
+Warning: could not restore global/window_animation_scale on emulator-5554: commandFailed("adb: device \'emulator-5554\' not found", 1)
+Warning: could not restore global/transition_animation_scale on emulator-5554: commandFailed("adb: device \'emulator-5554\' not found", 1)
+Warning: could not restore global/animator_duration_scale on emulator-5554: commandFailed("adb: device \'emulator-5554\' not found", 1)
+Warning: could not restore system/accelerometer_rotation on emulator-5554: commandFailed("adb: device \'emulator-5554\' not found", 1)
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-stock/captures/failure-1791700620.png
+Error: Runner failed (exit 1); see the runner output above.

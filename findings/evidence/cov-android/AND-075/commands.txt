@@ -1,0 +1,9 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs > $E/AND-075/ok.out 2> $E/AND-075/ok.err; echo exit $?; sleep 3; ps -axo pid,ppid,command | grep "[a]db.*logcat" || echo no-logcat
+rc=0 elapsed=11.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/99-crash.yaml --device emulator-5554 --logs > $E/AND-075/fail.out 2> $E/AND-075/fail.err; echo exit $?; sleep 3; ps -axo pid,ppid,command | grep "[a]db.*logcat" || echo no-logcat
+rc=0 elapsed=9.4s  (stdout 02.out, stderr 02.err)
+
+# shared evidence: see ../B-A07.1/ (Ctrl-C exit 130)

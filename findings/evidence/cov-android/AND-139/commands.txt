@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --duration 2 --json  --output $S/r139.mp4 > $S/r139-plain.json 2> $S/r139-plain.err; echo rc=$?; wc -l < $S/r139-plain.err; head -3 $S/r139-plain.err | cut -c1-160
+rc=0 elapsed=2.4s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --duration 2 --json --quiet --output $S/r139.mp4 > $S/r139-quiet.json 2> $S/r139-quiet.err; echo rc=$?; wc -l < $S/r139-quiet.err; head -3 $S/r139-quiet.err | cut -c1-160
+rc=0 elapsed=2.4s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --duration 2 --json --verbose --output $S/r139.mp4 > $S/r139-verbose.json 2> $S/r139-verbose.err; echo rc=$?; wc -l < $S/r139-verbose.err; head -3 $S/r139-verbose.err | cut -c1-160
+rc=0 elapsed=2.4s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ for i in 1 2 3; do $GRANTIVA record --duration 2 --json --quiet --output $S/r139q.mp4 >/dev/null 2>$S/r139q-$i.err; echo "quiet $i: warn=$(grep -c Warning $S/r139q-$i.err) frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 $S/r139q.mp4)"; $GRANTIVA record --duration 2 --json --output $S/r139p.mp4 >/dev/null 2>$S/r139p-$i.err; echo "plain $i: warn=$(grep -c Warning $S/r139p-$i.err) frames=$(ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of csv=p=0 $S/r139p.mp4)"; done
+rc=0 elapsed=14.3s  (stdout 04.out, stderr 04.err)
+

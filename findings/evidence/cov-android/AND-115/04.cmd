@@ -1,0 +1,1 @@
+$GRANTIVA emulator ensure --name cov-android; $GRANTIVA build install --device emulator-5554 --no-launch; adb -s emulator-5554 shell pm list packages | grep landmarks; adb -s emulator-5554 shell sync; sleep 8; $GRANTIVA emulator teardown --serial emulator-5554; sleep 3; adb devices

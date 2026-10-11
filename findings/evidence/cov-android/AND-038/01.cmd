@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/08-scroll.yaml --env LANDMARKS_SEED=many --env LANDMARKS_NOTE=x 2>&1 | grep -E "PASS|FAIL"; $S/tools/launchlog.sh; $S/tools/ui.sh | grep -o "text=\"x\""

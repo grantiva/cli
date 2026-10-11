@@ -1,0 +1,1 @@
+$GRANTIVA emulator ensure --name cov-android-2 --no-boot >/dev/null 2>&1; cat ~/.grantiva/android/created-avds.json; echo; avdmanager delete avd -n cov-android-2 >/dev/null 2>&1; avdmanager list avd | grep -c cov-android-2; $GRANTIVA emulator ensure --name cov-android-3x --no-boot; echo rc=$?; cat ~/.grantiva/android/created-avds.json

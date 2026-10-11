@@ -1,0 +1,1 @@
+$GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 > $E/AND-068/killed.out 2> $E/AND-068/killed.err & p=$!; sleep 6; kill -9 $p; sleep 2; echo "killed $p"; ls .grantiva; $S/tools/settings.sh; ps -axo pid,ppid,command | grep "[g]rantiva-runner" | cut -c1-160

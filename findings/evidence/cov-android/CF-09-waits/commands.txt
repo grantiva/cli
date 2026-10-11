@@ -1,0 +1,13 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $S/tools/cflow.sh 09-waits; cp $S/out-cf-09-waits.stderr $S/out-cf-09-waits.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-09-waits/ 2>/dev/null; true
+rc=0 elapsed=19.9s  (stdout 01.out, stderr 01.err)
+
+# note: 01 failed at extendedWaitUntil notVisible; rerun
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $S/tools/cflow.sh 09-waits; cp $S/out-cf-09-waits.stderr $E/CF-09-waits/02.run.stderr; $S/tools/ui.sh
+rc=0 elapsed=12.0s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ for i in 1 2 3; do $S/tools/cflow.sh 09-waits | grep -E "extendedWait|exit"; done
+rc=0 elapsed=31.1s  (stdout 03.out, stderr 03.err)
+

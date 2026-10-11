@@ -1,0 +1,1 @@
+$GRANTIVA diff capture --device emulator-5556 --no-build > $S/n06-1.out 2> $S/n06-1.err; echo rc=$?; grep -E "Captured|Error|refused|✗|╰" $S/n06-1.out $S/n06-1.err | head -8 | cut -c1-250; cp $S/n06-1.* $E/N-06/

@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --duration 5 --frames-at 0,1000,3000; echo rc=$?; ls -la .grantiva/recordings/; ffprobe -v error -show_entries format=duration -of csv=p=0 .grantiva/recordings/recording.mp4 2>/dev/null || mdls -name kMDItemDurationSeconds .grantiva/recordings/recording.mp4; cat .grantiva/recordings/recording.json 2>/dev/null | head -60
+rc=0 elapsed=5.8s  (stdout 01.out, stderr 01.err)
+

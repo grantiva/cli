@@ -1,0 +1,23 @@
+# note: fresh boot 1: new AVD cov-android-2 via ensure, app installed with build install --app-file, then the first diff capture
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ adb devices; $GRANTIVA emulator ensure --name cov-android-2; $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk --no-launch 2>&1 | tail -1
+rc=0 elapsed=16.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA diff capture --device emulator-5556 --no-build > $S/n06-1.out 2> $S/n06-1.err; echo rc=$?; grep -E "Captured|Error|refused|✗|╰" $S/n06-1.out $S/n06-1.err | head -8 | cut -c1-250; cp $S/n06-1.* $E/N-06/
+rc=0 elapsed=13.9s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA diff capture --device emulator-5556 --no-build > $S/n06-1b.out 2> $S/n06-1b.err; echo "second capture same boot rc=$?"; grep -E "Captured" $S/n06-1b.out
+rc=0 elapsed=13.9s  (stdout 03.out, stderr 03.err)
+
+# note: fresh boot 2: teardown + delete + ensure (new AVD), install, first diff capture
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator teardown --serial emulator-5556 >/dev/null; sleep 3; $GRANTIVA emulator delete --name cov-android-2 >/dev/null; $GRANTIVA emulator ensure --name cov-android-2 2>&1 | tail -1; $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk --no-launch >/dev/null 2>&1; $GRANTIVA diff capture --device emulator-5556 --no-build > $S/n06-2.out 2> $S/n06-2.err; echo "boot 2 first capture rc=$?"; grep -E 'Captured|connection refused' $S/n06-2.out $S/n06-2.err | head -2 | cut -c1-200; cp $S/n06-2.* /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/N-06/
+rc=0 elapsed=43.9s  (stdout 04.out, stderr 04.err)
+
+# note: fresh boot 3: teardown + delete + ensure (new AVD), install, first diff capture
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator teardown --serial emulator-5556 >/dev/null; sleep 3; $GRANTIVA emulator delete --name cov-android-2 >/dev/null; $GRANTIVA emulator ensure --name cov-android-2 2>&1 | tail -1; $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk --no-launch >/dev/null 2>&1; $GRANTIVA diff capture --device emulator-5556 --no-build > $S/n06-3.out 2> $S/n06-3.err; echo "boot 3 first capture rc=$?"; grep -E 'Captured|connection refused' $S/n06-3.out $S/n06-3.err | head -2 | cut -c1-200; cp $S/n06-3.* /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/N-06/
+rc=0 elapsed=34.9s  (stdout 05.out, stderr 05.err)
+

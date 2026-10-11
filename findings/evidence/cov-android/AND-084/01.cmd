@@ -1,0 +1,1 @@
+echo "{\"pid\":99999,\"bundleId\":\"com.kylebrowning.landmarks\",\"platform\":\"android\",\"startedAt\":813396000,\"udid\":\"emulator-5554\",\"wdaPort\":1}" > .grantiva/session.json; ps -p 99999 -o pid= || echo pid-99999-dead; $GRANTIVA runner start --detach; echo rc=$?; cat .grantiva/session.json; echo; $GRANTIVA runner dump-hierarchy | head -3

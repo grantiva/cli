@@ -1,0 +1,1 @@
+rm -rf $S/out-120; $GRANTIVA run --device emulator-5554 --no-build --report-dir $S/out-120 --snapshot full > /dev/null 2>&1; echo rc=$?; ls $S/out-120 $S/out-120/screens; ls $S/out-120/screens/assets/flow-000 | wc -l; ls $S/out-120/assets | head -3; ls $S/out-120/assets/flow-000 | wc -l

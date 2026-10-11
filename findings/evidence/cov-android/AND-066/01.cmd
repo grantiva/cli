@@ -1,0 +1,1 @@
+($GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 > /dev/null 2>&1 &); sleep 6; ls .grantiva; cat .grantiva/android-settings-emulator-5554.json; echo; $S/tools/settings.sh; sleep 8; echo AFTER; ls .grantiva; $S/tools/settings.sh

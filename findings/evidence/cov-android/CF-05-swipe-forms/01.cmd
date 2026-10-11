@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 05-swipe-forms; cp $S/out-cf-05-swipe-forms.stderr $S/out-cf-05-swipe-forms.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-05-swipe-forms/ 2>/dev/null; true

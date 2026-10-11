@@ -1,0 +1,14 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov-android
+
+screens:
+  - name: Clock By Id
+    path:
+      - tap: "Deep Links"
+      - tap: "Caching Demo"
+      - assert_visible: {id: "clock"}
+      - tap: {id: "clock"}
+      - assert_not_visible: {id: "no-such-id"}

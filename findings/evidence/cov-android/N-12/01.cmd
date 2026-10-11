@@ -1,0 +1,1 @@
+$GRANTIVA runner stop; rm -rf .grantiva/captures; $GRANTIVA diff capture --device emulator-5554 --no-build --json > $S/n12-cli.json 2>/dev/null; echo rc=$?; mkdir -p .grantiva/baselines/android; cp $S/n12-session/*.png .grantiva/baselines/android/; $GRANTIVA diff compare

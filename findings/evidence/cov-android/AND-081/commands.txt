@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner dump-hierarchy --format tree > $S/dh.tree; echo rc=$?; wc -c < $S/dh.tree; head -c 400 $S/dh.tree
+rc=0 elapsed=0.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner dump-hierarchy --format json > $S/dh.json; echo rc=$?; wc -c < $S/dh.json; head -c 400 $S/dh.json
+rc=0 elapsed=0.5s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA runner dump-hierarchy --format xml > $S/dh.xml; echo rc=$?; wc -c < $S/dh.xml; head -c 400 $S/dh.xml
+rc=0 elapsed=0.1s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android
+$ grep -c '^ *\[' dh.tree; grep -o '<android[^ ]*\|<androidx[^ ]*\|<[a-z]*\.[^ ]*' dh.xml | wc -l; grep -c '"type"' dh.json; grep -o 'text="[^"]\+"' dh.xml | head -5; grep -o '"text" : "[^"]*"\|"label" : "[^"]*"' dh.json | head -5; grep -o '"[^"]*"' dh.tree | grep -v 'id=' | head -5
+rc=0 elapsed=0.0s  (stdout 04.out, stderr 04.err)
+

@@ -1,0 +1,17 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare; echo rc=$?
+rc=0 elapsed=0.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --json; echo rc=$?
+rc=0 elapsed=0.2s  (stdout 02.out, stderr 02.err)
+
+# note: mutation: PIL draws a 500x500 black square at (200,800) on captures/android/Home.png and flips one pixel (10,1000) on captures/android/Deep Links.png
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare; echo rc=$?; ls .grantiva/captures/android/diffs 2>/dev/null || ls .grantiva/
+rc=0 elapsed=0.2s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --json | python3 -c "import json,sys;d=json.load(sys.stdin);print(\"passed\",d[\"passed\"]);[print(s[\"screen_name\"],s[\"status\"],s[\"pixel_diff_percent\"],s[\"perceptual_distance\"],s.get(\"diff_path\"),s[\"message\"]) for s in d[\"screens\"]]"; echo rc=${PIPESTATUS[0]}
+rc=0 elapsed=0.2s  (stdout 04.out, stderr 04.err)
+

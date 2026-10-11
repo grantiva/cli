@@ -1,0 +1,1 @@
+adb devices; $GRANTIVA emulator ensure --name cov-android-2; $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk --no-launch 2>&1 | tail -1

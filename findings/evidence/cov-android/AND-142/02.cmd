@@ -1,0 +1,1 @@
+$GRANTIVA diff compare --capture --device emulator-5554 --no-build --verbose > $S/c142.out 2> $S/c142.err; echo rc=$?; grep -cE 'gradlew' $S/c142.err; grep -cE 'apkanalyzer' $S/c142.err; grep -E 'Captured|Emulator:|Visual diff|Passed:' $S/c142.out $S/c142.err | cut -c1-150

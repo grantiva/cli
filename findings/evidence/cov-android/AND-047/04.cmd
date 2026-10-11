@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --snapshot full --report-dir $S/out-snap-ok >/dev/null 2>&1; echo rc=$?; find $S/out-snap-ok/assets -type f | sed "s|.*/assets/||" | sort

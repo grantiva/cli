@@ -1,0 +1,1 @@
+echo "{\"status\":\"passed\"}" > $S/x034.ready; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --ready-file $S/x034.ready > /dev/null 2>$S/x034.err & p=$!; sleep 1.5; ls $S/x034.ready 2>&1; wait $p; echo rc=$?; cat $S/x034.ready

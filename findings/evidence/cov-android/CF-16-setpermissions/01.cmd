@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 16-setpermissions; cp $S/out-cf-16-setpermissions.stderr $S/out-cf-16-setpermissions.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-16-setpermissions/ 2>/dev/null; true

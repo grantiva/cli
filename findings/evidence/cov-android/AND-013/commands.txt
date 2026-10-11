@@ -1,0 +1,21 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2; cat ~/.grantiva/android/started.json
+rc=0 elapsed=15.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ kill -9 30707; sleep 3; adb devices
+rc=0 elapsed=3.1s  (stdout 02.out, stderr 02.err)
+
+# note: hand boot after kill -9: nohup emulator -avd cov-android-2 -port 5556 -no-window -no-snapshot-save & (pid 30925)
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ cat ~/.grantiva/android/started.json; echo; $GRANTIVA emulator sessions --json; cat ~/.grantiva/android/started.json
+rc=0 elapsed=0.2s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator teardown --serial emulator-5556; adb devices
+rc=0 elapsed=0.1s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator teardown --serial emulator-5556 --force; sleep 3; adb devices
+rc=0 elapsed=5.4s  (stdout 05.out, stderr 05.err)
+

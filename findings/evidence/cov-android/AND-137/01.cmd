@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml  > $S/r137-plain.out 2> $S/r137-plain.err; echo rc=$?; wc -l < $S/r137-plain.err; grep -c '^\[debug\]' $S/r137-plain.err; head -3 $S/r137-plain.err

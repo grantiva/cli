@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ adb -s emulator-5554 uninstall com.kylebrowning.landmarks.paid; $GRANTIVA run --app-file app/build/outputs/apk/paid/debug/app-paid-debug.apk --flow .maestro/01-browse.yaml --device emulator-5554 --report-dir $S/out-a03 2>&1 | grep -E "Installing|Warning|Resolved|PASS|FAIL"; jq -r .app.id $S/out-a03/report.json; adb -s emulator-5554 shell pm list packages | grep landmarks
+rc=0 elapsed=7.0s  (stdout 01.out, stderr 01.err)
+

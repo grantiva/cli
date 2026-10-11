@@ -1,0 +1,24 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2 --no-boot >/dev/null 2>&1; cat ~/.grantiva/android/created-avds.json; echo; avdmanager delete avd -n cov-android-2 >/dev/null 2>&1; avdmanager list avd | grep -c cov-android-2; $GRANTIVA emulator sessions; echo rc=$?; cat ~/.grantiva/android/created-avds.json
+rc=0 elapsed=2.7s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2 --no-boot >/dev/null 2>&1; cat ~/.grantiva/android/created-avds.json; echo; avdmanager delete avd -n cov-android-2 >/dev/null 2>&1; avdmanager list avd | grep -c cov-android-2; $GRANTIVA emulator ensure --name cov-android-3x --no-boot; echo rc=$?; cat ~/.grantiva/android/created-avds.json
+rc=0 elapsed=5.2s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2 --no-boot >/dev/null 2>&1; cat ~/.grantiva/android/created-avds.json; echo; avdmanager delete avd -n cov-android-2 >/dev/null 2>&1; avdmanager list avd | grep -c cov-android-2; $GRANTIVA emulator delete --name cov-android-nosuch; echo rc=$?; cat ~/.grantiva/android/created-avds.json
+rc=0 elapsed=1.8s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2 --no-boot >/dev/null 2>&1; cat ~/.grantiva/android/created-avds.json; echo; avdmanager delete avd -n cov-android-2 >/dev/null 2>&1; avdmanager list avd | grep -c cov-android-2; $GRANTIVA emulator teardown --serial emulator-5598; echo rc=$?; cat ~/.grantiva/android/created-avds.json
+rc=0 elapsed=1.6s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator teardown --serial emulator-5598 --force; echo rc=$?; cat ~/.grantiva/android/created-avds.json
+rc=0 elapsed=0.2s  (stdout 05.out, stderr 05.err)
+
+# [06] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator delete --name cov-android-3x; $GRANTIVA emulator sessions >/dev/null; cat ~/.grantiva/android/created-avds.json; avdmanager list avd | grep Name
+rc=0 elapsed=2.1s  (stdout 06.out, stderr 06.err)
+
