@@ -1,0 +1,15 @@
+# env: GRANTIVA=$HOME/.grantiva-qa/bin/grantiva (2.1.0, main 51c597a, runner 1.1.28-grantiva.9)
+#      GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner GRANTIVA_SESSION_ID=round1-smoke; GRANTIVA_API_KEY unset
+# demo copied from /Users/kyle/Developer/landmarks-demo (00fdc21) into scratch; android config edited per A4-config.diff
+A0  $GRANTIVA emulator ensure --name smoke-android                         -> A0-ensure.txt
+A0  (android/) $GRANTIVA build install --device emulator-5554              -> A0-build-install.txt
+A1  (android/) $GRANTIVA run --device emulator-5554 --no-build             -> A1-run.txt
+A2  (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/02-favorite.yaml --snapshot full --report-dir <scratch>/a02 -> A2-run.txt, A2-md5.txt, A2-report.json, A2-cmd-008-{before,after}.png
+A3  (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml  (x3) -> A3-crash-{1,2,3}.txt
+A4  (android/) $GRANTIVA diff capture --device emulator-5554 --no-build    -> A4-diff-capture.txt
+    $GRANTIVA emulator teardown --serial emulator-5554; adb devices        -> A-teardown.txt
+A5  (android/) adb devices; $GRANTIVA build build --variant paidDebug; adb devices; ps|grep emulator; avdmanager delete avd -n smoke-android -> A5-build-paid.txt
+I0  $GRANTIVA simulator ensure --name smoke-ios --device-type "iPhone 17" --runtime 26.0 -> I0-ensure.txt
+I0  (ios/) $GRANTIVA build install --simulator E1B88A86-3CD0-44AB-AB76-EDAB7AF964C0 -> I0-build-install.txt
+I1/I2 (ios/) $GRANTIVA run --simulator E1B88A86-... --no-build             -> I1-run.txt
+I3  ls devices/; $GRANTIVA simulator teardown --udid E1B88A86-...; ls devices/; simctl grep -c smoke-; adb devices -> I3-teardown.txt

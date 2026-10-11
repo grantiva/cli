@@ -1,0 +1,18 @@
+5c5
+< emulator: Pixel_8_API_35
+---
+> emulator: smoke-android
+18,19c18,19
+<       - tap: "Landmarks"
+<       - tap: "Lakes"
+---
+>       - tap: {text: "Landmarks", exact: true}
+>       - tap: {text: "Lakes", exact: true}
+22,24c22,24
+<       - tap: "Landmarks"
+<       - tap: "Golden Gate Bridge"
+<       - assert_visible: "Plan Visit"
+---
+>       - tap: {text: "Landmarks", exact: true}
+>       - tap: {text: "Golden Gate Bridge", exact: true}
+>       - assert_visible: {text: "Plan Visit", exact: true}
