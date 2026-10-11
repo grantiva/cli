@@ -265,12 +265,9 @@ enum UITools {
     ]
 
     /// 44 pt on iOS (HIG), 48 dp on Android (Material).
+    /// A frame value: a number on both platforms (Android's are whole dp).
     static func frameNumber(_ value: Any?) -> Double? {
-        switch value {
-        case let number as NSNumber: return number.doubleValue
-        case let string as String: return Double(string)
-        default: return nil
-        }
+        (value as? NSNumber)?.doubleValue
     }
 
     static func minimumTapTarget(for platform: Platform) -> Double {
@@ -351,7 +348,6 @@ enum UITools {
 
         // Rule: small_tap_target
         if rules.contains("small_tap_target") && isInteractive && enabled {
-            // iOS frames are numbers, Android's are strings.
             if let frame = element["frame"] as? [String: Any],
                let w = Self.frameNumber(frame["width"]), let h = Self.frameNumber(frame["height"]) {
                 let minimum = minimumTapTarget(for: platform)

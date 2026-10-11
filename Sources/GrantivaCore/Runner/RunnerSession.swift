@@ -107,7 +107,17 @@ public enum RunnerSession {
             fileName: configFileName
         )
         let flowPath = generated.path
-        let outputPathMap = expandedPathMap(generated.asWritten.merging([flowPath: configFileName]) { _, new in new })
+        // Every flow the config's run_flow steps reach, by its project-relative
+        // path (the runner resolves their own runFlows itself, L20), then the
+        // paths as written, then the generated flow as the config file.
+        let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
+            roots: Array(generated.asWritten.keys), cwd: FileManager.default.currentDirectoryPath
+        )
+        let outputPathMap = expandedPathMap(
+            reachablePathMap
+                .merging(generated.asWritten) { _, written in written }
+                .merging([flowPath: configFileName]) { _, new in new }
+        )
         simulatorLease.recordTemporaryDirectory((flowPath as NSString).deletingLastPathComponent)
         defer {
             try? FileManager.default.removeItem(
@@ -444,8 +454,19 @@ public enum RunnerSession {
             stagedPathMap[tempFlowPath] = flowPaths[index]
         }
 
-        // Sub-flow paths first, so a staged top-level path always wins.
-        let reportPathMap = subFlowPathMap.merging(stagedPathMap) { _, staged in staged }
+        // Every flow reachable through runFlow, by its project-relative path
+        // (the runner resolves a sub-flow's own runFlows itself), then the
+        // sub-flow paths as written, then the staged top-level paths, so a
+        // staged path always wins (L20).
+        let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
+            roots: absoluteFlowPaths, cwd: FileManager.default.currentDirectoryPath
+        ).merging(Dictionary(
+            zip(absoluteFlowPaths.map { URL(fileURLWithPath: $0).standardizedFileURL.path }, flowPaths),
+            uniquingKeysWith: { first, _ in first }
+        )) { _, passed in passed }
+        let reportPathMap = reachablePathMap
+            .merging(subFlowPathMap) { _, written in written }
+            .merging(stagedPathMap) { _, staged in staged }
         let outputPathMap = expandedPathMap(reportPathMap)
 
         // If the caller passed --report-dir, write reports straight to it and
@@ -583,11 +604,13 @@ public enum RunnerSession {
             // The flows' named screenshots are kept too, best-effort.
             let screenshots = (try? RunnerArtifactCollector.collect(
                 reportDir: reportDir, outputDir: outputDir,
-                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap
+                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap, pathMap: outputPathMap
             )).map { entries in
                 Dictionary(entries.map { ($0.screenName, $0.screenshots) }, uniquingKeysWith: { first, _ in first })
             } ?? [:]
-            failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir, screenshots: screenshots)
+            failureReport?.record(
+                reportDir: reportDir, preservedReportDir: readyReportDir, screenshots: screenshots, pathMap: outputPathMap
+            )
             // The same test the readiness watcher uses to publish `passed`:
             // the report can list fewer flows than were requested.
             if outcome.interrupted,
@@ -618,7 +641,8 @@ public enum RunnerSession {
             reportDir: reportDir,
             outputDir: outputDir,
             requestedFlowPaths: flowPaths,
-            stagedPathMap: stagedPathMap
+            stagedPathMap: stagedPathMap,
+            pathMap: outputPathMap
         )
 
         if let expectedPixels {
@@ -882,27 +906,29 @@ public enum RunnerSession {
         return lines.joined(separator: "\n")
     }
 
-    /// How a screen step is named in capture results.
+    /// How a screen step is named in capture results: the same wait label as
+    /// the live line, and `(exact)` after a label that must match exactly (L18).
     public static func stepAction(for step: GrantivaConfig.Screen.Step) -> String {
+        func exact(_ isExact: Bool) -> String { isExact ? " (exact)" : "" }
         if let label = step.tap {
-            return step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\""
+            return (step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\"") + exact(step.tapExact)
         } else if let direction = step.swipe {
             return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
         } else if let text = step.type {
             return "Type \"\(text)\""
         } else if let seconds = step.wait {
-            return "Wait \(seconds)s"
+            return FlowGenerator.waitLabel(seconds: seconds)
         } else if let seconds = step.settle {
             return "Wait for animation to end (\(seconds)s max)"
         } else if let label = step.assertVisible {
             let target = step.assertVisibleById ? "id \"\(label)\"" : "\"\(label)\""
             if step.scrollUntilVisible { return "Scroll until visible \(target)" }
             if let timeout = step.waitTimeout { return "Wait until visible \(target) (\(timeout)ms max)" }
-            return "Assert visible \(target)"
+            return "Assert visible \(target)" + exact(step.assertVisibleExact)
         } else if let label = step.assertNotVisible {
             let target = step.assertNotVisibleById ? "id \"\(label)\"" : "\"\(label)\""
             if let timeout = step.waitTimeout { return "Wait until not visible \(target) (\(timeout)ms max)" }
-            return "Assert not visible \(target)"
+            return "Assert not visible \(target)" + exact(step.assertNotVisibleExact)
         } else if let path = step.runFlow {
             return "Run flow \"\(path)\""
         }

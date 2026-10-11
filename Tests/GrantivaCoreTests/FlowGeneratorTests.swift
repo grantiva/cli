@@ -142,6 +142,37 @@ final class FlowGeneratorTests: XCTestCase {
         )
     }
 
+    /// L42-a: a native `{id:}` step is emitted with `id:`.
+    func testAnIdStepIsEmittedAsAnIdSelector() {
+        let screens = [GrantivaConfig.Screen(name: "Clock", path: .steps([
+            .init(tap: "clock", tapById: true), .init(assertVisible: "clock", assertVisibleById: true),
+        ]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    id: \"clock\""), yaml)
+    }
+
+    /// L44: on Android a launch-only screen waits for the app to draw (an
+    /// element with text inside the app's content view) before the settle
+    /// and the screenshot; a blank, not-yet-drawn window is static and would
+    /// pass the settle alone. iOS is unchanged.
+    func testALaunchScreenWaitsForTheAppToDrawOnAndroid() {
+        let screens = [GrantivaConfig.Screen(name: "Home", path: .launch)]
+        let android = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .android)
+        XCTAssertTrue(android.contains("""
+        - launchApp
+        \(FlowGenerator.appDrawnWait.joined(separator: "\n"))
+        \(settle)
+        - takeScreenshot: "Home"
+        """), android)
+        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("    optional: true"), "a screen without text must not fail")
+        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("        id: \"android:id/content\""))
+
+        let ios = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .ios)
+        XCTAssertFalse(ios.contains("extendedWaitUntil"), ios)
+        XCTAssertTrue(ios.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), ios)
+    }
+
     func testSwipeAndTypeAreFollowedBySettle() {
         let screens = [GrantivaConfig.Screen(name: "S", path: .steps([
             .init(swipe: "Up"), .init(type: "abc"), .init(assertVisible: "Done"),

@@ -12,6 +12,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
     private var earlierCaptures: [ScreenCapture] = []
     private var storedScreens: [ScreenCapture] = []
     private var passedBeforeInterrupt = false
+    private var storedSkipped: Set<String> = []
 
     public init() {}
 
@@ -61,6 +62,14 @@ public final class RunnerFailureReport: @unchecked Sendable {
         earlierCaptures += captures
     }
 
+    /// Flows the runner never started (a fail-fast run stopped earlier): the
+    /// text result shows them as skipped, as the ready file does (L10).
+    public var skippedFlows: Set<String> {
+        lock.lock()
+        defer { lock.unlock() }
+        return storedSkipped
+    }
+
     /// The preserved `--report-dir`, or nil for an ephemeral one.
     public var reportDir: String? {
         lock.lock()
@@ -68,23 +77,30 @@ public final class RunnerFailureReport: @unchecked Sendable {
         return storedReportDir
     }
 
-    func record(reportDir: String, preservedReportDir: String?, screenshots: [String: [ScreenCapture.Screenshot]] = [:]) {
-        let captures = Self.captures(reportDir: reportDir).map { capture -> ScreenCapture in
+    func record(
+        reportDir: String, preservedReportDir: String?, screenshots: [String: [ScreenCapture.Screenshot]] = [:],
+        pathMap: [String: String] = [:]
+    ) {
+        let captures = Self.captures(reportDir: reportDir, pathMap: pathMap).map { capture -> ScreenCapture in
             var capture = capture
             capture.screenshots = screenshots[capture.screenName] ?? []
             return capture
         }
+        let skipped = (RunnerReportSteps.report(in: reportDir)?.flows ?? [])
+            .filter { $0.status == "skipped" }.map { $0.name ?? "flow" }
         lock.lock()
         defer { lock.unlock() }
         storedCaptures = captures
+        storedSkipped = Set(skipped)
         storedReportDir = preservedReportDir
     }
 
-    static func captures(reportDir: String) -> [ScreenCapture] {
+    /// `pathMap` names the user's files in each step (L19).
+    static func captures(reportDir: String, pathMap: [String: String] = [:]) -> [ScreenCapture] {
         guard let report = RunnerReportSteps.report(in: reportDir) else { return [] }
         return (report.flows ?? []).map { flow in
             let name = flow.name ?? "flow"
-            var steps = RunnerReportSteps.steps(RunnerReportSteps.commands(of: flow, in: reportDir))
+            var steps = RunnerReportSteps.steps(RunnerReportSteps.commands(of: flow, in: reportDir), pathMap: pathMap)
             // A flow that did not pass must show a failed step even when no
             // command failed (setup error, skipped after fail-fast, cut off).
             if flow.status != "passed", !steps.contains(where: { $0.status == .failed }) {
@@ -92,7 +108,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
                     action: "Run flow \"\(name)\"",
                     status: .failed,
                     duration: nil,
-                    message: flow.error ?? flow.status
+                    message: (flow.error ?? flow.status).map(OutputRewriter(replacements: pathMap).rewrite)
                 ))
             }
             if steps.isEmpty {

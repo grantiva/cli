@@ -1,6 +1,7 @@
 import Foundation
 import XCTest
 @testable import GrantivaCore
+import Yams
 
 final class GrantivaConfigPlatformTests: XCTestCase {
     private var dir: URL!
@@ -317,5 +318,116 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         try write(".maestro/01.yaml", "appId: com.example.ios\n---\n- launchApp\n")
         try FileManager.default.createDirectory(at: dir.appendingPathComponent("Demo.xcodeproj"), withIntermediateDirectories: true)
         XCTAssertEqual(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir)?.bundleId, "com.example.ios")
+    }
+
+    // MARK: - L42-a: native steps select by id
+
+    func testNativeStepsAcceptAnIdSelector() throws {
+        try write("grantiva-android.yml", """
+            application_id: com.kylebrowning.landmarks
+            screens:
+              - name: Clock
+                path:
+                  - tap: {id: "clock"}
+                  - assert_visible: {id: "clock"}
+                  - assert_not_visible: {id: "spinner"}
+            """)
+        let config = try GrantivaConfig.load(platform: .android, from: dir)
+        XCTAssertTrue(config.warnings.isEmpty, "\(config.warnings)")
+        guard case .steps(let steps) = config.screens.first?.path else { return XCTFail("expected steps") }
+        XCTAssertEqual(steps[0].tap, "clock"); XCTAssertTrue(steps[0].tapById)
+        XCTAssertEqual(steps[1].assertVisible, "clock"); XCTAssertTrue(steps[1].assertVisibleById)
+        XCTAssertEqual(steps[2].assertNotVisible, "spinner"); XCTAssertTrue(steps[2].assertNotVisibleById)
+
+        let encoded = try YAMLEncoder().encode(steps)
+        let decoded = try YAMLDecoder().decode([GrantivaConfig.Screen.Step].self, from: encoded)
+        XCTAssertEqual(decoded.map(\.tapById), [true, false, false], encoded)
+        XCTAssertEqual(decoded.map(\.assertVisibleById), [false, true, false], encoded)
+        XCTAssertEqual(decoded.map(\.assertNotVisibleById), [false, false, true], encoded)
+        XCTAssertEqual(decoded[0].tap, "clock")
+    }
+
+    func testAnIdAndATextTogetherAreAConfigErrorNamingTheStep() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.kylebrowning.Landmarks
+            screens:
+              - name: Clock
+                path:
+                  - tap: {id: "clock", text: "Clock"}
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            let text = error.localizedDescription
+            XCTAssertTrue(text.contains("grantiva.yml:5"), text)
+            XCTAssertTrue(text.contains("tap"), text)
+            XCTAssertTrue(text.contains("not both"), text)
+        }
+    }
+
+    /// An identifier always matches exactly: `exact` with `id` is an error,
+    /// not silently dropped.
+    func testExactWithAnIdIsAConfigError() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.kylebrowning.Landmarks
+            screens:
+              - name: Clock
+                path:
+                  - assert_visible: {id: "clock", exact: true}
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            guard case .configuration(let message) = error as? GrantivaError else {
+                return XCTFail("expected a configuration error, got \(error)")
+            }
+            XCTAssertEqual(
+                message,
+                "grantiva.yml:5: screens[0].path[0].assert_visible: `exact` applies to `text` steps only."
+            )
+        }
+    }
+
+    /// A bad step and a bad top-level key are both reported, not only the
+    /// step.
+    func testABadStepAndABadTopLevelKeyAreBothReported() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.kylebrowning.Landmarks
+            screens:
+              - name: Wait
+                path:
+                  - wait: soon
+            diff:
+              threshold: lots
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            let text = error.localizedDescription
+            XCTAssertTrue(text.contains("grantiva.yml:5: screens[0].path[0].wait: wait takes a number of seconds"), text)
+            XCTAssertTrue(text.contains("grantiva.yml:7: diff.threshold: threshold takes a number; got \"lots\""), text)
+        }
+    }
+
+    // MARK: - L42-b: a malformed step is a plain config error
+
+    func testAMalformedStepIsAPlainConfigErrorWithItsLine() throws {
+        try write("grantiva-android.yml", """
+            platform: android
+            application_id: com.kylebrowning.landmarks
+            emulator: fix-l42b
+            screens:
+              - name: Deep Links
+                path:
+                  - tap: {txt: "Deep Links"}
+              - name: Wait
+                path:
+                  - wait: soon
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .android, from: dir)) { error in
+            let text = error.localizedDescription
+            XCTAssertTrue(text.contains("grantiva-android.yml:7"), text)
+            XCTAssertTrue(text.contains("tap"), text)
+            XCTAssertTrue(text.contains("unknown key \"txt\""), "the unknown key is folded in: \(text)")
+            XCTAssertTrue(text.contains("grantiva-android.yml:10"), text)
+            XCTAssertTrue(text.contains("wait"), text)
+            for jargon in ["DecodingError", "CodingKeys", "Debug description", "Invalid argument", "Double", "keyNotFound"] {
+                XCTAssertFalse(text.contains(jargon), "\(jargon) in: \(text)")
+            }
+        }
     }
 }

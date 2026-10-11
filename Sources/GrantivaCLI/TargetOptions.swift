@@ -2,10 +2,36 @@ import ArgumentParser
 import Foundation
 import GrantivaCore
 
+/// Whether a command's help lists the flags that only affect booting or
+/// choosing a device to run on (`--emulator`, `--headless`,
+/// `--allow-device-settings`).
+protocol BootFlagVisibility {
+    static var visibility: ArgumentVisibility { get }
+}
+
+/// Commands that boot or pick a device: the boot flags are in their help.
+enum BootFlagsShown: BootFlagVisibility {
+    static var visibility: ArgumentVisibility { .default }
+}
+
+/// `build build`, which only compiles and never boots or resolves a device
+/// to run on (L29): the boot flags still parse, so a script that passes them
+/// keeps working, but they are hidden from its help and change nothing.
+enum BootFlagsHidden: BootFlagVisibility {
+    static var visibility: ArgumentVisibility { .hidden }
+}
+
 /// The flags that name what to build and where to run it, for both
 /// platforms. A command declares this once; which half applies is decided by
 /// the resolved platform, and a flag from the other half is an error.
-struct TargetOptions: ParsableArguments {
+typealias TargetOptions = TargetFlags<BootFlagsShown>
+
+/// `TargetOptions` with the boot flags hidden from help, for `build build`.
+/// One declaration for both, so the flags, their help and their checks
+/// cannot drift apart.
+typealias BuildTargetOptions = TargetFlags<BootFlagsHidden>
+
+struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
     @Option(name: .long, help: "Scheme to build (iOS)")
     var scheme: String?
 
@@ -24,17 +50,23 @@ struct TargetOptions: ParsableArguments {
     @Option(name: .long, help: "Application ID (Android; read from the build or the APK when omitted)")
     var applicationId: String?
 
-    @Option(name: .long, help: "AVD name to use, booting it if needed (Android)")
+    @Option(name: .long, help: ArgumentHelp("AVD name to use, booting it if needed (Android)", visibility: Boot.visibility))
     var emulator: String?
 
-    @Option(name: .long, help: "adb serial of an attached emulator or physical device (Android)")
+    @Option(name: .long, help: "adb serial of an attached emulator or physical device (Android); for a build, its ABI picks the split APK")
     var device: String?
 
-    @Flag(name: .long, help: "Apply demo mode and animation settings on a physical device too (Android)")
+    @Flag(name: .long, help: ArgumentHelp("Apply demo mode and animation settings on a physical device too (Android)", visibility: Boot.visibility))
     var allowDeviceSettings = false
 
-    @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
+    @Flag(name: .long, help: ArgumentHelp("Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.", visibility: Boot.visibility))
     var headless = false
+
+    /// Runs at parse time, before any config is read: `--device` with
+    /// `--emulator` is a usage error (exit 64 with the Usage lines).
+    func validate() throws {
+        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
+    }
 
     var androidOptions: AndroidPlatform.Options {
         AndroidPlatform.Options(allowDeviceSettings: allowDeviceSettings, headless: headless)
@@ -54,9 +86,6 @@ struct TargetOptions: ParsableArguments {
         let wrong = platform == .ios ? androidFlags : iosFlags
         if let offending = wrong.first(where: { $0.1 })?.0 {
             throw Self.otherPlatformFlagError(offending, platform: platform)
-        }
-        if device != nil, emulator != nil {
-            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
         }
         if let device {
             _ = try DeviceID.validate(device, flag: "--device")
@@ -174,5 +203,14 @@ struct TargetOptions: ParsableArguments {
         case .android:
             return "Application ID is required. Pass --application-id, set application_id in grantiva-android.yml, build from source, or pass --app-file <apk>."
         }
+    }
+}
+
+/// The usage error for two flags given together (`ExclusiveFlags`), thrown
+/// from `validate()` so it exits 64 with the command's Usage lines and the
+/// plain `Error:` prefix.
+func requireExclusive(_ first: (flag: String, given: Bool), _ second: (flag: String, given: Bool)) throws {
+    if let problem = ExclusiveFlags.problem(first, second) {
+        throw ValidationError(problem)
     }
 }

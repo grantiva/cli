@@ -158,9 +158,7 @@ struct HierarchyCommand: AsyncParsableCommand {
             case .xml:
                 text = try await attachment.client.hierarchyXML()
             case .json:
-                let tree = try await attachment.client.hierarchy()
-                let data = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
-                text = String(decoding: data, as: UTF8.self)
+                text = try Self.jsonText(try await attachment.client.hierarchy())
             }
         } catch {
             await attachment.detach()
@@ -168,6 +166,12 @@ struct HierarchyCommand: AsyncParsableCommand {
         }
         await attachment.detach()
         Output.line(text)
+    }
+
+    /// The `--format json` text of a parsed tree.
+    static func jsonText(_ tree: Any) throws -> String {
+        let data = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+        return String(decoding: data, as: UTF8.self)
     }
 
     /// Turns URLSession's NSError dumps into one line naming the port and

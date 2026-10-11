@@ -339,8 +339,12 @@ public struct SimulatorManager: Sendable, Decodable {
     /// has no place for them, logging any that could not be removed.
     private func removeDeviceHomes(_ udid: String) {
         for failure in WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid).failures {
-            GrantivaLog.logger.warning("Could not remove the runner home \(failure). Delete it by hand.")
+            GrantivaLog.logger.warning("\(Self.homeRemovalWarning(failure))")
         }
+    }
+
+    static func homeRemovalWarning(_ failure: String) -> String {
+        "Could not remove the runner home \(WDADeviceHome.withoutTrailingPeriod(failure)). Delete it by hand."
     }
 
     public func managedSessions() async throws -> [ManagedSimulatorSession] {

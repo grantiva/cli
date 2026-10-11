@@ -27,7 +27,7 @@ If no keep-alive session is live, the command fails fast with an actionable erro
 ### Output formats
 
 - **XML (default)** — Apple's `debugDescription` format from XCUI, unwrapped from WDA's `{"value": "…"}` envelope. Full element tree with types, labels, identifiers, frames, traits.
-- **JSON** — the element tree parsed from that XML, never WDA's `{"value", "sessionId"}` envelope, the same shape `grantiva runner dump-hierarchy --format json` and the MCP `grantiva_a11y_tree` tool print for the same screen. Each element has `type` and `children`; `enabled` and `visible` are booleans; `frame` is `{x, y, width, height}` with numbers (whole points as integers, fractional ones as decimals). `label`, `name`, `identifier`, `value` and `placeholderValue` appear only when the element has a non-empty one, and `frame` only when all four values are present. On Android it is the UIAutomator2 tree with `type`, `platform` and `children`.
+- **JSON** — the element tree parsed from that XML, never WDA's `{"value", "sessionId"}` envelope, the same shape `grantiva runner dump-hierarchy --format json` and the MCP `grantiva_a11y_tree` tool print for the same screen. Each element has `type` and `children`; `enabled` and `visible` are booleans; `frame` is `{x, y, width, height}` with numbers (whole points as integers, fractional ones as decimals). `label`, `name`, `identifier`, `value` and `placeholderValue` appear only when the element has a non-empty one, and `frame` only when all four values are present. On Android it is the UIAutomator2 tree with `type`, `platform` and `children`, and its `frame` values are numbers too (whole dp).
 
 ### Flags
 

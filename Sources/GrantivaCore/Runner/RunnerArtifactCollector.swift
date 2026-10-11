@@ -26,6 +26,7 @@ enum RunnerArtifactCollector {
     }
 
     /// One entry per flow, in report order: the runner's commands as steps
+    /// (with `pathMap` applied, so they name the user's files)
     /// (status, measured duration, failure message) and the flow's named
     /// `takeScreenshot` captures, copied to `outputDir` as
     /// `<flow>-<artifact>.png`. The runner's per-step trace shots
@@ -35,7 +36,8 @@ enum RunnerArtifactCollector {
         reportDir: String,
         outputDir: String,
         requestedFlowPaths: [String],
-        stagedPathMap: [String: String]
+        stagedPathMap: [String: String],
+        pathMap: [String: String] = [:]
     ) throws -> [ScreenCapture] {
         let fileManager = FileManager.default
         let attributedFlows = try attributedFlows(
@@ -85,7 +87,7 @@ enum RunnerArtifactCollector {
             }
 
             let reportFlow = reportFlows.first { $0.id == flow.id }
-            var steps = reportFlow.map { RunnerReportSteps.steps(RunnerReportSteps.commands(of: $0, in: reportDir)) } ?? []
+            var steps = reportFlow.map { RunnerReportSteps.steps(RunnerReportSteps.commands(of: $0, in: reportDir), pathMap: pathMap) } ?? []
             if steps.isEmpty {
                 let passed = reportFlow?.status.map { $0 == "passed" } ?? true
                 steps = [StepResult(

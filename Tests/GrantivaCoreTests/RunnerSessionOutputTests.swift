@@ -385,6 +385,137 @@ final class RunnerSessionOutputTests: XCTestCase {
         XCTAssertFalse(collected.text.contains(subFlow), collected.text)
     }
 
+    // MARK: - L19: stdout steps name a sub-flow as written
+
+    func testCollectedStepsNameTheSubFlowAsWritten() throws {
+        let commands = try JSONDecoder().decode(RunnerReportSteps.FlowData.self, from: Data("""
+        {"commands":[
+          {"yaml":"runFlow: /abs/dir/sub.yaml","status":"passed","duration":2100},
+          {"yaml":"runFlow: /abs/dir/sub.yaml","status":"failed","error":{"message":"in /abs/dir/sub.yaml: tapOn failed"}}
+        ]}
+        """.utf8)).commands ?? []
+        let steps = RunnerReportSteps.steps(commands, pathMap: ["/abs/dir/sub.yaml": "sub.yaml"])
+        XCTAssertEqual(steps.map(\.action), ["runFlow: sub.yaml", "runFlow: sub.yaml"])
+        XCTAssertEqual(steps.last?.message, "in sub.yaml: tapOn failed")
+    }
+
+    func testRunAndFailureResultsNameTheSubFlowAsWritten() async throws {
+        let project = scratch.appendingPathComponent("project-l19")
+        try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n"
+            .write(to: project.appendingPathComponent("main.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- launchApp\n"
+            .write(to: project.appendingPathComponent("sub.yaml"), atomically: true, encoding: .utf8)
+        let subFlow = project.appendingPathComponent("sub.yaml").standardizedFileURL.path
+        func body(status: String, exit: Int) -> String {
+            """
+            mkdir -p "$out/flows"
+            printf '{"commands":[{"yaml":"launchApp","status":"passed","duration":10},{"yaml":"runFlow: \(subFlow)","status":"\(status)","duration":20,"error":{"message":"\(subFlow) failed"}}]}' > "$out/flows/flow-000.json"
+            printf '{"status":"\(status)","flows":[{"index":0,"id":"flow-000","name":"main","sourceFile":"%s","assetsDir":"assets/flow-000","status":"\(status)","dataFile":"flows/flow-000.json"}]}' "$flow" > "$out/report.json"
+            exit \(exit)
+            """
+        }
+        let passing = try await RunnerSession.runFlowFiles(
+            at: [project.appendingPathComponent("main.yaml").path],
+            bundleId: "com.example", udid: "OUT-\(UUID().uuidString)", platform: OutputStubPlatform(),
+            runner: try fakeRunner(body: body(status: "passed", exit: 0)),
+            outputDir: scratch.appendingPathComponent("captures").path, timeoutSeconds: 30
+        )
+        XCTAssertEqual(passing.first?.steps.map(\.action), ["launchApp", "runFlow: sub.yaml"])
+
+        let report = RunnerFailureReport()
+        do {
+            _ = try await RunnerSession.runFlowFiles(
+                at: [project.appendingPathComponent("main.yaml").path],
+                bundleId: "com.example", udid: "OUT-\(UUID().uuidString)", platform: OutputStubPlatform(),
+                runner: try fakeRunner(body: body(status: "failed", exit: 1)),
+                outputDir: scratch.appendingPathComponent("captures").path, timeoutSeconds: 30, failureReport: report
+            )
+            XCTFail("expected a failure")
+        } catch {
+            XCTAssertFalse(error.localizedDescription.contains(subFlow), error.localizedDescription)
+        }
+        let failed = try XCTUnwrap(report.captures.first)
+        XCTAssertEqual(failed.steps.map(\.action), ["launchApp", "runFlow: sub.yaml"])
+        XCTAssertEqual(failed.steps.last?.message, "sub.yaml failed")
+    }
+
+    /// L10: a fail-fast run reports the flows it never started as skipped.
+    func testTheFailureReportNamesTheSkippedFlows() throws {
+        let reportDir = scratch.appendingPathComponent("skipped-report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        try #"{"status":"failed","flows":[{"index":0,"id":"f0","name":"02-exact-negative","status":"failed","error":"boom"},{"index":1,"id":"f1","name":"02-favorite","status":"skipped","error":"run stopped"}]}"#
+            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+        let report = RunnerFailureReport()
+        report.record(reportDir: reportDir.path, preservedReportDir: nil)
+        XCTAssertEqual(report.skippedFlows, ["02-favorite"])
+        XCTAssertEqual(report.captures.map(\.screenName), ["02-exact-negative", "02-favorite"], "--json keeps every flow")
+    }
+
+    // MARK: - L20: a runFlow cycle names every hop the user's way
+
+    func testEveryReachableSubFlowMapsToItsProjectRelativePath() throws {
+        let project = scratch.appendingPathComponent("cycle")
+        try FileManager.default.createDirectory(at: project.appendingPathComponent("flows"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: project.appendingPathComponent("shared"), withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- runFlow: b.yaml\n"
+            .write(to: project.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- runFlow: a.yaml\n"
+            .write(to: project.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- runFlow: ../shared/d.yaml\n"
+            .write(to: project.appendingPathComponent("flows/c.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- runFlow: ../flows/c.yaml\n"
+            .write(to: project.appendingPathComponent("shared/d.yaml"), atomically: true, encoding: .utf8)
+        let root = project.standardizedFileURL.path
+
+        let map = RunnerSession.expandedPathMap(FlowReferenceResolver.reachableFlowDisplayMap(
+            roots: ["\(root)/a.yaml", "\(root)/flows/c.yaml"], cwd: root
+        ))
+        XCTAssertEqual(map["\(root)/a.yaml"], "a.yaml")
+        XCTAssertEqual(map["\(root)/b.yaml"], "b.yaml")
+        XCTAssertEqual(map["\(root)/shared/d.yaml"], "shared/d.yaml")
+        let other = root.hasPrefix("/private/") ? String(root.dropFirst("/private".count)) : "/private" + root
+        XCTAssertEqual(map["\(other)/a.yaml"], "a.yaml", "both spellings")
+        XCTAssertEqual(map["\(other)/b.yaml"], "b.yaml", "both spellings")
+
+        let line = "  - b.yaml: circular dependency detected: a.yaml -> \(other)/b.yaml -> \(root)/a.yaml -> b.yaml"
+        XCTAssertEqual(
+            OutputRewriter(replacements: map).rewrite(line),
+            "  - b.yaml: circular dependency detected: a.yaml -> b.yaml -> a.yaml -> b.yaml"
+        )
+    }
+
+    func testAFlowRunNamesEveryHopOfACycleAsWritten() async throws {
+        let project = scratch.appendingPathComponent("cycle-run")
+        try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- runFlow: b.yaml\n"
+            .write(to: project.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- runFlow: a.yaml\n"
+            .write(to: project.appendingPathComponent("b.yaml"), atomically: true, encoding: .utf8)
+        let root = project.standardizedFileURL.path
+        let collected = Collected()
+        RunnerNarration.sink = { collected.append($0) }
+        // The runner names the staged flow, then the paths it resolved itself.
+        let runner = try fakeRunner(body: """
+        echo "  - b.yaml: circular dependency detected: $flow -> \(root)/b.yaml -> \(root)/a.yaml -> \(root)/b.yaml" >&2
+        exit 1
+        """)
+        let cwd = FileManager.default.currentDirectoryPath
+        XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(root))
+        defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
+        do {
+            _ = try await RunnerSession.runFlowFiles(
+                at: ["a.yaml"], bundleId: "com.example", udid: "OUT-\(UUID().uuidString)", platform: OutputStubPlatform(),
+                runner: runner, outputDir: scratch.appendingPathComponent("captures").path, timeoutSeconds: 30
+            )
+            XCTFail("expected a failure")
+        } catch {
+            let text = collected.text + error.localizedDescription
+            XCTAssertTrue(text.contains("circular dependency detected: a.yaml -> b.yaml -> a.yaml -> b.yaml"), text)
+            XCTAssertFalse(text.contains(root), text)
+        }
+    }
+
     // MARK: - Helpers
 
     /// A runner stand-in: `$out` is the `--output` dir and `$flow` the last
@@ -443,4 +574,29 @@ struct OutputStubPlatform: DevicePlatform {
     func cleanupOrphans(deviceID: String) async {}
     func attachDriver(deviceID: String, port: UInt16?) async throws -> DriverAttachment { fatalError() }
     func recordVideo(deviceID: String, to path: String, seconds: Double) async throws {}
+}
+
+/// L18: the summary names a step as the live line does.
+extension RunnerSessionOutputTests {
+    func testSummaryWaitLabelMatchesTheLiveLine() {
+        typealias Step = GrantivaConfig.Screen.Step
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(wait: 3)), "Wait 3s")
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(wait: 1.5)), "Wait 1.5s")
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(wait: 3)), FlowGenerator.waitLabel(seconds: 3))
+    }
+
+    func testSummaryLabelsKeepTheExactQualifier() {
+        typealias Step = GrantivaConfig.Screen.Step
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(tap: "Lakes", tapExact: true)), "Tap on \"Lakes\" (exact)")
+        XCTAssertEqual(
+            RunnerSession.stepAction(for: Step(assertVisible: "Mono Lake", assertVisibleExact: true)),
+            "Assert visible \"Mono Lake\" (exact)"
+        )
+        XCTAssertEqual(
+            RunnerSession.stepAction(for: Step(assertNotVisible: "Golden Gate.*", assertNotVisibleExact: true)),
+            "Assert not visible \"Golden Gate.*\" (exact)"
+        )
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(tap: "Lakes")), "Tap on \"Lakes\"")
+        XCTAssertEqual(RunnerSession.stepAction(for: Step(assertVisible: "Mono Lake")), "Assert visible \"Mono Lake\"")
+    }
 }

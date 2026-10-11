@@ -146,6 +146,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
 
+    func validate() throws {
+        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
+    }
+
     func run() async throws {
         options.applyRunnerNarration()
         // Check for existing session
@@ -174,9 +178,6 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
         if platform == .android, simulator != nil {
             throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android)
-        }
-        if device != nil, emulator != nil {
-            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
         }
         if let device { _ = try DeviceID.validate(device, flag: "--device") }
         let resolvedAppID = try Self.appID(platform: platform, bundleId: bundleId, applicationId: applicationId, config: config)

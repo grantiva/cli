@@ -118,6 +118,89 @@ final class GradleBuildRunnerTests: XCTestCase {
         XCTAssertTrue(errors[2].contains("--module"), "\(errors)")
     }
 
+    // MARK: - L41: an unknown variant or module lists the ones that exist
+
+    private static let unknownVariantLog = """
+    FAILURE: Build failed with an exception.
+
+    * What went wrong:
+    Cannot locate tasks that match ':app:assembleNoSuchVariant' as task 'assembleNoSuchVariant' not found in project ':app'.
+
+    * Try:
+    > Run gradlew tasks to get a list of available tasks.
+
+    BUILD FAILED in 412ms
+    """
+
+    /// Captured from `./gradlew -q :app:tasks --all` in landmarks-demo/android.
+    private static let appTasks = """
+    Build tasks
+    -----------
+    assemble - Assemble main outputs for all the variants.
+    assembleAndroidTest - Assembles all the Test applications.
+    assembleDebug - Assembles main outputs for all Debug variants.
+    assembleFree - Assembles main outputs for all Free variants.
+    assemblePaid - Assembles main outputs for all Paid variants.
+    assembleRelease - Assembles main outputs for all Release variants.
+    assembleUnitTest - Assembles all the unit test applications.
+    assembleFreeDebug - Assembles main output for variant freeDebug
+    assembleFreeDebugAndroidTest - Assembles main output for variant freeDebugAndroidTest
+    assembleFreeDebugUnitTest - Assembles main output for variant freeDebugUnitTest
+    assembleFreeRelease - Assembles main output for variant freeRelease
+    assembleFreeReleaseUnitTest - Assembles main output for variant freeReleaseUnitTest
+    assemblePaidDebug - Assembles main output for variant paidDebug
+    assemblePaidDebugAndroidTest - Assembles main output for variant paidDebugAndroidTest
+    assemblePaidDebugUnitTest - Assembles main output for variant paidDebugUnitTest
+    assemblePaidRelease - Assembles main output for variant paidRelease
+    assemblePaidReleaseUnitTest - Assembles main output for variant paidReleaseUnitTest
+    """
+
+    func testAnUnknownVariantListsTheModulesVariants() async throws {
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(Self.unknownVariantLog, 1)), .success(Self.appTasks)])
+        let result = try await GradleBuildRunner(execute: shell.execute).build(
+            projectRoot: scratch.path, module: "app", variant: "noSuchVariant", extraArgs: [], javaHome: nil, deviceABI: "arm64-v8a"
+        )
+        XCTAssertTrue(result.errors.contains("Variants of :app: freeDebug, freeRelease, paidDebug, paidRelease."), "\(result.errors)")
+        XCTAssertEqual(shell.commands.count, 2, "one extra Gradle call")
+        XCTAssertTrue(shell.commands.last?.contains("':app:tasks' --all") == true, "\(shell.commands)")
+    }
+
+    func testAnUnknownModuleListsTheProjectsModules() async throws {
+        let log = """
+        FAILURE: Build failed with an exception.
+
+        * What went wrong:
+        Cannot locate tasks that match ':nosuch:assembleFreeDebug' as project 'nosuch' not found in root project 'Landmarks'.
+        """
+        let projects = """
+        ------------------------------------------------------------
+        Root project 'Landmarks'
+        ------------------------------------------------------------
+
+        Root project 'Landmarks'
+        +--- Project ':app'
+        \\--- Project ':feature:map'
+        """
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(log, 1)), .success(projects)])
+        let result = try await GradleBuildRunner(execute: shell.execute).build(
+            projectRoot: scratch.path, module: "nosuch", variant: "freeDebug", extraArgs: [], javaHome: nil, deviceABI: "arm64-v8a"
+        )
+        XCTAssertTrue(result.errors.contains("Modules: app, feature:map."), "\(result.errors)")
+        XCTAssertTrue(shell.commands.last?.contains("projects") == true, "\(shell.commands)")
+    }
+
+    func testAFailedListingKeepsTheHint() async throws {
+        let shell = ScriptedShell([
+            .failure(GrantivaError.commandFailed(Self.unknownVariantLog, 1)),
+            .failure(GrantivaError.commandFailed("daemon died", 1)),
+        ])
+        let result = try await GradleBuildRunner(execute: shell.execute).build(
+            projectRoot: scratch.path, module: "app", variant: "noSuchVariant", extraArgs: [], javaHome: nil, deviceABI: "arm64-v8a"
+        )
+        XCTAssertTrue(result.errors.last?.contains("./gradlew tasks --all") == true, "\(result.errors)")
+        XCTAssertFalse(result.errors.contains { $0.hasPrefix("Variants of") }, "\(result.errors)")
+    }
+
     func testWhatWentWrongBlocksOfSeveralFailuresAreAllKept() {
         let lines = """
         FAILURE: Build completed with 2 failures.

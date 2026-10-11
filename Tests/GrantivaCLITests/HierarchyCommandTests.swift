@@ -65,6 +65,21 @@ final class HierarchyCommandTests: XCTestCase {
         XCTAssertEqual(fake.calls, ["attachDriver(emulator-5554,-)", "detach"])
     }
 
+    /// L40: the Android tree the command prints has numeric frames, as
+    /// docs/dump-hierarchy.md promises for every platform.
+    func testAnAndroidTreeIsPrintedWithNumericFrames() throws {
+        let xml = """
+        <hierarchy class="hierarchy"><android.view.View class="android.view.View" text="Details" bounds="[42,236][270,310]" displayed="true" /></hierarchy>
+        """
+        let tree = try UIAutomator2HierarchyXMLParser(xml: xml, scale: 2.625).parse()
+        let text = try HierarchyCommand.jsonText(tree)
+        XCTAssertTrue(text.contains("\"height\" : 28"), text)
+        XCTAssertFalse(text.contains("\"height\" : \""), text)
+        let parsed = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+        let frame = try XCTUnwrap(((parsed["children"] as? [[String: Any]])?.first)?["frame"] as? [String: Any])
+        XCTAssertTrue(frame.values.allSatisfy { $0 is NSNumber && !($0 is String) }, "\(frame)")
+    }
+
     func testAndroidSessionDetachesWhenTheReadFails() async throws {
         let directory = try temporaryDirectory()
         let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })

@@ -775,19 +775,35 @@ struct DiffCommand: AsyncParsableCommand {
         let screenNames = requestedScreenNames.isEmpty
             ? availableArtifacts.map(\.screenName)
             : requestedScreenNames
+        // Resolve every screen first: an approve that fails names every
+        // missing screen and saves nothing (L16).
+        let resolved = screenNames.map { screenName in
+            (screenName, "\(captureDirectory)/\(ScreenArtifact.existingFileName(for: screenName, in: captureDirectory, fileManager: fileManager))")
+        }
+        let missing = resolved.filter { !fileManager.fileExists(atPath: $0.1) }.map(\.0)
+        if let message = missingCapturesMessage(missing, captureDirectory: captureDirectory) {
+            throw GrantivaError.notFound(message)
+        }
         var approved: [String] = []
-
-        for screenName in screenNames {
-            let capturePath = "\(captureDirectory)/\(ScreenArtifact.existingFileName(for: screenName, in: captureDirectory, fileManager: fileManager))"
-            guard fileManager.fileExists(atPath: capturePath) else {
-                throw GrantivaError.notFound("No capture found for \"\(screenName)\" in \(captureDirectory). Run: grantiva diff capture")
-            }
+        for (screenName, capturePath) in resolved {
             let data = try Data(contentsOf: URL(fileURLWithPath: capturePath))
             _ = try await store.save(screenName, data)
             approved.append(screenName)
         }
 
         return approved
+    }
+
+    /// One sentence for the screens `approve` found no capture for: K49's
+    /// sentence for one, every name for several; nil when none is missing.
+    static func missingCapturesMessage(_ missing: [String], captureDirectory: String) -> String? {
+        switch missing.count {
+        case 0: return nil
+        case 1: return "No capture found for \"\(missing[0])\" in \(captureDirectory). Run: grantiva diff capture"
+        default:
+            let names = missing.map { "\"\($0)\"" }.joined(separator: ", ")
+            return "No captures found for \(names) in \(captureDirectory). Run: grantiva diff capture"
+        }
     }
 
     static let androidLocalOnlyMessage =

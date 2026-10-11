@@ -137,7 +137,9 @@ To loosen a flaky screen, raise both. Raising only `threshold` still fails the s
 
 Each screen has a `name` and a `path`. The path describes how to navigate there:
 
-- `launch` — screenshot immediately after app launch
+- `launch` — screenshot right after app launch. On Android the first screen first waits (up to 10 s, then
+  continues) until an element with text is on screen inside the app's own content view, so the capture is never the
+  empty window a cold start shows before the app draws; when the app has already drawn this is a single lookup
 - `- tap: "Label"` — tap a button or element by accessibility label
 - `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`, any case); any other value is a config error
 - `- type: "text"` — type text into the focused field
@@ -149,7 +151,9 @@ Each screen has a `name` and a `path`. The path describes how to navigate there:
 A label is a case-insensitive regular expression matched against an element's whole text, on iOS and Android alike:
 `tap: "Open"` matches an element whose text is "Open" or "open", not "Talk · Open" (write `.*Open.*` to match part of
 the text). `tap`, `assert_visible`, and `assert_not_visible` also take `{text: "Landmarks", exact: true}` to require
-the element's text to equal the label exactly as written.
+the element's text to equal the label exactly as written, or `{id: "clock"}` to select by identifier instead of text
+(the accessibility identifier on iOS, the resource id or Compose test tag on Android). A mapping names `text` or `id`,
+not both; a step that does not decode is a config error naming the file, line and key, and what the key takes.
 
 Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
 and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
@@ -260,7 +264,9 @@ The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
 it includes `status`, `applicationId`, `appPath`, and `device` with the
 emulator's `name` and adb `serial`. `status` is `installed` (installed, not
 launched), `launched`, or `skipped` (`--no-build --no-launch`: nothing was
-installed or launched).
+installed or launched). Every key is present in every document; `appPath` is `null` when
+nothing was installed (`--no-build` without `--app-file`), and `scheme` and
+`dataContainerPath` are `null` when there is none.
 `--derived-data-path` isolates Xcode products and intermediates for the run and
 supports absolute or relative paths, including paths containing spaces. It is
 available on every Grantiva command that builds the app and overrides a
@@ -365,7 +371,7 @@ grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml 
 `grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
 timestamp, with a JSON report of the frame actually shown at each. On Android,
 `screenrecord` writes frames only when the screen changes, so Grantiva holds the last
-frame to `--duration`; if the last frame was on screen for more than half the recording, it
+frame to `--duration` (and trims a recording that ran past it); if the last frame was on screen for more than half the recording, it
 prints a note on stderr, since a device that disconnected mid-recording looks the same as an
 idle screen. `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
 A `--frames-at` value past `--duration` is refused (exit 64) before anything is recorded. Paths in
@@ -467,6 +473,13 @@ removed in a later release. The keys still written in both spellings:
 - `baseline_directory` → `baselineDirectory` (diff approve)
 - `bundle_id` → `bundleId` (runner start, runner stop; `applicationId` on Android)
 
+Without `--json`, `run` prints one block per screen and per flow, then `Screens: <n> total,
+<c> captured, <f> failed` and `Flows: <n> total, <p> passed, <f> failed` (plus `, <s> skipped`
+when a failure stopped the run before some flows started), then the screenshot directory. A
+failing run prints the same for whatever ran, the failed step marked `✗`, before its `Error:`
+line; a failure before anything ran prints no summary. A step that must match exactly reads
+`(exact)` in these blocks, and a `wait:` step reads as the live line does (`Wait 3s`).
+
 `run --json` has the same shape whether the run passed or failed. `screens`
 holds one entry per configured screen (`"kind": "screen"`) and one per flow
 (`"kind": "flow"`); each entry has `name`, `kind`, `passed`, `steps` (the
@@ -499,7 +512,9 @@ Two flags adjust the stderr side only; neither changes stdout:
   output (banner, step lines, summary, report paths). Warnings and errors still
   print — a failing run's `Error:` line names the failed step — and the
   command's result on stdout is untouched, so
-  `grantiva doctor --json --quiet | jq` is still valid JSON.
+  `grantiva doctor --json --quiet | jq` is still valid JSON. A failing `run --quiet` still
+  prints its screen and flow blocks and its `Screens:`/`Flows:` lines on stdout, as a passing
+  run does; only the narration on stderr is silenced.
 
 `--json` already suppresses narration on its own, the runner's included: asking
 for a machine-readable result does not ask for a running commentary. `--verbose`

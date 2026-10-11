@@ -6,6 +6,12 @@ import Yams
 /// reported instead of surfacing later as an unrelated error.
 enum ConfigKeyValidator {
     static func unknownKeyWarnings(in root: Node, platform: Platform, fileName: String) -> [String] {
+        unknownKeys(in: root, platform: platform, fileName: fileName).map(\.message)
+    }
+
+    /// The unknown keys with their lines, so a decoding error can fold in
+    /// those of the step it names.
+    static func unknownKeys(in root: Node, platform: Platform, fileName: String) -> [Warning] {
         var top = GrantivaConfig.CodingKeys.allCases.map(\.rawValue)
         if platform == .android {
             top += AndroidProject.CodingKeys.allCases.map(\.rawValue)
@@ -13,6 +19,7 @@ enum ConfigKeyValidator {
         var warnings: [Warning] = []
         check(root, known: top, fileName: fileName, into: &warnings)
         guard let mapping = root.mapping else { return sorted(warnings) }
+
 
         if let diff = mapping["diff"] {
             check(diff, known: GrantivaConfig.DiffConfig.CodingKeys.allCases.map(\.rawValue), fileName: fileName, into: &warnings)
@@ -36,16 +43,19 @@ enum ConfigKeyValidator {
         return sorted(warnings)
     }
 
-    private struct Warning {
+    struct Warning {
         var line: Int
+        /// `<file>:<line>: unknown key "x" (did you mean "y"?)`
         var message: String
+        /// `unknown key "x" (did you mean "y"?)`
+        var detail: String
     }
 
     /// In file order, so the output reads top to bottom.
-    private static func sorted(_ warnings: [Warning]) -> [String] {
+    private static func sorted(_ warnings: [Warning]) -> [Warning] {
         warnings.enumerated()
             .sorted { ($0.element.line, $0.offset) < ($1.element.line, $1.offset) }
-            .map(\.element.message)
+            .map(\.element)
     }
 
     private static func check(_ node: Node, known: [String], fileName: String, into warnings: inout [Warning]) {
@@ -53,11 +63,11 @@ enum ConfigKeyValidator {
         for (keyNode, _) in mapping {
             guard let key = keyNode.string, !known.contains(key) else { continue }
             let line = keyNode.mark.map { ":\($0.line)" } ?? ""
-            var message = "\(fileName)\(line): unknown key \"\(key)\""
+            var detail = "unknown key \"\(key)\""
             if let suggestion = suggestion(for: key, among: known) {
-                message += " (did you mean \"\(suggestion)\"?)"
+                detail += " (did you mean \"\(suggestion)\"?)"
             }
-            warnings.append(Warning(line: keyNode.mark?.line ?? 0, message: message))
+            warnings.append(Warning(line: keyNode.mark?.line ?? 0, message: "\(fileName)\(line): \(detail)", detail: detail))
         }
     }
 

@@ -175,7 +175,7 @@ struct EmulatorCommand: AsyncParsableCommand {
             case (nil, false):
                 throw ValidationError("Pass --serial <serial> or --all.")
             case (.some, true):
-                throw ValidationError("--serial and --all are mutually exclusive; pass one.")
+                throw ValidationError(ExclusiveFlags.message("--serial", "--all"))
             default:
                 break
             }

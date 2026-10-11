@@ -251,6 +251,16 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertTrue(message.contains("Delete it by hand"), message)
     }
 
+    /// L22: Foundation's reason ends with a period; the message has one.
+    func testTheRunnerHomeErrorHasNoDoubledPeriod() throws {
+        let reason = "/r/versions/v1/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it."
+        let one = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError([reason]).flatMap(\.errorDescription))
+        XCTAssertFalse(one.contains(".."), one)
+        XCTAssertTrue(one.hasSuffix("access it. Delete it by hand."), one)
+        let two = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError([reason, "/r/devices/U: denied."]).flatMap(\.errorDescription))
+        XCTAssertFalse(two.contains(".."), two)
+        XCTAssertTrue(two.contains("access it; /r/devices/U: denied. Delete it by hand."), two)
+    }
 
     /// K42: usage errors read `Error: <message>` with exit 64, never the
     /// runtime "Invalid argument:" prefix.

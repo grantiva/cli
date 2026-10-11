@@ -91,6 +91,45 @@ final class MP4LastFrameHoldFixtureTests: XCTestCase {
         }
     }
 
+    /// K111: a movie that runs past the request is trimmed to it, still
+    /// decodes, and a frame at the requested end resolves to the last frame.
+    func testAnOverrunningMovieIsTrimmedAndStillDecodes() async throws {
+        let url = dir.appendingPathComponent("overrun.mp4")
+        try await writeTwoFrameMovie(to: url)
+        let before = try await AVURLAsset(url: url).load(.duration)
+        XCTAssertGreaterThan(CMTimeGetSeconds(before), 0.75, "the writer gives the last frame a non-zero sample")
+
+        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 0.75) else {
+            return XCTFail("expected the overrun to be trimmed")
+        }
+        XCTAssertEqual(timing.recordedSeconds, CMTimeGetSeconds(before), accuracy: 0.05, "the pre-trim end is reported")
+
+        let asset = AVURLAsset(url: url)
+        let after = try await asset.load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(after), 0.75, accuracy: 0.01)
+        let generator = AVAssetImageGenerator(asset: asset)
+        generator.requestedTimeToleranceBefore = .zero
+        generator.requestedTimeToleranceAfter = .zero
+        var actual = CMTime.zero
+        _ = try generator.copyCGImage(at: CMTime(value: 750, timescale: 1_000), actualTime: &actual)
+        XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), 500)
+    }
+
+    /// K111: the --verbose line says what was trimmed, or why nothing was.
+    func testHoldDiagnosticsNameTheTrim() {
+        let trimmed = RecordCommand.holdDiagnostics(
+            .trimmed(.init(frameCount: 2, lastFrameSeconds: 3.0788, recordedSeconds: 6.1575)), requestedSeconds: 4
+        ).statistics
+        XCTAssertTrue(trimmed.contains("trackEnd=6158ms"), trimmed)
+        XCTAssertTrue(trimmed.contains("trimmed=2158ms"), trimmed)
+        XCTAssertTrue(trimmed.contains("held=0ms"), trimmed)
+
+        let late = RecordCommand.holdDiagnostics(
+            .unchanged(.init(frameCount: 2, lastFrameSeconds: 4.4444, recordedSeconds: 5.5556)), requestedSeconds: 4
+        ).statistics
+        XCTAssertTrue(late.contains("not trimmed: the last frame starts at 4444ms, after the requested 4000ms"), late)
+    }
+
     func testHeldRecordingNoteOnlyWhenMoreThanHalfWasHeld() {
         func timing(_ lastFrame: Double) -> MP4LastFrameHold.Timing {
             .init(frameCount: 1, lastFrameSeconds: lastFrame, recordedSeconds: lastFrame)

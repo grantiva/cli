@@ -189,3 +189,20 @@ private final class OrderLog: @unchecked Sendable {
     func append(_ value: String) { lock.lock(); values.append(value); lock.unlock() }
     var entries: [String] { lock.lock(); defer { lock.unlock() }; return values }
 }
+
+/// L22: a runner home that could not be removed is named with its reason,
+/// without Foundation's trailing period, so callers can append a sentence.
+extension WDADeviceHomeTests {
+    func testAFailureLineDropsTheReasonsTrailingPeriod() {
+        let error = NSError(domain: NSCocoaErrorDomain, code: 513, userInfo: [
+            NSLocalizedDescriptionKey: "\u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it.",
+        ])
+        let line = WDADeviceHome.failureLine(home: "/r/devices/U", error: error)
+        XCTAssertEqual(line, "/r/devices/U: \u{201C}U\u{201D} couldn\u{2019}t be removed because you don\u{2019}t have permission to access it")
+        XCTAssertEqual(
+            SimulatorManager.homeRemovalWarning(line),
+            "Could not remove the runner home \(line). Delete it by hand."
+        )
+        XCTAssertFalse(SimulatorManager.homeRemovalWarning("/r/U: denied.").contains(".."))
+    }
+}

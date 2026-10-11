@@ -161,10 +161,25 @@ final class TargetOptionsTests: XCTestCase {
         XCTAssertTrue(TargetOptions.appIDMessage(for: .android).contains("grantiva-android.yml"))
     }
 
-    func testDeviceAndEmulatorTogetherAreRejected() throws {
-        let target = try TargetOptions.parse(["--device", "emulator-5554", "--emulator", "Pixel_8_API_35"])
-        XCTAssertThrowsError(try target.checkFlags(for: .android, derivedDataPath: nil)) { error in
-            XCTAssertTrue("\(error)".contains("--device and --emulator are mutually exclusive"), "\(error)")
+    /// L26-b: `--device` with `--emulator` is a usage error on every command
+    /// that takes both: exit 64, the plain message, then the command's Usage
+    /// lines. It is raised at parse time, before any config is read.
+    func testDeviceAndEmulatorTogetherAreAUsageErrorEverywhere() throws {
+        let message = "--device and --emulator are mutually exclusive; pass one."
+        XCTAssertThrowsError(try TargetOptions.parse(["--device", "emulator-5554", "--emulator", "Pixel_8_API_35"])) { error in
+            XCTAssertEqual(TargetOptions.message(for: error), message)
+        }
+        for command in [["run"], ["record", "--duration", "2"], ["runner", "start"], ["diff", "capture"], ["build", "install"]] {
+            XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(command + ["--device", "a", "--emulator", "b"])) { error in
+                XCTAssertTrue(error is ValidationError || "\(type(of: error))".contains("CommandError"), "\(command): \(type(of: error))")
+                let full = GrantivaCommand.fullMessage(for: error)
+                let lines = full.components(separatedBy: "\n")
+                XCTAssertEqual(lines.first, "Error: " + message, "\(command): \(full)")
+                XCTAssertTrue(lines.count > 1 && lines[1].hasPrefix("Usage: grantiva \(command.prefix(2).filter { !$0.hasPrefix("-") }.joined(separator: " "))"), "\(command): \(full)")
+                XCTAssertTrue(full.contains("See 'grantiva "), full)
+                XCTAssertFalse(full.contains("Invalid argument"), full)
+                XCTAssertEqual(GrantivaCommand.exitCode(for: error), .validationFailure, "\(command)")
+            }
         }
     }
 }
