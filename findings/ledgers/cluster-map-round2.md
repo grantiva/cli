@@ -8,6 +8,15 @@ rows go to clusters, or to §Carried open items when they verify a brief that is
 K111). Triage rows go to §Expectation corrections. Android evidence lives under
 `cov2-android/findings/evidence/cov2-android/<ROW>/` and the shared `CF-*/` runs; each `commands.txt` records the 1-min host
 load. Fails that may only be load artefacts are listed in §Load-sensitive.
+
+**Android fix round 1** (cov2/android b58af30; task-5-report.md "## Fix round 1") re-ran the load-suspect rows on a fresh
+default AVD at load 5-13 ("quiet host" below means this round, not load < 4). Grading changes:
+- B2-L01 → pass.
+- AND-107, AND-040, B-A01.1 and B-R01.3 → triage (M25 withdrawn).
+- AND-213 stays `fail`, with its cause re-attributed to M41.
+- New extra AND2-OBS-07 → M42.
+
+Each cluster below carries a confirmation line where the re-run touched it.
 CLI-049 was `blocked` in the CLI slice and handed over. The iOS slice graded it `fail`, so it counts in the iOS slice.
 
 ## Clusters
@@ -322,23 +331,14 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 - Suspected cause: criterion 3 was not implemented. Add the CI step (`GRANTIVA_RUNNER_HOME=$(mktemp -d) swift test` followed by
   an emptiness check) to `.github/workflows/ci.yml`.
 
-### M25 — android-crash-on-launch-detected-at-first-assert
-- Component: runner. Severity: contract.
-- Rows: AND-107, AND-040, B-A01.1, B-R01.3 [android].
-- Expected: 99-crash and `--env LANDMARKS_CRASH_ON_LAUNCH=1` fail at `launchApp` with `crashed on launch:
-  java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH` (brief R01 criterion 3, A01 criterion 1, AND-040/AND-107).
-- Actual: `launchApp` passes (4.8-17.1 s), and the first `assertVisible "Landmarks"` fails with `error.type: app_crash` and
-  `app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH`. No step passes against the dead app,
-  and the exit code, failure screenshot and ready file `failed` are right. AND-107 takes 50.0 s wall (round 1: 6.2 s, at
-  `launchApp`).
-- Brief: R01 criterion 3 and A01 criterion 1 regress. Note that L02's own Expected ("fails on the first assert, within ~2 s
-  of the crash") describes the observed step. **Needs a ruling** before a brief is written:
-  - either `launchApp` must catch a crash in the first seconds after launch (product fix), or
-  - first-assert `app_crash` is accepted, and AND-107/AND-040/B-A01.1/B-R01.3 become matrix corrections.
-- Suspected cause: `pkg/driver/uiautomator2/commands.go:1607-1630` (`confirmLaunch`) returns success once the process has
-  been alive for `settle` = 1 s (`defaultLaunchTiming`, `:1566-1571`). On the slow software-rendered AVD, the app lives more
-  than 1 s before its `onCreate` throws, so the crash lands after `launchApp` returned. This is timing-dependent (see
-  §Load-sensitive). A fix could keep watching for a FATAL EXCEPTION until the first UI is drawn, or for a longer settle.
+### M25 — withdrawn (crash on launch detected at the first assert)
+- Rows moved to §Expectation corrections: AND-107, AND-040, B-A01.1 and B-R01.3 were re-graded `fail (matrix/brief error —
+  triage)` in fix round 1. Their expected text should read "fails with app_crash at launchApp or at the first step after
+  it", which is the outcome B2-L02 requires.
+- The fix-round 99-crash re-run once **missed** the crash: run 2 reported a plain `assertion` 12.2 s after `am_crash`. That
+  is recorded under L02 and L06 in §Carried open items, not here.
+- The cause notes stay as background for L02: `confirmLaunch` settles after 1 s alive
+  (`pkg/driver/uiautomator2/commands.go:1566-1630`).
 
 ### M26 — android-doubletap-registers-as-two-taps
 - Component: runner. Severity: wrong-result.
@@ -351,6 +351,7 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
   software-rendered AVD the two clicks probably land further apart than the double-tap timeout (~300 ms). Not confirmed:
   there is no pointer trace. A fix would send one W3C `/actions` sequence with an explicit short inter-tap gap. Re-run on a
   quiet host first (§Load-sensitive).
+- **Confirmed on a quiet host** (fix round 1, load 5-13): two single taps in 3 of 3 runs.
 
 ### M27 — android-doubletap-point-only-selector-rejected
 - Component: runner. Severity: wrong-result.
@@ -373,6 +374,8 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 - Suspected cause: `pkg/driver/uiautomator2/commands.go:1019-1055` scrolls each step with `performScrollInRect` /
   `performScroll` at a 0.3 fraction and no measured top-up. On the software AVD a gesture moves the content less, so 20
   scrolls fall short of row 70. Apply L03's measured-travel plan here, or count progress instead of scrolls.
+- **Confirmed on a quiet host, flaky** (fix round 1, load 8-11): run 1 fails after 20 scrolls (53.5 s); runs 2-3 find
+  Landmark 70 (26.2/17.5 s).
 
 ### M29 — android-force-teardown-leaves-killed-run-temp-dirs
 - Component: cli. Severity: ux.
@@ -425,6 +428,9 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
   (`sessionStartingMessage`). There is no Android counterpart, and `.grantiva/session.json` seems to be written only once
   UIAutomator2 is ready. The `--detach` readiness check (`DriverCommand.swift`, `WDAStartup` at `:551`) is WDA-oriented, and
   an early return on Android was not traced. The early return may be load-dependent (load 10.3).
+- **Detach half: intermittent, unconfirmed.** The fix round did not reproduce it in 0 of 3 runs (`--detach` returned after
+  4.7-5.9 s, and the first dump answered 0.4-1.5 s later). Keep it as a single sighting. The K100.2/D2-44 half (no
+  "starting" text) is logical and stands.
 
 ### M33 — build-install-skipped-omits-apppath
 - Component: cli. Severity: contract.
@@ -495,8 +501,8 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
 - Suspected cause: `Sources/GrantivaCore/Runner/FlowGenerator.swift:133-134` and `:215-217`. Before `takeScreenshot`, the
   generated flow's only wait is `waitForAnimationToEnd` (timeout 5000), which returns as soon as two screenshots match. A
   blank pre-render screen is static, so it "settles" at once. A launch-only screen needs an app-drawn condition, such as
-  waiting until the hierarchy contains the app's package, or a minimum delay after `launchApp`. Load-sensitive (load 40.8,
-  slow period).
+  waiting until the hierarchy contains the app's package, or a minimum delay after `launchApp`.
+- **Confirmed on a quiet host** (fix round 1): the launch-only Home is blank in 3 of 3 captures (19.3 KB).
 
 ### M39 — mcp-emulator-boot-reports-reuse-as-boot
 - Component: mcp. Severity: ux.
@@ -520,6 +526,43 @@ part of the brief's acceptance criteria still fails, and *extends* means a new d
   ends the emulator with `adb emu kill` (or a kill after `killTimeout`). Boots use `-no-snapshot-save` (`:229`). A kill
   before the guest flushes userdata would lose a recent install. Check whether teardown escalates to a kill, and add `adb
   shell sync` or a graceful `reboot -p` before `emu kill`.
+- **Confirmed on a quiet host** (fix round 1): an app installed 5 s before `teardown` is gone after the next boot (1 of 1).
+
+### M41 — focused-element-lookup-unbounded-under-load
+- Component: runner. Severity: wrong-result.
+- Rows: AND-213 [android].
+- Expected: `inputText " · Ünïcødé ✓"` types the text within its step timeout, as runs 2-3 and the fix-round re-run do (3 of 3,
+  1.5-2.4 s, `GET /element/active` 170-192 ms at load 7-10).
+- Actual: 1 of 3 original runs (load 68 at start) failed: `✗ inputText … (48.0s)`, `did not answer POST /actions within
+  10s`.
+  - client.log: the step spent 35.5 s on `GET /element/active` (404, no focused field). That left only the 10 s minimum for
+    `POST /actions`, which was cut.
+  - AND-120/01 shows the same pattern after a 25.7 s lookup.
+  - With `active` = 404, the timeout recovery had no field to read.
+- Brief: new. This is not L01: the fix round re-graded B2-L01 to pass because no call was cut at 10 s while its step still
+  had time. It sits next to L05, the other slow first-lookup on the software AVD.
+- Suspected cause: `pkg/driver/uiautomator2/commands.go:421`. `d.client.ActiveElement()` runs under the step's whole
+  deadline (`requestDeadline`, `pkg/uiautomator2/transport.go:82-99`) with no bound of its own, so a slow lookup spends the
+  step's budget before typing starts. Fix direction:
+  - cap the lookup (a few seconds) and fall back to key events without the before-text, or
+  - reserve part of the step deadline for `/actions`.
+- Status: load-only. The original failure was at load 68, and the quiet-host re-run passed 3 of 3. Write the brief with the
+  load condition as its repro.
+
+### M42 — uia2-session-start-fixed-30s-no-retry
+- Component: runner (limit) and cli (message). Severity: ux.
+- Rows: AND2-OBS-07 [android].
+- Expected: starting a UIAutomator2 session on a busy host either succeeds, retries, or fails with a limit the user can raise.
+- Actual:
+  - `runner start --detach --json` failed with `Timed out waiting for the UIAutomator2 session to start` (runner log
+    `UIAutomator2 server not ready after 30s`, load 76, AND-126/01).
+  - The first stock run hit the same 30 s limit (AND-106/01, load 98).
+  - The limit is not configurable, and the run gives up rather than retrying.
+- Brief: new.
+- Suspected cause: `pkg/device/uiautomator.go:270-280` (`waitForUIAutomator2Ready(timeout)`, called with a fixed 30 s). The
+  CLI reports it at `Sources/GrantivaCLI/DriverCommand.swift:363` and `:455`. Make the limit follow `--timeout`, or add a
+  retry before giving up.
+- Status: load-only (load 76-98). Not seen at the fix round's load of 5-13.
 
 ## Expectation corrections
 
@@ -546,6 +589,7 @@ Row text cites README/brief lines that were checked at c65fc17 where noted.
 | N-01 | ios | `runner stop` releases a `run --keep-alive` session fully. The ready file stays `passed` because it was written at the flows' terminal state, and README:83 and :419 say it is written once and keeps `passed`/`failed` | correct the matrix (`interrupted` applies only when the stop lands before the flows finish) |
 | B2-K14 | ios | same as N-01. The K14 criterion asks for the ready file to read `interrupted` after a stop that follows completed flows | correct the brief (K14 criterion: ready file unchanged once terminal; `interrupted` only if stopped mid-flow) |
 | B2-K68 | ios | free UDID: `reclaimed:false, leaseReleased:false` (bullet 1 met). After `kill -9` of a keep-alive, `reclaimed:true` with WDA and diagnose killed, but `leaseReleased:false`. Bullet 2 asks for `true`, while bullet 3 says `true` only when the flock is held or the claim is live | correct the brief. See the judgment below |
+| AND-107, AND-040, B-A01.1, B-R01.3 | android | re-graded in fix round 1 (was M25). `launchApp` passes and the first assert fails with `app_crash` and `LANDMARKS_CRASH_ON_LAUNCH`; no step passes against the dead app. The rows (brief R01 criterion 3, A01 criterion 1) expect the failure at `launchApp`, while B2-L02 requires the first-assert outcome | correct the matrix and the R01/A01 criteria: "fails with app_crash at launchApp or at the first step after it". The one missed crash in the re-run (a plain `assertion`, run 2) is a product defect under L02/L06, not part of this correction |
 | AND-223 | android | four bare scrolls land with Landmark 28 as the last row (20-28 visible). N-03/B2-K07 were corrected to `Landmark 28` for Android (00-expectation-corrections.md:16, landmarks-demo flow asserts 28 and passes). This row still expects `Landmark 30` | correct the matrix (apply the N-03 correction to AND-223) |
 | MCP-026 | android | steps 1-4 run in order, then step 5 `type "x"` stops with isError `No focused text field …`, listing the steps that ran. That is the K102/D2-37 behaviour; the row still expects the final tree. The invalid-script half passes | correct the matrix (same fix as MCP-025: drop the `type` step or focus a field first) |
 
@@ -581,82 +625,91 @@ true only if the runner still held the lease when teardown ran. Not a product de
 ## Carried open items
 
 The Android rows below verify briefs that are still open at runner 1be68db / CLI c65fc17. They are placed here, not in
-clusters, and feed the existing briefs' next fix.
+clusters, and feed the existing briefs' next fix. Fix-round outcomes (load 5-13) are included.
 
-- **L01** (Android inputText cut by a fixed 10 s request timeout). Rows: B2-L01, AND-213 [android].
-  - What passes: 03-edit passes 3 of 3 alone (inputText 12.8/21.0/15.9 s; `/actions` answered after 8.2/15.1/11.6 s and was
-    **not** cut, so the step-governed deadline works) and inside the stock set (12/12).
-  - AND-213 failed 1 of 3 (`15-input-unicode`, load 68 at start): `✗ inputText … (48.0s)`, `did not answer POST /actions
-    within 10s`.
-  - **Client-log reading** (CF-15-input-unicode/report/client.log and the runner log beside it): step 4 starts at 10:31:02.82.
-    `GET /element/active` then takes **35.5 s** (ends 10:31:38.36, 404, no focused field), and that request was itself
-    allowed past 10 s. `POST /actions` follows and is cut at exactly 10.0 s (10:31:48.36). The step fails at 48.0 s.
-  - `requestDeadline` (`pkg/uiautomator2/transport.go:83-99`) gives a request the larger of the 10 s floor and the time
-    left on the step. A cut at exactly 10.0 s means at most 10 s was left. So this is the floor after the step budget was
-    spent by the slow focused-element lookup, not the hard-coded cap L01 removed.
-  - Because `active` returned 404, the L01 timeout recovery (`typedDespiteTimeout`, `pkg/driver/uiautomator2/commands.go:505-522`)
-    had no field to read and could not rescue the step.
-  - **Verdict:** a different path from L01's (a slow `GET /element/active` under heavy load), not a regression of the fix.
-    It is load-sensitive, so re-run before filing. Not confirmed: the inputText step timeout value is not in the log.
-  - Worth adding to L01 or L05: at flow start (10:30:12-10:30:42), three consecutive `POST /element` calls are each cut at
-    10.00 s. That looks like a find attempt still capped at the floor while its step had time, which matches L01 criterion 2
-    ("no call cut at a hard-coded 10 s while its step still has time") and L05.
+- **L01** (Android inputText cut by a fixed 10 s request timeout). **Rows: none (B2-L01 re-graded pass in fix round 1).**
+  - 03-edit passes 3 of 3 alone (inputText 12.8/21.0/15.9 s; `/actions` completed after 8.2-15.1 s and was not cut) and
+    inside the stock set.
+  - The two 10 s `/actions` cuts (CF-15-input-unicode, AND-120/01) followed a 35.5 s / 25.7 s `GET /element/active` that had
+    used up the step budget. No call was cut at 10 s while its step still had time, so L01's criteria hold.
+  - AND-213 moved to M41.
+  - Still worth checking under L05: the three `POST /element` calls each cut at 10.00 s at the start of CF-15-input-unicode
+    (10:30:12-42).
 - **L02** (Android crash check stalled by a blocked find; assert can pass on the dead app). Rows: B2-L02, N2-13 [android].
-  - B2-L02: 99-crash fails 3 of 3 at `assertVisible "Landmarks"` with `app_crash` and the right cause, 0.7-1.9 s after
-    `am_crash`, and never passes (detection criterion met). The timing criteria are missed: assert step 5.6-6.0 s (target
-    ~3 s), flow 16.2-19.2 s (< 6 s) and wall 31.4-32.3 s (< 12 s), at load ~10-13.
-  - N2-13 [android]: `extendedWaitUntil {visible: "Landmarks", timeout: 15000}` **passes** against the crashed app (13.2 s;
-    `am_crash` lands inside the wait, and the match is the launcher's "Landmarks" label). That breaks L02 criterion 4 ("no
-    element-wait step reports success while the launched process is gone"). The other three variants fail with `app_crash`
-    1.2-2.6 s after the crash.
-  - The detection-at-first-assert outcome is what M25 turns on.
-- **L05** (Android first find after `launchApp` blocks 5-10 s). Row: B2-L05 [android]. Reproduces: the first `tapOn "Deep
-  Links"` takes 9.1/10.8/8.5 s (target < ~3 s), the first `POST /element` (404) 6.33/6.05/5.95 s (< 2 s), and 99-crash wall
-  31.4/32.3/31.9 s (< 12 s), still `app_crash` at the first assert. Load ~6-14. The slice notes the AVD was slow until about
-  12:50, so re-run on a quiet host (§Load-sensitive).
+  - Original run: 99-crash fails 3 of 3 at `assertVisible "Landmarks"` with `app_crash`, 0.7-1.9 s after `am_crash`, but the
+    timing criteria are missed (assert step 5.6-6.0 s, flow 16.2-19.2 s, wall 31.4-32.3 s).
+  - **Fix round 1, new evidence that the crash check can still miss** (load 5.7-10.4, fresh default AVD, B2-L02/rerun):
+    - run 1 `app_crash` 0.5 s after `am_crash` (step 7.1 s);
+    - **run 2 `error.type: assertion` (`Element not visible: text='Landmarks'`) 12.2 s after `am_crash`, step 19.2 s: the
+      crash was not recognised at all;**
+    - run 3 `app_crash` 3.6 s after (step 11.0 s).
+    - Not within ~2 s in 2 of 3 runs; assert step > 3 s, flow > 6 s (22.7-30.7 s) and wall > 12 s (54-57 s) in all 3.
+    - Run 2 breaks L02's criteria 1 and 3 outright (a crash reported as not-visible), which is worse than slow detection.
+  - N2-13 [android]: `extendedWaitUntil {visible: "Landmarks", timeout: 15000}` passed against the crashed app (13.2 s; it
+    matched the launcher's label), which breaks L02 criterion 4. The re-run's 99-crash part repeats the run-2 miss.
+  - The 4 rows that expected the failure at `launchApp` are now expectation corrections (old M25).
+- **L05** (Android first find after `launchApp` blocks 5-10 s). Row: B2-L05 [android].
+  - Original run: first `tapOn "Deep Links"` 9.1/10.8/8.5 s, first `POST /element` (404) 6.33/6.05/5.95 s, 99-crash wall
+    31.4-32.3 s.
+  - **Confirmed on a quiet host** (fix round 1): first `POST /element` 8.6/6.9/6.5 s and first `tapOn` 12.4/9.6/9.2 s, so the
+    slowness is the software-rendered AVD, not host load.
+  - Load section: AND2-OBS-07 (UIAutomator2 session start timing out at 30 s at load 76-98) is filed as M42; consider
+    folding it into L05's next fix, since both are slow-AVD start-up paths.
 - **L06** (page-source selectors check for a crash only between attempts). Row: B2-L06 [android].
-  - (a) The `index: 1` variant **passes both steps** 3 of 3 (`assertVisible {text: ".*", index: 1}` 0.8-1.2 s, `tapOn` 0.7
-    s) against an app that never came up. Its `am_crash` follows the passing flow.
-  - (b) `below:` and (c) `width:` fail with `app_crash` 1.8-3.7 s and 1.8-4.0 s after `am_crash` (2 of 6 within ~2 s).
-  - `confirmMatch` exists (`pkg/driver/uiautomator2/wait_crash.go:34-38`, called from `driver.go:591,604,692`), but the
-    index path evidently returns a match before the crash watch is armed or without re-checking it.
-- **L07** (Android element swipe flaky under load). Rows: B-A02.2, B-R02.1, B2-K09, N2-17 [android] (one shared 10-run loop,
-  CF-k09).
-  - The swipe starts at the element's far side (~x=250 px, ≈90% across the Lake Tahoe label) and ends at the left edge, as
-    documented, but opens the row in only 5 of 10 runs (1, 2, 4, 5, 8) at load 10-13. The other runs spring back.
-  - B-R02.5 (CLI source check) confirms the element swipe still goes through `adb input swipe 246 500 0 500 300`, not
-    UIAutomator2 `/actions`.
-  - L07's criterion is defined at load ≥ 8, so these rows are valid as recorded. A quiet-host re-run would not close L07.
+  - Original run: the (a) `index: 1` scratch variant passed both steps 3 of 3 against an app that never came up. (b)
+    `below:` and (c) `width:` failed with `app_crash` 1.8-4.0 s after `am_crash`.
+  - **Fix round 1 with the matrix's variant** `{text: "Landmarks", index: 0}`, 3 runs at load 9.6-10.8: it never passes.
+    Each assert started before the crash and failed with `app_crash` 2.0/1.6/3.8 s after `am_crash`, so 1 of 3 is outside
+    ~2 s.
+  - The earlier `index: 1` pass came from a scratch variant whose `.*` text matched launcher content. Under L06's "no match
+    after death" criterion it remains a defect sighting.
+  - The L02 run-2 miss above (a plain `assertion` 12.2 s after the crash) is also L06 evidence: the crash check between
+    attempts can miss a death entirely.
+- **L07** (Android element swipe flaky under load). Rows: B-A02.2, B-R02.1, B2-K09, N2-17 [android].
+  - The far-side start (~x=250 px) and edge end are as documented.
+  - The row opens in 5 of 10 runs at load 10-13, and **7 of 10 in fix round 1**. Confirmed open.
+  - Still `adb input swipe` (B-R02.5 source check).
 - **K111** (Android `record` overrun never trimmed). Rows: B2-K111, N2-01 [android].
-  - The 5 × `--duration 4` repro runs were all 4.000 s (no overrun occurred; `recordedMilliseconds` 0/3059/0/0/0), and
-    `--frames-at 4000` resolves to the last frame.
-  - But AND-079's `--duration 3` recording is 5.663 s (`recordedMilliseconds: 5663`) and untrimmed, and D2-11/02 recorded
-    5253 ms for 4 s.
-  - At c65fc17, `MP4LastFrameHold.swift` has no trim or `stts` shortening. Open, as expected.
+  - **Confirmed by ffprobe** (fix round 1): the kept AND-079 `--duration 3` mp4 is 5.662756 s, untrimmed.
+  - The overrun is intermittent: 12 new 3 s recordings and the 5 × 4 s repro all measured exactly the requested length.
+  - At c65fc17, `MP4LastFrameHold.swift` has no trim. Open.
 - **Deferred minor: `holdTrack` with a malformed extra track** → N2-20 `fail` [cli], filed as M18.
 - **Deferred minor: SIGHUP under nohup** → N2-18 `fail` [ios]. The runner dies on SIGHUP (M04), and teardown then leaves its
   session file (M05). The first half of N2-18 holds.
 
 ## Load-sensitive
 
-Fails whose evidence points at timing on a loaded host or a slow software-rendered AVD. Load is the 1-min average from
-`commands.txt`. The Android slice ran in parallel with the iOS slice: load ranged from about 10 to 394, and the slice notes
-the default AVD was slow until about 12:50 (inputText 13-22 s, first lookup 6-10 s, launchApp up to 1m 43s). Re-run each
-on a quiet host (load < 4, no parallel slice) with the same AVD before writing or extending a brief. Rows whose cluster is
-purely logical (M06, M12, M16, M33, M34, M37, …) are not listed.
+Fails whose evidence pointed at host load or a slow software-rendered AVD, with the fix-round 1 outcome (fresh default AVD,
+load 5-13). The original Android run saw load from about 10 to 394, with the AVD slow until about 12:50. Logical clusters
+are not listed.
 
-| rows | cluster / brief | load and timing seen | what a quiet-host re-run decides |
+**Confirmed on a quiet host** (write the brief from the re-run evidence):
+
+| rows | cluster / brief | original | fix round 1 |
 |---|---|---|---|
-| AND-107, AND-040, B-A01.1, B-R01.3 | M25 | 6-15; launchApp 4.8-17.1 s (CF-crash-1..3: 5.96/7.43/9.07) | whether `launchApp`'s 1 s settle catches the crash when the app dies fast (round 1: at launchApp, 6.2 s), and so whether M25 is a product fix or a ruling |
-| AND-210 | M26 | 9.1/19.3/12.7 | whether the double tap splits only when injection is slow (round 1 passed) |
-| AND-224 | M28 | 10.9/6.5; 49.8/52.2 s | whether 20 scrolls reach row 70 when the AVD is fast. L03 showed the software AVD moves less per gesture regardless of load, so it may stay a defect |
-| N-12, AND2-OBS-02 | M38 | 40.8 (N-12), 14.3 (AND-108); slow period | whether the blank Home appears only while the AVD is slow (Home was 122 KB later). The settle weakness is logical, but its trigger is timing |
-| AND2-OBS-03 | M32 (detach half) | 10.3; returned after 1.5 s once, 4.7-7.9 s otherwise | whether `--detach` ever returns before the driver is up on a quiet host |
-| AND-213 | L01 | 68.4 at start; `GET /element/active` 35.5 s | whether the 35 s focused-element lookup recurs (2 of 3 runs passed in 7.5/7.2 s) |
-| B2-L02, B2-L05 | L02, L05 | 6-14; slow period | their criteria are wall-clock limits measured on the software AVD; the AVD's slowness, not host load, is the likelier factor, but a quiet-host baseline is needed to tell |
-| B2-L06 (index variant), N2-13 [android] | L06, L02 | 10.9-12.6; 11.75 | the passes against a dead app are logical defects, but whether the crash lands inside or after the wait depends on launch speed |
-| B2-K111, N2-01 (AND-079 overrun) | K111 | 6.85 | the overrun is intermittent (0 of 5 in the repro). Source shows no trim, so it stays open either way; a quiet host only changes how often it shows |
-| B-A02.2, B-R02.1, B2-K09, N2-17 | L07 | 10-14 | not a re-run candidate: L07's criterion requires load ≥ 8, so these results stand |
+| AND-210 | M26 | two taps, 3 of 3 (load 9-19) | two taps, 3 of 3 |
+| AND-224 | M28 | 2 of 2 fail (load 6-11) | 1 of 3 fail (flaky) |
+| N-12, AND2-OBS-02 | M38 | blank Home (load 14-41, slow period) | blank Home, 3 of 3 (19.3 KB) |
+| AND2-OBS-06 | M40 | app lost after teardown (load 9.5) | reproduced, 1 of 1 |
+| B-A02.2, B-R02.1, B2-K09, N2-17 | L07 | row opens 5 of 10 (load 10-13) | 7 of 10 |
+| B2-L05 | L05 | first find 6-11 s | 6.5-8.6 s, first tapOn 9.2-12.4 s |
+| B2-L02, N2-13 | L02 | slow detection | slow, plus one missed crash (run 2) |
+| B2-L06 | L06 | (a) scratch `index: 1` passes | matrix variant: `app_crash` 1.6-3.8 s, 1 of 3 outside ~2 s |
+| B2-K111, N2-01 | K111 | 5.663 s untrimmed | ffprobe 5.662756 s; overrun intermittent (0 of 12 new) |
+
+**Still load-only** (seen only at high load; not reproduced in the fix round):
+
+| rows | cluster | evidence |
+|---|---|---|
+| AND-213 | M41 | 1 of 3 at load 68 (35.5 s `GET /element/active`); re-run 3 of 3 pass (lookup 170-192 ms) |
+| AND2-OBS-07 | M42 | 30 s UIAutomator2 start limit hit at load 76 and 98; not seen at 5-13 |
+| AND2-OBS-03 | M32 (detach half) | `--detach` returned after 1.5 s once (load 10.3); 0 of 3 in the re-run. Intermittent, unconfirmed |
+
+**Resolved by the fix round:**
+- B2-L01 → pass (the 10 s cuts are explained by M41).
+- AND-107, AND-040, B-A01.1, B-R01.3 → expectation corrections.
+- B2-K108 (Android) was not a fail, but its pass was doubtful. Fix round 1 produced the pixel-only failure line, so the pass
+  stands: `pixel=75.00% exceeds threshold 2.00% (perceptual=1.4 …)`.
 
 ## Unassigned
 
@@ -668,15 +721,16 @@ Rows: 27 + 23 + 44 = 94; placed 94.
   triage rows in §Expectation corrections.
 - **iOS (23):** 17 `fail` rows in clusters (IOS-121, IOS-138, IOS-141, B2-K16, B2-K37.2, B2-K90-a, B2-K90-b, B2-K105,
   N2-03, N2-05, N2-07, N2-08, N2-13, N2-18, S2-03, D2-13, CLI-049) and 6 triage rows.
-- **Android (44 = 36 `fail` + 2 triage + 6 extras):**
+- **Android (44 = 31 `fail` + 6 triage + 7 extras), after fix round 1:**
   - 8 absorbed into existing clusters: S2-03 → M03; B2-K16, N2-07, D2-13 → M06; B2-K105 → M12; X-022, B2-K17, N2-08 → M16.
-  - 22 in new clusters M25-M40: AND-107, AND-040, B-A01.1, B-R01.3 → M25; AND-210 → M26; AND2-OBS-01 → M27; AND-224 →
-    M28; B2-K106 → M29; N2-15 → M30; AND2-OBS-04 → M31; B2-K100.2, D2-44, AND2-OBS-03 → M32; D2-07 → M33; D2-31 → M34;
-    B-A09.2 → M35; B-C08.2 → M36; B2-K103 → M37; N-12, AND2-OBS-02 → M38; AND2-OBS-05 → M39; AND2-OBS-06 → M40.
-  - 12 under §Carried open items: B2-L01, AND-213 (L01); B2-L02, N2-13 (L02); B2-L05 (L05); B2-L06 (L06); B-A02.2,
-    B-R02.1, B2-K09, N2-17 (L07); B2-K111, N2-01 (K111).
-  - 2 triage rows (AND-223, MCP-026) in §Expectation corrections.
+  - 13 in Android clusters: AND-210 → M26; AND-224 → M28; B2-K106 → M29; N2-15 → M30; B2-K100.2, D2-44 → M32; D2-07 → M33;
+    D2-31 → M34; B-A09.2 → M35; B-C08.2 → M36; B2-K103 → M37; N-12 → M38; AND-213 → M41.
+  - 10 under §Carried open items: B2-L02, N2-13 (L02); B2-L05 (L05); B2-L06 (L06); B-A02.2, B-R02.1, B2-K09, N2-17 (L07);
+    B2-K111, N2-01 (K111).
+  - 7 extras: AND2-OBS-01 → M27; OBS-02 → M38; OBS-03 → M32; OBS-04 → M31; OBS-05 → M39; OBS-06 → M40; OBS-07 → M42.
+  - 6 triage rows in §Expectation corrections: AND-107, AND-040, B-A01.1, B-R01.3, AND-223, MCP-026.
+- **Clusters:** 41 active (M01-M24, M26-M42); M25 withdrawn.
 - **Split rows:** D2-34 and N2-18 are each counted once, under M08 and M04, and also cited by M07 and M05. N2-15 [android]
   is counted under M30 and cited by M31.
 - **Not counted as fails:** blocked rows (CLI 6, iOS 4, Android 3, plus CLI-083's blocked half), listed in §Blocked;
-  Android n/a AND-069/070 (no physical device).
+  Android n/a AND-069/070; B2-L01 (now pass).
