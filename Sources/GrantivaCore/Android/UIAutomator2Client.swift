@@ -177,6 +177,15 @@ extension DriverClient {
                 ], failure: "Failed to tap at (\(x), \(y))")
             },
             typeText: { text in
+                // Key actions with nothing focused go nowhere and still
+                // succeed, so ask for the focused element first.
+                var active = URLRequest(url: URL(string: "\(session)/element/active")!, timeoutInterval: 60)
+                active.httpMethod = "GET"
+                let (_, activeStatus) = try await transport.send(active)
+                if activeStatus == 404 { throw DriverClient.noFocusedField(text) }
+                guard activeStatus == 200 else {
+                    throw GrantivaError.commandFailed("Failed to read the focused element (HTTP \(activeStatus))", 1)
+                }
                 var steps: [[String: String]] = []
                 for character in text {
                     steps.append(["type": "keyDown", "value": String(character)])

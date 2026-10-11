@@ -12,6 +12,9 @@ public struct DriverClient: Sendable {
     public var typeText: @Sendable (_ text: String) async throws -> Void
     public var swipe: @Sendable (_ direction: String) async throws -> Void
     public var screenshot: @Sendable () async throws -> Data
+    /// `tapByLabel` that also says which attribute matched; nil for drivers
+    /// that match one way only (the tap tools then report a label match).
+    public var tapByLabelMatch: (@Sendable (_ label: String) async throws -> LabelMatch)?
 
     public init(
         status: @escaping @Sendable () async throws -> WDAStatus,
@@ -21,7 +24,8 @@ public struct DriverClient: Sendable {
         tapByCoordinate: @escaping @Sendable (_ x: Double, _ y: Double) async throws -> Void,
         typeText: @escaping @Sendable (_ text: String) async throws -> Void,
         swipe: @escaping @Sendable (_ direction: String) async throws -> Void,
-        screenshot: @escaping @Sendable () async throws -> Data
+        screenshot: @escaping @Sendable () async throws -> Data,
+        tapByLabelMatch: (@Sendable (_ label: String) async throws -> LabelMatch)? = nil
     ) {
         self.status = status
         self.hierarchy = hierarchy
@@ -31,7 +35,17 @@ public struct DriverClient: Sendable {
         self.typeText = typeText
         self.swipe = swipe
         self.screenshot = screenshot
+        self.tapByLabelMatch = tapByLabelMatch
     }
+}
+
+/// Which attribute a label tap matched on iOS: the accessibility label, then
+/// WDA's `name` (the accessibility identifier, or an SF Symbol's name), then
+/// a text field's placeholder.
+public enum LabelMatch: String, Sendable, Equatable {
+    case label
+    case identifier
+    case placeholder
 }
 
 @available(macOS 15, *)
@@ -55,7 +69,13 @@ public struct WDAStatus: Sendable {
 extension DriverClient {
     /// The iOS driver. `transport` defaults to URLSession; tests pass a stub
     /// that records each request.
-    public static func wda(port: UInt16, transport: UIAutomator2Transport = .live) -> DriverClient {
+    ///
+    /// `retryDelay` is how long a label lookup waits before its one retry
+    /// after WDA answers 400 (the app under test is still launching right
+    /// after the session starts).
+    public static func wda(
+        port: UInt16, transport: UIAutomator2Transport = .live, retryDelay: Duration = .seconds(1)
+    ) -> DriverClient {
         let base = "http://localhost:\(port)"
 
         return DriverClient(
@@ -78,47 +98,7 @@ extension DriverClient {
                 try await fetchHierarchyXML(base: base, port: port, transport: transport)
             },
             tapByLabel: { label in
-                let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
-                // Match the accessibility label first (what VoiceOver reads and
-                // what `grantiva_a11y_tree` shows as `label`), then fall back to
-                // the element name. "link text" matched only the name, so a tab
-                // labelled "Favorites" whose name is "heart" was not found. The
-                // application element is excluded: it carries the app's display
-                // name as its label and would shadow a same-named back button.
-                var elementId: String?
-                for attribute in ["label", "name"] {
-                    let findBody: [String: Any] = [
-                        "using": "predicate string",
-                        "value": "\(attribute) == \(predicateLiteral(label)) AND type != \"XCUIElementTypeApplication\"",
-                    ]
-                    let (responseData, status) = try await send(
-                        transport, "POST", "\(base)/session/\(sessionId)/elements", findBody
-                    )
-                    // 404 is WebDriver's "no such element": try the next
-                    // attribute. Anything else (500, invalid session) is a
-                    // real failure and must not read as "not found".
-                    if status == 404 { continue }
-                    guard status == 200 else {
-                        throw GrantivaError.networkError("Failed to look up \"\(label)\"", status)
-                    }
-                    let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
-                    if let elements = findJson["value"] as? [[String: Any]],
-                       let first = elements.first,
-                       let id = elementID(from: first) {
-                        elementId = id
-                        break
-                    }
-                }
-                guard let elementId else {
-                    throw GrantivaError.elementNotFound(label)
-                }
-
-                let (_, clickStatus) = try await send(
-                    transport, "POST", "\(base)/session/\(sessionId)/element/\(elementId)/click", [:]
-                )
-                guard clickStatus == 200 else {
-                    throw GrantivaError.networkError("Failed to tap element \"\(label)\"", clickStatus)
-                }
+                _ = try await tapByLabel(label, base: base, port: port, transport: transport, retryDelay: retryDelay)
             },
             tapByCoordinate: { x, y in
                 let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
@@ -137,22 +117,29 @@ extension DriverClient {
                         ] as [String: Any]
                     ]
                 ]
-                let (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
+                let (data, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
                 guard status == 200 else {
-                    throw GrantivaError.commandFailed("Failed to tap at (\(x), \(y))", 1)
+                    throw failure(data, fallback: GrantivaError.commandFailed("Failed to tap at (\(x), \(y))", 1))
                 }
             },
             typeText: { text in
                 let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
+                // Keystrokes with nothing focused go nowhere and WDA still
+                // answers 200, so ask for the focused element first.
+                let (activeData, activeStatus) = try await send(transport, "GET", "\(base)/session/\(sessionId)/element/active")
+                if activeStatus == 404 { throw noFocusedField(text) }
+                guard activeStatus == 200 else {
+                    throw failure(activeData, fallback: GrantivaError.networkError("Failed to read the focused element", activeStatus))
+                }
                 let body: [String: Any] = ["value": Array(text).map { String($0) }]
                 // GrantivaAgent (WebDriverAgent) serves keystrokes at /wda/keys;
                 // /keys is the W3C path some drivers use, kept as a fallback.
-                var (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/wda/keys", body)
+                var (data, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/wda/keys", body)
                 if status == 404 {
-                    (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/keys", body)
+                    (data, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/keys", body)
                 }
                 guard status == 200 else {
-                    throw GrantivaError.networkError("Failed to type text", status)
+                    throw failure(data, fallback: GrantivaError.networkError("Failed to type text", status))
                 }
             },
             swipe: { direction in
@@ -200,9 +187,9 @@ extension DriverClient {
                         ] as [String: Any]
                     ]
                 ]
-                let (_, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
+                let (data, status) = try await send(transport, "POST", "\(base)/session/\(sessionId)/actions", body)
                 guard status == 200 else {
-                    throw GrantivaError.commandFailed("Failed to swipe \(direction)", 1)
+                    throw failure(data, fallback: GrantivaError.commandFailed("Failed to swipe \(direction)", 1))
                 }
             },
             screenshot: {
@@ -217,6 +204,9 @@ extension DriverClient {
                     throw GrantivaError.invalidImage
                 }
                 return imageData
+            },
+            tapByLabelMatch: { label in
+                try await tapByLabel(label, base: base, port: port, transport: transport, retryDelay: retryDelay)
             }
         )
     }
@@ -225,6 +215,92 @@ extension DriverClient {
     public static func live(port: UInt16) -> DriverClient { wda(port: port) }
 
     // MARK: - Helpers
+
+    /// Label first (what VoiceOver reads and `grantiva_a11y_tree` shows as
+    /// `label`), then WDA's `name` (the accessibility identifier; for an SF
+    /// Symbol, its name), then the placeholder: a SwiftUI `TextField("Name",
+    /// ...)` has no label and shows "Name" as its placeholder, which is what
+    /// a flow's `tapOn: "Name"` matches. The application element is excluded:
+    /// it carries the app's display name as its label and would shadow a
+    /// same-named back button.
+    static let labelAttributes: [(attribute: String, match: LabelMatch)] = [
+        ("label", .label), ("name", .identifier), ("placeholderValue", .placeholder),
+    ]
+
+    static func tapByLabel(
+        _ label: String, base: String, port: UInt16, transport: UIAutomator2Transport, retryDelay: Duration
+    ) async throws -> LabelMatch {
+        var sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
+        var retried = false
+        var found: (id: String, match: LabelMatch)?
+        var index = 0
+        while index < labelAttributes.count, found == nil {
+            let (attribute, match) = labelAttributes[index]
+            let findBody: [String: Any] = [
+                "using": "predicate string",
+                "value": "\(attribute) == \(predicateLiteral(label)) AND type != \"XCUIElementTypeApplication\"",
+            ]
+            let (responseData, status) = try await send(
+                transport, "POST", "\(base)/session/\(sessionId)/elements", findBody
+            )
+            // 404 is WebDriver's "no such element": try the next attribute.
+            if status == 404 { index += 1; continue }
+            // Right after the session starts WDA answers 400 while the app
+            // is still launching: wait, resolve the session again and retry
+            // once before reporting anything.
+            if status == 400, !retried {
+                retried = true
+                try await Task.sleep(for: retryDelay)
+                sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
+                continue
+            }
+            // Anything else is a real failure and must not read as "not found".
+            guard status == 200 else {
+                throw failure(responseData, fallback: GrantivaError.networkError(
+                    "Failed to look up \"\(label)\"\(wdaMessage(responseData).map { ": \($0)" } ?? "")", status
+                ))
+            }
+            let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
+            if let elements = findJson["value"] as? [[String: Any]], let first = elements.first, let id = elementID(from: first) {
+                found = (id, match)
+            }
+            index += 1
+        }
+        guard let found else {
+            throw GrantivaError.elementNotFound(label)
+        }
+        let (clickData, clickStatus) = try await send(
+            transport, "POST", "\(base)/session/\(sessionId)/element/\(found.id)/click", [:]
+        )
+        guard clickStatus == 200 else {
+            throw failure(clickData, fallback: GrantivaError.networkError("Failed to tap element \"\(label)\"", clickStatus))
+        }
+        return found.match
+    }
+
+    /// WDA's error message from a failed response body, if any.
+    static func wdaMessage(_ data: Data) -> String? {
+        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let message = (json?["value"] as? [String: Any])?["message"] as? String
+        return message.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
+    /// The error for a failed WDA call: "the app is not running" when WDA
+    /// says so (it answers 400 once the app under test has exited), else
+    /// `fallback`.
+    static func failure(_ data: Data, fallback: GrantivaError) -> GrantivaError {
+        guard let message = wdaMessage(data), message.contains("is not running") else { return fallback }
+        let app = message.range(of: #"bundle id '([^']+)'"#, options: .regularExpression)
+            .map { String(message[$0].dropFirst("bundle id '".count).dropLast()) }
+        return .unavailable(
+            "\(app ?? "The app under test") is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start)."
+        )
+    }
+
+    /// What typing with no focused field reports, on both drivers.
+    public static func noFocusedField(_ text: String) -> GrantivaError {
+        .notFound("No focused text field: tap a field before typing \"\(text)\".")
+    }
 
     static func elementID(from element: [String: Any]) -> String? {
         element["ELEMENT"] as? String
@@ -277,7 +353,7 @@ extension DriverClient {
         let sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
         let (data, status) = try await send(transport, "GET", "\(base)/session/\(sessionId)/source")
         guard status == 200 else {
-            throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1)
+            throw failure(data, fallback: GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1))
         }
         // WDA returns JSON with a "value" key containing the XML source
         if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],

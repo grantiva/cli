@@ -131,9 +131,10 @@ final class UIAutomator2ClientTests: XCTestCase {
     }
 
     func testTypeTextSendsKeyActionsPerCharacter() async throws {
-        let transport = ScriptedTransport([(#"{"value":null}"#, 200)])
+        let transport = ScriptedTransport([(#"{"value":{"ELEMENT":"f1"}}"#, 200), (#"{"value":null}"#, 200)])
         try await client(transport).typeText("hi")
-        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[0].body.utf8)) as? [String: Any])
+        XCTAssertEqual(transport.calls.map(\.path), ["/wd/hub/session/abc-123/element/active", "/wd/hub/session/abc-123/actions"])
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: Any])
         let actions = try XCTUnwrap((body["actions"] as? [[String: Any]])?.first)
         XCTAssertEqual(actions["type"] as? String, "key")
         let steps = try XCTUnwrap(actions["actions"] as? [[String: String]])
@@ -184,5 +185,17 @@ final class UIAutomator2ClientTests: XCTestCase {
         } catch {
             XCTAssertTrue("\(error)".contains("HTTP 404"), "\(error)")
         }
+    }
+
+    /// K102: with nothing focused, no keys are sent and the error says so.
+    func testTypeTextWithoutAFocusedElementSendsNoKeys() async {
+        let transport = ScriptedTransport([(#"{"value":{"error":"no such element","message":"Cannot find focused element"}}"#, 404)])
+        do {
+            try await client(transport).typeText("x")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, #"No focused text field: tap a field before typing "x"."#)
+        }
+        XCTAssertEqual(transport.calls.map(\.path), ["/wd/hub/session/abc-123/element/active"])
     }
 }

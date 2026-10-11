@@ -73,6 +73,7 @@ final class WDAClientTests: XCTestCase {
     private let status = #"{"sessionId":"S1","value":{"ready":true}}"#
     private let oneElement = #"{"value":[{"ELEMENT":"E1"}]}"#
     private let noElements = #"{"value":[]}"#
+    private let focused = #"{"value":{"ELEMENT":"F1"}}"#
 
     func testTapByLabelFindsByAccessibilityLabelPredicate() async throws {
         let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
@@ -118,22 +119,22 @@ final class WDAClientTests: XCTestCase {
     }
 
     func testTypeTextPostsCharactersToWDAKeys() async throws {
-        let transport = ScriptedTransport([(status, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (focused, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("Hi!")
-        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/wda/keys"])
-        XCTAssertEqual(transport.calls[1].method, "POST")
-        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: [String]])
+        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active", "/session/S1/wda/keys"])
+        XCTAssertEqual(transport.calls[2].method, "POST")
+        let body = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[2].body.utf8)) as? [String: [String]])
         XCTAssertEqual(body["value"], ["H", "i", "!"])
     }
 
     func testTypeTextFallsBackToKeysOnlyAfterA404() async throws {
-        let transport = ScriptedTransport([(status, 200), ("{}", 404), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (focused, 200), ("{}", 404), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
-        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/wda/keys", "/session/S1/keys"])
+        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active", "/session/S1/wda/keys", "/session/S1/keys"])
     }
 
     func testTypeTextFailureNamesTheHTTPStatus() async {
-        let transport = ScriptedTransport([(status, 200), ("{}", 500)])
+        let transport = ScriptedTransport([(status, 200), (focused, 200), ("{}", 500)])
         do {
             try await DriverClient.wda(port: 8100, transport: transport.transport).typeText("x")
             XCTFail("expected an error")
@@ -143,7 +144,7 @@ final class WDAClientTests: XCTestCase {
             XCTAssertTrue(message.contains("Failed to type text"), message)
             XCTAssertFalse(message.contains("exited with code"), message)
         }
-        XCTAssertEqual(transport.calls.count, 2, "a non-404 failure must not retry /keys")
+        XCTAssertEqual(transport.calls.count, 3, "a non-404 failure must not retry /keys")
     }
 
     func testTapByLabelTriesTheNameAfterA404OnTheLabelQuery() async throws {
@@ -165,5 +166,126 @@ final class WDAClientTests: XCTestCase {
             XCTFail("\(error)")
         }
         XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 1, "a 500 must not fall through to the name query")
+    }
+
+    // MARK: - K78: label first, then name (identifier), then placeholder; the match is reported
+
+    private func wda(_ transport: ScriptedTransport) -> DriverClient {
+        DriverClient.wda(port: 8100, transport: transport.transport, retryDelay: .zero)
+    }
+
+    private func findPredicates(_ transport: ScriptedTransport) throws -> [String?] {
+        try transport.calls.filter { $0.path.hasSuffix("/elements") }.map {
+            try XCTUnwrap(JSONSerialization.jsonObject(with: Data($0.body.utf8)) as? [String: String])["value"]
+        }
+    }
+
+    func testTapByLabelReportsALabelMatch() async throws {
+        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
+        let match = try await tap("Favorites")
+        XCTAssertEqual(match, .label)
+    }
+
+    func testTapByLabelReportsAnIdentifierFallbackMatch() async throws {
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
+        let match = try await tap("heart")
+        XCTAssertEqual(match, .identifier)
+        XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    /// IOS-OBS-06: a SwiftUI `TextField("Name", ...)` carries "Name" as its
+    /// placeholder, not its label; the flow's `tapOn: "Name"` reaches it, so
+    /// the MCP tap does too, after label and name.
+    func testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndName() async throws {
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
+        let match = try await tap("Name")
+        XCTAssertEqual(match, .placeholder)
+        XCTAssertEqual(try findPredicates(transport), [
+            #"label == "Name" AND type != "XCUIElementTypeApplication""#,
+            #"name == "Name" AND type != "XCUIElementTypeApplication""#,
+            #"placeholderValue == "Name" AND type != "XCUIElementTypeApplication""#,
+        ])
+        XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    // MARK: - K92: a 400 right after startup, and an app that is not running
+
+    private let appNotRunning = #"{"value":{"error":"invalid element state","message":"The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed","traceback":""}}"#
+
+    func testTapByLabelRetriesTheLookupOnceAfterA400AndThenReportsNotFound() async {
+        let transport = ScriptedTransport([
+            (status, 200), (appNotRunning, 400), (status, 200), (noElements, 200), (noElements, 200), (noElements, 200),
+        ])
+        do {
+            try await wda(transport).tapByLabel("No Such")
+            XCTFail("expected elementNotFound")
+        } catch let error as GrantivaError {
+            guard case .elementNotFound("No Such") = error else { return XCTFail("\(error)") }
+        } catch {
+            XCTFail("\(error)")
+        }
+        XCTAssertEqual(transport.calls.filter { $0.path == "/status" }.count, 2, "the session is resolved again before the retry")
+    }
+
+    func testTapByLabelSaysTheAppIsNotRunningWhenThe400Persists() async {
+        let transport = ScriptedTransport([(status, 200), (appNotRunning, 400), (status, 200), (appNotRunning, 400)])
+        do {
+            try await wda(transport).tapByLabel("Landmarks")
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("com.kylebrowning.Landmarks is not running"), message)
+            XCTAssertTrue(message.contains("grantiva_run"), message)
+            XCTAssertFalse(message.contains("Network error"), message)
+        }
+        XCTAssertFalse(transport.calls.contains { $0.path.hasSuffix("/click") })
+    }
+
+    func testAnUnrecognised400KeepsWDAsReason() async {
+        let odd = #"{"value":{"error":"invalid argument","message":"Something odd happened"}}"#
+        let transport = ScriptedTransport([(status, 200), (odd, 400), (status, 200), (odd, 400)])
+        do {
+            try await wda(transport).tapByLabel("Landmarks")
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("Something odd happened"), message)
+            XCTAssertTrue(message.contains("Landmarks"), message)
+        }
+    }
+
+    func testSwipeAndHierarchySayTheAppIsNotRunning() async {
+        let size = #"{"value":{"width":390,"height":844}}"#
+        let swipe = ScriptedTransport([(status, 200), (size, 200), (appNotRunning, 400)])
+        do {
+            try await wda(swipe).swipe("up")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("is not running"), error.localizedDescription)
+        }
+        let source = ScriptedTransport([(status, 200), (appNotRunning, 400)])
+        do {
+            _ = try await wda(source).hierarchy()
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("is not running"), error.localizedDescription)
+        }
+    }
+
+    // MARK: - K102: typing needs a focused field
+
+    func testTypeTextWithoutAFocusedElementSendsNoKeys() async {
+        let none = #"{"value":{"error":"no such element","message":"unable to find an element"}}"#
+        let transport = ScriptedTransport([(status, 200), (none, 404)])
+        do {
+            try await wda(transport).typeText("x")
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, #"No focused text field: tap a field before typing "x"."#)
+        }
+        XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active"])
     }
 }
