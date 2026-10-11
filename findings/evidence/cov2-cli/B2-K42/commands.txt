@@ -22,3 +22,6 @@ $ grep -n -A3 'func test.*[Ee]mpty.*[Uu]did\|func test.*[Uu]did.*[Ee]mpty' Tests
 # cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
 $ grep -rn -B2 -A3 'udid is empty' Tests | head -20
 # exit=0 elapsed=.022s -> tests2.out / tests2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn 'testTeardownUsageErrorsCarryNoInvalidArgumentPrefix' Tests | sed 's#^#c65fc17:#'
+# exit=0 elapsed=.035s -> tests.out / tests.err
