@@ -8,7 +8,12 @@ import Yams
 enum ConfigDecodingErrorRenderer {
     typealias Step = GrantivaConfig.Screen.Step
 
-    static func message(for error: Error, root: Node?, fileName: String, unknownKeys: [ConfigKeyValidator.Warning]) -> String {
+    /// `decodeOutsideScreens` decodes a document (the file without its
+    /// `screens:`), so an error elsewhere is reported next to the steps'.
+    static func message(
+        for error: Error, root: Node?, fileName: String, unknownKeys: [ConfigKeyValidator.Warning],
+        decodeOutsideScreens: ((Node) throws -> Void)? = nil
+    ) -> String {
         var lines: [String] = []
         var folded = Set<Int>()
         // Each screen step is decoded on its own, so every bad step is named,
@@ -30,6 +35,18 @@ enum ConfigDecodingErrorRenderer {
                     }
                 }
             }
+        }
+        if !lines.isEmpty, let decodeOutsideScreens, let mapping = root?.mapping {
+            // The decoder stopped at the first bad step; an error outside
+            // `screens:` (under `diff:`, say) is reported too.
+            let rest = Node.mapping(Node.Mapping(
+                mapping.filter { $0.key.string != "screens" }, mapping.tag, mapping.style, mapping.mark
+            ))
+            do {
+                try decodeOutsideScreens(rest)
+            } catch let decoding as DecodingError {
+                lines.append(render(decoding, base: [], node: rest, fileName: fileName) + ".")
+            } catch {}
         }
         if lines.isEmpty {
             if let decoding = error as? DecodingError, let root {
@@ -67,7 +84,9 @@ enum ConfigDecodingErrorRenderer {
             let reason = context.debugDescription
             problem = { key, value in
                 if let key, labelKeys.contains(key) {
-                    return reason.hasPrefix("takes") ? "\(key) \(reason)" : "\(key) takes \(Step.Label.acceptedForms)"
+                    if reason.hasPrefix("takes") { return "\(key) \(reason)" }
+                    if reason.hasPrefix("`") { return reason }
+                    return "\(key) takes \(Step.Label.acceptedForms)"
                 }
                 return (key.map { "\($0): " } ?? "") + "has a value grantiva cannot read"
                     + (value?.scalar.map { " (\"\($0.string)\")" } ?? "")

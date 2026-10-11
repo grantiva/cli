@@ -512,7 +512,9 @@ Two flags adjust the stderr side only; neither changes stdout:
   output (banner, step lines, summary, report paths). Warnings and errors still
   print — a failing run's `Error:` line names the failed step — and the
   command's result on stdout is untouched, so
-  `grantiva doctor --json --quiet | jq` is still valid JSON.
+  `grantiva doctor --json --quiet | jq` is still valid JSON. A failing `run --quiet` still
+  prints its screen and flow blocks and its `Screens:`/`Flows:` lines on stdout, as a passing
+  run does; only the narration on stderr is silenced.
 
 `--json` already suppresses narration on its own, the runner's included: asking
 for a machine-readable result does not ask for a running commentary. `--verbose`

@@ -268,6 +268,7 @@ final class RunCommandTests: XCTestCase {
         mkdir -p "$out/flows"
         printf '{"status":"failed","flows":[{"index":0,"id":"flow-000","name":"smoke","sourceFile":"%s","assetsDir":"assets/flow-000","dataFile":"flows/flow-000.json","status":"failed","error":"Element not found: text=Remove"}]}' "$flow" > "$out/report.json"
         printf '{"commands":[{"yaml":"launchApp","status":"passed"},{"yaml":"tapOn: Remove","status":"failed","error":{"message":"Element not found: text=Remove"}}]}' > "$out/flows/flow-000.json"
+        echo "runner narration: smoke"
         echo "flow smoke failed" >&2
         exit 1
         """#.write(toFile: runner, atomically: true, encoding: .utf8)
@@ -311,6 +312,37 @@ final class RunCommandTests: XCTestCase {
             let failed = try XCTUnwrap(steps.first { $0["status"] as? String == "failed" })
             XCTAssertEqual(failed["action"] as? String, "tapOn: Remove")
             XCTAssertEqual(failed["message"] as? String, "Element not found: text=Remove")
+        }
+    }
+
+    /// L10: `--quiet` silences narration, not the result: a failing run
+    /// still prints its blocks and summary lines on stdout, and the runner's
+    /// own output is not relayed.
+    func testQuietFailingRunPrintsTheSummaryWithoutTheRunnersNarration() async throws {
+        try await withFailingRunnerProject { _, runner in
+            var command = try RunCommand.parse(["--quiet", "--no-build", "--application-id", "com.fake", "--timeout", "30"])
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .android))
+            command.runnerManager = runner
+            let stdout = CapturedLines()
+            command.resultOutput = ResultOutput { stdout.append($0) }
+            let narration = CapturedLines()
+            let previousSink = RunnerNarration.sink
+            RunnerNarration.sink = { narration.append($0) }
+            defer {
+                RunnerNarration.sink = previousSink
+                RunnerNarration.isSilenced = false
+            }
+
+            do {
+                try await command.run()
+                XCTFail("a failed flow must fail the run")
+            } catch {}
+
+            let text = stdout.values.joined(separator: "\n")
+            XCTAssertTrue(text.contains("  smoke"), text)
+            XCTAssertTrue(text.contains("\u{2717} tapOn: Remove"), text)
+            XCTAssertTrue(text.contains("Flows: 1 total, 0 passed, 1 failed"), text)
+            XCTAssertFalse(narration.values.joined().contains("runner narration"), "\(narration.values)")
         }
     }
 
@@ -615,7 +647,6 @@ final class RunCommandTests: XCTestCase {
         XCTAssertTrue(skipped.contains("  03-edit\n    - Skipped: not run"), skipped)
         XCTAssertFalse(skipped.contains("\u{2717} Run flow \"03-edit\""), skipped)
         XCTAssertTrue(skipped.contains("Flows: 3 total, 1 passed, 1 failed, 1 skipped"), skipped)
-
 
         let none = CapturedLines()
         await RunCommand.handleSuiteFailure(

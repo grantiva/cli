@@ -363,6 +363,46 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         }
     }
 
+    /// An identifier always matches exactly: `exact` with `id` is an error,
+    /// not silently dropped.
+    func testExactWithAnIdIsAConfigError() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.kylebrowning.Landmarks
+            screens:
+              - name: Clock
+                path:
+                  - assert_visible: {id: "clock", exact: true}
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            guard case .configuration(let message) = error as? GrantivaError else {
+                return XCTFail("expected a configuration error, got \(error)")
+            }
+            XCTAssertEqual(
+                message,
+                "grantiva.yml:5: screens[0].path[0].assert_visible: `exact` applies to `text` steps only."
+            )
+        }
+    }
+
+    /// A bad step and a bad top-level key are both reported, not only the
+    /// step.
+    func testABadStepAndABadTopLevelKeyAreBothReported() throws {
+        try write("grantiva.yml", """
+            bundle_id: com.kylebrowning.Landmarks
+            screens:
+              - name: Wait
+                path:
+                  - wait: soon
+            diff:
+              threshold: lots
+            """)
+        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+            let text = error.localizedDescription
+            XCTAssertTrue(text.contains("grantiva.yml:5: screens[0].path[0].wait: wait takes a number of seconds"), text)
+            XCTAssertTrue(text.contains("grantiva.yml:7: diff.threshold: threshold takes a number; got \"lots\""), text)
+        }
+    }
+
     // MARK: - L42-b: a malformed step is a plain config error
 
     func testAMalformedStepIsAPlainConfigErrorWithItsLine() throws {

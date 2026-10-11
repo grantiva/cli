@@ -2,10 +2,36 @@ import ArgumentParser
 import Foundation
 import GrantivaCore
 
+/// Whether a command's help lists the flags that only affect booting or
+/// choosing a device to run on (`--emulator`, `--headless`,
+/// `--allow-device-settings`).
+protocol BootFlagVisibility {
+    static var visibility: ArgumentVisibility { get }
+}
+
+/// Commands that boot or pick a device: the boot flags are in their help.
+enum BootFlagsShown: BootFlagVisibility {
+    static var visibility: ArgumentVisibility { .default }
+}
+
+/// `build build`, which only compiles and never boots or resolves a device
+/// to run on (L29): the boot flags still parse, so a script that passes them
+/// keeps working, but they are hidden from its help and change nothing.
+enum BootFlagsHidden: BootFlagVisibility {
+    static var visibility: ArgumentVisibility { .hidden }
+}
+
 /// The flags that name what to build and where to run it, for both
 /// platforms. A command declares this once; which half applies is decided by
 /// the resolved platform, and a flag from the other half is an error.
-struct TargetOptions: ParsableArguments {
+typealias TargetOptions = TargetFlags<BootFlagsShown>
+
+/// `TargetOptions` with the boot flags hidden from help, for `build build`.
+/// One declaration for both, so the flags, their help and their checks
+/// cannot drift apart.
+typealias BuildTargetOptions = TargetFlags<BootFlagsHidden>
+
+struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
     @Option(name: .long, help: "Scheme to build (iOS)")
     var scheme: String?
 
@@ -24,16 +50,16 @@ struct TargetOptions: ParsableArguments {
     @Option(name: .long, help: "Application ID (Android; read from the build or the APK when omitted)")
     var applicationId: String?
 
-    @Option(name: .long, help: "AVD name to use, booting it if needed (Android)")
+    @Option(name: .long, help: ArgumentHelp("AVD name to use, booting it if needed (Android)", visibility: Boot.visibility))
     var emulator: String?
 
     @Option(name: .long, help: "adb serial of an attached emulator or physical device (Android)")
     var device: String?
 
-    @Flag(name: .long, help: "Apply demo mode and animation settings on a physical device too (Android)")
+    @Flag(name: .long, help: ArgumentHelp("Apply demo mode and animation settings on a physical device too (Android)", visibility: Boot.visibility))
     var allowDeviceSettings = false
 
-    @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
+    @Flag(name: .long, help: ArgumentHelp("Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.", visibility: Boot.visibility))
     var headless = false
 
     /// Runs at parse time, before any config is read: `--device` with
@@ -186,62 +212,5 @@ struct TargetOptions: ParsableArguments {
 func requireExclusive(_ first: (flag: String, given: Bool), _ second: (flag: String, given: Bool)) throws {
     if let problem = ExclusiveFlags.problem(first, second) {
         throw ValidationError(problem)
-    }
-}
-
-/// `TargetOptions` for `build build`, which only compiles: it never resolves
-/// or boots a device to run on, so the boot flags (`--emulator`, `--headless`,
-/// `--allow-device-settings`) are hidden from its help (L29). They still
-/// parse, so a script that passes them keeps working; they change nothing.
-/// `--device` stays: it lends its ABI to the choice of split APK.
-struct BuildTargetOptions: ParsableArguments {
-    @Option(name: .long, help: "Scheme to build (iOS)")
-    var scheme: String?
-
-    @Option(name: .long, help: "Simulator name or UDID (iOS)")
-    var simulator: String?
-
-    @Option(name: .long, help: "Bundle identifier (iOS)")
-    var bundleId: String?
-
-    @Option(name: .long, help: "Gradle module to assemble (Android; default app)")
-    var module: String?
-
-    @Option(name: .long, help: "Gradle build variant, e.g. debug or freeDebug (Android; default debug)")
-    var variant: String?
-
-    @Option(name: .long, help: "Application ID (Android; read from the build or the APK when omitted)")
-    var applicationId: String?
-
-    @Option(name: .long, help: ArgumentHelp(visibility: .hidden))
-    var emulator: String?
-
-    @Option(name: .long, help: "adb serial of an attached emulator or device whose ABI picks the split APK (Android)")
-    var device: String?
-
-    @Flag(name: .long, help: ArgumentHelp(visibility: .hidden))
-    var allowDeviceSettings = false
-
-    @Flag(name: .long, help: ArgumentHelp(visibility: .hidden))
-    var headless = false
-
-    func validate() throws {
-        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
-    }
-
-    /// The same values as a `TargetOptions`, for the shared checks and resolution.
-    var target: TargetOptions {
-        var target = TargetOptions()
-        target.scheme = scheme
-        target.simulator = simulator
-        target.bundleId = bundleId
-        target.module = module
-        target.variant = variant
-        target.applicationId = applicationId
-        target.emulator = emulator
-        target.device = device
-        target.allowDeviceSettings = allowDeviceSettings
-        target.headless = headless
-        return target
     }
 }

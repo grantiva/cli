@@ -25,17 +25,14 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
     var derivedDataPath: String?
 
-    @OptionGroup var buildTarget: BuildTargetOptions
-
-    /// The target flags; the boot flags are hidden here (L29).
-    var target: TargetOptions { buildTarget.target }
+    /// The target flags with the boot flags hidden from help (L29).
+    @OptionGroup var target: BuildTargetOptions
 
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
-        let target = self.target
         try target.checkFlags(for: platform, derivedDataPath: derivedDataPath)
         let device = try devicePlatform.make(platform, android: target.androidOptions)
 

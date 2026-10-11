@@ -139,6 +139,11 @@ public struct GrantivaConfig: Sendable, Codable {
                             codingPath: decoder.codingPath, debugDescription: "takes text or id, not both"
                         ))
                     }
+                    if id != nil, exact != nil {
+                        throw DecodingError.dataCorrupted(.init(
+                            codingPath: decoder.codingPath, debugDescription: "`exact` applies to `text` steps only"
+                        ))
+                    }
                     if text == nil, id == nil {
                         throw DecodingError.dataCorrupted(.init(
                             codingPath: decoder.codingPath, debugDescription: "takes \(Self.acceptedForms)"
@@ -388,7 +393,11 @@ public struct GrantivaConfig: Sendable, Codable {
         } catch {
             // A plain config error naming the file, line and key (L42-b).
             throw GrantivaError.configuration(ConfigDecodingErrorRenderer.message(
-                for: error, root: firstDocument, fileName: fileName, unknownKeys: unknownKeys
+                for: error, root: firstDocument, fileName: fileName, unknownKeys: unknownKeys,
+                decodeOutsideScreens: { node in
+                    _ = try YAMLDecoder().decode(GrantivaConfig.self, from: node)
+                    if platform == .android { _ = try YAMLDecoder().decode(AndroidProject.self, from: node) }
+                }
             ))
         }
         config.warnings = warnings
