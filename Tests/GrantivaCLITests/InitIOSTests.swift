@@ -20,8 +20,7 @@ final class InitIOSTests: XCTestCase {
 
     func testTheSimulatorIsMarkedAsAPlaceholderWhenNoIPhoneTypeIsInstalled() {
         let (yaml, warnings) = InitCommand.iosTemplate(scheme: "X", detected: nil, bundleId: nil, newestIPhone: nil)
-        XCTAssertTrue(yaml.contains("simulator: \(DefaultSimulator.fallback)
-"), yaml)
+        XCTAssertTrue(yaml.contains("simulator: \(DefaultSimulator.fallback)\n"), yaml)
         XCTAssertEqual(warnings.count, 1)
         XCTAssertTrue(warnings[0].contains("simulator \"\(DefaultSimulator.fallback)\" is a placeholder"), warnings[0])
     }

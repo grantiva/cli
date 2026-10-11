@@ -322,7 +322,7 @@ final class DoctorTests: XCTestCase {
         let checks = await DoctorRunner().runAllChecks(platforms: [.ios], required: true)
         XCTAssertEqual(checks.first { $0.name == "Booted Simulator" }?.section, .advisory)
         XCTAssertEqual(checks.first { $0.name == "Xcode" }?.section, .required)
-        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).section, .advisory)
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck().section, .advisory)
     }
 
     func testAdvisorySectionIsPrintedUnderItsOwnHeadingAndEncoded() throws {
@@ -355,7 +355,7 @@ final class DoctorTests: XCTestCase {
             await runner.checkAVDs(list: { [] }),
             await runner.checkAVDs(list: { ["Pixel"] }),
             await runner.checkRunningEmulator(adb: ADB(path: dir.appendingPathComponent("no-adb").path)),
-            DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil),
+            DoctorRunner.noBootedSimulatorCheck(),
         ]
         FileManager.default.createFile(atPath: binary, contents: Data())
         try "v1".write(toFile: version, atomically: true, encoding: .utf8)
