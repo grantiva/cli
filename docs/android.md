@@ -65,6 +65,11 @@ The application ID a run installs and tests is the app's own: the Gradle output 
 `--application-id` overrides the test target, with a warning when it disagrees with the app;
 the APK is still installed under its own ID.
 
+`--no-build` skips the Gradle build and assumes the app is already installed: nothing is
+installed, and `build install --no-build` says `(install skipped)` in its `Done` line. With
+`--app-file <apk>` as well, that APK is installed and only the build is skipped (`build
+install`, `run`, `diff capture` alike).
+
 Flags: `--module`, `--variant`, `--application-id`, `--emulator`, `--device`,
 `--allow-device-settings`, `--headless`, `--logs-tag`. iOS flags such as `--scheme` are
 rejected on Android, and vice versa. `GRANTIVA_PLATFORM=android` or `--platform android`
@@ -95,7 +100,10 @@ visual-diff captures.
 Before each capture Grantiva enables System UI demo mode (clock 09:41, full battery,
 no notifications), sets the three animation scales to 0, and pins portrait. The previous
 values are saved to `.grantiva/android-settings-<serial>.json` and restored afterwards. If
-a run is interrupted, the next run restores them first.
+a run is interrupted, the next run restores them first. A freshly booted emulator can drop
+off adb for a moment (its adbd restarts once after boot); when that happens during the
+restore, Grantiva waits up to 30 seconds for the device to come back and retries, and prints
+one warning only if it does not return.
 
 ## Logs
 
@@ -214,5 +222,7 @@ AVDs `ensure` created are listed in `~/.grantiva/android/created-avds.json`; `de
 removes the AVD from it, and `ensure`, `delete`, `sessions` and `teardown` drop names whose
 AVD no longer exists on disk (deleted with `avdmanager` or Android Studio); `teardown` does so
 even when it refuses the serial. `teardown --force` of a serial that is neither attached nor
-recorded says so and exits 0. `delete --json` prints `{"deleted": true, "name": ...}`,
+recorded says so and exits 0. `teardown` stops a runner session on the emulator it kills
+(`runner start` or `run --keep-alive`) and removes its session files; `--json` reports it as
+`runnerSessionStopped`. `delete --json` prints `{"deleted": true, "name": ...}`,
 pretty-printed like every other `--json` document.

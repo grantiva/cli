@@ -7,7 +7,7 @@ public struct DoctorCheck: Sendable, Codable {
     public let fix: String?
     public let section: Section
 
-    public enum Status: String, Sendable, Codable {
+    public enum Status: String, Sendable, Codable, CaseIterable {
         case ok
         case warning
         case error

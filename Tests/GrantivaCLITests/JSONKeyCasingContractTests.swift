@@ -10,7 +10,7 @@ import GrantivaCore
 /// Commands add theirs to `fixtures`. The only other keys allowed are the
 /// snake_case aliases a document still writes next to its camelCase twin for
 /// existing consumers (`LegacyJSONKeys.renamed`); each must have that twin.
-/// `runner start`/`runner stop` join in a sibling change (K16).
+/// `runner start`/`runner stop` are among the fixtures (K16).
 final class JSONKeyCasingContractTests: XCTestCase {
     static func isCamelCase(_ key: String) -> Bool { key.wholeMatch(of: /[a-z][A-Za-z0-9]*/) != nil }
 

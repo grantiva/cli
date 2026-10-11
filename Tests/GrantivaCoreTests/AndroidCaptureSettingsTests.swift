@@ -101,4 +101,87 @@ final class AndroidCaptureSettingsTests: XCTestCase {
             ".grantiva/android-settings-192.168.1.10_5555.json"
         )
     }
+
+    // MARK: - K06: a device that briefly leaves adb after a fresh boot
+
+    private func quickSettings(_ shell: ScriptedShell, timeout: TimeInterval = 2) -> AndroidCaptureSettings {
+        AndroidCaptureSettings(
+            adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute), stateDirectory: scratch.path,
+            reconnectTimeout: timeout, pollInterval: .milliseconds(1)
+        )
+    }
+
+    private func writeState(_ saved: [String: String?]) throws -> String {
+        let state = AndroidCaptureSettings.statePath(serial: "emulator-5554", directory: scratch.path)
+        try JSONEncoder().encode(saved).write(to: URL(fileURLWithPath: state))
+        return state
+    }
+
+    private static let gone = GrantivaError.commandFailed("adb: device 'emulator-5554' not found", 1)
+    private static let offline = GrantivaError.commandFailed("adb: device offline", 1)
+
+    func testRestoreWaitsForADeviceThatLeftAdbAndRetriesTheCommandOnce() async throws {
+        let state = try writeState(["global/window_animation_scale": "1.0", "system/accelerometer_rotation": "1"])
+        let shell = ScriptedShell([
+            .failure(Self.gone),                                         // exit demo mode: device gone
+            .success("List of devices attached\n"),                       // not back yet
+            .success("List of devices attached\nemulator-5554\toffline\n"), // back, not ready
+            .success("List of devices attached\nemulator-5554\tdevice product:sdk model:x\n"),
+        ])
+        let warnings = await quickSettings(shell).restore(serial: "emulator-5554")
+        let bodies = shell.commands.map(shellBody)
+        XCTAssertEqual(bodies.filter { $0 == "am broadcast -a com.android.systemui.demo -e command exit" }.count, 2,
+                       "the failed command is retried once the device is back")
+        XCTAssertEqual(shell.commands.filter { $0.hasSuffix("devices -l") }.count, 3)
+        XCTAssertTrue(bodies.contains("settings put global window_animation_scale 1.0"))
+        XCTAssertTrue(bodies.contains("settings put system accelerometer_rotation 1"))
+        XCTAssertEqual(warnings, [])
+        XCTAssertFalse(FileManager.default.fileExists(atPath: state))
+    }
+
+    func testAnOfflineDeviceMidRestoreIsWaitedOnAndTheSettingRetried() async throws {
+        _ = try writeState(["global/window_animation_scale": "1.0", "global/transition_animation_scale": "1.0"])
+        let shell = ScriptedShell([
+            .success(""),                       // exit demo mode
+            .failure(Self.offline),             // window_animation_scale: offline
+            .success("emulator-5554\tdevice\n"), // devices -l
+        ])
+        let warnings = await quickSettings(shell).restore(serial: "emulator-5554")
+        let bodies = shell.commands.map(shellBody)
+        XCTAssertEqual(bodies.filter { $0 == "settings put global window_animation_scale 1.0" }.count, 2)
+        XCTAssertTrue(bodies.contains("settings put global transition_animation_scale 1.0"))
+        XCTAssertEqual(warnings, [])
+    }
+
+    func testADeviceThatDoesNotComeBackGetsOneWarningAndNoFurtherCommands() async throws {
+        let state = try writeState([
+            "global/window_animation_scale": "1.0", "global/transition_animation_scale": "1.0",
+            "system/accelerometer_rotation": "1",
+        ])
+        let shell = ScriptedShell([.failure(Self.gone)])
+        shell.fallback = "List of devices attached\n"
+        let warnings = await quickSettings(shell, timeout: 0.05).restore(serial: "emulator-5554")
+        XCTAssertEqual(warnings.count, 1, "\(warnings)")
+        XCTAssertTrue(warnings.first?.contains("emulator-5554") == true, "\(warnings)")
+        XCTAssertTrue(warnings.first?.contains("left adb") == true, "\(warnings)")
+        XCTAssertFalse(shell.commands.map(shellBody).contains { $0.hasPrefix("settings ") },
+                       "nothing more is sent to a device that is gone")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: state))
+    }
+
+    func testAnOrdinaryFailureIsNotWaitedOn() async throws {
+        _ = try writeState(["global/window_animation_scale": "1.0"])
+        let shell = ScriptedShell([.success(""), .failure(GrantivaError.commandFailed("Security exception: permission denied", 1))])
+        let warnings = await quickSettings(shell).restore(serial: "emulator-5554")
+        XCTAssertFalse(shell.commands.contains { $0.hasSuffix("devices -l") })
+        XCTAssertEqual(warnings.count, 1)
+        XCTAssertTrue(warnings[0].contains("global/window_animation_scale"), warnings[0])
+    }
+
+    func testDeviceGoneRecognisesAdbsWordings() {
+        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(Self.gone))
+        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(Self.offline))
+        XCTAssertTrue(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("adb: no devices/emulators found", 1)))
+        XCTAssertFalse(AndroidCaptureSettings.deviceLeftAdb(GrantivaError.commandFailed("Security exception", 1)))
+    }
 }
