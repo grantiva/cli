@@ -29,3 +29,4 @@ Task 5: fix round 1/5 (b58af30; 372 pass / 31 fail / 6 triage / 3 blocked / 2 n/
 Task 5: fix round 1/5 result: all addressed (re-review clean at b58af30; two text nits: AND-213 unsupported 170–192 ms figure; OBS-03 rerun label). Fix round 2/5 dispatched (two one-liners; controller verifies by inspection — ruling).
 Task 5: fix round 2/5 result: verified by controller (8885a21; element/active lines exist with grep -a; OBS-03 rerun relabelled). Task 5: complete (cov2/android 8885a21: 372 pass / 31 fail / 6 fail-triage / 3 blocked / 2 n/a + AND2-OBS-01..07).
 Task 6 Step 1: cov2/cli, cov2/ios, cov2/android merged --no-ff into coverage-campaign (9fadf607).
+Task 6 Step 2: brief writers dispatched (opus ×2): M01–M21 → L08–L28; M22–M24 + M26–M42 → L29–L48 (M25 withdrawn → expectation correction).
