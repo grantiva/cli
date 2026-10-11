@@ -340,3 +340,12 @@ Error: No captures found in No capture found for "Home; touch …/pwn-cov". Run:
 | B-A04.1 | pass | B-A04.1/cap1..10 | 10 captures: Home.png and Deep Links.png hashes differ every time |
 | IOS-120 | pass | IOS-120/, B-A04.1/ | 5/5 captured on 26.0 (cov-ios-1, B-A04.1 runs) and 27.0 (cov-ios-2); Lakes shows the Lakes list (Lake Tahoe, Mono Lake, Crater Lake) and Detail the Golden Gate Bridge detail (checked visually) |
 | B-I16.2 | pass | B-I16.2/ | a legacy `Deep%20Links.png` baseline is matched by compare (`✓ Deep Links`), and `diff approve "Deep Links"` migrates it to `Deep Links.png` (the %20 file is gone) |
+| IOS-033 | pass | IOS-033/ | `--ready-file /nonexistent-cov/sub/x.ready` fails before build or boot (0.02 s, exit 1): `--ready-file directory /nonexistent-cov/sub could not be created: You can’t save the file “sub” because the volume is read only.` |
+| IOS-034 | pass | IOS-034/ | `--ready-file $S/cov-missing/x.ready`: directory created, verdict `passed` written there |
+| IOS-041 | pass | IOS-030/12-quote-label.* | flow 12 `tapOn: 'Mount "Denali"'` taps, `Alaska` asserted, exit 0 |
+| B-A02.2 | pass | IOS-030/02-favorite.*, IOS-118/ | iOS half: `swipe: {direction: LEFT, from: "Lake Tahoe"}` starts on the row and reveals Remove; flow 02 passes on 26.0 and 27.0 |
+| B-R01.4 | pass | IOS-117/, IOS-118/ | iOS set 12/12 on 26.0 and 27.0 |
+| B-R02.6 | pass | IOS-117/, IOS-118/, IOS-030/02-favorite.* | iOS half: 02-favorite and the stock set pass on 26.0 and 27.0 with bundled runner 1.1.28-grantiva.9 |
+| B-C10.1 | pass | FLOWS-26/16-setpermissions.*, B-C10.2/ | `setPermissions` (header appId) and bare `scroll` (`scroll: DOWN`) both pass |
+| B-C10.2 | pass | B-C10.2/ | from a dir with no config and no --bundle-id: `Resolved: scheme=(none)`, the flow's appId used, setPermissions + scroll pass, exit 0 |
+| B-C01.2 | pass | B-C01.2/ | `runner install` (`Extracting runner...`, `Runner installed at …`) while flow 11 held the lease: flow passed; every file under locks/ and reports/, both grantiva-wda.xcconfig files and version files have identical hashes before and after |

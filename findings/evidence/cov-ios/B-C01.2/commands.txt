@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ cd $GRANTIVA_RUNNER_HOME; (find locks reports versions/*/reports -type f 2>/dev/null | sort | xargs shasum 2>/dev/null; shasum grantiva-wda.xcconfig versions/*/grantiva-wda.xcconfig version versions/*/version; stat -f "%m %N" grantiva-runner versions/*/grantiva-runner)  > $S/c01-before.txt; wc -l < $S/c01-before.txt
+# exit=0 elapsed=.146s -> before.out / before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/11-slow.yaml > $S/c01-run.out 2> $S/c01-run.err & P=$!; sleep 8; $GRANTIVA runner install; echo install_exit=$?; wait $P; echo run_exit=$?
+# exit=0 elapsed=16.324s -> install-during-run.out / install-during-run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ cd $GRANTIVA_RUNNER_HOME; (find locks reports versions/*/reports -type f 2>/dev/null | sort | xargs shasum 2>/dev/null; shasum grantiva-wda.xcconfig versions/*/grantiva-wda.xcconfig version versions/*/version; stat -f "%m %N" grantiva-runner versions/*/grantiva-runner)  > $S/c01-after.txt; diff $S/c01-before.txt $S/c01-after.txt && echo identical
+# exit=0 elapsed=.076s -> after.out / after.err
