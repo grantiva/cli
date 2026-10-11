@@ -1,0 +1,22 @@
+OVERVIEW: Manage webhook endpoints and inspect their deliveries.
+
+USAGE: grantiva console webhooks <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  list                    List webhook endpoints.
+  get                     Show one webhook endpoint.
+  create                  Create a webhook endpoint. The signing secret is
+                          shown once.
+  enable                  Resume deliveries to a webhook.
+  disable                 Pause deliveries to a webhook without deleting it.
+  update                  Change a webhook's events or description.
+  delete                  Delete a webhook endpoint and its delivery history.
+  test                    Send a test event and report the endpoint's response.
+  deliveries              List recent deliveries for a webhook.
+  retry                   Retry a failed delivery.
+
+  See 'grantiva help console webhooks <subcommand>' for detailed help.

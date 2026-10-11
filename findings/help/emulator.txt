@@ -1,0 +1,20 @@
+OVERVIEW: Provision, inspect, and tear down Android emulators.
+
+USAGE: grantiva emulator <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  ensure                  Create the AVD when missing (installing its system
+                          image first) and boot it. stdout is the serial, or
+                          the AVD name with --no-boot.
+  delete                  Delete an AVD Grantiva created. Others need --force.
+                          A running AVD is never deleted.
+  sessions                List the emulators Grantiva started.
+  teardown                Kill emulators Grantiva started: one by serial, or
+                          all of them. Stops the UIAutomator2 server and
+                          removes the serial's adb forwards first.
+
+  See 'grantiva help emulator <subcommand>' for detailed help.
