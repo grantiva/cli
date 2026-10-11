@@ -1,0 +1,12 @@
+# uptime: 10:50  up 4 days,  2:17, 5 users, load averages: 8.45 11.71 26.57
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/08-caching.yaml --logs > /dev/null 2>&1; echo run_exit=$?; sleep 1; echo count=$(ps -axo command | grep 'log stream' | grep 7E846901-F93F-4220-A153-7043061033D7 | grep -vc grep)
+# exit=0 elapsed=17.639s -> pass-run.out / pass-run.err
+# uptime: 10:50  up 4 days,  2:17, 5 users, load averages: 11.76 12.29 26.52
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/99-crash.yaml --logs > /dev/null 2>&1; echo run_exit=$?; sleep 1; echo count=$(ps -axo command | grep 'log stream' | grep 7E846901-F93F-4220-A153-7043061033D7 | grep -vc grep)
+# exit=0 elapsed=11.375s -> fail-run.out / fail-run.err
+# uptime: 10:50  up 4 days,  2:18, 5 users, load averages: 13.38 12.62 26.38
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/08-caching.yaml --logs --keep-alive > /dev/null 2>&1 & P=$!; sleep 25; echo during=$(ps -axo command | grep 'log stream' | grep 7E846901-F93F-4220-A153-7043061033D7 | grep -vc grep); kill -INT $P; wait $P; echo run_exit=$?; sleep 1; echo after=$(ps -axo command | grep 'log stream' | grep 7E846901-F93F-4220-A153-7043061033D7 | grep -vc grep)
+# exit=0 elapsed=26.399s -> sigint.out / sigint.err

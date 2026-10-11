@@ -1,0 +1,8 @@
+# uptime: 10:48  up 4 days,  2:15, 5 users, load averages: 10.75 13.61 29.22
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/08-caching.yaml --logs
+# exit=0 elapsed=16.304s -> logs.out / logs.err
+# uptime: 10:48  up 4 days,  2:16, 5 users, load averages: 10.10 13.25 28.73
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ echo log_lines=$(cat $E/IOS-061/logs.out $E/IOS-061/logs.err | grep -c '^\[log\]'); echo banners=$(cat $E/IOS-061/logs.out $E/IOS-061/logs.err | grep -c 'getpwuid_r\|Filtering the log data')
+# exit=0 elapsed=.015s -> count.out / count.err

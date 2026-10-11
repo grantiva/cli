@@ -39,3 +39,5 @@ mcp() {
 }
 INIT='{"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"cov2","version":"1"}}},{"jsonrpc":"2.0","method":"notifications/initialized"}'
 mkreq() { echo "[$INIT,$1]" > $2; }
+# mkcfg <dir> <cfg-file-or-"-"> : project copy under $S/<dir> with that config as grantiva.yml (cov-ios-1 -> cov2-ios-1)
+mkcfg() { local d=$S/$1; rm -rf $d; mkdir -p $d; cp -c -R $APP/Landmarks.xcodeproj $APP/Landmarks $APP/Landmarks-Info.plist $APP/.maestro $d/; if [ "$2" != "-" ]; then sed 's/^simulator: cov-ios-1$/simulator: cov2-ios-1/' $2 > $d/grantiva.yml; fi; }

@@ -1,0 +1,9 @@
+# project $S/p135: grantiva.yml = NEW:cfg/screens-slow
+# uptime: 10:58  up 4 days,  2:25, 5 users, load averages: 10.81 12.18 20.45
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p135  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cat grantiva.yml
+# exit=0 elapsed=.008s -> config.out / config.err
+# uptime: 10:58  up 4 days,  2:25, 5 users, load averages: 10.81 12.18 20.45
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/p135  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ rm -rf out; rm -f $S/r135.ready; $GRANTIVA run --no-build --simulator $U1 --timeout 30 --report-dir out --ready-file $S/r135.ready; echo exit=$?; cat $S/r135.ready; python3 -I -c "import json; d=json.load(open(\"out/screens/report.json\")) if __import__(\"os\").path.exists(\"out/screens/report.json\") else json.load(open(\"out/report.json\")); print(\"report status\", d.get(\"status\"), d.get(\"summary\"))"
+# exit=0 elapsed=32.091s -> run.out / run.err

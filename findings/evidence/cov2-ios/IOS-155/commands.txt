@@ -1,0 +1,28 @@
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 180.91 73.46 62.89
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-3 iPhone 17"
+# exit=0 elapsed=22.062s -> ensure1.out / ensure1.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 217.32 89.87 69.07
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U3 --force --json
+# exit=0 elapsed=1.009s -> plain.out / plain.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 217.32 89.87 69.07
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U3 --force --json --quiet
+# exit=0 elapsed=.896s -> quiet.out / quiet.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 217.32 89.87 69.07
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-3 iPhone 17"
+# exit=0 elapsed=4.238s -> ensure2.out / ensure2.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 246.12 97.95 72.04
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U3 --force --json --verbose
+# exit=0 elapsed=.647s -> verbose.out / verbose.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 246.12 97.95 72.04
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ cd $E/IOS-155; cmp plain.out quiet.out && cmp plain.out verbose.out && echo IDENTICAL; wc -c plain.out quiet.out verbose.out plain.err quiet.err verbose.err
+# exit=0 elapsed=.058s -> cmp.out / cmp.err
+# uptime: 10:31  up 4 days,  1:58, 5 users, load averages: 246.12 97.95 72.04
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator delete --name "cov2-ios-3 iPhone 17"
+# exit=0 elapsed=3.951s -> delete.out / delete.err

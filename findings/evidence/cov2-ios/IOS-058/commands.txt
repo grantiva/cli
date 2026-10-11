@@ -1,0 +1,4 @@
+# uptime: 10:33  up 4 days,  2:01, 5 users, load averages: 32.29 65.74 63.06
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ rm -f $S/r058.ready; $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/18-long-wait.yaml --keep-alive --ready-file $S/r058.ready & P=$!; sleep 15; ls $S/r058.ready 2>&1; kill -INT $P; wait $P; echo run_exit=$?; cat $S/r058.ready; sleep 2; ps -axo pid,command | grep $U1 | grep -v grep | grep -v launchd_sim | grep -v Landmarks.app | cut -c1-150; ls /tmp/grantiva-sessions/
+# exit=0 elapsed=17.336s -> run.out / run.err
