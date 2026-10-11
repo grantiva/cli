@@ -1,0 +1,18 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ adb devices
+# exit=0 elapsed=.019s -> adb_before.out / adb_before.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ $GRANTIVA ci run --platform android --headless; echo rc=$?
+# exit=0 elapsed=.019s -> headless.out / headless.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ $GRANTIVA ci run --platform android --emulator cov-android; echo rc=$?
+# exit=0 elapsed=.019s -> emulatorcovandroid.out / emulatorcovandroid.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ $GRANTIVA ci run --platform android --module app --variant freeDebug; echo rc=$?
+# exit=0 elapsed=.019s -> moduleappvariantfreeDebug.out / moduleappvariantfreeDebug.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ $GRANTIVA ci run --platform android --derived-data-path x; echo rc=$?
+# exit=0 elapsed=.019s -> deriveddatapathx.out / deriveddatapathx.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-167
+$ adb devices; ls app/build 2>&1 | head -2
+# exit=0 elapsed=.022s -> adb_after.out / adb_after.err

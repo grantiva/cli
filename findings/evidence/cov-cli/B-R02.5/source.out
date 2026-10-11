@@ -1,0 +1,98 @@
+package devicelab
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/devicelab-dev/maestro-runner/pkg/core"
+	"github.com/devicelab-dev/maestro-runner/pkg/flow"
+)
+
+// favoritesSource is the Favorites screen from the R02 device session: the
+// "Lake Tahoe" text sits near the left edge of its 1080 px wide row.
+func favoritesSource(textBounds string) func() (string, error) {
+	return func() (string, error) {
+		return `<?xml version="1.0" encoding="UTF-8"?>
+<hierarchy rotation="0">
+  <android.widget.FrameLayout bounds="[0,0][1080,2400]">
+    <android.view.View bounds="[0,432][1080,621]">
+      <android.widget.TextView text="Lake Tahoe" bounds="` + textBounds + `" displayed="true" enabled="true"/>
+    </android.view.View>
+  </android.widget.FrameLayout>
+</hierarchy>`, nil
+	}
+}
+
+// R02: a left swipe from text near the left edge used to run from its centre
+// to 10% of the screen, a 47 px drag that left the row closed. It now runs to
+// the screen edge, starting from the text's far side because its centre is
+// within a quarter of the screen of that edge.
+func TestSwipeFromNearEdgeElementReachesScreenEdge(t *testing.T) {
+	client := newAdbSwipeClient()
+	client.sourceFunc = favoritesSource("[42,469][269,532]")
+	shell := &mockShell{}
+	driver := New(client, &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2400}, shell)
+
+	step := &flow.SwipeStep{
+		Direction: "LEFT",
+		Selector:  &flow.Selector{Text: "Lake Tahoe"},
+		BaseStep:  flow.BaseStep{TimeoutMs: 1000},
+	}
+	if res := driver.swipe(step); !res.Success {
+		t.Fatalf("swipe failed: %v (%s)", res.Error, res.Message)
+	}
+	if len(shell.commands) != 1 || shell.commands[0] != "input swipe 246 500 0 500 300" {
+		t.Errorf("got %q, want [input swipe 246 500 0 500 300]", shell.commands)
+	}
+}
+
+// F01: an element without usable bounds fails the step instead of falling
+// through to a screen-centre swipe that ignores `from:`.
+func TestSwipeFromElementWithoutBoundsFails(t *testing.T) {
+	client := newAdbSwipeClient()
+	client.sourceFunc = favoritesSource("[42,469][42,469]")
+	shell := &mockShell{}
+	driver := New(client, &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2400}, shell)
+
+	step := &flow.SwipeStep{
+		Direction: "LEFT",
+		Selector:  &flow.Selector{Text: "Lake Tahoe"},
+		BaseStep:  flow.BaseStep{TimeoutMs: 500},
+	}
+	res := driver.swipe(step)
+	if res.Success {
+		t.Fatal("expected failure for an element without bounds")
+	}
+	if !strings.Contains(res.Message, "Element not found for swipe") {
+		t.Errorf("message = %q, want it to name the swipe element", res.Message)
+	}
+	if len(shell.commands) != 0 || len(client.swipeCoordsCalls) != 0 {
+		t.Errorf("no swipe should be issued, got adb %v agent %v", shell.commands, client.swipeCoordsCalls)
+	}
+}
+
+// R02: `start:`/`end:` without `%` are pixels; `N%` stays a percentage.
+func TestSwipeStartEndPlainIntegersArePixels(t *testing.T) {
+	for _, tc := range []struct {
+		name, start, end, want string
+	}{
+		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+		{"percentages", "60%, 22%", "5%, 22%", "input swipe 648 528 54 528 300"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			shell := &mockShell{}
+			driver := New(newAdbSwipeClient(), &core.PlatformInfo{ScreenWidth: 1080, ScreenHeight: 2400}, shell)
+			if res := driver.swipe(&flow.SwipeStep{Start: tc.start, End: tc.end}); !res.Success {
+				t.Fatalf("swipe failed: %v", res.Error)
+			}
+			if len(shell.commands) != 1 || shell.commands[0] != tc.want {
+				t.Errorf("got %q, want %q", shell.commands, tc.want)
+			}
+ae48e34:pkg/driver/appium/swipe_geometry_test.go:88:		{"pixels", "900, 520", "100, 520", []string{`"x":900,"y":520`, `"x":100,"y":520`}},
+ae48e34:pkg/driver/devicelab/swipe_geometry_test.go:79:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+ae48e34:pkg/driver/uiautomator2/swipe_geometry_test.go:11:// percentages, so `900, 520` became 900% of the screen and the swipe landed
+ae48e34:pkg/driver/uiautomator2/swipe_geometry_test.go:17:		{"pixels", "900, 520", "100, 520", "input swipe 900 520 100 520 300"},
+ae48e34:pkg/driver/uiautomator2/swipe_geometry_test.go:18:		{"pixels without spaces", "900,520", "100,520", "input swipe 900 520 100 520 300"},
+ae48e34:pkg/driver/wda/swipe_geometry_test.go:72:	if result := driver.swipe(&flow.SwipeStep{Start: "900, 520", End: "100, 520"}); result.Success {
+ae48e34:pkg/flow/swipe_coords_test.go:11:		{"plain pixels", "- swipe:\n    start: 900, 520\n    end: 100, 520\n", "900, 520", "100, 520"},
+ae48e34:pkg/flow/swipe_coords_test.go:12:		{"quoted pixels", "- swipe:\n    start: \"900, 520\"\n    end: \"100, 520\"\n", "900, 520", "100, 520"},

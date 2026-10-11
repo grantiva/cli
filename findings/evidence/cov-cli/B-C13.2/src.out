@@ -1,0 +1,11 @@
+    /// simctl narrates ("Recording completed. Writing to disk.") on stdout,
+    /// which must not reach Grantiva's stdout ahead of the result.
+    static func makeRecorder(deviceID: String, path: String, log: FileHandle) -> Process {
+        let recorder = Process()
+        recorder.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
+        recorder.arguments = ["simctl", "io", deviceID, "recordVideo", "--codec=h264", path]
+        recorder.standardOutput = log
+        recorder.standardError = log
+        return recorder
+    }
+

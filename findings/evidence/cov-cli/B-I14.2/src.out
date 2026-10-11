@@ -1,0 +1,56 @@
+        // The look-up/create pair runs under a cross-process lock so two
+        // concurrent runs asking for the same name reuse one device instead of
+        // both observing "not found" and creating duplicates.
+        let (created, provisionedUDID): (Bool, String) = try await provenance.withProvisioningLock {
+            let named = try await listDevices().filter { $0.name == name }
+            if named.count > 1 { throw GrantivaError.invalidArgument("Multiple simulators are named \"\(name)\"; delete duplicates or use a unique name") }
+            if let existing = named.first {
+                // Only enforce the configuration the caller actually asked for.
+                let typeMatches = requestedType.map { existing.deviceTypeIdentifier == $0.identifier } ?? true
+                let runtimeMatches = pinnedRuntime.map { existing.runtime == $0.shortName } ?? true
+                guard typeMatches && runtimeMatches else {
+                    let requested = [requestedType?.name, pinnedRuntime?.name].compactMap { $0 }.joined(separator: ", ")
+                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(requested)")
+                }
+                return (false, existing.udid)
+            }
+            let type: SimctlCatalog.DeviceType
+            if let requestedType {
+                type = requestedType
+            } else {
+                guard let inferred = Self.inferDeviceType(fromName: name, in: catalog.deviceTypes.map { ($0.name, $0.identifier) }) else {
+                    throw GrantivaError.invalidArgument(
+                        "Could not infer a device type from the name \"\(name)\". "
+                            + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
+                    )
+                }
+                guard let match = catalog.deviceTypes.first(where: { $0.identifier == inferred.identifier }) else {
+                    throw GrantivaError.invalidArgument("Simulator device type not found: \"\(inferred.name)\"")
+                }
+                type = match
+            }
+            let runtime = try pinnedRuntime ?? resolveRuntime("latest")
+            let udid = try await execute("xcrun simctl create \(shellQuoted(name)) \(shellQuoted(type.identifier)) \(shellQuoted(runtime.identifier))")
+            try provenance.register(udid: udid, name: name)
+            return (true, udid)
+        }
+        let udid = provisionedUDID
+        if shouldBoot {
+            do {
+                _ = try await boot(nameOrUDID: udid)
+            } catch {
+                // A failed ensure (most often a capacity-wait timeout) leaves
+                // the host as it found it: remove a device this call created.
+                // A reused device is never touched.
+                if created {
+                    try? await removeCreatedDevice(udid: udid)
+                }
+                throw error
+            }
+        }
+        let device = try await exactDevice(nameOrUDID: udid)
+        let geometry = shouldBoot ? try await displayGeometry(udid: udid) : nil
+        // Report what the device actually is, not what was requested or inferred.
+        let typeName = catalog.deviceTypes.first { $0.identifier == device.deviceTypeIdentifier }?.name
+            ?? device.deviceTypeIdentifier ?? "unknown"
+        let runtimeName = catalog.runtimes.first { $0.shortName == device.runtime }?.name ?? device.runtime

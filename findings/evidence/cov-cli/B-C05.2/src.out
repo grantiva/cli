@@ -1,0 +1,28 @@
+    // MARK: - Handlers
+
+    /// The absolute path of the running Grantiva binary. The argv[0] fallback
+    /// is resolved through PATH when it is a bare name, never against the
+    /// working directory (MCPServer has changed it to the project dir).
+    static var executable: String {
+        if let path = Bundle.main.executablePath { return path }
+        let argv0 = CommandLine.arguments[0]
+        if !argv0.contains("/"), let found = which(argv0) { return found }
+        return URL(fileURLWithPath: argv0).standardizedFileURL.path
+    }
+
+    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
+        "\(shellQuoted(executable)) diff capture --no-build --json --platform \(platform.rawValue)"
+    }
+
+    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
+        "\(shellQuoted(executable)) diff compare --json --platform \(platform.rawValue)"
+    }
+
+    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> String {
+        var cmd = "\(shellQuoted(executable)) diff approve --json --platform \(platform.rawValue)"
+        if !screens.isEmpty {
+            cmd += " " + screens.map(shellQuoted).joined(separator: " ")
+        }
+        return cmd
+    }
+

@@ -1,0 +1,16 @@
+
+    // Event types are validated by the server (#56, #108), not a local catalogue.
+    func testUnknownWebhookEventsAreLeftToTheServer() {
+        XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://x.example.com", "--event", "brand.new.event"]))
+        XCTAssertNoThrow(try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "brand.new.event"]))
+    }
+
+    func testWebhookEventsIsNotASubcommand() {
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.parseAsRoot(["events"]))
+    }
+
+    func testWebhookCommandsRejectBlankResourceIDs() {
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.GetCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.EnableCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.DisableCommand.parse([" \n "]))
+        XCTAssertThrowsError(try ConsoleWebhooksCommand.UpdateCommand.parse([" \n ", "--description", "x"]))

@@ -1,0 +1,29 @@
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches the compiled-in version
+        run: |
+          # The git tag IS the version: no v prefix, exactly what
+          # `grantiva --version` prints. Verify they agree before anything is
+          # published — a mismatch would ship a GitHub release and a Homebrew
+          # formula claiming a version the binary does not report.
+          VERSION="${{ github.ref_name }}"
+          case "$VERSION" in
+            v*)
+              echo "Tag $VERSION has a v prefix. Tags are bare SemVer (e.g. 2.0.1); retag without the v." >&2
+              exit 1 ;;
+          esac
+          DECLARED=$(sed -n 's/.*grantivaVersion = "\(.*\)".*/\1/p' Sources/GrantivaCore/Version.swift)
+          if [ -z "$DECLARED" ]; then
+            echo "Could not read grantivaVersion from Sources/GrantivaCore/Version.swift" >&2
+            exit 1
+          fi
+          if [ "$VERSION" != "$DECLARED" ]; then
+            echo "Tag is $VERSION, but Version.swift declares $DECLARED." >&2
+            echo "Bump Version.swift to match the tag, or tag the version the binary reports." >&2
+            exit 1
+          fi
+          echo "tag $VERSION matches Version.swift"
+
+      - name: Build universal binary
+ls: CHANGELOG.md: No such file or directory
