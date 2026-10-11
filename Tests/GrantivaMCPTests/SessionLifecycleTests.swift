@@ -452,7 +452,7 @@ final class SessionLifecycleTests: XCTestCase {
         try assertSucceeded(absent)
     }
 
-    // MARK: Per-platform rules (the bundled runner, 1.1.28-grantiva.10)
+    // MARK: Per-platform rules (the bundled runner, 1.1.28-grantiva.11)
 
     func testIOSTextMatchesLabelAndValueOnlyNeverTheName() async throws {
         let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeButton","name":"settings_button","label":"Gear","frame":{"x":0,"y":0,"width":10,"height":10},"children":[]},{"type":"XCUIElementTypeTextField","value":"Search","frame":{"x":0,"y":50,"width":10,"height":10},"children":[]}]}"#

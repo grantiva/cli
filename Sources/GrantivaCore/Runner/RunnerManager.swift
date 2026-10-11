@@ -36,7 +36,7 @@ public struct RunnerManager: Sendable, Decodable {
 }
 
 extension RunnerManager {
-    public static let runnerVersion = "1.1.28-grantiva.10"
+    public static let runnerVersion = "1.1.28-grantiva.11"
 
     /// What the version file holds. Bump the suffix whenever the tarball
     /// layout changes without a runner rebuild, so `installIfNeeded` sees a
@@ -449,7 +449,7 @@ extension RunnerManager {
     }
 
     /// The version `<path> --version` prints on its first line
-    /// (`grantiva-runner 1.1.28-grantiva.10`), or why there is none: the
+    /// (`grantiva-runner 1.1.28-grantiva.11`), or why there is none: the
     /// binary could not be launched, exited non-zero, printed nothing, or did
     /// not exit within `timeout`.
     static func reportedVersion(ofRunnerAt path: String, timeout: TimeInterval = 30) -> Result<String, RunnerProbeFailure> {

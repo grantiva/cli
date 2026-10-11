@@ -2,7 +2,7 @@ import XCTest
 
 @testable import GrantivaMCP
 
-/// The bundled grantiva-runner's selector rules (1.1.28-grantiva.10), as a
+/// The bundled grantiva-runner's selector rules (1.1.28-grantiva.11), as a
 /// capture through a session uses them.
 final class SelectorMatchTests: XCTestCase {
     /// Text is the same rule on both platforms.
