@@ -193,7 +193,8 @@ A flow header `env:` block defines `${VAR}` values and is also passed to the app
 | `GRANTIVA_PLATFORM` | `ios` or `android`, like `--platform`. |
 | `GRANTIVA_SESSION_ID` | Durable owner for simulator capacity slots (see below). |
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
-| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner. A relative path is resolved against the current directory. |
+| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner, and every command that uses the runner warns (once) when no bundle is beside the binary at all, since the next fresh install would fail. A relative path is resolved against the current directory, and the home is always printed in its resolved form (`/private/tmp/…`, not `/tmp/…`), whether or not it exists yet. |
+| `GRANTIVA_DRIVER_START_TIMEOUT` | Seconds the runner waits for the UIAutomator2 server to start on Android (the runner's default is 30). Raise it on a slow or busy host; `runner start` then waits a minute longer than this for the session. A start that fails says so at once, with the runner's reason. |
 
 
 ## CI Integration
@@ -407,9 +408,14 @@ as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
 (`started`, `already_running`, `stopped`, `exited`, `not_running`), `pid` and
 `port` as numbers, `platform`, and the platform's own names for the app and the
 device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
-(`log` with `--detach`). For `runner stop`, `runnerPid` is the stable field: it
+(`log` with `--detach`). Every `stopped` document (a single stop, an
+`alreadyExited` one, and each entry of `sessions`) carries all of those keys;
+`port` and the app ID are `null` when the session did not record them. On top
+of them a stop document has `runnerPid`, `killed` and `reaped`, and
+`alreadyExited` and `sessions` when they apply. `runnerPid` is the stable field: it
 is always the runner's pid, while `pid` is the grantiva process that was
-holding a released `run --keep-alive` session. A stop that found the runner
+holding a released `run --keep-alive` session. `killed` is true when the runner
+ignored SIGINT and SIGTERM and took SIGKILL, false otherwise. A stop that found the runner
 already gone is still `stopped`, with `"alreadyExited": true`; one that released
 several keep-alive sessions lists them all under `sessions`. `reaped` lists the
 device helpers the stopped runner left running that `runner stop` then ended
@@ -420,6 +426,20 @@ there were none. Only processes the runner started are ended: they name the
 device and descend from the runner, or write into its run directory under the
 runner home. `bundle_id`, and
 `udid` on Android, are the 2.1 names, kept for one release and deprecated.
+
+`.grantiva/session.json`, the file `runner start` leaves for `runner stop`,
+`dump-hierarchy` and the MCP server, uses the same names as `runner start
+--json`: `pid`, `port`, `platform`, `bundleId` and `udid` on iOS,
+`applicationId`, `serial` and `udid` on Android, plus `startedAt` and `state`.
+It is written the moment the runner is spawned with `"state": "starting"` and
+no port, and rewritten with `"state": "ready"` once the driver answers; while it
+is starting, `dump-hierarchy` and the MCP session tools answer "The runner
+session is starting … Retry in a few seconds." instead of "No active runner
+session". The 2.1 names stay beside the new ones for one release, and files
+written by 2.1 are still read:
+
+- `wdaPort` → `port` (.grantiva/session.json)
+- `bundleId` → `applicationId` (.grantiva/session.json on Android)
 
 `runner stop` releases a `run --keep-alive` session started from the current
 directory as Ctrl-C would. If that run's flows had already finished, its
