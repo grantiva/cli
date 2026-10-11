@@ -1,0 +1,1 @@
+cd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android2 && $GRANTIVA runner stop --json; echo exit=$?; ls /tmp/grantiva-sessions; ps -p $(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-S1/ka.pid) -o pid=,args= | cut -c1-120

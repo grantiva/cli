@@ -1,0 +1,36 @@
+10:45:58.551207 [INFO] === Test execution started ===
+10:45:58.551308 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/l06-width-2
+10:45:58.551318 [INFO] Platform: android
+10:45:58.551325 [INFO] Driver: uiautomator2
+10:45:58.551759 [INFO] Validated 1 flow(s)
+10:45:58.551788 [INFO] Single device execution mode
+10:45:58.551795 [INFO] Starting flow execution (parallel: false, devices: [])
+10:45:58.551801 [INFO] Creating driver for single device execution
+10:45:58.551811 [INFO] Connecting to Android device: emulator-5554
+10:45:58.727480 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:45:58.771219 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:45:59.304538 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:45:59.321445 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:46:03.656747 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:46:03.699877 [INFO] Session created successfully: 92bad4b5-0c90-4cad-8893-da40629ec3ce
+10:46:04.047931 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:46:04.054367 [INFO] === Starting flow: l06-width ===
+10:46:04.054395 [INFO] Flow file: .maestro/coverage/l06-width.yaml
+10:46:04.054406 [INFO] Total steps: 3
+10:46:04.079815 [DEBUG] Executing step 0: launchApp
+10:46:08.538553 [DEBUG] Step 0 completed successfully (4458ms): launchApp
+10:46:08.540060 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+10:46:08.541183 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+10:46:10.214196 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:46:11.389934 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:46:12.355470 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:46:16.058504 [ERROR] Step 1 failed (7518ms): assertVisible: text="Landmarks" - Error: app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Landmarks') (cause: app crashed after launch)
+10:46:16.519294 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:46:22.090783 [INFO] === Flow completed: l06-width (status: failed, duration: 18029ms, passed: 1, failed: 1, skipped: 1) ===
+10:46:23.105861 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:46:23.119236 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:46:23.119264 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:46:23.119422 [INFO] Generating reports...
+10:46:23.120564 [INFO] Shutting down devices started by maestro-runner...
+10:46:23.120587 [INFO] Shutting down all tracked emulators
+10:46:23.120602 [INFO] Shutting down all tracked simulators

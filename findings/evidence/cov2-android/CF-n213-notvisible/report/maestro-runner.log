@@ -1,0 +1,31 @@
+10:47:27.354928 [INFO] === Test execution started ===
+10:47:27.354992 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/n213-notvisible
+10:47:27.354997 [INFO] Platform: android
+10:47:27.355001 [INFO] Driver: uiautomator2
+10:47:27.355311 [INFO] Validated 1 flow(s)
+10:47:27.355340 [INFO] Single device execution mode
+10:47:27.355346 [INFO] Starting flow execution (parallel: false, devices: [])
+10:47:27.355351 [INFO] Creating driver for single device execution
+10:47:27.355356 [INFO] Connecting to Android device: emulator-5554
+10:47:27.508066 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:47:27.558637 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:47:28.111649 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:47:28.130062 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:47:31.905453 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:47:31.927453 [INFO] Session created successfully: bf5d7102-9cfd-4e3b-9a99-c9877ccea34d
+10:47:32.094836 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:47:32.100256 [INFO] === Starting flow: n213-notvisible ===
+10:47:32.100271 [INFO] Flow file: .maestro/coverage/n213-notvisible.yaml
+10:47:32.100280 [INFO] Total steps: 3
+10:47:32.113684 [DEBUG] Executing step 0: launchApp
+10:47:36.246454 [DEBUG] Step 0 completed successfully (4132ms): launchApp
+10:47:36.248062 [DEBUG] Executing step 1: assertNotVisible: text="This never appears"
+10:47:41.979033 [ERROR] Step 1 failed (5730ms): assertNotVisible: text="This never appears" - Error: app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element still visible: text='This never appears' after 5s) (cause: app crashed after launch)
+10:47:44.720176 [INFO] === Flow completed: n213-notvisible (status: failed, duration: 12617ms, passed: 1, failed: 1, skipped: 1) ===
+10:47:45.936923 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:47:45.947914 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:47:45.947936 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:47:45.948224 [INFO] Generating reports...
+10:47:45.949284 [INFO] Shutting down devices started by maestro-runner...
+10:47:45.949301 [INFO] Shutting down all tracked emulators
+10:47:45.949310 [INFO] Shutting down all tracked simulators

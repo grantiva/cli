@@ -1,0 +1,89 @@
+{
+  "id": "flow-000",
+  "name": "l06-index",
+  "sourceFile": ".maestro/coverage/l06-index.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:43:01.892174-07:00",
+  "endTime": "2026-10-11T10:43:08.210731-07:00",
+  "duration": 6318,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:43:01.924778-07:00",
+      "endTime": "2026-10-11T10:43:06.462778-07:00",
+      "duration": 4538,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\".*\", index=1",
+      "status": "passed",
+      "startTime": "2026-10-11T10:43:06.465421-07:00",
+      "endTime": "2026-10-11T10:43:07.521421-07:00",
+      "duration": 1056,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": ".*"
+        }
+      },
+      "element": {
+        "found": true,
+        "bounds": {
+          "x": 819,
+          "y": 46,
+          "width": 39,
+          "height": 39
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\".*\", index=1",
+      "status": "passed",
+      "startTime": "2026-10-11T10:43:07.523584-07:00",
+      "endTime": "2026-10-11T10:43:08.208584-07:00",
+      "duration": 685,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": ".*"
+        }
+      },
+      "element": {
+        "found": true,
+        "bounds": {
+          "x": 819,
+          "y": 46,
+          "width": 39,
+          "height": 39
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 2093,
+    "p50": 1056,
+    "p95": 4538,
+    "max": 4538,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

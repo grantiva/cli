@@ -1,0 +1,62 @@
+{
+  "id": "flow-000",
+  "name": "n213-scrolluntil",
+  "sourceFile": ".maestro/coverage/n213-scrolluntil.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:47:57.171858-07:00",
+  "endTime": "2026-10-11T10:48:12.233438-07:00",
+  "duration": 15061,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:47:57.196247-07:00",
+      "endTime": "2026-10-11T10:48:01.744247-07:00",
+      "duration": 4548,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "scrollUntilVisible",
+      "yaml": "scrollUntilVisible: text=\"Landmark 70\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:48:01.747022-07:00",
+      "endTime": "2026-10-11T10:48:08.026022-07:00",
+      "duration": 6279,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 70"
+        },
+        "direction": "DOWN"
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Failed to find element) (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 5413,
+    "p50": 4548,
+    "p95": 6279,
+    "max": 6279,
+    "slowestType": "scrollUntilVisible"
+  },
+  "artifacts": {}
+}

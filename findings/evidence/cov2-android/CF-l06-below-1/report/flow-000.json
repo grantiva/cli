@@ -1,0 +1,75 @@
+{
+  "id": "flow-000",
+  "name": "l06-below",
+  "sourceFile": ".maestro/coverage/l06-below.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:44:05.475347-07:00",
+  "endTime": "2026-10-11T10:44:21.302071-07:00",
+  "duration": 15826,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:44:05.502722-07:00",
+      "endTime": "2026-10-11T10:44:09.579722-07:00",
+      "duration": 4077,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\".*\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:44:09.580346-07:00",
+      "endTime": "2026-10-11T10:44:17.606346-07:00",
+      "duration": 8026,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": ".*"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='.*') (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\".*\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": ".*"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 6051,
+    "p50": 4077,
+    "p95": 8026,
+    "max": 8026,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

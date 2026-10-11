@@ -1,0 +1,65 @@
+10:53:15.039649 [INFO] === Test execution started ===
+10:53:15.039709 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/cf/fav-full
+10:53:15.039713 [INFO] Platform: android
+10:53:15.039716 [INFO] Driver: uiautomator2
+10:53:15.040015 [INFO] Validated 1 flow(s)
+10:53:15.040041 [INFO] Single device execution mode
+10:53:15.040046 [INFO] Starting flow execution (parallel: false, devices: [])
+10:53:15.040050 [INFO] Creating driver for single device execution
+10:53:15.040054 [INFO] Connecting to Android device: emulator-5554
+10:53:15.184847 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+10:53:15.245027 [INFO] Starting UIAutomator2 server on device emulator-5554
+10:53:15.769685 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:53:15.784365 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:53:19.047177 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+10:53:19.075375 [INFO] Session created successfully: 47114323-ee68-47fb-82ef-0b5569acc2a7
+10:53:19.360591 [INFO] Driver created: android on google sdk_gphone64_arm64
+10:53:19.362115 [INFO] === Starting flow: 02-favorite ===
+10:53:19.362120 [INFO] Flow file: .maestro/02-favorite.yaml
+10:53:19.362123 [INFO] Total steps: 13
+10:53:19.392564 [DEBUG] Executing step 0: launchApp
+10:53:26.398634 [DEBUG] Step 0 completed successfully (7006ms): launchApp
+10:53:27.275595 [DEBUG] Executing step 1: tapOn: text="Lake Tahoe"
+10:53:28.191451 [DEBUG] Flutter: parallel search (text="Lake Tahoe", id="")
+10:53:29.017108 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:29.465453 [DEBUG] crash check during a lookup in flight for 1.112s: crashed=false (took 110ms)
+10:53:29.888635 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:30.605044 [DEBUG] crash check during a lookup in flight for 2.251s: crashed=false (took 249ms)
+10:53:31.765890 [DEBUG] crash check during a lookup in flight for 3.412s: crashed=false (took 410ms)
+10:53:32.831760 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:32.844146 [DEBUG] crash check during a lookup in flight for 4.49s: crashed=false (took 488ms)
+10:53:33.485138 [DEBUG] crash check during a lookup in flight for 5.131s: crashed=false (took 130ms)
+10:53:33.842241 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:34.694670 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:36.085362 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+10:53:36.085397 [DEBUG] Step 1 completed successfully (8809ms): tapOn: text="Lake Tahoe"
+10:53:36.672442 [DEBUG] Executing step 2: tapOn: text="Favorite"
+10:53:38.377128 [DEBUG] Step 2 completed successfully (1704ms): tapOn: text="Favorite"
+10:53:39.173727 [DEBUG] Executing step 3: assertVisible: text="Unfavorite"
+10:53:40.115620 [DEBUG] Step 3 completed successfully (941ms): assertVisible: text="Unfavorite"
+10:53:40.654767 [DEBUG] Executing step 4: tapOn: text="Landmarks"
+10:53:42.479205 [DEBUG] Step 4 completed successfully (1824ms): tapOn: text="Landmarks"
+10:53:43.731613 [DEBUG] Executing step 5: tapOn: text="Favorites"
+10:53:45.497468 [DEBUG] Step 5 completed successfully (1765ms): tapOn: text="Favorites"
+10:53:46.925748 [DEBUG] Executing step 6: assertVisible: text="Lake Tahoe"
+10:53:47.681153 [DEBUG] Step 6 completed successfully (755ms): assertVisible: text="Lake Tahoe"
+10:53:48.205970 [DEBUG] Executing step 7: takeScreenshot
+10:53:49.484635 [DEBUG] Step 7 completed successfully (1278ms): takeScreenshot
+10:53:50.112916 [DEBUG] Executing step 8: swipe: LEFT from text="Lake Tahoe"
+10:53:51.845065 [DEBUG] Step 8 completed successfully (1732ms): swipe: LEFT from text="Lake Tahoe"
+10:53:53.348421 [DEBUG] Executing step 9: tapOn: text="Remove"
+10:53:54.911524 [DEBUG] Step 9 completed successfully (1563ms): tapOn: text="Remove"
+10:53:55.676506 [DEBUG] Executing step 10: assertNotVisible: text="Lake Tahoe"
+10:53:56.536816 [DEBUG] Step 10 completed successfully (860ms): assertNotVisible: text="Lake Tahoe"
+10:53:57.065967 [DEBUG] Executing step 11: assertVisible: text="Landmarks you favorite will appear here."
+10:53:57.756652 [DEBUG] Step 11 completed successfully (690ms): assertVisible: text="Landmarks you favorite will appear here."
+10:53:58.246012 [DEBUG] Executing step 12: takeScreenshot
+10:53:59.198160 [DEBUG] Step 12 completed successfully (952ms): takeScreenshot
+10:53:59.846292 [INFO] === Flow completed: 02-favorite (status: passed, duration: 40480ms, passed: 13, failed: 0, skipped: 0) ===
+10:54:00.726279 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+10:54:00.739533 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+10:54:00.739576 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:54:00.739806 [INFO] Generating reports...
+10:54:00.743197 [INFO] Shutting down devices started by maestro-runner...
+10:54:00.743205 [INFO] Shutting down all tracked emulators
+10:54:00.743215 [INFO] Shutting down all tracked simulators

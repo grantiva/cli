@@ -1,0 +1,72 @@
+{
+  "id": "flow-000",
+  "name": "n213-waitanim",
+  "sourceFile": ".maestro/coverage/n213-waitanim.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T10:48:25.535695-07:00",
+  "endTime": "2026-10-11T10:48:45.517979-07:00",
+  "duration": 19982,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T10:48:25.556443-07:00",
+      "endTime": "2026-10-11T10:48:31.491443-07:00",
+      "duration": 5935,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-11T10:48:31.49378-07:00",
+      "endTime": "2026-10-11T10:48:33.45278-07:00",
+      "duration": 1959,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-11T10:48:33.45403-07:00",
+      "endTime": "2026-10-11T10:48:38.03103-07:00",
+      "duration": 4577,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 4157,
+    "p50": 4577,
+    "p95": 5935,
+    "max": 5935,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

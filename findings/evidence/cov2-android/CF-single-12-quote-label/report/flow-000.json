@@ -1,0 +1,131 @@
+{
+  "id": "flow-000",
+  "name": "12-quote-label",
+  "sourceFile": ".maestro/12-quote-label.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T11:11:19.105996-07:00",
+  "endTime": "2026-10-11T11:11:37.067963-07:00",
+  "duration": 17961,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T11:11:19.12374-07:00",
+      "endTime": "2026-10-11T11:11:25.22174-07:00",
+      "duration": 6098,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mountains\"",
+      "status": "passed",
+      "startTime": "2026-10-11T11:11:25.222957-07:00",
+      "endTime": "2026-10-11T11:11:34.447957-07:00",
+      "duration": 9225,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mountains"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Mountains",
+        "bounds": {
+          "x": 0,
+          "y": 1028,
+          "width": 1080,
+          "height": 147
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mount \"Denali\"\"",
+      "status": "passed",
+      "startTime": "2026-10-11T11:11:34.449761-07:00",
+      "endTime": "2026-10-11T11:11:35.761761-07:00",
+      "duration": 1312,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mount \"Denali\""
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Mount \"Denali\"",
+        "bounds": {
+          "x": 0,
+          "y": 999,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Alaska\"",
+      "status": "passed",
+      "startTime": "2026-10-11T11:11:35.763507-07:00",
+      "endTime": "2026-10-11T11:11:36.559507-07:00",
+      "duration": 796,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Alaska"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-03d8-0000-00de00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-11T11:11:36.560874-07:00",
+      "endTime": "2026-10-11T11:11:37.066874-07:00",
+      "duration": 506,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-Quoted Label.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 3587,
+    "p50": 1312,
+    "p95": 9225,
+    "max": 9225,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
