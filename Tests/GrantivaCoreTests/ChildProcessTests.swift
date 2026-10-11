@@ -141,6 +141,33 @@ final class ChildProcessTests: XCTestCase {
         XCTAssertEqual(status, SIGINT)
     }
 
+    func testTheWatchdogRemovesTheRunnersSessionFilesOnceItIsGone() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let sessions = scratch.appendingPathComponent("sessions")
+        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+        )
+        defer { child.terminateGroup(gracePeriod: 1) }
+        let mine = ["\(child.pid)-1.grantiva", "\(child.pid).owner.json"]
+        let other = "1\(child.pid)-1.grantiva"
+        for name in mine + [other] {
+            FileManager.default.createFile(atPath: sessions.appendingPathComponent(name).path, contents: Data("{}".utf8))
+        }
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent(sessionDirectory: sessions.path))
+        Darwin.close(lifeline)
+        child.wait()
+        let deadline = Date().addingTimeInterval(5)
+        while Date() < deadline, FileManager.default.fileExists(atPath: sessions.appendingPathComponent(mine[0]).path) {
+            usleep(50_000)
+        }
+        for name in mine {
+            XCTAssertFalse(FileManager.default.fileExists(atPath: sessions.appendingPathComponent(name).path), name)
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: sessions.appendingPathComponent(other).path))
+    }
+
     func testTheWatchdogJoinsTheRunnersProcessGroup() throws {
         let output = try devNullOutput()
         defer { Darwin.close(output) }

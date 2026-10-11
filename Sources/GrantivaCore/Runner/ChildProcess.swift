@@ -227,7 +227,10 @@ public final class ChildProcess: @unchecked Sendable {
     /// holds. The kernel closes that end when grantiva exits for any reason,
     /// `kill -9` included; the watchdog then interrupts the group, waits up to
     /// ten seconds for the runner to release WebDriverAgent, and terminates
-    /// whatever is left. Being a member of the group, it keeps the group id
+    /// whatever is left; once the runner is gone it removes the runner's
+    /// keep-alive session files from `sessionDirectory`, which neither the
+    /// dead grantiva nor an interrupted runner may have done. Being a member
+    /// of the group, it keeps the group id
     /// from being reused while it waits, and a SIGINT or SIGTERM grantiva
     /// itself sends to the group ends it at once.
     static let watchdogScript = """
@@ -238,6 +241,9 @@ public final class ChildProcess: @unchecked Sendable {
     trap 'exit 0' INT
     i=0
     while kill -0 "$1" 2>/dev/null && [ "$i" -lt 100 ]; do sleep 0.1; i=$((i+1)); done
+    if [ -n "$2" ] && ! kill -0 "$1" 2>/dev/null; then
+      rm -f "$2/$1".owner.json "$2/$1"-*.grantiva
+    fi
     trap '' TERM
     kill -TERM -"$1" 2>/dev/null
     """
@@ -248,7 +254,7 @@ public final class ChildProcess: @unchecked Sendable {
     /// close it to simulate that death), or nil when the watchdog could not be
     /// started, in which case the child simply is not bound.
     @discardableResult
-    public func bindLifetimeToParent() -> Int32? {
+    public func bindLifetimeToParent(sessionDirectory: String? = nil) -> Int32? {
         var fds: [Int32] = [-1, -1]
         guard pipe(&fds) == 0 else { return nil }
         _ = fcntl(fds[0], F_SETFD, FD_CLOEXEC)
@@ -262,7 +268,7 @@ public final class ChildProcess: @unchecked Sendable {
         do {
             let watchdog = try Self.spawn(
                 executable: "/bin/sh",
-                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup)],
+                arguments: ["-c", Self.watchdogScript, "grantiva-watchdog", String(processGroup), sessionDirectory ?? ""],
                 stdin: fds[0], stdout: output, stderr: output,
                 processGroup: processGroup, logged: false
             )

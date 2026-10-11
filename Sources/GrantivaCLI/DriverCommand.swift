@@ -427,7 +427,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
         // `kill -9` of this process must not leave the runner holding the device.
-        child.bindLifetimeToParent()
+        child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
         Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
         lease.recordRunner(pid: child.pid, keepAlive: true)
 
@@ -511,6 +511,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
             removeInterruptHandler: { SignalRelay.shared.removeCleanup($0) },
             cleanup: { cleanup.run() }
         )
+        if SignalRelay.shared.isTerminating {
+            // Ctrl-C: the relay is reaping and exits 130 once its cleanups
+            // finish; do not race it to a 0. Capped like `run`'s wait.
+            try? await Task.sleep(for: .seconds(30))
+            throw ExitCode(130)
+        }
         guard Self.isOrderlyRunnerExit(status) else {
             throw GrantivaError.commandFailed("The runner exited with status \(status); the session has ended.", 1)
         }
