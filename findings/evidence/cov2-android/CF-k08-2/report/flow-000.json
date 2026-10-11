@@ -1,0 +1,178 @@
+{
+  "id": "flow-000",
+  "name": "09-waits",
+  "sourceFile": ".maestro/coverage/09-waits.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T13:40:50.715026-07:00",
+  "endTime": "2026-10-11T13:41:17.642631-07:00",
+  "duration": 26927,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T13:40:50.744498-07:00",
+      "endTime": "2026-10-11T13:40:58.456498-07:00",
+      "duration": 7712,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-11T13:40:58.458314-07:00",
+      "endTime": "2026-10-11T13:41:08.049314-07:00",
+      "duration": 9591,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:08.051901-07:00",
+      "endTime": "2026-10-11T13:41:10.374901-07:00",
+      "duration": 2323,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Slow Screen",
+        "bounds": {
+          "x": 42,
+          "y": 1304,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:10.376819-07:00",
+      "endTime": "2026-10-11T13:41:11.572819-07:00",
+      "duration": 1196,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0022-0000-00d300000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: notVisible text=\"Loading…\"",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:11.57525-07:00",
+      "endTime": "2026-10-11T13:41:14.56025-07:00",
+      "duration": 2985,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loaded after delay\"",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:14.562421-07:00",
+      "endTime": "2026-10-11T13:41:14.899421-07:00",
+      "duration": 337,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loaded after delay"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0022-0000-00d300000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:14.901879-07:00",
+      "endTime": "2026-10-11T13:41:16.359879-07:00",
+      "duration": 1458,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-11T13:41:16.360349-07:00",
+      "endTime": "2026-10-11T13:41:17.641349-07:00",
+      "duration": 1281,
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 8,
+    "mean": 3360,
+    "p50": 1458,
+    "p95": 9591,
+    "max": 9591,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
