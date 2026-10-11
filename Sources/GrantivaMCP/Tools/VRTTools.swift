@@ -93,7 +93,7 @@ enum VRTTools {
         executable: String = VRTTools.executable, environment: [String: String]? = nil
     ) async throws -> CallTool.Result {
         do {
-            let output = try await run(captureCommand(platform: platform, executable: executable), environment: environment)
+            let output = try await runProcess(captureCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
         } catch GrantivaError.commandFailed(let message, _) {
             return failure(message)
@@ -105,7 +105,7 @@ enum VRTTools {
         executable: String = VRTTools.executable, environment: [String: String]? = nil
     ) async throws -> CallTool.Result {
         do {
-            let output = try await run(compareCommand(platform: platform, executable: executable), environment: environment)
+            let output = try await runProcess(compareCommand(platform: platform, executable: executable), environment: environment)
             return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
         } catch GrantivaError.commandFailed(let message, _) {
             return compareFailureResult(message: message)
@@ -129,59 +129,10 @@ enum VRTTools {
     ) async throws -> CallTool.Result {
         let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
         do {
-            let output = try await run(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
+            let output = try await runProcess(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
             return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
         } catch GrantivaError.commandFailed(let message, _) {
             return failure(message)
-        }
-    }
-
-    /// Runs `argv` directly (no shell) with a null stdin, so the child can
-    /// never read the MCP server's input. Returns trimmed stdout; a non-zero
-    /// exit throws `commandFailed` with stderr (or stdout), as `shell` does.
-    static func run(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: argv[0])
-        process.arguments = Array(argv.dropFirst())
-        if let environment {
-            process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
-        }
-        let stdout = Pipe()
-        let stderr = Pipe()
-        process.standardInput = FileHandle.nullDevice
-        process.standardOutput = stdout
-        process.standardError = stderr
-        GrantivaLog.logger.debug("$ \(argv.map(shellQuoted).joined(separator: " "))")
-        // The exit is observed through the termination handler: blocking in
-        // waitUntilExit on a cooperative thread can miss it.
-        let exited = AsyncStream<Void> { continuation in
-            process.terminationHandler = { _ in
-                continuation.yield()
-                continuation.finish()
-            }
-        }
-        try process.run()
-        // Drain both pipes concurrently so neither fills and blocks the child.
-        async let out = readAll(stdout.fileHandleForReading)
-        async let err = readAll(stderr.fileHandleForReading)
-        let (outData, errData) = await (out, err)
-        for await _ in exited {}
-        let output = String(decoding: outData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-        guard process.terminationStatus == 0 else {
-            let errors = String(decoding: errData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-            let message = errors.isEmpty
-                ? (output.isEmpty ? "\(argv.joined(separator: " ")) exited with code \(process.terminationStatus)" : output)
-                : errors
-            throw GrantivaError.commandFailed(message, process.terminationStatus)
-        }
-        return output
-    }
-
-    private static func readAll(_ handle: FileHandle) async -> Data {
-        await withCheckedContinuation { continuation in
-            DispatchQueue.global(qos: .userInitiated).async {
-                continuation.resume(returning: handle.readDataToEndOfFile())
-            }
         }
     }
 }

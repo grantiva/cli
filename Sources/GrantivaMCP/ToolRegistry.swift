@@ -225,18 +225,32 @@ struct ToolRegistry: Sendable {
         return CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
     }
 
-    /// A session tool's failure as a tool result. A driver that refuses the
-    /// connection is the moment before WDA listens, so it is named as such.
-    static func sessionToolError(_ error: Error, session: RunnerSessionInfo) -> CallTool.Result {
-        let unreachable: Set<URLError.Code> = [.cannotConnectToHost, .networkConnectionLost, .timedOut, .cannotFindHost]
-        guard let urlError = error as? URLError, unreachable.contains(urlError.code) else {
-            return errorResult(error)
-        }
-        let driver = session.wdaPort > 0 ? "The runner session's driver on port \(session.wdaPort)" : "The runner session's driver"
-        let text = "Error: \(driver) is not answering (\(urlError.localizedDescription)). "
-            + "Retry in a few seconds if the session just started; otherwise restart it with grantiva runner stop and grantiva runner start."
-        return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true)
+    /// A session tool's failure as a tool result.
+    static func sessionToolError(_ error: Error, session: RunnerSessionInfo?) -> CallTool.Result {
+        CallTool.Result(
+            content: [.text(text: "Error: \(sessionFailureText(error, session: session))", annotations: nil, _meta: nil)],
+            isError: true
+        )
     }
+
+    /// What a session tool says about `error`, without the `Error: ` prefix.
+    /// A driver that refuses the connection is the moment before WDA
+    /// listens, so it is named as such; an app that has exited gets the
+    /// tools' own remedy.
+    static func sessionFailureText(_ error: Error, session: RunnerSessionInfo?) -> String {
+        if let exited = error as? AppNotRunningError {
+            return "\(exited.app) is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start)."
+        }
+        if let urlError = error as? URLError, unreachableCodes.contains(urlError.code) {
+            let port = session.map(\.wdaPort) ?? 0
+            let driver = port > 0 ? "The runner session's driver on port \(port)" : "The runner session's driver"
+            return "\(driver) is not answering (\(urlError.localizedDescription)). "
+                + "Retry in a few seconds if the session just started; otherwise restart it with grantiva runner stop and grantiva runner start."
+        }
+        return (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+    }
+
+    static let unreachableCodes: Set<URLError.Code> = [.cannotConnectToHost, .networkConnectionLost, .timedOut, .cannotFindHost]
 
     /// The tool's result, and whether the call may have changed the UI.
     private func callSessionTool(
@@ -260,7 +274,7 @@ struct ToolRegistry: Sendable {
         case "grantiva_a11y_check":
             return (try await UITools.a11yCheck(driver: driver, config: try? currentConfig(), platform: platform), false)
         default: // grantiva_script
-            let outcome = try await ScriptTools.run(driver: driver, arguments: arguments)
+            let outcome = try await ScriptTools.run(driver: driver, arguments: arguments, session: current.session)
             // A script whose first steps ran and a later step failed still
             // changed the UI.
             return (outcome.result, outcome.stepsRun > 0)
@@ -274,46 +288,57 @@ struct ToolRegistry: Sendable {
     /// docs/mcp.md.
     static let noSessionResourceErrorCode = -32002
 
+    /// `-32002` means "no usable runner session": none resolves, the driver
+    /// cannot attach or is not answering yet, WDA has no session yet, or the
+    /// app under test is not running. Any other failure while reading is a
+    /// server fault (`-32603`) carrying its real text.
     func readResource(uri: String) async throws -> [Resource.Content] {
-        switch uri {
-        case "grantiva://hierarchy", "grantiva://screenshot":
-            do {
-                return try await readSessionResource(uri: uri)
-            } catch let cancellation as CancellationError {
-                throw cancellation
-            } catch let error as MCPError {
-                throw error
-            } catch {
+        guard uri == "grantiva://hierarchy" || uri == "grantiva://screenshot" else {
+            throw MCPError.invalidRequest("Unknown resource URI: \(uri)")
+        }
+        let current: RunnerConnection.Current
+        do {
+            current = try await connection.current()
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            throw MCPError.serverError(code: Self.noSessionResourceErrorCode, message: Self.resourceErrorMessage(error))
+        }
+        do {
+            if uri == "grantiva://screenshot" {
+                let imageData = try await current.driver.screenshot()
+                return [.binary(imageData, uri: uri, mimeType: "image/png")]
+            }
+            let tree = try await current.driver.hierarchy()
+            let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+            let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+            return [.text(jsonString, uri: uri, mimeType: "application/json")]
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch let error as MCPError {
+            throw error
+        } catch {
+            if Self.isNoUsableSession(error) {
                 throw MCPError.serverError(code: Self.noSessionResourceErrorCode, message: Self.resourceErrorMessage(error))
             }
-        default:
-            throw MCPError.invalidRequest("Unknown resource URI: \(uri)")
+            throw MCPError.internalError(Self.resourceErrorMessage(error))
         }
     }
 
-    private func readSessionResource(uri: String) async throws -> [Resource.Content] {
-        let current = try await connection.current()
-        if uri == "grantiva://screenshot" {
-            let imageData = try await current.driver.screenshot()
-            return [.binary(imageData, uri: uri, mimeType: "image/png")]
-        }
-        let tree = try await current.driver.hierarchy()
-        let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
-        let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
-        return [.text(jsonString, uri: uri, mimeType: "application/json")]
+    /// The session exists but cannot serve a read yet (or any more).
+    static func isNoUsableSession(_ error: Error) -> Bool {
+        if case GrantivaError.unavailable = error { return true }
+        if error is AppNotRunningError { return true }
+        if let urlError = error as? URLError, unreachableCodes.contains(urlError.code) { return true }
+        return false
     }
 
     /// The session tools' text for the same failure, without the `Error: `
-    /// prefix (and without a misplaced `Invalid argument: `).
+    /// prefix and without a usage label (`Invalid argument: `) on a
+    /// condition no argument caused.
     static func resourceErrorMessage(_ error: Error) -> String {
-        if case GrantivaError.invalidArgument(let message) = error { return message }
-        let result = sessionToolError(error, session: RunnerSessionInfo(pid: 0, wdaPort: 0, bundleId: "", udid: "", startedAt: Date()))
-        var text = result.content.compactMap { content -> String? in
-            if case .text(let text, _, _) = content { return text }
-            return nil
-        }.joined(separator: "\n")
-        if text.hasPrefix("Error: ") { text.removeFirst("Error: ".count) }
-        return text
+        if let error = error as? GrantivaError { return error.usageMessage }
+        return sessionFailureText(error, session: nil)
     }
 }
 

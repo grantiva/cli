@@ -39,6 +39,25 @@ public struct DriverClient: Sendable {
     }
 }
 
+/// The app under test has exited: WDA answers 400 with "... is not
+/// running". Callers word the remedy for their surface (the MCP tools name
+/// `grantiva_run`); this description suits any of them.
+public struct AppNotRunningError: LocalizedError, Equatable, Sendable {
+    /// The bundle ID WDA named, when it named one.
+    public let appID: String?
+
+    public init(appID: String?) {
+        self.appID = appID
+    }
+
+    /// The bundle ID, or "The app under test".
+    public var app: String { appID ?? "The app under test" }
+
+    public var errorDescription: String? {
+        "\(app) is not running. Relaunch it, or restart the runner session with grantiva runner stop and grantiva runner start."
+    }
+}
+
 /// Which attribute a label tap matched on iOS: the accessibility label, then
 /// WDA's `name` (the accessibility identifier, or an SF Symbol's name), then
 /// a text field's placeholder.
@@ -247,7 +266,9 @@ extension DriverClient {
             if status == 404 { index += 1; continue }
             // Right after the session starts WDA answers 400 while the app
             // is still launching: wait, resolve the session again and retry
-            // once before reporting anything.
+            // once before reporting anything. Any 400 is retried, not only
+            // an invalid session: WDA reports the launching app as an
+            // invalid element state, and one retry costs only `retryDelay`.
             if status == 400, !retried {
                 retried = true
                 try await Task.sleep(for: retryDelay)
@@ -288,13 +309,11 @@ extension DriverClient {
     /// The error for a failed WDA call: "the app is not running" when WDA
     /// says so (it answers 400 once the app under test has exited), else
     /// `fallback`.
-    static func failure(_ data: Data, fallback: GrantivaError) -> GrantivaError {
+    static func failure(_ data: Data, fallback: GrantivaError) -> Error {
         guard let message = wdaMessage(data), message.contains("is not running") else { return fallback }
         let app = message.range(of: #"bundle id '([^']+)'"#, options: .regularExpression)
             .map { String(message[$0].dropFirst("bundle id '".count).dropLast()) }
-        return .unavailable(
-            "\(app ?? "The app under test") is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start)."
-        )
+        return AppNotRunningError(appID: app)
     }
 
     /// What typing with no focused field reports, on both drivers.

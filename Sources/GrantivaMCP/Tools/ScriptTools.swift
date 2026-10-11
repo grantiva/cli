@@ -71,7 +71,10 @@ enum ScriptTools {
 
     /// The result, and how many steps ran to completion (so the caller knows
     /// whether the UI may have changed).
-    static func run(driver: DriverClient, arguments: [String: Value]) async throws -> (result: CallTool.Result, stepsRun: Int) {
+    /// `session` names the driver's port when it stops answering.
+    static func run(
+        driver: DriverClient, arguments: [String: Value], session: RunnerSessionInfo? = nil
+    ) async throws -> (result: CallTool.Result, stepsRun: Int) {
         guard let stepsValue = arguments["steps"]?.arrayValue else {
             return (CallTool.Result(
                 content: [.text(text: "Error: 'steps' array is required.", annotations: nil, _meta: nil)],
@@ -101,21 +104,37 @@ enum ScriptTools {
             let stepNum = index + 1
             do {
                 try await perform(step, number: stepNum, driver: driver, log: &log)
-            } catch let error as GrantivaError {
+            } catch let cancellation as CancellationError {
+                throw cancellation
+            } catch {
                 // Stop here, like a flow: name the step and keep what ran.
-                let ran = log.isEmpty ? "" : "\n\nSteps that ran:\n" + log.joined(separator: "\n")
-                let text = "Error: Step \(stepNum) (\(step.summary)) failed: \(error.localizedDescription)\(ran)"
+                let text = "Error: Step \(stepNum) (\(step.summary)) failed: \(ToolRegistry.sessionFailureText(error, session: session))"
+                    + ranList(log)
                 return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), index)
             }
         }
 
-        // Fetch final hierarchy
-        let tree = try await driver.hierarchy()
-        let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
-        let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+        // Every step ran (the UI may have changed) even if the final
+        // hierarchy cannot be read.
+        let jsonString: String
+        do {
+            let tree = try await driver.hierarchy()
+            let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+            jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            let text = "Error: All \(steps.count) steps ran, but the final hierarchy could not be read: \(ToolRegistry.sessionFailureText(error, session: session))"
+                + ranList(log)
+            return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), steps.count)
+        }
 
         let output = log.joined(separator: "\n") + "\n\nFinal hierarchy:\n" + jsonString
         return (CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)]), steps.count)
+    }
+
+    private static func ranList(_ log: [String]) -> String {
+        log.isEmpty ? "" : "\n\nSteps that ran:\n" + log.joined(separator: "\n")
     }
 
     private static func perform(_ step: Step, number stepNum: Int, driver: DriverClient, log: inout [String]) async throws {

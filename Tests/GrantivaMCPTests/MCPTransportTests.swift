@@ -1,4 +1,5 @@
 import Foundation
+import GrantivaCore
 import MCP
 import XCTest
 
@@ -79,6 +80,78 @@ final class MCPTransportTests: XCTestCase {
         XCTAssertEqual((byID["7"]?["error"] as? [String: Any])?["code"] as? Int, -32600)
         XCTAssertNotNil(byID["2"]?["result"])
         XCTAssertNotNil(byID["3"]?["result"], "valid traffic still works after malformed lines")
+    }
+
+    func testBatchMembersAreScreenedOneByOne() throws {
+        guard case .reply(let empty) = JSONRPCScreen.screen(Data("[]".utf8)) else { return XCTFail("expected a reply") }
+        let emptyError = try XCTUnwrap(json(empty))
+        XCTAssertTrue(emptyError["id"] is NSNull)
+        XCTAssertEqual((emptyError["error"] as? [String: Any])?["code"] as? Int, -32600)
+
+        let mixed = #"[{"jsonrpc":"2.0","id":1,"method":"ping"},{"id":2,"method":"ping"},{"method":"x"},5]"#
+        guard case .split(let forward, let reply) = JSONRPCScreen.screen(Data(mixed.utf8)) else { return XCTFail("expected a split") }
+        let forwarded = try XCTUnwrap(JSONSerialization.jsonObject(with: forward) as? [[String: Any]])
+        XCTAssertEqual(forwarded.map { $0["id"] as? Int }, [1])
+        let errors = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(reply)) as? [[String: Any]])
+        XCTAssertEqual(errors.count, 2)
+        XCTAssertEqual(errors[0]["id"] as? Int, 2)
+        XCTAssertTrue(errors[1]["id"] is NSNull)
+        XCTAssertTrue(errors.allSatisfy { ($0["error"] as? [String: Any])?["code"] as? Int == -32600 })
+
+        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"jsonrpc":"2.0","id":1,"method":"ping"}]"#.utf8)), .forward)
+        XCTAssertEqual(JSONRPCScreen.screen(Data(#"[{"method":"x"}]"#.utf8)), .drop)
+    }
+
+    /// A response is never answered, even a malformed one with an id.
+    func testAMalformedResponseIsDroppedNotAnswered() {
+        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"id":4,"result":{}}"#.utf8)), .drop)
+        XCTAssertEqual(JSONRPCScreen.screen(Data(#"{"id":4,"error":{"code":1,"message":"x"}}"#.utf8)), .drop)
+    }
+
+    func testRepliesDoNotEscapeSlashes() throws {
+        let rewritten = JSONRPCScreen.outgoing(Data(#"{"jsonrpc":"2.0","id":1,"error":{"code":-32002,"message":"Server error: No session at /tmp/x/.grantiva/session.json"}}"#.utf8))
+        let text = String(decoding: rewritten, as: UTF8.self)
+        XCTAssertTrue(text.contains(#""message":"No session at /tmp/x/.grantiva/session.json""#), text)
+    }
+
+    /// K100 end to end: a resource read with no session, through a real
+    /// server and the transport, reads as the session tools' text.
+    func testANoSessionResourceReadReachesTheClientWithoutTheSDKPrefix() async throws {
+        let registry = ToolRegistry(
+            connection: RunnerConnection(
+                resolveSession: { throw GrantivaError.invalidArgument("No active runner session at /p/.grantiva/session.json.") },
+                attach: { _ in throw GrantivaError.invalidArgument("unreachable") }
+            ),
+            platform: .ios, device: MCPFakeDevicePlatform(platform: .ios), config: nil,
+            simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: nil
+        )
+        let (clientSide, serverSide) = await InMemoryTransport.createConnectedPair()
+        let server = Server(name: "grantiva-test", version: "0.0.0", capabilities: .init(resources: .init(subscribe: true, listChanged: false)))
+        await server.withMethodHandler(ReadResource.self) { params in
+            ReadResource.Result(contents: try await registry.readResource(uri: params.uri))
+        }
+        try await server.start(transport: ValidatingTransport(wrapping: serverSide))
+        try await clientSide.connect()
+        let replies = Replies()
+        let stream = await clientSide.receive()
+        let reader = Task { for try await data in stream { replies.append(data) } }
+        defer { reader.cancel() }
+
+        for line in [
+            #"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"qa","version":"1"}}}"#,
+            #"{"jsonrpc":"2.0","method":"notifications/initialized"}"#,
+            #"{"jsonrpc":"2.0","id":2,"method":"resources/read","params":{"uri":"grantiva://hierarchy"}}"#,
+        ] {
+            try await clientSide.send(Data(line.utf8))
+        }
+        let deadline = Date().addingTimeInterval(5)
+        while replies.all.count < 2, Date() < deadline { try await Task.sleep(nanoseconds: 50_000_000) }
+        await server.stop()
+
+        let read = try XCTUnwrap(replies.all.compactMap(json).first { $0["id"] as? Int == 2 })
+        let error = try XCTUnwrap(read["error"] as? [String: Any])
+        XCTAssertEqual(error["code"] as? Int, -32002)
+        XCTAssertEqual(error["message"] as? String, "No active runner session at /p/.grantiva/session.json.")
     }
 }
 

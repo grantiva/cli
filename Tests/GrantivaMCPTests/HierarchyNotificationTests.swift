@@ -68,4 +68,15 @@ final class HierarchyNotificationTests: XCTestCase {
         XCTAssertEqual(result.isError, true)
         XCTAssertEqual(notified.all, ["grantiva://hierarchy"])
     }
+
+    func testAScriptWhoseFinalHierarchyFailsStillNotifies() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1) }
+        let registry = MCPTestSupport.registry(driver: driver)
+        await registry.subscriptions.subscribe("grantiva://hierarchy")
+        let notified = Notified()
+        let result = try await call(registry, "grantiva_script", ["steps": .array([.object(["tap": .string("Gesture Lab")])])], notified)
+        XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(notified.all, ["grantiva://hierarchy"])
+    }
 }

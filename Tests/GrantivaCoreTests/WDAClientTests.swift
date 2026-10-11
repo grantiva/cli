@@ -236,9 +236,9 @@ final class WDAClientTests: XCTestCase {
             try await wda(transport).tapByLabel("Landmarks")
             XCTFail("expected an error")
         } catch {
+            XCTAssertEqual(error as? AppNotRunningError, AppNotRunningError(appID: "com.kylebrowning.Landmarks"))
             let message = error.localizedDescription
-            XCTAssertTrue(message.contains("com.kylebrowning.Landmarks is not running"), message)
-            XCTAssertTrue(message.contains("grantiva_run"), message)
+            XCTAssertTrue(message.hasPrefix("com.kylebrowning.Landmarks is not running. Relaunch it"), message)
             XCTAssertFalse(message.contains("Network error"), message)
         }
         XCTAssertFalse(transport.calls.contains { $0.path.hasSuffix("/click") })

@@ -89,7 +89,7 @@ there is no session.
 
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
-| `grantiva_vrt_capture` | iOS, Android | when live | Capture screenshots for all configured screens. Without a session, equivalent to `grantiva diff capture --no-build --json`; assumes the app is installed on the device. With a live runner session it does not start another runner (the session's device lease would refuse it): it captures on the session's device, ignoring `simulator:` or `emulator:` in the config file, relaunches the app, runs each screen's steps through the session's driver, takes each screenshot through that driver as grantiva-runner does, and returns the same JSON as `diff capture --json`. Selectors follow the bundled grantiva-runner's rules. On both platforms `text` is a case-insensitive regex over the whole value (`Open` does not match `Talk · Open`; write `.*Open.*`) and `exact: true` is the whole value as written. iOS: `text` reads the label, value and placeholder; `id:` reads the accessibility identifier, ignoring case (on an agent that does not report identifiers, WDA's `name`). Android: `text` reads the text, content-desc and hint, and without `exact` also the error text; `id:` reads the resource id, whole or after its last `/`. Screens with `runFlow`, a swipe from an element, a swipe between points, or a swipe with a duration are refused before anything runs; stop the session with `grantiva runner stop` to capture those. |
+| `grantiva_vrt_capture` | iOS, Android | when live | Capture screenshots for all configured screens. Without a session, equivalent to `grantiva diff capture --no-build --json`; assumes the app is installed on the device. With a live runner session it does not start another runner (the session's device lease would refuse it): it captures on the session's device, ignoring `simulator:` or `emulator:` in the config file, relaunches the app, runs each screen's steps through the session's driver, takes each screenshot through that driver as grantiva-runner does, and returns the same JSON as `diff capture --json`. Selectors follow the bundled grantiva-runner's rules. On both platforms `text` is a case-insensitive regex over the whole value (`Open` does not match `Talk · Open`; write `.*Open.*`) and `exact: true` is the whole value as written. iOS: `text` reads the label, value and placeholder; `id:` reads the accessibility identifier, ignoring case (on an agent that does not report identifiers, WDA's `name`). Android: `text` reads the text, content-desc and hint, and without `exact` also the error text; `id:` reads the resource id, whole or after its last `/`. Screens with `runFlow`, a swipe from an element, a swipe between points, or a swipe with a duration are refused before anything runs; stop the session with `grantiva runner stop` to capture those. Through a session a `type` step needs a focused field (tap one in an earlier step): with nothing focused the capture fails as `Screen "<name>", step <n> (Type "<text>"): No focused text field: ...` rather than typing nowhere and capturing a misleading baseline. |
 | `grantiva_vrt_compare` | iOS, Android | no | Compare current captures against baselines. Equivalent to `grantiva diff compare --json`. Only the screens configured in the config file are compared; other files in the capture directory (an older `grantiva run`'s shots) are listed under `ignored` and left alone. A screen without a baseline is not a pass: the document has `"passed": false` and the screen's `status` is `new_screen` (with no baselines at all, every screen is); this verdict is a normal result, not an `isError` one. When the directory holds only files that are not configured screens, the error names the configured screens that have no capture. |
 | `grantiva_vrt_approve` | iOS, Android | no | Promote current captures to baselines. Equivalent to `grantiva diff approve [screens] --json`; with no screens it approves every configured screen that has a capture, lists other files in the capture directory under `ignored` and approves none of them; named screens are approved as asked. |
 
@@ -103,10 +103,12 @@ VRT failure reads `Error: <message>`.
 | `grantiva://hierarchy` | The current view hierarchy as a JSON tree (`application/json`), as `grantiva_a11y_tree` returns it. |
 | `grantiva://screenshot` | The current screenshot as a PNG (`image/png`, base64 blob). |
 
-Both read through the runner session. Without one (or while it is still starting), `resources/read`
-answers the JSON-RPC error code `-32002` whose message is the session tools' text, for example
+Both read through the runner session. When there is no usable session (none, one still starting, a
+driver that is not answering yet, or an app under test that is not running), `resources/read` answers
+the JSON-RPC error code `-32002` whose message is the session tools' text, for example
 `No active runner session ... Start one with ...` or `The runner session is starting ... Retry in a few
-seconds.`; never `-32603`. An unknown URI is `-32600`.
+seconds.` Any other failure while reading (for example a page source that cannot be parsed) is
+`-32603` with its own text. An unknown URI is `-32600`.
 
 `resources/subscribe` to `grantiva://hierarchy` turns on `notifications/resources/updated` for it, and
 `resources/unsubscribe` turns them off. A notification follows only a `grantiva_tap`, `grantiva_swipe`,
@@ -119,4 +121,7 @@ sent to a client that did not subscribe.
 The server follows JSON-RPC 2.0 for input it cannot handle: a line that is not JSON is answered with
 `-32700` and `"id": null`; a JSON object that is not a valid request but carries an `id` (for example
 one without `"jsonrpc": "2.0"`) is answered with `-32600` echoing that id; a malformed message without
-an `id` is not answered. Valid traffic that follows is handled normally.
+an `id`, and any response (a message with `result` or `error`), is not answered. An empty batch is
+`-32600` with `"id": null`; in a batch each member is screened the same way: valid members are handled
+and the malformed ones answered together in one array (a non-object member gets `"id": null`). Valid
+traffic that follows is handled normally.

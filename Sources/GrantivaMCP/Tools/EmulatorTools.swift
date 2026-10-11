@@ -63,7 +63,7 @@ enum EmulatorTools {
         ),
         Tool(
             name: "grantiva_emulator_delete",
-            description: "Delete an AVD Grantiva created. Pass force to delete one it did not create. A running AVD is never deleted.",
+            description: "Delete an AVD Grantiva created. Pass force: true to delete one it did not create. A running AVD is never deleted.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -115,9 +115,9 @@ enum EmulatorTools {
         guard let name = arguments["name"]?.stringValue else { return toolError("'name' is required.") }
         do {
             try await deps.delete(name, arguments["force"]?.boolValue ?? false)
-        } catch GrantivaError.invalidArgument(let message) where message.contains("Pass --force") {
+        } catch GrantivaError.invalidArgument(let message) where message == EmulatorManager.notCreatedRefusal(avd: name) {
             // The refusal is worded for the CLI; name this tool's argument.
-            return toolError(message.replacingOccurrences(of: "Pass --force", with: "Pass force: true"))
+            return toolError(EmulatorManager.notCreatedRefusal(avd: name, force: "force: true"))
         }
         let data = try JSONSerialization.data(withJSONObject: ["deleted": true, "name": name], options: [.sortedKeys])
         return CallTool.Result(content: [.text(text: String(decoding: data, as: UTF8.self), annotations: nil, _meta: nil)])

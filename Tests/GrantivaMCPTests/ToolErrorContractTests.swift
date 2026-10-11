@@ -111,7 +111,10 @@ final class ToolErrorContractTests: XCTestCase {
             ),
             platform: platform, device: device,
             config: GrantivaConfig(scheme: "Demo", bundleId: "com.example.app"),
-            simulatorManager: .live, buildRunner: XcodeBuildRunner(), emulators: emulators,
+            // A scripted simctl that lists no devices: sim_boot and
+            // sim_delete fail on lookup without running xcrun.
+            simulatorManager: SimulatorManager(execute: { _ in #"{"devices":{}}"# }),
+            buildRunner: XcodeBuildRunner(), emulators: emulators,
             projectDirectory: FileManager.default.temporaryDirectory
         )
     }
@@ -199,6 +202,58 @@ final class ToolErrorContractTests: XCTestCase {
         } catch let error as MCPError {
             XCTAssertEqual(error.code, ToolRegistry.noSessionResourceErrorCode)
             XCTAssertTrue((error.errorDescription ?? "").contains("Retry in a few seconds"), error.errorDescription ?? "")
+        }
+    }
+
+    // MARK: - K92 through the registry: an app that is not running
+
+    func testAnAppThatIsNotRunningIsAnIsErrorWithTheToolsRemedy() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabel = { _ in throw AppNotRunningError(appID: "com.kylebrowning.Landmarks") }
+        let registry = MCPTestSupport.registry(driver: driver)
+        let expected = "com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start)."
+
+        let tap = try await registry.call(name: "grantiva_tap", arguments: ["label": .string("Landmarks")], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(tap.isError, true)
+        XCTAssertEqual(try textContent(of: tap), "Error: \(expected)")
+
+        let script = try await registry.call(
+            name: "grantiva_script", arguments: ["steps": .array([.object(["tap": .string("Landmarks")])])],
+            server: MCPTestSupport.disconnectedServer()
+        )
+        XCTAssertEqual(script.isError, true)
+        let text = try textContent(of: script)
+        XCTAssertEqual(text, #"Error: Step 1 (tap "Landmarks") failed: "# + expected)
+        for result in [tap, script] {
+            XCTAssertFalse(try textContent(of: result).contains("Unavailable"))
+        }
+    }
+
+    // MARK: - K100: only a missing or unusable session is -32002
+
+    func testAResourceReadThatFailsForAnotherReasonIsAnInternalErrorWithItsText() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to parse WDA hierarchy XML: bad", 1) }
+        let registry = MCPTestSupport.registry(driver: driver)
+        do {
+            _ = try await registry.readResource(uri: "grantiva://hierarchy")
+            XCTFail("expected an error")
+        } catch let error as MCPError {
+            XCTAssertEqual(error.code, -32603)
+            XCTAssertTrue((error.errorDescription ?? "").contains("Failed to parse WDA hierarchy XML: bad"), error.errorDescription ?? "")
+        }
+    }
+
+    func testAResourceReadOnAnAppThatIsNotRunningIsNoUsableSession() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.screenshot = { throw AppNotRunningError(appID: "com.example.app") }
+        let registry = MCPTestSupport.registry(driver: driver)
+        do {
+            _ = try await registry.readResource(uri: "grantiva://screenshot")
+            XCTFail("expected an error")
+        } catch let error as MCPError {
+            XCTAssertEqual(error.code, ToolRegistry.noSessionResourceErrorCode)
+            XCTAssertTrue((error.errorDescription ?? "").contains("com.example.app is not running"), error.errorDescription ?? "")
         }
     }
 }
