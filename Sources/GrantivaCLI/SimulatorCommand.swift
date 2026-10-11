@@ -172,35 +172,42 @@ struct SimulatorCommand: AsyncParsableCommand {
                 results.append(try await SimulatorReaper.forceTeardown(udid: target))
             }
 
-            if options.json {
-                Output.line(try JSONOutput.string(results))
-                return
-            }
+            let output = try Self.forceOutput(results, json: options.json)
+            output.lines.forEach(Output.line)
+            if let error = output.error { throw error }
+        }
+
+        /// What `--force` prints for `results`, and the error it then exits
+        /// with when a runner home was left behind (in JSON mode too).
+        static func forceOutput(_ results: [ForceTeardownResult], json: Bool) throws -> (lines: [String], error: GrantivaError?) {
+            let error = deviceHomeError(results.flatMap(\.deviceHomeFailures))
+            if json { return ([try JSONOutput.string(results)], error) }
+            var lines: [String] = []
             for result in results {
                 if result.processes.isEmpty {
-                    Output.line("No processes were holding \(result.udid).")
+                    lines.append("No processes were holding \(result.udid).")
                 } else {
                     for process in result.processes {
-                        Output.line("Killed \(process.kind.rawValue) pid \(process.pid) holding \(result.udid).")
+                        lines.append("Killed \(process.kind.rawValue) pid \(process.pid) holding \(result.udid).")
                     }
                 }
                 if result.leaseReleased {
-                    Output.line("Released the simulator lease for \(result.udid).")
+                    lines.append("Released the simulator lease for \(result.udid).")
                 }
                 if result.capacityRecordsCleared > 0 {
-                    Output.line("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
+                    lines.append("Cleared \(result.capacityRecordsCleared) session record(s) for \(result.udid).")
                 }
                 for kept in result.capacityRecordsKept {
-                    Output.line("Kept the session record for \(kept.udid) under \(kept.sessionId): \(kept.reason).")
+                    lines.append("Kept the session record for \(kept.udid) under \(kept.sessionId): \(kept.reason).")
                 }
                 if !result.sessionFilesRemoved.isEmpty {
-                    Output.line("Removed \(result.sessionFilesRemoved.count) keep-alive session file(s) for \(result.udid).")
+                    lines.append("Removed \(result.sessionFilesRemoved.count) keep-alive session file(s) for \(result.udid).")
                 }
                 for home in result.deviceHomesRemoved {
-                    Output.line("Removed the runner home \(home).")
+                    lines.append("Removed the runner home \(home).")
                 }
             }
-            if let error = Self.deviceHomeError(results.flatMap(\.deviceHomeFailures)) { throw error }
+            return (lines, error)
         }
 
         /// The error a teardown ends with when it released the simulator but

@@ -315,29 +315,43 @@ extension RunnerManager {
         try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
     }
 
+    /// Why `<runner> --version` gave no version.
+    struct RunnerProbeFailure: Error, Equatable {
+        let reason: String
+    }
+
     /// Throws unless the runner at `path` reports `expected` from
-    /// `--version`. `bundlePath` names the resource bundle it came from, so
-    /// the message points at the file that is out of date.
+    /// `--version`. A runner that reports another version came from a stale
+    /// resource bundle, and the message names `bundlePath`. A runner that
+    /// cannot be run at all says why, without blaming the bundle.
     static func verifyRunnerVersion(
         at path: String,
         expected: String,
         bundlePath: String,
-        reportedVersion: (String) -> String? = { reportedVersion(ofRunnerAt: $0) }
+        reportedVersion: (String) -> Result<String, RunnerProbeFailure> = { reportedVersion(ofRunnerAt: $0) }
     ) throws {
-        let found = reportedVersion(path)
-        guard found != expected else { return }
-        let what = found.map { "is version \($0)" } ?? "did not report a version"
-        throw GrantivaError.unavailable(
-            "The grantiva-runner in \(bundlePath) \(what), but this grantiva expects \(expected). "
-                + "The resource bundle beside the grantiva binary is from another release. "
-                + "Reinstall grantiva so the binary and its bundle match. The installed runner was left as it was."
-        )
+        switch reportedVersion(path) {
+        case .success(expected):
+            return
+        case .success(let found):
+            throw GrantivaError.unavailable(
+                "The grantiva-runner in \(bundlePath) reports version \(found), but this grantiva expects \(expected). "
+                    + "The resource bundle beside the grantiva binary is from another release. "
+                    + "Reinstall grantiva so the binary and its bundle match. The installed runner was left as it was."
+            )
+        case .failure(let failure):
+            throw GrantivaError.unavailable(
+                "Could not run \(path): \(failure.reason). "
+                    + "It was extracted from \(bundlePath); reinstall grantiva if this persists. The installed runner was left as it was."
+            )
+        }
     }
 
     /// The version `<path> --version` prints on its first line
-    /// (`grantiva-runner 1.1.28-grantiva.8`), or nil when the binary cannot
-    /// be run, exits non-zero, prints nothing, or does not exit in `timeout`.
-    static func reportedVersion(ofRunnerAt path: String, timeout: TimeInterval = 30) -> String? {
+    /// (`grantiva-runner 1.1.28-grantiva.8`), or why there is none: the
+    /// binary could not be launched, exited non-zero, printed nothing, or did
+    /// not exit within `timeout`.
+    static func reportedVersion(ofRunnerAt path: String, timeout: TimeInterval = 30) -> Result<String, RunnerProbeFailure> {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: path)
         process.arguments = ["--version"]
@@ -347,21 +361,26 @@ extension RunnerManager {
         process.standardInput = FileHandle.nullDevice
         let exited = DispatchSemaphore(value: 0)
         process.terminationHandler = { _ in exited.signal() }
-        do { try process.run() } catch { return nil }
+        do {
+            try process.run()
+        } catch {
+            return .failure(.init(reason: error.localizedDescription))
+        }
         // `--version` prints a few lines, well under the pipe buffer, so
         // waiting for exit before reading cannot deadlock.
         if exited.wait(timeout: .now() + timeout) == .timedOut {
             process.terminate()
-            return nil
+            return .failure(.init(reason: "it did not exit within \(timeout.formatted()) seconds"))
         }
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        guard process.terminationStatus == 0,
-              let firstLine = String(decoding: data, as: UTF8.self)
-                  .split(whereSeparator: \.isNewline).first
-        else { return nil }
-        let words = firstLine.split(whereSeparator: \.isWhitespace)
-        guard let last = words.last else { return nil }
-        return words.count >= 2 ? String(words[1]) : String(last)
+        guard process.terminationStatus == 0 else {
+            return .failure(.init(reason: "it exited with status \(process.terminationStatus)"))
+        }
+        let words = String(decoding: data, as: UTF8.self)
+            .split(whereSeparator: \.isNewline).first?
+            .split(whereSeparator: \.isWhitespace) ?? []
+        guard let last = words.last else { return .failure(.init(reason: "it printed no version")) }
+        return .success(words.count >= 2 ? String(words[1]) : String(last))
     }
 
     static let lastUsedFileName = ".last-used"

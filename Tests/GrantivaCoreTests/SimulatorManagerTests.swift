@@ -162,6 +162,7 @@ final class SimulatorManagerTests: XCTestCase {
     }
 
     func testTeardownReportsADeviceHomeItCannotRemove() async throws {
+        try XCTSkipIf(geteuid() == 0, "a read-only parent does not stop root from removing the home")
         let simctl = FakeSimctl(devices: [
             .init(name: "Mine", udid: "MINE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
         ])

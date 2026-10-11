@@ -297,16 +297,19 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(try String(contentsOfFile: paths.version, encoding: .utf8), "1.1.28-grantiva.8+android-drivers-2")
     }
 
-    func testInstallRefusesARunnerThatReportsNoVersion() throws {
+    func testInstallRefusesARunnerThatCannotRunAndSaysSoInsteadOfBlamingTheBundle() throws {
         let paths = try makePaths()
+        var stagedPath = ""
         XCTAssertThrowsError(try RunnerManager.installIfNeeded(
             baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
             version: "v2", verify: verifier(expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle")
         ) { destination in
-            FileManager.default.createFile(atPath: "\(destination)/grantiva-runner", contents: Data())
+            stagedPath = "\(destination)/grantiva-runner"
+            FileManager.default.createFile(atPath: stagedPath, contents: Data())
         }) { error in
             let message = (error as? GrantivaError)?.errorDescription ?? ""
-            XCTAssertTrue(message.contains("1.1.28-grantiva.8") && message.contains("/b.bundle"), message)
+            XCTAssertTrue(message.hasPrefix("Could not run \(stagedPath): "), message)
+            XCTAssertFalse(message.contains("another release"), "a runner that cannot run is not a version mismatch: \(message)")
         }
         XCTAssertFalse(FileManager.default.fileExists(atPath: paths.version))
         XCTAssertFalse(FileManager.default.fileExists(atPath: paths.binary))
@@ -315,8 +318,55 @@ final class RunnerManagerTests: XCTestCase {
     func testReportedVersionReadsTheFirstLineOfVersionOutput() throws {
         let paths = try makePaths()
         try writeFakeRunner(at: paths.binary, output: "grantiva-runner 1.1.28-grantiva.8\n  Go: go1.27.1")
-        XCTAssertEqual(RunnerManager.reportedVersion(ofRunnerAt: paths.binary), "1.1.28-grantiva.8")
-        XCTAssertNil(RunnerManager.reportedVersion(ofRunnerAt: "\(paths.base)/missing"))
+        XCTAssertEqual(try RunnerManager.reportedVersion(ofRunnerAt: paths.binary).get(), "1.1.28-grantiva.8")
+    }
+
+    func testReportedVersionSaysWhyARunnerCouldNotRun() throws {
+        let paths = try makePaths()
+        func reason(_ path: String, timeout: TimeInterval = 30) -> String? {
+            if case .failure(let failure) = RunnerManager.reportedVersion(ofRunnerAt: path, timeout: timeout) { return failure.reason }
+            return nil
+        }
+        XCTAssertNotNil(reason("\(paths.base)/missing"), "launch failure")
+
+        let failing = "\(paths.base)/failing"
+        try "#!/bin/sh\nexit 3\n".write(toFile: failing, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: failing)
+        XCTAssertEqual(reason(failing), "it exited with status 3")
+
+        let silent = "\(paths.base)/silent"
+        try "#!/bin/sh\nexit 0\n".write(toFile: silent, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: silent)
+        XCTAssertEqual(reason(silent), "it printed no version")
+
+        let hanging = "\(paths.base)/hanging"
+        try "#!/bin/sh\nexec sleep 30\n".write(toFile: hanging, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: hanging)
+        XCTAssertEqual(reason(hanging, timeout: 0.5), "it did not exit within 0.5 seconds")
+    }
+
+    func testVerifySeparatesARunnerThatCannotRunFromAVersionMismatch() {
+        XCTAssertThrowsError(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .failure(.init(reason: "it exited with status 3")) }
+        )) { error in
+            XCTAssertEqual(
+                (error as? GrantivaError)?.errorDescription,
+                "Could not run /s/grantiva-runner: it exited with status 3. "
+                    + "It was extracted from /b.bundle; reinstall grantiva if this persists. The installed runner was left as it was."
+            )
+        }
+        XCTAssertThrowsError(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .success("1.1.18-grantiva.7") }
+        )) { error in
+            let message = (error as? GrantivaError)?.errorDescription ?? ""
+            XCTAssertTrue(message.hasPrefix("The grantiva-runner in /b.bundle reports version 1.1.18-grantiva.7, but this grantiva expects 1.1.28-grantiva.8."), message)
+        }
+        XCTAssertNoThrow(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .success("1.1.28-grantiva.8") }
+        ))
     }
 
     func testEmbeddedRunnerReportsTheVersionItIsStampedWith() throws {
@@ -324,7 +374,7 @@ final class RunnerManagerTests: XCTestCase {
         defer { try? FileManager.default.removeItem(atPath: base) }
         try FileManager.default.createDirectory(atPath: base, withIntermediateDirectories: true)
         try RunnerManager.extractEmbedded(into: base)
-        XCTAssertEqual(RunnerManager.reportedVersion(ofRunnerAt: "\(base)/grantiva-runner"), RunnerManager.runnerVersion)
+        XCTAssertEqual(try RunnerManager.reportedVersion(ofRunnerAt: "\(base)/grantiva-runner").get(), RunnerManager.runnerVersion)
     }
 
     private func seedInstall(_ paths: Paths, version: String, binary: String) throws {
