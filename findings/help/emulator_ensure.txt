@@ -1,5 +1,6 @@
 OVERVIEW: Create the AVD when missing (installing its system image first) and
-boot it. stdout is the serial, or the AVD name with --no-boot.
+boot it. stdout is the serial, or with --no-boot the AVD name (the serial when
+it is already running).
 
 USAGE: grantiva emulator ensure [--json] [--verbose] [--quiet] [--name <name>] [--system-image <system-image>] [--boot] [--no-boot] [--headless]
 
@@ -20,7 +21,9 @@ OPTIONS:
   --boot/--no-boot        Boot the emulator and wait for it to be ready. On by
                           default; --no-boot creates it without booting.
                           (default: --boot)
-  --headless              Boot without a window.
+  --headless              Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1
+                          or CI=true does the same; otherwise the emulator gets
+                          a window, even when stdout is not a terminal.
   --version               Show the version.
   -h, --help              Show help information.
 

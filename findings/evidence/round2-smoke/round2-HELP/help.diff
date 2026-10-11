@@ -1,0 +1,387 @@
+diff --git a/findings/help/build_build.txt b/findings/help/build_build.txt
+index 69ae152..93fe549 100644
+--- a/findings/help/build_build.txt
++++ b/findings/help/build_build.txt
+@@ -30,7 +30,10 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/build_install.txt b/findings/help/build_install.txt
+index 5c4d291..3875b80 100644
+--- a/findings/help/build_install.txt
++++ b/findings/help/build_install.txt
+@@ -10,10 +10,11 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+-                          Skips the build step.
++  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
++                          (iOS), .apk (Android). Skips the build step.
+   --no-build              Skip building and installing — assume the app is
+-                          already on the device.
++                          already on the device. With --app-file, that file is
++                          installed (only the build is skipped).
+   --derived-data-path <derived-data-path>
+                           Write Xcode build products and intermediates to this
+                           DerivedData directory.
+@@ -35,7 +36,10 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --no-launch             Install the app without launching it.
+   --version               Show the version.
+   -h, --help              Show help information.
+diff --git a/findings/help/ci_run.txt b/findings/help/ci_run.txt
+index f4aaf58..6df0ae2 100644
+--- a/findings/help/ci_run.txt
++++ b/findings/help/ci_run.txt
+@@ -10,10 +10,11 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+-                          Skips the build step.
++  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
++                          (iOS), .apk (Android). Skips the build step.
+   --no-build              Skip building and installing — assume the app is
+-                          already on the device.
++                          already on the device. With --app-file, that file is
++                          installed (only the build is skipped).
+   --derived-data-path <derived-data-path>
+                           Write Xcode build products and intermediates to this
+                           DerivedData directory.
+@@ -35,7 +36,10 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/console_releases_update.txt b/findings/help/console_releases_update.txt
+index 1e6cc13..e3f4bce 100644
+--- a/findings/help/console_releases_update.txt
++++ b/findings/help/console_releases_update.txt
+@@ -1,7 +1,7 @@
+ OVERVIEW: Change a note's version, title, or body. Use publish/unpublish for
+ its state.
+ 
+-USAGE: grantiva console releases update [--json] [--verbose] [--quiet] <note> [--version <version>] [--title <title>] [--body <body>]
++USAGE: grantiva console releases update [--json] [--verbose] [--quiet] <note> [--release-version <release-version>] [--title <title>] [--body <body>]
+ 
+ ARGUMENTS:
+   <note>                  Release note ID.
+@@ -13,7 +13,8 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --version <version>     New version.
++  --release-version <release-version>
++                          New version.
+   --title <title>         New title.
+   --body <body>           New body, inline or @file.md.
+   --version               Show the version.
+diff --git a/findings/help/diff_capture.txt b/findings/help/diff_capture.txt
+index edaf3f4..26cf3e7 100644
+--- a/findings/help/diff_capture.txt
++++ b/findings/help/diff_capture.txt
+@@ -9,10 +9,11 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+-                          Skips the build step.
++  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
++                          (iOS), .apk (Android). Skips the build step.
+   --no-build              Skip building and installing — assume the app is
+-                          already on the device.
++                          already on the device. With --app-file, that file is
++                          installed (only the build is skipped).
+   --derived-data-path <derived-data-path>
+                           Write Xcode build products and intermediates to this
+                           DerivedData directory.
+@@ -34,7 +35,10 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/diff_compare.txt b/findings/help/diff_compare.txt
+index 50167ed..9962e85 100644
+--- a/findings/help/diff_compare.txt
++++ b/findings/help/diff_compare.txt
+@@ -9,10 +9,11 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+-                          Skips the build step.
++  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
++                          (iOS), .apk (Android). Skips the build step.
+   --no-build              Skip building and installing — assume the app is
+-                          already on the device.
++                          already on the device. With --app-file, that file is
++                          installed (only the build is skipped).
+   --derived-data-path <derived-data-path>
+                           Write Xcode build products and intermediates to this
+                           DerivedData directory.
+@@ -34,7 +35,10 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --capture               Capture screenshots before comparing (runs full
+                           lifecycle)
+   --version               Show the version.
+diff --git a/findings/help/emulator.txt b/findings/help/emulator.txt
+index 94054b4..e4cac08 100644
+--- a/findings/help/emulator.txt
++++ b/findings/help/emulator.txt
+@@ -9,7 +9,8 @@ OPTIONS:
+ SUBCOMMANDS:
+   ensure                  Create the AVD when missing (installing its system
+                           image first) and boot it. stdout is the serial, or
+-                          the AVD name with --no-boot.
++                          with --no-boot the AVD name (the serial when it is
++                          already running).
+   delete                  Delete an AVD Grantiva created. Others need --force.
+                           A running AVD is never deleted.
+   sessions                List the emulators Grantiva started.
+diff --git a/findings/help/emulator_ensure.txt b/findings/help/emulator_ensure.txt
+index 4469eb8..0ea5f89 100644
+--- a/findings/help/emulator_ensure.txt
++++ b/findings/help/emulator_ensure.txt
+@@ -1,5 +1,6 @@
+ OVERVIEW: Create the AVD when missing (installing its system image first) and
+-boot it. stdout is the serial, or the AVD name with --no-boot.
++boot it. stdout is the serial, or with --no-boot the AVD name (the serial when
++it is already running).
+ 
+ USAGE: grantiva emulator ensure [--json] [--verbose] [--quiet] [--name <name>] [--system-image <system-image>] [--boot] [--no-boot] [--headless]
+ 
+@@ -20,7 +21,9 @@ OPTIONS:
+   --boot/--no-boot        Boot the emulator and wait for it to be ready. On by
+                           default; --no-boot creates it without booting.
+                           (default: --boot)
+-  --headless              Boot without a window.
++  --headless              Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1
++                          or CI=true does the same; otherwise the emulator gets
++                          a window, even when stdout is not a terminal.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/emulator_teardown.txt b/findings/help/emulator_teardown.txt
+index dc78082..3c10244 100644
+--- a/findings/help/emulator_teardown.txt
++++ b/findings/help/emulator_teardown.txt
+@@ -1,6 +1,10 @@
+ OVERVIEW: Kill emulators Grantiva started: one by serial, or all of them. Stops
+ the UIAutomator2 server and removes the serial's adb forwards first.
+ 
++A runner session on a torn-down serial (`grantiva runner start` or `grantiva
++run --keep-alive`) is stopped too, and its session files are removed; --json
++reports it as runnerSessionStopped.
++
+ USAGE: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
+ 
+ OPTIONS:
+diff --git a/findings/help/hierarchy.txt b/findings/help/hierarchy.txt
+index 912aee9..adbc120 100644
+--- a/findings/help/hierarchy.txt
++++ b/findings/help/hierarchy.txt
+@@ -30,10 +30,11 @@ OPTIONS:
+                           unaffected.
+   --udid <udid>           Simulator UDID or adb serial to target (default:
+                           newest keep-alive session)
+-  --timeout <timeout>     Seconds to wait for GrantivaAgent's page-source
+-                          response. Default: 60. (default: 60.0)
++  --timeout <timeout>     Seconds to wait for GrantivaAgent's (iOS) or
++                          UIAutomator2's (Android) page-source response.
++                          Default: 60. (default: 60.0)
+   --format <format>       Output format: xml (default) or json. --json is the
+-                          same as --format json.
++                          same as --format json. (values: xml, json)
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/run.txt b/findings/help/run.txt
+index 63c58b5..f3a0f63 100644
+--- a/findings/help/run.txt
++++ b/findings/help/run.txt
+@@ -10,10 +10,11 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
+-                          Skips the build step.
++  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
++                          (iOS), .apk (Android). Skips the build step.
+   --no-build              Skip building and installing — assume the app is
+-                          already on the device.
++                          already on the device. With --app-file, that file is
++                          installed (only the build is skipped).
+   --derived-data-path <derived-data-path>
+                           Write Xcode build products and intermediates to this
+                           DerivedData directory.
+@@ -35,9 +36,13 @@ OPTIONS:
+                           (Android)
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+-  --headless              Boot an emulator without a window (Android)
++  --headless              Boot an emulator without a window (Android).
++                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
++                          same; otherwise a booted emulator gets a window, even
++                          when stdout is not a terminal.
+   --flow <flow>           Run a single flow file instead of all configured flows
+-  --keep-alive            Keep GrantivaAgent session alive after flows complete
++  --keep-alive            Keep the runner session (GrantivaAgent on iOS,
++                          UIAutomator2 on Android) alive after flows complete
+                           so `grantiva hierarchy` can inspect UI state without
+                           relaunching the app. Release with Ctrl-C.
+   --logs                  Stream app logs from the simulator or emulator into
+@@ -59,7 +64,8 @@ OPTIONS:
+                           debug)
+   --snapshot <snapshot>   Snapshot policy: failure (default — one shot after
+                           failure), trailing (last-good step + failure step),
+-                          full (every step). (default: failure)
++                          full (every step). (values: failure, trailing, full;
++                          default: failure)
+   --continue-on-failure   Keep running remaining flows after a failure. Default
+                           is fail-fast — stop the suite on the first broken
+                           flow, which matches CI semantics and avoids wasting
+diff --git a/findings/help/runner.txt b/findings/help/runner.txt
+index 7f8d526..c104786 100644
+--- a/findings/help/runner.txt
++++ b/findings/help/runner.txt
+@@ -9,8 +9,8 @@ OPTIONS:
+ SUBCOMMANDS:
+   install                 Extract or update the embedded runner binary.
+   version                 Show the embedded runner version.
+-  start                   Start the runner with WDA and keep it alive for
+-                          interactive use.
++  start                   Start the runner with WDA (UIAutomator2 on Android)
++                          and keep it alive for interactive use.
+   stop                    Stop the running runner session.
+   dump-hierarchy          Dump the view hierarchy from a running app for agent
+                           inspection.
+diff --git a/findings/help/runner_dump-hierarchy.txt b/findings/help/runner_dump-hierarchy.txt
+index 4673f0e..b4de9af 100644
+--- a/findings/help/runner_dump-hierarchy.txt
++++ b/findings/help/runner_dump-hierarchy.txt
+@@ -9,10 +9,12 @@ OPTIONS:
+   --quiet                 Silence progress diagnostics on stderr; warnings and
+                           errors still print. Program output on stdout is
+                           unaffected.
+-  -p, --port <port>       WDA port (auto-detected from active session if
+-                          omitted)
+-  -f, --format <format>   Output format: tree, json, or xml (default: tree).
+-                          --json is the same as --format json.
++  -p, --port <port>       Driver port: WDA on iOS, the forwarded UIAutomator2
++                          port on Android (auto-detected from the active
++                          session if omitted)
++  -f, --format <format>   Output format: tree, json, or xml (default: tree; any
++                          case). --json is the same as --format json. (values:
++                          tree, json, xml)
+   --udid <udid>           Simulator UDID or adb serial when falling back to a
+                           `grantiva run --keep-alive` session
+   --version               Show the version.
+diff --git a/findings/help/runner_install.txt b/findings/help/runner_install.txt
+index fb4151c..ae462bb 100644
+--- a/findings/help/runner_install.txt
++++ b/findings/help/runner_install.txt
+@@ -1,5 +1,8 @@
+ OVERVIEW: Extract or update the embedded runner binary.
+ 
++A no-op when the installed runner is already this version: it prints "Runner
++already installed at <path>", and --json reports "extracted": false.
++
+ USAGE: grantiva runner install [--json] [--verbose] [--quiet]
+ 
+ OPTIONS:
+diff --git a/findings/help/runner_start.txt b/findings/help/runner_start.txt
+index f9d3ed4..49f89b4 100644
+--- a/findings/help/runner_start.txt
++++ b/findings/help/runner_start.txt
+@@ -1,4 +1,17 @@
+-OVERVIEW: Start the runner with WDA and keep it alive for interactive use.
++OVERVIEW: Start the runner with WDA (UIAutomator2 on Android) and keep it alive
++for interactive use.
++
++Without --detach the command stays in the foreground, streams the runner's
++output to stderr and holds the session until Ctrl-C (or `grantiva runner stop`
++from another shell); it then stops the runner, removes the session files and
++releases the device. Interrupted, it exits 130. With --detach it returns once
++the driver is up and the runner keeps the session until `grantiva runner stop`.
++
++--json prints one document: {"status": "started" | "already_running", "pid":
++<number>, "port": <number>, "platform": "ios" | "android", plus "bundleId" and
++"udid" on iOS or "applicationId" and "serial" on Android, and "log" with
++--detach}. "bundle_id" (and "udid" on Android) are kept for compatibility and
++are deprecated.
+ 
+ USAGE: grantiva runner start [--json] [--verbose] [--quiet] [--platform <platform>] [--bundle-id <bundle-id>] [--simulator <simulator>] [--application-id <application-id>] [--emulator <emulator>] [--device <device>] [--headless] [--detach]
+ 
+diff --git a/findings/help/runner_stop.txt b/findings/help/runner_stop.txt
+index 0c3ef62..f75f561 100644
+--- a/findings/help/runner_stop.txt
++++ b/findings/help/runner_stop.txt
+@@ -1,5 +1,16 @@
+ OVERVIEW: Stop the running runner session.
+ 
++Stops the session `grantiva runner start` recorded in .grantiva/session.json:
++the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and its
++session files and device lease are removed. Without one, it releases a
++`grantiva run --keep-alive` session started from this directory (every one, if
++there are several) the way Ctrl-C would, by sending that grantiva process
++SIGINT, and waits for it to exit. A run whose flows had already finished keeps
++the ready file it wrote (`passed` or `failed`): the ready file is written once,
++and the `stopped` result here is the record of the release. Sessions started
++from other directories are left alone. With no session at all it prints "No
++active session found." and exits 0.
++
+ USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
+ 
+ OPTIONS:
+diff --git a/findings/help/simulator_teardown.txt b/findings/help/simulator_teardown.txt
+index adcd35e..58318c8 100644
+--- a/findings/help/simulator_teardown.txt
++++ b/findings/help/simulator_teardown.txt
+@@ -1,6 +1,10 @@
+ OVERVIEW: End a managed session, or reclaim one simulator by UDID when no
+ ledger entry exists.
+ 
++A runner session on a torn-down simulator (`grantiva runner start` or `grantiva
++run --keep-alive`) is stopped first and its session files are removed; --json
++reports it as runnerSessionStopped.
++
+ USAGE: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ 
+ OPTIONS:

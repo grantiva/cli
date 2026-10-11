@@ -1,0 +1,112 @@
+$ (ios-k109/ = ios copy, grantiva.yml = .maestro/coverage/cfg/maestro-format.grantiva.yml) $GRANTIVA diff capture --no-build --simulator F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --verbose
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: exit 0: xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T13:38:48Z com.grantiva.cli: $ xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: exit 0: xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: $ xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: exit 0: xcrun simctl getenv 'F7DCF106-9DDF-491B-BB72-68D90CFFE1AB' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: $ xcrun simctl status_bar F7DCF106-9DDF-491B-BB72-68D90CFFE1AB override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: exit 0: xcrun simctl status_bar F7DCF106-9DDF-491B-BB72-68D90CFFE1AB override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T13:38:49Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.10+android-drivers-2/grantiva-runner --platform ios --device F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-484A92F0-D34B-4B1C-9C1F-2E5D1DDAF84E --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-8BC39C15-5B14-451B-820B-8ED303241F60/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 9079
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ swipe: UP (1.4s)
+    ✓ waitForAnimationToEnd (1.0s)
+    ✓ takeScreenshot (165ms)
+    ✓ tapOn: text="Deep Links" (987ms)
+    ✓ waitForAnimationToEnd (966ms)
+    ✓ tapOn: text="Caching Demo" (956ms)
+    ✓ waitForAnimationToEnd (772ms)
+    ✓ extendedWaitUntil: visible text="Cache Policy" (346ms)
+    ✓ tapOn: id="clock" (851ms)
+    ✓ waitForAnimationToEnd (303ms)
+    ✓ assertVisible: id="clock" (305ms)
+    ✓ waitForAnimationToEnd (256ms)
+    ✓ takeScreenshot (80ms)
+✓ screens 13.0s
+
+  [1/1] screens (grantiva.yml) - Device: smoke2-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ swipe: UP (1.4s)
+    ✓ waitForAnimationToEnd (1.0s)
+    ✓ takeScreenshot (165ms)
+    ✓ tapOn: text="Deep Links" (987ms)
+    ✓ waitForAnimationToEnd (966ms)
+    ✓ tapOn: text="Caching Demo" (956ms)
+    ✓ waitForAnimationToEnd (772ms)
+    ✓ extendedWaitUntil: visible text="Cache Policy" (346ms)
+    ✓ tapOn: id="clock" (851ms)
+    ✓ waitForAnimationToEnd (303ms)
+    ✓ assertVisible: id="clock" (305ms)
+    ✓ waitForAnimationToEnd (256ms)
+    ✓ takeScreenshot (80ms)
+✓ screens 13.0s
+
+  14 steps passing (13.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✓ PASS      14     14      0      0      13.0s  smoke2-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      14     14      0      0      13.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-11T13:39:05Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.10+android-drivers-2/grantiva-runner --platform ios --device F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-484A92F0-D34B-4B1C-9C1F-2E5D1DDAF84E --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-8BC39C15-5B14-451B-820B-8ED303241F60/grantiva.yml
+[debug] 2026-10-11T13:39:05Z com.grantiva.cli: $ xcrun simctl status_bar F7DCF106-9DDF-491B-BB72-68D90CFFE1AB clear
+[debug] 2026-10-11T13:39:05Z com.grantiva.cli: exit 0: xcrun simctl status_bar F7DCF106-9DDF-491B-BB72-68D90CFFE1AB clear
+
+  Home Swiped
+    ✓ Swipe up
+    ✓ Wait for animation to end (5.0s max)
+
+  Caching Maestro
+    ✓ Tap on "Deep Links"
+    ✓ Tap on "Caching Demo"
+    ✓ Wait until visible "Cache Policy" (5000ms max)
+    ✓ Tap on id "clock"
+    ✓ Assert visible id "clock"
+
+Captured 2 screens in 17.4s
+  Directory: .grantiva/captures
+  Simulator: smoke2-ios (F7DCF106-9DDF-491B-BB72-68D90CFFE1AB)
+  Display: 402x874 points, 1206x2622 pixels @3.0x
+  • Home Swiped (338.7 KB)
+  • Caching Maestro (336.1 KB)
+exit=0

@@ -1,0 +1,117 @@
+$ (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/05-swipe-forms.yaml
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/05-swipe-forms.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 05-swipe-forms (05-swipe-forms.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.4s, slow)
+    ✓ tapOn: text="Deep Links" (7.2s, slow)
+    ✓ tapOn: text="Gesture Lab" (1.8s)
+[swipe] Using screen coords: (972,1200) → (108,1200)
+    ✓ swipe: LEFT (616ms)
+    ✓ assertVisible: text="Last swipe: left" (471ms)
+[swipe] Using screen coords: (108,1200) → (972,1200)
+    ✓ swipe: RIGHT (537ms)
+    ✓ assertVisible: text="Last swipe: right" (267ms)
+[swipe] Using screen coords: (540,1200) → (540,240)
+    ✓ swipe: UP (472ms)
+    ✓ assertVisible: text="Last swipe: up" (274ms)
+[swipe] Using screen coords: (540,480) → (540,2160)
+    ✓ swipe: DOWN (517ms)
+    ✓ assertVisible: text="Last swipe: down" (216ms)
+    ✓ swipe: start="80%, 50%" end="20%, 50%" (534ms)
+    ✓ assertVisible: text="Last swipe: left" (455ms)
+[swipe] Using screen coords: (108,1200) → (972,1200)
+    ✓ swipe: RIGHT (1.6s)
+    ✓ assertVisible: text="Last swipe: right" (325ms)
+    ✓ swipe: UP from id="gesture-pad" (568ms)
+    ✓ assertVisible: text="Last swipe: up" (252ms)
+    ✓ takeScreenshot (677ms)
+✓ 05-swipe-forms 24.3s
+
+  [1/1] 05-swipe-forms (.maestro/coverage/05-swipe-forms.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.4s, slow)
+    ✓ tapOn: text="Deep Links" (7.2s, slow)
+    ✓ tapOn: text="Gesture Lab" (1.8s)
+    ✓ swipe: LEFT (616ms)
+    ✓ assertVisible: text="Last swipe: left" (471ms)
+    ✓ swipe: RIGHT (537ms)
+    ✓ assertVisible: text="Last swipe: right" (267ms)
+    ✓ swipe: UP (472ms)
+    ✓ assertVisible: text="Last swipe: up" (274ms)
+    ✓ swipe: DOWN (517ms)
+    ✓ assertVisible: text="Last swipe: down" (216ms)
+    ✓ swipe: start="80%, 50%" end="20%, 50%" (534ms)
+    ✓ assertVisible: text="Last swipe: left" (455ms)
+    ✓ swipe: RIGHT (1.6s)
+    ✓ assertVisible: text="Last swipe: right" (325ms)
+    ✓ swipe: UP from id="gesture-pad" (568ms)
+    ✓ assertVisible: text="Last swipe: up" (252ms)
+    ✓ takeScreenshot (677ms)
+✓ 05-swipe-forms 24.3s
+
+  18 steps passing (24.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-swipe-forms                 ✓ PASS      18     18      0      0      24.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      18     18      0      0      24.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  05-swipe-forms
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Gesture Lab"
+    ✓ swipe: LEFT
+    ✓ assertVisible: text="Last swipe: left"
+    ✓ swipe: RIGHT
+    ✓ assertVisible: text="Last swipe: right"
+    ✓ swipe: UP
+    ✓ assertVisible: text="Last swipe: up"
+    ✓ swipe: DOWN
+    ✓ assertVisible: text="Last swipe: down"
+    ✓ swipe: start="80%, 50%" end="20%, 50%"
+    ✓ assertVisible: text="Last swipe: left"
+    ✓ swipe: RIGHT
+    ✓ assertVisible: text="Last swipe: right"
+    ✓ swipe: UP from id="gesture-pad"
+    ✓ assertVisible: text="Last swipe: up"
+    ✓ takeScreenshot
+    ▸ Screenshot: 05-swipe-forms-cmd-017-Swipes
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/android/
+
+exit=0

@@ -1,0 +1,81 @@
+$ (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/09-waits.yaml
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/09-waits.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 09-waits (09-waits.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (5.9s, slow)
+    ✓ tapOn: text="Deep Links" (7.5s, slow)
+    ✓ tapOn: text="Slow Screen" (1.8s)
+    ✓ assertVisible: text="Loading…" (1.0s)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (3.0s)
+    ✓ assertVisible: text="Loaded after delay" (96ms)
+    ✓ waitForAnimationToEnd (1.3s)
+    ✓ waitForAnimationToEnd (1.3s)
+✓ 09-waits 22.1s
+
+  [1/1] 09-waits (.maestro/coverage/09-waits.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (5.9s, slow)
+    ✓ tapOn: text="Deep Links" (7.5s, slow)
+    ✓ tapOn: text="Slow Screen" (1.8s)
+    ✓ assertVisible: text="Loading…" (1.0s)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (3.0s)
+    ✓ assertVisible: text="Loaded after delay" (96ms)
+    ✓ waitForAnimationToEnd (1.3s)
+    ✓ waitForAnimationToEnd (1.3s)
+✓ 09-waits 22.1s
+
+  8 steps passing (22.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  09-waits                       ✓ PASS       8      8      0      0      22.1s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      22.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  09-waits
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Slow Screen"
+    ✓ assertVisible: text="Loading…"
+    ✓ extendedWaitUntil: notVisible text="Loading…"
+    ✓ assertVisible: text="Loaded after delay"
+    ✓ waitForAnimationToEnd
+    ✓ waitForAnimationToEnd
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/android/
+
+exit=0

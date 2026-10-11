@@ -1,0 +1,81 @@
+$ (ios/) $GRANTIVA run --simulator F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --no-build --flow .maestro/coverage/09-waits.yaml
+Resolved: scheme=Landmarks (UI Testing) simulator=F7DCF106-9DDF-491B-BB72-68D90CFFE1AB screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: F7DCF106-9DDF-491B-BB72-68D90CFFE1AB
+Simulator booted: smoke2-ios (F7DCF106-9DDF-491B-BB72-68D90CFFE1AB)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/09-waits.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 9079
+
+  [1/1] 09-waits (09-waits.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.7s)
+    ✓ tapOn: text="Slow Screen" (2.2s)
+    ✓ assertVisible: text="Loading…" (354ms)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (2.9s)
+    ✓ assertVisible: text="Loaded after delay" (219ms)
+    ✓ waitForAnimationToEnd (231ms)
+    ✓ waitForAnimationToEnd (204ms)
+✓ 09-waits 12.3s
+
+  [1/1] 09-waits (.maestro/coverage/09-waits.yaml) - Device: smoke2-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.7s)
+    ✓ tapOn: text="Slow Screen" (2.2s)
+    ✓ assertVisible: text="Loading…" (354ms)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (2.9s)
+    ✓ assertVisible: text="Loaded after delay" (219ms)
+    ✓ waitForAnimationToEnd (231ms)
+    ✓ waitForAnimationToEnd (204ms)
+✓ 09-waits 12.3s
+
+  8 steps passing (12.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  09-waits                       ✓ PASS       8      8      0      0      12.3s  smoke2-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      12.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  09-waits
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Slow Screen"
+    ✓ assertVisible: text="Loading…"
+    ✓ extendedWaitUntil: notVisible text="Loading…"
+    ✓ assertVisible: text="Loaded after delay"
+    ✓ waitForAnimationToEnd
+    ✓ waitForAnimationToEnd
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/
+
+exit=0

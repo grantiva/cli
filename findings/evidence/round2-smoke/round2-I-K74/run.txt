@@ -1,0 +1,114 @@
+$ (ios/) $GRANTIVA run --simulator F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --no-build --flow .maestro/coverage/10-lifecycle.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74
+Resolved: scheme=Landmarks (UI Testing) simulator=F7DCF106-9DDF-491B-BB72-68D90CFFE1AB screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: F7DCF106-9DDF-491B-BB72-68D90CFFE1AB
+Simulator booted: smoke2-ios (F7DCF106-9DDF-491B-BB72-68D90CFFE1AB)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/10-lifecycle.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 9079
+
+  [1/1] 10-lifecycle (10-lifecycle.yaml)
+────────────────────────────────────────────────────────────
+    ✓ stopApp (1.0s)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (529ms)
+    ✓ tapOn: text="Lake Tahoe" (835ms)
+    ✓ tapOn: text="Favorite" (1.7s)
+    ✓ assertVisible: text="Unfavorite" (655ms)
+    ✓ launchApp (clearState) (3.4s)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (147ms)
+    ✓ stopApp (1.1s)
+    ✓ stopApp (3ms)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (410ms)
+    ✓ killApp (1.1s)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (408ms)
+✓ 10-lifecycle 21.5s
+
+  [1/1] 10-lifecycle (.maestro/coverage/10-lifecycle.yaml) - Device: smoke2-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ stopApp (1.0s)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (529ms)
+    ✓ tapOn: text="Lake Tahoe" (835ms)
+    ✓ tapOn: text="Favorite" (1.7s)
+    ✓ assertVisible: text="Unfavorite" (655ms)
+    ✓ launchApp (clearState) (3.4s)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (147ms)
+    ✓ stopApp (1.1s)
+    ✓ stopApp (3ms)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (410ms)
+    ✓ killApp (1.1s)
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Featured" (408ms)
+✓ 10-lifecycle 21.5s
+
+  16 steps passing (21.5s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-lifecycle                   ✓ PASS      16     16      0      0      21.5s  smoke2-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      16     16      0      0      21.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74/allure-results
+
+  Built by Grantiva
+
+
+  10-lifecycle
+    ✓ stopApp
+    ✓ launchApp
+    ✓ assertVisible: text="Featured"
+    ✓ tapOn: text="Lake Tahoe"
+    ✓ tapOn: text="Favorite"
+    ✓ assertVisible: text="Unfavorite"
+    ✓ launchApp (clearState)
+    ✓ tapOn: text="Favorites"
+    ✓ assertVisible: text="Landmarks you favorite will appear here."
+    ✓ stopApp
+    ✓ stopApp
+    ✓ launchApp
+    ✓ assertVisible: text="Featured"
+    ✓ killApp
+    ✓ launchApp
+    ✓ assertVisible: text="Featured"
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i74/captures/
+
+exit=0

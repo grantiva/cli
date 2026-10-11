@@ -1,0 +1,82 @@
+$ (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/03-edit.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3  (run 3)
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/03-edit.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (7.7s, slow)
+    ✓ tapOn: text="Deep Links" (7.3s, slow)
+    ✓ tapOn: text="Edit Landmark" (2.0s)
+    ✓ assertVisible: text="Edit Landmark" (882ms)
+    ✓ tapOn: text="Name" (1.1s)
+    ✗ inputText: " Renamed" (13.6s)
+      ╰─ Failed to input text: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers) (cause: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers))
+✗ 03-edit 36.8s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (7.7s, slow)
+    ✓ tapOn: text="Deep Links" (7.3s, slow)
+    ✓ tapOn: text="Edit Landmark" (2.0s)
+    ✓ assertVisible: text="Edit Landmark" (882ms)
+    ✓ tapOn: text="Name" (1.1s)
+    ✗ inputText: " Renamed" (13.6s)
+      ╰─ Failed to input text: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers) (cause: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers))
+    - tapOn: text="Done" (skipped)
+    - assertVisible: text="Golden Gate Bridge Renamed" (skipped)
+    - takeScreenshot (skipped)
+✗ 03-edit 36.8s
+
+  5 steps passing (36.8s)
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✗ FAIL       9      5      1      3      36.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       9      5      1      3      36.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/a03-3/captures/failure-1791724965.png
+Error: Runner failed (exit 1): 03-edit: inputText: " Renamed": Failed to input text: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers) (cause: send request: Post "http://localhost/session/33a01e8b-3b9f-4d35-a43c-fd0503806617/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers))
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/03-edit.yaml   1.75s user 1.46s system 6% cpu 51.230 total
+exit=1

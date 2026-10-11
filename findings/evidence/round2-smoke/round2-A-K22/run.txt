@@ -1,0 +1,67 @@
+$ (android/) $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/14b-runflow-inline.yaml
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke2-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/14b-runflow-inline.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 14b-runflow-inline (14b-runflow-inline.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (6.1s, slow)
+        ✓ tapOn: text="Favorites" (7.8s, slow)
+        ✓ assertVisible: text="Landmarks you favorite will appear here." (798ms)
+    ✓ runFlow (8.6s, slow)
+✓ 14b-runflow-inline 14.7s
+
+  [1/1] 14b-runflow-inline (.maestro/coverage/14b-runflow-inline.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (6.1s, slow)
+    ✓ runFlow (8.6s, slow)
+      ✓ tapOn: text="Favorites" (7.8s, slow)
+      ✓ assertVisible: text="Landmarks you favorite will appear here." (798ms)
+✓ 14b-runflow-inline 14.7s
+
+  3 steps passing (14.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  14b-runflow-inline             ✓ PASS       3      3      0      0      14.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       3      3      0      0      14.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  14b-runflow-inline
+    ✓ launchApp
+    ✓ runFlow
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/android/
+
+exit=0

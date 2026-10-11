@@ -1,0 +1,61 @@
+06:33:38.201421 [INFO] === Test execution started ===
+06:33:38.201493 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/i99
+06:33:38.201498 [INFO] Platform: ios
+06:33:38.201502 [INFO] Driver: wda
+06:33:38.201751 [INFO] Validated 1 flow(s)
+06:33:38.310183 [INFO] Single device execution mode
+06:33:38.310210 [INFO] Starting flow execution (parallel: false, devices: [])
+06:33:38.310218 [INFO] Creating driver for single device execution
+06:33:38.310223 [INFO] Using specified iOS device: F7DCF106-9DDF-491B-BB72-68D90CFFE1AB
+06:33:38.403641 [INFO] Device F7DCF106-9DDF-491B-BB72-68D90CFFE1AB is a simulator
+06:33:38.403696 [INFO] Building WDA for device F7DCF106-9DDF-491B-BB72-68D90CFFE1AB (team ID: )
+06:33:38.589203 [INFO] WDA build reused from cache
+06:33:38.589216 [INFO] Starting WDA on device F7DCF106-9DDF-491B-BB72-68D90CFFE1AB (port: 9079)
+06:33:38.812341 [INFO] Starting GrantivaAgent (attempt 1/4)
+06:33:40.315207 [INFO] GrantivaAgent started
+06:33:40.315261 [INFO] WDA started successfully on port 9079
+06:33:40.673896 [DEBUG] WDA GET /window/size
+06:33:40.744888 [DEBUG] WDA GET /window/size completed (70ms, status: 200)
+06:33:40.744959 [INFO] Driver created: ios on smoke2-ios
+06:33:40.746453 [INFO] === Starting flow: 99-crash ===
+06:33:40.746458 [INFO] Flow file: .maestro/99-crash.yaml
+06:33:40.746462 [INFO] Total steps: 4
+06:33:40.746593 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+06:33:40.747677 [DEBUG] WDA POST /appium/settings completed (1ms, status: 404)
+06:33:40.747724 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+06:33:42.244513 [DEBUG] WDA POST /session completed (1496ms, status: 200)
+06:33:42.244631 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+06:33:42.253725 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings completed (9ms, status: 200)
+06:33:42.253889 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+06:33:42.254589 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings completed (0ms, status: 200)
+06:33:42.255275 [DEBUG] Executing step 0: launchApp
+06:33:42.667989 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+06:33:42.668051 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+06:33:42.668762 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/appium/settings completed (0ms, status: 200)
+06:33:42.668861 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+06:33:42.669310 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/terminate completed (0ms, status: 200)
+06:33:42.669338 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+06:33:44.159277 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/launch completed (1489ms, status: 200)
+06:33:44.159476 [DEBUG] Step 0 completed successfully (1904ms): launchApp
+06:33:44.160943 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+06:33:44.305445 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+06:33:44.305471 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/alert/text
+06:33:44.311836 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/alert/text completed (6ms, status: 400)
+06:33:44.312210 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks' OR value ==[c] 'Landmarks')"}
+06:33:44.315632 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/element completed (3ms, status: 400)
+06:33:44.315741 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/source
+06:33:44.319086 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/source completed (3ms, status: 400)
+06:33:44.319155 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+06:33:44.319675 [DEBUG] WDA POST /session/8129D3C2-3755-4850-941F-CD33387DBE87/wda/apps/state completed (0ms, status: 200)
+06:33:44.319713 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) during an element wait — treating it as crashed
+06:33:44.319731 [ERROR] Step 1 failed (158ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+06:33:44.319735 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/screenshot
+06:33:44.469076 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/screenshot completed (149ms, status: 200)
+06:33:44.487622 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/source
+06:33:44.489475 [DEBUG] WDA GET /session/8129D3C2-3755-4850-941F-CD33387DBE87/source completed (1ms, status: 400)
+06:33:44.494702 [INFO] === Flow completed: 99-crash (status: failed, duration: 3743ms, passed: 1, failed: 1, skipped: 2) ===
+06:33:44.515347 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+06:33:44.515487 [INFO] Generating reports...
+06:33:44.517296 [INFO] Shutting down devices started by maestro-runner...
+06:33:44.517307 [INFO] Shutting down all tracked emulators
+06:33:44.517317 [INFO] Shutting down all tracked simulators

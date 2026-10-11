@@ -1,0 +1,7 @@
+# env: GRANTIVA=$HOME/.grantiva-qa/bin/grantiva (2.1.0, main 5eab55d, runner 1.1.28-grantiva.10); GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner;
+#      GRANTIVA_SESSION_ID=smoke2; GRANTIVA_API_KEY unset; Android shells: JAVA_HOME/ANDROID_HOME/PATH prelude from the constraints
+# demo: landmarks-demo b3f046f ios/ and android/ copied to <scratch>/smoke2 (build dirs removed); <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+# devices: smoke2-ios = F7DCF106-9DDF-491B-BB72-68D90CFFE1AB (iPhone 17, iOS 26.0); smoke2-android = emulator-5554 (API 35)
+# each output file starts with the exact command line; exit codes are at the end of each file
+ensure.txt        $GRANTIVA emulator ensure --name smoke2-android
+build-install.txt (android/) $GRANTIVA build install --device emulator-5554

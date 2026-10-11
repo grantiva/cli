@@ -1,6 +1,10 @@
 OVERVIEW: Kill emulators Grantiva started: one by serial, or all of them. Stops
 the UIAutomator2 server and removes the serial's adb forwards first.
 
+A runner session on a torn-down serial (`grantiva runner start` or `grantiva
+run --keep-alive`) is stopped too, and its session files are removed; --json
+reports it as runnerSessionStopped.
+
 USAGE: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
 
 OPTIONS:

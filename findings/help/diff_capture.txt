@@ -9,10 +9,11 @@ OPTIONS:
   --quiet                 Silence progress diagnostics on stderr; warnings and
                           errors still print. Program output on stdout is
                           unaffected.
-  --app-file <app-file>   Path to a pre-built .app bundle or .ipa archive.
-                          Skips the build step.
+  --app-file <app-file>   Path to a pre-built app: .app bundle or .ipa archive
+                          (iOS), .apk (Android). Skips the build step.
   --no-build              Skip building and installing — assume the app is
-                          already on the device.
+                          already on the device. With --app-file, that file is
+                          installed (only the build is skipped).
   --derived-data-path <derived-data-path>
                           Write Xcode build products and intermediates to this
                           DerivedData directory.
@@ -34,7 +35,10 @@ OPTIONS:
                           (Android)
   --allow-device-settings Apply demo mode and animation settings on a physical
                           device too (Android)
-  --headless              Boot an emulator without a window (Android)
+  --headless              Boot an emulator without a window (Android).
+                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
+                          same; otherwise a booted emulator gets a window, even
+                          when stdout is not a terminal.
   --version               Show the version.
   -h, --help              Show help information.
 

@@ -9,10 +9,12 @@ OPTIONS:
   --quiet                 Silence progress diagnostics on stderr; warnings and
                           errors still print. Program output on stdout is
                           unaffected.
-  -p, --port <port>       WDA port (auto-detected from active session if
-                          omitted)
-  -f, --format <format>   Output format: tree, json, or xml (default: tree).
-                          --json is the same as --format json.
+  -p, --port <port>       Driver port: WDA on iOS, the forwarded UIAutomator2
+                          port on Android (auto-detected from the active
+                          session if omitted)
+  -f, --format <format>   Output format: tree, json, or xml (default: tree; any
+                          case). --json is the same as --format json. (values:
+                          tree, json, xml)
   --udid <udid>           Simulator UDID or adb serial when falling back to a
                           `grantiva run --keep-alive` session
   --version               Show the version.

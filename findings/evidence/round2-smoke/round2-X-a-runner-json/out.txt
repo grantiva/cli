@@ -1,0 +1,51 @@
+$ $GRANTIVA runner --json
+Error: Unknown option '--json'
+Usage: grantiva runner <subcommand>
+  See 'grantiva runner --help' for more information.
+exit=64
+
+$ $GRANTIVA runner version
+grantiva-runner 1.1.28-grantiva.10
+exit=0
+
+$ $GRANTIVA runner version --json
+{
+  "version" : "1.1.28-grantiva.10"
+}
+exit=0
+
+$ $GRANTIVA runner status --json
+Error: Unknown option '--json'
+Usage: grantiva runner <subcommand>
+  See 'grantiva runner --help' for more information.
+exit=64
+
+$ $GRANTIVA runner --help
+OVERVIEW: Manage the embedded UI automation runner.
+
+USAGE: grantiva runner <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  install                 Extract or update the embedded runner binary.
+  version                 Show the embedded runner version.
+  start                   Start the runner with WDA (UIAutomator2 on Android)
+                          and keep it alive for interactive use.
+  stop                    Stop the running runner session.
+  dump-hierarchy          Dump the view hierarchy from a running app for agent
+                          inspection.
+
+  See 'grantiva help runner <subcommand>' for detailed help.
+exit=0
+
+$ ls $GRANTIVA_RUNNER_HOME/versions
+1.1.18-grantiva.7+android-drivers-2
+1.1.28-grantiva.10+android-drivers-2
+1.1.28-grantiva.9+android-drivers-2
+$ grep -n "runner version\|runner --json" README.md (main 5eab55d)
+98:- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home
+192:| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner in
+356:grantiva runner version     Show the embedded runner version

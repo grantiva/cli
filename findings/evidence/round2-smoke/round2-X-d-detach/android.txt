@@ -1,0 +1,33 @@
+$ (android/) $GRANTIVA runner start --detach --json --device emulator-5554
+{
+  "applicationId" : "com.kylebrowning.landmarks",
+  "bundle_id" : "com.kylebrowning.landmarks",
+  "log" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-runner-1791726236.log",
+  "pid" : 61616,
+  "platform" : "android",
+  "port" : 61738,
+  "serial" : "emulator-5554",
+  "status" : "started",
+  "udid" : "emulator-5554"
+}
+exit=0
+$ ls -la /tmp/grantiva-sessions   (during)
+total 8
+drwxr-xr-x@   3 kyle  wheel    96 Oct 11 06:43 .
+drwxrwxrwt  220 root  wheel  7040 Oct 11 06:43 ..
+-rw-r--r--@   1 kyle  wheel   322 Oct 11 06:43 61616.owner.json
+$ (android/) $GRANTIVA runner stop --json
+{
+  "killed" : false,
+  "pid" : 61616,
+  "platform" : "android",
+  "runnerPid" : 61616,
+  "serial" : "emulator-5554",
+  "status" : "stopped",
+  "udid" : "emulator-5554"
+}
+exit=0
+$ ls -la /tmp/grantiva-sessions   (after)
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 06:44 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 06:44 ..

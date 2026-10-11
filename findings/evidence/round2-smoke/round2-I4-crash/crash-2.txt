@@ -1,0 +1,31 @@
+$ (ios/) time $GRANTIVA run --simulator F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --no-build --flow .maestro/99-crash.yaml --json   (run 2)
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1): 99-crash: assertVisible: text=\"Landmarks\": Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)",
+  "screens" : [
+    {
+      "kind" : "flow",
+      "name" : "99-crash",
+      "passed" : false,
+      "screenshots" : [
+
+      ],
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "duration" : 1.943,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Landmarks\"",
+          "duration" : 0.154,
+          "message" : "Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}
+Error: Runner failed (exit 1): 99-crash: assertVisible: text="Landmarks": Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+$GRANTIVA run --simulator $U --no-build --flow .maestro/99-crash.yaml --json  2.48s user 2.94s system 61% cpu 8.758 total
+exit=1

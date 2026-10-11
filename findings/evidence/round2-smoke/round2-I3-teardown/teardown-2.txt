@@ -1,0 +1,27 @@
+$ $GRANTIVA emulator teardown --serial emulator-5554
+Killed emulator-5554 (smoke2-android).
+exit=0
+$ $GRANTIVA simulator teardown --session-id smoke2
+Deleted Grantiva-created smoke2-ios (F7DCF106-9DDF-491B-BB72-68D90CFFE1AB) and released session smoke2.
+exit=0
+$ xcrun simctl list devices | grep -c smoke2
+0
+$ adb devices
+List of devices attached
+
+$ avdmanager list avd -c
+Pixel_8_API_35
+$ ls -la /tmp/grantiva-sessions
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 06:44 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 06:44 ..
+$ ls $GRANTIVA_RUNNER_HOME/locks | grep -c F7DCF106
+0
+$ ps -Ao pid,args | grep -E "qemu-system.*smoke2|smoke2" | grep -v grep
+$ xcrun simctl list devices booted
+== Devices ==
+-- iOS 26.0 --
+    iPhone 17 Pro (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) (Booted) 
+-- iOS 27.0 --
+-- watchOS 27.0 --
+-- visionOS 27.0 --

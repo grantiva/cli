@@ -1,0 +1,31 @@
+$ (android/) time $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --json   (run 2)
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1): 99-crash: assertVisible: text=\"Landmarks\": app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Landmarks') (cause: app crashed after launch)",
+  "screens" : [
+    {
+      "kind" : "flow",
+      "name" : "99-crash",
+      "passed" : false,
+      "screenshots" : [
+
+      ],
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "duration" : 4.359,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Landmarks\"",
+          "duration" : 10.715,
+          "message" : "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Landmarks') (cause: app crashed after launch)",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}
+Error: Runner failed (exit 1): 99-crash: assertVisible: text="Landmarks": app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Landmarks') (cause: app crashed after launch)
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml  1.56s user 1.22s system 10% cpu 26.829 total
+exit=1

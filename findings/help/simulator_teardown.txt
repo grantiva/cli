@@ -1,6 +1,10 @@
 OVERVIEW: End a managed session, or reclaim one simulator by UDID when no
 ledger entry exists.
 
+A runner session on a torn-down simulator (`grantiva runner start` or `grantiva
+run --keep-alive`) is stopped first and its session files are removed; --json
+reports it as runnerSessionStopped.
+
 USAGE: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
 
 OPTIONS:

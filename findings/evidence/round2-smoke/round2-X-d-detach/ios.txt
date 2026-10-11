@@ -1,0 +1,36 @@
+$ ls -la /tmp/grantiva-sessions   (before)
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 04:20 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 06:43 ..
+$ (ios/) $GRANTIVA runner start --detach --json --simulator F7DCF106-9DDF-491B-BB72-68D90CFFE1AB --bundle-id com.kylebrowning.Landmarks
+{
+  "bundleId" : "com.kylebrowning.Landmarks",
+  "bundle_id" : "com.kylebrowning.Landmarks",
+  "log" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-runner-1791726228.log",
+  "pid" : 61488,
+  "platform" : "ios",
+  "port" : 9079,
+  "status" : "started",
+  "udid" : "F7DCF106-9DDF-491B-BB72-68D90CFFE1AB"
+}
+exit=0
+$ ls -la /tmp/grantiva-sessions; ls .grantiva   (during)
+total 8
+drwxr-xr-x@   3 kyle  wheel    96 Oct 11 06:43 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 06:43 ..
+-rw-r--r--@   1 kyle  wheel   337 Oct 11 06:43 61488.owner.json
+-rw-r--r--@  1 kyle  wheel  160 Oct 11 06:43 session.json
+$ (ios/) $GRANTIVA runner stop --json
+{
+  "killed" : false,
+  "pid" : 61488,
+  "platform" : "ios",
+  "runnerPid" : 61488,
+  "status" : "stopped",
+  "udid" : "F7DCF106-9DDF-491B-BB72-68D90CFFE1AB"
+}
+exit=0
+$ ls -la /tmp/grantiva-sessions   (after)
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 06:43 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 06:43 ..

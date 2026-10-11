@@ -1,5 +1,16 @@
 OVERVIEW: Stop the running runner session.
 
+Stops the session `grantiva runner start` recorded in .grantiva/session.json:
+the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and its
+session files and device lease are removed. Without one, it releases a
+`grantiva run --keep-alive` session started from this directory (every one, if
+there are several) the way Ctrl-C would, by sending that grantiva process
+SIGINT, and waits for it to exit. A run whose flows had already finished keeps
+the ready file it wrote (`passed` or `failed`): the ready file is written once,
+and the `stopped` result here is the record of the release. Sessions started
+from other directories are left alone. With no session at all it prints "No
+active session found." and exits 0.
+
 USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
 
 OPTIONS:

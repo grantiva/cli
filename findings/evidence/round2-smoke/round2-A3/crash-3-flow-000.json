@@ -1,0 +1,102 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": ".maestro/99-crash.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T06:33:52.593037-07:00",
+  "endTime": "2026-10-11T06:34:10.135974-07:00",
+  "duration": 17542,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T06:33:52.618844-07:00",
+      "endTime": "2026-10-11T06:33:56.757844-07:00",
+      "duration": 4139,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-11T06:33:56.760748-07:00",
+      "endTime": "2026-10-11T06:34:06.985748-07:00",
+      "duration": 10225,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00d9-ffff-ffff00000174",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "failed",
+      "startTime": "2026-10-11T06:34:06.988394-07:00",
+      "endTime": "2026-10-11T06:34:07.717394-07:00",
+      "duration": 729,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Featured': com.kylebrowning.landmarks crashed (APP CRASH(EXCEPTION))) (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 5031,
+    "p50": 4139,
+    "p95": 10225,
+    "max": 10225,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

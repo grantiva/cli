@@ -1,0 +1,36 @@
+$ (android/) time $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --json   (run 1)
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1): 99-crash: assertVisible: text=\"Featured\": app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Featured': com.kylebrowning.landmarks crashed (APP CRASH(EXCEPTION))) (cause: app crashed after launch)",
+  "screens" : [
+    {
+      "kind" : "flow",
+      "name" : "99-crash",
+      "passed" : false,
+      "screenshots" : [
+
+      ],
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "duration" : 6.028,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Landmarks\"",
+          "duration" : 10.333,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Featured\"",
+          "duration" : 0.73,
+          "message" : "app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Featured': com.kylebrowning.landmarks crashed (APP CRASH(EXCEPTION))) (cause: app crashed after launch)",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}
+Error: Runner failed (exit 1): 99-crash: assertVisible: text="Featured": app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (step failed: Element not visible: text='Featured': com.kylebrowning.landmarks crashed (APP CRASH(EXCEPTION))) (cause: app crashed after launch)
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml  1.68s user 1.35s system 10% cpu 30.165 total
+exit=1
