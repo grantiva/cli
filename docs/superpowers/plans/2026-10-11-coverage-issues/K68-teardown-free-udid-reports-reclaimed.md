@@ -70,3 +70,7 @@ Today: `"leaseReleased" : true`, `"reclaimed" : true`. (If the lock directory di
   succeeds.
 - GrantivaCoreTests/SimulatorReaperTests: a forced teardown with no processes and only a stale lock file yields
   `reclaimed == false`.
+
+## Correction (round 2 coverage, 2026-10-12)
+
+Withdrawn: bullet 2 (after `kill -9` of a `run --keep-alive`, teardown reports `leaseReleased: true`). It was written while K79 was open, when the orphaned runner kept the lease's flock through an inherited descriptor, so bullets 2 and 3 agreed. K79 makes the runner exit with its killed parent; nothing holds the flock and the claim names dead pids, so `leaseReleased: false` with `reclaimed: true` (orphaned WDA/diagnose reaped) is correct and matches bullet 3, the field's contract (`SimulatorReaper.swift:43-47`). Corrected bullet 2: after `kill -9`, `reclaimed: true`; `leaseReleased` is true only if the runner still held the lease when teardown ran. Not a product defect.

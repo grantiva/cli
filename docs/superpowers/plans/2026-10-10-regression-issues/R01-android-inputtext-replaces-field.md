@@ -106,3 +106,7 @@ confirmed on device beyond the client log above.
   server whose set-value replaces must not pass the test); a typed value that silently replaced non-hint existing text
   is reported, not marked `✓`.
 - The bundled runner version is bumped in this repo and the release notes say what changed.
+
+## Correction (round 2 coverage, 2026-10-12)
+
+Withdrawn: criterion 3's "99-crash still fails at `launchApp`". `launchApp` passes and the first assertion after it fails with `app_crash` (`LANDMARKS_CRASH_ON_LAUNCH`); no step passes against the dead app. Brief B2-L02 requires the first-assert outcome. Corrected: 99-crash fails with `app_crash` at `launchApp` or at the first step after it. (A run-2 miss, reported as a plain `assertion`, is a product defect under L02/L06, not part of this correction.)

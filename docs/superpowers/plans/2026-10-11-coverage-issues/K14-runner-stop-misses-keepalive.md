@@ -77,3 +77,7 @@ Android: same with the Android prelude (see K01), `cd android` and `--device "$S
 - A keep-alive session started from another directory is not touched (or is only named, if the second option is chosen).
 - GrantivaCLITests (RunnerLifecycleCommandTests): `RunnerStopCommand.run(dependencies:)` with no session.json and a
   stubbed live keep-alive session takes the chosen branch; with neither, it prints the existing note.
+
+## Correction (round 2 coverage, 2026-10-12)
+
+Withdrawn: the criterion that the ready file reads `interrupted` after `runner stop` releases a keep-alive session whose flows had already finished. README:83 and :419 (c65fc17) say the ready file is written once, at the terminal state, and keeps `passed`/`failed`. The slice (B2-K14, N-01) saw `runner stop` release the session fully (process gone, session files and lease removed, `Stopped keep-alive session (pid, udid)`, exit 0) with the ready file unchanged at `passed`. Corrected criterion: the ready file is left unchanged once terminal; `interrupted` applies only when the stop lands before the flows finish. The rest of K14 stands.
