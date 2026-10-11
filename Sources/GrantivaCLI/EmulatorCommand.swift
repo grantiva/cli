@@ -141,8 +141,11 @@ struct EmulatorCommand: AsyncParsableCommand {
             stopRunners: (@Sendable (String) async -> [RunnerSessionStopper.Outcome])? = nil,
             removeDeadSessions: (@Sendable (String) -> [String])? = nil,
             markStops: (@Sendable (String) -> [Int32])? = nil,
-            unmarkStops: (@Sendable ([Int32]) -> Void)? = nil
+            unmarkStops: (@Sendable ([Int32]) -> Void)? = nil,
+            sweepStops: (@Sendable () -> Void)? = nil
         ) async throws -> [EmulatorTeardownOutcome] {
+            // However the teardown ends, markers nobody will read go.
+            defer { sweepStops?() }
             // Runners on the serials die with their emulator, before
             // `stopRunners` gets to them: mark them first so a foreground
             // `runner start` holding one ends in order (L36). A serial that
@@ -241,7 +244,8 @@ struct EmulatorCommand: AsyncParsableCommand {
                 },
                 removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
                 markStops: { DeviceRunnerSessions.markLive(udid: $0) },
-                unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } }
+                unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } },
+                sweepStops: { RunnerStopMarker().sweep() }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))

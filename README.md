@@ -445,8 +445,11 @@ written by 2.1 are still read:
 A foreground `runner start` ended by `grantiva runner stop` exits 0. One ended
 by `simulator teardown` or `emulator teardown`, run from any directory, exits 0
 too and says `Runner stopped by teardown (pid N); the session has ended.`: the
-teardown marks the device's runners under `<runner home>/stops/` before it
-stops them (a marker counts only for the very process it names).
+teardown writes `<pid>.stop.json` beside the runner's owner file in
+`/tmp/grantiva-sessions` before it stops it, so the marker is found whatever
+the directory or runner home either side uses. A marker counts only for the
+very process it names, and it is removed once read, or once its runner and
+its `runner start` are both gone.
 
 `runner stop` releases a `run --keep-alive` session started from the current
 directory as Ctrl-C would. If that run's flows had already finished, its

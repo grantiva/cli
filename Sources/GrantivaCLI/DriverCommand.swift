@@ -483,7 +483,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// as `grantiva run --keep-alive` does.
     private static func recordKeepAliveOwner(_ launch: Launch, runnerPid: Int32, detached: Bool) {
         KeepAliveSessionStore().recordOwner(
-            udid: launch.device.udid, runnerPid: runnerPid, platform: launch.platform, detached: detached, appID: launch.appID
+            udid: launch.device.udid, runnerPid: runnerPid, platform: launch.platform, detached: detached, appID: launch.appID,
+            command: KeepAliveOwner.runnerStartCommand
         )
     }
 

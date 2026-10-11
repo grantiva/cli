@@ -229,6 +229,107 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertEqual(refused.values, ["mark emulator-5598", "unmark [78]"])
     }
 
+    // MARK: - L36 fix round 3: stop markers beside the owner files
+
+    private func sleeper() throws -> Process {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        process.arguments = ["30"]
+        try process.run()
+        return process
+    }
+
+    private func stopMarkers(in directory: String) -> [String] {
+        ((try? FileManager.default.contentsOfDirectory(atPath: directory)) ?? []).filter { $0.hasSuffix(".stop.json") }
+    }
+
+    /// A foreground `runner start` under runner home A, torn down by a
+    /// grantiva using runner home B: the marker is found through the shared
+    /// session directory, not either home, and the start ends in order.
+    func testAForegroundStartUnderOneHomeTornDownFromAnotherEndsInOrder() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let runner = try sleeper()
+        defer { runner.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        // Home A's start records its runner (this test process holds it).
+        store.recordOwner(
+            udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+            command: KeepAliveOwner.runnerStartCommand
+        )
+        let startTime = RunnerStopMarker.processStartTime(runner.processIdentifier)
+        // Home B's teardown: its runner home appears nowhere in the marking.
+        let teardown = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: {},
+            stopSessions: { _, _ in [] },
+            markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+            sweepStops: { store.stopMarkers.sweep() }
+        )
+        _ = await teardown.stop(udid: "emulator-5556")
+        XCTAssertEqual(store.stopMarkers.directory, sessions)
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: runner.processIdentifier, session: nil,
+            marked: store.stopMarkers.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: startTime)
+        )
+        XCTAssertEqual(request, .teardown)
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: runner.processIdentifier, stop: request),
+            "Runner stopped by teardown (pid \(runner.processIdentifier)); the session has ended."
+        )
+    }
+
+    /// Detached starts and `run --keep-alive` runs read no marker, so a
+    /// teardown of their devices leaves none behind.
+    func testNoMarkerRemainsAfterTearingDownADetachedAndAKeepAliveRunner() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let detached = try sleeper()
+        let keepAlive = try sleeper()
+        defer { detached.terminate(); keepAlive.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        store.recordOwner(udid: "emulator-5556", runnerPid: detached.processIdentifier, platform: .android, detached: true,
+                          command: KeepAliveOwner.runnerStartCommand)
+        store.recordOwner(udid: "emulator-5558", runnerPid: keepAlive.processIdentifier, platform: .android, detached: false)
+        for serial in ["emulator-5556", "emulator-5558"] {
+            let teardown = DeviceRunnerSessions(
+                loadSession: { nil }, removeSession: {}, stopSessions: { _, _ in [] },
+                markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+                sweepStops: { store.stopMarkers.sweep() }
+            )
+            _ = await teardown.stop(udid: serial)
+        }
+        XCTAssertEqual(stopMarkers(in: sessions), [])
+    }
+
+    /// A marker that cannot be written is one warning naming the pid; the
+    /// runner is still stopped.
+    func testAMarkerThatCannotBeWrittenWarnsAndTheRunnerIsStillStopped() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let runner = try sleeper()
+        defer { runner.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        store.recordOwner(udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+                          command: KeepAliveOwner.runnerStartCommand)
+        let blocker = "\(sessions)/blocker"
+        FileManager.default.createFile(atPath: blocker, contents: Data())
+        let warnings = LockedList()
+        let events = LockedList()
+        let teardown = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: {},
+            stopSessions: { udid, _ in events.append("stop \(udid)"); return [] },
+            markStops: { udid in
+                DeviceRunnerSessions.markLive(
+                    udid: udid, store: store, marker: RunnerStopMarker(directory: "\(blocker)/sub"), warn: warnings.append
+                )
+            }
+        )
+        _ = await teardown.stop(udid: "emulator-5556")
+        XCTAssertEqual(warnings.values.count, 1)
+        XCTAssertTrue(warnings.values.first?.contains("runner pid \(runner.processIdentifier)") == true, "\(warnings.values)")
+        XCTAssertEqual(events.values, ["stop emulator-5556"])
+    }
+
     // MARK: - L12/L35: what a teardown cleaned up is listed
 
     func testTeardownListsTheDeadRunnersSessionFilesAndTheTempDirectories() async throws {

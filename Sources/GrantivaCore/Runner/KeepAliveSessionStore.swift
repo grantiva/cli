@@ -66,10 +66,16 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     /// The app the session launched (bundle ID or application ID). Absent in
     /// sidecars written by earlier versions.
     public let appId: String?
+    /// `runner-start` for a `grantiva runner start` session, nil for
+    /// `run --keep-alive` and sidecars written by earlier versions.
+    public let command: String?
+
+    public static let runnerStartCommand = "runner-start"
 
     public init(
         udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
-        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil
+        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil,
+        command: String? = nil
     ) {
         self.udid = udid
         self.runnerPid = runnerPid
@@ -79,6 +85,13 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
         self.platform = platform
         self.detached = detached
         self.appId = appId
+        self.command = command
+    }
+
+    /// A foreground `runner start`: the grantiva process holding it reads a
+    /// teardown's stop marker when its runner exits (L36).
+    public var isForegroundRunnerStart: Bool {
+        command == Self.runnerStartCommand && detached == false
     }
 
     /// The canonical form both sides compare: absolute, standardized, with
@@ -139,14 +152,16 @@ public struct KeepAliveSessionStore: Sendable {
         projectDirectory: String = FileManager.default.currentDirectoryPath,
         platform: Platform? = nil,
         detached: Bool? = nil,
-        appID: String? = nil
+        appID: String? = nil,
+        command: String? = nil
     ) -> KeepAliveOwner? {
         let owner = KeepAliveOwner(
             udid: udid, runnerPid: runnerPid,
             projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
             platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios),
             detached: detached,
-            appId: appID.flatMap { $0.isEmpty ? nil : $0 }
+            appId: appID.flatMap { $0.isEmpty ? nil : $0 },
+            command: command
         )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -169,6 +184,12 @@ public struct KeepAliveSessionStore: Sendable {
 
     public func removeOwner(runnerPid: Int32) {
         try? FileManager.default.removeItem(atPath: ownerPath(runnerPid: runnerPid))
+        stopMarkers.removeUnlessHeld(runnerPid: runnerPid)
+    }
+
+    /// Teardown stop markers live beside the owner files and go with them.
+    public var stopMarkers: RunnerStopMarker {
+        RunnerStopMarker(directory: directory, isProcessAlive: isProcessAlive)
     }
 
     /// Deletes `runnerPid`'s sidecar and its own `<pid>-<timestamp>.grantiva`
@@ -188,6 +209,7 @@ public struct KeepAliveSessionStore: Sendable {
             let path = "\(directory)/\(name)"
             if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
         }
+        if stopMarkers.removeUnlessHeld(runnerPid: runnerPid) { removed.append(stopMarkers.path(runnerPid)) }
         return removed
     }
 
@@ -221,6 +243,11 @@ public struct KeepAliveSessionStore: Sendable {
             let path = "\(directory)/\(name)"
             if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
         }
+        let markers = stopMarkers
+        for pid in pids.sorted() where markers.removeUnlessHeld(runnerPid: pid) {
+            removed.append(markers.path(pid))
+        }
+        markers.sweep()
         return removed
     }
 
@@ -291,15 +318,19 @@ public struct KeepAliveSessionStore: Sendable {
             }
     }
 
-    /// The live runners grantiva recorded for `udid` (owner sidecars), started
-    /// or still starting: what a teardown of that device is about to stop.
-    public func runnerPids(udid: String) -> [Int32] {
+    /// The live foreground `runner start` sessions recorded for `udid`, whose
+    /// holder is alive: the runners a teardown of that device marks before
+    /// stopping them (L36). Detached starts and `run --keep-alive` runs read
+    /// no marker, so they get none.
+    public func foregroundRunnerStarts(udid: String) -> [KeepAliveOwner] {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directory) else { return [] }
         return contents.sorted()
             .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
             .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
-            .filter { $0.udid.caseInsensitiveCompare(udid) == .orderedSame && isProcessAlive($0.runnerPid) }
-            .map(\.runnerPid)
+            .filter {
+                $0.udid.caseInsensitiveCompare(udid) == .orderedSame && $0.isForegroundRunnerStart
+                    && isProcessAlive($0.runnerPid) && isProcessAlive($0.grantivaPid)
+            }
     }
 
     /// The pid in a runner's `<pid>-<timestamp>.grantiva` file name.

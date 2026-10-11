@@ -647,8 +647,8 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
         defer { try? FileManager.default.removeItem(atPath: directory) }
         let started: Int64 = 1_791_700_000
-        let marker = RunnerStopMarker(directory: directory, startTime: { _ in started })
-        XCTAssertTrue(marker.mark(runnerPid: 1234))
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in started }, isProcessAlive: { _ in true })
+        XCTAssertTrue(try marker.mark(runnerPid: 1234, ownerPid: 77))
         // A's session file still names the runner: no `runner stop` happened.
         let request = RunnerStartCommand.stopRequest(
             runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: started)
@@ -660,11 +660,11 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         )
     }
 
-    func testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly() {
+    func testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
         defer { try? FileManager.default.removeItem(atPath: directory) }
-        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_600_000 })
-        XCTAssertTrue(marker.mark(runnerPid: 1234))
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_600_000 }, isProcessAlive: { _ in true })
+        XCTAssertTrue(try marker.mark(runnerPid: 1234, ownerPid: 77))
         let request = RunnerStartCommand.stopRequest(
             runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: 1_791_700_000)
         )

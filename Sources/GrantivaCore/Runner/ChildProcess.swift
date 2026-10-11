@@ -319,7 +319,7 @@ public final class ChildProcess: @unchecked Sendable {
     /// group, waits up to `$3` tenths of a second (default 100) for the runner
     /// to release WebDriverAgent, then SIGTERMs the group and waits as long
     /// again, then SIGKILLs the runner; it removes the runner's keep-alive
-    /// session files from `$2` whichever way the runner went (neither the dead
+    /// session files (and any teardown stop marker) from `$2` whichever way the runner went (neither the dead
     /// grantiva nor a killed runner removes them); and finally SIGTERMs
     /// whatever is left in the group. Being a member of the group, it keeps
     /// the group id from being reused while it works.
@@ -333,7 +333,7 @@ public final class ChildProcess: @unchecked Sendable {
     wait_runner "$1"
     if kill -0 "$1" 2>/dev/null; then kill -TERM -"$1" 2>/dev/null; wait_runner "$1"; fi
     if kill -0 "$1" 2>/dev/null; then kill -KILL "$1" 2>/dev/null; sleep 0.2; fi
-    if [ -n "$2" ]; then rm -f "$2/$1".owner.json "$2/$1"-*.grantiva; fi
+    if [ -n "$2" ]; then rm -f "$2/$1".owner.json "$2/$1".stop.json "$2/$1"-*.grantiva; fi
     kill -TERM -"$1" 2>/dev/null
     exit 0
     """
