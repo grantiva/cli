@@ -17,7 +17,7 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Run a single flow file instead of all configured flows")
     var flow: String?
 
-    @Flag(name: .long, help: "Keep GrantivaAgent session alive after flows complete so `grantiva hierarchy` can inspect UI state without relaunching the app. Release with Ctrl-C.")
+    @Flag(name: .long, help: "Keep the runner session (GrantivaAgent on iOS, UIAutomator2 on Android) alive after flows complete so `grantiva hierarchy` can inspect UI state without relaunching the app. Release with Ctrl-C.")
     var keepAlive: Bool = false
 
     @Flag(name: .long, help: "Stream app logs from the simulator or emulator into this terminal, prefixed with [log] (iOS and Android). On iOS the filter defaults to lines whose subsystem starts with the app's bundle ID or whose process is the app's executable; on Android, to lines from the app's uid.")
@@ -114,30 +114,97 @@ struct RunCommand: AsyncParsableCommand {
 
     /// The line printed before the device is resolved. With nothing named
     /// (no flag, no config) Android picks the running emulator or boots the
-    /// only AVD, so it says that instead of printing an empty name.
-    static func bootNarration(platform: Platform, target: String) -> String {
+    /// only AVD, so it says that instead of printing an empty name. A target
+    /// that is already running is used, not booted, and says so.
+    static func bootNarration(platform: Platform, target: String, running: Bool = false) -> String {
         let noun = platform == .ios ? "simulator" : "emulator"
         guard !target.isEmpty else {
             return platform == .ios
                 ? "No simulator named; using the default simulator"
                 : "No emulator named; using the running emulator or the only AVD"
         }
-        return "Booting \(noun): \(target)"
+        return running ? "Using \(noun): \(target)" : "Booting \(noun): \(target)"
+    }
+
+    /// Finds the device to run on. iOS boots the named simulator. On Android
+    /// `--device <serial>` names an attached device, which is used as is and
+    /// never booted (an unknown serial is an error naming what is attached);
+    /// an AVD name is used if running and booted otherwise, and the boot
+    /// itself is narrated where it happens.
+    static func targetDevice(
+        platform: Platform, device: any DevicePlatform, target: String, serialFlag: String?, log: (String) -> Void
+    ) async throws -> BootedDevice {
+        if platform == .android, let serial = serialFlag {
+            let attached: BootedDevice
+            do {
+                attached = try await device.attachedDevice(serial: serial)
+            } catch GrantivaError.invalidArgument(let message) {
+                throw GrantivaError.invalidArgument("\(message) To boot an AVD for this run, pass --emulator <avd>.")
+            }
+            log(bootNarration(platform: platform, target: "\(attached.name) (\(attached.udid))", running: true))
+            return attached
+        }
+        if platform == .android, !target.isEmpty {
+            let booted = try await device.bootDevice(named: target)
+            log(bootNarration(platform: platform, target: "\(booted.name) (\(booted.udid))", running: true))
+            return booted
+        }
+        log(bootNarration(platform: platform, target: target))
+        let booted = try await device.bootDevice(named: target)
+        log("\(platform == .ios ? "Simulator" : "Emulator") booted: \(booted.name) (\(booted.udid))")
+        return booted
+    }
+
+    /// The suite line: screens and flows counted separately, each once.
+    /// Without screens the flow session's own line carries the count.
+    static func suiteNarration(screens: Int, flows: Int) -> String? {
+        guard screens > 0 else { return nil }
+        return flows > 0
+            ? "Capturing \(screens) screen(s), then running \(flows) flow(s)..."
+            : "Capturing \(screens) screen(s)..."
+    }
+
+    /// The flows session line, naming the driver that holds the session.
+    static func sessionNarration(platform: Platform, flows: [String], countGiven: Bool) -> String {
+        let driver = platform == .ios ? "GrantivaAgent" : "UIAutomator2"
+        let subject = countGiven ? "Running the flows" : "Running \(flows.count) flow(s)"
+        return "\(subject) in one \(driver) session: \(flows.joined(separator: ", "))"
+    }
+
+    /// `--flow` and configured flows must exist before any device work.
+    static func checkFlowFiles(_ flows: [String]) throws {
+        let fileManager = FileManager.default
+        for flow in flows {
+            var isDirectory: ObjCBool = false
+            guard fileManager.fileExists(atPath: flow, isDirectory: &isDirectory) else {
+                throw GrantivaError.invalidArgument("Flow file not found: \(flow)")
+            }
+            guard !isDirectory.boolValue else {
+                throw GrantivaError.invalidArgument("Flow file is a directory, not a file: \(flow)")
+            }
+            guard fileManager.isReadableFile(atPath: flow) else {
+                throw GrantivaError.invalidArgument("Flow file cannot be read: \(flow)")
+            }
+        }
     }
 
     /// A failed suite gets a screenshot of the device's current state, except
     /// when the device belongs to another run (this run never drove it) or
     /// when an interrupt released a run whose flows all passed (how a
     /// `--keep-alive` session ends; nothing failed).
+    /// A usage error (a flow that does not parse or resolve, a missing file)
+    /// is raised before the runner drives the device, so a screenshot would
+    /// only show whatever was already on screen.
     static func wantsFailureScreenshot(error: Error, report: RunnerFailureReport) -> Bool {
-        !SimulatorLease.isOwnershipRefusal(error) && !report.passedBeforeInterruption
+        if case .invalidArgument = error as? GrantivaError { return false }
+        return !SimulatorLease.isOwnershipRefusal(error) && !report.passedBeforeInterruption
     }
 
     /// What the suite's catch does before rethrowing: a failure screenshot
     /// when `wantsFailureScreenshot` says so, and the `--json` document.
     static func handleSuiteFailure(
         error: Error, report: RunnerFailureReport, device: any DevicePlatform, deviceID: String, captureDir: String,
-        json: Bool, resultOutput: ResultOutput, log: (String) -> Void
+        json: Bool, resultOutput: ResultOutput, reportDir: String? = nil, log: (String) -> Void
     ) async {
         // The device belongs to another run: this run never drove it.
         if SimulatorLease.isOwnershipRefusal(error) { return }
@@ -145,7 +212,7 @@ struct RunCommand: AsyncParsableCommand {
             await takeFailureScreenshot(device: device, deviceID: deviceID, captureDir: captureDir, log: log)
         }
         if json {
-            try? resultOutput.emit(Self.failureResult(error: error, report: report))
+            try? resultOutput.emit(Self.failureResult(error: error, report: report, reportDir: reportDir))
         }
     }
 
@@ -199,6 +266,7 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
+        options.applyRunnerNarration()
         if let readyFile {
             try ReadyFile.prepare(at: readyFile)
         }
@@ -210,7 +278,10 @@ struct RunCommand: AsyncParsableCommand {
             // steps) in `execute`; anything else that failed before a result
             // existed prints the error alone.
             if options.json, !resultOutput.emitted {
-                try? resultOutput.emit(RunResult(screens: [], allPassed: false, error: Self.failureMessage(error)))
+                try? resultOutput.emit(RunResult(
+                    screens: [], allPassed: false, error: Self.failureMessage(error),
+                    reportDir: Self.existingReportDir(reportDir)
+                ))
             }
             // `execute` writes the real verdict when the runner produced one;
             // the file existing here means that already happened and must not
@@ -226,7 +297,7 @@ struct RunCommand: AsyncParsableCommand {
                 try? ReadyFile.write(
                     RunReadyState(
                         status: "failed", flows: [],
-                        reportDir: reportDir.flatMap { FileManager.default.fileExists(atPath: $0) ? $0 : nil },
+                        reportDir: Self.existingReportDir(reportDir),
                         error: Self.failureMessage(error)
                     ),
                     to: readyFile
@@ -305,6 +376,7 @@ struct RunCommand: AsyncParsableCommand {
                 ? GrantivaError.notFound(Self.nothingToRunMessage(platform: platform, hasConfig: false))
                 : GrantivaError.configuration(Self.nothingToRunMessage(platform: platform, hasConfig: true))
         }
+        try Self.checkFlowFiles(resolved.flows)
 
         log(Self.resolvedNarration(platform: platform, resolved: resolved))
 
@@ -314,10 +386,9 @@ struct RunCommand: AsyncParsableCommand {
         log("Runner ready")
 
         // Boot simulator
-        let deviceNoun = platform == .ios ? "simulator" : "emulator"
-        log(Self.bootNarration(platform: platform, target: resolved.simulator))
-        let booted = try await device.bootDevice(named: resolved.simulator)
-        log("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
+        let booted = try await Self.targetDevice(
+            platform: platform, device: device, target: resolved.simulator, serialFlag: target.device, log: log
+        )
         let geometry = try await device.displayGeometry(deviceID: booted.udid)
         let expectedPixels = geometry.dimensions
 
@@ -399,7 +470,7 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         guard let bid = target.installedAppID(platform: platform, config: config, resolved: resolved, binaryID: builtAppID ?? appBundleId, warn: { GrantivaLog.logger.warning("\($0)") }) else {
-            throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform))
+            throw GrantivaError.invalidArgument(TargetOptions.appIDMessage(for: platform, noBuild: buildOptions.shouldSkipBuild))
         }
 
         if !buildOptions.shouldSkipInstall, let productPath {
@@ -415,8 +486,9 @@ struct RunCommand: AsyncParsableCommand {
         // and other lifecycle steps to fail.
 
         // Run flows — capture screenshots, but skip VRT comparison
-        let totalFlows = (resolved.screens.isEmpty ? 0 : 1) + resolved.flows.count
-        log("Running \(totalFlows) flow(s)...")
+        if let suite = Self.suiteNarration(screens: resolved.screens.count, flows: resolved.flows.count) {
+            log(suite)
+        }
 
         var captures: [ScreenCapture] = []
         let failureReport = RunnerFailureReport()
@@ -427,6 +499,7 @@ struct RunCommand: AsyncParsableCommand {
                 keepAlive: keepAlive,
                 readyFile: readyFile,
                 options: sessionOptions,
+                screensFailureRows: { failureReport.screenCaptures },
                 runScreens: { keepAlive, readyFile, session in
                     let screenCaptures = try await RunnerSession.run(
                         screens: resolved.screens,
@@ -443,7 +516,8 @@ struct RunCommand: AsyncParsableCommand {
                         expectedPixels: expectedPixels,
                         failFast: session.failFast,
                         reportDir: session.reportDir,
-                        timeoutSeconds: session.timeoutSeconds
+                        timeoutSeconds: session.timeoutSeconds,
+                        failureReport: failureReport
                     )
                     // A failed screen stops the suite before the flows run;
                     // --json still reports what was captured.
@@ -451,7 +525,9 @@ struct RunCommand: AsyncParsableCommand {
                     return screenCaptures
                 },
                 runFlows: { keepAlive, readyFile, session in
-                    log("Running \(resolved.flows.count) flow(s) in one GrantivaAgent session: \(resolved.flows.joined(separator: ", "))")
+                    log(Self.sessionNarration(
+                        platform: platform, flows: resolved.flows, countGiven: !resolved.screens.isEmpty
+                    ))
                     return try await RunnerSession.runFlowFiles(
                         at: resolved.flows,
                         bundleId: bid,
@@ -468,44 +544,31 @@ struct RunCommand: AsyncParsableCommand {
                         environment: launchEnvironment,
                         readyFile: readyFile,
                         expectedPixels: expectedPixels,
-                        failureReport: failureReport
+                        failureReport: failureReport,
+                        readyLeadingFlows: session.readyLeadingFlows
                     )
                 }
             )
         } catch {
             await Self.handleSuiteFailure(
                 error: error, report: failureReport, device: device, deviceID: booted.udid, captureDir: captureDir,
-                json: options.json, resultOutput: resultOutput, log: log
+                json: options.json, resultOutput: resultOutput, reportDir: Self.existingReportDir(reportDir), log: log
             )
             throw error
         }
 
         // Print results
-        var allPassed = true
+        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } }
         if !options.json {
-            for capture in captures {
-                Output.line("\n  \(capture.screenName)")
-                for step in capture.steps {
-                    let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
-                    Output.line("    \(icon) \(step.action)")
-                    if let msg = step.message {
-                        Output.line("      \(msg)")
-                    }
-                    if step.status != .passed {
-                        allPassed = false
-                    }
-                }
+            for line in Self.resultLines(captures: captures, captureDir: captureDir) {
+                Output.line(line)
             }
-            Output.line("")
-            let total = captures.count
-            let passed = captures.filter { $0.steps.allSatisfy { $0.status == .passed } }.count
-            Output.line("  Screens: \(total) total, \(passed) passed, \(total - passed) failed")
-            Output.line("  Screenshots: \(captureDir)/")
-            Output.line("")
         } else {
-            let screens = captures.map(RunResult.ScreenResult.init)
-            allPassed = screens.allSatisfy(\.passed)
-            try resultOutput.emit(RunResult(screens: screens, allPassed: allPassed))
+            // `reportDir` whenever the run kept one, pass or fail.
+            try resultOutput.emit(RunResult(
+                screens: captures.map(RunResult.ScreenResult.init), allPassed: allPassed,
+                reportDir: Self.existingReportDir(reportDir)
+            ))
         }
 
         if !allPassed {
@@ -513,11 +576,69 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// The plain-text result: one block per configured screen and per flow,
+    /// then screens and flows counted separately (a flow's screenshots are
+    /// not screens).
+    static func resultLines(captures: [ScreenCapture], captureDir: String) -> [String] {
+        var lines: [String] = []
+        for capture in captures {
+            lines.append("\n  \(capture.screenName)")
+            for step in capture.steps {
+                let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+                lines.append("    \(icon) \(step.action)")
+                if let msg = step.message {
+                    lines.append("      \(msg)")
+                }
+            }
+            for shot in capture.screenshots {
+                lines.append("    \u{25B8} Screenshot: \(shot.name)")
+            }
+        }
+        lines.append("")
+        lines += summaryLines(captures: captures)
+        lines.append("  Screenshots: \(captureDir)/")
+        lines.append("")
+        return lines
+    }
+
+    static func summaryLines(captures: [ScreenCapture]) -> [String] {
+        func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status == .passed } }
+        let screens = captures.filter { $0.kind == .screen }
+        let flows = captures.filter { $0.kind == .flow }
+        var lines: [String] = []
+        if !screens.isEmpty {
+            let captured = screens.filter(passed).count
+            lines.append("  Screens: \(screens.count) total, \(captured) captured, \(screens.count - captured) failed")
+        }
+        if !flows.isEmpty {
+            let ok = flows.filter(passed).count
+            lines.append("  Flows: \(flows.count) total, \(ok) passed, \(flows.count - ok) failed")
+        }
+        return lines
+    }
+
+    /// `--report-dir` as the run used it (absolute), or nil.
+    static func absoluteReportDir(_ reportDir: String?) -> String? {
+        guard let reportDir, !reportDir.isEmpty else { return nil }
+        return reportDir.hasPrefix("/") ? reportDir : FileManager.default.currentDirectoryPath + "/" + reportDir
+    }
+
+    /// The `reportDir` a JSON document or ready file names: the absolute
+    /// `--report-dir`, whenever that directory exists (pass or fail).
+    static func existingReportDir(_ reportDir: String?) -> String? {
+        guard let path = absoluteReportDir(reportDir) else { return nil }
+        var isDirectory: ObjCBool = false
+        return FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) && isDirectory.boolValue ? path : nil
+    }
+
     /// The runner flags every session of the suite honours.
     struct SessionOptions: Equatable {
         var reportDir: String?
         var timeoutSeconds: UInt64
         var failFast: Bool
+        /// Entries the flows session lists ahead of its own in the ready file
+        /// (the screens session, when the suite has one).
+        var readyLeadingFlows: [RunReadyState.Flow] = []
     }
 
     var sessionOptions: SessionOptions {
@@ -535,31 +656,56 @@ struct RunCommand: AsyncParsableCommand {
         return header
     }
 
-    /// The `--json` result. A failed run has the same shape plus `error` and,
-    /// with `--report-dir`, `reportDir`; both are omitted on success.
+    /// The `--json` result. Passing and failing runs have the same shape:
+    /// `reportDir` whenever `--report-dir` was given, `error` only on failure.
+    /// `screens` holds one entry per configured screen (`kind: screen`) and
+    /// one per flow (`kind: flow`), each with its steps; a flow's
+    /// `takeScreenshot` captures are in its `screenshots`.
     struct RunResult: Codable, Sendable {
         let screens: [ScreenResult]
         let allPassed: Bool
         var error: String?
         var reportDir: String?
 
+        init(screens: [ScreenResult], allPassed: Bool, error: String? = nil, reportDir: String? = nil) {
+            self.screens = screens
+            self.allPassed = allPassed
+            self.error = error
+            self.reportDir = reportDir
+        }
+
         struct ScreenResult: Codable, Sendable {
             let name: String
+            /// `screen` or `flow`.
+            let kind: String
             let passed: Bool
             let steps: [StepResult]
+            let screenshots: [Screenshot]
 
             struct StepResult: Codable, Sendable {
                 let action: String
                 let status: String
+                /// Seconds, as the runner measured it; absent when unknown.
+                let duration: Double?
                 let message: String?
+            }
+
+            struct Screenshot: Codable, Sendable {
+                let name: String
+                let path: String
             }
 
             init(_ capture: ScreenCapture) {
                 name = capture.screenName
+                kind = capture.kind.rawValue
                 passed = capture.steps.allSatisfy { $0.status == .passed }
                 steps = capture.steps.map { step in
-                    StepResult(action: step.action, status: step.status.rawValue, message: step.message)
+                    StepResult(action: step.action, status: step.status.rawValue, duration: step.duration, message: step.message)
                 }
+                let shots = capture.kind == .screen && !capture.path.isEmpty
+                    ? [ScreenCapture.Screenshot(name: capture.screenName, path: capture.path)]
+                    : capture.screenshots
+                screenshots = shots.map { Screenshot(name: $0.name, path: $0.path) }
             }
         }
     }
@@ -568,15 +714,18 @@ struct RunCommand: AsyncParsableCommand {
     /// session is released after its flows finish, so an interrupt whose
     /// flows all passed is a passing run (the ready file says `passed` too),
     /// not a failure.
-    static func failureResult(error: Error, report: RunnerFailureReport) -> RunResult {
+    static func failureResult(error: Error, report: RunnerFailureReport, reportDir: String? = nil) -> RunResult {
         let screens = report.captures.map(RunResult.ScreenResult.init)
+        // The directory the caller asked for (a mixed suite's screens session
+        // reports into a subdirectory of it).
+        let reportDir = reportDir ?? report.reportDir
         // Decided from the run's verdict, not the captures: the report may
         // list fewer flows than were requested.
         if report.passedBeforeInterruption, screens.allSatisfy(\.passed) {
-            return RunResult(screens: screens, allPassed: true)
+            return RunResult(screens: screens, allPassed: true, reportDir: reportDir)
         }
         return RunResult(
-            screens: screens, allPassed: false, error: failureMessage(error), reportDir: report.reportDir
+            screens: screens, allPassed: false, error: failureMessage(error), reportDir: reportDir
         )
     }
 
@@ -604,11 +753,13 @@ struct RunCommand: AsyncParsableCommand {
         keepAlive: Bool,
         readyFile: String?,
         options: SessionOptions,
+        screensFailureRows: () -> [ScreenCapture] = { [] },
         runScreens: (Bool, String?, SessionOptions) async throws -> [ScreenCapture],
         runFlows: (Bool, String?, SessionOptions) async throws -> [ScreenCapture]
     ) async throws -> [ScreenCapture] {
         var captures: [ScreenCapture] = []
         var screensFailed = false
+        var flowOptions = options
         if hasScreens {
             var screenOptions = options
             if hasFlows {
@@ -619,10 +770,17 @@ struct RunCommand: AsyncParsableCommand {
             } catch where hasFlows && !options.failFast && RunnerSession.isRunnerOutcomeFailure(error) {
                 // Only the runner's own failure becomes a row; setup errors
                 // and cancellation still stop the suite.
-                let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
-                captures.append(ScreenCapture(screenName: "screens", path: "", sizeBytes: 0, steps: [
-                    StepResult(action: "Capture screens", status: .failed, duration: 0, message: message),
-                ]))
+                // One row per screen when the session reported them (the
+                // failed screen names its step); otherwise one row for the session.
+                let rows = screensFailureRows()
+                if rows.isEmpty {
+                    let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+                    captures.append(ScreenCapture(screenName: "screens", path: "", sizeBytes: 0, steps: [
+                        StepResult(action: "Capture screens", status: .failed, duration: nil, message: message),
+                    ]))
+                } else {
+                    captures += rows
+                }
             }
             // Missing captures are returned as failed steps rather than thrown.
             // Do not let the later session publish success for a failed suite.
@@ -634,11 +792,21 @@ struct RunCommand: AsyncParsableCommand {
             }
         }
         if hasFlows {
-            captures += try await runFlows(keepAlive, readyFile, options)
+            if hasScreens {
+                // The ready file names the screens session next to the flows.
+                flowOptions.readyLeadingFlows = [
+                    RunReadyState.Flow(name: FlowGenerator.screensFlowName, status: screensFailed ? "failed" : "passed"),
+                ]
+            }
+            captures += try await runFlows(keepAlive, readyFile, flowOptions)
             if screensFailed, let readyFile {
                 let flowsState = try? ReadyFile.read(readyFile)
+                var flows = flowsState?.flows ?? []
+                if !flows.contains(where: { $0.name == FlowGenerator.screensFlowName }) {
+                    flows.insert(RunReadyState.Flow(name: FlowGenerator.screensFlowName, status: "failed"), at: 0)
+                }
                 try? ReadyFile.write(
-                    RunReadyState(status: "failed", flows: flowsState?.flows ?? [], reportDir: flowsState?.reportDir),
+                    RunReadyState(status: "failed", flows: flows, reportDir: flowsState?.reportDir),
                     to: readyFile
                 )
             }

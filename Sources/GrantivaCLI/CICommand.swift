@@ -208,6 +208,7 @@ struct CICommand: AsyncParsableCommand {
         }
 
         func run() async throws {
+            options.applyRunnerNarration()
             let (platform, config) = try platformOptions.loadConfig()
             guard platform == .ios else {
                 throw GrantivaError.invalidArgument(DiffCommand.androidLocalOnlyMessage)

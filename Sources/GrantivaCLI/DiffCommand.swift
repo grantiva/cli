@@ -49,6 +49,7 @@ struct DiffCommand: AsyncParsableCommand {
         var sessionLookup = RunnerSessionLookup()
 
         func run() async throws {
+            options.applyRunnerNarration()
             let (platform, config) = try platformOptions.loadConfig()
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
             // No config means no screens: say so before scheme resolution,
@@ -309,6 +310,7 @@ struct DiffCommand: AsyncParsableCommand {
         var imageDiffer: ImageDiffer = .live
 
         func run() async throws {
+            options.applyRunnerNarration()
             // Only --capture loads the config strictly. A bare compare resolves
             // the platform (iOS when nothing points anywhere) and surfaces an
             // ambiguous directory or a bad GRANTIVA_PLATFORM rather than

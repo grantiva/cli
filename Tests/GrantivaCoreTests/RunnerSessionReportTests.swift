@@ -194,7 +194,11 @@ final class RunnerSessionReportTests: XCTestCase {
             )
             XCTFail("expected a timeout")
         } catch {
-            XCTAssertTrue("\(error)".contains("timed out after 1s"), "\(error)")
+            XCTAssertTrue("\(error)".contains("killed the screens session after 1s"), "\(error)")
+            // K10/K20: the timeout sentence is the whole message.
+            let message = (error as? GrantivaError)?.errorDescription ?? ""
+            XCTAssertFalse(message.contains("\n"), message)
+            XCTAssertFalse(message.lowercased().contains("interrupt"), message)
             XCTAssertTrue(RunnerSession.isRunnerOutcomeFailure(error))
         }
         XCTAssertLessThan(Date().timeIntervalSince(start), 20)

@@ -102,7 +102,7 @@ public struct AndroidPlatform: DevicePlatform {
             let attached = devices.isEmpty ? "(none)" : devices.map { "\($0.serial) (\($0.state))" }.joined(separator: ", ")
             throw GrantivaError.invalidArgument(
                 "No usable attached device has the serial \"\(serial)\". Attached: \(attached). "
-                    + "`grantiva build build` never boots a device: start it first (grantiva emulator ensure) or drop --device."
+                    + "--device never boots a device: start it first (grantiva emulator ensure) or drop --device."
             )
         }
         let name = match.isEmulator ? ((try? await adb.avdName(serial: match.serial)) ?? match.serial) : match.serial

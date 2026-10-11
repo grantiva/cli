@@ -86,7 +86,9 @@ final class RunCommandTests: XCTestCase {
             runFlows: { _, _, session in flows = session; return [] }
         )
         XCTAssertEqual(screens, RunCommand.SessionOptions(reportDir: "out/screens", timeoutSeconds: 90, failFast: true))
-        XCTAssertEqual(flows, options)
+        var expectedFlows = options
+        expectedFlows.readyLeadingFlows = [.init(name: "screens", status: "passed")]
+        XCTAssertEqual(flows, expectedFlows)
     }
 
     // C04 (AND-F06): --continue-on-failure runs every flow after a failed
@@ -118,7 +120,8 @@ final class RunCommandTests: XCTestCase {
         XCTAssertTrue(captures.first?.steps.first?.message?.contains("Runner failed") ?? false)
         let state = try ReadyFile.read(ready)
         XCTAssertEqual(state.status, "failed")
-        XCTAssertEqual(state.flows, [.init(name: "smoke", status: "passed")])
+        // K20: the screens session is named next to the flows.
+        XCTAssertEqual(state.flows, [.init(name: "screens", status: "failed"), .init(name: "smoke", status: "passed")])
     }
 
     func testContinueOnFailureStillRunsFlowsAfterAMissingScreenCapture() async throws {
@@ -815,6 +818,8 @@ final class RunCommandTests: XCTestCase {
         try fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
         try "bundle_id: com.kylebrowning.Landmarks\nsimulator: qa-ios-1\nflows:\n  - smoke.yaml\n"
             .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n"
+            .write(to: scratch.appendingPathComponent("smoke.yaml"), atomically: true, encoding: .utf8)
         defer {
             fileManager.changeCurrentDirectoryPath(previous)
             try? fileManager.removeItem(at: scratch)

@@ -12,13 +12,57 @@ final class KilledFlag: @unchecked Sendable {
 
 /// Orchestrates the grantiva-runner execution and collects screenshot results.
 public enum RunnerSession {
-    /// The error text for a failed runner. Its stderr is often empty because
-    /// the runner streams to the terminal, so say where the detail went.
-    static func failureMessage(reason: String, stderr: String) -> String {
-        let detail = stderr.suffix(2000).trimmingCharacters(in: .whitespacesAndNewlines)
-        // A reason that is already a sentence takes no colon before the detail.
-        guard detail.isEmpty else { return reason.hasSuffix(".") ? "\(reason)\n\(detail)" : "\(reason):\n\(detail)" }
-        return reason.hasSuffix(".") ? reason : "\(reason); see the runner output above."
+    /// The error text for a failed runner: the reason, then the failed step
+    /// from the runner's report (so the message stands on its own, as a
+    /// `--json` `error` must), then any stderr the runner wrote, then the
+    /// remedy when the failure is about the UI tree.
+    ///
+    /// When grantiva stopped the runner itself (`timedOut`), the runner's
+    /// acknowledgement of the signal (`Received interrupt, cleaning up...`)
+    /// is dropped: it would read as a Ctrl-C and contradict the reason.
+    static func failureMessage(
+        reason: String,
+        stderr: String,
+        failure: RunnerReportSteps.Failure? = nil,
+        failedStep: String? = nil,
+        timedOut: Bool = false,
+        runnerOutputShown: Bool = !RunnerNarration.isSilenced
+    ) -> String {
+        var detail = String(stderr.suffix(2000))
+        if timedOut {
+            detail = detail.components(separatedBy: "\n")
+                .filter { !isSignalAcknowledgement($0) }
+                .joined(separator: "\n")
+        }
+        detail = detail.trimmingCharacters(in: .whitespacesAndNewlines)
+        let step = failedStep ?? failure.map(\.line).flatMap { $0.isEmpty ? nil : $0 }
+
+        var message = reason
+        if let step {
+            // A reason that is already a sentence takes no colon.
+            message += reason.hasSuffix(".") ? "\n\(step)" : ": \(step)"
+        }
+        if !detail.isEmpty {
+            message += (step == nil && !reason.hasSuffix(".")) ? ":\n\(detail)" : "\n\(detail)"
+        } else if step == nil, !reason.hasSuffix(".") {
+            message += runnerOutputShown ? "; see the runner output above." : "."
+        }
+        if failure?.wantsHierarchyHint == true {
+            message += "\n\(RunnerReportSteps.hierarchyHint)"
+        }
+        return message
+    }
+
+    /// The runner's line for a signal it received (`Received interrupt,
+    /// cleaning up...`, `Received terminated, ...`).
+    static func isSignalAcknowledgement(_ line: String) -> Bool {
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        return trimmed.hasPrefix("Received ") && trimmed.contains("cleaning up")
+    }
+
+    /// Both spellings of a temp path (`/var/...` and `/private/var/...`).
+    static func expandedPathMap(_ map: [String: String]) -> [String: String] {
+        RunnerReportRewriter.expanded(map)
     }
 
     /// Run the embedded runner against a booted simulator.
@@ -38,7 +82,8 @@ public enum RunnerSession {
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 300
+        timeoutSeconds: UInt64 = 300,
+        failureReport: RunnerFailureReport? = nil
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
@@ -53,10 +98,16 @@ public enum RunnerSession {
         let runnerBin = runner.runnerPath()
         let runnerDir = runner.runnerDir()
 
-        // Generate Maestro flow YAML
-        let flowPath = try FlowGenerator.writeTemp(
-            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
+        // Generate Maestro flow YAML, named like the config file so the
+        // runner's lines (and errors such as a runFlow cycle) name the file
+        // the user wrote rather than a temp copy.
+        let configFileName = platform.platform.configFileName
+        let generated = try FlowGenerator.writeTempWithMap(
+            screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform,
+            fileName: configFileName
         )
+        let flowPath = generated.path
+        let outputPathMap = expandedPathMap(generated.asWritten.merging([flowPath: configFileName]) { _, new in new })
         simulatorLease.recordTemporaryDirectory((flowPath as NSString).deletingLastPathComponent)
         defer {
             try? FileManager.default.removeItem(
@@ -107,6 +158,9 @@ public enum RunnerSession {
                 requestedFlowPaths: ["screens"],
                 stagedPathMap: [flowPath: "screens"]
             )
+            if preserveReportDir, snapshot.lowercased() == "trailing" {
+                RunnerTraceTrimmer.trimTrailing(reportDir: reportDir)
+            }
         }
 
         // Freeze status bar for deterministic screenshots
@@ -147,31 +201,57 @@ public enum RunnerSession {
                 lease: simulatorLease,
                 keepAlive: keepAlive,
                 timeoutSeconds: timeoutSeconds,
-                pathMap: [:],
+                pathMap: outputPathMap,
                 reportDir: reportDir,
                 readyReportDir: readyReportDir,
                 expectedFlows: 1,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
-                platform: platform.platform
+                platform: platform.platform,
+                outputFilter: RunnerOutputFilter(
+                    ephemeralReportDir: preserveReportDir ? nil : reportDir,
+                    waitLabels: FlowGenerator.waitLabels(for: screens)
+                )
             ))
         }
 
         guard outcome.terminationStatus == 0, !outcome.interrupted else {
-            let reason = outcome.interrupted
-                ? "Runner interrupted"
-                : outcome.timedOut
-                ? "Runner timed out after \(timeoutSeconds)s"
-                : "Runner failed (exit \(outcome.terminationStatus))"
             let verdict = outcome.interrupted ? "interrupted" : "failed"
+            let failure = RunnerReportSteps.firstFailure(in: reportDir)
+            let screen = Self.screen(for: failure, owners: generated.owners)
+            let reason: String
+            if outcome.interrupted {
+                reason = "Runner interrupted"
+            } else if outcome.timedOut {
+                reason = Self.screensTimeoutReason(seconds: timeoutSeconds, screen: screen)
+            } else {
+                reason = "Runner failed (exit \(outcome.terminationStatus))"
+            }
+            if outcome.timedOut || outcome.interrupted {
+                RunnerReportFinalizer.finalize(reportDir: reportDir, status: verdict, reason: reason)
+            }
             readySignal.write(RunReadyState(
                 status: verdict,
                 flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
                 reportDir: readyReportDir
             ))
-            let stderr = outcome.stderr
+            failureReport?.recordScreens(
+                Self.screenCaptures(
+                    screens: screens, reportDir: reportDir, outputDir: outputDir, owners: generated.owners,
+                    failure: failure, failedScreen: screen
+                ),
+                preservedReportDir: readyReportDir
+            )
+            let stderr = OutputRewriter(replacements: outputPathMap).rewrite(outcome.stderr)
             throw GrantivaError.commandFailed(
-                Self.failureMessage(reason: reason, stderr: stderr),
+                // A timeout names the screen in its reason; anything else
+                // names the failed screen and step.
+                Self.failureMessage(
+                    reason: reason, stderr: stderr,
+                    failure: outcome.timedOut || outcome.interrupted ? nil : failure,
+                    failedStep: outcome.timedOut || outcome.interrupted ? nil : Self.screenFailureLine(failure, screen: screen),
+                    timedOut: outcome.timedOut
+                ),
                 outcome.terminationStatus
             )
         }
@@ -182,63 +262,18 @@ public enum RunnerSession {
             reportDir: readyReportDir
         ))
 
-        // Collect screenshots from report output
-        let fm = FileManager.default
-        if !fm.fileExists(atPath: outputDir) {
-            try fm.createDirectory(atPath: outputDir, withIntermediateDirectories: true)
-        }
-
         // The runner saves takeScreenshot outputs in assets/<flow-id>/cmd-NNN-<name>.png
-        // Find the assets directory
         let assetsDir = "\(reportDir)/assets"
-        var captures: [ScreenCapture] = []
-
-        if fm.fileExists(atPath: assetsDir) {
-            // Find the single flow subdirectory
-            let flowDirs = (try? fm.contentsOfDirectory(atPath: assetsDir)) ?? []
-            let screenshotDir = flowDirs.first.map { "\(assetsDir)/\($0)" } ?? assetsDir
-
-            // Map screen names to their expected screenshot files
-            for screen in screens {
-                let screenshotFiles = ((try? fm.contentsOfDirectory(atPath: screenshotDir)) ?? [])
-                    .filter { screenshotName(in: $0) == screen.name }
-                    .sorted()
-
-                if let file = screenshotFiles.first {
-                    let srcPath = "\(screenshotDir)/\(file)"
-                    let dstPath = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"
-                    if fm.fileExists(atPath: dstPath) {
-                        try fm.removeItem(atPath: dstPath)
-                    }
-                    try fm.copyItem(atPath: srcPath, toPath: dstPath)
-
-                    let data = try Data(contentsOf: URL(fileURLWithPath: dstPath))
-                    let steps = buildStepResults(for: screen)
-                    captures.append(ScreenCapture(
-                        screenName: screen.name, path: dstPath,
-                        sizeBytes: data.count, steps: steps
-                    ))
-                } else {
-                    // Screenshot not found — report as failed
-                    captures.append(ScreenCapture(
-                        screenName: screen.name, path: "",
-                        sizeBytes: 0, steps: [
-                            StepResult(
-                                action: "Take screenshot",
-                                status: .failed, duration: 0,
-                                message: "Screenshot not found in runner output"
-                            ),
-                        ]
-                    ))
-                }
-            }
-        } else {
-            // Fallback: try parsing runner stdout for screenshot paths
+        guard FileManager.default.fileExists(atPath: assetsDir) else {
             throw GrantivaError.commandFailed(
                 "Runner completed but no screenshots found in \(assetsDir)",
                 1
             )
         }
+        let captures = Self.screenCaptures(
+            screens: screens, reportDir: reportDir, outputDir: outputDir, owners: generated.owners,
+            failure: nil, failedScreen: nil
+        )
 
         if let expectedPixels {
             try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
@@ -252,7 +287,7 @@ public enum RunnerSession {
     /// could not be extracted. The prefixes match the messages thrown above.
     public static func isRunnerOutcomeFailure(_ error: Error) -> Bool {
         guard case .commandFailed(let message, _) = error as? GrantivaError else { return false }
-        return ["Runner failed", "Runner timed out", "Runner completed"].contains { message.hasPrefix($0) }
+        return ["Runner failed", "Runner timed out", "Runner completed", "grantiva killed"].contains { message.hasPrefix($0) }
     }
 
     /// Removes the configured screens' previous captures before a capture run,
@@ -330,11 +365,14 @@ public enum RunnerSession {
         environment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
-        failureReport: RunnerFailureReport? = nil
+        failureReport: RunnerFailureReport? = nil,
+        readyLeadingFlows: [RunReadyState.Flow] = []
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
-        let readySignal = ReadyFileSignal(path: readyFile)
+        // An earlier session of the same suite (the screens session) is
+        // listed first in the ready file, and its failure fails the verdict.
+        let readySignal = ReadyFileSignal(path: readyFile, leadingFlows: readyLeadingFlows)
         let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: runner.leaseDirectory)
         defer { simulatorLease.release() }
 
@@ -364,12 +402,16 @@ public enum RunnerSession {
         // Maps every staged copy back to the path the user actually passed, so
         // runner output and error messages never name a /var/folders temp file.
         var stagedPathMap: [String: String] = [:]
+        // Each runFlow path the resolver made absolute → the path as written,
+        // so step lines read `runFlow: sub.yaml`, not a rewritten path.
+        var subFlowPathMap: [String: String] = [:]
         for (index, absoluteFlowPath) in absoluteFlowPaths.enumerated() {
             let originalContent = try String(contentsOfFile: absoluteFlowPath, encoding: .utf8)
             var injectedContent = injectAppId(originalContent, bundleId: bundleId)
             injectedContent = try FlowReferenceResolver.resolve(
                 in: injectedContent,
-                relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent
+                relativeTo: (absoluteFlowPath as NSString).deletingLastPathComponent,
+                asWritten: &subFlowPathMap
             )
             // Header `env:` and `--env` go into launchApp for the platform's channel.
             let launchData = FlowEnvironment.apply(to: injectedContent, environment: environment, platform: platform.platform)
@@ -397,7 +439,9 @@ public enum RunnerSession {
             stagedPathMap[tempFlowPath] = flowPaths[index]
         }
 
-        let outputPathMap = stagedPathMap
+        // Sub-flow paths first, so a staged top-level path always wins.
+        let reportPathMap = subFlowPathMap.merging(stagedPathMap) { _, staged in staged }
+        let outputPathMap = expandedPathMap(reportPathMap)
 
         // If the caller passed --report-dir, write reports straight to it and
         // preserve on exit so CI can upload them. Otherwise fall back to an
@@ -437,7 +481,7 @@ public enum RunnerSession {
         // staged paths from report.json, and on every exit path.
         defer {
             if preserveReportDir {
-                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: stagedPathMap)
+                RunnerReportRewriter.rewrite(reportDir: reportDir, stagedPathMap: reportPathMap)
             }
         }
         defer {
@@ -445,6 +489,9 @@ public enum RunnerSession {
                 reportDir: reportDir, outputDir: outputDir, snapshot: snapshot,
                 requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap
             )
+            if preserveReportDir, snapshot.lowercased() == "trailing" {
+                RunnerTraceTrimmer.trimTrailing(reportDir: reportDir)
+            }
         }
 
         await platform.prepareForCapture(deviceID: udid)
@@ -487,7 +534,8 @@ public enum RunnerSession {
                 expectedFlows: flowPaths.count,
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
-                platform: platform.platform
+                platform: platform.platform,
+                outputFilter: RunnerOutputFilter(ephemeralReportDir: preserveReportDir ? nil : reportDir)
             ))
         }
 
@@ -501,18 +549,39 @@ public enum RunnerSession {
             if outcome.interrupted {
                 reason = "Runner interrupted"
             } else if outcome.timedOut {
-                reason = "grantiva killed the runner after \(effectiveTimeout)s (--timeout <seconds> to raise the cap). The runner's last output above shows how far it got."
+                reason = "grantiva killed the runner after \(effectiveTimeout)s (--timeout <seconds> to raise the cap)."
+                    + (RunnerNarration.isSilenced ? "" : " The runner's last output above shows how far it got.")
             } else {
                 reason = "Runner failed (exit \(outcome.terminationStatus))"
             }
             let verdict = outcome.interrupted ? "interrupted" : "failed"
+            if outcome.timedOut || outcome.interrupted {
+                let why = outcome.timedOut
+                    ? "grantiva stopped the run at the --timeout cap (\(effectiveTimeout)s)"
+                    : "grantiva was interrupted"
+                RunnerReportFinalizer.finalize(reportDir: reportDir, status: verdict, reason: why)
+            }
             readySignal.write(RunReadyState(
                 status: verdict,
                 flows: RunnerReportIndex.finalFlows(reportDir: reportDir, unfinishedAs: verdict),
                 reportDir: readyReportDir
             ))
+            let failure = RunnerReportSteps.firstFailure(in: reportDir).map { failure in
+                RunnerReportSteps.Failure(
+                    flowName: failure.flowName, commandIndex: failure.commandIndex,
+                    action: pathRewriter.rewrite(failure.action), message: failure.message.map(pathRewriter.rewrite),
+                    errorType: failure.errorType, unfinished: failure.unfinished
+                )
+            }
             // Read before the ephemeral report dir is deleted on the way out.
-            failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir)
+            // The flows' named screenshots are kept too, best-effort.
+            let screenshots = (try? RunnerArtifactCollector.collect(
+                reportDir: reportDir, outputDir: outputDir,
+                requestedFlowPaths: flowPaths, stagedPathMap: stagedPathMap
+            )).map { entries in
+                Dictionary(entries.map { ($0.screenName, $0.screenshots) }, uniquingKeysWith: { first, _ in first })
+            } ?? [:]
+            failureReport?.record(reportDir: reportDir, preservedReportDir: readyReportDir, screenshots: screenshots)
             // The same test the readiness watcher uses to publish `passed`:
             // the report can list fewer flows than were requested.
             if outcome.interrupted,
@@ -522,7 +591,10 @@ public enum RunnerSession {
                 failureReport?.markPassedBeforeInterrupt()
             }
             throw GrantivaError.commandFailed(
-                Self.failureMessage(reason: reason, stderr: stderr),
+                Self.failureMessage(
+                    reason: reason, stderr: stderr, failure: outcome.interrupted ? nil : failure,
+                    timedOut: outcome.timedOut
+                ),
                 outcome.terminationStatus
             )
         }
@@ -535,30 +607,19 @@ public enum RunnerSession {
 
         // report.json is the runner's source of truth for flow order and asset
         // ownership. Never infer either from physical directory enumeration.
-        var captures = try RunnerArtifactCollector.collect(
+        // One entry per flow, with its real steps and named screenshots.
+        let captures = try RunnerArtifactCollector.collect(
             reportDir: reportDir,
             outputDir: outputDir,
             requestedFlowPaths: flowPaths,
             stagedPathMap: stagedPathMap
         )
 
-        // If no flow took any screenshots, emit one "ran" capture per flow so
-        // callers see a row in the summary.
-        if captures.isEmpty {
-            for flowPath in flowPaths {
-                let flowName = URL(fileURLWithPath: flowPath)
-                    .deletingPathExtension().lastPathComponent
-                captures.append(ScreenCapture(
-                    screenName: flowName,
-                    path: "",
-                    sizeBytes: 0,
-                    steps: [StepResult(action: "Run flow \"\(flowName)\"", status: .passed, duration: 0)]
-                ))
-            }
-        }
-
         if let expectedPixels {
-            try ScreenshotNormalizer.normalize(captures: captures, expectedPixels: expectedPixels)
+            let shots = captures.flatMap(\.screenshots).map {
+                ScreenCapture(screenName: $0.name, path: $0.path, sizeBytes: 0)
+            }
+            try ScreenshotNormalizer.normalize(captures: shots, expectedPixels: expectedPixels)
         }
         return captures
     }
@@ -838,10 +899,14 @@ public enum RunnerSession {
         } else if let seconds = step.settle {
             return "Wait for animation to end (\(seconds)s max)"
         } else if let label = step.assertVisible {
-            return step.assertVisibleById ? "Assert visible id \"\(label)\"" : "Assert visible \"\(label)\""
+            let target = step.assertVisibleById ? "id \"\(label)\"" : "\"\(label)\""
+            if step.scrollUntilVisible { return "Scroll until visible \(target)" }
+            if let timeout = step.waitTimeout { return "Wait until visible \(target) (\(timeout)ms max)" }
+            return "Assert visible \(target)"
         } else if let label = step.assertNotVisible {
-            return step.assertNotVisibleById
-                ? "Assert not visible id \"\(label)\"" : "Assert not visible \"\(label)\""
+            let target = step.assertNotVisibleById ? "id \"\(label)\"" : "\"\(label)\""
+            if let timeout = step.waitTimeout { return "Wait until not visible \(target) (\(timeout)ms max)" }
+            return "Assert not visible \(target)"
         } else if let path = step.runFlow {
             return "Run flow \"\(path)\""
         }
