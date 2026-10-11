@@ -1,0 +1,6 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K61
+$ for p in "runner start" "runner" "runner dump-hierarchy" "hierarchy" "run" "build install" "diff capture" "ci run"; do echo "## $p"; $GRANTIVA $p --help | grep -A2 -E "OVERVIEW|WDA|--port|--timeout <|--app-file"; done
+# exit=0 elapsed=.089s -> helps.out / helps.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -E 'func test.*(BothPlatform|NamesBoth|Android.*Help|Help.*Android|ReadmeAbstract|README)' Tests/GrantivaCLITests | cut -c1-200 | head
+# exit=0 elapsed=.016s -> tests.out / tests.err

@@ -49,3 +49,12 @@ export R=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a
 # device-safe copies: the stock configs name owner devices (qa-ios-1, Pixel_8_API_35); point them at fake names
 ios_copy() { local d=$(fd "$1"); cp -c -R $LM/ios/. "$d/"; rm -rf "$d/build" "$d/.grantiva"; [ -f "$d/grantiva.yml" ] && sed -i '' 's/^simulator: .*/simulator: cov-missing/' "$d/grantiva.yml"; echo "$d"; }
 and_copy() { local d=$(fd "$1"); cp -c -R $LM/android/. "$d/"; rm -rf "$d/build" "$d/.grantiva" "$d/.gradle" "$d/.kotlin" "$d/app/build"; [ -f "$d/grantiva-android.yml" ] && sed -i '' 's/^emulator: .*/emulator: cov-missing/' "$d/grantiva-android.yml"; echo "$d"; }
+# tg ROW LABEL PATTERN [SUBPATH] -- grep the c65fc17 tree (read-only export at $R) and record it as evidence
+tg() { local row=$1 lab=$2 pat=$3 sub=${4:-Tests}; (cd $R && ev "$row" "$lab" "grep -rn -E '$pat' $sub | sed 's#^#c65fc17:#' | cut -c1-400"); }
+export RR=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/runner-1be68db/grantiva-runner-1be68db61557806ebad29784b86f7c36123d84ce
+# rg ROW LABEL PATTERN [SUBPATH] -- grep the runner source at 1be68db (bundled as 1.1.28-grantiva.11)
+rgr() { local row=$1 lab=$2 pat=$3 sub=${4:-.}; (cd $RR && ev "$row" "$lab" "grep -rn -E '$pat' $sub --include=*.go | sed 's#^#runner@1be68db:#' | cut -c1-300"); }
+# rawq ROW LABEL DIR PLAT -- send raw stdin lines (after initialize) to grantiva mcp; saves LABEL.requests.txt/.out/.err
+rawq() { local row=$1 lab=$2 dir=$3 plat=$4 d=$E/$1; mkdir -p $d; cat > $d/$lab.requests.txt
+  { echo "# cwd: $PWD"; echo "\$ MCP_STDERR=$d/$lab.err bash findings/evidence/cov2-cli/inputs/send.sh $dir $plat $d/$lab.requests.txt > $d/$lab.out"; } >> $d/commands.txt
+  MCP_STDERR=$d/$lab.err bash $T/send.sh "$dir" "$plat" $d/$lab.requests.txt > $d/$lab.out 2> $d/$lab.exit; echo "# $(cat $d/$lab.exit)" >> $d/commands.txt; cat $d/$lab.out | cut -c1-260; }

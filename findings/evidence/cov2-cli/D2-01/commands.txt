@@ -1,0 +1,13 @@
+# $GRANTIVA (~/.grantiva-qa/bin) and its bundle stand in for .build/release (no swift build); copies follow README From source: binary alone, then 'cp -R <binary> <bundle> <dest>/'
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-01
+$ cp -R $GRANTIVA alone/; ls alone
+# exit=0 elapsed=.032s -> copy_alone.out / copy_alone.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-01
+$ GRANTIVA_RUNNER_HOME=$PWD/rh_alone ./alone/grantiva runner install
+# exit=1 elapsed=.264s -> install_alone.out / install_alone.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-01
+$ cp -R $GRANTIVA $(dirname $GRANTIVA)/grantiva_GrantivaCore.bundle both/; ls both
+# exit=0 elapsed=.122s -> copy_both.out / copy_both.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-01
+$ GRANTIVA_RUNNER_HOME=$PWD/rh_both ./both/grantiva runner install
+# exit=0 elapsed=1.411s -> install_both.out / install_both.err

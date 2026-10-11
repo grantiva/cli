@@ -1,0 +1,24 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn 'option, but this is an' Sources/GrantivaCLI; grep -rn 'otherPlatformFlagError' Sources/GrantivaCLI | cut -c1-120 | head -20
+# exit=0 elapsed=.021s -> grep.out / grep.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-042
+$ $GRANTIVA build build --variant x
+# exit=1 elapsed=.020s -> ios_build_variant.out / ios_build_variant.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-042
+$ $GRANTIVA runner start --application-id a.b
+# exit=1 elapsed=.020s -> ios_runner_appid.out / ios_runner_appid.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-042
+$ $GRANTIVA record --duration 1 --emulator x
+# exit=1 elapsed=.019s -> ios_record_emulator.out / ios_record_emulator.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-041
+$ $GRANTIVA diff capture --scheme X
+# exit=1 elapsed=.021s -> and_capture_scheme.out / and_capture_scheme.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-041
+$ $GRANTIVA runner start --simulator X
+# exit=1 elapsed=.022s -> and_runner_sim.out / and_runner_sim.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/CLI-041
+$ $GRANTIVA record --duration 1 --simulator X
+# exit=1 elapsed=.027s -> and_record_sim.out / and_record_sim.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -E 'func test.*(OtherPlatform|PlatformFlag|ApplicationIdOnIOS|SimulatorOnAndroid)' Tests/GrantivaCLITests | cut -c1-200 | head
+# exit=0 elapsed=.017s -> tests.out / tests.err

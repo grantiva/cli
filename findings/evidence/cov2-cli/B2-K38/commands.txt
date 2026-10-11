@@ -1,0 +1,16 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K38
+$ $GRANTIVA init
+# exit=0 elapsed=.794s -> init_two.out / init_two.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K38
+$ $GRANTIVA run
+# exit=1 elapsed=1.340s -> run_after_init.out / run_after_init.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K38
+$ $GRANTIVA init --scheme "Landmarks (UI Testing)"
+# exit=0 elapsed=.239s -> init_flag.out / init_flag.err
+# run_after_init used the init-written config whose simulator is the owner's 'iPhone 18 Pro'; it stopped at scheme resolution (no device work). Not repeated
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n -E 'func test.*[Ss]cheme' Tests/GrantivaCLITests/InitIOSTests.swift; grep -rn -E 'detectSchemes|sharedSchemes|func schemes' Sources/GrantivaCLI/InitCommand.swift Sources/GrantivaCore/Config/ProjectResolver.swift Sources/GrantivaCore/Config/ProjectDetector.swift | head
+# exit=0 elapsed=.013s -> tests.out / tests.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ sed -n 236,265p Sources/GrantivaCLI/InitCommand.swift; grep -n -E 'xcodebuild -list|func detect|ProjectDetector' Sources/GrantivaCore/Config/ProjectResolver.swift | head
+# exit=0 elapsed=.012s -> detect_impl.out / detect_impl.err

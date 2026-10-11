@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -E '"iPhone 1[0-9]' Sources | cut -c1-220
+# exit=0 elapsed=.467s -> grep_sources.out / grep_sources.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rln 'DefaultSimulator' Sources | sort; sed -n 1,40p Sources/GrantivaCore/Simulator/DefaultSimulator.swift
+# exit=0 elapsed=.492s -> users.out / users.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -rn -E 'DefaultSimulator' Tests | grep -E 'Init|Schema|ProjectResolution|DefaultSimulatorTests' | cut -c1-200 | head -20; ls Tests/GrantivaMCPTests | grep -i schema
+# exit=0 elapsed=.019s -> tests.out / tests.err

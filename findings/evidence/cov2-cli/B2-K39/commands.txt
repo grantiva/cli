@@ -1,0 +1,21 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K39
+$ $GRANTIVA run --report-dir out --ready-file out.ready --json; ls -d out 2>&1; cat out.ready
+# exit=0 elapsed=.026s -> empty_config.out / empty_config.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K39
+$ $GRANTIVA run --timeout 5 --ready-file out2.ready; cat out2.ready
+# exit=0 elapsed=.022s -> timeout5.out / timeout5.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K39-boot
+$ $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 --report-dir out3 --ready-file out3.ready; ls -d out3 2>&1; cat out3.ready
+# exit=0 elapsed=.240s -> boot_failure.out / boot_failure.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/B2-K39-boot
+$ $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1 --report-dir out4 --ready-file out4.ready 2>/dev/null; cat out4.ready
+# exit=0 elapsed=.278s -> boot_failure_existing_dir.out / boot_failure_existing_dir.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n -E 'func test.*(Ready|ready).*(Error|error|ReportDir|reportDir)|func test.*(NoScreens|NothingConfigured).*Ready' Tests/GrantivaCLITests/RunCommandTests.swift Tests/GrantivaCoreTests/ReadyFileTests.swift | head
+# exit=0 elapsed=.013s -> tests.out / tests.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ grep -n 'func test' Tests/GrantivaCoreTests/ReadyFileTests.swift
+# exit=0 elapsed=.012s -> tests2.out / tests2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/src-c65fc17
+$ sed -n 243,262p Tests/GrantivaCoreTests/ReadyFileTests.swift
+# exit=0 elapsed=.010s -> tests3.out / tests3.err

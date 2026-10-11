@@ -1,0 +1,4 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-cli/rows/D2-27
+$ for p in "build build" "build install" "ci run" "diff capture" "diff compare" "run" "emulator ensure"; do echo "## $p"; $GRANTIVA $p --help | sed -n "/--headless/,/^  --[a-z]/p" | sed "\$d" | tr -s " " | tr "
+" " "; echo; done
+# exit=0 elapsed=.077s -> helps.out / helps.err
