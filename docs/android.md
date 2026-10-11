@@ -37,6 +37,12 @@ lists the AVDs. `--device <serial>` targets any attached device, including
 a physical one. On a physical device the demo-mode and animation settings are skipped
 unless `--allow-device-settings` is given. `--headless` boots without a window.
 
+`grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
+not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s
+ABI when given, else for this host's emulators (`arm64-v8a` on Apple silicon).
+`grantiva build install` resolves the device as above and logs `Booting AVD <name> as
+<serial>` when it has to boot one.
+
 The application ID a run installs and tests is the app's own: the Gradle output metadata's
 `applicationId` for a built variant, or the APK's (read with `apkanalyzer`) for `--app-file`.
 `application_id` in the config is used only when there is no app to read it from
@@ -113,7 +119,9 @@ for every timestamp (`actualMilliseconds` is the frame on screen at that moment)
 than half of the requested duration was held, `record` prints a note on stderr: expected for an
 idle screen, but a device that disconnected mid-recording looks the same.
 `--device <serial>` or `--emulator <AVD>` pick the target; the config's `emulator` is the
-default.
+default. The JSON report (`--json`, and the `.json` beside the video) names the device as
+`emulator` (the AVD name) and `serial`; the `simulator` and `udid` keys carry the same values
+and are kept for compatibility.
 
 ## Runner sessions and the MCP server
 
@@ -170,3 +178,6 @@ process is gone, whose pid now names another process, or whose console port anot
 owns is dropped by `sessions` and `teardown`; `teardown` then refuses the
 serial without `--force`, whatever AVD it runs, so `teardown --all` never kills an emulator
 someone else started. `delete` refuses while a running emulator's AVD name cannot be read.
+AVDs `ensure` created are listed in `~/.grantiva/android/created-avds.json`; `delete`
+removes the AVD from it, and `ensure`, `delete`, `sessions` and `teardown` drop names whose
+AVD no longer exists on disk (deleted with `avdmanager` or Android Studio).
