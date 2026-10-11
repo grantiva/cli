@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=6.82 8.08 9.23
+$ $GRANTIVA emulator ensure --name cov2-android-2; echo exit=$?; cat ~/.grantiva/android/started.json; echo; $GRANTIVA run --device emulator-5556 --no-build --flow .maestro/01-browse.yaml 2>&1 | grep -E '✓ 01|✗|Error|Using|Booting'; $GRANTIVA run --emulator cov2-android-2 --no-build --flow .maestro/01-browse.yaml 2>&1 | grep -E '✓ 01|✗|Error|Using|Booting'; adb devices; cat ~/.grantiva/android/started.json
+rc=0 elapsed=16.7s  (stdout 01.out, stderr 01.err)
+

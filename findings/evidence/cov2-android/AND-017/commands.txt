@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/emptydir load=3.30 4.33 13.22
+$ t0=$(date +%s); GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS=5 $GRANTIVA emulator ensure --name cov2-android-2; echo exit=$? secs=$(( $(date +%s)-t0 )); adb devices; $GRANTIVA emulator sessions; sleep 20; $GRANTIVA emulator teardown --serial emulator-5556; echo teardown-exit=$?
+rc=0 elapsed=26.9s  (stdout 01.out, stderr 01.err)
+

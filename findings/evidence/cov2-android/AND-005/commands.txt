@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/emptydir load=2.92 4.31 13.38
+$ serial=$($GRANTIVA emulator ensure --name cov2-android-2 --headless); echo $serial; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='$serial'][0])"); $GRANTIVA emulator teardown --serial $serial; echo exit=$?
+rc=0 elapsed=15.6s  (stdout 01.out, stderr 01.err)
+

@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=9.48 8.66 9.48
+$ $GRANTIVA runner start --detach --device emulator-5556; rp=$(python3 -I -c "import json;print(json.load(open('.grantiva/session.json'))['pid'])"); echo runner=$rp; adb forward --list; $GRANTIVA emulator teardown --serial emulator-5556 --json; echo exit=$?; sleep 2; kill -0 $rp 2>/dev/null && echo runner-alive || echo runner-gone; ls .grantiva/session.json 2>&1; ls /tmp/grantiva-sessions; adb forward --list; adb devices
+rc=0 elapsed=10.5s  (stdout 01.out, stderr 01.err)
+

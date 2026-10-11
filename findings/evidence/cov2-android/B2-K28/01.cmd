@@ -1,0 +1,1 @@
+avdmanager delete avd -n cov2-android-2; cat ~/.grantiva/android/created-avds.json; echo; $GRANTIVA emulator teardown --serial emulator-5598; echo exit=$?; cat ~/.grantiva/android/created-avds.json; echo; $GRANTIVA emulator teardown --serial emulator-5598 --force; echo exit=$?; $GRANTIVA emulator teardown --serial emulator-5598 --force --json; echo exit=$?

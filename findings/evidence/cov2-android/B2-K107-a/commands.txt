@@ -2,3 +2,7 @@
 $ ls -la /Users/kyle/.grantiva-qa/runner/locks 2>&1 | head -30
 rc=0 elapsed=0.1s  (stdout 01.out, stderr 01.err)
 
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=3.97 6.57 8.48
+$ ls /Users/kyle/.grantiva-qa/runner/locks | grep -E 'emulator-'; $GRANTIVA emulator delete --name cov2-android-2; ls /Users/kyle/.grantiva-qa/runner/locks | grep -E 'emulator-'; avdmanager list avd -c
+rc=0 elapsed=1.1s  (stdout 02.out, stderr 02.err)
+

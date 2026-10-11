@@ -1,0 +1,1 @@
+H=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/hl.sh; env -u CI $H baseline-captured-stdout; $H CI=true CI=true; $H CI=1 CI=1; $H CI=0 CI=0; $H CI=false CI=false; $H CI-empty CI=; $H GRANTIVA_EMULATOR_HEADLESS=1 GRANTIVA_EMULATOR_HEADLESS=1; adb devices

@@ -1,0 +1,13 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=9.47 7.21 8.41
+$ $GRANTIVA build install; echo exit=$?; adb devices; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='emulator-5554'][0])") | grep -o 'qemu-system-aarch64[-a-z]*\|-no-window'
+rc=0 elapsed=18.7s  (stdout 01.out, stderr 01.err)
+
+# note: earlier entries in this file ran in a wrong device state (emulator booted by a previous step, or the app lost after teardown); see the later entries
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=3.61 5.50 7.28
+$ $GRANTIVA emulator teardown --serial emulator-5554 >/dev/null 2>&1; sleep 3; adb devices; $GRANTIVA build install; echo exit=$?; adb devices; ps -o args= -p $(python3 -I -c "import json,os;print([r['pid'] for r in json.load(open(os.path.expanduser('~/.grantiva/android/started.json'))) if r['serial']=='emulator-5554'][0])") | grep -o 'qemu-system-aarch64[-a-z]*\|-no-window'; adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks
+rc=0 elapsed=22.8s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=3.59 5.37 7.19
+$ adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks; $GRANTIVA emulator teardown --serial emulator-5554 >/dev/null 2>&1; sleep 3; adb devices; $GRANTIVA emulator ensure --name cov2-android; adb -s emulator-5554 shell pm list packages com.kylebrowning.landmarks; echo pm-exit=$?
+rc=0 elapsed=21.9s  (stdout 03.out, stderr 03.err)
+

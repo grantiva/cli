@@ -1,0 +1,28 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=8.98 8.10 10.31
+$ $GRANTIVA emulator teardown --serial emulator-5556; $GRANTIVA emulator delete --name cov2-android-2; $GRANTIVA emulator ensure --name cov2-android-2 --no-boot; sed -i '' -e 's/^hw.gpu.mode=.*/hw.gpu.mode=host/' -e 's/^hw.gpu.enabled=.*/hw.gpu.enabled=yes/' ~/.android/avd/cov2-android-2.avd/config.ini; grep hw.gpu ~/.android/avd/cov2-android-2.avd/config.ini; $GRANTIVA emulator ensure --name cov2-android-2; $GRANTIVA build install --no-build --app-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/app-free-debug.apk --device emulator-5556 --no-launch; grep hw.gpu ~/.android/avd/cov2-android/config.ini 2>/dev/null || grep hw.gpu ~/.android/avd/cov2-android.avd/config.ini
+rc=0 elapsed=20.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=7.30 7.77 10.14
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5556 gpu-f1 --snapshot full; grep -c 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f1/client.log; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f1/client.log | cut -c1-260
+rc=0 elapsed=55.2s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=8.12 7.98 10.07
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5556 gpu-f2 --snapshot full; grep -c 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f2/client.log; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f2/client.log | cut -c1-260
+rc=0 elapsed=83.1s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=8.00 7.89 9.83
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5556 gpu-f3 --snapshot full; grep -c 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f3/client.log; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-gpu-f3/client.log | cut -c1-260
+rc=0 elapsed=49.6s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=6.90 7.68 9.64
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5554 sw-f1 --snapshot full; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-sw-f1/client.log | cut -c1-260
+rc=0 elapsed=64.3s  (stdout 05.out, stderr 05.err)
+
+# [06] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=8.57 8.05 9.64
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5554 sw-f2 --snapshot full; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-sw-f2/client.log | cut -c1-260
+rc=0 elapsed=63.7s  (stdout 06.out, stderr 06.err)
+
+# [07] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=8.72 8.23 9.60
+$ bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/tools/seedmany2.sh emulator-5554 sw-f3 --snapshot full; grep -m2 'POST .*/actions' /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/sm-sw-f3/client.log | cut -c1-260
+rc=0 elapsed=62.4s  (stdout 07.out, stderr 07.err)
+
