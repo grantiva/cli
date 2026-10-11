@@ -1,28 +1,33 @@
-OVERVIEW: End a managed session, or reclaim one simulator by UDID when no
-ledger entry exists.
+OVERVIEW: The Grantiva CLI for iOS and Android developers.
 
-A runner session on a torn-down simulator (`grantiva runner start` or `grantiva
-run --keep-alive`) is stopped first and its session files are removed; --json
-reports it as runnerSessionStopped.
-
-USAGE: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+USAGE: grantiva <subcommand>
 
 OPTIONS:
-  --json                  Output as JSON
-  --verbose               Print diagnostic detail (timestamps, labels,
-                          metadata) to stderr.
-  --quiet                 Silence progress diagnostics on stderr; warnings and
-                          errors still print. Program output on stdout is
-                          unaffected.
-  --session-id <session-id>
-                          Ticket/session identifier to shut down and release.
-  --udid <udid>           Simulator UDID to reclaim. Use with --force when a
-                          run was killed and left processes owning the device.
-  --force                 Reclaim by live process inspection instead of the
-                          session ledger: kills the grantiva-runner,
-                          WebDriverAgent xcodebuild, and simctl diagnose
-                          processes holding the simulator, breaks the lease,
-                          and reconciles the session registry.
   --version               Show the version.
   -h, --help              Show help information.
 
+SUBCOMMANDS:
+  build                   Build and optionally install the app to a simulator
+                          or emulator.
+  run                     Run Maestro flows against a simulator or emulator. No
+                          visual regression — reports step pass/fail and
+                          captures a screenshot on failure.
+  record                  Record a simulator or emulator and extract PNG frames
+                          at exact requested timestamps.
+  simulator               Provision, inspect, and tear down managed simulators.
+  emulator                Provision, inspect, and tear down Android emulators.
+  hierarchy               Dump the UI hierarchy of a booted simulator or
+                          emulator without relaunching the app.
+  ci                      CI pipeline — capture, compare, and upload results.
+  diff                    Visual regression testing — capture, compare, and
+                          approve screenshots.
+  auth                    Manage authentication with Grantiva.
+  console                 Manage your Grantiva dashboard from the terminal.
+  doctor                  Check environment and dependencies.
+  runner                  Manage the embedded UI automation runner.
+  init                    Generate grantiva.yml (iOS) or grantiva-android.yml
+                          (Android) in the current directory.
+  mcp                     Start the Grantiva MCP server for AI agent
+                          integration.
+
+  See 'grantiva help <subcommand>' for detailed help.

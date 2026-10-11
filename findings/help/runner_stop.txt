@@ -1,25 +1,33 @@
-OVERVIEW: Stop the running runner session.
+OVERVIEW: The Grantiva CLI for iOS and Android developers.
 
-Stops the session `grantiva runner start` recorded in .grantiva/session.json:
-the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and its
-session files and device lease are removed. Without one, it releases a
-`grantiva run --keep-alive` session started from this directory (every one, if
-there are several) the way Ctrl-C would, by sending that grantiva process
-SIGINT, and waits for it to exit. A run whose flows had already finished keeps
-the ready file it wrote (`passed` or `failed`): the ready file is written once,
-and the `stopped` result here is the record of the release. Sessions started
-from other directories are left alone. With no session at all it prints "No
-active session found." and exits 0.
-
-USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
+USAGE: grantiva <subcommand>
 
 OPTIONS:
-  --json                  Output as JSON
-  --verbose               Print diagnostic detail (timestamps, labels,
-                          metadata) to stderr.
-  --quiet                 Silence progress diagnostics on stderr; warnings and
-                          errors still print. Program output on stdout is
-                          unaffected.
   --version               Show the version.
   -h, --help              Show help information.
 
+SUBCOMMANDS:
+  build                   Build and optionally install the app to a simulator
+                          or emulator.
+  run                     Run Maestro flows against a simulator or emulator. No
+                          visual regression — reports step pass/fail and
+                          captures a screenshot on failure.
+  record                  Record a simulator or emulator and extract PNG frames
+                          at exact requested timestamps.
+  simulator               Provision, inspect, and tear down managed simulators.
+  emulator                Provision, inspect, and tear down Android emulators.
+  hierarchy               Dump the UI hierarchy of a booted simulator or
+                          emulator without relaunching the app.
+  ci                      CI pipeline — capture, compare, and upload results.
+  diff                    Visual regression testing — capture, compare, and
+                          approve screenshots.
+  auth                    Manage authentication with Grantiva.
+  console                 Manage your Grantiva dashboard from the terminal.
+  doctor                  Check environment and dependencies.
+  runner                  Manage the embedded UI automation runner.
+  init                    Generate grantiva.yml (iOS) or grantiva-android.yml
+                          (Android) in the current directory.
+  mcp                     Start the Grantiva MCP server for AI agent
+                          integration.
+
+  See 'grantiva help <subcommand>' for detailed help.
