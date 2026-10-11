@@ -23,6 +23,9 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
     case ipaExtractionFailed(String)
     case permissionDenied(String)
     case notFound(String)
+    /// A config file that loads but configures nothing the command can do
+    /// (no screens, no flows). The message is the whole sentence.
+    case configuration(String)
     case aborted
 
     public var errorDescription: String? {
@@ -70,6 +73,8 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
         case .permissionDenied(let message):
             return message
         case .notFound(let message):
+            return message
+        case .configuration(let message):
             return message
         case .aborted:
             return "Aborted."

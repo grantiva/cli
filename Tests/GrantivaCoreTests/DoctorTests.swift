@@ -310,4 +310,32 @@ final class DoctorTests: XCTestCase {
         let json = String(data: try JSONEncoder().encode(checks[0]), encoding: .utf8) ?? ""
         XCTAssertTrue(json.contains(#""section":"Advisory""#), json)
     }
+
+    /// Checks that can never be an error are Advisory in every mode, and
+    /// `--json` carries that section value.
+    func testNeverFailingChecksReportTheAdvisorySection() async throws {
+        let runner = DoctorRunner()
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("doctor-adv-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let binary = dir.appendingPathComponent("grantiva-runner").path
+        let version = dir.appendingPathComponent("version").path
+        let checks = [
+            await runner.checkRunner(runnerPath: binary, versionFilePath: version, expectedVersion: "v1"),
+            await runner.checkAVDs(list: { [] }),
+            await runner.checkAVDs(list: { ["Pixel"] }),
+            await runner.checkRunningEmulator(adb: ADB(path: dir.appendingPathComponent("no-adb").path)),
+            DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil),
+        ]
+        FileManager.default.createFile(atPath: binary, contents: Data())
+        try "v1".write(toFile: version, atomically: true, encoding: .utf8)
+        let installed = await runner.checkRunner(runnerPath: binary, versionFilePath: version, expectedVersion: "v1")
+        XCTAssertEqual(installed.status, .ok)
+        for check in checks + [installed] {
+            XCTAssertEqual(check.section, .advisory, check.name)
+            let json = String(data: try JSONEncoder().encode(check), encoding: .utf8) ?? ""
+            XCTAssertTrue(json.contains(#""section":"Advisory""#), json)
+        }
+        XCTAssertEqual(Set(checks.map(\.name)), ["Runner", "Android AVDs", "Running Emulator", "Booted Simulator"])
+    }
 }

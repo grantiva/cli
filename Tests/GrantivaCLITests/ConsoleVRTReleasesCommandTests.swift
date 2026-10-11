@@ -205,6 +205,44 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
             ["console", "releases", "update", "--version"]
         )
         XCTAssertEqual(GrantivaCommand.normalizedArguments(["run", "--version", "x"]), ["run", "--version", "x"])
+        // Options before `update` do not hide the command path.
+        for prefix in [
+            ["console", "releases", "--json", "update"],
+            ["console", "--json", "releases", "update"],
+            ["--json", "console", "releases", "update"],
+            ["console", "--per", "10", "releases", "update"],
+            ["console", "--per=10", "releases", "--verbose", "update"],
+        ] {
+            XCTAssertEqual(
+                GrantivaCommand.normalizedArguments(prefix + ["N", "--version", "2.2.0"]),
+                prefix + ["N", "--release-version", "2.2.0"], "\(prefix)"
+            )
+            XCTAssertEqual(
+                GrantivaCommand.normalizedArguments(prefix + ["N", "--version=2.2.0"]),
+                prefix + ["N", "--release-version=2.2.0"], "\(prefix)"
+            )
+            XCTAssertEqual(GrantivaCommand.normalizedArguments(prefix + ["N", "--version"]), prefix + ["N", "--version"])
+        }
+        // ArgumentParser rejects --json before `update` either way; what
+        // matters is that the value is not swallowed into a silent version
+        // print with exit 0.
+        XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(GrantivaCommand.normalizedArguments(
+            ["console", "releases", "--json", "update", "N", "--version", "2.2.0"]
+        ))) { error in
+            XCTAssertNotEqual(GrantivaCommand.exitCode(for: error), .success, GrantivaCommand.message(for: error))
+        }
+        let parsed = try XCTUnwrap(
+            try GrantivaCommand.parseAsRoot(GrantivaCommand.normalizedArguments(
+                ["console", "releases", "update", "--json", "N", "--version=2.2.0"]
+            )) as? ConsoleReleasesCommand.UpdateCommand
+        )
+        XCTAssertEqual(parsed.version, "2.2.0")
+        XCTAssertTrue(parsed.options.json)
+        // A value token is not taken for a subcommand name.
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "--per", "update", "releases", "x", "--version", "1"]),
+            ["console", "--per", "update", "releases", "x", "--version", "1"]
+        )
         XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(["console", "releases", "update", "--version"])) { error in
             XCTAssertEqual(GrantivaCommand.exitCode(for: error), .success)
             XCTAssertEqual(GrantivaCommand.message(for: error), grantivaVersion)

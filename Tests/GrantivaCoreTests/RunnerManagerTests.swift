@@ -543,7 +543,9 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertTrue(missing.contains("android-drivers.tar.gz"), missing)
     }
 
-    func testTheShippedBundleRaisesNoWarning() {
+    func testTheShippedBundleRaisesNoWarning() throws {
+        let bundle = try XCTUnwrap(RunnerManager.resourceBundle, "without the bundle the check below passes vacuously")
+        XCTAssertNil(RunnerManager.missingTarballsMessage(bundle: bundle))
         XCTAssertNil(RunnerManager.bundleMismatchWarning())
     }
 

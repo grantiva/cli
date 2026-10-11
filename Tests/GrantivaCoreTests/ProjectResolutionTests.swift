@@ -175,10 +175,12 @@ final class ProjectResolutionTests: XCTestCase {
         let workspace = root.appendingPathComponent("App.xcworkspace", isDirectory: true)
         try fm.createDirectory(at: workspace, withIntermediateDirectories: true)
         defer { try? fm.removeItem(at: root) }
-        try #"<Workspace version = "1.0"><FileRef location = "group:Sub/App.xcodeproj"></FileRef></Workspace>"#
+        let elsewhere = fm.temporaryDirectory.appendingPathComponent("k72abs-\(UUID().uuidString)/Other.xcodeproj").path
+        try #"<Workspace version = "1.0"><FileRef location = "group:Sub/App.xcodeproj"></FileRef><FileRef location = "absolute:\#(elsewhere)"></FileRef></Workspace>"#
             .write(to: workspace.appendingPathComponent("contents.xcworkspacedata"), atomically: true, encoding: .utf8)
         let paths = ProjectDetector.schemeStatePaths(container: workspace)
         XCTAssertTrue(paths.contains(root.appendingPathComponent("Sub/App.xcodeproj/xcshareddata/xcschemes").path), "\(paths)")
+        XCTAssertTrue(paths.contains(elsewhere + "/xcshareddata/xcschemes"), "\(paths)")
     }
 }
 

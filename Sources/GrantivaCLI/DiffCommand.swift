@@ -743,7 +743,7 @@ struct DiffCommand: AsyncParsableCommand {
         guard config != nil else {
             return .notFound(GrantivaConfig.missingFileMessage(platform: platform, directory: directory))
         }
-        return .invalidArgument("No screens configured in \(platform.configFileName)")
+        return .configuration("No screens configured in \(platform.configFileName)")
     }
 
     static func captureDirectory(for platform: Platform) -> String {

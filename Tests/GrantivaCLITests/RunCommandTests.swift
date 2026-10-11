@@ -658,7 +658,13 @@ final class RunCommandTests: XCTestCase {
         let fileManager = FileManager.default
         let previous = fileManager.currentDirectoryPath
         let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-k52-\(UUID().uuidString)")
-        try fileManager.createDirectory(at: scratch.appendingPathComponent("App.xcodeproj"), withIntermediateDirectories: true)
+        // Two shared schemes: resolution would fail with "No scheme specified
+        // ... Found: App, App (UI Testing)." if it ran first.
+        let schemes = scratch.appendingPathComponent("App.xcodeproj/xcshareddata/xcschemes")
+        try fileManager.createDirectory(at: schemes, withIntermediateDirectories: true)
+        for name in ["App", "App (UI Testing)"] {
+            try "<Scheme/>".write(to: schemes.appendingPathComponent("\(name).xcscheme"), atomically: true, encoding: .utf8)
+        }
         defer {
             fileManager.changeCurrentDirectoryPath(previous)
             try? fileManager.removeItem(at: scratch)
@@ -691,6 +697,38 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(built, expected)
         XCTAssertEqual(noBuild, expected)
         XCTAssertEqual(capture, expected)
+        XCTAssertFalse(built.contains("No scheme specified"), built)
+    }
+
+    /// A config that configures nothing is a configuration error, without
+    /// the usage prefix, from both run and diff capture.
+    func testAnEmptyConfigIsAConfigurationErrorForRunAndCapture() async throws {
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-empty-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        try "scheme: Demo\nsimulator: fake\nbundle_id: com.example.demo\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+
+        var run = try RunCommand.parse(["--no-build"])
+        run.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        do { try await run.run(); XCTFail("expected a failure") } catch {
+            guard case .configuration(let message)? = error as? GrantivaError else { return XCTFail("\(error)") }
+            XCTAssertEqual(message, "No screens or flows configured in grantiva.yml")
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, message)
+        }
+        var capture = try DiffCommand.CaptureCommand.parse(["--no-build"])
+        capture.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        do { try await capture.run(); XCTFail("expected a failure") } catch {
+            guard case .configuration(let message)? = error as? GrantivaError else { return XCTFail("\(error)") }
+            XCTAssertEqual(message, "No screens configured in grantiva.yml")
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, message)
+        }
     }
 
     /// K39: a setup failure's ready file says why, and names no report

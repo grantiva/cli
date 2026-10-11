@@ -301,7 +301,9 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         guard !resolved.screens.isEmpty || !resolved.flows.isEmpty else {
-            throw GrantivaError.notFound(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
+            throw config == nil
+                ? GrantivaError.notFound(Self.nothingToRunMessage(platform: platform, hasConfig: false))
+                : GrantivaError.configuration(Self.nothingToRunMessage(platform: platform, hasConfig: true))
         }
 
         log(Self.resolvedNarration(platform: platform, resolved: resolved))

@@ -33,10 +33,28 @@ public struct GrantivaCommand: AsyncParsableCommand {
     /// spelling working where it carries a value (`--version 2.2.0`,
     /// `--version=2.2.0`), and leaves a bare `--version` to print the CLI
     /// version.
+    ///
+    /// The command path is the first three non-option tokens, so options
+    /// before `update` (`console --json releases update`) do not hide it. An
+    /// option is a flag only when it is one of `flagNames`; any other option
+    /// without `=` takes the next token as its value, which is therefore not
+    /// a subcommand name.
     public static func normalizedArguments(_ arguments: [String]) -> [String] {
-        guard arguments.count > 3, Array(arguments.prefix(3)) == ["console", "releases", "update"] else { return arguments }
+        let flagNames: Set<String> = ["--json", "--verbose", "--quiet", "-h", "--help", "--version"]
+        var path: [String] = []
+        var index = 0
+        while index < arguments.count, path.count < 3 {
+            let argument = arguments[index]
+            if argument == "--" { return arguments }
+            if argument.hasPrefix("-") {
+                if !flagNames.contains(argument), !argument.contains("=") { index += 1 }
+            } else {
+                path.append(argument)
+            }
+            index += 1
+        }
+        guard path == ["console", "releases", "update"] else { return arguments }
         var result = arguments
-        var index = 3
         while index < result.count {
             let argument = result[index]
             if argument == "--" { break }

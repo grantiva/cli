@@ -209,8 +209,11 @@ extension ProjectDetector {
            let data = fm.contents(atPath: container.appendingPathComponent("contents.xcworkspacedata").path),
            let xml = String(data: data, encoding: .utf8) {
             let base = container.deletingLastPathComponent()
-            for match in xml.matches(of: /location\s*=\s*"(?:group|container):([^"]+\.xcodeproj)"/) {
-                let project = base.appendingPathComponent(String(match.1))
+            for match in xml.matches(of: /location\s*=\s*"(group|container|absolute):([^"]+\.xcodeproj)"/) {
+                let reference = String(match.2)
+                let project = match.1 == "absolute"
+                    ? URL(fileURLWithPath: reference)
+                    : base.appendingPathComponent(reference)
                 paths += schemeStatePaths(container: project, fileManager: fm, includeReferences: false)
             }
         }
