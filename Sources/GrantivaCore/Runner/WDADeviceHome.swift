@@ -180,10 +180,23 @@ public enum WDADeviceHome {
                 try fm.removeItem(atPath: home)
                 removal.removed.append(home)
             } catch {
-                removal.failures.append("\(home): \(error.localizedDescription)")
+                removal.failures.append(failureLine(home: home, error: error))
             }
         }
         return removal
+    }
+
+    /// `<home>: <reason>` without the reason's trailing period, so a caller
+    /// can append `. Delete it by hand.` (L22).
+    static func failureLine(home: String, error: Error) -> String {
+        "\(home): \(withoutTrailingPeriod(error.localizedDescription))"
+    }
+
+    /// `text` without trailing periods and whitespace.
+    public static func withoutTrailingPeriod(_ text: String) -> String {
+        var text = Substring(text)
+        while let last = text.last, last == "." || last.isWhitespace { text = text.dropLast() }
+        return String(text)
     }
 
     /// Runs `body` holding an exclusive `flock` on `cache/wda-builds/.lock`,

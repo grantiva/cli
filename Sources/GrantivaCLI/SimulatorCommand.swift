@@ -302,7 +302,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             guard !failures.isEmpty else { return nil }
             return GrantivaError.unavailable(
                 "The simulator was released, but its runner home could not be removed: "
-                    + failures.joined(separator: "; ") + ". Delete it by hand."
+                    + failures.map(WDADeviceHome.withoutTrailingPeriod).joined(separator: "; ") + ". Delete it by hand."
             )
         }
 
