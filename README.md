@@ -88,15 +88,13 @@ grantiva hierarchy > state.xml
 
   `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present only when `--report-dir` was given: the default report directory is deleted when the run exits.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
-- **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific simulator's with `--udid <UDID>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
+- **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<runner version>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed runner version, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
-- **`--logs`** — Streams simulator app logs (`xcrun simctl spawn log stream`) prefixed with `[log]` interleaved with the flow output. Auto-scopes the predicate to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`). Override with `--logs-predicate`.
-- **`--logs-predicate '<NSPredicate>'`** — Custom log filter for narrowing to specific subsystems, categories, or processes.
+- **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
+- **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
 - **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
 - **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
 - **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). The timeout itself is ignored under `--keep-alive`, where the session is held until you release it, but the 30 s minimum is still validated.
-
-  `--continue-on-failure` and `--timeout` apply to flow files (`flows:` in the config, or `--flow`). A suite that runs only the configured `screens:` does not read these two flags: it uses a fixed 300 s timeout.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
 - **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
 
@@ -144,7 +142,7 @@ Each screen has a `name` and a `path`. The path describes how to navigate there:
 
 A label matches any element whose text *contains* it, case-insensitively, so `tap: "Landmarks"` can hit a
 `landmarks://…` link before the tab called "Landmarks". `tap`, `assert_visible`, and `assert_not_visible` also take
-`{text: "Landmarks", exact: true}` to require the element's full text to equal the label.
+`{text: "Landmarks", exact: true}` to require the element's full text to equal the label, on iOS and Android alike.
 
 Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
 and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
@@ -251,7 +249,7 @@ grantiva run \
 ```
 
 The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
-`dataContainerPath`, and the selected simulator's `name` and `udid`. On Android
+`dataContainerPath`, and `simulator` with the selected simulator's `name` and `udid`. On Android
 it includes `status`, `applicationId`, `appPath`, and `device` with the
 emulator's `name` and adb `serial`.
 `--derived-data-path` isolates Xcode products and intermediates for the run and
@@ -306,36 +304,36 @@ Results upload to the [Grantiva](https://grantiva.io) dashboard and post as GitH
 ## Commands
 
 ```
-grantiva run                Run Maestro flows against a simulator or emulator (supports --keep-alive, --logs, --flow)
-grantiva record             Record a simulator or emulator and extract PNG frames at requested timestamps
-grantiva hierarchy          Dump the live UI hierarchy of a keep-alive session
-grantiva build              Build the app for a simulator (xcodebuild) or emulator (Gradle)
-grantiva build install      Build and install the app; use --no-launch to stop before launch
-grantiva ci run             Run full CI pipeline (build -> capture -> diff -> upload)
-grantiva diff capture       Capture screenshots for all configured screens
-grantiva diff compare       Diff captures against baselines
-grantiva diff approve       Promote captures to baselines
-grantiva simulator ensure   Create or reuse a named simulator and boot it (--name is enough)
+grantiva run                Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow)
+grantiva record             Record a simulator or emulator and extract PNG frames at exact requested timestamps
+grantiva hierarchy          Dump the UI hierarchy of a booted simulator or emulator without relaunching the app (reads a `run --keep-alive` session)
+grantiva build build        Build the app for a simulator (xcodebuild) or emulator (Gradle); `grantiva build` alone runs this
+grantiva build install      Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip)
+grantiva ci run             Run full CI pipeline: capture screenshots, compare against baselines, upload results
+grantiva diff capture       Navigate to configured screens and capture screenshots
+grantiva diff compare       Diff current captures against baselines
+grantiva diff approve       Promote current captures to baselines
+grantiva simulator ensure   Create or reuse a named simulator and boot it (--name alone reuses an existing one)
 grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
-grantiva simulator teardown End a session, or reclaim one simulator with --udid <UDID> --force
+grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
 grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
-grantiva emulator ensure    Create the AVD if missing and boot it; prints the serial
-grantiva emulator delete    Delete an AVD Grantiva created (--force for others)
+grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or the AVD name with --no-boot
+grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
 grantiva emulator sessions  List the emulators Grantiva started
-grantiva emulator teardown  Kill emulators Grantiva started (one by --serial, or --all)
+grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all
 grantiva console            Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
-grantiva auth login         Authenticate with Grantiva
-grantiva auth status        Show current authentication
-grantiva auth logout        Remove stored credentials
+grantiva auth login         Authenticate with Grantiva API
+grantiva auth status        Show current authentication status
+grantiva auth logout        Remove saved authentication credentials
 grantiva doctor             Check environment and dependencies (non-zero exit if a required check fails)
-grantiva runner install     Extract the embedded GrantivaAgent runner
+grantiva runner install     Extract or update the embedded runner binary
 grantiva runner version     Show the embedded runner version
-grantiva runner start       Start an interactive GrantivaAgent session
-grantiva runner stop        Stop a running interactive session
+grantiva runner start       Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use
+grantiva runner stop        Stop the running runner session
 grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection
-grantiva mcp                Start the MCP server for AI agent integration (tool list: docs/mcp.md)
-grantiva init               Generate grantiva.yml
+grantiva mcp                Start the Grantiva MCP server for AI agent integration (tool list: docs/mcp.md)
+grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml (Android) in the current directory
 ```
 
 `grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
