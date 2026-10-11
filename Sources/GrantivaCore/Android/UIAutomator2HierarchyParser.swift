@@ -58,6 +58,8 @@ public final class UIAutomator2HierarchyXMLParser: NSObject, XMLParserDelegate {
         }
         if let id = attributes["resource-id"], !id.isEmpty { node["identifier"] = id }
         if !text.isEmpty { node["value"] = text }
+        if let hint = attributes["hint"], !hint.isEmpty { node["hint"] = hint }
+        if let error = attributes["error"], !error.isEmpty { node["error"] = error }
         if let package = attributes["package"], !package.isEmpty { node["package"] = package }
         if let enabled = attributes["enabled"] { node["enabled"] = enabled == "true" }
         if let displayed = attributes["displayed"] { node["visible"] = displayed == "true" }

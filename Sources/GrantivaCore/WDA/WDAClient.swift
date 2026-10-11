@@ -352,6 +352,9 @@ public class WDAHierarchyXMLParser: NSObject, XMLParserDelegate {
         if let value = attributes["value"], !value.isEmpty {
             node["value"] = value
         }
+        if let placeholder = attributes["placeholderValue"], !placeholder.isEmpty {
+            node["placeholderValue"] = placeholder
+        }
         if let enabled = attributes["enabled"] {
             node["enabled"] = enabled == "true"
         }

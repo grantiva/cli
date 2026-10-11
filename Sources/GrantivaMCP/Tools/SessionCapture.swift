@@ -137,7 +137,7 @@ extension VRTTools {
         try? await device.terminate(appID: appID, deviceID: udid)
         try await device.launch(appID: appID, deviceID: udid)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
-        let rules = await SelectorRules.current(platform: platform, driver: driver)
+        let rules = try await SelectorRules.current(platform: platform, screens: screens, driver: driver)
 
         var captures: [ScreenCapture] = []
         for screen in screens {
@@ -222,9 +222,30 @@ extension VRTTools {
         /// `name`, which falls back to the label.
         let identifierReported: Bool
 
-        static func current(platform: Platform, driver: DriverClient) async -> SelectorRules {
-            guard platform == .ios else { return SelectorRules(platform: platform, identifierReported: true) }
-            let source = (try? await driver.hierarchyXML()) ?? ""
+        /// Reads the page source only when an iOS screen has an `id:` step;
+        /// a source that cannot be read fails the capture with its reason.
+        static func current(platform: Platform, screens: [GrantivaConfig.Screen], driver: DriverClient) async throws -> SelectorRules {
+            var firstIDStep: (screen: String, index: Int, step: GrantivaConfig.Screen.Step)?
+            for screen in screens where firstIDStep == nil {
+                guard case .steps(let steps) = screen.path else { continue }
+                if let index = steps.firstIndex(where: { step in
+                    (step.tap != nil && step.tapById) || (step.assertVisible != nil && step.assertVisibleById)
+                        || (step.assertNotVisible != nil && step.assertNotVisibleById)
+                }) {
+                    firstIDStep = (screen.name, index, steps[index])
+                }
+            }
+            guard platform == .ios, let firstIDStep else { return SelectorRules(platform: platform, identifierReported: true) }
+            let source: String
+            do {
+                source = try await driver.hierarchyXML()
+            } catch {
+                throw StepFailure(
+                    screen: firstIDStep.screen, step: firstIDStep.index + 1,
+                    action: RunnerSession.stepAction(for: firstIDStep.step),
+                    reason: "could not read the page source to match id: selectors: \(describe(error))"
+                )
+            }
             let reported = source.contains(" identifier=\"")
             if !reported {
                 GrantivaLog.logger.warning(
@@ -236,9 +257,9 @@ extension VRTTools {
     }
 
     /// A step's element selector, matched per platform as grantiva-runner
-    /// matches it. iOS: text reads label and value; `id:` reads the
-    /// accessibility identifier, ignoring case. Android: text reads text and
-    /// content-desc; `id:` reads the resource id, whole or after its last
+    /// matches it. iOS: text reads label, value and placeholder; `id:` reads the
+    /// accessibility identifier, ignoring case. Android: text reads text,
+    /// content-desc and hint (and the error text, without `exact`); `id:` reads the resource id, whole or after its last
     /// `/`. Text is a case-insensitive regex over the whole value; `exact`
     /// is the whole value as written.
     struct Selector {
@@ -258,8 +279,13 @@ extension VRTTools {
                 }
             }
             // UIAutomator2HierarchyParser puts text in `value` and
-            // content-desc in `name`.
-            let keys = rules.platform == .ios ? ["label", "value"] : ["value", "name"]
+            // content-desc in `name`. Android's error text counts only
+            // without `exact`: it is a message about the field.
+            let keys: [String]
+            switch rules.platform {
+            case .ios: keys = ["label", "value", "placeholderValue"]
+            case .android: keys = exact ? ["value", "name", "hint"] : ["value", "name", "hint", "error"]
+            }
             return keys.contains { key in
                 guard let value = element[key] as? String, !value.isEmpty else { return false }
                 return exact ? SelectorMatch.exactText(pattern, value) : SelectorMatch.text(pattern, value)

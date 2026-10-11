@@ -505,6 +505,53 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertEqual(exactMiss.isError, true)
     }
 
+    func testIOSTextReadsThePlaceholderValue() async throws {
+        let hierarchy = #"{"type":"XCUIElementTypeApplication","children":[{"type":"XCUIElementTypeTextField","placeholderValue":"Search landmarks","frame":{"x":0,"y":10,"width":10,"height":10},"children":[]}]}"#
+        let (result, calls) = try await captureOneStep(.init(tap: "search LANDMARKS"), hierarchy: hierarchy)
+        try assertSucceeded(result)
+        XCTAssertTrue(calls.contains("tapByCoordinate(5.0,15.0)"), "\(calls)")
+        var exact = GrantivaConfig.Screen.Step(tap: "Search landmarks")
+        exact.tapExact = true
+        let (exactResult, _) = try await captureOneStep(exact, hierarchy: hierarchy)
+        try assertSucceeded(exactResult)
+    }
+
+    func testAndroidTextReadsTheHintAndNonExactTextReadsTheErrorText() async throws {
+        let hierarchy = #"{"type":"android.widget.FrameLayout","children":[{"type":"android.widget.EditText","hint":"Email","error":"Required field","frame":{"x":"0","y":"0","width":"10","height":"10"},"children":[]}]}"#
+        let (byHint, _) = try await captureOneStep(.init(tap: "email"), hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(byHint)
+        var exactHint = GrantivaConfig.Screen.Step(tap: "Email")
+        exactHint.tapExact = true
+        let (exactHintResult, _) = try await captureOneStep(exactHint, hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(exactHintResult)
+        let (byError, _) = try await captureOneStep(.init(assertVisible: "required field"), hierarchy: hierarchy, platform: .android)
+        try assertSucceeded(byError)
+        // Error text is a message about the field, not what it shows: exact does not read it.
+        var exactError = GrantivaConfig.Screen.Step(assertVisible: "Required field")
+        exactError.assertVisibleExact = true
+        let (exactErrorResult, _) = try await captureOneStep(exactError, hierarchy: hierarchy, platform: .android)
+        XCTAssertEqual(exactErrorResult.isError, true)
+    }
+
+    /// A page source that cannot be read is the step's failure, not a
+    /// silent switch of `id:` to WDA's name.
+    func testAnUnreadablePageSourceFailsAnIdStepWithTheRealReason() async throws {
+        let directory = try temporaryDirectory()
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder(), hierarchyJSON: Self.loginHierarchy)
+        driver.hierarchyXML = { throw GrantivaError.networkError("Failed to get page source", 500) }
+        var step = GrantivaConfig.Screen.Step(tap: "login")
+        step.tapById = true
+        let registry = liveRegistry(
+            directory: directory, config: screensConfig([.init(name: "Screen", path: .steps([step]))]),
+            driver: driver, device: MCPFakeDevicePlatform(platform: .ios)
+        )
+        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(result.isError, true)
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Failed to get page source"), text)
+        XCTAssertTrue(text.contains("Screen"), text)
+    }
+
     func testASwipeWithADurationIsRefusedBeforeTouchingTheDevice() async throws {
         let directory = try temporaryDirectory()
         let device = MCPFakeDevicePlatform(platform: .ios)
