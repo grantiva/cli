@@ -56,6 +56,18 @@ swipe and script rows.
   - A drag of at least 50 pt/dp sets `Last swipe` to the dominant axis direction of finger travel (end minus start:
     negative x = `left`, positive y = `down`). Speed does not matter, so a 1500 ms swipe counts. iOS:
     `DragGesture(minimumDistance: 50)` `.onEnded`; Android: `detectDragGestures` accumulating the drag, decided on end.
+- **SwiftUI composition** (so the gestures do not swallow each other): on the pad
+  `.gesture(TapGesture(count: 2).onEnded { double += 1 }.exclusively(before: SpatialTapGesture().onEnded { tap($0.location) }))`,
+  `.simultaneousGesture(LongPressGesture(minimumDuration: 0.5).onEnded { _ in long += 1 })`,
+  `.simultaneousGesture(DragGesture(minimumDistance: 50).onEnded { swipe($0.translation) })`; a long press must not also
+  count as a tap (guard the tap handler with a flag the long press sets, cleared on the next touch). Task 2 checks
+  each counter with the flows below.
+- **Tab bar hidden** on the Gesture Lab screen: `.toolbar(.hidden, for: .tabBar)` (iOS); on Android the bottom
+  navigation bar is not shown on the Gesture Lab route. The pad then reaches the bottom edge, and point taps near the
+  bottom land on the pad rather than a tab.
+- **Accessibility:** the pad is `.accessibilityElement(children: .contain)` with identifier `gesture-pad` and label
+  `Gesture pad`, so `gesture-pad` and each read-out `Text` appear as separate elements in the hierarchy (on Android the
+  pad `Box` carries the test tag and the read-outs are separate `Text` nodes, not merged).
 - **Tests:** if the demo has a unit/UI test target, add a test that the counters start at 0 and the direction
   helper maps (-100, 0) to `left` and (0, 100) to `down`.
 
@@ -86,6 +98,12 @@ appId: com.kylebrowning.Landmarks
 - assertVisible: "San Francisco, CA"
 - launchApp
 # {text:} and exact
+# exact: the regex form matches, the same string with exact: true matches nothing
+- assertVisible:
+    text: "Golden Gate.*"
+- assertNotVisible:
+    text: "Golden Gate.*"
+    exact: true
 - tapOn:
     text: "Lakes"
     exact: true
@@ -119,7 +137,11 @@ appId: com.kylebrowning.Landmarks
 ```
 
 Expected: pass on both platforms. `assertNotVisible: "Lake"` passes because a label is matched against an element's
-whole text (README:143-145).
+whole text. The `exact` pair discriminates: `assertNotVisible: {text: "Golden Gate.*", exact: true}` passes only when
+`exact` is honoured (no element's text is literally `Golden Gate.*`); if `exact` were ignored the regex would match
+`Golden Gate Bridge` and the step would fail. Rule sources: runner flows (`run --flow`, Maestro format) follow
+docs/mcp.md:88 (`text` a case-insensitive regex over the whole value, `exact: true` the whole value as written);
+`screens:` steps follow README:143-147.
 
 ### 02-exact-negative (both, negative)
 
@@ -129,16 +151,17 @@ Rows: IOS/AND-206, IOS-065, 066, 071, 074, 078, AND-047, 050, X-002, X-004, X-01
 appId: com.kylebrowning.Landmarks
 ---
 - launchApp
-- tapOn: "Lakes"
-- assertVisible: "Mono Lake"
+- assertVisible: "Golden Gate.*"
 - assertVisible:
-    text: "Lake"
+    text: "Golden Gate.*"
     exact: true
 ```
 
-Expected: fails at the last step with the runner's element-not-visible failure naming `Lake` (for example
-`✗ assertVisible: text="Lake" ... Element not visible`), followed by the remediation `Run grantiva hierarchy (or the
-grantiva_a11y_tree MCP tool) to inspect the tree.` when Grantiva prints one; exit 1. Steps 1-3 pass.
+Expected: fails at the last step with the runner's element-not-visible failure naming `Golden Gate.*` (for example
+`✗ assertVisible: text="Golden Gate.*" ... Element not visible`), followed by the remediation `Run grantiva hierarchy
+(or the grantiva_a11y_tree MCP tool) to inspect the tree.` when Grantiva prints one; exit 1. Steps 1-2 pass (the regex
+form matches `Golden Gate Bridge`). The outcome flips with `exact`: if the last step passes, `exact` was ignored, and
+the rows using this flow record `fail` (docs/mcp.md:88).
 
 ### 03-gesture-lab-taps (both; H1, H2 on Android)
 
@@ -315,18 +338,23 @@ Expected: pass (the screen loads after 3 s).
 
 ### 10-lifecycle (both)
 
-Rows: IOS/AND-231, 233, 234, IOS-075, 076, 077, IOS-237.
+Rows: IOS/AND-231, 233, 234, IOS-075, 077, IOS-238.
 
 ```yaml
 appId: com.kylebrowning.Landmarks
 ---
 - stopApp
 - launchApp:
-    clearState: true
     arguments:
       "--flag": true
 - assertVisible: "Featured"
 - tapOn: "Lake Tahoe"
+- tapOn: "Favorite"
+- assertVisible: "Unfavorite"
+- launchApp:
+    clearState: true
+- tapOn: "Favorites"
+- assertVisible: "Landmarks you favorite will appear here."
 - stopApp
 - stopApp
 - launchApp
@@ -337,7 +365,8 @@ appId: com.kylebrowning.Landmarks
 ```
 
 Expected: pass; the first `stopApp` (app not running) passes; the runner log shows the launch argument `--flag` (not
-`---flag`) on iOS and an intent extra `--flag` on Android.
+`---flag`) on iOS and an intent extra `--flag` on Android; after `clearState` the favorite is gone (empty Favorites
+state) and the runner log shows the app data being cleared.
 
 ### 11-launch-environment (both)
 
@@ -379,7 +408,7 @@ expected negative.
 
 ### 13-android-arguments-merge (Android only)
 
-Rows: AND-116, AND-237.
+Rows: AND-116, AND-238.
 
 ```yaml
 appId: com.kylebrowning.landmarks
@@ -451,7 +480,7 @@ Expected: pass (text appended unmangled; the discard alert answered by the flow)
 
 ### 16-setpermissions (both)
 
-Rows: IOS/AND-236, B-C10. Also run from a scratch directory with no config and no `--bundle-id` (B-C10.2).
+Rows: IOS/AND-237, B-C10. Also run from a scratch directory with no config and no `--bundle-id` (B-C10.2).
 
 ```yaml
 appId: com.kylebrowning.Landmarks
@@ -468,7 +497,7 @@ Expected: pass (`setPermissions` gets the header appId; bare `scroll` scrolls do
 
 ### 17-back (Android only)
 
-Rows: AND-121, AND-238.
+Rows: AND-121, AND-239.
 
 ```yaml
 appId: com.kylebrowning.landmarks
@@ -533,7 +562,7 @@ Expected: pass.
 
 ### 21-system-alert-maps (iOS only)
 
-Rows: IOS-151, IOS-238, B-I04.2. Same steps as the regression's `findings/evidence/ios/inputs/flows/maps.yaml`; no app
+Rows: IOS-151, IOS-239, B-I04.2. Same steps as the regression's `findings/evidence/ios/inputs/flows/maps.yaml`; no app
 change (it drives Apple Maps, whose location prompt is a system alert).
 
 ```yaml
@@ -598,9 +627,10 @@ screens:
   - name: Lakes Exact
     path:
       - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
+      - assert_visible: "Golden Gate.*"
+      - assert_not_visible: {text: "Golden Gate.*", exact: true}
       - tap: {text: "Lakes", exact: true}
       - assert_visible: {text: "Mono Lake", exact: true}
-      - assert_not_visible: {text: "Lake", exact: true}
   - name: Caching
     path:
       - run_flow: ".maestro/coverage/cfg/relaunch.yaml"
@@ -635,6 +665,9 @@ diff:
   threshold: 0.02
   perceptual_threshold: 5.0
 ```
+
+The `Golden Gate.*` pair discriminates `exact` for screens steps (README:143-147): the plain label is a regex and
+matches, the exact form matches nothing, so `assert_not_visible` passes only when `exact` is honoured.
 
 Expected: `diff capture` captures six screens (the `Edit Typed` rename does not persist across the relaunches); the `wait: 3` step takes at least 3 s; `Caching` shows the live clock,
 so it is the screen the threshold rows change between capture and compare. With a live runner session, MCP
