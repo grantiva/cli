@@ -201,6 +201,32 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertTrue(shell.commands[2].contains("':mobile:assembleFreeDebug' --console=plain '-Px=1'"), shell.commands[2])
     }
 
+    /// `build build` passes no device: the APK is chosen for the host's
+    /// emulator ABI and no adb command runs.
+    func testBuildWithoutADeviceReadsNoDeviceAndPicksTheHostABI() async throws {
+        let metadataDir = scratch.appendingPathComponent("app/build/outputs/apk/debug")
+        try FileManager.default.createDirectory(at: metadataDir, withIntermediateDirectories: true)
+        try """
+        {"applicationId":"com.example","variantName":"debug","elements":[
+          {"type":"ONE_OF_MANY","filters":[{"filterType":"ABI","value":"arm64-v8a"}],"outputFile":"app-arm64-v8a-debug.apk"},
+          {"type":"ONE_OF_MANY","filters":[{"filterType":"ABI","value":"x86_64"}],"outputFile":"app-x86_64-debug.apk"}]}
+        """.write(to: metadataDir.appendingPathComponent("output-metadata.json"), atomically: true, encoding: .utf8)
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("no java", 1)), .success("BUILD SUCCESSFUL")])
+        let request = PlatformBuildRequest(
+            config: GrantivaConfig(platform: .android, android: AndroidProject()),
+            resolved: ResolvedProject(android: AndroidProject()),
+            deviceID: "",
+            extraBuildSettings: []
+        )
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(scratch.path)
+        defer { FileManager.default.changeCurrentDirectoryPath(previous) }
+        let result = try await platform(shell).build(request)
+        XCTAssertTrue(result.success)
+        XCTAssertFalse(shell.commands.contains { $0.contains("adb") }, "\(shell.commands)")
+        XCTAssertEqual(result.productPath.map { URL(fileURLWithPath: $0).lastPathComponent }, "app-\(AndroidPlatform.hostEmulatorABI)-debug.apk")
+    }
+
     func testFactoryMakesAndroidWhenAnSDKExists() throws {
         XCTAssertEqual(try DevicePlatformFactory.make(.ios).platform, .ios)
         // `.android` needs a real SDK on this machine; the error path is what

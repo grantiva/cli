@@ -53,6 +53,16 @@ public struct AndroidPlatform: DevicePlatform {
         )
     }
 
+    /// The ABI an emulator on this host runs: the APK `build build` reports
+    /// when no device was passed to read the ABI from.
+    public static let hostEmulatorABI: String = {
+        #if arch(arm64)
+        return "arm64-v8a"
+        #else
+        return "x86_64"
+        #endif
+    }()
+
     static func isPhysical(_ serial: String) -> Bool { !serial.hasPrefix("emulator-") }
 
     // MARK: Devices
@@ -98,7 +108,11 @@ public struct AndroidPlatform: DevicePlatform {
 
     public func build(_ request: PlatformBuildRequest) async throws -> BuildResult {
         let android = request.resolved.android ?? AndroidProject()
-        let abi = try await adb.getprop(serial: request.deviceID, "ro.product.cpu.abi")
+        // An empty device ID is `build build` with no --device: compile only,
+        // never touching adb, and pick the split APK for this host's emulators.
+        let abi = request.deviceID.isEmpty
+            ? Self.hostEmulatorABI
+            : try await adb.getprop(serial: request.deviceID, "ro.product.cpu.abi")
         let javaHome = await AndroidSDK.javaHome(environment: environment, execute: execute)
         return try await gradle.build(
             projectRoot: FileManager.default.currentDirectoryPath,

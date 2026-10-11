@@ -81,6 +81,39 @@ final class AndroidCommandTests: XCTestCase {
         XCTAssertTrue(fake.calls.contains("build(module=mobile,variant=freeDebug,args=[])"), "\(fake.calls)")
     }
 
+    /// `build build` compiles only: the config's `emulator:` is irrelevant
+    /// and no device is resolved or booted.
+    func testBuildBuildOnAndroidNeverBootsTheConfiguredEmulator() async throws {
+        var command = try BuildOnlyCommand.parse(["--variant", "paidDebug"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("bootDevice") || $0 == "defaultDevice" }, "\(fake.calls)")
+        XCTAssertEqual(fake.calls, ["build(module=app,variant=paidDebug,args=[])"])
+        XCTAssertEqual(fake.lastBuildDeviceID, "", "no device: the build reads no device ABI")
+    }
+
+    /// An explicit `--device` only lends its ABI to the APK choice; it is
+    /// never booted or resolved through the emulator path.
+    func testBuildBuildOnAndroidWithADevicePassesTheSerialWithoutBooting() async throws {
+        var command = try BuildOnlyCommand.parse(["--device", "emulator-5554"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("bootDevice") }, "\(fake.calls)")
+        XCTAssertEqual(fake.lastBuildDeviceID, "emulator-5554")
+    }
+
+    /// `build install` still boots the configured AVD (the platform logs
+    /// "Booting AVD <name> as <serial>" when it starts one).
+    func testBuildInstallOnAndroidBootsTheConfiguredAVD() async throws {
+        var command = try InstallCommand.parse(["--no-launch"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+        XCTAssertEqual(fake.calls.first, "bootDevice(Pixel_8_API_35)", "\(fake.calls)")
+    }
+
     func testBuildInstallOnAndroidUsesTheBuiltApplicationID() async throws {
         var command = try InstallCommand.parse(["--no-launch", "--module", "mobile", "--variant", "freeDebug"])
         let fake = FakeDevicePlatform(platform: .android)
