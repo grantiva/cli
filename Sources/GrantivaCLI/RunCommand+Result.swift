@@ -29,6 +29,14 @@ extension RunCommand {
         return lines
     }
 
+    /// The text result of a suite that threw: the blocks of every screen and
+    /// flow that ran, then the summary lines; nothing when nothing ran.
+    static func failureLines(report: RunnerFailureReport, captureDir: String) -> [String] {
+        let captures = report.captures
+        guard !captures.isEmpty else { return [] }
+        return resultLines(captures: captures, captureDir: captureDir)
+    }
+
     static func summaryLines(captures: [ScreenCapture]) -> [String] {
         func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status == .passed } }
         let screens = captures.filter { $0.kind == .screen }

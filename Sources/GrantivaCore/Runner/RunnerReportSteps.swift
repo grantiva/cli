@@ -63,15 +63,21 @@ enum RunnerReportSteps {
 
     /// One step per command that ran, with the runner's status, duration and
     /// (on failure) message. Skipped and pending commands never ran.
-    static func steps(_ commands: [FlowData.Command]) -> [StepResult] {
-        commands.compactMap { command in
-            let action = command.yaml ?? command.type ?? "step"
+    /// `pathMap` (staged or resolved path → the user's path) is applied to
+    /// every action and message, so a `runFlow` step names the sub-flow as
+    /// written (L19).
+    static func steps(_ commands: [FlowData.Command], pathMap: [String: String] = [:]) -> [StepResult] {
+        let rewriter = OutputRewriter(replacements: pathMap)
+        return commands.compactMap { command in
+            let action = rewriter.rewrite(command.yaml ?? command.type ?? "step")
             let duration = seconds(command.duration)
             switch command.status {
             case "passed":
                 return StepResult(action: action, status: .passed, duration: duration)
             case "failed", "error":
-                return StepResult(action: action, status: .failed, duration: duration, message: command.error?.message)
+                return StepResult(
+                    action: action, status: .failed, duration: duration, message: command.error?.message.map(rewriter.rewrite)
+                )
             case "running":
                 return StepResult(action: action, status: .failed, duration: duration, message: "Did not finish")
             default:

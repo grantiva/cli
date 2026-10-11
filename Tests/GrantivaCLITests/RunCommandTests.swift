@@ -568,6 +568,59 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(none.values, [], "no document without --json")
     }
 
+    /// L10: a failing run without --json prints, on stdout, the blocks of
+    /// every screen and flow that ran and both summary lines; a failure
+    /// before any capture prints no empty summary.
+    func testSuiteFailurePrintsTheTextResultOfWhatRan() async throws {
+        let captureDir = FileManager.default.temporaryDirectory.appendingPathComponent("captures-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: captureDir) }
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures((1...5).map { index in
+            ScreenCapture(screenName: "Screen\(index)", path: "\(captureDir)/Screen\(index).png", sizeBytes: 10, steps: [
+                StepResult(action: "Capture Screen\(index)", status: .passed, duration: 0.1),
+            ])
+        })
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "01-browse", path: "", sizeBytes: 0, steps: [
+                StepResult(action: "launchApp", status: .passed, duration: 1),
+            ], kind: .flow),
+            ScreenCapture(screenName: "02-exact-negative", path: "", sizeBytes: 0, steps: [
+                StepResult(action: "launchApp", status: .passed, duration: 1),
+                StepResult(action: "assertVisible: text=\"Golden Gate.*\"", status: .failed, duration: 5, message: "Element not visible"),
+            ], kind: .flow),
+        ])
+        let error = GrantivaError.commandFailed("Runner failed", 1)
+
+        let stdout = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: error, report: report, device: FakeDevicePlatform(platform: .ios), deviceID: "U", captureDir: captureDir,
+            json: false, resultOutput: ResultOutput { stdout.append($0) }, log: { _ in }
+        )
+        let text = stdout.values.joined(separator: "\n")
+        XCTAssertTrue(text.contains("  Screen1"), text)
+        XCTAssertTrue(text.contains("  02-exact-negative"), text)
+        XCTAssertTrue(text.contains("\u{2717} assertVisible: text=\"Golden Gate.*\""), text)
+        XCTAssertTrue(text.contains("Element not visible"), text)
+        XCTAssertTrue(text.contains("Screens: 5 total, 5 captured, 0 failed"), text)
+        XCTAssertTrue(text.contains("Flows: 2 total, 1 passed, 1 failed"), text)
+
+        let none = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: error, report: RunnerFailureReport(), device: FakeDevicePlatform(platform: .ios), deviceID: "U",
+            captureDir: captureDir, json: false, resultOutput: ResultOutput { none.append($0) }, log: { _ in }
+        )
+        XCTAssertEqual(none.values, [], "no captures, no summary")
+
+        // A usage error raised before the runner drove the device prints nothing either.
+        let usage = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: GrantivaError.invalidArgument("Flow file not found: x.yaml"), report: RunnerFailureReport(),
+            device: FakeDevicePlatform(platform: .ios), deviceID: "U", captureDir: captureDir,
+            json: false, resultOutput: ResultOutput { usage.append($0) }, log: { _ in }
+        )
+        XCTAssertEqual(usage.values, [])
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

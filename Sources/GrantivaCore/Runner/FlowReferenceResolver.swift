@@ -138,6 +138,34 @@ enum FlowReferenceResolver {
         }
     }
 
+    /// Every flow file reachable from `roots` through `runFlow` (the roots
+    /// included), absolute path → the path to show: relative to `cwd` when
+    /// under it, absolute otherwise. The runner resolves the `runFlow`s of a
+    /// sub-flow grantiva did not stage itself, so a cycle or failure can name
+    /// any of these files by its absolute path (L20). Unreadable files are
+    /// skipped: the runner reports them.
+    static func reachableFlowDisplayMap(roots: [String], cwd: String) -> [String: String] {
+        let cwdPrefixes = Set([cwd, URL(fileURLWithPath: cwd).resolvingSymlinksInPath().path])
+            .map { $0.hasSuffix("/") ? $0 : $0 + "/" }
+        func display(_ path: String) -> String {
+            for prefix in cwdPrefixes where path.hasPrefix(prefix) {
+                return String(path.dropFirst(prefix.count))
+            }
+            return path
+        }
+        var map: [String: String] = [:]
+        var pending = roots.map { URL(fileURLWithPath: $0).standardizedFileURL.path }
+        while let path = pending.popLast() {
+            guard map[path] == nil else { continue }
+            map[path] = display(path)
+            guard let content = try? String(contentsOfFile: path, encoding: .utf8) else { continue }
+            var targets: [String: String] = [:]
+            _ = try? resolve(in: content, relativeTo: (path as NSString).deletingLastPathComponent, asWritten: &targets)
+            pending += targets.keys.map { URL(fileURLWithPath: $0).standardizedFileURL.path }
+        }
+        return map
+    }
+
     static func resolvePath(_ path: String, baseDirectory: String) throws -> String {
         guard !path.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             throw invalidRunFlow("path must not be empty")

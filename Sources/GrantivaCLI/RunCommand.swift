@@ -204,7 +204,9 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     /// What the suite's catch does before rethrowing: a failure screenshot
-    /// when `wantsFailureScreenshot` says so, and the `--json` document.
+    /// when `wantsFailureScreenshot` says so, then the result of whatever ran:
+    /// the `--json` document, or the same text blocks and summary lines a
+    /// passing run prints (L10). A failure before any capture prints no text.
     static func handleSuiteFailure(
         error: Error, report: RunnerFailureReport, device: any DevicePlatform, deviceID: String, captureDir: String,
         json: Bool, resultOutput: ResultOutput, reportDir: String? = nil, log: (String) -> Void
@@ -216,6 +218,10 @@ struct RunCommand: AsyncParsableCommand {
         }
         if json {
             try? resultOutput.emit(Self.failureResult(error: error, report: report, reportDir: reportDir))
+        } else {
+            for line in Self.failureLines(report: report, captureDir: captureDir) {
+                resultOutput.line(line)
+            }
         }
     }
 
@@ -716,6 +722,11 @@ final class ResultOutput: Decodable, @unchecked Sendable {
     }
 
     var emitted: Bool { lock.withLock { wrote } }
+
+    /// One line of the plain-text result (not a document).
+    func line(_ text: String) {
+        write(text)
+    }
 
     func emit<T: Encodable>(_ value: T) throws {
         let text = try JSONOutput.string(value)
