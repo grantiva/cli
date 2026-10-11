@@ -94,6 +94,21 @@ public struct AndroidPlatform: DevicePlatform {
         return try await emulators.selectDevice(configured: nameOrID)
     }
 
+    /// The usable attached device with this serial. Never boots: an AVD name
+    /// or a serial adb does not list is an error naming what is attached.
+    public func attachedDevice(serial: String) async throws -> BootedDevice {
+        let devices = try await adb.devices()
+        guard let match = devices.first(where: { $0.serial == serial }), match.isUsable else {
+            let attached = devices.isEmpty ? "(none)" : devices.map { "\($0.serial) (\($0.state))" }.joined(separator: ", ")
+            throw GrantivaError.invalidArgument(
+                "No usable attached device has the serial \"\(serial)\". Attached: \(attached). "
+                    + "`grantiva build build` never boots a device: start it first (grantiva emulator ensure) or drop --device."
+            )
+        }
+        let name = match.isEmulator ? ((try? await adb.avdName(serial: match.serial)) ?? match.serial) : match.serial
+        return BootedDevice(udid: match.serial, name: name)
+    }
+
     public func defaultDevice() async throws -> BootedDevice {
         try await emulators.selectDevice(configured: nil)
     }

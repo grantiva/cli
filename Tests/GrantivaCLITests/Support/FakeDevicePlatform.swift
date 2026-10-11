@@ -27,6 +27,9 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     func bootDevice(named nameOrID: String) async throws -> BootedDevice {
         record("bootDevice(\(nameOrID))"); return BootedDevice(udid: bootedID, name: bootedName)
     }
+    func attachedDevice(serial: String) async throws -> BootedDevice {
+        record("attachedDevice(\(serial))"); return BootedDevice(udid: serial, name: bootedName)
+    }
     func displayGeometry(deviceID: String) async throws -> DeviceGeometry {
         record("displayGeometry(\(deviceID))"); return DeviceGeometry(pixelWidth: 1080, pixelHeight: 2400, scale: 2.625)
     }

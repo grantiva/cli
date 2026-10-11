@@ -54,8 +54,9 @@ struct BuildOnlyCommand: AsyncParsableCommand {
             deviceID = booted.udid
             deviceName = booted.name
         case .android:
-            deviceID = target.device ?? ""
-            deviceName = target.device
+            let attached = if let serial = target.device { try await device.attachedDevice(serial: serial) } else { nil as BootedDevice? }
+            deviceID = attached?.udid ?? ""
+            deviceName = attached?.name
         }
 
         let buildTarget = resolved.scheme ?? GradleBuildRunner.taskName(

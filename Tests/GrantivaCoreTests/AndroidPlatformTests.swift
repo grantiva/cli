@@ -227,6 +227,25 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(result.productPath.map { URL(fileURLWithPath: $0).lastPathComponent }, "app-\(AndroidPlatform.hostEmulatorABI)-debug.apk")
     }
 
+    /// `build build --device <serial>` never boots: an unattached serial
+    /// fails naming it and the attached devices.
+    func testAttachedDeviceNeverBootsAndNamesTheAttachedDevices() async throws {
+        let shell = ScriptedShell([.success("List of devices attached\nemulator-5556 device\nR5CT offline")])
+        do {
+            _ = try await platform(shell).attachedDevice(serial: "emulator-5554")
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("emulator-5554"), message)
+            XCTAssertTrue(message.contains("emulator-5556 (device), R5CT (offline)"), message)
+        }
+        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' devices -l"], "no listing of AVDs, no boot")
+
+        let attached = ScriptedShell([.success("List of devices attached\nemulator-5554 device"), .success("Pixel_8_API_35\nOK")])
+        let device = try await platform(attached).attachedDevice(serial: "emulator-5554")
+        XCTAssertEqual(device, BootedDevice(udid: "emulator-5554", name: "Pixel_8_API_35"))
+    }
+
     func testFactoryMakesAndroidWhenAnSDKExists() throws {
         XCTAssertEqual(try DevicePlatformFactory.make(.ios).platform, .ios)
         // `.android` needs a real SDK on this machine; the error path is what
