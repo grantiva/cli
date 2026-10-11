@@ -440,6 +440,18 @@ final class RunnerSessionOutputTests: XCTestCase {
         XCTAssertEqual(failed.steps.last?.message, "sub.yaml failed")
     }
 
+    /// L10: a fail-fast run reports the flows it never started as skipped.
+    func testTheFailureReportNamesTheSkippedFlows() throws {
+        let reportDir = scratch.appendingPathComponent("skipped-report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        try #"{"status":"failed","flows":[{"index":0,"id":"f0","name":"02-exact-negative","status":"failed","error":"boom"},{"index":1,"id":"f1","name":"02-favorite","status":"skipped","error":"run stopped"}]}"#
+            .write(to: reportDir.appendingPathComponent("report.json"), atomically: true, encoding: .utf8)
+        let report = RunnerFailureReport()
+        report.record(reportDir: reportDir.path, preservedReportDir: nil)
+        XCTAssertEqual(report.skippedFlows, ["02-favorite"])
+        XCTAssertEqual(report.captures.map(\.screenName), ["02-exact-negative", "02-favorite"], "--json keeps every flow")
+    }
+
     // MARK: - L20: a runFlow cycle names every hop the user's way
 
     func testEveryReachableSubFlowMapsToItsProjectRelativePath() throws {

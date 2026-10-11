@@ -471,6 +471,13 @@ removed in a later release. The keys still written in both spellings:
 - `baseline_directory` → `baselineDirectory` (diff approve)
 - `bundle_id` → `bundleId` (runner start, runner stop; `applicationId` on Android)
 
+Without `--json`, `run` prints one block per screen and per flow, then `Screens: <n> total,
+<c> captured, <f> failed` and `Flows: <n> total, <p> passed, <f> failed` (plus `, <s> skipped`
+when a failure stopped the run before some flows started), then the screenshot directory. A
+failing run prints the same for whatever ran, the failed step marked `✗`, before its `Error:`
+line; a failure before anything ran prints no summary. A step that must match exactly reads
+`(exact)` in these blocks, and a `wait:` step reads as the live line does (`Wait 3s`).
+
 `run --json` has the same shape whether the run passed or failed. `screens`
 holds one entry per configured screen (`"kind": "screen"`) and one per flow
 (`"kind": "flow"`); each entry has `name`, `kind`, `passed`, `steps` (the

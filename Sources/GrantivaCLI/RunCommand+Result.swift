@@ -7,10 +7,16 @@ extension RunCommand {
     /// The plain-text result: one block per configured screen and per flow,
     /// then screens and flows counted separately (a flow's screenshots are
     /// not screens).
-    static func resultLines(captures: [ScreenCapture], captureDir: String) -> [String] {
+    /// `skippedFlows` (a failed fail-fast run) are shown as skipped, not as
+    /// failures, and counted apart.
+    static func resultLines(captures: [ScreenCapture], captureDir: String, skippedFlows: Set<String> = []) -> [String] {
         var lines: [String] = []
         for capture in captures {
             lines.append("\n  \(capture.screenName)")
+            if capture.kind == .flow, skippedFlows.contains(capture.screenName) {
+                lines.append("    - Skipped: not run")
+                continue
+            }
             for step in capture.steps {
                 let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
                 lines.append("    \(icon) \(step.action)")
@@ -23,7 +29,7 @@ extension RunCommand {
             }
         }
         lines.append("")
-        lines += summaryLines(captures: captures)
+        lines += summaryLines(captures: captures, skippedFlows: skippedFlows)
         lines.append("  Screenshots: \(captureDir)/")
         lines.append("")
         return lines
@@ -34,10 +40,10 @@ extension RunCommand {
     static func failureLines(report: RunnerFailureReport, captureDir: String) -> [String] {
         let captures = report.captures
         guard !captures.isEmpty else { return [] }
-        return resultLines(captures: captures, captureDir: captureDir)
+        return resultLines(captures: captures, captureDir: captureDir, skippedFlows: report.skippedFlows)
     }
 
-    static func summaryLines(captures: [ScreenCapture]) -> [String] {
+    static func summaryLines(captures: [ScreenCapture], skippedFlows: Set<String> = []) -> [String] {
         func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status == .passed } }
         let screens = captures.filter { $0.kind == .screen }
         let flows = captures.filter { $0.kind == .flow }
@@ -48,7 +54,11 @@ extension RunCommand {
         }
         if !flows.isEmpty {
             let ok = flows.filter(passed).count
-            lines.append("  Flows: \(flows.count) total, \(ok) passed, \(flows.count - ok) failed")
+            let skipped = flows.filter { skippedFlows.contains($0.screenName) && !passed($0) }.count
+            lines.append(
+                "  Flows: \(flows.count) total, \(ok) passed, \(flows.count - ok - skipped) failed"
+                    + (skipped > 0 ? ", \(skipped) skipped" : "")
+            )
         }
         return lines
     }

@@ -12,6 +12,7 @@ public final class RunnerFailureReport: @unchecked Sendable {
     private var earlierCaptures: [ScreenCapture] = []
     private var storedScreens: [ScreenCapture] = []
     private var passedBeforeInterrupt = false
+    private var storedSkipped: Set<String> = []
 
     public init() {}
 
@@ -61,6 +62,14 @@ public final class RunnerFailureReport: @unchecked Sendable {
         earlierCaptures += captures
     }
 
+    /// Flows the runner never started (a fail-fast run stopped earlier): the
+    /// text result shows them as skipped, as the ready file does (L10).
+    public var skippedFlows: Set<String> {
+        lock.lock()
+        defer { lock.unlock() }
+        return storedSkipped
+    }
+
     /// The preserved `--report-dir`, or nil for an ephemeral one.
     public var reportDir: String? {
         lock.lock()
@@ -77,9 +86,12 @@ public final class RunnerFailureReport: @unchecked Sendable {
             capture.screenshots = screenshots[capture.screenName] ?? []
             return capture
         }
+        let skipped = (RunnerReportSteps.report(in: reportDir)?.flows ?? [])
+            .filter { $0.status == "skipped" }.map { $0.name ?? "flow" }
         lock.lock()
         defer { lock.unlock() }
         storedCaptures = captures
+        storedSkipped = Set(skipped)
         storedReportDir = preservedReportDir
     }
 

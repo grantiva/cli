@@ -604,6 +604,19 @@ final class RunCommandTests: XCTestCase {
         XCTAssertTrue(text.contains("Screens: 5 total, 5 captured, 0 failed"), text)
         XCTAssertTrue(text.contains("Flows: 2 total, 1 passed, 1 failed"), text)
 
+        // Flows a fail-fast run never started read as skipped, not failed,
+        // and are counted as the ready file counts them.
+        let skipped = RunCommand.resultLines(
+            captures: report.captures + [ScreenCapture(screenName: "03-edit", path: "", sizeBytes: 0, steps: [
+                StepResult(action: "Run flow \"03-edit\"", status: .failed, duration: nil, message: "run stopped"),
+            ], kind: .flow)],
+            captureDir: captureDir, skippedFlows: ["03-edit"]
+        ).joined(separator: "\n")
+        XCTAssertTrue(skipped.contains("  03-edit\n    - Skipped: not run"), skipped)
+        XCTAssertFalse(skipped.contains("\u{2717} Run flow \"03-edit\""), skipped)
+        XCTAssertTrue(skipped.contains("Flows: 3 total, 1 passed, 1 failed, 1 skipped"), skipped)
+
+
         let none = CapturedLines()
         await RunCommand.handleSuiteFailure(
             error: error, report: RunnerFailureReport(), device: FakeDevicePlatform(platform: .ios), deviceID: "U",
