@@ -1,0 +1,121 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF screens=0 flows=3
+Preparing runner...
+Runner ready
+Booting simulator: A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF
+Simulator booted: cov-ios-1 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF)
+Skipping build and install (--no-build)
+Running 3 flow(s)...
+Running 3 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml, .maestro/01-browse.yaml, .maestro/05-category.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 3 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8C257121-D9D4-47B2-8302-25967FCC3C11
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/3] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ assertVisible: text="Landmarks" (12.2s)
+      ╰─ Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+✗ 99-crash 16.9s
+
+  [2/3] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Landmarks" (443ms)
+    ✓ assertVisible: text="Featured" (278ms)
+    ✓ takeScreenshot (71ms)
+    ✓ tapOn: text="Golden Gate Bridge" (911ms)
+    ✓ assertVisible: text="San Francisco, CA" (409ms)
+    ✓ assertVisible: text="Plan Visit" (452ms)
+    ✓ takeScreenshot (89ms)
+✓ 01-browse 4.6s
+
+  [3/3] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lakes" (1.8s)
+    ✓ assertVisible: text="Lake Tahoe" (365ms)
+    ✓ assertVisible: text="Mono Lake" (286ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (458ms)
+    ✓ takeScreenshot (59ms)
+✓ 05-category 5.0s
+
+  [1/3] 99-crash (.maestro/99-crash.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ assertVisible (12.3s)
+      ╰─ Element not visible: text='Landmarks' (cause: context deadline exceeded: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+✗ 99-crash 14.3s
+
+  [2/3] 01-browse (.maestro/01-browse.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible (443ms)
+    ✓ assertVisible (278ms)
+    ✓ takeScreenshot (71ms)
+    ✓ tapOn (911ms)
+    ✓ assertVisible (409ms)
+    ✓ assertVisible (452ms)
+    ✓ takeScreenshot (89ms)
+✓ 01-browse 4.6s
+
+  [3/3] 05-category (.maestro/05-category.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.8s)
+    ✓ assertVisible (365ms)
+    ✓ assertVisible (286ms)
+    ✓ assertNotVisible (458ms)
+    ✓ takeScreenshot (59ms)
+✓ 05-category 5.0s
+
+  15 steps passing (26.4s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      1      1      2      16.9s  cov-ios-1 (ios 26.0 Simulator)
+  01-browse                      ✓ PASS       8      8      0      0       4.6s  cov-ios-1 (ios 26.0 Simulator)
+  05-category                    ✓ PASS       6      6      0      0       5.0s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             2/3      18     15      1      2      26.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8C257121-D9D4-47B2-8302-25967FCC3C11
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8C257121-D9D4-47B2-8302-25967FCC3C11/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8C257121-D9D4-47B2-8302-25967FCC3C11/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-8C257121-D9D4-47B2-8302-25967FCC3C11/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/failure-1791704490.png
+Error: Runner failed (exit 1); see the runner output above.
