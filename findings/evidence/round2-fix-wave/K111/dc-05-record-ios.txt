@@ -1,0 +1,33 @@
+$ grantiva record --simulator 612DE76E-9E56-4593-9A3E-CF0C4CDCC177 --duration 3 --frames-at 0
+Recording: .grantiva/recordings/recording.mov
+Frame report: .grantiva/recordings/recording.json
+  0ms -> 0ms: .grantiva/recordings/recording-frames/000000ms.png
+exit 0
+$ md5 .grantiva/recordings/recording.mov
+be5b3d27eb51e56de81eaee16b876556
+$ time grantiva record --simulator $UDID --duration 2 --frames-at 5000
+Error: --frames-at 5000 is past --duration 2 (2000 ms).
+Usage: grantiva record [--json] [--verbose] [--quiet] [--platform <platform>] [--simulator <simulator>] [--emulator <emulator>] [--device <device>] --duration <duration> [--output <output>] [--frames-at <frames-at>]
+  See 'grantiva record --help' for more information.
+real 0.01
+user 0.00
+sys 0.00
+exit 64
+$ md5 .grantiva/recordings/recording.mov
+be5b3d27eb51e56de81eaee16b876556
+$ grantiva record --duration 3 --frames-at 0,1000 --json | jq -r ".video, .frames[].path"
+.grantiva/recordings/recording.mov
+.grantiva/recordings/recording-frames/000000ms.png
+.grantiva/recordings/recording-frames/001000ms.png
+$ grantiva record --simulator 612DE76E-9E56-4593-9A3E-CF0C4CDCC177 --duration 3 --frames-at 0,1000
+Recording: .grantiva/recordings/recording.mov
+Frame report: .grantiva/recordings/recording.json
+  0ms -> 0ms: .grantiva/recordings/recording-frames/000000ms.png
+  1000ms -> 0ms: .grantiva/recordings/recording-frames/001000ms.png
+exit 0
+$ grantiva record --simulator 612DE76E-9E56-4593-9A3E-CF0C4CDCC177 --duration 2 --frames-at 0,1000 --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/abs/rec.mov
+Recording: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/abs/rec.mov
+Frame report: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/abs/rec.json
+  0ms -> 0ms: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/abs/rec-frames/000000ms.png
+  1000ms -> 0ms: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/abs/rec-frames/001000ms.png
+exit 0

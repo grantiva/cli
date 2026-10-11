@@ -1,0 +1,30 @@
+# control: status bar frozen (System UI demo mode, clock 12:00, no notifications)
+run 11 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 12 rc=0 note=0 frames=14 lastpts=2.319056
+    Held frame: frames=14 lastFrame=2319ms trackEnd=2334ms requested=4000ms lastFrameOnScreen=1681ms held=1666ms noteThreshold=>2000ms note=not printed (the screen changed after the halfway point)
+run 13 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 14 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 15 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 16 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 17 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 18 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 19 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+run 20 rc=0 note=1 frames=1 lastpts=0.000000
+    Held frame: frames=1 lastFrame=0ms trackEnd=0ms requested=4000ms lastFrameOnScreen=4000ms held=4000ms noteThreshold=>2000ms note=printed
+# K34-a: --frames-at 1000 --duration 2 --json; note vs actualMilliseconds
+{"lastFrameMilliseconds":330,"recordedMilliseconds":383,"video":"/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/k34/a.mp4","frames":[{"actualMilliseconds":330,"path":"/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/fix2-8/k34/a-frames/001000ms.png","requestedMilliseconds":1000}]}
+Warning: The recording's last frame is at 330ms; it was held to the requested 2.0s. screenrecord writes frames only when the screen changes, so this is expected for an idle screen; if the screen was changing, check that the device stayed connected.
+0.000000,0.018889
+0.018889,0.102433
+0.121322,0.106278
+0.227600,0.049511
+0.277111,0.053056
+0.330167,1.669833
