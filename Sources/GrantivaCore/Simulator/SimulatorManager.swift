@@ -7,7 +7,8 @@ public struct SimulatorManager: Sendable, Decodable {
     private let execute: @Sendable (String) async throws -> String
     private let capacity: SimulatorCapacity
     private let provenance: SimulatorProvenance
-    /// Base of the per-simulator runner homes (`<runnerHome>/devices/<udid>`).
+    /// The runner base (`GRANTIVA_RUNNER_HOME`); per-simulator runner homes
+    /// live at `<runnerHome>/versions/<runner version>/devices/<udid>`.
     private let runnerHome: String
 
     public init() {
@@ -247,7 +248,7 @@ public struct SimulatorManager: Sendable, Decodable {
             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
             try? capacity.remove(udid: udid, ownedBy: me)
             try? provenance.remove(udid: udid)
-            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: udid)
+            removeDeviceHomes(udid)
         }
     }
 
@@ -256,8 +257,16 @@ public struct SimulatorManager: Sendable, Decodable {
         _ = try await execute("xcrun simctl delete \(shellQuoted(device.udid))")
         try capacity.remove(udid: device.udid)
         try provenance.remove(udid: device.udid)
-        WDADeviceHome.remove(runnerHome: runnerHome, deviceID: device.udid)
+        removeDeviceHomes(device.udid)
         return device
+    }
+
+    /// Removes `udid`'s runner homes for `delete` and `cleanup`, whose output
+    /// has no place for them, logging any that could not be removed.
+    private func removeDeviceHomes(_ udid: String) {
+        for failure in WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid).failures {
+            GrantivaLog.logger.warning("Could not remove the runner home \(failure). Delete it by hand.")
+        }
     }
 
     public func managedSessions() async throws -> [ManagedSimulatorSession] {
@@ -296,8 +305,11 @@ public struct SimulatorManager: Sendable, Decodable {
                 try provenance.remove(udid: record.udid)
             }
             try capacity.remove(udid: record.udid)
-            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: record.udid)
-            outcomes.append(SimulatorTeardownOutcome(session: record, deleted: created))
+            let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: record.udid)
+            outcomes.append(SimulatorTeardownOutcome(
+                session: record, deleted: created,
+                deviceHomesRemoved: homes.removed, deviceHomeFailures: homes.failures
+            ))
         }
         return outcomes
     }
@@ -317,7 +329,7 @@ public struct SimulatorManager: Sendable, Decodable {
             guard !device.isBooted, !active.contains(record.udid) else { continue }
             _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
             try provenance.remove(udid: record.udid)
-            WDADeviceHome.remove(runnerHome: runnerHome, deviceID: record.udid)
+            removeDeviceHomes(record.udid)
             removed.append(record)
         }
         return removed

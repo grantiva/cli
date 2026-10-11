@@ -11,7 +11,8 @@ import Foundation
 /// therefore overwrite each other's port and startup log, and one of them
 /// loses its WDA moments after it reports ready.
 ///
-/// Grantiva points `MAESTRO_RUNNER_HOME` at `<runner>/devices/<udid>` instead.
+/// Grantiva points `MAESTRO_RUNNER_HOME` at `<install>/devices/<udid>` instead,
+/// where `<install>` is the runner version's `versions/<stamp>` directory.
 /// That home links to the shared `drivers/` and carries an APFS clone of each
 /// cached build's `Build/Products` (a few MB, cloned rather than rebuilt), so
 /// every simulator launches WDA from its own xctestrun, log, and DerivedData.
@@ -150,11 +151,39 @@ public enum WDADeviceHome {
         }
     }
 
-    /// Removes `deviceID`'s runner home. Called when the simulator is torn
-    /// down or deleted.
-    public static func remove(runnerHome: String, deviceID: String, fileManager fm: FileManager = .default) {
-        guard isPlainIdentifier(deviceID) else { return }
-        try? fm.removeItem(atPath: path(runnerHome: runnerHome, deviceID: deviceID))
+    /// What `removeAll` did: the homes it deleted, and one
+    /// "<path>: <reason>" line for each it could not.
+    public struct Removal: Equatable, Sendable {
+        public var removed: [String] = []
+        public var failures: [String] = []
+    }
+
+    /// Removes every runner home `deviceID` has under the runner base
+    /// (`GRANTIVA_RUNNER_HOME`, default `~/.grantiva/runner`): one per
+    /// installed runner version, `versions/<stamp>/devices/<udid>`, plus the
+    /// unversioned `devices/<udid>` older installs used. Called when the
+    /// simulator is torn down or deleted. Failures are returned, not thrown,
+    /// so the rest of the teardown still runs and the caller reports them.
+    public static func removeAll(
+        runnerBase: String,
+        deviceID: String,
+        fileManager fm: FileManager = .default
+    ) -> Removal {
+        var removal = Removal()
+        guard isPlainIdentifier(deviceID) else { return removal }
+        let installs = subdirectories(of: "\(runnerBase)/versions", fileManager: fm)
+            .map { "\(runnerBase)/versions/\($0)" }
+        for install in [runnerBase] + installs {
+            let home = path(runnerHome: install, deviceID: deviceID)
+            guard (try? fm.attributesOfItem(atPath: home)) != nil else { continue }
+            do {
+                try fm.removeItem(atPath: home)
+                removal.removed.append(home)
+            } catch {
+                removal.failures.append("\(home): \(error.localizedDescription)")
+            }
+        }
+        return removal
     }
 
     /// Runs `body` holding an exclusive `flock` on `cache/wda-builds/.lock`,
