@@ -19,7 +19,7 @@ public struct GrantivaMCPServer: Sendable {
     public func run() async throws {
         let (server, connection) = try await makeServer()
         // Detach on both paths: on Android the attachment owns an adb forward.
-        let transport = StdioTransport()
+        let transport = ValidatingTransport(wrapping: StdioTransport())
         do {
             try await server.start(transport: transport)
             await server.waitUntilCompleted()
@@ -119,15 +119,14 @@ public struct GrantivaMCPServer: Sendable {
             return ReadResource.Result(contents: contents)
         }
 
-        // Register resources/subscribe handler
+        // resources/subscribe and unsubscribe: hierarchy updates are sent
+        // only while the client is subscribed.
         await server.withMethodHandler(ResourceSubscribe.self) { params in
-            // Subscription tracking is handled by the MCP server actor internally.
-            // We just acknowledge it here.
+            await tools.subscriptions.subscribe(params.uri)
             return Empty()
         }
-
-        // Register resources/unsubscribe handler
         await server.withMethodHandler(ResourceUnsubscribe.self) { params in
+            await tools.subscriptions.unsubscribe(params.uri)
             return Empty()
         }
 
@@ -181,7 +180,7 @@ public struct GrantivaMCPServer: Sendable {
            let port = UInt16(exactly: keepAlive.port) {
             let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
             return RunnerSessionInfo(
-                pid: keepAlive.pid, wdaPort: port, bundleId: "", udid: udid, startedAt: Date()
+                pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
             )
         }
         throw GrantivaError.noRunnerSession(

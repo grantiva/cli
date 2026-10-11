@@ -530,4 +530,23 @@ final class MCPServerTests: XCTestCase {
         await connection.detach()
         XCTAssertEqual(state.detaches, 2)
     }
+
+    /// K56: a keep-alive session carries the app ID its owner sidecar recorded.
+    func testAKeepAliveSessionCarriesTheRecordedAppID() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let sessions = directory.appendingPathComponent("sessions")
+        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+        let runnerFile: [String: Any] = ["version": 1, "sessionId": "s4242", "pid": 4242, "port": 8235, "outputDir": "/o"]
+        try JSONSerialization.data(withJSONObject: runnerFile).write(to: sessions.appendingPathComponent("4242-1791340478890825000.grantiva"))
+        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { $0 == 4242 })
+        store.recordOwner(
+            udid: "921A0945-7157-4533-BA1F-21E8132D3E40", runnerPid: 4242, projectDirectory: directory.path,
+            platform: .ios, appID: "com.kylebrowning.Landmarks"
+        )
+
+        let loaded = try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: store)
+        XCTAssertEqual(loaded.bundleId, "com.kylebrowning.Landmarks")
+        XCTAssertEqual(loaded.wdaPort, 8235)
+    }
 }

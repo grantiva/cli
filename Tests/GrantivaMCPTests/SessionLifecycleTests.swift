@@ -624,4 +624,27 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertEqual(result.isError, true)
         XCTAssertTrue(try textContent(of: result).contains("No screens configured in grantiva.yml"))
     }
+
+    /// K102 ruling: a `type` step with nothing focused fails the capture
+    /// through the session (a silent no-op would capture a misleading
+    /// baseline) and names the screen and step.
+    func testVRTCaptureThroughTheSessionFailsATypeStepWithNoFocusedField() async throws {
+        let directory = try temporaryDirectory()
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.typeText = { text in throw DriverClient.noFocusedField(text) }
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let config = screensConfig([
+            .init(name: "Home", path: .launch),
+            .init(name: "Search", path: .steps([.init(type: "x")])),
+        ])
+        let registry = liveRegistry(directory: directory, config: config, driver: driver, device: device)
+
+        let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+        XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(
+            try textContent(of: result),
+            #"Error: Screen "Search", step 1 (Type "x"): No focused text field: tap a field before typing "x"."#
+        )
+        XCTAssertEqual(device.calls.last, "restore")
+    }
 }

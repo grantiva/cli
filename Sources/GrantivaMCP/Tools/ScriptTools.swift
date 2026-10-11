@@ -16,6 +16,8 @@ enum ScriptTools {
                 Supported actions: tap (by label), tap_xy (by coordinates), swipe (direction), type (text), wait (seconds). \
                 Every step is validated before any step runs: if a step is not an object or has no valid action, \
                 nothing runs and the result is an error naming each invalid step. \
+                A step that fails (an element not found, no focused field to type into) stops the script; \
+                the error names that step and lists the steps that ran. \
                 Returns the final accessibility tree after all steps complete.
                 """,
             inputSchema: .object([
@@ -64,11 +66,20 @@ enum ScriptTools {
     // MARK: - Handler
 
     static func script(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
+        try await run(driver: driver, arguments: arguments).result
+    }
+
+    /// The result, and how many steps ran to completion (so the caller knows
+    /// whether the UI may have changed).
+    /// `session` names the driver's port when it stops answering.
+    static func run(
+        driver: DriverClient, arguments: [String: Value], session: RunnerSessionInfo? = nil
+    ) async throws -> (result: CallTool.Result, stepsRun: Int) {
         guard let stepsValue = arguments["steps"]?.arrayValue else {
-            return CallTool.Result(
+            return (CallTool.Result(
                 content: [.text(text: "Error: 'steps' array is required.", annotations: nil, _meta: nil)],
                 isError: true
-            )
+            ), 0)
         }
 
         // Validate every step before running any, so a bad script never
@@ -84,45 +95,70 @@ enum ScriptTools {
         guard invalid.isEmpty else {
             let text = "Error: invalid script steps; no steps were run.\n" + invalid.joined(separator: "\n")
                 + "\nEach step must be an object with one of: tap, tap_xy {x, y}, swipe, type, wait."
-            return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true)
+            return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), 0)
         }
 
         var log: [String] = []
 
         for (index, step) in steps.enumerated() {
             let stepNum = index + 1
-            switch step {
-            case .tap(let label):
-                try await driver.tapByLabel(label)
-                try await Task.sleep(nanoseconds: 500_000_000)
-                log.append("Step \(stepNum): tapped \"\(label)\"")
-            case .tapXY(let x, let y):
-                try await driver.tapByCoordinate(x, y)
-                try await Task.sleep(nanoseconds: 500_000_000)
-                log.append("Step \(stepNum): tapped at (\(Int(x)), \(Int(y)))")
-            case .swipe(let direction):
-                try await driver.swipe(direction)
-                try await Task.sleep(nanoseconds: 500_000_000)
-                log.append("Step \(stepNum): swiped \(direction)")
-            case .type(let text):
-                try await driver.typeText(text)
-                try await Task.sleep(nanoseconds: 300_000_000)
-                log.append("Step \(stepNum): typed \"\(text)\"")
-            case .wait(let seconds):
-                try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-                log.append("Step \(stepNum): waited \(seconds)s")
+            do {
+                try await perform(step, number: stepNum, driver: driver, log: &log)
+            } catch let cancellation as CancellationError {
+                throw cancellation
+            } catch {
+                // Stop here, like a flow: name the step and keep what ran.
+                let text = "Error: Step \(stepNum) (\(step.summary)) failed: \(ToolRegistry.sessionFailureText(error, session: session))"
+                    + ranList(log)
+                return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), index)
             }
         }
 
-        // Fetch final hierarchy
-        let tree = try await driver.hierarchy()
-        let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
-        let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+        // Every step ran (the UI may have changed) even if the final
+        // hierarchy cannot be read.
+        let jsonString: String
+        do {
+            let tree = try await driver.hierarchy()
+            let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+            jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            let text = "Error: All \(steps.count) steps ran, but the final hierarchy could not be read: \(ToolRegistry.sessionFailureText(error, session: session))"
+                + ranList(log)
+            return (CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true), steps.count)
+        }
 
         let output = log.joined(separator: "\n") + "\n\nFinal hierarchy:\n" + jsonString
-        return CallTool.Result(
-            content: [.text(text: output, annotations: nil, _meta: nil)]
-        )
+        return (CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)]), steps.count)
+    }
+
+    private static func ranList(_ log: [String]) -> String {
+        log.isEmpty ? "" : "\n\nSteps that ran:\n" + log.joined(separator: "\n")
+    }
+
+    private static func perform(_ step: Step, number stepNum: Int, driver: DriverClient, log: inout [String]) async throws {
+        switch step {
+        case .tap(let label):
+            try await driver.tapByLabel(label)
+            try await Task.sleep(nanoseconds: 500_000_000)
+            log.append("Step \(stepNum): tapped \"\(label)\"")
+        case .tapXY(let x, let y):
+            try await driver.tapByCoordinate(x, y)
+            try await Task.sleep(nanoseconds: 500_000_000)
+            log.append("Step \(stepNum): tapped at (\(Int(x)), \(Int(y)))")
+        case .swipe(let direction):
+            try await driver.swipe(direction)
+            try await Task.sleep(nanoseconds: 500_000_000)
+            log.append("Step \(stepNum): swiped \(direction)")
+        case .type(let text):
+            try await driver.typeText(text)
+            try await Task.sleep(nanoseconds: 300_000_000)
+            log.append("Step \(stepNum): typed \"\(text)\"")
+        case .wait(let seconds):
+            try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
+            log.append("Step \(stepNum): waited \(seconds)s")
+        }
     }
 
     // MARK: - Step parsing
@@ -135,6 +171,17 @@ enum ScriptTools {
         case wait(Double)
 
         struct Invalid: Error { let message: String }
+
+        /// The step as written, for an error naming it.
+        var summary: String {
+            switch self {
+            case .tap(let label): return "tap \"\(label)\""
+            case .tapXY(let x, let y): return "tap_xy (\(Int(x)), \(Int(y)))"
+            case .swipe(let direction): return "swipe \(direction)"
+            case .type(let text): return "type \"\(text)\""
+            case .wait(let seconds): return "wait \(seconds)s"
+            }
+        }
 
         static let actions = ["tap", "tap_xy", "swipe", "type", "wait"]
 

@@ -77,3 +77,50 @@ public func which(_ tool: String) -> String? {
     let path = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
     return path?.isEmpty == false ? path : nil
 }
+
+/// `shell` for an argument vector: runs `argv[0]` with `argv[1...]` directly,
+/// so nothing in an argument is interpreted by a shell. Same contract: null
+/// stdin, trimmed stdout, a non-zero exit throws `commandFailed` with stderr
+/// (or stdout).
+///
+/// The exit is observed through the termination handler rather than
+/// `waitUntilExit()`: called after an `await`, on a cooperative thread,
+/// `waitUntilExit()` was seen to block forever after the child had exited.
+public func runProcess(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
+    precondition(!argv.isEmpty, "runProcess needs an executable")
+    let process = Process()
+    process.executableURL = URL(fileURLWithPath: argv[0])
+    process.arguments = Array(argv.dropFirst())
+    if let environment {
+        process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+    }
+    let stdout = Pipe()
+    let stderr = Pipe()
+    process.standardInput = FileHandle.nullDevice
+    process.standardOutput = stdout
+    process.standardError = stderr
+    let command = argv.map(shellQuoted).joined(separator: " ")
+    GrantivaLog.logger.debug("$ \(command)")
+    let exited = AsyncStream<Void> { continuation in
+        process.terminationHandler = { _ in
+            continuation.yield()
+            continuation.finish()
+        }
+    }
+    try process.run()
+    // Drain both pipes concurrently so neither fills and blocks the child.
+    async let out = readToEndOfFile(stdout.fileHandleForReading)
+    async let err = readToEndOfFile(stderr.fileHandleForReading)
+    let (outData, errData) = await (out, err)
+    for await _ in exited {}
+    GrantivaLog.logger.debug("exit \(process.terminationStatus): \(command)")
+    let output = String(decoding: outData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+    guard process.terminationStatus == 0 else {
+        let errors = String(decoding: errData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+        throw GrantivaError.commandFailed(
+            errors.isEmpty ? (output.isEmpty ? "\(command) exited with code \(process.terminationStatus)" : output) : errors,
+            process.terminationStatus
+        )
+    }
+    return output
+}

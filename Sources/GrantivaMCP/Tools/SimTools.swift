@@ -11,7 +11,7 @@ enum SimTools {
     static let definitions: [Tool] = [
         Tool(
             name: "grantiva_sim_list",
-            description: "List available iOS simulators with their name, UDID, state, runtime, and availability.",
+            description: "List iOS simulators with their name, UDID, state (as simctl reports it), runtime (e.g. iOS 26.0), and availability (no when the simulator's runtime is not installed).",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
@@ -72,33 +72,33 @@ enum SimTools {
         arguments: [String: Value]
     ) async throws -> CallTool.Result {
         let filter = arguments["filter"]?.stringValue ?? "all"
-        var devices = try await simManager.listDevices()
+        let output = render(devices: try await simManager.listDevices(), filter: filter)
+        return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
+    }
 
-        // Only show available devices
-        devices = devices.filter { $0.isAvailable }
+    /// iOS simulators only (watchOS, tvOS and visionOS devices are left
+    /// out), unavailable ones included and marked as such.
+    static func render(devices: [SimulatorDevice], filter: String) -> String {
+        let rows = devices
+            .filter { $0.runtime.hasPrefix("iOS") }
+            .filter { device in
+                switch filter {
+                case "booted": return device.isBooted
+                case "shutdown": return device.state == "Shutdown"
+                default: return true
+                }
+            }
+            .map { "\($0.name) | \($0.udid) | \($0.state) | \(runtimeName($0.runtime)) | \($0.isAvailable ? "yes" : "no")" }
+        guard !rows.isEmpty else { return "No iOS simulators found matching filter '\(filter)'." }
+        return (["Name | UDID | State | Runtime | Available"] + rows).joined(separator: "\n")
+    }
 
-        switch filter {
-        case "booted":
-            devices = devices.filter { $0.isBooted }
-        case "shutdown":
-            devices = devices.filter { !$0.isBooted }
-        default:
-            break
-        }
-
-        var lines: [String] = []
-        for device in devices {
-            let state = device.isBooted ? "Booted" : "Shutdown"
-            lines.append("\(device.name) | \(device.udid) | \(state) | \(device.runtime)")
-        }
-
-        let output = lines.isEmpty
-            ? "No simulators found matching filter '\(filter)'."
-            : "Name | UDID | State | Runtime\n" + lines.joined(separator: "\n")
-
-        return CallTool.Result(
-            content: [.text(text: output, annotations: nil, _meta: nil)]
-        )
+    /// simctl's runtime identifier fragment as people read it:
+    /// `iOS-26-0` becomes `iOS 26.0`.
+    static func runtimeName(_ runtime: String) -> String {
+        guard let dash = runtime.firstIndex(of: "-") else { return runtime }
+        let version = runtime[runtime.index(after: dash)...].replacingOccurrences(of: "-", with: ".")
+        return "\(runtime[..<dash]) \(version)"
     }
 
     static func boot(
@@ -111,7 +111,7 @@ enum SimTools {
         return CallTool.Result(
             content: [
                 .text(
-                    text: "Simulator booted: \(device.name) (\(device.udid))\nRuntime: \(device.runtime)",
+                    text: "Simulator booted: \(device.name) (\(device.udid))\nRuntime: \(runtimeName(device.runtime))",
                     annotations: nil, _meta: nil
                 ),
             ]

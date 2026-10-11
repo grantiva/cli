@@ -137,7 +137,14 @@ final class MCPFakeDevicePlatform: DevicePlatform, @unchecked Sendable {
 
     init(platform: Platform) { self.platform = platform }
 
-    func bootDevice(named nameOrID: String) async throws -> BootedDevice { record("bootDevice(\(nameOrID))"); return BootedDevice(udid: bootedID, name: bootedName) }
+    /// Thrown by `bootDevice` when set, as a missing simulator or AVD would.
+    var bootFailure: Error?
+
+    func bootDevice(named nameOrID: String) async throws -> BootedDevice {
+        record("bootDevice(\(nameOrID))")
+        if let bootFailure { throw bootFailure }
+        return BootedDevice(udid: bootedID, name: bootedName)
+    }
     func displayGeometry(deviceID: String) async throws -> DeviceGeometry { record("displayGeometry"); return DeviceGeometry(pixelWidth: 1080, pixelHeight: 2400, scale: 2.625) }
     func build(_ request: PlatformBuildRequest) async throws -> BuildResult {
         record("build(scheme=\(request.resolved.scheme ?? "-"),module=\(request.resolved.android?.module ?? "-"),variant=\(request.resolved.android?.variant ?? "-"))"); return buildResult

@@ -416,4 +416,40 @@ final class UIToolsTests: XCTestCase {
         let text = try await androidCheck(xml: xml)
         XCTAssertTrue(text.contains("android.widget.Switch has no accessibility label"), text)
     }
+
+    // MARK: - K78: the result says how a label matched
+
+    func testTapSaysWhenTheLabelMatchedAnIdentifier() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabelMatch = { _ in .identifier }
+        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("heart")])
+        XCTAssertNil(result.isError)
+        XCTAssertTrue(try textContent(of: result).hasPrefix(#"Tapped on "heart" (matched by identifier). Updated hierarchy:"#))
+    }
+
+    func testTapSaysWhenTheLabelMatchedAPlaceholder() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabelMatch = { _ in .placeholder }
+        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("Name")])
+        XCTAssertTrue(try textContent(of: result).hasPrefix(#"Tapped on "Name" (matched by placeholder). Updated hierarchy:"#))
+    }
+
+    func testTapByALabelMatchSaysNothingExtra() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabelMatch = { _ in .label }
+        let result = try await UITools.tap(driver: driver, arguments: ["label": .string("Favorites")])
+        XCTAssertTrue(try textContent(of: result).hasPrefix(#"Tapped on "Favorites". Updated hierarchy:"#))
+    }
+
+    // MARK: - K102
+
+    func testTypeWithoutAFocusedElementIsAToolError() async throws {
+        let recorder = WDARecorder()
+        var driver = MCPTestSupport.fakeDriver(recorder: recorder)
+        driver.typeText = { text in throw GrantivaError.notFound(#"No focused text field: tap a field before typing "\#(text)"."#) }
+        let result = try await UITools.type(driver: driver, arguments: ["text": .string("x")])
+        XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(try textContent(of: result), #"Error: No focused text field: tap a field before typing "x"."#)
+        XCTAssertFalse(recorder.calls.contains("hierarchy"))
+    }
 }

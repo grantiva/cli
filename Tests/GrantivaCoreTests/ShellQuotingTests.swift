@@ -64,4 +64,25 @@ final class ShellQuotingTests: XCTestCase {
         let output = try await shell("printf '%s' \(shellQuoted(hostile))")
         XCTAssertEqual(output, hostile)
     }
+
+    // MARK: - runProcess (argv, no shell)
+
+    func testRunProcessPassesArgumentsVerbatim() async throws {
+        let marker = FileManager.default.temporaryDirectory.appendingPathComponent("runprocess-\(UUID().uuidString)").path
+        let output = try await runProcess(["/bin/echo", "a; touch \(marker)", "$(touch \(marker))", "it's"])
+        XCTAssertEqual(output, "a; touch \(marker) $(touch \(marker)) it's")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: marker))
+    }
+
+    func testRunProcessReportsStderrAndTheExitCode() async {
+        do {
+            _ = try await runProcess(["/bin/sh", "-c", "echo out; echo oops >&2; exit 3"])
+            XCTFail("expected commandFailed")
+        } catch GrantivaError.commandFailed(let message, let code) {
+            XCTAssertEqual(message, "oops")
+            XCTAssertEqual(code, 3)
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
 }

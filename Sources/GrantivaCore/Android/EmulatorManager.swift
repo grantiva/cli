@@ -521,6 +521,13 @@ public struct EmulatorManager: Sendable {
 
     /// Deletes an AVD Grantiva created; others need `force`. A running AVD
     /// is never deleted.
+    /// The refusal to delete an AVD Grantiva did not create. `force` names
+    /// the override as the caller spells it: `--force` on the CLI,
+    /// `force: true` in the MCP tool.
+    public static func notCreatedRefusal(avd name: String, force: String = "--force") -> String {
+        "AVD \"\(name)\" was not created by Grantiva (grantiva emulator ensure). Pass \(force) to delete it anyway."
+    }
+
     public func deleteAVD(name: String, force: Bool) async throws {
         for device in try await adb.devices() where device.isEmulator {
             // Fail closed: an emulator whose console cannot be read yet may be
@@ -546,9 +553,7 @@ public struct EmulatorManager: Sendable {
             )
         }
         if !force, !(try provenance.createdAVDs()).contains(name) {
-            throw GrantivaError.invalidArgument(
-                "AVD \"\(name)\" was not created by Grantiva (grantiva emulator ensure). Pass --force to delete it anyway."
-            )
+            throw GrantivaError.invalidArgument(Self.notCreatedRefusal(avd: name))
         }
         let java = await javaPrefix()
         do {

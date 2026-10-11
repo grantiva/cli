@@ -374,7 +374,7 @@ extension VRTTools {
     }
 
     private static func captureFailure(_ message: String) -> CallTool.Result {
-        CallTool.Result(content: [.text(text: "Capture failed:\n\(message)", annotations: nil, _meta: nil)], isError: true)
+        VRTTools.failure(message)
     }
 }
 

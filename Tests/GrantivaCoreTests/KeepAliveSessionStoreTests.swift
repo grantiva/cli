@@ -253,4 +253,25 @@ final class KeepAliveSessionStoreTests: XCTestCase {
 
         XCTAssertEqual(try store(live: [100]).locate().sessionId, "new")
     }
+
+    /// K56: the owner sidecar records the app ID the session launched, and
+    /// the live session carries it; an older sidecar without it reads nil.
+    func testOwnerSidecarRoundTripsTheAppID() throws {
+        try writeRunnerSession(pid: 300, nanos: 1, port: 8235, sessionId: "s300")
+        try writeRunnerSession(pid: 301, nanos: 2, port: 8236, sessionId: "s301")
+        let store = store(live: [300, 301])
+        store.recordOwner(udid: "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF", runnerPid: 300, projectDirectory: directory.path, platform: .ios, appID: "com.kylebrowning.Landmarks")
+        store.recordOwner(udid: "C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961", runnerPid: 301, projectDirectory: directory.path, platform: .ios)
+
+        let owner = try XCTUnwrap(KeepAliveSessionStore.loadOwner(path: store.ownerPath(runnerPid: 300)))
+        XCTAssertEqual(owner.appId, "com.kylebrowning.Landmarks")
+        let sessions = store.liveSessions()
+        XCTAssertEqual(sessions.first { $0.pid == 300 }?.appId, "com.kylebrowning.Landmarks")
+        XCTAssertNil(sessions.first { $0.pid == 301 }?.appId)
+
+        // A sidecar from an earlier Grantiva has no appId key at all.
+        let legacy = #"{"udid":"C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961","runnerPid":301,"grantivaPid":1,"createdAt":"2026-10-07T10:00:00Z"}"#
+        try Data(legacy.utf8).write(to: URL(fileURLWithPath: store.ownerPath(runnerPid: 301)))
+        XCTAssertNil(try XCTUnwrap(KeepAliveSessionStore.loadOwner(path: store.ownerPath(runnerPid: 301))).appId)
+    }
 }

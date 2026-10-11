@@ -33,16 +33,6 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertEqual(ios.simulator, DefaultSimulator.name)
     }
 
-    func testBuildOnAndroidBootsThenBuildsThroughThePlatform() async throws {
-        let device = MCPFakeDevicePlatform(platform: .android)
-        let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: [:])
-        XCTAssertNil(result.isError)
-        XCTAssertEqual(device.calls, ["bootDevice(Pixel_8_API_35)", "build(scheme=-,module=app,variant=debug)"])
-        let text = try textContent(of: result)
-        XCTAssertTrue(text.contains("Build succeeded"), text)
-        XCTAssertTrue(text.contains("Product: /fake/app.apk"), text)
-    }
-
     /// A10: a failed Android build names the module and variant, not a scheme.
     func testFailedAndroidBuildShowsModuleAndVariantAndNoScheme() async throws {
         let device = MCPFakeDevicePlatform(platform: .android)
@@ -79,10 +69,11 @@ final class BuildToolsTests: XCTestCase {
 
     func testRunOnIOSWithoutABundleIDIsAToolError() async throws {
         let device = MCPFakeDevicePlatform(platform: .ios)
+        device.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/nonexistent/Demo.app")
         let result = try await BuildTools.run(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:])
         XCTAssertEqual(result.isError, true)
-        XCTAssertTrue(try textContent(of: result).contains("bundle_id"))
-        XCTAssertTrue(device.calls.isEmpty)
+        XCTAssertEqual(try textContent(of: result), "Error: No bundle ID: grantiva.yml has no bundle_id and the built app has no CFBundleIdentifier.")
+        XCTAssertFalse(device.calls.contains { $0.hasPrefix("launch") })
     }
 
     func testTestOnAndroidReturnsAnErrorResult() async throws {
@@ -163,5 +154,84 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertEqual(BuildTools.utf8Suffix("aaaa\nbb", maxBytes: 5), "bb", "starts after a newline in range")
         let failing = TestResult(success: false, scheme: "D", duration: 1, testsPassed: 0, testsFailed: 0, output: (1...200).map { "ligne é✘ \($0)" }.joined(separator: "\n"))
         XCTAssertFalse(BuildTools.testSummary(failing, maxTailBytes: 101).contains("\u{FFFD}"))
+    }
+
+    // MARK: - K54: grantiva_build on Android compiles only
+
+    func testBuildOnAndroidCompilesWithoutBootingTheConfiguredEmulator() async throws {
+        let device = MCPFakeDevicePlatform(platform: .android)
+        let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: [:])
+        XCTAssertNil(result.isError)
+        XCTAssertEqual(device.calls, ["build(scheme=-,module=app,variant=debug)"], "nothing is booted")
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.contains("Module: app\nVariant: debug"), text)
+    }
+
+    func testBuildOnIOSStillBootsItsSimulator() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        _ = try await BuildTools.build(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo", simulator: "fix2-10-ios"), arguments: [:])
+        XCTAssertEqual(device.calls.first, "bootDevice(fix2-10-ios)")
+    }
+
+    // MARK: - K94: grantiva_run says what it built
+
+    func testRunNamesTheProductItInstalled() async throws {
+        let ios = MCPFakeDevicePlatform(platform: .ios)
+        ios.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/fake/Demo.app")
+        let iosText = try textContent(of: try await BuildTools.run(
+            device: ios, platform: .ios, config: GrantivaConfig(scheme: "Demo", bundleId: "com.example.demo"), arguments: [:]
+        ))
+        XCTAssertTrue(iosText.hasSuffix("\nProduct: /fake/Demo.app"), iosText)
+
+        let android = MCPFakeDevicePlatform(platform: .android)
+        let androidText = try textContent(of: try await BuildTools.run(device: android, platform: .android, config: androidConfig, arguments: [:]))
+        XCTAssertTrue(androidText.contains("\nProduct: /fake/app.apk"), androidText)
+    }
+
+    // MARK: - K95: grantiva_run without a config reads the built app's bundle ID
+
+    private func appWithInfoPlist(bundleID: String?) throws -> String {
+        let app = FileManager.default.temporaryDirectory.appendingPathComponent("k95-\(UUID().uuidString)/Demo.app")
+        try FileManager.default.createDirectory(at: app, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: app.deletingLastPathComponent()) }
+        var plist: [String: Any] = ["CFBundleName": "Demo"]
+        if let bundleID { plist["CFBundleIdentifier"] = bundleID }
+        try PropertyListSerialization.data(fromPropertyList: plist, format: .xml, options: 0)
+            .write(to: app.appendingPathComponent("Info.plist"))
+        return app.path
+    }
+
+    func testRunWithoutAConfigLaunchesTheBundleIDOfTheBuiltApp() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        let product = try appWithInfoPlist(bundleID: "com.example.App")
+        device.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: product)
+        let result = try await BuildTools.run(
+            device: device, platform: .ios, config: nil, arguments: ["scheme": .string("Demo (UI Testing)")],
+            missingConfig: "grantiva.yml not found at /x/grantiva.yml. Create one with grantiva init.",
+            projectDirectory: URL(fileURLWithPath: "/x")
+        )
+        XCTAssertNil(result.isError)
+        XCTAssertEqual(Array(device.calls.suffix(2)), ["install(com.example.App,\(product))", "launch(com.example.App)"])
+        let text = try textContent(of: result)
+        XCTAssertTrue(text.hasPrefix("App built and launched.\nScheme: Demo (UI Testing)\nBundle ID: com.example.App\nSimulator: Fake"), text)
+    }
+
+    func testRunPrefersTheConfiguredBundleID() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        device.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: try appWithInfoPlist(bundleID: "com.example.Built"))
+        _ = try await BuildTools.run(device: device, platform: .ios, config: GrantivaConfig(scheme: "Demo", bundleId: "com.example.Configured"), arguments: [:])
+        XCTAssertEqual(device.calls.last, "launch(com.example.Configured)")
+    }
+
+    func testRunWithNoBundleIDAnywhereSaysWhereItLooked() async throws {
+        let device = MCPFakeDevicePlatform(platform: .ios)
+        device.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: try appWithInfoPlist(bundleID: nil))
+        let result = try await BuildTools.run(
+            device: device, platform: .ios, config: nil, arguments: ["scheme": .string("Demo")],
+            missingConfig: "unused", projectDirectory: URL(fileURLWithPath: "/proj")
+        )
+        XCTAssertEqual(result.isError, true)
+        XCTAssertEqual(try textContent(of: result), "Error: No bundle ID: no grantiva.yml in /proj and the built app has no CFBundleIdentifier.")
+        XCTAssertFalse(device.calls.contains { $0.hasPrefix("launch") })
     }
 }

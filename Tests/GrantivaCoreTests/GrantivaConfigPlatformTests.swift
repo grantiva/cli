@@ -297,4 +297,25 @@ final class GrantivaConfigPlatformTests: XCTestCase {
         XCTAssertEqual(steps[3].tap, "Lakes")
         XCTAssertFalse(steps[3].tapExact)
     }
+
+    /// K58: `--platform ios` in an Android-only directory never turns the
+    /// Android flows in `.maestro/` into an iOS config.
+    func testIOSSkipsTheMaestroFallbackInAnAndroidOnlyDirectory() throws {
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)
+        try write(".maestro/01.yaml", "appId: com.example.android\n---\n- launchApp\n")
+        try write("grantiva-android.yml", "application_id: com.example.android\n")
+        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+
+        try FileManager.default.removeItem(at: dir.appendingPathComponent("grantiva-android.yml"))
+        try write("settings.gradle.kts", "rootProject.name = \"demo\"\n")
+        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+    }
+
+    /// README:158: an iOS project with only `.maestro/` keeps working.
+    func testIOSKeepsTheMaestroFallbackInAnIOSDirectory() throws {
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent(".maestro"), withIntermediateDirectories: true)
+        try write(".maestro/01.yaml", "appId: com.example.ios\n---\n- launchApp\n")
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent("Demo.xcodeproj"), withIntermediateDirectories: true)
+        XCTAssertEqual(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir)?.bundleId, "com.example.ios")
+    }
 }

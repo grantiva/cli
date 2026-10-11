@@ -29,6 +29,7 @@ let package = Package(
             dependencies: [
                 "GrantivaCore",
                 .product(name: "MCP", package: "swift-sdk"),
+                .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .target(

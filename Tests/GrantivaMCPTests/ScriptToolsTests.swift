@@ -161,4 +161,65 @@ final class ScriptToolsTests: XCTestCase {
         XCTAssertTrue(recorder.calls.isEmpty)
         XCTAssertTrue(try textContent(of: result).contains("Step 1: 'tap' must be a string"))
     }
+
+    // MARK: - K102: a step that fails stops the script and names the step
+
+    func testTypeStepWithoutFocusStopsTheScript() async throws {
+        let recorder = WDARecorder()
+        var driver = MCPTestSupport.fakeDriver(recorder: recorder)
+        driver.typeText = { text in throw GrantivaError.notFound(#"No focused text field: tap a field before typing "\#(text)"."#) }
+        let outcome = try await ScriptTools.run(
+            driver: driver,
+            arguments: ["steps": .array([
+                .object(["tap": .string("Gesture Lab")]),
+                .object(["type": .string("x")]),
+                .object(["tap": .string("Never")]),
+            ])]
+        )
+        XCTAssertEqual(outcome.result.isError, true)
+        XCTAssertEqual(outcome.stepsRun, 1)
+        let text = try textContent(of: outcome.result)
+        XCTAssertTrue(text.hasPrefix(#"Error: Step 2 (type "x") failed: No focused text field: tap a field before typing "x"."#), text)
+        XCTAssertTrue(text.contains(#"Step 1: tapped "Gesture Lab""#), text)
+        XCTAssertFalse(recorder.calls.contains("tapByLabel(Never)"), "\(recorder.calls)")
+    }
+
+    func testATapStepOnAMissingElementStopsTheScriptLikeAType() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.tapByLabel = { label in throw GrantivaError.elementNotFound(label) }
+        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([.object(["tap": .string("Nope")])])])
+        XCTAssertEqual(outcome.result.isError, true)
+        XCTAssertEqual(outcome.stepsRun, 0)
+        XCTAssertTrue(try textContent(of: outcome.result).hasPrefix(#"Error: Step 1 (tap "Nope") failed: Element not found: "Nope"."#))
+    }
+
+    /// A transport failure mid-script is reported like any other step
+    /// failure: the step is named and the steps that ran are listed.
+    func testATransportFailureInAStepStopsTheScriptAndListsWhatRan() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.swipe = { _ in throw URLError(.networkConnectionLost) }
+        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([
+            .object(["tap": .string("Gesture Lab")]), .object(["swipe": .string("up")]),
+        ])])
+        XCTAssertEqual(outcome.result.isError, true)
+        XCTAssertEqual(outcome.stepsRun, 1)
+        let text = try textContent(of: outcome.result)
+        XCTAssertTrue(text.hasPrefix("Error: Step 2 (swipe up) failed: The runner session's driver is not answering"), text)
+        XCTAssertTrue(text.contains("Steps that ran:\nStep 1: tapped \"Gesture Lab\""), text)
+    }
+
+    /// Every step ran, so the UI may have changed, even though the final
+    /// hierarchy could not be read.
+    func testAFailedFinalHierarchyStillCountsEveryStep() async throws {
+        var driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())
+        driver.hierarchy = { throw GrantivaError.commandFailed("Failed to get hierarchy from WDA", 1) }
+        let outcome = try await ScriptTools.run(driver: driver, arguments: ["steps": .array([
+            .object(["tap": .string("A")]), .object(["tap": .string("B")]),
+        ])])
+        XCTAssertEqual(outcome.result.isError, true)
+        XCTAssertEqual(outcome.stepsRun, 2)
+        let text = try textContent(of: outcome.result)
+        XCTAssertTrue(text.hasPrefix("Error: All 2 steps ran, but the final hierarchy could not be read: Failed to get hierarchy from WDA"), text)
+        XCTAssertTrue(text.contains("Step 2: tapped \"B\""), text)
+    }
 }
