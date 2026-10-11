@@ -53,7 +53,7 @@ struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
     @Option(name: .long, help: ArgumentHelp("AVD name to use, booting it if needed (Android)", visibility: Boot.visibility))
     var emulator: String?
 
-    @Option(name: .long, help: "adb serial of an attached emulator or physical device (Android)")
+    @Option(name: .long, help: "adb serial of an attached emulator or physical device (Android); for a build, its ABI picks the split APK")
     var device: String?
 
     @Flag(name: .long, help: ArgumentHelp("Apply demo mode and animation settings on a physical device too (Android)", visibility: Boot.visibility))

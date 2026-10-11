@@ -23,6 +23,7 @@ final class BuildCommandTests: XCTestCase {
             XCTAssertFalse(help.contains(flag), "\(flag) in:\n\(help)")
         }
         XCTAssertTrue(help.contains("--device"), help)
+        XCTAssertTrue(help.contains("ABI picks the split APK"), help)
         XCTAssertTrue(InstallCommand.helpMessage().contains("--headless"))
         XCTAssertTrue(InstallCommand.helpMessage().contains("--emulator"))
         // Still accepted, hidden, for scripts that pass them.
