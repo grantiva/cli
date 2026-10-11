@@ -41,17 +41,28 @@ public struct EmulatorTeardownOutcome: Codable, Equatable, Sendable {
     public let recorded: Bool
     /// True when teardown also stopped a runner session on this serial.
     public var runnerSessionStopped: Bool
+    /// Temp directories a killed run on this serial left (its staged flows,
+    /// its ephemeral report dir), removed here, as `simulator teardown` does.
+    public var temporaryDirectoriesRemoved: [String]
+    /// Keep-alive session files of runners on this serial that were no
+    /// longer running, removed here.
+    public var sessionFilesRemoved: [String]
 
-    public init(serial: String, avd: String?, killed: Bool, recorded: Bool, runnerSessionStopped: Bool = false) {
+    public init(
+        serial: String, avd: String?, killed: Bool, recorded: Bool, runnerSessionStopped: Bool = false,
+        temporaryDirectoriesRemoved: [String] = [], sessionFilesRemoved: [String] = []
+    ) {
         self.serial = serial
         self.avd = avd
         self.killed = killed
         self.recorded = recorded
         self.runnerSessionStopped = runnerSessionStopped
+        self.temporaryDirectoriesRemoved = temporaryDirectoriesRemoved
+        self.sessionFilesRemoved = sessionFilesRemoved
     }
 
     private enum CodingKeys: String, CodingKey {
-        case serial, avd, killed, recorded, runnerSessionStopped
+        case serial, avd, killed, recorded, runnerSessionStopped, temporaryDirectoriesRemoved, sessionFilesRemoved
     }
 
     public init(from decoder: Decoder) throws {
@@ -61,6 +72,8 @@ public struct EmulatorTeardownOutcome: Codable, Equatable, Sendable {
         killed = try container.decode(Bool.self, forKey: .killed)
         recorded = try container.decode(Bool.self, forKey: .recorded)
         runnerSessionStopped = try container.decodeIfPresent(Bool.self, forKey: .runnerSessionStopped) ?? false
+        temporaryDirectoriesRemoved = try container.decodeIfPresent([String].self, forKey: .temporaryDirectoriesRemoved) ?? []
+        sessionFilesRemoved = try container.decodeIfPresent([String].self, forKey: .sessionFilesRemoved) ?? []
     }
 }
 
@@ -81,6 +94,10 @@ public struct EmulatorManager: Sendable {
     private let killTimeout: TimeInterval
     private let consolePortBound: @Sendable (Int) -> Bool
     private let consolePortOwners: @Sendable (Int) async -> [Int32]?
+    /// How long teardown waits for `adb shell sync` before killing anyway.
+    private let flushTimeout: TimeInterval
+    /// Where runs on a serial record their lease claim; nil is the runner home's.
+    private let leaseDirectory: String?
 
     public static let bootTimeoutVariable = "GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS"
     /// Set to 1 (or true/yes) to boot every emulator without a window, as
@@ -131,7 +148,9 @@ public struct EmulatorManager: Sendable {
         fileManager: FileManager = .default,
         killTimeout: TimeInterval = 30,
         consolePortBound: @escaping @Sendable (Int) -> Bool = EmulatorManager.isLocalPortBound,
-        consolePortOwners: @escaping @Sendable (Int) async -> [Int32]? = EmulatorManager.listeningPIDs
+        consolePortOwners: @escaping @Sendable (Int) async -> [Int32]? = EmulatorManager.listeningPIDs,
+        flushTimeout: TimeInterval = 10,
+        leaseDirectory: String? = nil
     ) {
         self.sdk = sdk
         self.adb = adb
@@ -146,6 +165,8 @@ public struct EmulatorManager: Sendable {
         self.killTimeout = killTimeout
         self.consolePortBound = consolePortBound
         self.consolePortOwners = consolePortOwners
+        self.flushTimeout = flushTimeout
+        self.leaseDirectory = leaseDirectory
     }
 
     /// True when something already listens on `127.0.0.1:port`. adb can
@@ -585,8 +606,11 @@ public struct EmulatorManager: Sendable {
         return records
     }
 
-    /// Stops the UIAutomator2 server, drops this serial's forwards, asks the
-    /// emulator to exit, and waits for both the process and the serial to go.
+    /// Stops the UIAutomator2 server, drops this serial's forwards, flushes
+    /// the guest's writes, asks the emulator to exit, and waits for both the
+    /// process and the serial to go. Then removes the temp directories a
+    /// killed run on the serial recorded in its lease claim, with the stale
+    /// lease file (L35).
     public func teardown(serial: String, force: Bool) async throws -> EmulatorTeardownOutcome {
         var record = try provenance.all().first { $0.serial == serial }
         // A record whose process is gone (or whose pid now names another
@@ -612,6 +636,12 @@ public struct EmulatorManager: Sendable {
         var listed = try await adb.devices().contains { $0.serial == serial }
         var killed = false
         if listed {
+            // `emu kill` stops the guest without a shutdown: whatever its page
+            // cache still holds (an app installed seconds ago) is lost on the
+            // next boot. Flush it first, bounded so a wedged guest cannot hold
+            // the teardown (L46).
+            let adb = self.adb
+            await Self.bounded(seconds: flushTimeout) { _ = try? await adb.sync(serial: serial) }
             _ = try? await adb.emuKill(serial: serial)
             killed = true
             let deadline = Date().addingTimeInterval(killTimeout)
@@ -630,7 +660,33 @@ public struct EmulatorManager: Sendable {
         if record != nil {
             try provenance.remove(serial: serial)
         }
-        return EmulatorTeardownOutcome(serial: serial, avd: record?.avd, killed: killed, recorded: record != nil)
+        var temporaryDirectoriesRemoved: [String] = []
+        if let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory), !claim.isLive {
+            temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(of: claim)
+            SimulatorLease.removeLeaseFile(udid: serial, directory: leaseDirectory)
+        }
+        return EmulatorTeardownOutcome(
+            serial: serial, avd: record?.avd, killed: killed, recorded: record != nil,
+            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
+        )
+    }
+
+    /// Runs `work`, returning when it finishes or after `seconds`, whichever
+    /// is first; work still running then is cancelled and not waited for (a
+    /// task group would wait for it).
+    static func bounded(seconds: TimeInterval, _ work: @escaping @Sendable () async -> Void) async {
+        let (finished, signal) = AsyncStream<Void>.makeStream()
+        let worker = Task {
+            await work()
+            signal.yield()
+        }
+        let timer = Task {
+            try? await Task.sleep(for: .seconds(seconds))
+            signal.yield()
+        }
+        for await _ in finished { break }
+        timer.cancel()
+        worker.cancel()
     }
 
     /// A record is ours while its process lives (the same process, by start

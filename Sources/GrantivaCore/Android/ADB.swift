@@ -233,6 +233,11 @@ public struct ADB: Sendable {
         _ = try await execute(line(serial, "shell rm -f \(shellQuoted(remotePath))"))
     }
 
+    /// Flushes the guest's page cache to its data partition.
+    public func sync(serial: String) async throws {
+        try await shell(serial: serial, "sync")
+    }
+
     public func emuKill(serial: String) async throws {
         _ = try await execute(line(serial, "emu kill"))
     }

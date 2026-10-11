@@ -47,7 +47,8 @@ final class EmulatorCommandTests: XCTestCase {
         }
         let manager = EmulatorManager(
             sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
-            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1
+            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            flushTimeout: 0.2, leaseDirectory: dir.appendingPathComponent("locks").path
         )
         return (ledger, manager, dir)
     }
@@ -178,6 +179,36 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertTrue(other.isEmpty)
         XCTAssertEqual(removed.values, ["session.json"], "a session naming another serial is left alone")
         XCTAssertEqual(handed.values, ["emulator-5556 27331", "emulator-5554 27331"])
+    }
+
+    // MARK: - L12/L35: what a teardown cleaned up is listed
+
+    func testTeardownListsTheDeadRunnersSessionFilesAndTheTempDirectories() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let swept = LockedList()
+        let outcomes = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            removeDeadSessions: { serial in
+                swept.append(serial)
+                return ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"]
+            }
+        )
+        XCTAssertEqual(swept.values, ["emulator-5598"])
+        XCTAssertEqual(outcomes.first?.sessionFilesRemoved, ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(outcomes).utf8)) as? [[String: Any]])
+        XCTAssertEqual(json.first?["sessionFilesRemoved"] as? [String], ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+        XCTAssertEqual(json.first?["temporaryDirectoriesRemoved"] as? [String], [])
+    }
+
+    func testTeardownTextNamesTheRemovedTempDirectories() {
+        var outcome = EmulatorTeardownOutcome(serial: "emulator-5556", avd: "A", killed: true, recorded: true)
+        outcome.temporaryDirectoriesRemoved = ["/var/folders/x/T/grantiva-96934240", "/var/folders/x/T/grantiva-report-E0C9"]
+        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+            "Removed the killed run's temp directory /var/folders/x/T/grantiva-96934240.",
+            "Removed the killed run's temp directory /var/folders/x/T/grantiva-report-E0C9.",
+        ])
     }
 
     // MARK: - K30 delete --json
