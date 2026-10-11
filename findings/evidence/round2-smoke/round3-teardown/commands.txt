@@ -1,0 +1,7 @@
+# round 3 (runner .11): GRANTIVA=$HOME/.grantiva-qa/bin/grantiva 2.1.0 (main c65fc17), runner 1.1.28-grantiva.11+android-drivers-2; GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner;
+# GRANTIVA_SESSION_ID=smoke3; GRANTIVA_API_KEY unset; Android prelude as before. Devices: smoke3-android = emulator-5554 (API 35, default AVD); smoke3-ios = 6B18B654-219E-426E-A024-FEC8E0C44977 (iPhone 17, iOS 26.0)
+# demo: landmarks-demo b3f046f copy at <scratch>/smoke2/{ios,android} (.grantiva removed first); <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+# each file starts with uptime (Android) and the exact command; exit code at the end
+android.txt  uptime; $GRANTIVA emulator teardown --serial emulator-5554; avdmanager delete avd -n smoke3-android; adb devices; avd list
+ios-teardown-json.txt  ps grep <udid>; $GRANTIVA simulator teardown --udid <udid> --json (no --force); simctl grep -c smoke3; device homes
+host-state.txt  final host state

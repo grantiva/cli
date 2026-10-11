@@ -1,0 +1,40 @@
+## cycle 2
+$ uptime
+ 9:45  up 4 days,  1:12, 5 users, load averages: 3.35 6.84 9.18
+$ $GRANTIVA runner start --detach --json --simulator 6B18B654-219E-426E-A024-FEC8E0C44977 --bundle-id com.kylebrowning.Landmarks
+{
+  "bundleId" : "com.kylebrowning.Landmarks",
+  "bundle_id" : "com.kylebrowning.Landmarks",
+  "log" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-runner-1791737108.log",
+  "pid" : 8988,
+  "platform" : "ios",
+  "port" : 8651,
+  "status" : "started",
+  "udid" : "6B18B654-219E-426E-A024-FEC8E0C44977"
+}
+exit=0
+$ $GRANTIVA runner stop --json
+{
+  "killed" : false,
+  "pid" : 8988,
+  "platform" : "ios",
+  "reaped" : [
+
+  ],
+  "runnerPid" : 8988,
+  "status" : "stopped",
+  "udid" : "6B18B654-219E-426E-A024-FEC8E0C44977"
+}
+exit=0
+$ ps -Ao pid,ppid,etime,args | grep 6B18B654-219E-426E-A024-FEC8E0C44977 | grep -v grep   (+0 s)
+ 8925  8646       00:04 /bin/bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/bin/reap-cycle.sh 6B18B654-219E-426E-A024-FEC8E0C44977 2
+ 9090 95832       00:00 /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/Containers/Bundle/Application/37966ED7-C977-4761-9622-87C4023861FA/Landmarks.app/Landmarks
+95832     1       30:00 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/var/run/launchd_bootstrap.plist
+$ ps -Ao pid,ppid,etime,args | grep 6B18B654-219E-426E-A024-FEC8E0C44977 | grep -v grep   (+60 s)
+ 8925  8646       01:04 /bin/bash /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/bin/reap-cycle.sh 6B18B654-219E-426E-A024-FEC8E0C44977 2
+ 9090 95832       01:00 /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/Containers/Bundle/Application/37966ED7-C977-4761-9622-87C4023861FA/Landmarks.app/Landmarks
+95832     1       31:00 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/var/run/launchd_bootstrap.plist
+$ ls -la /tmp/grantiva-sessions
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 09:45 .
+drwxrwxrwt  224 root  wheel  7168 Oct 11 09:45 ..

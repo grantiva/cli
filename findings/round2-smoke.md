@@ -43,6 +43,7 @@ GPU setting is not recorded, so a re-run on a quiet host is needed before blamin
 
 Counts (round2 rows): 26 rows, 20 pass, 6 fail (round2-A1, round2-A1-03edit, round2-A3, round2-A-K07, round2-X-d2, round2-HELP-K61).
 Counts with the quiet-host re-run below: 34 rows, 23 pass, 11 fail (adds round2b-A1, round2b-A1-03edit, round2b-A3, round2b-A-K07, round2b-AB).
+Counts with round 3 (runner .11) below: 47 rows, 35 pass, 12 fail (round 3 adds 13 rows: 12 pass, 1 fail: round3-A2-K09).
 
 ## Help corpus changes (`git diff --stat findings/help`, 17 pages, +106/-38)
 
@@ -93,3 +94,39 @@ Load was 2.17 before the AVD booted. It climbed to 6-12 while the runs were goin
   - So the crash short-circuit exists but does not cover a blocked server call, and the K97 fast fail (WDA) has no working counterpart on UIAutomator2 here.
   - Round 1 (.9): `assertVisible` failed in 318 ms. The .9 comparison could not be repeated (see round2b-AB).
 - **round2b-A-K07: not a load artefact.** The flow lands on Landmark 22 in 3 of 3 runs on the fresh AVD and 2 of 2 on the round2 AVD, under both heavy and moderate load. The scroll is deterministic, but its distance on this AVD is 6 rows short of the 28-29 the fix device check saw. Either the held-drag distance depends on the device (graphics backend or frame pacing during the 4-7 s `/actions` drag), or the Landmark 28 expectation only holds for the AVD it was tuned on.
+
+## Round 3 (runner .11)
+
+Binary: `~/.grantiva-qa/bin/grantiva` 2.1.0 (main c65fc17) with grantiva-runner 1.1.28-grantiva.11 (`versions/1.1.28-grantiva.11+android-drivers-2`;
+runner PR #20 L01-L04, CLI PR #198 L04 reaper). Session `smoke3`. Devices: AVD `smoke3-android` (emulator-5554, API 35, fresh default
+AVD from `emulator ensure`: `config.ini` `hw.gpu.enabled=no`/`mode=auto`, resolved `lavapipe`, SurfaceFlinger ANGLE on SwiftShader, so
+rendering is software); simulator `smoke3-ios` (6B18B654-219E-426E-A024-FEC8E0C44977, iPhone 17, iOS 26.0). Evidence:
+`evidence/round2-smoke/round3-<ID>/`. Load: 3.2 at the start, **46.5** when the Android stock run began (from outside this
+smoke; it fell to 9.0 by its end), then 7-16 during the Android single-flow runs and 3-7 during the iOS rows.
+
+| ID | Result | Evidence | Note |
+|---|---|---|---|
+| round3-A0 Android ensure + build install | pass | round3-A0/ | AVD created and booted in 17.5 s; build install 1:11 (load spike). |
+| round3-A1 Android stock flows + screens | pass | round3-A1/run.txt | Flows **12/12** (90/90 steps, 6m 58s; wall 9:59); screens **5/5** (21/21, 1m 28s); exit 0. 03-edit `inputText " Renamed" (29.6s)`, 04-discard `inputText "X" (10.7s)`, 10-seed-many passed. Every step ran 3-10x slower than in round 1 at load 46 → 9. |
+| round3-A1-03edit 03-edit alone x3 | pass | round3-A1-03edit/run-1..3.txt, run-<i>-client.log | 3/3 pass. inputText step **20.1 / 19.3 / 18.3 s** (round 1: 2.8 s). The key-actions request now completes: `POST /actions [15.87s / 14.91s / 15.14s] OK`, no longer cut off at 10 s. Wall 57.1 / 53.4 / 56.7 s; load 7.9-10.1 before each run. Passes, but slow on the software-rendered AVD. |
+| round3-A3 Android 99-crash x3 | pass | round3-A3/crash-1..3.txt, crash-<i>-maestro-runner.log, crash-<i>-flow-000.json, device-crash-times.txt | 3/3: `launchApp` passes, then `✗ assertVisible "Landmarks"` (18.1 / 13.9 / 9.6 s) with `error.type` `app_crash`, and steps 3-4 are skipped. **No step passed against the dead app.** Crash to failure (logcat `FATAL EXCEPTION ... LANDMARKS_CRASH_ON_LAUNCH` at device 09:30:58.6 / 09:32:10.2 / 09:32:59.4; the device clock runs about 1 s behind the host; step failed at host 09:31:03.56 / 09:32:13.83 / 09:33:01.96) ≈ **4-5 s / 2.6-3.6 s / 1.6-2.6 s**. The app itself crashed 8-14 s into the step because launch is slow on this AVD. The runner log shows `crash check during a lookup in flight for <t>: crashed=false` every ~1 s while a lookup is blocked (the L-fix), then `crashed=true (took 5.3s / 3.4s / 2.2s)`, so the check itself is the bulk of the crash-to-failure time. Wall 86.6 / 64.9 / 40.6 s; load 10.8 / 16.3 / 14.0. |
+| round3-A-K07 Android 10-seed-many x3 | pass | round3-A-K07/run-1..3.txt, run-<i>-cmd-005-after.png | 3/3 `✓ assertVisible "Landmark 28"` (2.4 / 1.0 / 1.1 s). The assert-step captures show Landmark 20-28 with 28 the last row visible, every run (run 1 and run 2 captures are byte-identical). Scrolls 6.4-14.6 s each. Wall 62.8 / 59.3 / 61.1 s. |
+| round3-A2-K09 Android swipe reveals Remove x3 | fail | round3-A2-K09/summary.txt, run<i>-cmd-008-{before,after}.png, run1-cmd-009-before.png | The flow passes 3/3 (`✓ swipe: LEFT from text="Lake Tahoe" (1.4s)`, `✓ tapOn "Remove"`), but the swipe opened the row only in **2 of 3** runs. Run 1: cmd-008 before = after = cmd-009 before (`dab5f51f`); the row is unchanged and the tap hit the row's always-visible inline "Remove" text button. Runs 2 and 3: after ≠ before, and the red swipe "Remove" background shows. The flow cannot tell the two cases apart, because `tapOn "Remove"` matches either. |
+| round3-A-keepalive Android keep-alive banner | pass | round3-A-keepalive/run.txt | `Running 1 flow(s) in one UIAutomator2 session`, `UIAutomator2 keep-alive: session=4802-...`, `Press Ctrl-C to release.`, `Releasing UIAutomator2 session...`; no GrantivaAgent. `runner stop` → "Stopped keep-alive session (pid 4767, emulator-5554)"; the run exits 130 and `/tmp/grantiva-sessions` is empty afterwards. |
+| round3-I0 iOS ensure + build install | pass | round3-I0/ | `simulator ensure --name smoke3-ios --device-type "iPhone 17" --runtime "iOS 26.0"` created and booted the simulator in 24.2 s; build install 10.0 s. |
+| round3-I1 iOS stock flows + screens | pass | round3-I1/run.txt | Flows 12/12 (90/90, 1m 43s; wall 2:10); screens 5/5 (21/21); cached GrantivaAgent build used in both phases. |
+| round3-I4 iOS 99-crash x3 | pass | round3-I4-crash/ | 3/3 `✗ assertVisible "Landmarks"` in **144 / 132 / 143 ms** with `app_crash`; launchApp passed, steps 3-4 skipped; wall 9.8 / 8.8 / 8.8 s. |
+| round3-I-reap 3x `runner start --detach --json` → `runner stop --json` | pass | round3-I-reap/cycle-1..3.txt | `reaped[]`: cycle 1 one `webDriverAgent` (xcodebuild test-without-building, pid 8773, `killed: true`); cycle 2 `[]` (the runner handled SIGINT itself: "Received interrupt, cleaning up..."); cycle 3 one `webDriverAgent` (pid 9283, killed). Processes naming the UDID at **+0 s**: launchd_sim, plus a `simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m` (ppid 1, 3 s old) in cycles 1 and 3, and in cycles 2-3 the app under test (Landmarks pid 9090, launched in cycle 2). At **+60 s**: the diagnose is gone in every cycle; no grantiva-runner or xcodebuild is left; only launchd_sim and the app remain. `/tmp/grantiva-sessions` is empty after each cycle. |
+| round3-I3 `simulator teardown --udid` without `--force` | pass | round3-teardown/ios-teardown-json.txt | `deleted: true`, `leftoverProcesses: []`, `deviceHomeFailures: []`, `deviceHomesRemoved: [.../1.1.28-grantiva.11+android-drivers-2/devices/6B18B654-...]`, `runnerSessionStopped: false`; afterwards `simctl ... grep -c smoke3` = 0 and device-home count = 0. |
+| round3-teardown end state | pass | round3-teardown/android.txt, host-state.txt | `emulator teardown --serial emulator-5554` → "Killed emulator-5554 (smoke3-android)."; AVD deleted. End: no smoke simulators, `adb devices` empty, AVDs = Pixel_8_API_35, `/tmp/grantiva-sessions` empty, no lock for 6B18B654, no qemu/smoke3 process; booted: iPhone 17 Pro only (not touched). Load 3.15. |
+
+Round 3 counts: 13 rows, 12 pass, 1 fail (round3-A2-K09).
+
+**Round 3 interpretation.**
+
+- **Fixed in .11:**
+  - 03-edit no longer fails at 10 s: the key-actions request ran for about 15 s and completed.
+  - 99-crash no longer passes a step against the dead app. A blocked lookup is now interleaved with crash checks, so the step fails 1.6-5 s after the crash.
+  - 10-seed-many reaches Landmark 28 on the software-rendered AVD. That is the same AVD type on which .10 stopped at 22.
+- **Remaining fail:** the K09 swipe-to-reveal is flaky on this AVD (2 of 3). The stock 02-favorite flow hides the miss, because the tap target also exists without the swipe. The round2-A2/round2b runs (.10, slower AVD) opened 3 of 3.
+- **Speed (not counted as fails):** Android steps on the default software-rendered AVD at load 7-46 are 3-10x slower than in round 1; inputText alone takes 18-30 s.

@@ -1,0 +1,35 @@
+$ ps -Ao pid,ppid,etime,args | grep 6B18B654-219E-426E-A024-FEC8E0C44977 | grep -v grep   (before teardown)
+ 9090 95832       02:22 /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/Containers/Bundle/Application/37966ED7-C977-4761-9622-87C4023861FA/Landmarks.app/Landmarks
+95832     1       32:22 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/6B18B654-219E-426E-A024-FEC8E0C44977/data/var/run/launchd_bootstrap.plist
+$ $GRANTIVA simulator teardown --udid 6B18B654-219E-426E-A024-FEC8E0C44977 --json
+[
+  {
+    "deleted" : true,
+    "deviceHomeFailures" : [
+
+    ],
+    "deviceHomesRemoved" : [
+      "\/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.11+android-drivers-2\/devices\/6B18B654-219E-426E-A024-FEC8E0C44977"
+    ],
+    "leftoverProcesses" : [
+
+    ],
+    "runnerSessionStopped" : false,
+    "session" : {
+      "acquiredAt" : "2026-10-11T16:15:11Z",
+      "bootedByGrantiva" : true,
+      "ephemeral" : false,
+      "name" : "smoke3-ios",
+      "ownerPID" : 95724,
+      "sessionId" : "smoke3",
+      "state" : "active",
+      "udid" : "6B18B654-219E-426E-A024-FEC8E0C44977"
+    },
+    "udid" : "6B18B654-219E-426E-A024-FEC8E0C44977"
+  }
+]
+exit=0
+$ xcrun simctl list devices | grep -c smoke3
+0
+$ ls $GRANTIVA_RUNNER_HOME/versions/*/devices | grep -c 6B18B654-219E-426E-A024-FEC8E0C44977
+0

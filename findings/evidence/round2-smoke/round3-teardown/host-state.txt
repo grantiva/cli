@@ -1,0 +1,19 @@
+$ uptime
+ 9:47  up 4 days,  1:15, 5 users, load averages: 3.15 5.35 8.17
+$ xcrun simctl list devices | grep -c smoke
+0
+$ adb devices
+List of devices attached
+
+$ avdmanager list avd -c
+Pixel_8_API_35
+$ ls -la /tmp/grantiva-sessions
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 09:46 .
+drwxrwxrwt  224 root  wheel  7168 Oct 11 09:47 ..
+$ ls $GRANTIVA_RUNNER_HOME/locks | grep -c 6B18B654
+0
+$ ps -Ao pid,args | grep -E "6B18B654|smoke3|qemu-system" | grep -v grep
+$ xcrun simctl list devices booted
+== Devices ==
+    iPhone 17 Pro (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) (Booted) 

@@ -1,0 +1,44 @@
+09:32:40.413000 [INFO] === Test execution started ===
+09:32:40.413095 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/c99-3
+09:32:40.413104 [INFO] Platform: android
+09:32:40.413110 [INFO] Driver: uiautomator2
+09:32:40.413482 [INFO] Validated 1 flow(s)
+09:32:40.413509 [INFO] Single device execution mode
+09:32:40.413515 [INFO] Starting flow execution (parallel: false, devices: [])
+09:32:40.413521 [INFO] Creating driver for single device execution
+09:32:40.413527 [INFO] Connecting to Android device: emulator-5554
+09:32:40.894574 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+09:32:40.959942 [INFO] Starting UIAutomator2 server on device emulator-5554
+09:32:41.578068 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+09:32:41.595538 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+09:32:46.627427 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+09:32:46.673795 [INFO] Session created successfully: a53726bb-f4a3-4b85-950f-1444dcf9333a
+09:32:46.922273 [INFO] Driver created: android on google sdk_gphone64_arm64
+09:32:46.927777 [INFO] === Starting flow: 99-crash ===
+09:32:46.927800 [INFO] Flow file: .maestro/99-crash.yaml
+09:32:46.927813 [INFO] Total steps: 4
+09:32:46.963014 [DEBUG] Executing step 0: launchApp
+09:32:52.330151 [DEBUG] Step 0 completed successfully (5367ms): launchApp
+09:32:52.331499 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+09:32:52.332369 [DEBUG] Flutter: parallel search (text="Landmarks", id="")
+09:32:54.246498 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:32:54.970415 [DEBUG] crash check during a lookup in flight for 1.231s: crashed=false (took 229ms)
+09:32:55.740343 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:32:55.926580 [DEBUG] crash check during a lookup in flight for 2.187s: crashed=false (took 186ms)
+09:32:56.853751 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:32:56.915721 [DEBUG] crash check during a lookup in flight for 3.176s: crashed=false (took 173ms)
+09:32:57.772339 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:32:57.914635 [DEBUG] crash check during a lookup in flight for 4.175s: crashed=false (took 175ms)
+09:32:59.165638 [DEBUG] crash check during a lookup in flight for 5.426s: crashed=false (took 424ms)
+09:32:59.924162 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:33:01.957164 [DEBUG] crash check during a lookup in flight for 8.218s: crashed=true (took 2.217s)
+09:33:01.957449 [ERROR] Step 1 failed (9625ms): assertVisible: text="Landmarks" - Error: app crashed after launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed after launch)
+09:33:07.876339 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+09:33:08.419645 [INFO] === Flow completed: 99-crash (status: failed, duration: 21486ms, passed: 1, failed: 1, skipped: 2) ===
+09:33:09.412795 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+09:33:09.426612 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+09:33:09.426635 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+09:33:09.426803 [INFO] Generating reports...
+09:33:09.427599 [INFO] Shutting down devices started by maestro-runner...
+09:33:09.427619 [INFO] Shutting down all tracked emulators
+09:33:09.427641 [INFO] Shutting down all tracked simulators

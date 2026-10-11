@@ -1,0 +1,28 @@
+$ date; adb -s emulator-5554 shell date
+Sun Oct 11 09:33:31 PDT 2026
+Sun Oct 11 09:33:30 PDT 2026
+$ adb -s emulator-5554 logcat -b crash -d -v time | grep -E "FATAL|LANDMARKS_CRASH"
+10-11 09:16:13.858 E/AndroidRuntime( 1222): FATAL EXCEPTION: UiThreadHelper
+10-11 09:16:13.858 E/AndroidRuntime( 1222): Process: com.google.android.apps.nexuslauncher, PID: 1222
+10-11 09:30:58.618 E/AndroidRuntime(13051): FATAL EXCEPTION: main
+10-11 09:30:58.618 E/AndroidRuntime(13051): Process: com.kylebrowning.landmarks, PID: 13051
+10-11 09:30:58.618 E/AndroidRuntime(13051): java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH
+10-11 09:32:10.215 E/AndroidRuntime(13616): FATAL EXCEPTION: main
+10-11 09:32:10.215 E/AndroidRuntime(13616): Process: com.kylebrowning.landmarks, PID: 13616
+10-11 09:32:10.215 E/AndroidRuntime(13616): java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH
+10-11 09:32:59.388 E/AndroidRuntime(14165): FATAL EXCEPTION: main
+10-11 09:32:59.388 E/AndroidRuntime(14165): Process: com.kylebrowning.landmarks, PID: 14165
+10-11 09:32:59.388 E/AndroidRuntime(14165): java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH
+$ adb -s emulator-5554 logcat -d -v time | grep -E "ActivityManager.*(Start proc|Process com.kylebrowning.landmarks.*has died)"
+10-11 09:25:22.008 I/ActivityManager(  567): Start proc 9876:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:25:36.545 I/ActivityManager(  567): Start proc 10110:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:26:18.044 I/ActivityManager(  567): Start proc 10333:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:26:40.264 I/ActivityManager(  567): Start proc 10617:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:27:18.457 I/ActivityManager(  567): Start proc 11165:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:28:14.428 I/ActivityManager(  567): Start proc 11796:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:29:08.755 I/ActivityManager(  567): Start proc 12412:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:30:38.163 I/ActivityManager(  567): Start proc 13051:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:31:04.001 I/ActivityManager(  567): Process com.kylebrowning.landmarks (pid 13051) has died: prcp CRE 
+10-11 09:31:54.393 I/ActivityManager(  567): Start proc 13616:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:32:49.164 I/ActivityManager(  567): Start proc 14165:com.kylebrowning.landmarks/u0a207 for next-top-activity {com.kylebrowning.landmarks/com.kylebrowning.landmarks.MainActivity}
+10-11 09:33:02.883 I/ActivityManager(  567): Process com.kylebrowning.landmarks (pid 14165) has died: prcp CRE 

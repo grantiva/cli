@@ -1,0 +1,13 @@
+$ uptime
+ 9:40  up 4 days,  1:08, 5 users, load averages: 7.28 8.74 10.29
+$ $GRANTIVA emulator teardown --serial emulator-5554
+Killed emulator-5554 (smoke3-android).
+exit=0
+$ avdmanager delete avd -n smoke3-android
+
+AVD 'smoke3-android' deleted.exit=0
+$ adb devices
+List of devices attached
+
+$ avdmanager list avd -c
+Pixel_8_API_35
