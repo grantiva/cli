@@ -27,6 +27,12 @@ final class BuildToolsTests: XCTestCase {
         XCTAssertThrowsError(try BuildTools.resolvedProject(platform: .ios, config: nil, arguments: [:]))
     }
 
+    // K37: with no argument and no config `simulator:`, the shared default.
+    func testResolvedProjectWithoutASimulatorUsesTheSharedDefault() throws {
+        let ios = try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:])
+        XCTAssertEqual(ios.simulator, DefaultSimulator.name)
+    }
+
     func testBuildOnAndroidBootsThenBuildsThroughThePlatform() async throws {
         let device = MCPFakeDevicePlatform(platform: .android)
         let result = try await BuildTools.build(device: device, platform: .android, config: androidConfig, arguments: [:])

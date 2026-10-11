@@ -15,18 +15,50 @@ public struct SimulatorLeaseClaim: Codable, Sendable, Equatable {
     public let startedAt: Date
     public var runnerPID: Int32?
     public var keepAlive: Bool
+    /// True when `runner start` handed the lease to the runner it left
+    /// running: the holder is a session, released with `grantiva runner stop`,
+    /// not a `run --keep-alive`. Absent in claims written by earlier versions.
+    public var handedOff: Bool?
+    /// The directory `runner start` ran in, where `runner stop` finds the
+    /// session. Recorded on hand-off.
+    public var projectDirectory: String?
+    /// Temp directories the run created (its staged flows, its ephemeral
+    /// report dir). A clean exit removes them; `simulator teardown --force`
+    /// removes them for a run that was killed before it could.
+    public var temporaryDirectories: [String]?
 
-    public init(pid: Int32, udid: String, startedAt: Date, runnerPID: Int32? = nil, keepAlive: Bool = false) {
+    public init(
+        pid: Int32, udid: String, startedAt: Date, runnerPID: Int32? = nil, keepAlive: Bool = false,
+        handedOff: Bool? = nil, projectDirectory: String? = nil, temporaryDirectories: [String]? = nil
+    ) {
         self.pid = pid
         self.udid = udid
         self.startedAt = startedAt
         self.runnerPID = runnerPID
         self.keepAlive = keepAlive
+        self.handedOff = handedOff
+        self.projectDirectory = projectDirectory
+        self.temporaryDirectories = temporaryDirectories
     }
 
     /// True when the process that wrote the claim is gone.
     public var isStale: Bool {
-        kill(pid, 0) != 0 && errno != EPERM
+        !Self.isAlive(pid)
+    }
+
+    /// True while the claim's process or its runner is still running.
+    public var isLive: Bool {
+        Self.isAlive(pid) || runnerPID.map(Self.isAlive) == true
+    }
+
+    /// A `runner start` session's claim. Claims from before `handedOff`
+    /// existed are recognised by their shape: the runner is its own owner.
+    public var isRunnerStartSession: Bool {
+        handedOff == true || (handedOff == nil && keepAlive && runnerPID == pid)
+    }
+
+    static func isAlive(_ pid: Int32) -> Bool {
+        pid > 0 && (kill(pid, 0) == 0 || errno == EPERM)
     }
 }
 
@@ -59,6 +91,10 @@ public final class SimulatorLease: @unchecked Sendable {
         return "\(directory)/\(safeUDID).lock"
     }
 
+    /// Test hook: runs between `open` and `flock` in `acquire`, where a
+    /// holder releasing (and unlinking) the file is the race to survive.
+    nonisolated(unsafe) static var afterOpenForTesting: ((String) -> Void)?
+
     public static func acquire(
         udid: String,
         platform: Platform = .ios,
@@ -71,6 +107,21 @@ public final class SimulatorLease: @unchecked Sendable {
         )
 
         let path = leasePath(udid: udid, directory: directory)
+        // `release()` unlinks the file. A process that opened it just before
+        // can then lock an inode no longer at `path`, which nobody else will
+        // ever contend for; it must let go and open the file anew.
+        for _ in 0..<100 {
+            if let lease = try acquireOnce(udid: udid, platform: platform, directory: directory, path: path) {
+                return lease
+            }
+        }
+        throw GrantivaError.commandFailed("Could not lock simulator \(udid): its lease file at \(path) kept changing.", 1)
+    }
+
+    /// One attempt; nil when the file locked was unlinked meanwhile.
+    private static func acquireOnce(
+        udid: String, platform: Platform, directory: String, path: String
+    ) throws -> SimulatorLease? {
         // O_CLOEXEC so the descriptor can never reach a spawned child and keep
         // the lock alive past this process. Foundation's `Process` and
         // `ChildProcess` both spawn with POSIX_SPAWN_CLOEXEC_DEFAULT already,
@@ -82,6 +133,7 @@ public final class SimulatorLease: @unchecked Sendable {
                 1
             )
         }
+        afterOpenForTesting?(path)
 
         guard flock(descriptor, LOCK_EX | LOCK_NB) == 0 else {
             let lockError = errno
@@ -94,6 +146,12 @@ public final class SimulatorLease: @unchecked Sendable {
                 "Could not lock simulator \(udid): \(String(cString: strerror(lockError)))",
                 1
             )
+        }
+
+        guard isFile(descriptor, at: path) else {
+            flock(descriptor, LOCK_UN)
+            Darwin.close(descriptor)
+            return nil
         }
 
         // The lock is free, but `runner start` hands its lease to the runner
@@ -112,20 +170,43 @@ public final class SimulatorLease: @unchecked Sendable {
         return lease
     }
 
-    /// The message shown when a simulator is already owned. It names the owning
-    /// process and the exact command that frees it, because the situation this
-    /// error describes is otherwise invisible: `simulator sessions` tracks boot
-    /// capacity, not runner ownership.
-    /// True when `error` is the refusal above: the device belongs to another
-    /// run, so this run never touched it (no failure screenshot of it).
+    /// Whether `descriptor` is the file currently at `path` (same device and
+    /// inode); false when the path is gone or now names another file.
+    private static func isFile(_ descriptor: Int32, at path: String) -> Bool {
+        var open = stat()
+        var current = stat()
+        guard fstat(descriptor, &open) == 0, stat(path, &current) == 0 else { return false }
+        return open.st_dev == current.st_dev && open.st_ino == current.st_ino
+    }
+
+    /// True when `error` is the refusal `ownershipMessage` builds: the device
+    /// belongs to another run or session, so this run never touched it (no
+    /// failure screenshot of it).
     public static func isOwnershipRefusal(_ error: Error) -> Bool {
         guard case GrantivaError.commandFailed(let message, _)? = error as? GrantivaError else { return false }
-        return message.contains(ownershipMarker)
+        return message.contains(ownershipMarker) || message.contains(sessionMarker)
     }
 
     private static let ownershipMarker = " is already owned by another Grantiva run"
+    private static let sessionMarker = " is held by a `grantiva runner start` session"
 
+    /// The message shown when a simulator is already owned. It names the owning
+    /// process and the exact command that frees it, because the situation this
+    /// error describes is otherwise invisible: `simulator sessions` tracks boot
+    /// capacity, not runner ownership. A `runner start` session is named as
+    /// one and released with `runner stop`, not reclaimed by force.
     static func ownershipMessage(udid: String, holder: SimulatorLeaseClaim?, platform: Platform = .ios) -> String {
+        if let holder, holder.isRunnerStartSession {
+            let age = Int(Date().timeIntervalSince(holder.startedAt))
+            var message = "\(platform == .ios ? "Simulator" : "Emulator") \(udid)\(sessionMarker) "
+                + "(grantiva-runner pid \(holder.runnerPID ?? holder.pid), started \(age)s ago). "
+                + "Stop it with `grantiva runner stop`"
+            if let directory = holder.projectDirectory { message += " (from \(directory))" }
+            message += platform == .ios
+                ? ", or use another simulator via `grantiva simulator ensure --name <unique-name>`."
+                : ", or use another emulator via `grantiva emulator ensure --name <unique-name>`."
+            return message
+        }
         var message = platform == .ios
             ? "Simulator \(udid)\(ownershipMarker)"
             : "Emulator \(udid)\(ownershipMarker)"
@@ -167,6 +248,15 @@ public final class SimulatorLease: @unchecked Sendable {
         persistClaim()
     }
 
+    /// Records a temp directory this run created, so a reclaim after the run
+    /// was killed can remove it (see `SimulatorLeaseClaim.temporaryDirectories`).
+    public func recordTemporaryDirectory(_ path: String) {
+        stateLock.lock()
+        claim.temporaryDirectories = (claim.temporaryDirectories ?? []) + [path]
+        stateLock.unlock()
+        persistClaim()
+    }
+
     /// Transfers ownership to a process that outlives this one. `runner start`
     /// returns to the shell as soon as WDA is up, so a lock tied to its own
     /// descriptor would vanish while the runner still owns the simulator. The
@@ -177,7 +267,8 @@ public final class SimulatorLease: @unchecked Sendable {
         stateLock.lock()
         claim = SimulatorLeaseClaim(
             pid: runnerPID, udid: claim.udid, startedAt: claim.startedAt,
-            runnerPID: runnerPID, keepAlive: true
+            runnerPID: runnerPID, keepAlive: true, handedOff: true,
+            projectDirectory: FileManager.default.currentDirectoryPath
         )
         stateLock.unlock()
         persistClaim()
@@ -211,16 +302,29 @@ public final class SimulatorLease: @unchecked Sendable {
         return try? JSONDecoder.leaseDecoder.decode(SimulatorLeaseClaim.self, from: data)
     }
 
-    /// Breaks a lease regardless of who holds it. Only for `teardown --force`,
-    /// after the owning processes have been reaped: the claim is cleared and the
-    /// lock file unlinked, so any descriptor still open on the old inode can no
-    /// longer block a fresh acquisition.
+    /// Breaks a lease regardless of who holds it. Only for `teardown --force`
+    /// and `runner stop`: the claim is cleared and the lock file unlinked, so
+    /// any descriptor still open on the old inode can no longer block a fresh
+    /// acquisition. Returns whether the lease was held (see `isHeld`); a file
+    /// left by a run that ended is removed too, but freeing it is no release.
     @discardableResult
     public static func forceRelease(udid: String, directory: String? = nil) -> Bool {
-        let path = leasePath(udid: udid, directory: directory)
-        guard FileManager.default.fileExists(atPath: path) else { return false }
-        try? FileManager.default.removeItem(atPath: path)
-        return true
+        let held = isHeld(udid: udid, directory: directory)
+        try? FileManager.default.removeItem(atPath: leasePath(udid: udid, directory: directory))
+        return held
+    }
+
+    /// Whether someone holds the lease: its `flock` is taken by another open
+    /// file, or the file carries a claim whose process or runner is alive
+    /// (a `runner start` hand-off holds no descriptor).
+    public static func isHeld(udid: String, directory: String? = nil) -> Bool {
+        if claim(udid: udid, directory: directory)?.isLive == true { return true }
+        let descriptor = Darwin.open(leasePath(udid: udid, directory: directory), O_RDWR | O_CLOEXEC)
+        guard descriptor >= 0 else { return false }
+        defer { Darwin.close(descriptor) }
+        guard flock(descriptor, LOCK_EX | LOCK_NB) == 0 else { return errno == EWOULDBLOCK }
+        flock(descriptor, LOCK_UN)
+        return false
     }
 
     /// Test hook: the lease descriptor must carry FD_CLOEXEC so it can never be
@@ -238,9 +342,16 @@ public final class SimulatorLease: @unchecked Sendable {
         }
         released = true
         stateLock.unlock()
-        // Clear the claim before unlocking so nobody reads a claim for a lease
-        // that is already free.
+        // Clear the claim and unlink the file before unlocking, so nobody
+        // reads a claim for a lease that is already free and no lock file
+        // outlives its run. A process that opened the file before the unlink
+        // sees, once it gets the lock, that the path no longer names it and
+        // retries (see `acquire`). A file that `forceRelease` already replaced
+        // belongs to someone else and is left alone.
         _ = ftruncate(descriptor, 0)
+        if Self.isFile(descriptor, at: path) {
+            _ = unlink(path)
+        }
         _ = flock(descriptor, LOCK_UN)
         Darwin.close(descriptor)
     }

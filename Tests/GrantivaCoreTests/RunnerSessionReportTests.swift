@@ -75,7 +75,8 @@ final class RunnerSessionReportTests: XCTestCase {
             let reportDir = "out-\(exitCode)"
             _ = try? await RunnerSession.runFlowFiles(
                 at: ["flows/login.yaml"], bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: runner, outputDir: "captures", reportDir: reportDir, timeoutSeconds: 30
+                runner: runner, outputDir: "captures", reportDir: reportDir, timeoutSeconds: 30,
+                leaseDirectory: leaseDirectory
             )
             for file in ["report.json", "flows/flow-000.json", "junit-report.xml", "maestro-runner.log"] {
                 let text = try String(contentsOfFile: "\(scratch.path)/\(reportDir)/\(file)", encoding: .utf8)
@@ -111,7 +112,8 @@ final class RunnerSessionReportTests: XCTestCase {
         let runner = try makeRunner(exitCode: 1)
         _ = try? await RunnerSession.runFlowFiles(
             at: ["qa/a/same.yaml", "qa/b/same.yaml"], bundleId: "com.example", udid: udid(),
-            platform: StubPlatform(), runner: runner, outputDir: "captures", timeoutSeconds: 30
+            platform: StubPlatform(), runner: runner, outputDir: "captures", timeoutSeconds: 30,
+            leaseDirectory: leaseDirectory
         )
         let staged0 = try String(contentsOfFile: "\(scratch.path)/seen/flow-0.yaml", encoding: .utf8)
         let staged1 = try String(contentsOfFile: "\(scratch.path)/seen/flow-1.yaml", encoding: .utf8)
@@ -133,7 +135,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Deep Links", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: try makeRunner(exitCode: 1), outputDir: captures.path
+                runner: try makeRunner(exitCode: 1), outputDir: captures.path, leaseDirectory: leaseDirectory
             )
             XCTFail("expected the runner failure to be thrown")
         } catch {
@@ -150,7 +152,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: try makeRunner(exitCode: 0), outputDir: "captures"
+                runner: try makeRunner(exitCode: 0), outputDir: "captures", leaseDirectory: leaseDirectory
             )
             XCTFail("expected the missing screenshots to be thrown")
         } catch {
@@ -167,7 +169,7 @@ final class RunnerSessionReportTests: XCTestCase {
             screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
             bundleId: "com.example", udid: udid(), platform: StubPlatform(),
             runner: runner, outputDir: "out/captures",
-            failFast: true, reportDir: "out", timeoutSeconds: 30
+            failFast: true, reportDir: "out", timeoutSeconds: 30, leaseDirectory: leaseDirectory
         )
         let reportDir = "\(scratch.path)/out"
         XCTAssertTrue(FileManager.default.fileExists(atPath: "\(reportDir)/report.json"), "report dir must survive the run")
@@ -190,7 +192,7 @@ final class RunnerSessionReportTests: XCTestCase {
             _ = try await RunnerSession.run(
                 screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
                 bundleId: "com.example", udid: udid(), platform: StubPlatform(),
-                runner: runner, outputDir: "captures", timeoutSeconds: 1
+                runner: runner, outputDir: "captures", timeoutSeconds: 1, leaseDirectory: leaseDirectory
             )
             XCTFail("expected a timeout")
         } catch {
@@ -203,6 +205,9 @@ final class RunnerSessionReportTests: XCTestCase {
     // MARK: - Helpers
 
     private func udid() -> String { "TEST-REPORT-\(UUID().uuidString)" }
+
+    /// Leases go under the scratch dir, never the real runner home (K107-b).
+    private var leaseDirectory: String { scratch.appendingPathComponent("locks").path }
 
     private func writeFlow(_ path: String) throws {
         let url = scratch.appendingPathComponent(path)

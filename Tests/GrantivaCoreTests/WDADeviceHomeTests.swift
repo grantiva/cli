@@ -28,8 +28,13 @@ final class WDADeviceHomeTests: XCTestCase {
     }
 
     func testTwoSimulatorsGetDistinctRunnerHomesAndDerivedData() throws {
-        let env1 = IOSPlatform().runnerEnvironment(runnerHome: home, deviceID: "AAAA-1111")
-        let env2 = IOSPlatform().runnerEnvironment(runnerHome: home, deviceID: "BBBB-2222")
+        // The second call prunes AAAA-1111 (simctl does not list it) under
+        // its lease: the lease directory must be the test's, not the real
+        // runner home's.
+        var platform = IOSPlatform()
+        platform.leaseDirectory = leaseDirectory
+        let env1 = platform.runnerEnvironment(runnerHome: home, deviceID: "AAAA-1111")
+        let env2 = platform.runnerEnvironment(runnerHome: home, deviceID: "BBBB-2222")
         let home1 = try XCTUnwrap(env1["MAESTRO_RUNNER_HOME"])
         let home2 = try XCTUnwrap(env2["MAESTRO_RUNNER_HOME"])
         XCTAssertEqual(home1, "\(home!)/devices/AAAA-1111")
@@ -101,6 +106,17 @@ final class WDADeviceHomeTests: XCTestCase {
     }
 
     private var leaseDirectory: String { "\(home!)/locks" }
+
+    // K107-a: pruning a deleted simulator's home takes its lease, and must
+    // not leave that lease's file behind.
+    func testPruningADeletedDevicesHomeLeavesNoLockFile() throws {
+        _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
+        _ = try XCTUnwrap(WDADeviceHome.prepare(
+            runnerHome: home, deviceID: "BBBB-2222", existingDeviceIDs: { ["BBBB-2222"] }, leaseDirectory: leaseDirectory
+        ))
+        XCTAssertFalse(fm.fileExists(atPath: WDADeviceHome.path(runnerHome: home, deviceID: "AAAA-1111")))
+        XCTAssertFalse(fm.fileExists(atPath: SimulatorLease.leasePath(udid: "AAAA-1111", directory: leaseDirectory)))
+    }
 
     func testAnEmptySimulatorListPrunesNothing() throws {
         _ = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))

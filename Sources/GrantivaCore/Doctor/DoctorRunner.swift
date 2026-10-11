@@ -88,25 +88,36 @@ public struct DoctorRunner: Sendable {
         return DoctorCheck(name: "Xcode Version", status: .ok, message: version, fix: nil)
     }
 
-    func checkBootedSimulator() async -> DoctorCheck {
+    /// "No simulator booted" only when simctl answered and listed none
+    /// booted. A list that could not be read says so: the same broken
+    /// toolchain would make the ensure fix line fail too.
+    func checkBootedSimulator(simulators: SimulatorManager = .live) async -> DoctorCheck {
+        let devices: [SimulatorDevice]
         do {
-            let device = try await SimulatorManager.live.bootedDevice()
-            return DoctorCheck(
-                name: "Booted Simulator", status: .ok,
-                message: "\(device.name) — \(device.runtime)", fix: nil, section: .advisory
-            )
+            devices = try await simulators.listDevices()
         } catch {
-            return Self.noBootedSimulatorCheck(newestIPhone: await SimulatorManager.live.newestIPhone())
+            let reason = ((error as? LocalizedError)?.errorDescription ?? "\(error)")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            return DoctorCheck(
+                name: "Booted Simulator", status: .warning,
+                message: "Could not list simulators: \(reason)",
+                fix: "Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again",
+                section: .advisory
+            )
         }
+        guard let device = devices.first(where: \.isBooted) else { return Self.noBootedSimulatorCheck() }
+        return DoctorCheck(
+            name: "Booted Simulator", status: .ok,
+            message: "\(device.name) — \(device.runtime)", fix: nil, section: .advisory
+        )
     }
 
-    /// Names an iPhone type this host has, not a hardcoded model that newer
-    /// Xcodes no longer ship.
-    static func noBootedSimulatorCheck(newestIPhone: String?) -> DoctorCheck {
+    /// Names the default simulator every command uses (see `DefaultSimulator`).
+    static func noBootedSimulatorCheck(name: String = DefaultSimulator.name) -> DoctorCheck {
         DoctorCheck(
             name: "Booted Simulator", status: .warning,
             message: "No simulator booted",
-            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\"",
+            fix: "Run: grantiva simulator ensure --name \"\(name)\"",
             section: .advisory
         )
     }

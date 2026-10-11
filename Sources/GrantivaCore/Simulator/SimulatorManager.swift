@@ -87,6 +87,17 @@ public struct SimulatorManager: Sendable, Decodable {
         return (.warning, "Waiting for simulator capacity (\(sessions.count)/\(maximum)): \(owners)")
     }
 
+    /// The line for any wait in `reserve`. Waiting on a twin that is booting
+    /// the same device is not a capacity wait, and says so.
+    static func waitMessage(_ wait: SimulatorCapacity.Wait, maximum: Int) -> (level: Logger.Level, message: String) {
+        switch wait {
+        case .capacity(let sessions):
+            return capacityWait(sessions: sessions, maximum: maximum)
+        case .deviceBusy(let holder):
+            return (.notice, "Waiting for \(holder.name) (\(holder.udid)): another Grantiva process (pid \(holder.ownerPID)) is booting it.")
+        }
+    }
+
     /// Boots a simulator and takes a capacity slot for it.
     ///
     /// Only simulators Grantiva boots count toward the limit. A device that is
@@ -105,17 +116,21 @@ public struct SimulatorManager: Sendable, Decodable {
                 return device
             }
         }
-        _ = try await capacity.reserve(device: device, ephemeral: ephemeral, devices: { try await listDevices() }) { sessions, elapsed in
+        _ = try await capacity.reserve(device: device, ephemeral: ephemeral, devices: { try await listDevices() }) { wait, elapsed in
             guard Int(elapsed) % 10 == 0 else { return }
-            let wait = Self.capacityWait(sessions: sessions, maximum: capacity.maximum)
-            GrantivaLog.logger.log(level: wait.level, "\(wait.message)")
+            let line = Self.waitMessage(wait, maximum: capacity.maximum)
+            GrantivaLog.logger.log(level: line.level, "\(line.message)")
         }
         do {
-            if !device.isBooted {
+            // Look again: the wait may have been for another process that
+            // was booting this very device (two `ensure`s of one name), and
+            // booting a Booted device fails (CoreSimulator code 405).
+            let current = try await exactDevice(nameOrUDID: device.udid)
+            if !current.isBooted {
                 _ = try await execute("xcrun simctl boot \(device.udid)")
                 _ = try await execute("xcrun simctl bootstatus \(device.udid) -b")
             }
-            try capacity.activate(udid: device.udid, bootedByGrantiva: !device.isBooted)
+            try capacity.activate(udid: device.udid, bootedByGrantiva: !current.isBooted)
         } catch {
             try? capacity.releaseReservation(udid: device.udid)
             throw error
@@ -127,7 +142,9 @@ public struct SimulatorManager: Sendable, Decodable {
     public func exactDevice(nameOrUDID: String) async throws -> SimulatorDevice {
         let matches = try await listDevices().filter { $0.name == nameOrUDID || $0.udid == nameOrUDID }
         guard matches.count == 1, let device = matches.first else {
-            let message = matches.isEmpty ? "Simulator not found: \"\(nameOrUDID)\"" : "Multiple simulators are named \"\(nameOrUDID)\"; use a UDID"
+            let message = matches.isEmpty
+                ? "Simulator not found: \"\(nameOrUDID)\"" + (DefaultSimulator.notFoundHint(for: nameOrUDID).map { ".\($0)" } ?? "")
+                : "Multiple simulators are named \"\(nameOrUDID)\"; use a UDID"
             throw GrantivaError.invalidArgument(message)
         }
         return device
@@ -249,6 +266,7 @@ public struct SimulatorManager: Sendable, Decodable {
             try? capacity.remove(udid: udid, ownedBy: me)
             try? provenance.remove(udid: udid)
             removeDeviceHomes(udid)
+            removeLockFile(udid)
         }
     }
 
@@ -258,7 +276,17 @@ public struct SimulatorManager: Sendable, Decodable {
         try capacity.remove(udid: device.udid)
         try provenance.remove(udid: device.udid)
         removeDeviceHomes(device.udid)
+        removeLockFile(device.udid)
         return device
+    }
+
+    /// Where this manager's runner home keeps simulator leases.
+    private var leaseDirectory: String { "\(runnerHome)/locks" }
+
+    /// Removes the lease file of a device that is gone, unless a run holds
+    /// it: taking the lease and releasing it unlinks the file.
+    private func removeLockFile(_ udid: String) {
+        (try? SimulatorLease.acquire(udid: udid, directory: leaseDirectory))?.release()
     }
 
     /// Removes `udid`'s runner homes for `delete` and `cleanup`, whose output
@@ -282,9 +310,24 @@ public struct SimulatorManager: Sendable, Decodable {
 
     /// Ends whatever session owns `udid`. Used by
     /// `teardown --udid` when the caller knows the device but not the ticket.
+    ///
+    /// A device with no record (booted outside Grantiva, then run on) still
+    /// has runner homes; they are removed while no run holds the device, and
+    /// reported in an outcome with no session.
     public func teardown(udid: String) async throws -> [SimulatorTeardownOutcome] {
         let devices = try await listDevices()
-        return try await end(try capacity.sessions(devices: devices).filter { $0.udid == udid }, devices: devices)
+        let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
+        guard records.isEmpty else { return try await end(records, devices: devices) }
+        // Holding the lease keeps a run from starting in the device's home
+        // while it is removed; a device a run holds is not idle.
+        guard let lease = try? SimulatorLease.acquire(udid: udid, directory: leaseDirectory) else { return [] }
+        defer { lease.release() }
+        let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: udid)
+        guard !homes.removed.isEmpty || !homes.failures.isEmpty else { return [] }
+        return [SimulatorTeardownOutcome(
+            udid: udid, session: nil, deleted: false,
+            deviceHomesRemoved: homes.removed, deviceHomeFailures: homes.failures
+        )]
     }
 
     /// Releases each record. A booted device is shut down, and then deleted
@@ -303,6 +346,7 @@ public struct SimulatorManager: Sendable, Decodable {
             if created {
                 _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
                 try provenance.remove(udid: record.udid)
+                removeLockFile(record.udid)
             }
             try capacity.remove(udid: record.udid)
             let homes = WDADeviceHome.removeAll(runnerBase: runnerHome, deviceID: record.udid)
@@ -330,6 +374,7 @@ public struct SimulatorManager: Sendable, Decodable {
             _ = try await execute("xcrun simctl delete \(shellQuoted(record.udid))")
             try provenance.remove(udid: record.udid)
             removeDeviceHomes(record.udid)
+            removeLockFile(record.udid)
             removed.append(record)
         }
         return removed

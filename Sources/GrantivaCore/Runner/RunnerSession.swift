@@ -38,13 +38,14 @@ public enum RunnerSession {
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
         failFast: Bool = false,
         reportDir overrideReportDir: String? = nil,
-        timeoutSeconds: UInt64 = 300
+        timeoutSeconds: UInt64 = 300,
+        leaseDirectory: String? = nil
     ) async throws -> [ScreenCapture] {
         // A runner invocation owns WDA on its target simulator until the
         // subprocess exits. Refuse overlapping ownership on the same UDID so a
         // concurrent invocation cannot replace or tear down this session.
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: leaseDirectory)
         defer { simulatorLease.release() }
 
         // Ensure runner is extracted
@@ -57,6 +58,7 @@ public enum RunnerSession {
         let flowPath = try FlowGenerator.writeTemp(
             screens: screens, bundleId: bundleId, environment: environment, platform: platform.platform
         )
+        simulatorLease.recordTemporaryDirectory((flowPath as NSString).deletingLastPathComponent)
         defer {
             try? FileManager.default.removeItem(
                 atPath: (flowPath as NSString).deletingLastPathComponent
@@ -77,6 +79,7 @@ public enum RunnerSession {
                 .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
                 .path
             preserveReportDir = false
+            simulatorLease.recordTemporaryDirectory(reportDir)
         }
         // A capture that does not happen this run must not leave last run's
         // image behind for `diff compare` to pass against. Before the report
@@ -328,12 +331,13 @@ public enum RunnerSession {
         environment: [String: String] = [:],
         readyFile: String? = nil,
         expectedPixels: SimulatorProvisionResult.Dimensions? = nil,
-        failureReport: RunnerFailureReport? = nil
+        failureReport: RunnerFailureReport? = nil,
+        leaseDirectory: String? = nil
     ) async throws -> [ScreenCapture] {
         guard !flowPaths.isEmpty else { return [] }
 
         let readySignal = ReadyFileSignal(path: readyFile)
-        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform)
+        let simulatorLease = try SimulatorLease.acquire(udid: udid, platform: platform.platform, directory: leaseDirectory)
         defer { simulatorLease.release() }
 
         // Resolve relative paths against the working directory where the CLI was invoked,
@@ -355,6 +359,7 @@ public enum RunnerSession {
             .path
         try FileManager.default.createDirectory(atPath: tempFlowDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(atPath: tempFlowDir) }
+        simulatorLease.recordTemporaryDirectory(tempFlowDir)
 
         var tempFlowPaths: [String] = []
         let uniqueFlowNames = uniqueFlowNames(for: flowPaths)
@@ -412,6 +417,7 @@ public enum RunnerSession {
                 .appendingPathComponent("grantiva-report-\(UUID().uuidString)")
                 .path
             preserveReportDir = false
+            simulatorLease.recordTemporaryDirectory(reportDir)
         }
         // A preserved --report-dir may contain a terminal report and assets
         // from an earlier invocation. The ready watcher must never publish

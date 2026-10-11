@@ -55,10 +55,17 @@ struct InitCommand: AsyncParsableCommand {
         if fm.fileExists(atPath: configPath) {
             GrantivaLog.logger.info("grantiva.yml already exists — skipping")
         } else {
-            let (yaml, warnings) = Self.iosTemplate(
-                scheme: scheme, detected: scheme == nil ? await Self.detectSchemes(in: cwd) : nil, bundleId: bundleId,
-                newestIPhone: await SimulatorManager.live.newestIPhone()
+            let (yaml, templateWarnings) = Self.iosTemplate(
+                scheme: scheme, detected: scheme == nil ? await Self.detectSchemes(in: cwd) : nil, bundleId: bundleId
             )
+            var warnings = templateWarnings
+            if let devices = try? await SimulatorManager.live.listDevices(),
+               let warning = Self.existingSimulatorWarning(
+                   name: DefaultSimulator.name, devices: devices,
+                   createdByGrantiva: Set(((try? SimulatorProvenance.live.all()) ?? []).map(\.udid))
+               ) {
+                warnings.append(warning)
+            }
             try yaml.write(toFile: configPath, atomically: true, encoding: .utf8)
             GrantivaLog.logger.info("Created grantiva.yml")
             for warning in warnings { GrantivaLog.logger.warning("\(warning)") }
@@ -98,7 +105,7 @@ struct InitCommand: AsyncParsableCommand {
     }
 
     static func iosTemplate(
-        scheme: String?, detected: DetectedSchemes?, bundleId: String?, newestIPhone: String?
+        scheme: String?, detected: DetectedSchemes?, bundleId: String?, newestIPhone: String? = DefaultSimulator.resolved
     ) -> (yaml: String, warnings: [String]) {
         var warnings: [String] = []
         let schemeName: String
@@ -128,8 +135,8 @@ struct InitCommand: AsyncParsableCommand {
         if let newestIPhone {
             simulator = newestIPhone
         } else {
-            simulator = "iPhone 17 Pro"
-            warnings.append("No installed iPhone simulator type found; simulator \"iPhone 17 Pro\" is a placeholder. Edit grantiva.yml.")
+            simulator = DefaultSimulator.fallback
+            warnings.append("No installed iPhone simulator type found; simulator \"\(simulator)\" is a placeholder. Edit grantiva.yml.")
         }
         let bundleLine = bundleId.map { "bundle_id: \($0)" } ?? "# bundle_id: com.example.myapp"
         let yaml = """
@@ -154,6 +161,20 @@ struct InitCommand: AsyncParsableCommand {
         #     - small_tap_target
         """
         return (yaml, warnings)
+    }
+
+    /// The default is a stock device-type name, so the user may already have
+    /// a simulator called that for something else; `run` would boot and
+    /// drive it. Says so, naming it, unless Grantiva created it.
+    static func existingSimulatorWarning(
+        name: String, devices: [SimulatorDevice], createdByGrantiva: Set<String>
+    ) -> String? {
+        let theirs = devices.filter { $0.name == name && !createdByGrantiva.contains($0.udid) }
+        guard !theirs.isEmpty else { return nil }
+        let listed = theirs.map { "\"\($0.name)\" (\($0.udid))" }.joined(separator: ", ")
+        return "A simulator named \(listed) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+            + "To keep them off it, set simulator: in grantiva.yml to a name of your own, for example \"Grantiva \(name)\" "
+            + "(created on first use with `grantiva simulator ensure --name \"Grantiva \(name)\"`)."
     }
 
     /// Rejects a flag from the other platform by name, as `run` does,

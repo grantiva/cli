@@ -310,6 +310,117 @@ final class SimulatorReaperTests: XCTestCase {
     }
 }
 
+extension SimulatorReaperTests {
+    // MARK: - K68: only a held lease is a reclaim
+
+    func testForceTeardownWithNoProcessesAndOnlyAStaleLockFileIsNotAReclaim() async throws {
+        let directory = temporaryDirectory()
+        // What a run that ended normally used to leave: the file, no claim.
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        FileManager.default.createFile(atPath: SimulatorLease.leasePath(udid: udid, directory: directory), contents: Data())
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.processes, [])
+        XCTAssertFalse(result.leaseReleased)
+        XCTAssertFalse(result.reclaimed)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: udid, directory: directory)))
+    }
+
+    func testForceTeardownOfAKilledKeepAliveRunStillReportsTheLeaseReleased() async throws {
+        let directory = temporaryDirectory()
+        // `kill -9` of the grantiva process: its claim is left behind naming a
+        // runner that is still alive until the reaper kills it.
+        let runner = Process()
+        runner.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        runner.arguments = ["30"]
+        try runner.run()
+        defer { if runner.isRunning { runner.terminate() }; runner.waitUntilExit() }
+        let dead = Process()
+        dead.executableURL = URL(fileURLWithPath: "/usr/bin/true")
+        try dead.run()
+        dead.waitUntilExit()
+        try writeClaim(SimulatorLeaseClaim(
+            pid: dead.processIdentifier, udid: udid, startedAt: Date(),
+            runnerPID: runner.processIdentifier, keepAlive: true
+        ), directory: directory)
+        let line = "  \(runner.processIdentifier)  \(runner.processIdentifier) /x/grantiva-runner --platform ios --device \(udid) test"
+
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: "\(directory)/runner",
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+            snapshot: { line },
+            gracePeriod: 1
+        )
+
+        XCTAssertEqual(result.processes.map(\.pid), [runner.processIdentifier])
+        XCTAssertTrue(result.leaseReleased)
+        XCTAssertTrue(result.reclaimed)
+    }
+
+    // MARK: - K106: the killed run's temp directories
+
+    private func writeClaim(_ claim: SimulatorLeaseClaim, directory: String) throws {
+        try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+        try JSONEncoder.leaseEncoder.encode(claim)
+            .write(to: URL(fileURLWithPath: SimulatorLease.leasePath(udid: udid, directory: directory)))
+    }
+
+    private func makeTempDirectories(under root: String) throws -> [String] {
+        let paths = ["grantiva-\(UUID().uuidString)", "grantiva-report-\(UUID().uuidString)"].map { "\(root)/\($0)" }
+        for path in paths {
+            try FileManager.default.createDirectory(atPath: "\(path)/0", withIntermediateDirectories: true)
+        }
+        return paths
+    }
+
+    func testForceTeardownRemovesTheKilledRunsTempDirectories() async throws {
+        let directory = temporaryDirectory()
+        let temps = try makeTempDirectories(under: "\(directory)/tmp")
+        var claim = SimulatorLeaseClaim(pid: 999_999, udid: udid, startedAt: Date(), runnerPID: 999_998, keepAlive: true)
+        claim.temporaryDirectories = temps
+        try writeClaim(claim, directory: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.temporaryDirectoriesRemoved, temps)
+        for path in temps { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
+        XCTAssertEqual(object["temporaryDirectoriesRemoved"] as? [String], temps)
+    }
+
+    func testForceTeardownKeepsTempDirectoriesOfALiveOwner() async throws {
+        let directory = temporaryDirectory()
+        let temps = try makeTempDirectories(under: "\(directory)/tmp")
+        // The owner is this test process: alive, and never reaped.
+        var claim = SimulatorLeaseClaim(pid: getpid(), udid: udid, startedAt: Date())
+        claim.temporaryDirectories = temps
+        try writeClaim(claim, directory: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.temporaryDirectoriesRemoved, [])
+        for path in temps { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
+    }
+
+    func testForceTeardownNeverRemovesADirectoryThatIsNotAGrantivaTempDirectory() async throws {
+        let directory = temporaryDirectory()
+        let reportDir = "\(directory)/ci-reports"
+        try FileManager.default.createDirectory(atPath: reportDir, withIntermediateDirectories: true)
+        var claim = SimulatorLeaseClaim(pid: 999_999, udid: udid, startedAt: Date())
+        claim.temporaryDirectories = [reportDir]
+        try writeClaim(claim, directory: directory)
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(result.temporaryDirectoriesRemoved, [])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: reportDir))
+    }
+}
+
 /// Hands out a different `ps` snapshot on each call.
 private final class SnapshotSequence: @unchecked Sendable {
     private let lock = NSLock()

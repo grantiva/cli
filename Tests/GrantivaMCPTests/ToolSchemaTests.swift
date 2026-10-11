@@ -24,6 +24,22 @@ final class ToolSchemaTests: XCTestCase {
         MCPTestSupport.registry(driver: MCPTestSupport.fakeDriver(recorder: WDARecorder())).allTools()
     }
 
+    // MARK: - K37: one default simulator
+
+    func testSimulatorSchemasStateTheSharedDefault() throws {
+        let tools = Dictionary(uniqueKeysWithValues: allTools().map { ($0.name, $0) })
+        for (name, property) in [
+            ("grantiva_build", "simulator"), ("grantiva_run", "simulator"), ("grantiva_test", "simulator"),
+            ("grantiva_sim_boot", "name"),
+        ] {
+            let tool = try XCTUnwrap(tools[name], name)
+            let properties = try XCTUnwrap(object(object(tool.inputSchema)?["properties"]), name)
+            let description = try XCTUnwrap(string(object(properties[property])?["description"]), "\(name).\(property)")
+            XCTAssertTrue(description.contains("default: '\(DefaultSimulator.name)'"), "\(name): \(description)")
+            XCTAssertFalse(description.contains("iPhone 16") && DefaultSimulator.name != "iPhone 16", "\(name): \(description)")
+        }
+    }
+
     // MARK: - Structural validation
 
     func testEverySchemaIsAJSONSchemaObjectWithAPropertiesMap() throws {

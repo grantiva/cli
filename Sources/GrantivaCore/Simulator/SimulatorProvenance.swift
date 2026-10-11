@@ -14,7 +14,12 @@ public struct CreatedSimulatorRecord: Codable, Equatable, Sendable {
 }
 
 public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
-    public let session: ManagedSimulatorSession
+    /// The device torn down.
+    public let udid: String
+    /// The session record released; nil when the device had none and only
+    /// its runner homes were removed (`teardown --udid` on a device Grantiva
+    /// did not boot).
+    public let session: ManagedSimulatorSession?
     public let deleted: Bool
     /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
     public var deviceHomesRemoved: [String]
@@ -27,6 +32,18 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
         deviceHomesRemoved: [String] = [],
         deviceHomeFailures: [String] = []
     ) {
+        self.init(udid: session.udid, session: session, deleted: deleted,
+                  deviceHomesRemoved: deviceHomesRemoved, deviceHomeFailures: deviceHomeFailures)
+    }
+
+    public init(
+        udid: String,
+        session: ManagedSimulatorSession?,
+        deleted: Bool,
+        deviceHomesRemoved: [String] = [],
+        deviceHomeFailures: [String] = []
+    ) {
+        self.udid = udid
         self.session = session
         self.deleted = deleted
         self.deviceHomesRemoved = deviceHomesRemoved

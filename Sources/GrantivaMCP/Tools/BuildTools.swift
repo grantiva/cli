@@ -21,7 +21,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name for destination (default: 'iPhone 16')"),
+                        "description": .string("Simulator name for destination (default: '\(DefaultSimulator.name)')"),
                     ]),
                     "module": .object([
                         "type": .string("string"),
@@ -51,7 +51,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name (default: 'iPhone 16')"),
+                        "description": .string("Simulator name (default: '\(DefaultSimulator.name)')"),
                     ]),
                     "module": .object([
                         "type": .string("string"),
@@ -81,7 +81,7 @@ enum BuildTools {
                     ]),
                     "simulator": .object([
                         "type": .string("string"),
-                        "description": .string("Simulator name for destination (default: 'iPhone 16')"),
+                        "description": .string("Simulator name for destination (default: '\(DefaultSimulator.name)')"),
                     ]),
                 ]),
             ]),
@@ -104,7 +104,7 @@ enum BuildTools {
             return ResolvedProject(
                 scheme: scheme, project: config?.project, workspace: config?.workspace,
                 bundleId: config?.bundleId, buildSettings: config?.buildSettings ?? [],
-                simulator: arguments["simulator"]?.stringValue ?? config?.simulator ?? "iPhone 16"
+                simulator: arguments["simulator"]?.stringValue ?? config?.simulator ?? DefaultSimulator.name
             )
         case .android:
             let configured = config?.android ?? AndroidProject()
@@ -255,7 +255,7 @@ enum BuildTools {
             )
         }
 
-        let simName = arguments["simulator"]?.stringValue ?? config?.simulator ?? "iPhone 16"
+        let simName = arguments["simulator"]?.stringValue ?? config?.simulator ?? DefaultSimulator.name
         let device = try await simManager.boot(nameOrUDID: simName)
         let destination = "platform=iOS Simulator,id=\(device.udid)"
 

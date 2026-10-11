@@ -472,6 +472,43 @@ final class DiffCommandTests: XCTestCase {
         }
     }
 
+    // MARK: - K86-b: a device held by a live `runner start` session
+
+    /// `diff capture --no-build --simulator <held>` captures through the live
+    /// session instead of starting a second runner the device lease refuses.
+    func testNoBuildCaptureOnTheSessionsDeviceCapturesThroughTheSession() async throws {
+        try await inTemporaryDirectory { dir in
+            try """
+            bundle_id: com.example.app
+            screens:
+              - name: Home
+                path: launch
+            """.write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios", "--simulator", "HELD-UDID"])
+            let fake = FakeDevicePlatform(platform: .ios)
+            fake.bootedID = "HELD-UDID"; fake.bootedName = "Held"
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            command.sessionLookup = RunnerSessionLookup { platform in
+                XCTAssertEqual(platform, .ios)
+                return RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "com.example.app", udid: "HELD-UDID", startedAt: Date(), platform: .ios)
+            }
+
+            try await command.run()
+
+            XCTAssertTrue(fake.calls.contains("attachDriver(HELD-UDID,8123)"), "\(fake.calls)")
+            XCTAssertTrue(fake.calls.contains("launch(com.example.app)"), "\(fake.calls)")
+            let capture = dir.appendingPathComponent(".grantiva/captures/\(ScreenArtifact.fileName(for: "Home"))")
+            XCTAssertTrue(FileManager.default.fileExists(atPath: capture.path), "no capture written")
+        }
+    }
+
+    func testOnlyTheSessionsOwnDeviceIsCapturedThroughIt() {
+        let session = RunnerSessionInfo(pid: 4242, wdaPort: 8123, bundleId: "b", udid: "HELD-UDID", startedAt: Date(), platform: .ios)
+        XCTAssertNotNil(DiffCommand.session(session, holding: "HELD-UDID"))
+        XCTAssertNil(DiffCommand.session(session, holding: "OTHER-UDID"))
+        XCTAssertNil(DiffCommand.session(nil, holding: "HELD-UDID"))
+    }
+
     /// The runner session is only consulted when neither the flag nor the config names a device.
     func testNoBuildDoesNotLookUpTheSessionWhenADeviceIsNamed() async throws {
         let fake = FakeDevicePlatform(platform: .ios)

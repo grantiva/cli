@@ -337,7 +337,8 @@ struct FakeRunnerScratch {
             reportDir: reportDir,
             timeoutSeconds: 30,
             readyFile: readyFile,
-            failureReport: failureReport
+            failureReport: failureReport,
+            leaseDirectory: root.appendingPathComponent("locks").path
         )
     }
 }
