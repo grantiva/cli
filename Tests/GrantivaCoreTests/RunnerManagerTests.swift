@@ -183,8 +183,38 @@ final class RunnerManagerTests: XCTestCase {
     func testRunnerHomeOverrideIsMadeAbsolute() {
         let cwd = FileManager.default.currentDirectoryPath
         XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh/../runner"]), "\(cwd)/runner")
-        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/x/"]), "/tmp/x")
+        XCTAssertEqual(RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/x/"]), "/private/tmp/x")
         XCTAssertTrue(RunnerManager.resolveBaseDir(environment: [:]).hasSuffix("/.grantiva/runner"))
+    }
+
+    /// L27: one spelling whether or not the home exists yet: the realpath(3)
+    /// one, as `KeepAliveOwner.canonicalDirectory` records directories.
+    func testTheRunnerHomeIsSpelledTheSameBeforeAndAfterItExists() throws {
+        let root = "/tmp/grantiva-l27-\(UUID().uuidString)"
+        defer { try? FileManager.default.removeItem(atPath: root) }
+        let home = "\(root)/missing/rh"
+        let before = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": home])
+        try FileManager.default.createDirectory(atPath: home, withIntermediateDirectories: true)
+        let after = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": home])
+        XCTAssertEqual(before, after)
+        XCTAssertEqual(after, "/private\(home)")
+    }
+
+    func testARelativeRunnerHomeResolvesToThePrivateSpellingEitherWay() throws {
+        let root = "/tmp/grantiva-l27-\(UUID().uuidString)"
+        try FileManager.default.createDirectory(atPath: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(atPath: root) }
+        let before = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh"], currentDirectory: root)
+        try FileManager.default.createDirectory(atPath: "\(root)/rh", withIntermediateDirectories: true)
+        let after = RunnerManager.resolveBaseDir(environment: ["GRANTIVA_RUNNER_HOME": "rh"], currentDirectory: root)
+        XCTAssertEqual(before, "/private\(root)/rh")
+        XCTAssertEqual(after, before)
+    }
+
+    func testCanonicalPathResolvesTheDeepestExistingAncestor() {
+        XCTAssertEqual(RunnerManager.canonicalPath("/tmp/does/not/exist"), "/private/tmp/does/not/exist")
+        XCTAssertEqual(RunnerManager.canonicalPath("/tmp"), "/private/tmp")
+        XCTAssertEqual(RunnerManager.canonicalPath("/"), "/")
     }
 
     func testEveryCallTouchesLastUsed() throws {
@@ -520,7 +550,7 @@ final class RunnerManagerTests: XCTestCase {
         defer { try? FileManager.default.removeItem(atPath: staging) }
         XCTAssertThrowsError(try RunnerManager.extractEmbedded(into: staging, bundle: bundle)) { error in
             let message = error.localizedDescription
-            XCTAssertTrue(message.contains(bundle.bundlePath), message)
+            XCTAssertTrue(message.contains(RunnerManager.canonicalPath(bundle.bundlePath)), message)
             XCTAssertTrue(message.contains("android-drivers.tar.gz"), message)
             XCTAssertTrue(message.contains("Reinstall grantiva so the binary and its bundle match"), message)
             XCTAssertFalse(message.contains("Runner binary not found"), message)
@@ -553,7 +583,7 @@ final class RunnerManagerTests: XCTestCase {
             reportedVersion: { _ in .success("1.0.0") }
         ))
         XCTAssertTrue(warning.contains("reports version 1.0.0, but the installed runner is 1.1.28-grantiva.9"), warning)
-        XCTAssertTrue(warning.contains(complete.bundlePath), warning)
+        XCTAssertTrue(warning.contains(RunnerManager.canonicalPath(complete.bundlePath)), warning)
         XCTAssertNil(RunnerManager.bundleMismatchWarning(
             bundle: complete, installed: "1.0.0", installDir: "/home/versions/s", reportedVersion: { _ in .success("1.0.0") }
         ))
@@ -563,6 +593,18 @@ final class RunnerManagerTests: XCTestCase {
             bundle: old, installed: "1.1.28-grantiva.9", installDir: "/home/versions/s", reportedVersion: { _ in .success("x") }
         ))
         XCTAssertTrue(missing.contains("android-drivers.tar.gz"), missing)
+    }
+
+    /// L28: with no bundle beside the binary the current install is kept,
+    /// but a fresh install would fail; say so now.
+    func testAMissingBundleWarnsThatAFreshInstallWouldFail() throws {
+        let warning = try XCTUnwrap(RunnerManager.bundleMismatchWarning(
+            bundle: nil, installed: "1.1.28-grantiva.11", installDir: "/home/versions/s"
+        ))
+        XCTAssertTrue(warning.contains("grantiva_GrantivaCore.bundle"), warning)
+        XCTAssertTrue(warning.contains("The installed runner (/home/versions/s) was left as it is"), warning)
+        XCTAssertTrue(warning.contains("a fresh install"), warning)
+        XCTAssertFalse(warning.hasPrefix("Warning:"), "the logger adds the prefix")
     }
 
     func testTheShippedBundleRaisesNoWarning() throws {

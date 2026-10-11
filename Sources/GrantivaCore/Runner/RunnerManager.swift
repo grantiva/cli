@@ -140,7 +140,7 @@ extension RunnerManager {
             return bundle.url(forResource: base, withExtension: "tar.gz") == nil
         }
         guard !missing.isEmpty else { return nil }
-        return "The resource bundle \(bundle.bundlePath) has no \(missing.joined(separator: " or ")): "
+        return "The resource bundle \(canonicalPath(bundle.bundlePath)) has no \(missing.joined(separator: " or ")): "
             + "it is from another grantiva release than this binary (which expects grantiva-runner \(runnerVersion)). "
             + "Reinstall grantiva so the binary and its bundle match."
     }
@@ -155,18 +155,38 @@ extension RunnerManager {
     }
 
     /// A warning when the resource bundle beside the binary does not carry
-    /// the runner the current install holds. The install is used as it is
-    /// (it is the right version); the bundle would fail the next fresh
-    /// install, so say so now. nil when the bundle matches or is absent.
+    /// the runner the current install holds, or is missing. The install is
+    /// used as it is (it is the right version); the bundle would fail the
+    /// next fresh install, so say so now. nil when the bundle matches.
     public static func bundleMismatchWarning() -> String? {
-        guard let bundle = resourceBundle else { return nil }
-        return bundleMismatchWarning(bundle: bundle, installed: runnerVersion, installDir: currentInstallDir)
+        bundleMismatchWarning(bundle: resourceBundle, installed: runnerVersion, installDir: currentInstallDir)
+    }
+
+    private static let missingBundleWarned = NSLock()
+    nonisolated(unsafe) private static var didWarnMissingBundle = false
+
+    /// `bundleMismatchWarning`'s missing-bundle case, logged at most once per
+    /// process, for commands that use the current install without reading
+    /// the bundle. Cheap: it only checks that the bundle exists.
+    static func warnOnceIfBundleMissing() {
+        guard resourceBundle == nil else { return }
+        let first = missingBundleWarned.withLock {
+            defer { didWarnMissingBundle = true }
+            return !didWarnMissingBundle
+        }
+        guard first, let warning = bundleMismatchWarning(bundle: nil, installed: runnerVersion, installDir: currentInstallDir) else { return }
+        GrantivaLog.logger.warning("\(warning)")
     }
 
     static func bundleMismatchWarning(
-        bundle: Bundle, installed: String, installDir: String,
+        bundle: Bundle?, installed: String, installDir: String,
         reportedVersion: (String) -> Result<String, RunnerProbeFailure> = { reportedVersion(ofRunnerAt: $0) }
     ) -> String? {
+        guard let bundle else {
+            return "The \(resourceBundleName).bundle resource bundle was not found next to the grantiva executable. "
+                + "The installed runner (\(installDir)) was left as it is, but a fresh install (a new runner home or another grantiva version) would fail. "
+                + "Reinstall grantiva, or keep the bundle beside the binary when copying it."
+        }
         if let problem = missingTarballsMessage(bundle: bundle) {
             return problem + " The installed runner (\(installDir)) was left as it is."
         }
@@ -184,7 +204,7 @@ extension RunnerManager {
         let binary = "\(scratch)/grantiva-runner"
         guard process.terminationStatus == 0, fm.fileExists(atPath: binary),
               case .success(let found) = reportedVersion(binary), found != installed else { return nil }
-        return "The grantiva-runner in \(bundle.bundlePath) reports version \(found), but the installed runner is \(installed) "
+        return "The grantiva-runner in \(canonicalPath(bundle.bundlePath)) reports version \(found), but the installed runner is \(installed) "
             + "(\(installDir)). The resource bundle beside the grantiva binary is from another release; "
             + "the installed runner was left as it is. Reinstall grantiva so the binary and its bundle match."
     }
@@ -195,13 +215,41 @@ extension RunnerManager {
     static let baseDir: String = resolveBaseDir(environment: ProcessInfo.processInfo.environment)
 
     /// `GRANTIVA_RUNNER_HOME` made absolute (a relative value would leave the
-    /// cache symlink dangling), else `~/.grantiva/runner`.
-    static func resolveBaseDir(environment: [String: String]) -> String {
+    /// cache symlink dangling), else `~/.grantiva/runner`; spelled by
+    /// `canonicalPath`, so the spelling does not depend on whether the home
+    /// exists yet (L27).
+    static func resolveBaseDir(
+        environment: [String: String],
+        currentDirectory: String = FileManager.default.currentDirectoryPath
+    ) -> String {
         if let override = environment["GRANTIVA_RUNNER_HOME"], !override.isEmpty {
-            return URL(fileURLWithPath: override).standardizedFileURL.path
+            let absolute = override.hasPrefix("/") ? override : "\(currentDirectory)/\(override)"
+            return canonicalPath(absolute)
         }
         let home = FileManager.default.homeDirectoryForCurrentUser.path
-        return "\(home)/.grantiva/runner"
+        return canonicalPath("\(home)/.grantiva/runner")
+    }
+
+    /// `path` standardized, with its deepest existing ancestor resolved the
+    /// way realpath(3) resolves it (`/tmp/x` becomes `/private/tmp/x`) and
+    /// the rest appended. Foundation's standardization drops a leading
+    /// `/private` only for paths that exist, which made one directory print
+    /// two ways depending on whether it had been created yet.
+    static func canonicalPath(_ path: String) -> String {
+        let standardized = URL(fileURLWithPath: path).standardizedFileURL.path
+        var existing = standardized
+        var rest: [String] = []
+        while existing != "/", !FileManager.default.fileExists(atPath: existing) {
+            rest.insert((existing as NSString).lastPathComponent, at: 0)
+            existing = (existing as NSString).deletingLastPathComponent
+        }
+        var resolved = existing
+        if let real = realpath(existing, nil) {
+            resolved = String(cString: real)
+            free(real)
+        }
+        guard !rest.isEmpty else { return resolved }
+        return (resolved == "/" ? "" : resolved) + "/" + rest.joined(separator: "/")
     }
 
     /// This version's install: the runner binary, its `version` stamp and
@@ -239,7 +287,12 @@ extension RunnerManager {
     }
 
     public static let live = RunnerManager(
-        ensureAvailable: { try installLive(willExtract: {}) },
+        ensureAvailable: {
+            let extracted = try installLive(willExtract: {})
+            // A current install is used without the bundle; a missing bundle
+            // would fail the next fresh install, so say so now (L28).
+            if !extracted { warnOnceIfBundleMissing() }
+        },
         runnerPath: { binaryPath },
         runnerDir: { currentInstallDir },
         install: { willExtract in try installLive(willExtract: willExtract) }
@@ -257,7 +310,7 @@ extension RunnerManager {
             verify: {
                 try verifyRunnerVersion(
                     at: $0, expected: runnerVersion,
-                    bundlePath: resourceBundle?.bundlePath ?? "\(resourceBundleName).bundle"
+                    bundlePath: resourceBundle.map { canonicalPath($0.bundlePath) } ?? "\(resourceBundleName).bundle"
                 )
             },
             onInstalled: {
