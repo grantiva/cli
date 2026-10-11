@@ -404,7 +404,13 @@ device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
 is always the runner's pid, while `pid` is the grantiva process that was
 holding a released `run --keep-alive` session. A stop that found the runner
 already gone is still `stopped`, with `"alreadyExited": true`; one that released
-several keep-alive sessions lists them all under `sessions`. `bundle_id`, and
+several keep-alive sessions lists them all under `sessions`. `reaped` lists the
+device helpers the stopped runner left running that `runner stop` then ended
+(`kind`, `pid`, `processGroup`, `command`; on iOS, the `simctl diagnose` that
+WebDriverAgent's xcodebuild starts when it is interrupted), and is `[]` when
+there were none. Only processes the runner started are ended: they name the
+device and descend from the runner, or write into its run directory under the
+runner home. `bundle_id`, and
 `udid` on Android, are the 2.1 names, kept for one release and deprecated.
 
 `runner stop` releases a `run --keep-alive` session started from the current
@@ -572,7 +578,11 @@ A simulator held by a `grantiva runner start` session is released with
 (with or without `--force`) also stops a runner session it finds on a simulator
 it tears down, a `runner start` or a `run --keep-alive` one, before tearing the
 simulator down, removes that session's files, and reports it as
-`runnerSessionStopped` in `--json`.
+`runnerSessionStopped` in `--json`. Without `--force`, a process still holding
+the simulator that teardown did not start (a runner, WebDriverAgent's
+xcodebuild, a `simctl diagnose`, a `grantiva run`) is not killed: teardown
+names its pid and command in a warning on stderr and in `leftoverProcesses` in
+`--json`, and goes on; `--force` reclaims such processes.
 
 ### Simulators Grantiva created
 

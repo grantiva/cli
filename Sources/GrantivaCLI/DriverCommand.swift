@@ -708,7 +708,11 @@ struct RunnerStopCommand: AsyncParsableCommand {
         discussion: """
         Stops the session `grantiva runner start` recorded in .grantiva/session.json: \
         the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and \
-        its session files and device lease are removed. Without one, it releases a \
+        its session files and device lease are removed. Helpers the runner \
+        started for the device that outlive it (on iOS, the `simctl diagnose` \
+        WebDriverAgent's xcodebuild starts when it is interrupted) are stopped \
+        too and listed (`reaped` in --json); on Android the runner's port \
+        forwards and UIAutomator2 server are cleared. Without one, it releases a \
         `grantiva run --keep-alive` session started from this directory (every \
         one, if there are several) the way Ctrl-C would, by sending that grantiva \
         process SIGINT, and waits for it to exit. A run whose flows had already \
@@ -724,11 +728,11 @@ struct RunnerStopCommand: AsyncParsableCommand {
     enum Result: Equatable {
         case notRunning
         /// The `runner start` session's runner was stopped; `killed` when it
-        /// took SIGKILL.
-        case stopped(pid: Int32, udid: String, killed: Bool)
+        /// took SIGKILL. `reaped`: device helpers it left running, ended here.
+        case stopped(pid: Int32, udid: String, killed: Bool, reaped: [ReapedProcess] = [])
         /// The `runner start` session's runner had already exited; its
         /// session was cleaned up.
-        case exited(pid: Int32, udid: String)
+        case exited(pid: Int32, udid: String, reaped: [ReapedProcess] = [])
         /// Every keep-alive session started from this directory.
         case keepAlive([RunnerSessionStopper.Outcome])
     }
@@ -758,13 +762,22 @@ struct RunnerStopCommand: AsyncParsableCommand {
             return .keepAlive(outcomes)
         }
 
-        var outcome: Result = .exited(pid: session.pid, udid: session.udid)
+        var outcome: Result?
         if dependencies.isAlive(session) {
             let snapshot = try await dependencies.processSnapshot()
             if session.ownsRunnerProcess(in: snapshot) {
-                let killed = dependencies.terminateGroup(session.pid) == .killed
-                outcome = .stopped(pid: session.pid, udid: session.udid, killed: killed)
+                // Watch what the runner started while its group stops: on iOS
+                // an interrupted xcodebuild starts `simctl diagnose` in a group
+                // of its own, which outlives the group (L04).
+                let (termination, reaped) = await dependencies.helperReaper.stopping(
+                    runnerPid: session.pid, udid: session.udid
+                ) { dependencies.terminateGroup(session.pid) }
+                outcome = .stopped(pid: session.pid, udid: session.udid, killed: termination == .killed, reaped: reaped)
             }
+        }
+        if outcome == nil {
+            let reaped = await dependencies.helperReaper.sweep(exitedRunnerPid: session.pid, udid: session.udid)
+            outcome = .exited(pid: session.pid, udid: session.udid, reaped: reaped)
         }
 
         // A runner that took SIGKILL never removes its own session file.
@@ -779,29 +792,36 @@ struct RunnerStopCommand: AsyncParsableCommand {
         dependencies.removeKeepAliveOwner(session.pid)
         // The session held the simulator lease by hand-off; free it now.
         dependencies.releaseLease(session.udid)
-        return outcome
+        return outcome ?? .exited(pid: session.pid, udid: session.udid)
     }
 
     static func render(_ result: Result) -> String {
         switch result {
         case .notRunning:
             return "No active session found."
-        case .stopped(let pid, _, let killed):
-            return killed
+        case .stopped(let pid, let udid, let killed, let reaped):
+            let line = killed
                 ? "Runner stopped (pid \(pid); it ignored SIGINT and SIGTERM and was killed)"
                 : "Runner stopped (pid \(pid))"
-        case .exited(let pid, _):
-            return "No running runner (pid \(pid) had exited); cleaned up its session."
+            return ([line] + reapedLines(reaped, udid: udid)).joined(separator: "\n")
+        case .exited(let pid, let udid, let reaped):
+            return (["No running runner (pid \(pid) had exited); cleaned up its session."] + reapedLines(reaped, udid: udid))
+                .joined(separator: "\n")
         case .keepAlive(let outcomes):
-            return outcomes.map { outcome in
+            return outcomes.flatMap { outcome in
                 switch outcome {
-                case .released(let grantivaPid, _, let udid):
-                    return "Stopped keep-alive session (pid \(grantivaPid), \(udid))"
-                case .terminated(let runnerPid, let udid, _):
-                    return "Stopped keep-alive session (pid \(runnerPid), \(udid))"
+                case .released(let grantivaPid, _, let udid, let reaped):
+                    return ["Stopped keep-alive session (pid \(grantivaPid), \(udid))"] + reapedLines(reaped, udid: udid)
+                case .terminated(let runnerPid, let udid, _, let reaped):
+                    return ["Stopped keep-alive session (pid \(runnerPid), \(udid))"] + reapedLines(reaped, udid: udid)
                 }
             }.joined(separator: "\n")
         }
+    }
+
+    /// One line per device helper a stop ended (L04).
+    static func reapedLines(_ reaped: [ReapedProcess], udid: String) -> [String] {
+        reaped.map { "Also stopped \($0.kind.rawValue) pid \($0.pid), which the runner left running for \(udid)." }
     }
 
     static func document(_ result: Result) -> RunnerLifecycleDocument {
@@ -809,27 +829,31 @@ struct RunnerStopCommand: AsyncParsableCommand {
         switch result {
         case .notRunning:
             return RunnerLifecycleDocument(status: "not_running")
-        case .stopped(let pid, let udid, let killed):
+        case .stopped(let pid, let udid, let killed, let reaped):
             var document = RunnerLifecycleDocument(status: "stopped", pid: pid, deviceID: udid, platform: platform(udid))
             document.runnerPid = pid
             document.killed = killed
+            document.reaped = reaped
             return document
-        case .exited(let pid, let udid):
+        case .exited(let pid, let udid, let reaped):
             var document = RunnerLifecycleDocument(status: "stopped", pid: pid, deviceID: udid, platform: platform(udid))
             document.runnerPid = pid
             document.alreadyExited = true
+            document.reaped = reaped
             return document
         case .keepAlive(let outcomes):
             let documents = outcomes.map { outcome -> RunnerLifecycleDocument in
                 switch outcome {
-                case .released(let grantivaPid, let runnerPid, let udid):
+                case .released(let grantivaPid, let runnerPid, let udid, let reaped):
                     var document = RunnerLifecycleDocument(status: "stopped", pid: grantivaPid, deviceID: udid, platform: platform(udid))
                     document.runnerPid = runnerPid
+                    document.reaped = reaped
                     return document
-                case .terminated(let runnerPid, let udid, let killed):
+                case .terminated(let runnerPid, let udid, let killed, let reaped):
                     var document = RunnerLifecycleDocument(status: "stopped", pid: runnerPid, deviceID: udid, platform: platform(udid))
                     document.runnerPid = runnerPid
                     document.killed = killed
+                    document.reaped = reaped
                     return document
                 }
             }
@@ -857,6 +881,8 @@ struct RunnerStopDependencies: Sendable {
     var keepAliveSessions: @Sendable () -> [KeepAliveSession]
     var stopKeepAlive: @Sendable (KeepAliveSession) async throws -> RunnerSessionStopper.Outcome
     var currentDirectory: @Sendable () -> String
+    /// Ends the device helpers the stopped runner left (L04). Inert unless set.
+    var helperReaper: RunnerHelperReaper = .inert
 
     static let live = RunnerStopDependencies(
         loadSession: { try RunnerSessionInfo.load() },
@@ -874,7 +900,8 @@ struct RunnerStopDependencies: Sendable {
         removeRunnerSessionFiles: { KeepAliveSessionStore().removeSessionFiles(runnerPid: $0) },
         keepAliveSessions: { KeepAliveSessionStore().liveSessions(includingOrphans: true) },
         stopKeepAlive: { try await RunnerSessionStopper.live().stop($0) },
-        currentDirectory: { FileManager.default.currentDirectoryPath }
+        currentDirectory: { FileManager.default.currentDirectoryPath },
+        helperReaper: .live()
     )
 }
 

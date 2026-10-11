@@ -149,13 +149,45 @@ struct SimulatorCommand: AsyncParsableCommand {
                 try await runForce()
                 return
             }
+
+            // What still holds the devices now is not this teardown's to
+            // kill (L04): name it rather than proceed silently.
+            let devices = target.map { [$0] } ?? managed.filter { $0.sessionId == session }.map(\.udid)
+            let leftovers = Self.leftoverProcesses(
+                udids: devices, psOutput: (try? await SimulatorReaper.processSnapshot()) ?? "", excludingPID: getpid()
+            )
+            for line in Self.leftoverWarnings(leftovers) {
+                FileHandle.standardError.write(Data("Warning: \(line)\n".utf8))
+            }
+
             if let target {
                 let result = try await SimulatorManager.live.teardown(udid: target)
-                try report(outcomes: Self.marking(result, stopped: stopped.stopped), subject: target)
+                try report(outcomes: Self.marking(result, stopped: stopped.stopped, leftovers: leftovers), subject: target)
                 return
             }
             let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
-            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped), subject: session ?? "")
+            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped, leftovers: leftovers), subject: session ?? "")
+        }
+
+        /// Processes holding each of `udids` (the reaper's rules: a runner,
+        /// WebDriverAgent's xcodebuild, `simctl diagnose`, a grantiva run).
+        static func leftoverProcesses(udids: [String], psOutput: String, excludingPID: Int32 = 0) -> [String: [ReapedProcess]] {
+            var found: [String: [ReapedProcess]] = [:]
+            for udid in udids {
+                let processes = SimulatorReaper.processes(owning: udid, psOutput: psOutput, excludingPID: excludingPID)
+                if !processes.isEmpty { found[udid] = processes }
+            }
+            return found
+        }
+
+        /// One line per leftover process, naming its pid and command.
+        static func leftoverWarnings(_ leftovers: [String: [ReapedProcess]]) -> [String] {
+            leftovers.keys.sorted().flatMap { udid in
+                (leftovers[udid] ?? []).map { process in
+                    "\(udid) is still held by \(process.kind.rawValue) pid \(process.pid), which this teardown did not start: \(process.command). "
+                        + "Stop it, or reclaim the simulator with `grantiva simulator teardown --udid \(udid) --force`."
+                }
+            }
         }
 
         /// The devices whose runner sessions teardown stops: only those it
@@ -185,10 +217,13 @@ struct SimulatorCommand: AsyncParsableCommand {
             return (stopped, lines)
         }
 
-        static func marking(_ outcomes: [SimulatorTeardownOutcome], stopped: [String]) -> [SimulatorTeardownOutcome] {
+        static func marking(
+            _ outcomes: [SimulatorTeardownOutcome], stopped: [String], leftovers: [String: [ReapedProcess]] = [:]
+        ) -> [SimulatorTeardownOutcome] {
             outcomes.map { outcome in
                 var outcome = outcome
                 outcome.runnerSessionStopped = stopped.contains(outcome.udid)
+                outcome.leftoverProcesses = leftovers[outcome.udid] ?? []
                 return outcome
             }
         }
