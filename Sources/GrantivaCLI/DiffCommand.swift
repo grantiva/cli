@@ -165,7 +165,8 @@ struct DiffCommand: AsyncParsableCommand {
                 // The session's runner holds the device lease; a second
                 // runner would be refused, so capture through the session.
                 notes.note("Capturing through the runner session (grantiva-runner pid \(holdingSession.pid)).", options: options)
-                let attachment = try await device.attachDriver(deviceID: booted.udid, port: holdingSession.wdaPort)
+                let port = holdingSession.wdaPort > 0 ? holdingSession.wdaPort : nil
+                let attachment = try await device.attachDriver(deviceID: booted.udid, port: port)
                 do {
                     captures = try await SessionScreenCapture.capture(
                         screens: resolved.screens, appID: bid, udid: booted.udid, platform: platform,
