@@ -1,0 +1,25 @@
+# uptime: 12:31  up 4 days,  3:58, 5 users, load averages: 14.32 29.88 45.50
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach
+# exit=0 elapsed=4.104s -> start.out / start.err
+# uptime: 12:31  up 4 days,  3:59, 5 users, load averages: 13.69 29.22 45.09
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ true
+# exit=0 elapsed=.008s -> start2.out / start2.err
+# runner start was issued from $S (no grantiva.yml there; --bundle-id and --simulator given)
+# uptime: 12:31  up 4 days,  3:59, 5 users, load averages: 13.69 29.22 45.09
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop
+# exit=0 elapsed=.306s -> stop.out / stop.err
+# uptime: 12:33  up 4 days,  4:01, 5 users, load averages: 10.88 23.22 40.63
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -o pid,args -ax | grep -i 7E846901-F93F-4220-A153-7043061033D7 | grep -v grep | grep -v launchd_sim | grep -v 'Containers/Bundle' | cut -c1-200; echo end
+# exit=0 elapsed=.071s -> ps-before.out / ps-before.err
+# uptime: 12:33  up 4 days,  4:01, 5 users, load averages: 10.88 23.22 40.63
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force --json
+# exit=0 elapsed=.256s -> teardown.out / teardown.err
+# uptime: 12:33  up 4 days,  4:01, 5 users, load averages: 10.88 23.22 40.63
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force
+# exit=0 elapsed=.184s -> teardown-text.out / teardown-text.err

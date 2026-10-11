@@ -1,0 +1,25 @@
+# uptime: 12:35  up 4 days,  4:02, 5 users, load averages: 9.06 20.15 38.00
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I $S/blocked_start.py $GRANTIVA $U1
+# exit=0 elapsed=4.028s -> start-blocked.out / start-blocked.err
+# uptime: 12:35  up 4 days,  4:02, 5 users, load averages: 9.05 19.97 37.83
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ps -o pid=,blocked=,command= -p 11299 | cut -c1-120
+# exit=0 elapsed=.014s -> mask.out / mask.err
+# uptime: 12:35  up 4 days,  4:02, 5 users, load averages: 9.05 19.97 37.83
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA runner stop --verbose
+# exit=0 elapsed=.309s -> stop-verbose.out / stop-verbose.err
+# uptime: 12:35  up 4 days,  4:02, 5 users, load averages: 9.16 19.62 37.50
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ python3 -I $S/nohup_hup.py $GRANTIVA $U1 $S/n218.ready
+# exit=0 elapsed=18.204s -> nohup-hup.out / nohup-hup.err
+# uptime: 12:35  up 4 days,  4:03, 5 users, load averages: 8.43 18.50 36.47
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force
+# exit=0 elapsed=3.551s -> cleanup-reclaim.out / cleanup-reclaim.err
+# uptime: 12:35  up 4 days,  4:03, 5 users, load averages: 8.26 17.97 35.97
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls -la /tmp/grantiva-sessions; cat /tmp/grantiva-sessions/12109-*.grantiva; ps -p 12109 >/dev/null && echo alive || echo "12109 not running"
+# exit=0 elapsed=.014s -> leftover-session.out / leftover-session.err
+# cleanup: removed the stale /tmp/grantiva-sessions/12109-*.grantiva (this row's runner, dead) by hand after recording it

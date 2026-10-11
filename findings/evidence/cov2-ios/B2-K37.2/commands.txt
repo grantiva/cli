@@ -1,1 +1,6 @@
 # MCP tools/list simulator defaults extracted from ../MCP-LIVE1/run/stdout.raw; the CLI slice's N2-10 shows the default resolves to 'iPhone 18 Pro' on this host
+# uptime: 12:25  up 4 days,  3:52, 5 users, load averages: 23.42 70.78 63.21
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator sessions --json
+# exit=0 elapsed=.124s -> sessions-record.out / sessions-record.err
+# the call this row avoids had already happened in MCP-031 (grantiva_build {scheme} with no simulator argument in an empty dir, 18:33:50Z): it booted the user's iPhone 18 Pro (FE441EE5…, Shutdown before: MCP-029 sim_list at 18:32Z lists only cov2-ios-1/2 and iPhone 17 Pro as booted) and recorded it as an ephemeral slot of session cov2-ios (sessions-record.out). Not touched since.
