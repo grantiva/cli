@@ -73,7 +73,7 @@ Android: the same in `/tmp/l10/android` with `SERIAL=$(grantiva emulator ensure 
   steps not run absent or marked skipped, then `Screens: 5 total, 5 captured, 0 failed` and `Flows: <n> total, <p>
   passed, <f> failed` counting what the ready file counts. Exit 1 is unchanged.
 - A failure before any capture (build error, usage error, ownership refusal) prints no empty summary.
-- `--quiet` stays silent on stdout. `--json` output is unchanged.
+- `--quiet` suppresses progress and runner narration only; the summary blocks are the command's result and still print on stdout (README `--quiet` contract; corrected in round 3, superseding the earlier reading that `--quiet` is silent). `--json` output is unchanged.
 - Both platforms (same code).
 - Tests: GrantivaCLITests/RunCommandTests, a suite whose screens session returns captures and whose flows session throws
   a runner-outcome failure: the text output contains the screen blocks, the failed flow block with `✗`, and both summary
