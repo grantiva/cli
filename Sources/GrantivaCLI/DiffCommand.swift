@@ -182,7 +182,7 @@ struct DiffCommand: AsyncParsableCommand {
             if options.json {
                 Output.line(try JSONOutput.string(result))
             } else {
-                Output.line(TableFormatter().formatCapture(result))
+                Output.line(TableFormatter().formatCapture(result, platform: platform))
             }
         }
     }
