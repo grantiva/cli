@@ -36,6 +36,10 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     public var capacityRecordsKept: [KeptCapacityRecord]
     /// Keep-alive session files of the reaped runner that were deleted.
     public var sessionFilesRemoved: [String]
+    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+    public var deviceHomesRemoved: [String]
+    /// One "<path>: <reason>" line per runner home that could not be removed.
+    public var deviceHomeFailures: [String]
     /// Whether this teardown actually took something back. A `--force` run that
     /// found nothing is a success — the device was already free — but it is not
     /// the same event as one that killed a stranded runner, and a script that
@@ -49,7 +53,9 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
         leaseReleased: Bool,
         capacityRecordsCleared: Int,
         capacityRecordsKept: [KeptCapacityRecord] = [],
-        sessionFilesRemoved: [String] = []
+        sessionFilesRemoved: [String] = [],
+        deviceHomesRemoved: [String] = [],
+        deviceHomeFailures: [String] = []
     ) {
         self.udid = udid
         self.processes = processes
@@ -57,6 +63,8 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
         self.capacityRecordsCleared = capacityRecordsCleared
         self.capacityRecordsKept = capacityRecordsKept
         self.sessionFilesRemoved = sessionFilesRemoved
+        self.deviceHomesRemoved = deviceHomesRemoved
+        self.deviceHomeFailures = deviceHomeFailures
         self.reclaimed = !processes.isEmpty || leaseReleased || capacityRecordsCleared > 0
     }
 }
@@ -148,6 +156,7 @@ public enum SimulatorReaper {
         udid: String,
         capacity: SimulatorCapacity = .live,
         leaseDirectory: String? = nil,
+        runnerBase: String? = nil,
         sessions: KeepAliveSessionStore = KeepAliveSessionStore(),
         snapshot: (() async throws -> String)? = nil,
         gracePeriod: TimeInterval = 3,
@@ -201,13 +210,18 @@ public enum SimulatorReaper {
         let runnerPids = targets.filter { $0.kind == .runner }.map(\.pid)
         let removedFiles = sessions.removeSessions(udid: udid, runnerPids: runnerPids)
 
+        // The device's WDA state; the runners using it were reaped above.
+        let homes = WDADeviceHome.removeAll(runnerBase: runnerBase ?? RunnerManager.baseDir, deviceID: udid)
+
         return ForceTeardownResult(
             udid: udid,
             processes: targets,
             leaseReleased: leaseReleased,
             capacityRecordsCleared: cleared,
             capacityRecordsKept: kept,
-            sessionFilesRemoved: removedFiles
+            sessionFilesRemoved: removedFiles,
+            deviceHomesRemoved: homes.removed,
+            deviceHomeFailures: homes.failures
         )
     }
 

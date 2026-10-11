@@ -129,7 +129,8 @@ final class WDADeviceHomeTests: XCTestCase {
 
     func testRemoveDeletesTheDeviceHome() throws {
         let deviceHome = try XCTUnwrap(WDADeviceHome.prepare(runnerHome: home, deviceID: "AAAA-1111", existingDeviceIDs: { nil }))
-        WDADeviceHome.remove(runnerHome: home, deviceID: "AAAA-1111")
+        let removal = WDADeviceHome.removeAll(runnerBase: home, deviceID: "AAAA-1111")
+        XCTAssertEqual(removal.removed, [deviceHome])
         XCTAssertFalse(fm.fileExists(atPath: deviceHome))
         XCTAssertTrue(fm.fileExists(atPath: "\(home!)/drivers"), "shared drivers untouched")
     }

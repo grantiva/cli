@@ -207,6 +207,16 @@ final class SimulatorCommandTests: XCTestCase {
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
         XCTAssertEqual(object["deleted"] as? Bool, true)
         XCTAssertEqual((object["session"] as? [String: Any])?["sessionId"] as? String, "APP-652")
+        XCTAssertEqual(object["deviceHomesRemoved"] as? [String], [])
+        XCTAssertEqual(object["deviceHomeFailures"] as? [String], [])
+    }
+
+    func testTeardownFailsWhenARunnerHomeCouldNotBeRemoved() throws {
+        XCTAssertNil(SimulatorCommand.Teardown.deviceHomeError([]))
+        let error = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError(["/r/versions/v1/devices/U: denied"]))
+        let message = error.errorDescription ?? ""
+        XCTAssertTrue(message.contains("/r/versions/v1/devices/U: denied"), message)
+        XCTAssertTrue(message.contains("Delete it by hand"), message)
     }
 
 }

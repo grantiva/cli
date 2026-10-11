@@ -16,10 +16,21 @@ public struct CreatedSimulatorRecord: Codable, Equatable, Sendable {
 public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
     public let session: ManagedSimulatorSession
     public let deleted: Bool
+    /// The device's runner homes (`<runner home>/versions/<runner version>/devices/<udid>`) that were removed.
+    public var deviceHomesRemoved: [String]
+    /// One "<path>: <reason>" line per runner home that could not be removed.
+    public var deviceHomeFailures: [String]
 
-    public init(session: ManagedSimulatorSession, deleted: Bool) {
+    public init(
+        session: ManagedSimulatorSession,
+        deleted: Bool,
+        deviceHomesRemoved: [String] = [],
+        deviceHomeFailures: [String] = []
+    ) {
         self.session = session
         self.deleted = deleted
+        self.deviceHomesRemoved = deviceHomesRemoved
+        self.deviceHomeFailures = deviceHomeFailures
     }
 }
 

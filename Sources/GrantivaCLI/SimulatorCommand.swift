@@ -196,7 +196,21 @@ struct SimulatorCommand: AsyncParsableCommand {
                 if !result.sessionFilesRemoved.isEmpty {
                     Output.line("Removed \(result.sessionFilesRemoved.count) keep-alive session file(s) for \(result.udid).")
                 }
+                for home in result.deviceHomesRemoved {
+                    Output.line("Removed the runner home \(home).")
+                }
             }
+            if let error = Self.deviceHomeError(results.flatMap(\.deviceHomeFailures)) { throw error }
+        }
+
+        /// The error a teardown ends with when it released the simulator but
+        /// left runner homes behind, or nil when every home was removed.
+        static func deviceHomeError(_ failures: [String]) -> GrantivaError? {
+            guard !failures.isEmpty else { return nil }
+            return GrantivaError.unavailable(
+                "The simulator was released, but its runner home could not be removed: "
+                    + failures.joined(separator: "; ") + ". Delete it by hand."
+            )
         }
 
         private func report(outcomes: [SimulatorTeardownOutcome], subject: String) throws {
@@ -214,6 +228,7 @@ struct SimulatorCommand: AsyncParsableCommand {
                     Output.line("\(action) \(session.name) (\(session.udid)) and released session \(session.sessionId).")
                 }
             }
+            if let error = Self.deviceHomeError(outcomes.flatMap(\.deviceHomeFailures)) { throw error }
         }
     }
 

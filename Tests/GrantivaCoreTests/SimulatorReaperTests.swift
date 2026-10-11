@@ -173,6 +173,7 @@ final class SimulatorReaperTests: XCTestCase {
             udid: udid,
             capacity: SimulatorCapacity(directory: directory),
             leaseDirectory: directory,
+            runnerBase: "\(directory)/runner",
             sessions: KeepAliveSessionStore(directory: sessionDirectory ?? "\(directory)/sessions", isProcessAlive: { _ in false }),
             snapshot: { "" },
             gracePeriod: 0,
@@ -182,6 +183,21 @@ final class SimulatorReaperTests: XCTestCase {
 
     // A named session outlives the CLI process that booted its device, so a
     // forced reclaim never drops its record while the device is booted.
+    func testForceTeardownRemovesTheDeviceHomeUnderEveryRunnerVersion() async throws {
+        let directory = temporaryDirectory()
+        let fm = FileManager.default
+        let homes = ["v1", "v2"].map { "\(directory)/runner/versions/\($0)/devices/\(udid)" }
+        let other = "\(directory)/runner/versions/v1/devices/OTHER-1"
+        for path in homes + [other] { try fm.createDirectory(atPath: path, withIntermediateDirectories: true) }
+
+        let result = try await forceTeardown(directory: directory)
+
+        XCTAssertEqual(Set(result.deviceHomesRemoved), Set(homes))
+        XCTAssertEqual(result.deviceHomeFailures, [])
+        for path in homes { XCTAssertFalse(fm.fileExists(atPath: path)) }
+        XCTAssertTrue(fm.fileExists(atPath: other))
+    }
+
     func testForceTeardownKeepsANamedSessionRecordWhateverItsOwnerPID() async throws {
         let directory = temporaryDirectory()
         try writeRecords([record(udid, session: "qa-ios")], to: directory)

@@ -131,6 +131,56 @@ final class SimulatorManagerTests: XCTestCase {
         return home
     }
 
+    // MARK: - Device homes live under every runner version
+
+    private func makeVersionedDeviceHome(_ capacity: SimulatorCapacity, stamp: String, _ udid: String) throws -> String {
+        let home = "\(capacity.directory)/runner/versions/\(stamp)/devices/\(udid)"
+        try FileManager.default.createDirectory(atPath: "\(home)/cache", withIntermediateDirectories: true)
+        return home
+    }
+
+    func testTeardownRemovesTheDeviceHomeUnderEveryRunnerVersion() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Mine", udid: "MINE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        _ = try await manager.boot(nameOrUDID: "MINE-1")
+        let current = try makeVersionedDeviceHome(capacity, stamp: "1.1.28-grantiva.8+android-drivers-2", "MINE-1")
+        let older = try makeVersionedDeviceHome(capacity, stamp: "1.1.18-grantiva.7+android-drivers-2", "MINE-1")
+        let legacy = try makeDeviceHome(capacity, "MINE-1")
+        let other = try makeVersionedDeviceHome(capacity, stamp: "1.1.28-grantiva.8+android-drivers-2", "OTHER-1")
+
+        let outcomes = try await manager.teardown(udid: "MINE-1")
+
+        let fm = FileManager.default
+        XCTAssertFalse(fm.fileExists(atPath: current))
+        XCTAssertFalse(fm.fileExists(atPath: older))
+        XCTAssertFalse(fm.fileExists(atPath: legacy))
+        XCTAssertTrue(fm.fileExists(atPath: other), "another simulator's home is left alone")
+        XCTAssertEqual(Set(outcomes.flatMap(\.deviceHomesRemoved)), [current, older, legacy])
+        XCTAssertEqual(outcomes.flatMap(\.deviceHomeFailures), [])
+    }
+
+    func testTeardownReportsADeviceHomeItCannotRemove() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Mine", udid: "MINE-1", state: "Shutdown", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        _ = try await manager.boot(nameOrUDID: "MINE-1")
+        let stuck = try makeVersionedDeviceHome(capacity, stamp: "v1", "MINE-1")
+        let devices = (stuck as NSString).deletingLastPathComponent
+        try FileManager.default.setAttributes([.posixPermissions: 0o555], ofItemAtPath: devices)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: devices) }
+
+        let outcomes = try await manager.teardown(udid: "MINE-1")
+
+        XCTAssertEqual(outcomes.map(\.session.udid), ["MINE-1"], "the session is still released")
+        let failures = outcomes.flatMap(\.deviceHomeFailures)
+        XCTAssertEqual(failures.count, 1)
+        XCTAssertTrue(failures.first?.contains(stuck) == true, "\(failures)")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: stuck))
+    }
+
     func testFailedEnsureAndCleanupRemoveTheDevicesRunnerHome() async throws {
         let simctl = FakeSimctl(devices: [])
         let (manager, capacity, provenance) = makeManager(simctl, maximum: 1)
