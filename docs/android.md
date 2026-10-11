@@ -39,7 +39,8 @@ unless `--allow-device-settings` is given. `--headless` boots without a window.
 
 `grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
 not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s
-ABI when given, else for this host's emulators (`arm64-v8a` on Apple silicon).
+ABI when given, else for this host's emulators (`arm64-v8a` on Apple silicon). A `--device`
+serial must already be attached; otherwise the command fails naming the attached devices.
 `grantiva build install` resolves the device as above and logs `Booting AVD <name> as
 <serial>` when it has to boot one.
 
@@ -70,7 +71,9 @@ Android captures go to `.grantiva/captures/android/` and baselines to
 `.grantiva/baselines/android/`. Baselines are local only for now: `ci run` and remote
 baselines refuse Android with "Android baselines are local only until the Grantiva backend
 supports platforms; use local baselines". `diff capture`, `diff compare`, and
-`diff approve` work locally.
+`diff approve` work locally. On Android, `diff capture` prints `Emulator: <AVD> (<serial>)`,
+and its `--json` document adds an `emulator` object (name, udid, dimensions, scale) next
+to `simulator`, which carries the same values and is kept for compatibility.
 
 Before each capture Grantiva enables System UI demo mode (clock 09:41, full battery,
 no notifications), sets the three animation scales to 0, and pins portrait. The previous

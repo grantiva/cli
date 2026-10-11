@@ -42,6 +42,8 @@ struct DiffCommand: AsyncParsableCommand {
 
         /// Empty means "make one from the resolved platform"; tests inject a fake.
         var devicePlatform = InjectedDevicePlatform()
+        var runnerManager: RunnerManager = .live
+        var notes = NoteSink()
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
@@ -117,8 +119,6 @@ struct DiffCommand: AsyncParsableCommand {
                     try await device.launch(appID: bid, deviceID: booted.udid)
                     try await Task.sleep(for: .seconds(2))
                 }
-
-                options.note("Capturing \(resolved.screens.count) screen(s)...")
             } else {
                 // --no-build honours flag > config > runner session, and only
                 // then the platform default, which on iOS refuses to pick among
@@ -146,13 +146,14 @@ struct DiffCommand: AsyncParsableCommand {
                 geometry: DiffCommand.simulatorGeometry(geometry)
             )
 
-            options.note("Capturing \(resolved.screens.count) screen(s)...")
+            notes.note("Capturing \(resolved.screens.count) screen(s)...", options: options)
 
             let captures = try await RunnerSession.run(
                 screens: resolved.screens,
                 bundleId: bid,
                 udid: booted.udid,
                 platform: device,
+                runner: runnerManager,
                 outputDir: outputDir,
                 expectedPixels: captureTarget.pixelDimensions
             )
@@ -172,11 +173,9 @@ struct DiffCommand: AsyncParsableCommand {
                 Output.line("")
             }
 
-            let result = CaptureResult(
-                screens: captures,
-                directory: outputDir,
-                duration: Date().timeIntervalSince(start),
-                simulator: captureTarget
+            let result = DiffCommand.captureResult(
+                screens: captures, directory: outputDir, duration: Date().timeIntervalSince(start),
+                target: captureTarget, platform: platform
             )
 
             if options.json {
@@ -185,6 +184,15 @@ struct DiffCommand: AsyncParsableCommand {
                 Output.line(TableFormatter().formatCapture(result, platform: platform))
             }
         }
+    }
+
+    static func captureResult(
+        screens: [ScreenCapture], directory: String, duration: Double, target: CaptureSimulatorTarget, platform: Platform
+    ) -> CaptureResult {
+        CaptureResult(
+            screens: screens, directory: directory, duration: duration,
+            simulator: target, emulator: platform == .android ? target : nil
+        )
     }
 
     // MARK: - --no-build device
