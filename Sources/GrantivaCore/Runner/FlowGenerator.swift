@@ -59,6 +59,9 @@ public enum FlowGenerator {
                 lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
             }
         }
+        if platform == .android {
+            lines += appDrawnWait
+        }
 
         for (screenIndex, screen) in screens.enumerated() {
             if screenIndex == 0 { claim(CommandOwner(screen: screen.name, step: nil)) }
@@ -201,6 +204,28 @@ public enum FlowGenerator {
         try yaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
         return (flowPath, asWritten, generated.owners)
     }
+
+    /// How long the first screen waits for the app to draw after launch.
+    static let appDrawnTimeoutMs = 10_000
+
+    /// Android only (L44): after `launchApp`, wait (up to
+    /// `appDrawnTimeoutMs`) until an element with text exists inside the
+    /// app's content view, so the first screenshot is never the blank window
+    /// a cold start shows before its first frame. The settle alone cannot
+    /// tell: a window that has not drawn yet is static. Optional, so a first
+    /// screen without text costs the timeout instead of failing; when the app
+    /// has already drawn it is one lookup. iOS launches return once the app
+    /// is running and drawn, so iOS gets nothing.
+    static let appDrawnWait = [
+        "- extendedWaitUntil:",
+        "    visible:",
+        "      text: \".+\"",
+        "      childOf:",
+        "        id: \"android:id/content\"",
+        "    timeout: \(appDrawnTimeoutMs)",
+        "    optional: true",
+        "    label: \"Wait for the app to draw\"",
+    ]
 
     /// Upper bound for the settle wait after a tap, swipe, or typed text and
     /// before each screenshot. `waitForAnimationToEnd` returns as soon as two

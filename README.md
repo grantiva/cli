@@ -137,7 +137,9 @@ To loosen a flaky screen, raise both. Raising only `threshold` still fails the s
 
 Each screen has a `name` and a `path`. The path describes how to navigate there:
 
-- `launch` — screenshot immediately after app launch
+- `launch` — screenshot right after app launch. On Android the first screen first waits (up to 10 s, then
+  continues) until an element with text is on screen inside the app's own content view, so the capture is never the
+  empty window a cold start shows before the app draws; when the app has already drawn this is a single lookup
 - `- tap: "Label"` — tap a button or element by accessibility label
 - `- swipe: up` — swipe in a direction (`up`, `down`, `left`, `right`, any case); any other value is a config error
 - `- type: "text"` — type text into the focused field
