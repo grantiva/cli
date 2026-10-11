@@ -640,6 +640,38 @@ final class RunnerLifecycleCommandTests: XCTestCase {
                        "Runner stopped (pid 1234); the session has ended.")
     }
 
+    /// L36 fix round 2: a foreground `runner start` in directory A torn down
+    /// from directory B. B's teardown cannot touch A's session file, but its
+    /// stop marker names the runner: the start ends in order.
+    func testAForegroundStartTornDownFromAnotherDirectoryEndsInOrder() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let started: Int64 = 1_791_700_000
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in started })
+        XCTAssertTrue(marker.mark(runnerPid: 1234))
+        // A's session file still names the runner: no `runner stop` happened.
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: started)
+        )
+        XCTAssertEqual(request, .teardown)
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request),
+            "Runner stopped by teardown (pid 1234); the session has ended."
+        )
+    }
+
+    func testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly() {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_600_000 })
+        XCTAssertTrue(marker.mark(runnerPid: 1234))
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: 1_791_700_000)
+        )
+        XCTAssertNil(request)
+        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request))
+    }
+
     func testAForegroundRunnerThatExitsOneUnpromptedStillFails() {
         XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
             XCTAssertEqual($0.localizedDescription, "The runner exited with status 1; the session has ended.")

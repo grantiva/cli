@@ -416,14 +416,60 @@ struct RunnerStartCommand: AsyncParsableCommand {
         session?.pid != runnerPid
     }
 
-    /// The foreground command's last line, or its failure: a runner that
-    /// exited 0 or by a stop signal, or after `runner stop` asked it to,
-    /// ended the session in order; any other status is the runner's failure.
-    static func foregroundEnding(status: Int32, pid: Int32, stopRequested: Bool) throws -> String {
-        guard stopRequested || isOrderlyRunnerExit(status) else {
-            throw GrantivaError.commandFailed("The runner exited with status \(status); the session has ended.", 1)
+    /// The stop request read when the foreground runner exits.
+    final class StopBox: @unchecked Sendable {
+        private let lock = NSLock()
+        private var stored: StopRequest?
+        var value: StopRequest? {
+            get { lock.withLock { stored } }
+            set { lock.withLock { stored = newValue } }
         }
-        return "Runner stopped (pid \(pid)); the session has ended."
+    }
+
+    /// Who asked for a runner's stop.
+    enum StopRequest: Equatable {
+        /// `runner stop` (the session file is gone).
+        case runnerStop
+        /// A teardown, from any directory (a `RunnerStopMarker` for this runner).
+        case teardown
+    }
+
+    /// Whether the runner's stop was asked for: a teardown's marker for this
+    /// very process (`marked`), or `runner stop`'s removed session file.
+    static func stopRequest(runnerPid: Int32, session: RunnerSessionInfo?, marked: Bool) -> StopRequest? {
+        if marked { return .teardown }
+        return stopWasRequested(runnerPid: runnerPid, session: session) ? .runnerStop : nil
+    }
+
+    /// The live check: the session file in this directory and the stop
+    /// marker for this runner, which must carry the start time the runner
+    /// had when this command spawned it (a stale marker never counts).
+    static func liveStopRequest(runnerPid: Int32, runnerStartTime: Int64?, marker: RunnerStopMarker = RunnerStopMarker()) -> StopRequest? {
+        stopRequest(
+            runnerPid: runnerPid, session: try? RunnerSessionInfo.load(),
+            marked: marker.isMarked(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
+        )
+    }
+
+    /// The foreground command's last line, or its failure: a runner that
+    /// exited 0, or after `runner stop` or a teardown asked it to, ended the
+    /// session in order; any other status is the runner's failure.
+    static func foregroundEnding(status: Int32, pid: Int32, stop: StopRequest?) throws -> String {
+        switch stop {
+        case .teardown:
+            return "Runner stopped by teardown (pid \(pid)); the session has ended."
+        case .runnerStop:
+            return "Runner stopped (pid \(pid)); the session has ended."
+        case nil:
+            guard isOrderlyRunnerExit(status) else {
+                throw GrantivaError.commandFailed("The runner exited with status \(status); the session has ended.", 1)
+            }
+            return "Runner stopped (pid \(pid)); the session has ended."
+        }
+    }
+
+    static func foregroundEnding(status: Int32, pid: Int32, stopRequested: Bool) throws -> String {
+        try foregroundEnding(status: status, pid: pid, stop: stopRequested ? .runnerStop : nil)
     }
 
     private static func portLabel(_ platform: Platform) -> String {
@@ -471,6 +517,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             throw error
         }
         let runnerPid = child.pid
+        let runnerStartTime = RunnerStopMarker.processStartTime(runnerPid)
         Self.recordKeepAliveOwner(launch, runnerPid: runnerPid, detached: true)
         try Self.recordStarting(launch, runnerPid: runnerPid)
         func abandon() {
@@ -513,9 +560,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             startedAt: Date(),
             platform: launch.platform
         )
-        // A `runner stop` that came during the start removed the starting
-        // file; the runner is on its way out, so do not bring it back.
-        if !Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load()) {
+        // A `runner stop` (or a teardown) that came during the start removed
+        // the starting file; the runner is on its way out, so do not bring it back.
+        if Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime) == nil {
             try Self.record(session: session)
         }
 
@@ -556,15 +603,21 @@ struct RunnerStartCommand: AsyncParsableCommand {
         )
         try? stdoutPipe.fileHandleForWriting.close()
         try? stderrPipe.fileHandleForWriting.close()
+        // What a teardown's stop marker must name to count for this runner.
+        let runnerStartTime = RunnerStopMarker.processStartTime(child.pid)
         // `kill -9` of this process must not leave the runner holding the device.
         let lifeline = child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
         Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
         lease.recordRunner(pid: child.pid, keepAlive: true)
 
         let runnerPid = child.pid
+        @Sendable func requestedStop() -> StopRequest? {
+            Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
+        }
         let cleanup = Once {
             Self.removeSessionFile(of: runnerPid)
             KeepAliveSessionStore().removeSessionFiles(runnerPid: runnerPid)
+            RunnerStopMarker().remove(runnerPid: runnerPid)
             lease.release()
         }
         Self.trackRunner(group: child.processGroup, platform: launch.platform)
@@ -593,11 +646,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
             output.endStartup()
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
             if let status = wait.exitStatus {
-                // `runner stop` removed the session file before stopping it.
-                let requested = Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load())
+                // `runner stop` removed the session file, or a teardown
+                // marked the runner, before stopping it.
+                let requested = requestedStop()
                 cleanup.run()
-                if requested {
-                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stopRequested: true)
+                if let requested {
+                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
                     options.note(ending)
                     return
                 }
@@ -620,12 +674,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
             )
             output.endStartup()
             guard case .port(let found)? = startup else {
-                // `runner stop` removed the session file before stopping it.
-                let requested = Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load())
+                // `runner stop` removed the session file, or a teardown
+                // marked the runner, before stopping it.
+                let requested = requestedStop()
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
-                if requested {
-                    let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stopRequested: true)
+                if let requested {
+                    let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stop: requested)
                     options.note(ending)
                     return
                 }
@@ -642,9 +697,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
             startedAt: Date(),
             platform: launch.platform
         )
-        // A `runner stop` that came during the start removed the starting
-        // file; the runner is on its way out, so do not bring it back.
-        if !Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load()) {
+        // A `runner stop` (or a teardown) that came during the start removed
+        // the starting file; the runner is on its way out, so do not bring it back.
+        if requestedStop() == nil {
             do {
                 try Self.record(session: session)
             } catch {
@@ -668,14 +723,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
             Output.line("Press Ctrl-C (or run 'grantiva runner stop') to stop the session.")
         }
 
-        let stopRequested = Once.Flag()
+        let stopRequested = StopBox()
         let status = await Self.holdForeground(
             waitForExit: {
                 let status = await withCheckedContinuation { continuation in
                     DispatchQueue.global(qos: .userInitiated).async { continuation.resume(returning: child.wait()) }
                 }
-                // Read before the cleanup removes the session file.
-                if Self.stopWasRequested(runnerPid: runnerPid, session: try? RunnerSessionInfo.load()) { stopRequested.set() }
+                // Read before the cleanup removes the session file and marker.
+                stopRequested.value = requestedStop()
                 return status
             },
             onInterrupt: { SignalRelay.shared.onTermination($0) },
@@ -688,7 +743,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             try? await Task.sleep(for: .seconds(30))
             throw ExitCode(130)
         }
-        let ending = try Self.foregroundEnding(status: status, pid: child.pid, stopRequested: stopRequested.isSet)
+        let ending = try Self.foregroundEnding(status: status, pid: child.pid, stop: stopRequested.value)
         options.note(ending)
     }
 

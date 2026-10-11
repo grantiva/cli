@@ -291,6 +291,17 @@ public struct KeepAliveSessionStore: Sendable {
             }
     }
 
+    /// The live runners grantiva recorded for `udid` (owner sidecars), started
+    /// or still starting: what a teardown of that device is about to stop.
+    public func runnerPids(udid: String) -> [Int32] {
+        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directory) else { return [] }
+        return contents.sorted()
+            .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
+            .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
+            .filter { $0.udid.caseInsensitiveCompare(udid) == .orderedSame && isProcessAlive($0.runnerPid) }
+            .map(\.runnerPid)
+    }
+
     /// The pid in a runner's `<pid>-<timestamp>.grantiva` file name.
     static func runnerPid(fileName: String) -> Int32? {
         guard fileName.hasSuffix(".\(runnerExtension)"), let dash = fileName.firstIndex(of: "-") else { return nil }

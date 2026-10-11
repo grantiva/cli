@@ -139,8 +139,24 @@ struct EmulatorCommand: AsyncParsableCommand {
         static func teardown(
             _ emulators: EmulatorManager, serial: String?, force: Bool,
             stopRunners: (@Sendable (String) async -> [RunnerSessionStopper.Outcome])? = nil,
-            removeDeadSessions: (@Sendable (String) -> [String])? = nil
+            removeDeadSessions: (@Sendable (String) -> [String])? = nil,
+            markStops: (@Sendable (String) -> [Int32])? = nil,
+            unmarkStops: (@Sendable ([Int32]) -> Void)? = nil
         ) async throws -> [EmulatorTeardownOutcome] {
+            // Runners on the serials die with their emulator, before
+            // `stopRunners` gets to them: mark them first so a foreground
+            // `runner start` holding one ends in order (L36). A serial that
+            // is refused or not torn down gets its markers back.
+            var marked: [String: [Int32]] = [:]
+            if let markStops {
+                var serials: [String] = []
+                if let serial {
+                    serials = [serial]
+                } else {
+                    serials = (try? await emulators.sessions())?.map(\.serial) ?? []
+                }
+                for target in serials { marked[target] = markStops(target) }
+            }
             // The prune runs on a refusal too (`defer` cannot await).
             var outcomes: [EmulatorTeardownOutcome]
             do {
@@ -150,9 +166,14 @@ struct EmulatorCommand: AsyncParsableCommand {
                     try await emulators.teardownAll()
                 }
             } catch {
+                let all = marked.values.flatMap { $0 }
+                if !all.isEmpty { unmarkStops?(all) }
                 _ = try? await emulators.pruneCreatedAVDs()
                 throw error
             }
+            let tornDown = Set(outcomes.map(\.serial))
+            let untouched = marked.filter { !tornDown.contains($0.key) }.values.flatMap { $0 }
+            if !untouched.isEmpty { unmarkStops?(untouched) }
             _ = try? await emulators.pruneCreatedAVDs()
             // After the kill, so a refused teardown touches nothing; the
             // runner's own adb cleanup has nothing left to do by then.
@@ -218,7 +239,9 @@ struct EmulatorCommand: AsyncParsableCommand {
                     if !json { stopped.map(DeviceRunnerSessions.render).forEach(Output.line) }
                     return stopped
                 },
-                removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) }
+                removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
+                markStops: { DeviceRunnerSessions.markLive(udid: $0) },
+                unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))

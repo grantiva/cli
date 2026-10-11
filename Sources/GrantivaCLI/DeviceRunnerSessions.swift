@@ -9,19 +9,30 @@ struct DeviceRunnerSessions: Sendable {
     var loadSession: @Sendable () -> RunnerSessionInfo?
     var removeSession: @Sendable () -> Void
     var stopSessions: @Sendable (_ udid: String, _ runnerStart: RunnerSessionInfo?) async -> [RunnerSessionStopper.Outcome]
+    /// Writes a stop marker for every runner grantiva recorded on the device
+    /// (`RunnerStopMarker`); returns the pids marked. Inert unless set.
+    var markStops: @Sendable (_ udid: String) -> [Int32] = { _ in [] }
 
     static let live = DeviceRunnerSessions(
         loadSession: { try? RunnerSessionInfo.load() },
         removeSession: { RunnerSessionInfo.remove() },
         stopSessions: { udid, runnerStart in
             await RunnerSessionStopper.live().stopSessions(udid: udid, runnerStartSession: runnerStart)
-        }
+        },
+        markStops: { udid in markLive(udid: udid) }
     )
 
-    /// The session file is removed before any runner is signalled, as
-    /// `runner stop` does: a foreground `runner start` holding it reads the
-    /// missing file as a requested stop and ends in order (L36).
+    /// Marks the live runners recorded for `udid`, in the default runner home.
+    static func markLive(udid: String, store: KeepAliveSessionStore = KeepAliveSessionStore(), marker: RunnerStopMarker = RunnerStopMarker()) -> [Int32] {
+        store.runnerPids(udid: udid).filter { marker.mark(runnerPid: $0) }
+    }
+
+    /// Before any runner is signalled: the stop markers are written (a
+    /// foreground `runner start` in any directory reads them and ends in
+    /// order), and the session file in this directory is removed, as
+    /// `runner stop` does (L36).
     func stop(udid: String) async -> [RunnerSessionStopper.Outcome] {
+        _ = markStops(udid)
         let file = loadSession()
         if let file, file.udid.caseInsensitiveCompare(udid) == .orderedSame {
             removeSession()

@@ -442,6 +442,12 @@ written by 2.1 are still read:
 - `wdaPort` → `port` (.grantiva/session.json)
 - `bundleId` → `applicationId` (.grantiva/session.json on Android)
 
+A foreground `runner start` ended by `grantiva runner stop` exits 0. One ended
+by `simulator teardown` or `emulator teardown`, run from any directory, exits 0
+too and says `Runner stopped by teardown (pid N); the session has ended.`: the
+teardown marks the device's runners under `<runner home>/stops/` before it
+stops them (a marker counts only for the very process it names).
+
 `runner stop` releases a `run --keep-alive` session started from the current
 directory as Ctrl-C would. If that run's flows had already finished, its
 `--ready-file` keeps the `passed` or `failed` it wrote (the ready file is

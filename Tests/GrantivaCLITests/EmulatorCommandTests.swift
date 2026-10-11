@@ -195,6 +195,40 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertEqual(events.values, ["remove", "stop"])
     }
 
+    /// The stop markers are written before anything is signalled.
+    func testTeardownMarksTheDevicesRunnersBeforeStoppingThem() async {
+        let events = LockedList()
+        var sessions = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: { events.append("remove") },
+            stopSessions: { _, _ in events.append("stop"); return [] }
+        )
+        sessions.markStops = { udid in events.append("mark \(udid)"); return [77] }
+        _ = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(events.values, ["mark emulator-5556", "stop"])
+    }
+
+    /// The emulator is killed before its runners are stopped, so they are
+    /// marked first; a refused teardown takes its markers back.
+    func testEmulatorTeardownMarksBeforeTheKillAndUnmarksOnRefusal() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let events = LockedList()
+        _ = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            markStops: { events.append("mark \($0)"); return [77] },
+            unmarkStops: { events.append("unmark \($0)") }
+        )
+        XCTAssertEqual(events.values, ["mark emulator-5598"])
+
+        let refused = LockedList()
+        _ = try? await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: false,
+            markStops: { refused.append("mark \($0)"); return [78] },
+            unmarkStops: { refused.append("unmark \($0)") }
+        )
+        XCTAssertEqual(refused.values, ["mark emulator-5598", "unmark [78]"])
+    }
+
     // MARK: - L12/L35: what a teardown cleaned up is listed
 
     func testTeardownListsTheDeadRunnersSessionFilesAndTheTempDirectories() async throws {
