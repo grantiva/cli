@@ -7,3 +7,4 @@ rc=0 elapsed=70.9s  (stdout 01.out, stderr 01.err)
 $ for i in 1 2; do $S/tools/seedmany.sh emulator-5556 fresh$i; done; $S/tools/seedmany.sh emulator-5556 freshfull --snapshot full
 rc=0 elapsed=58.9s  (stdout 02.out, stderr 02.err)
 
+# passing runs (01: a1-a3 on cov-android; 02: fresh2 on cov-android-2) keep no hierarchy (default --snapshot failure), so seedmany.sh printed "-". Last landmark read from each run's Scrolled capture ($S/sm-<tag>/captures/10-seed-many-cmd-006-Scrolled.png, montage passing-runs-scrolled-montage.png, PIL crop rows 300-2200): a1 26-33, a2 24-32, a3 26-33, fresh2 25-33

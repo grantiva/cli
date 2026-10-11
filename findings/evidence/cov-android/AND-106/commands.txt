@@ -7,3 +7,4 @@ rc=1 elapsed=10.5s  (stdout 01.out, stderr 01.err)
 $ $GRANTIVA run --device emulator-5554 --no-build --report-dir $S/out-stock --ready-file $S/stock.ready
 rc=0 elapsed=89.6s  (stdout 02.out, stderr 02.err)
 
+$ python3 $S/tools/durcmp.py $E/AND-106/02.err $S/out-stock | tee $E/AND-106/durcmp.txt   # script copied to inputs/durcmp.py; compares live step lines, summary block lines and report flows/*.json durations

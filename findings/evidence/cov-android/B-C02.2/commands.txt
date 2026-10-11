@@ -7,3 +7,7 @@ rc=0 elapsed=14.8s  (stdout 01.out, stderr 01.err)
 $ $GRANTIVA emulator teardown --serial emulator-5558; sleep 3; $GRANTIVA emulator delete --name cov-android-2; kill 63449 2>/dev/null; adb devices; avdmanager list avd | grep Name
 rc=0 elapsed=6.6s  (stdout 02.out, stderr 02.err)
 
+# port blocker started before 01 (background, own process, killed in 02):
+$ python3 -I -c "import socket,time; s=socket.socket(); s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR,1); s.bind(('127.0.0.1',5556)); s.listen(1); time.sleep(150)" &
+$ lsof -nP -iTCP:5556 -sTCP:LISTEN | tail -1
+Python  63449 kyle    3u  IPv4 0x7aaabc9f642355fc      0t0  TCP 127.0.0.1:5556 (LISTEN)
