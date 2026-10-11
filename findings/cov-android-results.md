@@ -4,6 +4,11 @@ Binary `~/.grantiva-qa/bin/grantiva` 2.1.0, runner 1.1.28-grantiva.9, `GRANTIVA_
 `GRANTIVA_SESSION_ID=cov-android`. AVD `cov-android` (API 35, google_apis arm64-v8a, pixel_8) as `emulator-5554`.
 App: scratch copy of landmarks-demo `android/` at 4e49dc4 with `emulator: cov-android`. Evidence under
 `findings/evidence/cov-android/<ID>/` (`commands.txt` lists each command, rc and elapsed time; `NN.out`/`NN.err` are raw).
+Shared tooling the rows cite (MCP client, helper scripts) is in `findings/evidence/cov-android/inputs/`.
+
+Totals: 296 matrix rows: 257 pass, 35 fail, 2 blocked (AND-012, AND-088), 2 n/a (AND-069, AND-070); plus 10
+findings outside the rows (AND-OBS-01..10, all fail). Host after the slice: `adb devices` empty, AVD `cov-android`
+deleted (FINAL/), no `cov-` AVDs, Grantiva's emulator ledgers empty.
 
 | ID | result | evidence | note |
 |---|---|---|---|
@@ -288,3 +293,35 @@ App: scratch copy of landmarks-demo `android/` at 4e49dc4 with `emulator: cov-an
 | AND-052 | pass | findings/evidence/cov-android/AND-052/ | Sessions on emulator-5554 (01-browse, Golden Gate detail) and emulator-5556 (05-category, Lakes, started later): `hierarchy` with no `--udid` returns the Lakes tree (newest) |
 | AND-056 | pass | findings/evidence/cov-android/AND-056/ | `--udid emulator-5554` returns the Golden Gate detail tree, `--udid emulator-5556` the Lakes tree |
 | AND-058 | pass | findings/evidence/cov-android/AND-058/ | After `kill -9` of the run and its runner on emulator-5556: `hierarchy --udid emulator-5556` fails at once (`No keep-alive session for udid emulator-5556. Live sessions: emulator-5554`, exit 1) although its session files remain; `hierarchy` falls back to the live emulator-5554 session |
+| AND-105 | pass | findings/evidence/cov-android/AND-105/ | Copy with both config files and an Android keep-alive (`run --platform android`): `mcp --platform android` starts on Android (`[Config] platform: android`, `[Emulator]` from the runner session) and session tools work; without `--platform` the server exits at once with `Both grantiva.yml and grantiva-android.yml exist. Pass --platform ios|android ...` (mcp-02) |
+| B-C02.2 | pass | findings/evidence/cov-android/B-C02.2/ | With 127.0.0.1:5556 held by another process, `ensure --name cov-android-2` skips that port and boots `emulator-5558`, recorded with its own pid. The "record only once the spawned pid owns the serial" half is covered by AND-013/AND-018 (records never name a process that is not Grantiva's) |
+| B-C02.1 | pass | findings/evidence/cov-android/B-C02.1/ | An emulator started outside Grantiva leaves no record in started.json after ensure and runs (AND-018) and teardown refuses it without --force (AND-011). The `teardown --all` half was not run (Global Constraints) |
+| B-C02.3 | pass | findings/evidence/cov-android/B-C02.3/ | A record whose pid is dead is dropped and `teardown --serial` refuses that serial without `--force` though cov-android-2 runs there again (AND-013) |
+| AND-224 | pass | findings/evidence/cov-android/AND-224/ | 08-scroll: `scrollUntilVisible` to `Landmark 70` (DOWN) and back to `Golden Gate Bridge` (UP) both found; flow passes (AND-038, 38.6 s) |
+| B-A01.1 | pass | findings/evidence/cov-android/B-A01.1/ | logcat `extras=[LANDMARKS_NOTE=a=b c]` and the note flow passes (AND-035); 09-seed-empty and 10-seed-many pass (AND-043; 10 is order-sensitive, N-03); 99-crash fails at launchApp with the app's RuntimeException (AND-107); 11-launch-environment passes |
+| X-004 | pass | findings/evidence/cov-android/X-004/ | Android half: ready file `{finishedAt, flows[{name, status}], status, reportDir?}` with `passed` (AND-034), `failed` (AND-040), `interrupted` (AND-060) |
+| X-007 | pass | findings/evidence/cov-android/X-007/ | Android half: text `Emulator: cov-android (emulator-5554)`; `--json` adds `emulator` next to `simulator` with the same values (AND-108/02) |
+| X-014 | pass | findings/evidence/cov-android/X-014/ | Android half: stdout is only the serial (or the AVD name with `--no-boot`); `--json` `{created, name, serial?, state}`; stderr human line `Created|Reused <avd> (<serial>) — Booted` |
+| X-001 | fail | findings/evidence/cov-android/X-001/ | Android half: `Resolved: module=... variant=... device=...`, `Running N flow(s)...`, per-step lines and the summary table, but the narration says `Running 1 flow(s) in one GrantivaAgent session` and `Booting emulator: emulator-5554` for an emulator that is already running (N-15, OBS-A5) |
+| B-R01.1 | pass | findings/evidence/cov-android/B-R01.1/ | Flow 03: exit 0; `assertVisible "Golden Gate Bridge Renamed"` passes; with `--snapshot full` the after-capture of the inputText step shows `Golden Gate Bridge Renamed` in the Name field (cmd-005-after-crop.png) |
+| B-R01.2 | pass | findings/evidence/cov-android/B-R01.2/ | `tapOn: "Done"` clicks at (993, 349) on the 1080x2400 screen (client.log line 44), the sheet closes and the renamed detail is asserted |
+| B-A04.1 | pass | findings/evidence/cov-android/B-A04.1/ | 10 consecutive `diff capture --no-build` runs: Deep Links md5 never equals Home's (two distinct pairs across runs; Home's own hash changed between runs 3 and 4) |
+| N-08 | pass | findings/evidence/cov-android/N-08/ | Android stock set (12/12 + screens, exit 0) with that directory not on PATH; no file under it changed (968-file mtime listing identical) and a 2-second `lsof +D` poll during the whole run saw only the macOS NotificationCenter, never grantiva or its runner |
+
+## Findings outside the matrix rows
+
+Seen while running the rows above; each is a `fail` so triage picks it up. Evidence is the row directory named.
+
+| ID | result | evidence | note |
+|---|---|---|---|
+| AND-OBS-01 | fail | findings/evidence/cov-android/AND-OBS-01/ | `build install --no-build --app-file <apk>` prints `Skipping build and install (--no-build)` then `Done — com.kylebrowning.landmarks installed on cov-android (not launched)`: nothing was installed, `--app-file` silently ignored. (evidence: AND-115/02) |
+| AND-OBS-02 | fail | findings/evidence/cov-android/AND-OBS-02/ | `build install`/`run` `--app-file` help says "pre-built .app bundle or .ipa archive"; Android takes an .apk (docs/android.md:48). (evidence: findings/help/build_install.txt) |
+| AND-OBS-03 | fail | findings/evidence/cov-android/AND-OBS-03/ | runs and captures without `--report-dir` print `Reports: /var/folders/.../grantiva-report-*` and `Paths: JSON/JUnit/Allure` that are deleted before exit. (evidence: AND-108, AND-018) |
+| AND-OBS-04 | fail | findings/evidence/cov-android/AND-OBS-04/ | `runner start --detach` on a fresh device prints monkey's output (`data="android.intent.category.LAUNCHER"`, `arg="--pct-syskeys" ...`) on stdout before `Runner started (detached)`. (evidence: AND-010/02.out) |
+| AND-OBS-05 | fail | findings/evidence/cov-android/AND-OBS-05/ | `run --device emulator-5554` with the emulator already running narrates `Booting emulator: emulator-5554` then `Emulator booted: ...`. (evidence: AND-106/02.err, AND-027/02) |
+| AND-OBS-06 | fail | findings/evidence/cov-android/AND-OBS-06/ | after a `--timeout` kill the last line is the runner's `Received interrupt, cleaning up...`, printed after grantiva's final `Error:` line and calling the timeout kill an interrupt. (evidence: AND-049/01.err) |
+| AND-OBS-07 | fail | findings/evidence/cov-android/AND-OBS-07/ | `run --logs --verbose` never logs the long-running `adb ... logcat --uid ... -T ... -s *:I` subprocess it spawns (README:390: `--verbose` lists every subprocess and its exit status); seen only with `ps`. (evidence: AND-073) |
+| AND-OBS-08 | fail | findings/evidence/cov-android/AND-OBS-08/ | the held-frame note says `The recording's last frame is at 100ms` while the written mp4's last frame is at 50 ms and the JSON reports `actualMilliseconds: 50` for it. (evidence: B-A05.1) |
+| AND-OBS-09 | fail | findings/evidence/cov-android/AND-OBS-09/ | the server sends `notifications/resources/updated` for `grantiva://hierarchy` after calls that changed nothing: a rejected `grantiva_script` (no steps run) and a `grantiva_tap` whose label was not found. (evidence: MCP-026/mcp-01, MCP-006/mcp-02) |
+| AND-OBS-10 | fail | findings/evidence/cov-android/AND-OBS-10/ | `grantiva mcp --platform ios` in a directory with only grantiva-android.yml and a Gradle project: `grantiva_context` reports `[Config] platform: ios, bundle_id: com.kylebrowning.landmarks, screens: 18` (synthesized from `.maestro/` with the Android appId) and the first booted simulator of another process (`cov-ios-1`, "first booted simulator"), instead of saying there is no grantiva.yml. (evidence: MCP-079/mcp-02) |
+| X-016 | pass | findings/evidence/cov-android/X-016/ | Android half: `emulator teardown --serial emulator-5554 --json` prints `[{avd, killed, recorded, serial}]`, exit 0 |

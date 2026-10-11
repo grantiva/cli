@@ -1,0 +1,4 @@
+bash: line 1: 69605 Terminated: 15          ( for i in $(seq 1 60);
+do
+    lsof +D "$D" 2> /dev/null | tail -n +2; sleep 2;
+done ) > $S/n08-lsof.txt

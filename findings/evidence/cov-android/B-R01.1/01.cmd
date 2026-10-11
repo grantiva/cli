@@ -1,0 +1,1 @@
+rm -rf $S/r01; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/03-edit.yaml --snapshot full --report-dir $S/r01 2>&1 | grep -E "inputText|Done|Renamed|PASS|FAIL"; echo rc=${PIPESTATUS[0]}; ls $S/r01/assets/flow-000 | grep cmd-005

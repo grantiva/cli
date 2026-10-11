@@ -1,0 +1,9 @@
+# note: port blocker: python3 binds 127.0.0.1:5556 (console port of emulator-5556) for 120 s
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator ensure --name cov-android-2; adb devices; cat ~/.grantiva/android/started.json
+rc=0 elapsed=14.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator teardown --serial emulator-5558; sleep 3; $GRANTIVA emulator delete --name cov-android-2; kill 63449 2>/dev/null; adb devices; avdmanager list avd | grep Name
+rc=0 elapsed=6.6s  (stdout 02.out, stderr 02.err)
+
