@@ -353,7 +353,9 @@ public struct EmulatorManager: Sendable {
     /// that is missing too), then boots it unless `boot` is false.
     public func ensure(avd: String, systemImage: String?, boot: Bool) async throws -> EmulatorProvisionResult {
         var created = false
-        if !(try await listAVDs()).contains(avd) {
+        let existing = try await listAVDs()
+        try await pruneCreatedAVDs(existing: existing)
+        if !existing.contains(avd) {
             let image = systemImage ?? Self.defaultSystemImage
             let java = await javaPrefix()
             if !fileManager.fileExists(atPath: Self.systemImagePath(root: sdk.root, image: image)) {
@@ -370,6 +372,17 @@ public struct EmulatorManager: Sendable {
         }
         let device = try await selectDevice(configured: avd)
         return EmulatorProvisionResult(name: avd, serial: device.udid, created: created, state: "Booted")
+    }
+
+    /// Drops names from created-avds.json whose AVD no longer exists on disk
+    /// (deleted with avdmanager or Android Studio), so a later AVD of the same
+    /// name is not taken for one Grantiva created. Returns the names dropped.
+    /// A listing that fails leaves the ledger as it is.
+    @discardableResult
+    public func pruneCreatedAVDs(existing: [String]? = nil) async throws -> [String] {
+        let onDisk: [String]
+        if let existing { onDisk = existing } else { onDisk = try await listAVDs() }
+        return try provenance.pruneCreatedAVDs(keeping: onDisk)
     }
 
     /// Deletes an AVD Grantiva created; others need `force`. A running AVD
@@ -393,6 +406,7 @@ public struct EmulatorManager: Sendable {
             }
         }
         let avds = try await listAVDs()
+        try await pruneCreatedAVDs(existing: avds)
         guard avds.contains(name) else {
             throw GrantivaError.invalidArgument(
                 "No AVD named \"\(name)\". Existing AVDs: \(avds.isEmpty ? "(none)" : avds.joined(separator: ", "))."

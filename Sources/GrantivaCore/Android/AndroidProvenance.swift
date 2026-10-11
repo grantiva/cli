@@ -72,6 +72,16 @@ public struct AndroidProvenance: Sendable {
         try withCreatedLock { $0 }
     }
 
+    /// Keeps only the names in `existing`; returns the ones dropped.
+    @discardableResult
+    public func pruneCreatedAVDs(keeping existing: [String]) throws -> [String] {
+        try withCreatedLock { names in
+            let gone = names.filter { !existing.contains($0) }
+            names.removeAll { gone.contains($0) }
+            return gone
+        }
+    }
+
     public func removeCreatedAVD(_ name: String) throws {
         try withCreatedLock { $0.removeAll { $0 == name } }
     }

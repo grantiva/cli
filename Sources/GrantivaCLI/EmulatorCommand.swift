@@ -94,7 +94,10 @@ struct EmulatorCommand: AsyncParsableCommand {
         }
 
         func run() async throws {
-            let sessions = try await AndroidPlatform.live().emulators.sessions()
+            let emulators = try AndroidPlatform.live().emulators
+            let sessions = try await emulators.sessions()
+            // Housekeeping: forget created AVDs that are gone from disk.
+            _ = try? await emulators.pruneCreatedAVDs()
             if options.json {
                 Output.line(try JSONOutput.string(sessions))
             } else {
@@ -145,6 +148,10 @@ struct EmulatorCommand: AsyncParsableCommand {
             } else {
                 outcomes = try await emulators.teardownAll()
             }
+            // Housekeeping: forget created AVDs that are gone from disk. The
+            // AVDs just stopped stay recorded, so `emulator delete` still
+            // knows Grantiva created them.
+            _ = try? await emulators.pruneCreatedAVDs()
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))
             } else if outcomes.isEmpty {
