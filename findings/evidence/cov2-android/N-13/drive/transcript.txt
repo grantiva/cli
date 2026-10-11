@@ -1,0 +1,949 @@
+[0.01] >> initialize {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa
+<< {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulat
+[0.03] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.04] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.05] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.07] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 5, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.09] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 6, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.10] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 7, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[0.12] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 8, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No active runner session at /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a
+[4.73] $ $GRANTIVA runner start --detach -> rc=0
+Runner started (detached)
+  UIAutomator2 port: 64393
+  PID:      47982
+  Log:      /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791744455.log
+  Session:  .grantiva/session.json
+
+Tail the log with: tail -f /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791744455.log
+Use 'grantiva runner stop' to stop the session.
+Starting runner...
+  Application ID: com.kylebrowning.landmarks
+  Device: cov2-android (emulator-5554)
+
+--- after runner start
+[8.35] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 9, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[12.62] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 10, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[14.00] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 11, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[14.06] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 12, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[14.15] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 13, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[14.24] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 14, "jsonrpc": "2.0", "result": {"content": [{"text": "No accessibility violations found.", "type": "text"}]}}
+[14.42] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 15, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 0 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[15.05] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 16, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[15.18] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 17, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Element not found: \"Landmarks\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.", "type": "text"}], "isError": true}}
+[18.42] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 18, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[18.88] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 19, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[19.22] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 20, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[19.50] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 21, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x41dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x41\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[19.74] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 22, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 1 ok=[True, False, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[20.36] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 23, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[21.76] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 24, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[26.71] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 25, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[26.82] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 26, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[26.99] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 27, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[27.17] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 28, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 2 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x37dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x37\",\n    \"type\" : \"android.view.View\"\n  },\n  {\n    \"element\" : \"android.view.Vi
+[27.40] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 29, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 2 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[28.06] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 30, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[29.53] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 31, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[33.61] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 32, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[33.77] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 33, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[33.98] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 34, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[34.12] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 35, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[34.39] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 36, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 3 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[35.06] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 37, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[36.47] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 38, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[40.53] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 39, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[40.62] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 40, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[40.76] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 41, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[40.91] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 42, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[41.14] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 43, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 4 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[41.83] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 44, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[43.25] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 45, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[47.14] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 46, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[47.26] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 47, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[47.39] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 48, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[47.48] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 49, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[47.73] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 50, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 5 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[48.29] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 51, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[49.50] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 52, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[54.91] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 53, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[55.06] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 54, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[55.20] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 55, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[55.32] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 56, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[55.55] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 57, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 6 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[56.15] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 58, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[57.42] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 59, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[62.28] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 60, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[62.40] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 61, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[62.57] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 62, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[62.72] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 63, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[62.97] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 64, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 7 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[63.62] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 65, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[64.97] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 66, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[69.42] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 67, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[69.54] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 68, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[69.67] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 69, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[69.81] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 70, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[70.07] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 71, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 8 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[70.79] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 72, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[72.04] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 73, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[75.63] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 74, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[75.77] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 75, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[75.93] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 76, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[76.09] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 77, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[76.30] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 78, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 9 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[76.88] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 79, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[78.14] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 80, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[81.73] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 81, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[81.83] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 82, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[81.96] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 83, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[82.08] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 84, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[82.34] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 85, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 10 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[82.95] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 86, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[84.29] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 87, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[88.60] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 88, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[88.70] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 89, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[88.85] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 90, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[89.00] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 91, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[89.22] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 92, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 11 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[89.77] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 93, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[91.30] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 94, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"
+[95.63] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 95, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n      
+[95.73] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 96, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[95.83] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 97, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n         
+[95.95] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 98, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[96.24] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 99, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\
+round 12 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[96.87] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 100, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[98.11] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 101, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[102.29] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 102, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[102.81] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 103, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[103.22] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 104, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[103.41] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 105, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[103.70] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 106, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 13 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[104.43] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 107, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[105.76] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 108, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[110.12] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 109, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[110.23] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 110, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[110.48] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 111, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[110.70] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 112, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[111.06] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 113, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 14 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[111.64] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 114, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[113.13] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 115, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[117.10] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 116, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[117.23] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 117, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[117.39] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 118, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[117.51] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 119, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[117.79] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 120, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 15 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[118.45] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 121, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[119.91] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 122, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[123.54] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 123, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[123.67] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 124, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[123.82] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 125, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[123.99] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 126, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[124.22] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 127, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 16 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[124.91] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 128, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[126.32] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 129, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[127.48] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 130, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[127.52] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 131, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[127.56] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 132, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[127.59] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 133, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[127.74] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 134, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 17 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[127.91] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 135, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[128.96] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 136, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[133.52] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 137, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[133.63] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 138, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[133.82] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 139, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[133.95] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 140, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[134.17] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 141, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 18 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[135.13] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 142, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[136.22] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 143, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[139.55] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 144, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[139.68] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 145, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[139.81] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 146, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[139.95] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 147, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[140.20] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 148, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 19 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[140.89] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 149, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[142.20] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 150, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[145.89] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 151, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[146.00] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 152, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[146.08] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 153, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[146.25] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 154, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[146.47] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 155, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 20 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[146.98] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 156, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[148.01] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 157, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[152.18] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 158, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[152.28] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 159, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[152.41] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 160, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[152.55] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 161, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[152.81] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 162, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 21 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[153.37] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 163, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[154.62] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 164, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[158.47] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 165, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[158.58] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 166, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[158.73] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 167, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[158.87] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 168, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[159.11] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 169, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 22 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[159.74] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 170, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[160.89] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 171, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[164.49] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 172, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[164.58] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 173, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[164.72] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 174, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[164.83] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 175, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[165.09] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 176, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 23 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[165.76] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 177, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[166.85] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 178, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[170.98] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 179, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[171.07] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 180, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[171.18] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 181, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[171.26] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 182, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[171.52] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 183, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 24 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[172.17] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 184, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[173.31] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 185, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[176.60] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 186, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[176.72] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 187, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[176.85] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 188, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[176.96] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 189, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[177.19] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 190, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 25 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[177.89] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 191, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[179.18] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 192, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[182.52] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 193, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[182.61] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 194, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[182.74] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 195, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[182.86] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 196, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[183.12] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 197, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 26 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[183.78] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 198, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[185.01] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 199, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[188.47] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 200, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[188.57] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 201, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[188.71] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 202, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[188.82] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 203, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[189.05] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 204, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 27 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[189.65] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 205, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[191.04] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 206, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[194.54] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 207, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[194.65] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 208, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[194.80] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 209, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[194.90] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 210, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[195.12] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 211, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 28 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[195.74] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 212, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[197.02] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 213, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[200.70] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 214, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[200.81] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 215, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[200.95] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 216, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[201.07] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 217, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[201.33] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 218, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 29 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[202.45] $ $GRANTIVA runner stop -> rc=0
+Runner stopped (pid 47982)
+
+[206.98] $ $GRANTIVA runner start --detach -> rc=0
+Runner started (detached)
+  UIAutomator2 port: 65034
+  PID:      52000
+  Log:      /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791744657.log
+  Session:  .grantiva/session.json
+
+Tail the log with: tail -f /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791744657.log
+Use 'grantiva runner stop' to stop the session.
+Starting runner...
+  Application ID: com.kylebrowning.landmarks
+  Device: cov2-android (emulator-5554)
+
+--- after replacement
+[210.42] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 219, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[213.96] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 220, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[215.27] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 221, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[215.32] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 222, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[215.43] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 223, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[215.51] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 224, "jsonrpc": "2.0", "result": {"content": [{"text": "No accessibility violations found.", "type": "text"}]}}
+[215.71] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 225, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 0 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[216.48] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 226, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[216.98] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 227, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Element not found: \"Landmarks\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.", "type": "text"}], "isError": true}}
+[219.52] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 228, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[220.10] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 229, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[220.29] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 230, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[220.48] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 231, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x41dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x41\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[220.74] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 232, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 1 ok=[True, False, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[221.46] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 233, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[223.08] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 234, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[226.99] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 235, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[227.15] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 236, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[227.36] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 237, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[227.54] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 238, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 2 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x37dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x37\",\n    \"type\" : \"android.view.View\"\n  },\n  {\n    \"element\" : \"android.view.V
+[227.82] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 239, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 2 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[228.49] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 240, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[229.80] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 241, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[233.22] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 242, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[233.31] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 243, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[233.48] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 244, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[233.61] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 245, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[233.84] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 246, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 3 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[234.44] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 247, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[235.66] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 248, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[239.35] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 249, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[239.46] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 250, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[239.59] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 251, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[239.72] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 252, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[239.93] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 253, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 4 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[240.48] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 254, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[241.73] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 255, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[245.35] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 256, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[245.46] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 257, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[245.58] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 258, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[245.69] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 259, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[245.96] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 260, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 5 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[246.48] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 261, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[247.68] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 262, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[251.46] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 263, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[251.56] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 264, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[251.68] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 265, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[251.79] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 266, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[252.03] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 267, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 6 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[252.61] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 268, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[254.09] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 269, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[257.11] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 270, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[257.20] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 271, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[257.32] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 272, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[257.43] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 273, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[257.67] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 274, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 7 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[258.30] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 275, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[259.59] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 276, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[262.70] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 277, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[262.82] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 278, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[262.98] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 279, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[263.16] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 280, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[263.37] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 281, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 8 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[263.92] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 282, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[265.52] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 283, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[268.63] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 284, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[268.71] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 285, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[268.83] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 286, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[268.96] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 287, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[269.14] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 288, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 9 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[269.66] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 289, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[270.91] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 290, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[274.28] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 291, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[274.40] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 292, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[274.52] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 293, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[274.61] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 294, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[274.80] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 295, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 10 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[275.39] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 296, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[276.72] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 297, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[279.97] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 298, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[280.02] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 299, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[280.11] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 300, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[280.22] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 301, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[280.46] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 302, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 11 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[282.08] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 303, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[283.33] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 304, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[287.52] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 305, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[287.63] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 306, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[287.77] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 307, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[287.88] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 308, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[288.11] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 309, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 12 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[288.65] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 310, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[289.70] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 311, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[293.36] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 312, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[293.46] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 313, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[293.57] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 314, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[293.74] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 315, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[293.95] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 316, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 13 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[294.47] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 317, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[295.73] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 318, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[299.34] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 319, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[299.44] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 320, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[299.59] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 321, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[299.71] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 322, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[299.89] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 323, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 14 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[300.39] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 324, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[301.58] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 325, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[305.36] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 326, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[305.45] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 327, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[305.57] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 328, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[305.67] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 329, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[305.87] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 330, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 15 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[306.51] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 331, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[307.82] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 332, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[311.06] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 333, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[311.16] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 334, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[311.28] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 335, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[311.42] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 336, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[311.65] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 337, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 16 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[312.15] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 338, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[313.40] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 339, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[316.51] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 340, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[316.60] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 341, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[316.70] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 342, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[316.83] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 343, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[317.03] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 344, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 17 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[317.57] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 345, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[318.92] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 346, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[321.98] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 347, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[322.07] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 348, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[322.20] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 349, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[322.33] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 350, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[322.61] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 351, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 18 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[323.18] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 352, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[324.40] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 353, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[327.69] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 354, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[327.78] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 355, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[327.91] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 356, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[328.01] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 357, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[328.43] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 358, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 19 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[329.08] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 359, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[330.24] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 360, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[333.86] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 361, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[333.95] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 362, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[334.12] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 363, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[334.29] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 364, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[334.51] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 365, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 20 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[335.03] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 366, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[336.31] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 367, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[340.62] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 368, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[340.70] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 369, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[340.85] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 370, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[340.95] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 371, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[341.20] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 372, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 21 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[341.79] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 373, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[342.99] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 374, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[346.56] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 375, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[346.66] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 376, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[346.81] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 377, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[346.92] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 378, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[347.12] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 379, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 22 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[347.69] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 380, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[348.72] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 381, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[352.37] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 382, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[352.48] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 383, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[352.61] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 384, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[352.74] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 385, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[352.97] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 386, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 23 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[353.62] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 387, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[355.04] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 388, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[358.52] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 389, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[358.61] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 390, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[358.76] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 391, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[358.89] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 392, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[359.15] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 393, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 24 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[359.79] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 394, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[360.92] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 395, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[364.30] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 396, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[364.39] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 397, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[364.50] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 398, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[364.59] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 399, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[364.81] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 400, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 25 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[365.42] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 401, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[366.74] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 402, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[369.94] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 403, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[370.00] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 404, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[370.09] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 405, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[370.17] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 406, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[370.36] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 407, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 26 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[370.94] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 408, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[372.24] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 409, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[375.98] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 410, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[376.06] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 411, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[376.20] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 412, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[376.33] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 413, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[376.55] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 414, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 27 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[377.17] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 415, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[378.47] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 416, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[382.05] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 417, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[382.17] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 418, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[382.29] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 419, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[382.42] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 420, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[382.66] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 421, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 28 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+[383.27] >> tools/call {"name": "grantiva_screenshot", "arguments": {}}
+<< {"id": 422, "jsonrpc": "2.0", "result": {"content": [{"data": "<b64>", "mimeType": "image/png", "type": "image"}]}}
+[384.57] >> tools/call {"name": "grantiva_tap", "arguments": {"label": "Landmarks"}}
+<< {"id": 423, "jsonrpc": "2.0", "result": {"content": [{"text": "Tapped on \"Landmarks\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \
+[391.39] >> tools/call {"name": "grantiva_swipe", "arguments": {"direction": "up"}}
+<< {"id": 424, "jsonrpc": "2.0", "result": {"content": [{"text": "Swiped up. Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n     
+[391.49] >> tools/call {"name": "grantiva_type", "arguments": {"text": "x"}}
+<< {"id": 425, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+[391.64] >> tools/call {"name": "grantiva_a11y_tree", "arguments": {}}
+<< {"id": 426, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411\",\n            \"x\" : \"0\",\n        
+[391.77] >> tools/call {"name": "grantiva_a11y_check", "arguments": {}}
+<< {"id": 427, "jsonrpc": "2.0", "result": {"content": [{"text": "Found 1 accessibility violation(s):\n[\n  {\n    \"element\" : \"android.view.View\",\n    \"message\" : \"Tap target \\\"android.view.View\\\" is 411x46dp, below the 48x48dp minimum.\",\n    \"rule\" : \"small_tap_target\",\n    \"size\" : \"411x46\",\n    \"type\" : \"android.view.View\"\n  }\n]", "type": "text"}]}}
+[392.03] >> tools/call {"name": "grantiva_script", "arguments": {"steps": [{"wait": 0.1}]}}
+<< {"id": 428, "jsonrpc": "2.0", "result": {"content": [{"text": "Step 1: waited 0.1s\n\nFinal hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n\n          ],\n          \"clickable\" : false,\n          \"enabled\" : true,\n          \"focusable\" : false,\n          \"frame\" : {\n            \"height\" : \"50\",\n            \"width\" : \"411
+round 29 ok=[True, True, True, False, True, True, True] rpc_error=[False, False, False, False, False, False, False]
+rounds_until_all_ok first=-1 replaced=-1
+server exit 0

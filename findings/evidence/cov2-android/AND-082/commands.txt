@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.00 13.37 21.88
+$ cat .grantiva/session.json; echo; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; $GRANTIVA runner stop; echo exit=$?; sleep 2; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; kill -0 56069 2>/dev/null && echo runner-alive || echo runner-gone; ls .grantiva/session.json /tmp/grantiva-sessions 2>&1
+rc=1 elapsed=3.1s  (stdout 01.out, stderr 01.err)
+

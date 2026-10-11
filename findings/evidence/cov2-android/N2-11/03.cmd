@@ -1,0 +1,1 @@
+cp .maestro/coverage/cfg/screens-steps.grantiva-android.yml grantiva-android.yml; $GRANTIVA diff capture --no-build; echo exit=$?; cp /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/grantiva-android.yml.stock grantiva-android.yml; kill -0 39267 && echo runner-still-alive

@@ -1,0 +1,5 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.99 28.71 28.50
+$ $GRANTIVA runner start --detach >/dev/null 2>&1; pid=$(python3 -I -c "import json;print(json.load(open(\".grantiva/session.json\"))[\"pid\"])"); kill -9 $pid; sleep 1; $GRANTIVA runner stop; echo exit=$?
+rc=0 elapsed=7.0s  (stdout 01.out, stderr 01.err)
+
+# shared evidence: see ../N2-15/ (foreground runs)

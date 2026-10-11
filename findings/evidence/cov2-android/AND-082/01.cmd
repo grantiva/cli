@@ -1,0 +1,1 @@
+cat .grantiva/session.json; echo; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; $GRANTIVA runner stop; echo exit=$?; sleep 2; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator; kill -0 56069 2>/dev/null && echo runner-alive || echo runner-gone; ls .grantiva/session.json /tmp/grantiva-sessions 2>&1

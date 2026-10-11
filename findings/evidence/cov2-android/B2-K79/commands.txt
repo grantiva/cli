@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.33 28.47 33.44
+$ ls /tmp/grantiva-sessions; cat /tmp/grantiva-sessions/*.owner.json; echo; RP=$(ls /tmp/grantiva-sessions | grep -o "^[0-9]*" | head -1); echo runner=$RP; GP=$(cat /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/MCP-014/ka.pid); echo grantiva=$GP; kill -9 $GP; sleep 1; t0=$(date +%s); $GRANTIVA hierarchy --timeout 10 > /dev/null; echo hierarchy-exit=$? secs=$(( $(date +%s)-t0 )); sleep 5; ps -p $RP -o pid=,args= | cut -c1-100 || echo runner-gone; ls /tmp/grantiva-sessions; adb forward --list
+rc=0 elapsed=6.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.29 27.86 33.16
+$ kill -0 37639 2>/dev/null && echo runner-alive || echo runner-gone; ls /tmp/grantiva-sessions | wc -l; adb forward --list; adb -s emulator-5554 shell ps -A | grep -c uiautomator
+rc=0 elapsed=0.1s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.29 27.86 33.16
+$ $GRANTIVA runner start --detach; echo exit=$?; sleep 1; $GRANTIVA hierarchy --format json | head -c 120; echo; $GRANTIVA runner dump-hierarchy --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K79/dump.json; echo dump-exit=$?; head -c 200 /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K79/dump.json
+rc=0 elapsed=1.5s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-android/android load=10.17 27.25 32.88
+$ sleep 15; cat .grantiva/session.json; echo; kill -0 39267 && echo runner-alive; $GRANTIVA hierarchy --format json | head -c 120; echo hier=$?; $GRANTIVA runner dump-hierarchy --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K79/dump.json; echo dump-exit=$?; head -c 200 /Users/kyle/Developer/grantiva-cli/.worktrees/cov2-android/findings/evidence/cov2-android/B2-K79/dump.json; tail -20 /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791744117.log
+rc=0 elapsed=16.3s  (stdout 04.out, stderr 04.err)
+
