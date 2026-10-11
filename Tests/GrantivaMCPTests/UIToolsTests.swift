@@ -156,14 +156,14 @@ final class UIToolsTests: XCTestCase {
           "type": "XCUIElementTypeApplication",
           "children": [
             {"type": "XCUIElementTypeButton", "label": "", "name": "", "enabled": true,
-             "frame": {"width": "100", "height": "50"}},
+             "frame": {"width": 100, "height": 50}},
             {"type": "XCUIElementTypeButton", "label": "Close", "enabled": true,
-             "frame": {"width": "20", "height": "20"}},
+             "frame": {"width": 20, "height": 20}},
             {"type": "XCUIElementTypeStaticText", "label": "", "enabled": true,
-             "frame": {"width": "10", "height": "10"}},
+             "frame": {"width": 10, "height": 10}},
             {"type": "XCUIElementTypeOther", "children": [
                {"type": "XCUIElementTypeSwitch", "label": "Wi-Fi", "enabled": true,
-                "frame": {"width": "60", "height": "60"}}
+                "frame": {"width": 60, "height": 60}}
             ]}
           ]
         }

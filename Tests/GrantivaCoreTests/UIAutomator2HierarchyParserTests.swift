@@ -36,7 +36,7 @@ final class UIAutomator2HierarchyParserTests: XCTestCase {
         XCTAssertEqual(text["value"] as? String, "Details")
         XCTAssertEqual(text["clickable"] as? Bool, false)
         XCTAssertEqual(text["visible"] as? Bool, true)
-        XCTAssertEqual(text["frame"] as? [String: String], ["x": "16", "y": "90", "width": "87", "height": "28"], "pixels / 2.625, rounded")
+        XCTAssertEqual(text["frame"] as? [String: Int], ["x": 16, "y": 90, "width": 87, "height": 28], "pixels / 2.625, rounded, as numbers (L40)")
 
         let button = children[1]
         XCTAssertEqual(button["label"] as? String, "Open settings", "content-desc wins over text")
@@ -64,7 +64,7 @@ final class UIAutomator2HierarchyParserTests: XCTestCase {
     func testScaleOneKeepsPixels() throws {
         let root = try UIAutomator2HierarchyXMLParser(xml: sample, scale: 1).parse()
         let text = try XCTUnwrap(((root["children"] as? [[String: Any]])?.first?["children"] as? [[String: Any]])?.first)
-        XCTAssertEqual(text["frame"] as? [String: String], ["x": "42", "y": "236", "width": "228", "height": "74"])
+        XCTAssertEqual(text["frame"] as? [String: Int], ["x": 42, "y": 236, "width": 228, "height": 74])
     }
 
     func testMalformedXMLThrows() {

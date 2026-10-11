@@ -96,7 +96,7 @@ final class UIAutomator2ClientTests: XCTestCase {
         let transport = ScriptedTransport([(#"{"value":"<hierarchy><android.view.View class=\"android.view.View\" text=\"Hi\" bounds=\"[0,0][20,40]\"/></hierarchy>"}"#, 200)])
         let tree = try await client(transport, scale: 2).hierarchy()
         let child = try XCTUnwrap((tree["children"] as? [[String: Any]])?.first)
-        XCTAssertEqual(child["frame"] as? [String: String], ["x": "0", "y": "0", "width": "10", "height": "20"])
+        XCTAssertEqual(child["frame"] as? [String: Int], ["x": 0, "y": 0, "width": 10, "height": 20])
     }
 
     func testTapByLabelFindsByXPathThenClicks() async throws {
