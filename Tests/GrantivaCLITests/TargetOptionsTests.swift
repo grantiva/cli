@@ -96,13 +96,13 @@ final class TargetOptionsTests: XCTestCase {
     }
 
     /// K26: `build install` installs; only `run` tests.
-    func testAppIDWarningFitsTheCommand() {
+    func testAppIDWarningFitsTheCommand() throws {
         let free = "com.kylebrowning.landmarks", paid = "com.kylebrowning.landmarks.paid"
-        let install = try? XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .installing).warning)
+        let install = try XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .installing).warning)
         XCTAssertEqual(install, "application_id \(free) in grantiva-android.yml differs from the app's own application ID \(paid); installing \(paid). Update application_id to match.")
-        let run = AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .testing).warning
-        XCTAssertTrue(run?.contains("testing \(paid)") == true, "\(String(describing: run))")
-        let flagged = AndroidProject.applicationID(override: free, binary: paid, configured: nil, purpose: .installing).warning ?? ""
+        let run = try XCTUnwrap(AndroidProject.applicationID(override: nil, binary: paid, configured: free, purpose: .testing).warning)
+        XCTAssertTrue(run.contains("testing \(paid)"), run)
+        let flagged = try XCTUnwrap(AndroidProject.applicationID(override: free, binary: paid, configured: nil, purpose: .installing).warning)
         XCTAssertTrue(flagged.contains("installing \(paid)"), flagged)
         XCTAssertFalse(flagged.contains("testing"), flagged)
         XCTAssertEqual(AndroidProject.applicationID(override: nil, binary: paid, configured: free).warning, run, "testing is the default")

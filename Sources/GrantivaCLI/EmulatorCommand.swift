@@ -24,7 +24,7 @@ struct EmulatorCommand: AsyncParsableCommand {
         @Flag(inversion: .prefixedNo, help: "Boot the emulator and wait for it to be ready. On by default; --no-boot creates it without booting.")
         var boot = true
 
-        @Flag(name: .long, help: "Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1 does the same; otherwise the emulator gets a window, even when stdout is not a terminal.")
+        @Flag(name: .long, help: "Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise the emulator gets a window, even when stdout is not a terminal.")
         var headless = false
 
         static func resolveName(flag: String?, config: GrantivaConfig?) throws -> String {

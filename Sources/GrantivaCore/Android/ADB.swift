@@ -102,7 +102,10 @@ public struct ADB: Sendable {
     /// own last status line, without its argument trace.
     static func launchFailure(output: String, applicationId: String, serial: String) -> GrantivaError {
         if output.contains(monkeyNoActivities) {
-            return .unavailable("\(applicationId) is not installed on \(serial) (or has no launcher activity). Install it first, e.g. grantiva build install --device \(serial).")
+            return .unavailable(
+                GrantivaError.notInstalledRoot(appID: applicationId, device: serial)
+                    + " (or has no launcher activity). Install it first, e.g. grantiva build install --device \(serial)."
+            )
         }
         let meaningful = output.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespaces) }

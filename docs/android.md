@@ -35,10 +35,11 @@ With no `emulator:`, the order is: the one running emulator, else the one emulat
 booting (waited on), else the only existing AVD (booted); otherwise the command fails and
 lists the AVDs. `--device <serial>` targets any attached device, including
 a physical one. On a physical device the demo-mode and animation settings are skipped
-unless `--allow-device-settings` is given. `--headless` boots without a window, and so does
-`GRANTIVA_EMULATOR_HEADLESS=1` (set it on CI hosts without a display). Nothing else makes a
-boot windowless: without one of them an emulator Grantiva boots gets a window, even when stdout
-is not a terminal (`serial=$(grantiva emulator ensure ...)`, a pipe, an agent).
+unless `--allow-device-settings` is given. `--headless` boots without a window, and so do
+`GRANTIVA_EMULATOR_HEADLESS=1` (or `true`/`yes`) and `CI` set to any value other than empty,
+`0` or `false` (as CI services set it). Nothing else makes a boot windowless: without one of
+them an emulator Grantiva boots gets a window, even when stdout is not a terminal
+(`serial=$(grantiva emulator ensure ...)`, a pipe, an agent).
 
 `grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
 not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s

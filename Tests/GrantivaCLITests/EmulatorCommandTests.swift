@@ -141,8 +141,13 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertFalse(files.isEmpty)
         for file in files {
             let source = try String(contentsOf: commands.appendingPathComponent(file), encoding: .utf8)
-            for line in source.components(separatedBy: "\n") where line.contains("JSONSerialization.data(withJSONObject") {
-                XCTAssertTrue(line.contains(".prettyPrinted") && line.contains(".sortedKeys"), "\(file): \(line)")
+            // Whitespace-free, so a call split over several lines still
+            // matches; each call is checked up to the next one.
+            let flat = source.filter { !$0.isWhitespace }
+            let calls = flat.components(separatedBy: "JSONSerialization.data(withJSONObject:").dropFirst()
+            for call in calls {
+                let options = call.range(of: "options:").map { String(call[$0.upperBound...].prefix(80)) } ?? ""
+                XCTAssertTrue(options.contains(".prettyPrinted") && options.contains(".sortedKeys"), "\(file): options \(options)")
             }
         }
     }
@@ -162,5 +167,8 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertTrue(doc.contains(variable), "docs/android.md names \(variable)")
         let flat = doc.split(whereSeparator: \.isWhitespace).joined(separator: " ")
         XCTAssertTrue(flat.contains("even when stdout is not a terminal"), "docs/android.md states the rule")
+        XCTAssertTrue(flat.contains("`CI` set to any value other than empty, `0` or `false`"), "docs/android.md names CI")
+        XCTAssertTrue(EmulatorCommand.Ensure.helpMessage(columns: 1000).contains("CI=true"))
+        XCTAssertTrue(InstallCommand.helpMessage(columns: 1000).contains("CI=true"))
     }
 }

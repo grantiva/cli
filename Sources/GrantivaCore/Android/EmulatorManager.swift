@@ -68,14 +68,23 @@ public struct EmulatorManager: Sendable {
 
     public static let bootTimeoutVariable = "GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS"
     /// Set to 1 (or true/yes) to boot every emulator without a window, as
-    /// `--headless` does. Nothing else makes a boot windowless: a non-TTY
-    /// stdout (`serial=$(grantiva emulator ensure ...)`, pipes, CI) does not.
+    /// `--headless` does; `CI` does the same. A non-TTY stdout
+    /// (`serial=$(grantiva emulator ensure ...)`, pipes, agents) does not.
     public static let headlessVariable = "GRANTIVA_EMULATOR_HEADLESS"
 
+    /// `--headless`, `GRANTIVA_EMULATOR_HEADLESS` (1/true/yes), or `CI` set to
+    /// anything but empty, `0` or `false`. A non-TTY stdout never implies it.
     public static func isHeadless(flag: Bool, environment: [String: String]) -> Bool {
         if flag { return true }
-        guard let value = environment[headlessVariable]?.trimmingCharacters(in: .whitespaces).lowercased() else { return false }
-        return ["1", "true", "yes"].contains(value)
+        if let value = environment[headlessVariable]?.trimmingCharacters(in: .whitespaces).lowercased(),
+           ["1", "true", "yes"].contains(value) {
+            return true
+        }
+        if let ci = environment["CI"]?.trimmingCharacters(in: .whitespaces).lowercased(),
+           !ci.isEmpty, ci != "0", ci != "false" {
+            return true
+        }
+        return false
     }
 
     /// An SDK tool's failure text without its own `Error:` prefix (the CLI
@@ -425,21 +434,22 @@ public struct EmulatorManager: Sendable {
         let output: String
         do {
             output = try await execute("yes 2>/dev/null | \(java)\(shellQuoted(sdk.sdkmanager)) --sdk_root=\(shellQuoted(sdk.root)) \(shellQuoted(image)) 2>&1")
-        } catch GrantivaError.commandFailed(let message, _) {
-            throw installFailure(image: image, output: message)
+        } catch GrantivaError.commandFailed(let message, let code) {
+            throw installFailure(image: image, output: message, code: code)
         }
+        // sdkmanager exited 0 but the image is not there: no code of its own.
         guard fileManager.fileExists(atPath: Self.systemImagePath(root: sdk.root, image: image)) else {
-            throw installFailure(image: image, output: output)
+            throw installFailure(image: image, output: output, code: 1)
         }
     }
 
-    private func installFailure(image: String, output: String) -> GrantivaError {
+    private func installFailure(image: String, output: String, code: Int32) -> GrantivaError {
         let reason = Self.sdkmanagerReason(output)
         let installed = installedSystemImages()
         let because = reason.map { ": " + ($0.hasSuffix(".") ? $0 : $0 + ".") } ?? "."
         return GrantivaError.commandFailed(
             "sdkmanager could not install \(image)\(because) Installed images: \(installed.isEmpty ? "(none)" : installed.joined(separator: ", ")).",
-            1
+            code
         )
     }
 

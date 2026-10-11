@@ -33,7 +33,7 @@ struct TargetOptions: ParsableArguments {
     @Flag(name: .long, help: "Apply demo mode and animation settings on a physical device too (Android)")
     var allowDeviceSettings = false
 
-    @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
+    @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
     var headless = false
 
     var androidOptions: AndroidPlatform.Options {

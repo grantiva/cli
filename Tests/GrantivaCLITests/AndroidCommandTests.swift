@@ -410,6 +410,7 @@ final class AndroidCommandTests: XCTestCase {
         } catch {
             let message = error.localizedDescription
             XCTAssertEqual(message, InstallCommand.notInstalledMessage(appID: "com.fake.app", deviceName: "Fake", serial: "emulator-5598"))
+            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.fake.app", device: "Fake (emulator-5598)")), message)
             XCTAssertTrue(message.hasPrefix("com.fake.app is not installed on Fake (emulator-5598)"), message)
         }
         XCTAssertFalse(fake.calls.contains("launch(com.fake.app)"), "\(fake.calls)")
@@ -423,5 +424,25 @@ final class AndroidCommandTests: XCTestCase {
         let stdout = try await captureStandardOutput { try await command.run() }
         XCTAssertTrue(fake.calls.contains("launch(com.fake.app)"), "\(fake.calls)")
         XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.app running on Fake (install skipped)")
+    }
+
+    /// AndroidPlatform answers `isInstalled`, so `run --no-build` refuses up
+    /// front when the app is missing, before any runner work.
+    func testRunWithNoBuildOnAndroidRefusesWhenTheAppIsMissing() async throws {
+        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake.app", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.installed = false
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.fake.app", device: "Fake")), message)
+            XCTAssertTrue(message.contains("Drop --no-build or run grantiva build install"), message)
+        }
+        XCTAssertTrue(fake.calls.contains("isInstalled(com.fake.app)"), "\(fake.calls)")
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("launch(") || $0.hasPrefix("install(") }, "\(fake.calls)")
     }
 }

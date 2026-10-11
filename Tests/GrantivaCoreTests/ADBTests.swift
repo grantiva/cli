@@ -178,6 +178,7 @@ final class ADBTests: XCTestCase {
             XCTFail("expected an error")
         } catch {
             let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.example.app", device: "emulator-5554")), message)
             XCTAssertTrue(message.hasPrefix("com.example.app is not installed on emulator-5554"), message)
             XCTAssertFalse(message.contains("arg="), message)
             XCTAssertFalse(message.contains("data="), message)

@@ -239,7 +239,8 @@ struct InstallCommand: AsyncParsableCommand {
     }
 
     static func notInstalledMessage(appID: String, deviceName: String, serial: String) -> String {
-        "\(appID) is not installed on \(deviceName) (\(serial)); install it first (drop --no-build, or pass --app-file) or pass --no-launch."
+        GrantivaError.notInstalledRoot(appID: appID, device: "\(deviceName) (\(serial))")
+            + "; install it first (drop --no-build, or pass --app-file) or pass --no-launch."
     }
 
     static func completionMessage(

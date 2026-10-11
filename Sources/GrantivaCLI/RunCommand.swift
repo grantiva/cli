@@ -182,7 +182,7 @@ struct RunCommand: AsyncParsableCommand {
     /// `--no-build` assumes the app is on the device; say so plainly when it
     /// is not, instead of letting the runner fail every launchApp step.
     static func notInstalledMessage(appID: String, device: String) -> String {
-        "\(appID) is not installed on \(device). Drop --no-build or run grantiva build install."
+        GrantivaError.notInstalledRoot(appID: appID, device: device) + ". Drop --no-build or run grantiva build install."
     }
 
     func run() async throws {

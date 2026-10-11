@@ -929,6 +929,34 @@ final class EmulatorManagerTests: XCTestCase {
         XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: [key: ""]))
     }
 
+    /// CI services set `CI`; any value but empty, 0 or false implies headless.
+    func testCIImpliesHeadless() {
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "true"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "1"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "woodpecker"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": ""]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": "0"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": "FALSE"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: true, environment: ["CI": "false"]), "the flag still wins")
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "false", EmulatorManager.headlessVariable: "1"]))
+    }
+
+    func testBootUnderCIIsWindowless() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute),
+            execute: shell.execute, spawn: spawn.spawn, provenance: AndroidProvenance(directory: scratch.path),
+            headless: false, bootTimeout: 1, pollInterval: 0.01, environment: ["CI": "true"], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+        )
+        _ = try await manager.boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(try XCTUnwrap(spawn.calls.first).1.last, "-no-window")
+    }
+
     /// `swift test`'s stdout is not a terminal; the boot still gets a window.
     func testBootWithoutHeadlessGetsAWindowWhenStdoutIsNotATerminal() async throws {
         let spawn = SpawnRecorder()
@@ -989,6 +1017,8 @@ final class EmulatorManagerTests: XCTestCase {
             XCTAssertTrue(message.hasPrefix("sdkmanager could not install \(image): Package system-images/android-99/bogus/arm64-v8a not found."), message)
             XCTAssertTrue(message.contains("Installed images: system-images;android-35;google_apis;arm64-v8a."), message)
             XCTAssertFalse(message.contains("deprecated"), message)
+            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+            XCTAssertEqual(code, 1, "exit 0 with the image missing reports 1")
         }
         XCTAssertFalse(shell.commands.contains { $0.contains("avdmanager") }, "\(shell.commands)")
         XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), [])
@@ -999,13 +1029,15 @@ final class EmulatorManagerTests: XCTestCase {
         let image = "system-images;android-36;google_apis;arm64-v8a"
         let shell = ScriptedShell([
             .success(""), .success("/jdk"),
-            .failure(GrantivaError.commandFailed("Warning: Failed to find package '\(image)'\n[=====    ] 40% Fetch remote repository", 1)),
+            .failure(GrantivaError.commandFailed("Warning: Failed to find package '\(image)'\n[=====    ] 40% Fetch remote repository", 3)),
         ])
         do {
             _ = try await manager(shell, sdkRoot: root).ensure(avd: "fix-k31", systemImage: image, boot: false)
             XCTFail("expected an error")
         } catch {
             XCTAssertTrue(error.localizedDescription.hasPrefix("sdkmanager could not install \(image): Warning: Failed to find package"), error.localizedDescription)
+            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+            XCTAssertEqual(code, 3, "sdkmanager's own exit code is passed through")
         }
         XCTAssertFalse(shell.commands.contains { $0.contains("avdmanager") }, "\(shell.commands)")
     }

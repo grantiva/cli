@@ -363,4 +363,14 @@ final class AndroidPlatformTests: XCTestCase {
         }
         XCTAssertTrue(shell.commands.isEmpty)
     }
+
+    func testIsInstalledReadsThePackageListAndIsUnknownWhenAdbFails() async {
+        let installed = await platform(ScriptedShell([.success("package:com.example.app")])).isInstalled(appID: "com.example.app", deviceID: "emulator-5554")
+        XCTAssertEqual(installed, true)
+        let missing = await platform(ScriptedShell([.success("package:com.example.app.paid")])).isInstalled(appID: "com.example.app", deviceID: "emulator-5554")
+        XCTAssertEqual(missing, false)
+        let unknown = await platform(ScriptedShell([.failure(GrantivaError.commandFailed("adb: device 'emulator-5554' not found", 1))]))
+            .isInstalled(appID: "com.example.app", deviceID: "emulator-5554")
+        XCTAssertNil(unknown, "an adb failure says nothing about the app")
+    }
 }
