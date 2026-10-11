@@ -66,7 +66,8 @@ final class DefaultSimulatorOwnershipCoreTests: XCTestCase {
             SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "\(home)/.grantiva/runner"]),
             "\(home)/.grantiva/simulator-capacity", "the default home keeps the existing ledger"
         )
-        XCTAssertEqual(SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/qa/runner/"]), "/tmp/qa/runner/simulator-capacity")
+        XCTAssertEqual(SimulatorCapacity.defaultDirectory(environment: ["GRANTIVA_RUNNER_HOME": "/tmp/qa/runner/"]), "/private/tmp/qa/runner/simulator-capacity",
+                       "the runner home is spelled the realpath way (L27)")
     }
 
     func testReadingAnAbsentLedgerCreatesNothing() throws {
