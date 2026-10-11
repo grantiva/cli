@@ -1,0 +1,4 @@
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli
+$ python3 findings/evidence/cov-cli/S3/step3.py /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli > examples.out
+# extracts every `grantiva ...` example from README.md and docs/*.md, maps it to its help page in findings/help, and checks every flag it uses is on that page
+# the two CHECK lines are parser false positives (a trailing comma after --keep-alive, --logs, --serial in README Commands prose); the multi-line build install / run examples at README:234-249 were checked by hand (multiline.out)

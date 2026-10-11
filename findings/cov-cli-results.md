@@ -325,3 +325,19 @@ Error: Invalid argument: ...`: inconsistent error text across sibling tools |
 | CLI-170 | fail | findings/evidence/cov-cli/CLI-170/all.out | 171 of the 172 corpus pages print 2.1.0 with exit 0; `console releases update --version` exits 64 'Missing value for --version <version>' because the command's own '--version <version>  New version.' option shadows the inherited flag, and its help page lists both (console_releases_update.txt:16 and :19) |
 | CLI-171 | pass | findings/evidence/cov-cli/CLI-171/ | --quiet and --verbose: Unknown option, exit 64, usage names --project-dir and --platform |
 | N-07 | fail | findings/evidence/cov-cli/N-07/ | runner start --help abstract still 'Start the runner with WDA and keep it alive for interactive use.'; README:333 says 'with WDA (UIAutomator2 on Android)' (same finding as CLI-123) |
+
+## Task 3 Step 3: README and docs command examples vs the help corpus
+
+| ID | result | evidence | note |
+|---|---|---|---|
+| S3-examples | pass | findings/evidence/cov-cli/S3/examples.out | 132 `grantiva ...` examples in README.md and docs/{android,android-environment,dump-hierarchy,mcp}.md: every command path exists in findings/help and every flag they use is on that page (2 parser false positives from trailing commas; multi-line README:234-249 checked by hand, multiline.out). Wording mismatches between README and help are in CLI-111/CLI-123/N-07 |
+
+## Findings outside the matrix rows (recorded as fail for triage)
+
+| ID | result | evidence | note |
+|---|---|---|---|
+| EXTRA-01 | fail | findings/evidence/cov-cli/CLI-141/install.out | a fresh runner home gets WDA caches for iOS 26.0, 26.2, 26.4 and 27.0 (the 51c597a commit message says so too), but docs/dump-hierarchy.md:55 says the tarball ships prebuilt agents for 26.2, 26.4 and 27.0 only |
+| EXTRA-02 | fail | findings/evidence/cov-cli/MCP-033/commands.txt | a failing `diff compare` / `diff approve` (no captures) and the MCP vrt tools in an empty project leave an empty `.grantiva/captures/diffs` (and `captures/android/diffs`) tree behind; a read-only command that fails should not create directories |
+| EXTRA-03 | fail | findings/evidence/cov-cli/CLI-097/empty_ios.out | default simulator names disagree: the MCP grantiva_build/run/test schemas say default 'iPhone 16', `init` writes 'iPhone 18 Pro' (CLI-072), doctor's fix line suggests `simulator ensure --name "iPhone 17 Pro"` (CLI-081) |
+| EXTRA-04 | fail | findings/evidence/cov-cli/B-C01.1/fresh.err | README:20-23 "From source" copies only `.build/release/grantiva` to /usr/local/bin; a binary without `grantiva_GrantivaCore.bundle` beside it cannot extract the runner ('The grantiva_GrantivaCore.bundle resource bundle was not found next to the grantiva executable ...') |
+| EXTRA-05 | fail | findings/evidence/cov-cli/CLI-031/run_flag_android.err | `run --device emulator-9999` narrates `Booting emulator: emulator-9999` and fails 'No attached device has the serial "emulator-9999" ... and no AVD has that name ...': --device is also tried as an AVD name and announced as a boot, while docs/android.md:36 says --device <serial> targets an attached device |
