@@ -66,6 +66,18 @@ public struct CaptureResult: Sendable, Codable {
         self.simulator = simulator
         self.emulator = emulator
     }
+
+    /// The one shape `diff capture --json` and the MCP live-session capture
+    /// both report: the device under `simulator`, and on Android the same
+    /// object again under `emulator`.
+    public init(
+        screens: [ScreenCapture], directory: String, duration: Double, target: CaptureSimulatorTarget, platform: Platform
+    ) {
+        self.init(
+            screens: screens, directory: directory, duration: duration,
+            simulator: target, emulator: platform == .android ? target : nil
+        )
+    }
 }
 
 public struct CaptureSimulatorTarget: Sendable, Codable, Equatable {
@@ -147,6 +159,40 @@ public struct ScreenDiff: Sendable, Codable {
         case capturePath = "capture_path"
         case diffImagePath = "diff_image_path"
         case message
+    }
+}
+
+/// The two checks a compared screen must pass, and the line that says which
+/// one it failed. Shared by `diff compare` and `ci run`.
+public enum DiffVerdict {
+    public static func passes(pixelDiffPercent: Double, perceptualDistance: Double, pixelThreshold: Double, perceptualThreshold: Double) -> Bool {
+        pixelDiffPercent <= pixelThreshold && perceptualDistance <= perceptualThreshold
+    }
+
+    /// `Passed`, or `Failed:` naming each exceeded threshold and its limit,
+    /// with the other measurement in parentheses. The pixel share and its
+    /// threshold print as percent, as `pixel=` always has.
+    public static func message(pixelDiffPercent: Double, perceptualDistance: Double, pixelThreshold: Double, perceptualThreshold: Double) -> String {
+        let pixel = "pixel=\(percent(pixelDiffPercent))"
+        let pixelLimit = "threshold \(percent(pixelThreshold))"
+        let perceptual = "perceptual=\(String(format: "%.1f", perceptualDistance))"
+        let perceptualLimit = "perceptual_threshold \(String(format: "%.1f", perceptualThreshold))"
+        let pixelFailed = pixelDiffPercent > pixelThreshold
+        let perceptualFailed = perceptualDistance > perceptualThreshold
+        switch (pixelFailed, perceptualFailed) {
+        case (true, true):
+            return "Failed: \(pixel) exceeds \(pixelLimit) and \(perceptual) exceeds \(perceptualLimit)"
+        case (true, false):
+            return "Failed: \(pixel) exceeds \(pixelLimit) (\(perceptual), \(perceptualLimit))"
+        case (false, true):
+            return "Failed: \(perceptual) exceeds \(perceptualLimit) (\(pixel), \(pixelLimit))"
+        case (false, false):
+            return "Passed"
+        }
+    }
+
+    private static func percent(_ fraction: Double) -> String {
+        String(format: "%.2f%%", fraction * 100)
     }
 }
 

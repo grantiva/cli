@@ -323,9 +323,11 @@ final class AndroidCommandTests: XCTestCase {
         command.devicePlatform = InjectedDevicePlatform(fake)
         command.runnerManager = stubRunner
         _ = try? await command.run()
-        let failureShots = (try? FileManager.default.contentsOfDirectory(atPath: ".grantiva/captures/android")) ?? []
+        // K82-b: run artefacts go to the run directory, never where diff reads.
+        let failureShots = (try? FileManager.default.contentsOfDirectory(atPath: ".grantiva/run-captures/android")) ?? []
         XCTAssertFalse(failureShots.isEmpty, "the failure capture directory is the Android one")
         let firstShot = try XCTUnwrap(failureShots.first)
-        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/\(firstShot)"), "nothing lands in the iOS directory")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/run-captures/\(firstShot)"), "nothing lands in the iOS directory")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures"), "diff's capture directory is untouched")
     }
 }

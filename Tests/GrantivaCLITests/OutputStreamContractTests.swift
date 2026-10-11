@@ -57,6 +57,10 @@ final class OutputStreamContractTests: XCTestCase {
         // A 1x1 RGB PNG.
         let png = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC")!
         try png.write(to: captures.appendingPathComponent("Home.png"))
+        // A matching baseline: a screen without one fails the compare (K89).
+        let baselines = dir.appendingPathComponent(".grantiva/baselines")
+        try FileManager.default.createDirectory(at: baselines, withIntermediateDirectories: true)
+        try png.write(to: baselines.appendingPathComponent("Home.png"))
 
         let run = try grantiva(
             ["diff", "compare", "--json"], in: dir,

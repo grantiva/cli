@@ -31,6 +31,27 @@ final class TableFormatterTests: XCTestCase {
         XCTAssertTrue(ios.contains("  Simulator: qa-reg-android (emulator-5554)"), ios)
     }
 
+    /// K89: a comparison where no screen had a baseline says so instead of passing.
+    func testCompareHeadlineWithoutBaselines() {
+        func screen(_ name: String, _ status: DiffStatus) -> ScreenDiff {
+            ScreenDiff(screenName: name, status: status, pixelThreshold: 0.02, perceptualThreshold: 5, capturePath: "c", message: "m")
+        }
+        let none = TableFormatter().formatCompare(CompareResult(
+            screens: [screen("A", .newScreen), screen("B", .newScreen)], passed: false, duration: 0
+        ))
+        XCTAssertTrue(none.hasPrefix("? No baselines: 2 new screens. Run: grantiva diff approve"), none)
+        let mixed = TableFormatter().formatCompare(CompareResult(
+            screens: [screen("A", .passed), screen("B", .newScreen)], passed: false, duration: 0
+        ))
+        XCTAssertTrue(mixed.hasPrefix("? Visual diff incomplete: 1 new screen has no baseline. Run: grantiva diff approve"), mixed)
+        let failed = TableFormatter().formatCompare(CompareResult(
+            screens: [screen("A", .failed), screen("B", .newScreen)], passed: false, duration: 0
+        ))
+        XCTAssertTrue(failed.hasPrefix("✗ Visual diff failed"), failed)
+        let passed = TableFormatter().formatCompare(CompareResult(screens: [screen("A", .passed)], passed: true, duration: 0))
+        XCTAssertTrue(passed.hasPrefix("✓ Visual diff passed"), passed)
+    }
+
     func testAndroidBuildPrintsTheAPKPathInPlaceOfTheScheme() {
         let output = TableFormatter().formatBuild(BuildResult(
             success: true, duration: 1, warnings: [], errors: [],

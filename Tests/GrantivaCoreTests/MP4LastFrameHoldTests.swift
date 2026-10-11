@@ -65,6 +65,81 @@ final class MP4LastFrameHoldTests: XCTestCase {
         }
     }
 
+    // MARK: - K34: the last frame's start, the track end, and why nothing was held
+
+    /// K34-a: three 33 ms frames start at 0, 33 and 67 ms; the track ends at 100 ms.
+    func testTimingReportsTheLastFramesStartAndTheTrackEnd() throws {
+        let file = MP4Fixture(stts: [(3, 3_000)], mdhdDuration: 9_000, movieDuration: 100)
+        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+        XCTAssertEqual(timing.frameCount, 3)
+        XCTAssertEqual(timing.lastFrameSeconds, 0.0667, accuracy: 0.0001)
+        XCTAssertEqual(timing.recordedSeconds, 0.1, accuracy: 0.0001)
+        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+        XCTAssertEqual(held.lastFrameSeconds, 0.0667, accuracy: 0.0001)
+        XCTAssertEqual(held.recordedSeconds, 0.1, accuracy: 0.0001)
+    }
+
+    func testASingleFrameStartsAndEndsAtZero() throws {
+        let file = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0)
+        let timing = try MP4LastFrameHold.timing(of: file.data).get()
+        XCTAssertEqual(timing.frameCount, 1)
+        XCTAssertEqual(timing.lastFrameSeconds, 0)
+        XCTAssertEqual(timing.recordedSeconds, 0)
+    }
+
+    /// K34-b: screenrecord can give its last frame a sample delta that already
+    /// reaches the requested length. Nothing is rewritten, but the timing is
+    /// still reported so the caller can tell how long that frame stayed.
+    func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
+        let file = MP4Fixture(stts: [(1, 3_000), (1, 200_000)], mdhdDuration: 203_000, movieDuration: 2_256)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .unchanged(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+            return XCTFail("expected the file to be left as it is")
+        }
+        XCTAssertEqual(timing.frameCount, 2)
+        XCTAssertEqual(timing.lastFrameSeconds, 0.0333, accuracy: 0.0001)
+        XCTAssertEqual(timing.recordedSeconds, 2.2556, accuracy: 0.0001)
+        XCTAssertEqual(try Data(contentsOf: url), file.data)
+    }
+
+    func testHoldFileReportsTheTimingOfAHeldTrack() throws {
+        let file = MP4Fixture(stts: [(2, 4_500)], mdhdDuration: 9_000, movieDuration: 100)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+            return XCTFail("expected the last frame to be held")
+        }
+        XCTAssertEqual(timing.frameCount, 2)
+        XCTAssertEqual(timing.lastFrameSeconds, 0.05, accuracy: 0.0001)
+        XCTAssertEqual(timing.recordedSeconds, 0.1, accuracy: 0.0001)
+    }
+
+    /// K34-b: a file the parser cannot read says why instead of a bare nil.
+    func testAFileThatCannotBeParsedReportsWhy() throws {
+        let url = try temporaryFile(Data("not a movie".utf8))
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .unreadable(let reason) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+            return XCTFail("expected the file to be reported unreadable")
+        }
+        XCTAssertEqual(reason, "the file's box sizes are malformed")
+        // A well-formed file without a movie box names what is missing.
+        let ftypOnly = Data([0, 0, 0, 16] + Array("ftyp".utf8) + Array("isom".utf8) + [0, 0, 0, 0])
+        XCTAssertEqual(MP4LastFrameHold.timing(of: ftypOnly), .failure(.init("the file has no moov box (not an MP4, or not finalized)")))
+        XCTAssertThrowsError(try MP4LastFrameHold.timing(of: Data()).get())
+        let truncated = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0, truncating: "mdhd")
+        switch MP4LastFrameHold.timing(of: truncated.data) {
+        case .success: XCTFail("a truncated mdhd is not a readable track")
+        case .failure(let error): XCTAssertFalse(error.reason.isEmpty)
+        }
+    }
+
+    private func temporaryFile(_ data: Data) throws -> URL {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("hold-\(UUID().uuidString).mp4")
+        try data.write(to: url)
+        return url
+    }
+
     func testNonMP4InputIsLeftAlone() {
         XCTAssertNil(MP4LastFrameHold.hold(Data(), toSeconds: 2))
         XCTAssertNil(MP4LastFrameHold.hold(Data("not a movie".utf8), toSeconds: 2))

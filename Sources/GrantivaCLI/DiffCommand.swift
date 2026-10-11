@@ -189,10 +189,7 @@ struct DiffCommand: AsyncParsableCommand {
     static func captureResult(
         screens: [ScreenCapture], directory: String, duration: Double, target: CaptureSimulatorTarget, platform: Platform
     ) -> CaptureResult {
-        CaptureResult(
-            screens: screens, directory: directory, duration: duration,
-            simulator: target, emulator: platform == .android ? target : nil
-        )
+        CaptureResult(screens: screens, directory: directory, duration: duration, target: target, platform: platform)
     }
 
     // MARK: - --no-build device
@@ -374,15 +371,10 @@ struct DiffCommand: AsyncParsableCommand {
 
             let diffConfig = config?.diff ?? .init()
             let fm = FileManager.default
-            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
             let differ = imageDiffer
 
-            // Create diffs directory
-            if !fm.fileExists(atPath: diffDir) {
-                try fm.createDirectory(atPath: diffDir, withIntermediateDirectories: true)
-            }
-
-            // Find capture files
+            // Find capture files before creating or resolving anything: a
+            // compare with nothing to compare leaves the project as it was.
             guard fm.fileExists(atPath: captureDir) else {
                 throw GrantivaError.noCaptures(captureDir)
             }
@@ -395,11 +387,20 @@ struct DiffCommand: AsyncParsableCommand {
             } else {
                 let captureFiles = try fm.contentsOfDirectory(atPath: captureDir)
                     .filter { $0.hasSuffix(".png") }
-                captureArtifacts = try DiffCommand.captureArtifacts(from: captureFiles)
+                let selection = DiffCommand.configuredArtifacts(
+                    try DiffCommand.captureArtifacts(from: captureFiles), screens: config.map { $0.screens.map(\.name) }
+                )
+                DiffCommand.noteIgnored(selection.ignored, in: captureDir, options: options)
+                captureArtifacts = selection.kept
             }
 
             guard !captureArtifacts.isEmpty else {
                 throw GrantivaError.noCaptures(captureDir)
+            }
+
+            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
+            if !fm.fileExists(atPath: diffDir) {
+                try fm.createDirectory(atPath: diffDir, withIntermediateDirectories: true)
             }
 
             let comparison = try await DiffCommand.compare(
@@ -445,9 +446,9 @@ struct DiffCommand: AsyncParsableCommand {
 
         func run() async throws {
             let platform = try platformOptions.resolve()
+            let config = try GrantivaConfig.loadIfPresent(platform: platform)
             let captureDir = DiffCommand.captureDirectory(for: platform)
             let fm = FileManager.default
-            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
 
             guard fm.fileExists(atPath: captureDir) else {
                 throw GrantivaError.noCaptures(captureDir)
@@ -459,7 +460,19 @@ struct DiffCommand: AsyncParsableCommand {
             guard !allCaptures.isEmpty else {
                 throw GrantivaError.noCaptures(captureDir)
             }
-            let captureArtifacts = try DiffCommand.captureArtifacts(from: allCaptures)
+            // Approving everything means every configured screen; a file
+            // that is not one (an old run's shot) is listed and left alone.
+            // A screen named on the command line is approved as asked.
+            var captureArtifacts = try DiffCommand.captureArtifacts(from: allCaptures)
+            if screenNames.isEmpty {
+                let selection = DiffCommand.configuredArtifacts(captureArtifacts, screens: config.map { $0.screens.map(\.name) })
+                DiffCommand.noteIgnored(selection.ignored, in: captureDir, options: options)
+                captureArtifacts = selection.kept
+                guard !captureArtifacts.isEmpty else {
+                    throw GrantivaError.noCaptures(captureDir)
+                }
+            }
+            let store = try await DiffCommand.resolveBaselineStore(platform: platform)
 
             let approved = try await DiffCommand.approve(
                 screenNames,
@@ -502,6 +515,25 @@ struct DiffCommand: AsyncParsableCommand {
         }
         let current = Set(artifacts.filter { $0.fileName == ScreenArtifact.fileName(for: $0.screenName) }.map(\.screenName))
         return artifacts.filter { $0.fileName == ScreenArtifact.fileName(for: $0.screenName) || !current.contains($0.screenName) }
+    }
+
+    /// The visual-diff set is the configured screens. Other files in the
+    /// capture directory (left by an older `grantiva run`, or by a screen
+    /// since removed from the config) are reported, never compared or
+    /// approved. With no config file, or one without screens, every capture
+    /// counts, as before.
+    static func configuredArtifacts(
+        _ artifacts: [CaptureArtifact], screens: [String]?
+    ) -> (kept: [CaptureArtifact], ignored: [CaptureArtifact]) {
+        guard let screens, !screens.isEmpty else { return (artifacts, []) }
+        let configured = Set(screens)
+        return (artifacts.filter { configured.contains($0.screenName) }, artifacts.filter { !configured.contains($0.screenName) })
+    }
+
+    static func noteIgnored(_ ignored: [CaptureArtifact], in directory: String, options: GlobalOptions) {
+        guard !ignored.isEmpty else { return }
+        let names = ignored.map(\.screenName).joined(separator: ", ")
+        options.note("Ignoring \(ignored.count) file\(ignored.count == 1 ? "" : "s") in \(directory) that \(ignored.count == 1 ? "is not a configured screen" : "are not configured screens"): \(names)")
     }
 
     /// Returns only screenshots explicitly produced by this runner invocation.
@@ -570,8 +602,10 @@ struct DiffCommand: AsyncParsableCommand {
             if let baselineData = try await store.load(screenName) {
                 do {
                     let output = try differ.compare(baselineData, captureData)
-                    let passed = output.pixelDiffPercent <= config.threshold
-                        && output.perceptualDistance <= config.perceptualThreshold
+                    let passed = DiffVerdict.passes(
+                        pixelDiffPercent: output.pixelDiffPercent, perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: config.threshold, perceptualThreshold: config.perceptualThreshold
+                    )
                     var diffImagePath: String?
                     if !passed {
                         allPassed = false
@@ -582,9 +616,10 @@ struct DiffCommand: AsyncParsableCommand {
                         diffImagePath = path
                     }
 
-                    let message = passed
-                        ? "Passed"
-                        : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
+                    let message = DiffVerdict.message(
+                        pixelDiffPercent: output.pixelDiffPercent, perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: config.threshold, perceptualThreshold: config.perceptualThreshold
+                    )
                     screenDiffs.append(ScreenDiff(
                         screenName: screenName,
                         status: passed ? .passed : .failed,
@@ -609,6 +644,9 @@ struct DiffCommand: AsyncParsableCommand {
                     ))
                 }
             } else {
+                // Nothing was compared for this screen, so the run cannot
+                // have passed it (K89); the headline says what to approve.
+                allPassed = false
                 screenDiffs.append(ScreenDiff(
                     screenName: screenName,
                     status: .newScreen,
@@ -638,7 +676,7 @@ struct DiffCommand: AsyncParsableCommand {
         for screenName in screenNames {
             let capturePath = "\(captureDirectory)/\(ScreenArtifact.existingFileName(for: screenName, in: captureDirectory, fileManager: fileManager))"
             guard fileManager.fileExists(atPath: capturePath) else {
-                throw GrantivaError.noCaptures("No capture found for \"\(screenName)\"")
+                throw GrantivaError.notFound("No capture found for \"\(screenName)\" in \(captureDirectory). Run: grantiva diff capture")
             }
             let data = try Data(contentsOf: URL(fileURLWithPath: capturePath))
             _ = try await store.save(screenName, data)

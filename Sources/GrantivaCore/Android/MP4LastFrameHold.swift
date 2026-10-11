@@ -9,23 +9,126 @@ import Foundation
 /// `mdhd`/`tkhd`/`mvhd`/`elst` durations) so the last frame stays on screen
 /// until the requested length. No frame is re-encoded.
 public enum MP4LastFrameHold {
+    /// The video track's frames as recorded, before any hold.
+    public struct Timing: Sendable, Equatable {
+        /// How many frames the track has.
+        public let frameCount: Int
+        /// When the last frame appears: the moment the screen last changed.
+        public let lastFrameSeconds: Double
+        /// Where the track ended before the hold (the last frame's end, from
+        /// the sample delta the recorder gave it).
+        public let recordedSeconds: Double
+
+        public init(frameCount: Int, lastFrameSeconds: Double, recordedSeconds: Double) {
+            self.frameCount = frameCount
+            self.lastFrameSeconds = lastFrameSeconds
+            self.recordedSeconds = recordedSeconds
+        }
+    }
+
     public struct Held: Sendable {
         /// The rewritten file.
         public let data: Data
+        /// The track's frames before the hold.
+        public let timing: Timing
         /// How long the video ran before the hold (its last frame's end).
-        public let recordedSeconds: Double
+        public var recordedSeconds: Double { timing.recordedSeconds }
+        /// When the last frame appears.
+        public var lastFrameSeconds: Double { timing.lastFrameSeconds }
     }
 
-    /// Rewrites the file in place. Returns the recording's length before the
-    /// hold, or nil when the file already lasts `seconds` or is not an MP4
-    /// this understands (it is then left untouched).
-    @discardableResult
-    public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Double? {
+    /// Why a file could not be read or rewritten.
+    public struct Unreadable: Error, Sendable, Equatable {
+        public let reason: String
+        public init(_ reason: String) { self.reason = reason }
+    }
+
+    /// What `holdFile` did.
+    public enum Outcome: Sendable, Equatable {
+        /// The last frame was held to the requested length.
+        case held(Timing)
+        /// The track already lasted the requested length; the file is as recorded.
+        case unchanged(Timing)
+        /// The file is not an MP4 this understands; it is left untouched.
+        case unreadable(String)
+    }
+
+    /// Rewrites the file in place when its last frame must be held, and says
+    /// what it found either way.
+    public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Outcome {
         let url = URL(fileURLWithPath: path)
         let data = try Data(contentsOf: url)
-        guard let held = hold(data, toSeconds: seconds) else { return nil }
-        try held.data.write(to: url, options: .atomic)
-        return held.recordedSeconds
+        let timing: Timing
+        switch self.timing(of: data) {
+        case .success(let value): timing = value
+        case .failure(let error): return .unreadable(error.reason)
+        }
+        if let held = hold(data, toSeconds: seconds) {
+            try held.data.write(to: url, options: .atomic)
+            return .held(held.timing)
+        }
+        guard seconds.isFinite, seconds > 0, seconds < 1_000_000 else {
+            return .unreadable("the requested length \(seconds)s is out of range")
+        }
+        // `hold` declines a track that already lasts the requested length;
+        // any other refusal is a container it could not rewrite.
+        guard timing.recordedSeconds + 0.000_5 >= seconds else {
+            return .unreadable("the container's chunk offsets or durations could not be rewritten")
+        }
+        return .unchanged(timing)
+    }
+
+    /// The video track's frame count, last frame start and end, or why the
+    /// file cannot be read. With several video tracks, the longest one.
+    public static func timing(of data: Data) -> Result<Timing, Unreadable> {
+        let bytes = [UInt8](data)
+        guard let top = try? parseBoxes(bytes, 0, bytes.count) else {
+            return .failure(Unreadable("the file's box sizes are malformed"))
+        }
+        guard let moov = top.first(where: { $0.type == "moov" }) else {
+            return .failure(Unreadable("the file has no moov box (not an MP4, or not finalized)"))
+        }
+        var best: Timing?
+        var reason = "the movie has no video track"
+        for trak in moov.children where trak.type == "trak" {
+            switch trackTiming(trak) {
+            case .success(let timing):
+                if timing.recordedSeconds >= (best?.recordedSeconds ?? -1) { best = timing }
+            case .failure(let error):
+                if error.reason != "not a video track" { reason = error.reason }
+            }
+        }
+        return best.map { .success($0) } ?? .failure(Unreadable(reason))
+    }
+
+    private static func trackTiming(_ trak: Box) -> Result<Timing, Unreadable> {
+        guard let mdia = trak.child("mdia") else { return .failure(Unreadable("a track has no mdia box")) }
+        guard mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else {
+            return .failure(Unreadable("not a video track"))
+        }
+        guard let mdhd = mdia.child("mdhd"), let scale = mdhd.timescale(), scale > 0, mdhd.duration() != nil else {
+            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
+        }
+        guard let stts = mdia.child("minf")?.child("stbl")?.child("stts"), let entries = stts.sttsEntries(), !entries.isEmpty else {
+            return .failure(Unreadable("the video track has no readable stts box"))
+        }
+        var end: UInt64 = 0
+        var frames: UInt64 = 0
+        for entry in entries {
+            let (sum, overflow) = end.addingReportingOverflow(UInt64(entry.count) * UInt64(entry.delta))
+            guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
+            end = sum
+            frames += UInt64(entry.count)
+        }
+        // The last sample's start is the end minus its own delta; a run of
+        // zero samples at the end does not move it.
+        let last = entries.last(where: { $0.count > 0 })
+        let lastStart = end - UInt64(last?.delta ?? 0)
+        return .success(Timing(
+            frameCount: Int(frames),
+            lastFrameSeconds: Double(lastStart) / Double(scale),
+            recordedSeconds: Double(end) / Double(scale)
+        ))
     }
 
     /// The rewritten file, or nil when nothing needs to change or the file is
@@ -42,10 +145,13 @@ public enum MP4LastFrameHold {
               let movieDuration = mvhd.duration() else { return nil }
         let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
 
-        var recorded: Double?
+        var recorded: Timing?
         for index in moov.children.indices where moov.children[index].type == "trak" {
-            if let trackRecorded = holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
-                recorded = max(recorded ?? 0, trackRecorded)
+            let before = moov.children[index]
+            if holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) != nil,
+               case .success(let timing) = trackTiming(before),
+               timing.recordedSeconds >= (recorded?.recordedSeconds ?? -1) {
+                recorded = timing
             }
         }
         guard let recorded else { return nil }
@@ -65,7 +171,7 @@ public enum MP4LastFrameHold {
         output += bytes[0..<top[moovIndex].start]
         output += newMoov
         output += bytes[top[moovIndex].end..<bytes.count]
-        return Held(data: Data(output), recordedSeconds: recorded)
+        return Held(data: Data(output), timing: recorded)
     }
 
     /// The track's length in seconds before the hold, or nil when the track

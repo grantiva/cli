@@ -93,6 +93,29 @@ final class CIComparisonPipelineTests: XCTestCase {
         XCTAssertEqual(writtenName, "Home")
         XCTAssertEqual(writtenData, diff)
     }
+
+    /// K108: `ci run` prints the same failure wording as `diff compare`.
+    func testFailureMessageNamesTheExceededThreshold() async throws {
+        let cases: [(pixel: Double, perceptual: Double, message: String)] = [
+            (0.0003, 63.6, "Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)"),
+            (0.0797, 1.2, "Failed: pixel=7.97% exceeds threshold 2.00% (perceptual=1.2, perceptual_threshold 5.0)"),
+            (0.0797, 6.4, "Failed: pixel=7.97% exceeds threshold 2.00% and perceptual=6.4 exceeds perceptual_threshold 5.0"),
+        ]
+        for testCase in cases {
+            let pipeline = CIComparisonPipeline(
+                validateCaptures: { _ in [DiffCommand.CaptureArtifact(fileName: "Home.png", screenName: "Home", path: "/c/Home.png")] },
+                loadCapture: { _ in Data("capture".utf8) },
+                loadBaseline: { _ in Data("baseline".utf8) },
+                compare: { _, _ in DiffOutput(pixelDiffPercent: testCase.pixel, perceptualDistance: testCase.perceptual, diffImageData: Data()) },
+                writeDiff: { _, _ in }
+            )
+            let outcome = try await pipeline.run(
+                captures: [ScreenCapture(screenName: "Home", path: "/c/Home.png", sizeBytes: 7)],
+                pixelThreshold: 0.02, perceptualThreshold: 5
+            )
+            XCTAssertEqual(outcome.screens.first?.message, testCase.message)
+        }
+    }
 }
 
 private enum TestError: Error {

@@ -40,7 +40,21 @@ struct RecordCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func validate() throws {
-        _ = try Self.parseTimestamps(framesAt)
+        let frames = try Self.parseTimestamps(framesAt)
+        if let problem = Self.framePastDurationProblem(frames: frames, duration: duration) {
+            throw ValidationError(problem)
+        }
+    }
+
+    /// A requested frame past the end of the recording can be refused before
+    /// anything is recorded (and before the previous video is replaced). A
+    /// frame exactly at the end is accepted.
+    static func framePastDurationProblem(frames: [Int], duration: Double) -> String? {
+        guard let last = frames.last, duration.isFinite, duration > 0 else { return nil }
+        let durationMilliseconds = duration * 1_000
+        guard Double(last) > durationMilliseconds.rounded(.toNearestOrEven) else { return nil }
+        let shownDuration = duration.rounded() == duration ? String(Int(duration)) : String(duration)
+        return "--frames-at \(last) is past --duration \(shownDuration) (\(Int(durationMilliseconds.rounded())) ms)."
     }
 
     /// The parsed, de-duplicated `--frames-at` values. `validate()` has
@@ -98,14 +112,52 @@ struct RecordCommand: AsyncParsableCommand {
         }
     }
 
-    /// A hold longer than half the recording is worth a word: the screen may
-    /// simply have been idle, but a disconnected device looks the same.
-    static func heldRecordingNote(recordedSeconds: Double, requestedSeconds: Double) -> String? {
-        guard requestedSeconds - recordedSeconds > requestedSeconds / 2 else { return nil }
-        let recordedMs = Int((recordedSeconds * 1_000).rounded())
-        return "The recording's last frame is at \(recordedMs)ms; it was held to the requested \(requestedSeconds)s. "
+    /// The last frame on screen for more than half of the recording is worth
+    /// a word: the screen may simply have been idle, but a disconnected
+    /// device looks the same. Measured from when the last frame appears, so
+    /// it holds whether Grantiva stretched that frame or the recorder already
+    /// gave it a long sample.
+    static func heldRecordingNote(timing: MP4LastFrameHold.Timing, requestedSeconds: Double) -> String? {
+        guard requestedSeconds - timing.lastFrameSeconds > requestedSeconds / 2 else { return nil }
+        let lastFrameMs = milliseconds(timing.lastFrameSeconds)
+        return "The recording's last frame is at \(lastFrameMs)ms; it was held to the requested \(requestedSeconds)s. "
             + "screenrecord writes frames only when the screen changes, so this is expected for an idle screen; "
             + "if the screen was changing, check that the device stayed connected."
+    }
+
+    /// The note (when it applies) and the `--verbose` statistics line that
+    /// explains it, or its absence.
+    static func holdDiagnostics(
+        _ outcome: MP4LastFrameHold.Outcome, requestedSeconds: Double
+    ) -> (note: String?, statistics: String) {
+        let timing: MP4LastFrameHold.Timing
+        switch outcome {
+        case .held(let value), .unchanged(let value): timing = value
+        case .unreadable(let reason):
+            return (nil, "Held frame: not held; the recording could not be read (\(reason))")
+        }
+        let note = heldRecordingNote(timing: timing, requestedSeconds: requestedSeconds)
+        let requestedMs = milliseconds(requestedSeconds)
+        let lastFrameMs = milliseconds(timing.lastFrameSeconds)
+        let endMs = milliseconds(timing.recordedSeconds)
+        let held = if case .held = outcome { max(requestedMs - endMs, 0) } else { 0 }
+        let verdict = note != nil ? "printed" : "not printed (the screen changed after the halfway point)"
+        let statistics = "Held frame: frames=\(timing.frameCount) lastFrame=\(lastFrameMs)ms trackEnd=\(endMs)ms "
+            + "requested=\(requestedMs)ms lastFrameOnScreen=\(max(requestedMs - lastFrameMs, 0))ms held=\(held)ms "
+            + "noteThreshold=>\(milliseconds(requestedSeconds / 2))ms note=\(verdict)"
+        return (note, statistics)
+    }
+
+    private static func milliseconds(_ seconds: Double) -> Int { Int((seconds * 1_000).rounded()) }
+
+    /// A path next to `path` in the same style: relative stays relative to the
+    /// current directory, absolute stays absolute.
+    static func sibling(of path: String, replacingExtensionWith newExtension: String? = nil, appending suffix: String = "") -> String {
+        let name = path as NSString
+        let stem = (name.lastPathComponent as NSString).deletingPathExtension + suffix
+        let file = newExtension.map { "\(stem).\($0)" } ?? stem
+        let parent = name.deletingLastPathComponent
+        return parent.isEmpty ? file : (parent as NSString).appendingPathComponent(file)
     }
 
     func run() async throws {
@@ -140,11 +192,16 @@ struct RecordCommand: AsyncParsableCommand {
         guard FileManager.default.fileExists(atPath: outputPath) else {
             throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
         }
+        var heldTiming: MP4LastFrameHold.Timing?
         if platform == .android {
             // screenrecord writes a frame only when the screen changes, so a
             // static screen ends at its last change: hold that frame to --duration.
-            if let recorded = try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration),
-               let note = Self.heldRecordingNote(recordedSeconds: recorded, requestedSeconds: duration) {
+            let outcome = try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration)
+            if case .held(let timing) = outcome { heldTiming = timing }
+            if case .unchanged(let timing) = outcome { heldTiming = timing }
+            let diagnostics = Self.holdDiagnostics(outcome, requestedSeconds: duration)
+            GrantivaLog.logger.debug("\(diagnostics.statistics)")
+            if let note = diagnostics.note {
                 GrantivaLog.logger.warning("\(note)")
             }
         }
@@ -152,7 +209,7 @@ struct RecordCommand: AsyncParsableCommand {
         let requested = requestedFrames
         let geometry = try await platformDevice.displayGeometry(deviceID: booted.udid)
         let frames = try await extractFrames(
-            from: outputURL,
+            from: outputPath,
             requestedMilliseconds: requested,
             expectedPixels: geometry.dimensions
         )
@@ -163,16 +220,20 @@ struct RecordCommand: AsyncParsableCommand {
             serial: platform == .android ? booted.udid : nil,
             video: outputPath,
             requestedDurationSeconds: duration,
+            lastFrameMilliseconds: heldTiming.map { Self.milliseconds($0.lastFrameSeconds) },
+            recordedMilliseconds: heldTiming.map { Self.milliseconds($0.recordedSeconds) },
             frames: frames
         )
-        let reportURL = outputURL.deletingPathExtension().appendingPathExtension("json")
-        try JSONEncoder.pretty.encode(report).write(to: reportURL)
+        // Every path in the report and the text output is in the style of
+        // --output: relative to the current directory, or absolute.
+        let reportPath = Self.sibling(of: outputPath, replacingExtensionWith: "json")
+        try JSONEncoder.pretty.encode(report).write(to: URL(fileURLWithPath: reportPath))
 
         if options.json {
             Output.line(try JSONOutput.string(report))
         } else {
             Output.line("Recording: \(outputPath)")
-            Output.line("Frame report: \(reportURL.path)")
+            Output.line("Frame report: \(reportPath)")
             for frame in frames {
                 Output.line("  \(frame.requestedMilliseconds)ms -> \(frame.actualMilliseconds)ms: \(frame.path)")
             }
@@ -180,11 +241,12 @@ struct RecordCommand: AsyncParsableCommand {
     }
 
     private func extractFrames(
-        from video: URL,
+        from videoPath: String,
         requestedMilliseconds: [Int],
         expectedPixels: SimulatorProvisionResult.Dimensions
     ) async throws -> [RecordFrame] {
         guard !requestedMilliseconds.isEmpty else { return [] }
+        let video = URL(fileURLWithPath: videoPath)
         let asset = AVURLAsset(url: video)
         let duration = try await asset.load(.duration)
         guard duration.isNumeric else {
@@ -202,26 +264,28 @@ struct RecordCommand: AsyncParsableCommand {
         generator.appliesPreferredTrackTransform = true
         generator.requestedTimeToleranceBefore = .zero
         generator.requestedTimeToleranceAfter = .zero
-        let frameDirectory = video.deletingLastPathComponent()
-            .appendingPathComponent(video.deletingPathExtension().lastPathComponent + "-frames")
+        let frameDirectoryPath = Self.sibling(of: videoPath, appending: "-frames")
+        let frameDirectory = URL(fileURLWithPath: frameDirectoryPath, isDirectory: true)
         try FileManager.default.createDirectory(at: frameDirectory, withIntermediateDirectories: true)
 
         let frames = try requestedMilliseconds.map { requested in
             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
             var actualTime = CMTime.zero
             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
-            let path = frameDirectory.appendingPathComponent(String(format: "%06dms.png", requested))
+            let fileName = String(format: "%06dms.png", requested)
+            let path = frameDirectory.appendingPathComponent(fileName)
+            let reportedPath = (frameDirectoryPath as NSString).appendingPathComponent(fileName)
             guard let destination = CGImageDestinationCreateWithURL(path as CFURL, UTType.png.identifier as CFString, 1, nil) else {
-                throw GrantivaError.commandFailed("Could not create PNG at \(path.path)", 1)
+                throw GrantivaError.commandFailed("Could not create PNG at \(reportedPath)", 1)
             }
             CGImageDestinationAddImage(destination, image, nil)
             guard CGImageDestinationFinalize(destination) else {
-                throw GrantivaError.commandFailed("Could not write PNG at \(path.path)", 1)
+                throw GrantivaError.commandFailed("Could not write PNG at \(reportedPath)", 1)
             }
             return RecordFrame(
                 requestedMilliseconds: requested,
                 actualMilliseconds: Int((CMTimeGetSeconds(actualTime) * 1_000).rounded()),
-                path: path.path
+                path: reportedPath
             )
         }
         try ScreenshotNormalizer.normalize(
@@ -242,6 +306,11 @@ private struct RecordReport: Codable {
     let serial: String?
     let video: String
     let requestedDurationSeconds: Double
+    /// Android only: when the last recorded frame appears (the screen's last
+    /// change) and where the track ended before the hold, so a caller can
+    /// see why the held-frame note did or did not print.
+    let lastFrameMilliseconds: Int?
+    let recordedMilliseconds: Int?
     let frames: [RecordFrame]
 }
 
