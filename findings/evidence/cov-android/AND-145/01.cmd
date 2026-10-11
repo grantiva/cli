@@ -1,0 +1,1 @@
+($GRANTIVA run --allow-device-settings --emulator cov-android --no-build --flow .maestro/11-slow.yaml > $S/a145.out 2> $S/a145.err &); sleep 6; $S/tools/settings.sh | head -5; sleep 8; echo AFTER; $S/tools/settings.sh | head -5; grep -E "PASS|FAIL" $S/a145.err

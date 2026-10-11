@@ -1,0 +1,1 @@
+rm -rf $S/r02c2; $GRANTIVA run --device emulator-5554 --no-build --flow /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/android/A02/probes/c2-abs-px-row.yaml --report-dir $S/r02c2 2>&1 | grep -E "✓|✗|╰|swipe\]" | head -20; ls $S/r02c2/captures

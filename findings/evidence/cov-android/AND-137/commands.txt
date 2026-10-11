@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml  > $S/r137-plain.out 2> $S/r137-plain.err; echo rc=$?; wc -l < $S/r137-plain.err; grep -c '^\[debug\]' $S/r137-plain.err; head -3 $S/r137-plain.err
+rc=0 elapsed=6.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --quiet > $S/r137-quiet.out 2> $S/r137-quiet.err; echo rc=$?; wc -l < $S/r137-quiet.err; grep -c '^\[debug\]' $S/r137-quiet.err; head -3 $S/r137-quiet.err
+rc=0 elapsed=6.0s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --verbose > $S/r137-verbose.out 2> $S/r137-verbose.err; echo rc=$?; wc -l < $S/r137-verbose.err; grep -c '^\[debug\]' $S/r137-verbose.err; head -3 $S/r137-verbose.err
+rc=0 elapsed=6.1s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --json --quiet > $S/r137-jq.out 2> $S/r137-jq.err; echo rc=$?; wc -l < $S/r137-jq.err; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/02-exact-negative.yaml --quiet > $S/r137-fail.out 2> $S/r137-fail.err; echo rc=$?; grep -E "✗|Error" $S/r137-fail.err | head -4 | cut -c1-150
+rc=0 elapsed=28.4s  (stdout 04.out, stderr 04.err)
+

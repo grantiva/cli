@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --flow .maestro/01-browse.yaml --ready-file /nonexistent-cov/sub/x.ready --verbose 2>&1 | grep -E "Error|gradlew|Resolved" | head; echo rc=${PIPESTATUS[0]}; ls -d /nonexistent-cov 2>&1

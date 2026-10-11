@@ -1,0 +1,80 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/15-input-unicode.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-15-input-unicode
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 15-input-unicode (15-input-unicode.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (921ms)
+    ✓ tapOn: text="Edit Landmark" (694ms)
+    ✓ tapOn: text="Location" (752ms)
+    ✓ inputText: " · Ünïcødé ✓" (1.4s)
+    ✓ assertVisible: text="San Francisco, CA · Ünïcødé ✓" (930ms)
+    ✓ tapOn: text="Cancel" (240ms)
+    ✓ tapOn: text="Discard" (1.4s)
+    ✓ assertNotVisible: text="San Francisco, CA · Ünïcødé ✓" (667ms)
+    ✓ assertVisible: text="Golden Gate Bridge" (28ms)
+✓ 15-input-unicode 9.0s
+
+  [1/1] 15-input-unicode (.maestro/coverage/15-input-unicode.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (921ms)
+    ✓ tapOn (694ms)
+    ✓ tapOn (752ms)
+    ✓ inputText (1.4s)
+    ✓ assertVisible (930ms)
+    ✓ tapOn (240ms)
+    ✓ tapOn (1.4s)
+    ✓ assertNotVisible (667ms)
+    ✓ assertVisible (28ms)
+✓ 15-input-unicode 9.0s
+
+  10 steps passing (9.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  15-input-unicode               ✓ PASS      10     10      0      0       9.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      10     10      0      0       9.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-15-input-unicode
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-15-input-unicode/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-15-input-unicode/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-15-input-unicode/allure-results
+
+  Built by Grantiva
+

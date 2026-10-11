@@ -1,0 +1,5 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ adb -s emulator-5554 shell settings put system pointer_location 1; rm -rf $S/r02c; $GRANTIVA run --device emulator-5554 --no-build --flow /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/android/A02/probes/c-direction-left-from.yaml --report-dir $S/r02c 2>&1 | grep -E "✓|✗|╰|swipe\]" | head -20; ls $S/r02c/captures
+rc=0 elapsed=9.6s  (stdout 01.out, stderr 01.err)
+
+# shared evidence: see ../B-R02.1/ (c-direction-left-from)

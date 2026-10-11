@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 10-lifecycle; cp $S/out-cf-10-lifecycle.stderr $S/out-cf-10-lifecycle.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-10-lifecycle/ 2>/dev/null; true

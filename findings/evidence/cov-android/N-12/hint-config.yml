@@ -1,0 +1,13 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov-android-2
+
+screens:
+  - name: Edit Name Field
+    path:
+      - tap: "Deep Links"
+      - tap: "Edit Landmark"
+      - assert_visible: "Name"
+      - tap: "Name"

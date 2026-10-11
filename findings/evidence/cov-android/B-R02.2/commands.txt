@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ rm -rf $S/r02f; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/02-favorite.yaml --snapshot full --report-dir $S/r02f 2>&1 | grep -E "✓|✗|╰|swipe\]" | head -20; ls $S/r02f/assets/flow-000 | grep cmd-008; adb -s emulator-5554 shell settings put system pointer_location 0
+rc=0 elapsed=11.7s  (stdout 01.out, stderr 01.err)
+

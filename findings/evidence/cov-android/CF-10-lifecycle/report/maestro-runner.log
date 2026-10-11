@@ -1,0 +1,61 @@
+00:33:47.251206 [INFO] === Test execution started ===
+00:33:47.251268 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-10-lifecycle
+00:33:47.251273 [INFO] Platform: android
+00:33:47.251276 [INFO] Driver: 
+00:33:47.251594 [INFO] Validated 1 flow(s)
+00:33:47.251615 [INFO] Single device execution mode
+00:33:47.251620 [INFO] Starting flow execution (parallel: false, devices: [])
+00:33:47.251625 [INFO] Creating driver for single device execution
+00:33:47.251630 [INFO] Connecting to Android device: emulator-5554
+00:33:47.332410 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+00:33:47.353306 [INFO] Starting UIAutomator2 server on device emulator-5554
+00:33:47.763348 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+00:33:47.776181 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+00:33:48.856944 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+00:33:48.865710 [INFO] Session created successfully: 7d078d40-bc44-4b9f-b099-6d33afd27593
+00:33:48.919271 [INFO] Driver created: android on google sdk_gphone64_arm64
+00:33:48.920832 [INFO] === Starting flow: 10-lifecycle ===
+00:33:48.920837 [INFO] Flow file: .maestro/coverage/10-lifecycle.yaml
+00:33:48.920841 [INFO] Total steps: 16
+00:33:48.925976 [DEBUG] Executing step 0: stopApp
+00:33:48.956498 [DEBUG] Step 0 completed successfully (30ms): stopApp
+00:33:48.956986 [DEBUG] Executing step 1: launchApp
+00:33:50.835676 [DEBUG] Step 1 completed successfully (1878ms): launchApp
+00:33:50.836216 [DEBUG] Executing step 2: assertVisible: text="Featured"
+00:33:50.836474 [DEBUG] Flutter: parallel search (text="Featured", id="")
+00:33:50.950099 [DEBUG] Flutter fallback: failed to get trees: no Flutter VM service found
+00:33:50.950135 [DEBUG] Step 2 completed successfully (113ms): assertVisible: text="Featured"
+00:33:50.950494 [DEBUG] Executing step 3: tapOn: text="Lake Tahoe"
+00:33:51.718040 [DEBUG] Step 3 completed successfully (767ms): tapOn: text="Lake Tahoe"
+00:33:51.718471 [DEBUG] Executing step 4: tapOn: text="Favorite"
+00:33:52.909565 [DEBUG] Step 4 completed successfully (1191ms): tapOn: text="Favorite"
+00:33:52.910166 [DEBUG] Executing step 5: assertVisible: text="Unfavorite"
+00:33:52.958600 [DEBUG] Step 5 completed successfully (48ms): assertVisible: text="Unfavorite"
+00:33:52.959285 [DEBUG] Executing step 6: launchApp (clearState)
+00:33:54.867886 [DEBUG] Step 6 completed successfully (1908ms): launchApp (clearState)
+00:33:54.868370 [DEBUG] Executing step 7: tapOn: text="Favorites"
+00:33:55.717480 [DEBUG] Step 7 completed successfully (849ms): tapOn: text="Favorites"
+00:33:55.718158 [DEBUG] Executing step 8: assertVisible: text="Landmarks you favorite will appear here."
+00:33:56.325036 [DEBUG] Step 8 completed successfully (606ms): assertVisible: text="Landmarks you favorite will appear here."
+00:33:56.325943 [DEBUG] Executing step 9: stopApp
+00:33:56.367570 [DEBUG] Step 9 completed successfully (41ms): stopApp
+00:33:56.368083 [DEBUG] Executing step 10: stopApp
+00:33:56.405195 [DEBUG] Step 10 completed successfully (37ms): stopApp
+00:33:56.405608 [DEBUG] Executing step 11: launchApp
+00:33:58.180011 [DEBUG] Step 11 completed successfully (1774ms): launchApp
+00:33:58.180451 [DEBUG] Executing step 12: assertVisible: text="Featured"
+00:33:58.248634 [DEBUG] Step 12 completed successfully (68ms): assertVisible: text="Featured"
+00:33:58.249053 [DEBUG] Executing step 13: killApp
+00:33:58.272429 [DEBUG] Step 13 completed successfully (23ms): killApp
+00:33:58.272855 [DEBUG] Executing step 14: launchApp
+00:34:00.094459 [DEBUG] Step 14 completed successfully (1821ms): launchApp
+00:34:00.095090 [DEBUG] Executing step 15: assertVisible: text="Featured"
+00:34:00.145356 [DEBUG] Step 15 completed successfully (50ms): assertVisible: text="Featured"
+00:34:00.146684 [INFO] === Flow completed: 10-lifecycle (status: passed, duration: 11225ms, passed: 16, failed: 0, skipped: 0) ===
+00:34:00.569986 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+00:34:00.584978 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+00:34:00.585013 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+00:34:00.585235 [INFO] Generating reports...
+00:34:00.586025 [INFO] Shutting down devices started by maestro-runner...
+00:34:00.586034 [INFO] Shutting down all tracked emulators
+00:34:00.586057 [INFO] Shutting down all tracked simulators

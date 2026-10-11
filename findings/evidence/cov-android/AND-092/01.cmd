@@ -1,0 +1,1 @@
+JAVA_HOME=/nonexistent $GRANTIVA doctor --platform android --json > $S/d092.json; echo rc=$?; python3 -c "import json;d=json.load(open(\"$S/d092.json\"));[print(c) for c in d if \"JDK\" in json.dumps(c) or c.get(\"status\")==\"fail\"]"

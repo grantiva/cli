@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --quiet > $S/r137-quiet.out 2> $S/r137-quiet.err; echo rc=$?; wc -l < $S/r137-quiet.err; grep -c '^\[debug\]' $S/r137-quiet.err; head -3 $S/r137-quiet.err

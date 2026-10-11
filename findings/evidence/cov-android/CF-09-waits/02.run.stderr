@@ -1,0 +1,76 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/09-waits.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-09-waits
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 09-waits (09-waits.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Deep Links" (1.0s)
+    ✓ tapOn: text="Slow Screen" (639ms)
+    ✓ assertVisible: text="Loading…" (619ms)
+    ✓ extendedWaitUntil: notVisible text="Loading…" (2.5s)
+    ✓ assertVisible: text="Loaded after delay" (26ms)
+    ✓ waitForAnimationToEnd (323ms)
+    ✓ waitForAnimationToEnd (302ms)
+✓ 09-waits 7.4s
+
+  [1/1] 09-waits (.maestro/coverage/09-waits.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn (1.0s)
+    ✓ tapOn (639ms)
+    ✓ assertVisible (619ms)
+    ✓ extendedWaitUntil (2.5s)
+    ✓ assertVisible (26ms)
+    ✓ waitForAnimationToEnd (323ms)
+    ✓ waitForAnimationToEnd (302ms)
+✓ 09-waits 7.4s
+
+  8 steps passing (7.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  09-waits                       ✓ PASS       8      8      0      0       7.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       7.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-09-waits
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-09-waits/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-09-waits/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/out-cf-09-waits/allure-results
+
+  Built by Grantiva
+

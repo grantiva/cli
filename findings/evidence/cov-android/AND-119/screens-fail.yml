@@ -1,0 +1,13 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov-android
+screens:
+  - name: Home
+    path: launch
+  - name: Broken
+    path:
+      - tap: "No Such Element"
+flows:
+  - .maestro/01-browse.yaml

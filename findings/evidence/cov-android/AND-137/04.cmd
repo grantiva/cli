@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --json --quiet > $S/r137-jq.out 2> $S/r137-jq.err; echo rc=$?; wc -l < $S/r137-jq.err; $GRANTIVA run --device emulator-5554 --no-build --flow .maestro/coverage/02-exact-negative.yaml --quiet > $S/r137-fail.out 2> $S/r137-fail.err; echo rc=$?; grep -E "✗|Error" $S/r137-fail.err | head -4 | cut -c1-150

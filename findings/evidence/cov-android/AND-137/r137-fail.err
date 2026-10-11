@@ -1,0 +1,62 @@
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C18C8FA6-B5BF-4C08-B996-A4311FAEC4C7
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-exact-negative (02-exact-negative.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Golden Gate.*" (672ms)
+    ✗ assertVisible: text="Golden Gate.*", exact=true (17.1s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 02-exact-negative 19.8s
+
+  [1/1] 02-exact-negative (.maestro/coverage/02-exact-negative.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible (672ms)
+    ✗ assertVisible (17.3s)
+      ╰─ Element not visible: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters)
+✗ 02-exact-negative 19.8s
+
+  2 steps passing (19.8s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-exact-negative              ✗ FAIL       3      2      1      0      19.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      2      1      0      19.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C18C8FA6-B5BF-4C08-B996-A4311FAEC4C7
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C18C8FA6-B5BF-4C08-B996-A4311FAEC4C7/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C18C8FA6-B5BF-4C08-B996-A4311FAEC4C7/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-C18C8FA6-B5BF-4C08-B996-A4311FAEC4C7/allure-results
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1); see the runner output above.

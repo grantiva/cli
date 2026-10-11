@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --capture --emulator cov-android --module app --variant freeDebug --application-id com.kylebrowning.landmarks --headless --verbose > $S/c142.out 2> $S/c142.err; echo rc=$?; grep -cE 'gradlew' $S/c142.err; grep -cE 'apkanalyzer' $S/c142.err; grep -E 'Captured|Emulator:|Visual diff|Passed:' $S/c142.out $S/c142.err | cut -c1-150
+rc=0 elapsed=14.6s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --capture --device emulator-5554 --no-build --verbose > $S/c142.out 2> $S/c142.err; echo rc=$?; grep -cE 'gradlew' $S/c142.err; grep -cE 'apkanalyzer' $S/c142.err; grep -E 'Captured|Emulator:|Visual diff|Passed:' $S/c142.out $S/c142.err | cut -c1-150
+rc=0 elapsed=11.1s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --capture --app-file app/build/outputs/apk/free/debug/app-free-debug.apk --verbose > $S/c142.out 2> $S/c142.err; echo rc=$?; grep -cE 'gradlew' $S/c142.err; grep -cE 'apkanalyzer' $S/c142.err; grep -E 'Captured|Emulator:|Visual diff|Passed:' $S/c142.out $S/c142.err | cut -c1-150
+rc=0 elapsed=13.7s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA diff compare --capture --allow-device-settings --verbose > $S/c142.out 2> $S/c142.err; echo rc=$?; grep -cE 'gradlew' $S/c142.err; grep -cE 'apkanalyzer' $S/c142.err; grep -E 'Captured|Emulator:|Visual diff|Passed:' $S/c142.out $S/c142.err | cut -c1-150
+rc=0 elapsed=13.7s  (stdout 04.out, stderr 04.err)
+

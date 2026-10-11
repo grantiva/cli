@@ -1,0 +1,84 @@
+{
+  "id": "flow-008",
+  "name": "09-seed-empty",
+  "sourceFile": ".maestro/09-seed-empty.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-11T00:46:22.342332-07:00",
+  "endTime": "2026-10-11T00:46:25.145098-07:00",
+  "duration": 2802,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-11T00:46:22.342592-07:00",
+      "endTime": "2026-10-11T00:46:24.447393-07:00",
+      "duration": 2104,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-008/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-008/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-11T00:46:24.4477-07:00",
+      "endTime": "2026-10-11T00:46:24.765193-07:00",
+      "duration": 317,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-05dd-0000-003700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-008/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-008/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-11T00:46:24.76549-07:00",
+      "endTime": "2026-10-11T00:46:25.144846-07:00",
+      "duration": 379,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-008/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-008/cmd-002-Empty.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 933,
+    "p50": 379,
+    "p95": 2104,
+    "max": 2104,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

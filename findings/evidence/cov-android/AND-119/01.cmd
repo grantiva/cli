@@ -1,0 +1,1 @@
+rm -rf $S/out-119; $GRANTIVA run --device emulator-5554 --no-build --continue-on-failure --report-dir $S/out-119 --ready-file $S/r119.ready > $E/AND-119/cof.out 2> $E/AND-119/cof.err; echo rc=$?; grep -E "Running|PASS|FAIL|Screens:|Error|Broken|No Such" $E/AND-119/cof.err $E/AND-119/cof.out | cut -c1-200; cat $S/r119.ready; ls $S/out-119 $S/out-119/screens

@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 07-swipe-from-missing; cp $S/out-cf-07-swipe-from-missing.stderr $S/out-cf-07-swipe-from-missing.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-07-swipe-from-missing/ 2>/dev/null; true

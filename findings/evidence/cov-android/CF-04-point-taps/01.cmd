@@ -1,0 +1,1 @@
+$S/tools/cflow.sh 04-point-taps; cp $S/out-cf-04-point-taps.stderr $S/out-cf-04-point-taps.stdout /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/CF-04-point-taps/ 2>/dev/null; true
