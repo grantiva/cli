@@ -1,0 +1,28 @@
+$ uptime
+ 6:49  up 3 days, 22:16, 5 users, load averages: 2.17 3.60 5.55
+$ $GRANTIVA emulator ensure --name smoke2b-android
+Creating AVD smoke2b-android
+Booting AVD smoke2b-android as emulator-5554
+Created smoke2b-android (emulator-5554) — Booted
+emulator-5554
+$GRANTIVA emulator ensure --name smoke2b-android  1.59s user 0.22s system 10% cpu 17.723 total
+exit=0
+$ grep hw.gpu ~/.android/avd/smoke2b-android.avd/config.ini
+hw.gpu.enabled=no
+hw.gpu.mode=auto
+$ adb -s emulator-5554 shell getprop ro.hardware.egl
+emulation
+$ adb -s emulator-5554 shell getprop | grep -i -E "gles|egl|gltransport"
+[ro.boot.hardware.gltransport]: [pipe]
+[ro.boot.opengles.version]: [196609]
+[ro.boot.qemu.gltransport.drawFlushInterval]: [800]
+[ro.boot.qemu.gltransport.name]: [pipe]
+[ro.hardware.egl]: [emulation]
+[ro.opengles.version]: [196609]
+$ ps -Ao args | grep qemu-system | grep smoke2b
+/Users/kyle/Library/Android/sdk/emulator/qemu/darwin-aarch64/qemu-system-aarch64 -avd smoke2b-android -port 5554 -no-snapshot-save -no-boot-anim
+$ grep -i gpu ~/.android/avd/smoke2b-android.avd/hardware-qemu.ini   (resolved at boot)
+hw.gpu.enabled = true
+hw.gpu.mode = lavapipe
+$ adb -s emulator-5554 shell dumpsys SurfaceFlinger | grep GLES:
+GLES: Google (Google Inc. (Google)), Android Emulator OpenGL ES Translator (ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver-5.0.0)), OpenGL ES 3.1 (OpenGL ES 3.1.0 (ANGLE 2.1.1 git hash: fbf66f49c7cc))

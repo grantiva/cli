@@ -1,0 +1,6 @@
+# quiet-host re-run (coordinator request, 2026-10-11 06:49-07:03). env as round2-*; AVD smoke2b-android = emulator-5554 (API 35, emulator ensure)
+# <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad; each file starts with uptime + exact command
+runner binaries driven directly (no grantiva), same AVD, from android/:
+03-edit-runner-{9,10}.txt  time ~/.grantiva-qa/runner/versions/1.1.28-grantiva.<v>+android-drivers-2/grantiva-runner --platform android --device emulator-5554 test --output <scratch>/smoke2/ab<v> .maestro/03-edit.yaml
+03-edit-runner-10-client.log; 03-edit-runner-9-report/ (report without assets; .9 writes a dated subdirectory and no client.log)
+99-crash-runner-{9,10}.txt  same for .maestro/99-crash.yaml (INVALID as a crash check: the app did not crash when the runner is driven directly)

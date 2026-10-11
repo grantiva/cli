@@ -41,7 +41,8 @@ GPU setting is not recorded, so a re-run on a quiet host is needed before blamin
 | round2-HELP-K61 `grep -rl GrantivaAgent findings/help` | fail | round2-HELP/k61-grep.txt | Hits `run.txt` and `hierarchy.txt`, which serve both platforms, so the check as written fails. Every hit names the Android counterpart, as K61's acceptance asks: run `--keep-alive` "(GrantivaAgent on iOS, UIAutomator2 on Android)", hierarchy "from GrantivaAgent on iOS, from the UIAutomator2 server on Android" and `--timeout` "GrantivaAgent's (iOS) or UIAutomator2's (Android)". The other K61 strings are present (runner/runner start abstract = README:333, dump-hierarchy `--port`, `--app-file`). This is probably an expectation correction, not a product fault. |
 | round2-I3 teardown + end state | pass | round2-I3-teardown/teardown.txt, teardown-2.txt | `simulator teardown --udid --force` removed `versions/1.1.28-grantiva.10+android-drivers-2/devices/F7DCF106-...` (count 1 → 0) but kept the session record, as its message says; `simulator teardown --session-id smoke2` then deleted the simulator. `emulator teardown --name` is not an option (exit 64; help offers `--serial`/`--all`); `--serial emulator-5554` worked. End: `simctl ... grep -c smoke2` = 0, `adb devices` empty, AVDs = Pixel_8_API_35 only, `/tmp/grantiva-sessions` empty, no lock for the UDID. |
 
-Counts: 26 rows, 20 pass, 6 fail (round2-A1, round2-A1-03edit, round2-A3, round2-A-K07, round2-X-d2, round2-HELP-K61).
+Counts (round2 rows): 26 rows, 20 pass, 6 fail (round2-A1, round2-A1-03edit, round2-A3, round2-A-K07, round2-X-d2, round2-HELP-K61).
+Counts with the quiet-host re-run below: 34 rows, 23 pass, 11 fail (adds round2b-A1, round2b-A1-03edit, round2b-A3, round2b-A-K07, round2b-AB).
 
 ## Help corpus changes (`git diff --stat findings/help`, 17 pages, +106/-38)
 
@@ -62,3 +63,33 @@ emulator_teardown, hierarchy, run, runner, runner_dump-hierarchy, runner_install
 - Android `run` on a failing stock set prints no `Screens: 5 total, 5 captured` line even though the screens phase passed.
 - `runner version --json` gives only `version`, not the installed stamp; the plan's "runner --json lists the new stamp" has no command behind it.
 - Concurrent iOS + Android stock runs on one host work (iOS 12/12 while Android ran), but the Android timings doubled.
+
+## Quiet-host Android re-run (round2b, 06:49-07:03)
+
+The coordinator asked for a re-run of the failed Android rows on a fresh AVD `smoke2b-android` (emulator-5554, API 35, `emulator ensure`),
+same binary, env and demo copy. Evidence: `evidence/round2-smoke/round2b-<ID>/`; each run file opens and closes with `uptime`.
+Load was 2.17 before the AVD booted. It climbed to 6-12 while the runs were going: the emulator itself (qemu at 77-100% CPU) plus
+`corespotlightd` at 200% during part of it, which was not started by this smoke. The host was quieter than in round2 but not idle.
+
+| ID | Result | Evidence | Note |
+|---|---|---|---|
+| round2b-GPU AVD graphics | pass (facts) | round2b-A0/ensure.txt | `config.ini`: `hw.gpu.enabled=no`, `hw.gpu.mode=auto`. Resolved at boot (`hardware-qemu.ini`): `hw.gpu.enabled = true`, `hw.gpu.mode = lavapipe`. `ro.hardware.egl` = `emulation`; `ro.boot.qemu.gltransport.name` = `pipe`; `ro.opengles.version` 196609; SurfaceFlinger `GLES: ... ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device ...))`, so rendering is software (lavapipe/SwiftShader). qemu argv: `-avd smoke2b-android -port 5554 -no-snapshot-save -no-boot-anim`. Round 1: config.ini was not recorded (unknown). `emulator ensure` passes no GPU option at 51c597a or 5eab55d (EmulatorManager.swift:229-230 only adds `-no-window` when headless), so the round-1 AVD most likely had the same avdmanager defaults. |
+| round2b-A0 ensure + build install | pass | round2b-A0/ | Created and booted in 17.7 s; build install 7.4 s. |
+| round2b-A1 stock flows + screens | fail | round2b-A1/run.txt | Screens 21/21 in 11.1 s. Flows 2/12: 01-browse 3.9 s and 02-favorite 6.9 s (the round-1 speeds), then 03-edit fails at `inputText " Renamed" (13.6s)` and 04-12 are skipped. Load 6.08 → 9.69. |
+| round2b-A1-03edit 03-edit alone x3 | fail | round2b-A1-03edit/run-1..3.txt, run-<i>-client.log | 3/3: launchApp 2.0 s, tapOn steps 1.2-2.0 s, then `✗ inputText " Renamed"` 13.8 / 13.6 / 13.7 s (round 1: 2.8 s pass). Client log, every run: `GET /element/active` OK, `GET /element/<id>/text` OK, then `POST /session/<id>/actions [10.0026s / 10.0025s / 10.0014s] ERROR: ... context deadline exceeded (Client.Timeout exceeded while awaiting headers)`, which is the 10 s HTTP client timeout. Wall 51 s per run; load 8.9-12.0. |
+| round2b-AB runner .9 vs .10, same AVD | fail | round2b-AB-runner/ | Both runner binaries driven directly (`grantiva-runner --platform android --device emulator-5554 test .maestro/03-edit.yaml`): .9 (commit ae48e34) `✗ inputText " Renamed" (15.6s)`, and .10 `✗ (13.2s)`. Both fail with the same `POST .../actions ... Client.Timeout exceeded`. The 99-crash A/B is not valid: driven directly, the app did not crash (`✓ assertVisible "Featured"` on both), so the flow's crash env did not reach the app on that path. Not investigated. |
+| round2b-A3 99-crash x3 | fail | round2b-A3/crash-1..3.txt, crash-<i>-client.log, -maestro-runner.log, -flow-000.json | Time to failure: flow 20.7 / 16.8 / 18.0 s, wall 35.6 / 27.4 / 31.7 s. Runs 1 and 3: `✓ assertVisible "Landmarks" (10.2s / 10.3s)` passes on the dead app, then `✗ assertVisible "Featured"` in 0.65-0.74 s with `error.type` `app_crash`. Run 2: `✗ assertVisible "Landmarks" (11.3s)`, `app_crash`. Client log, run 1: the first `POST /element` (text "Landmarks") blocks for `[10.001s] ERROR ... Client.Timeout exceeded`, then `textMatches("(?ims)(?:Landmarks)")` returns OK in 33 ms. Runs 2 and 3 show the same 10.00 s blocked `POST /element`. |
+| round2b-A-K07 10-seed-many x3 | fail | round2b-A-K07/run-1..3.txt, run-<i>-cmd-005-hierarchy.xml, run-<i>-client.log | Last landmark visible: 22, 22, 22 (first visible 14 every run); `✗ assertVisible "Landmark 28"` after 17.7-19.0 s. Scroll steps 2.8-8.9 s; each bare scroll is a `POST /actions` drag taking 4.0-7.3 s in the client log. Load 6.0-8.9. |
+| round2b-teardown | pass | round2b-teardown/teardown.txt | `emulator teardown --serial emulator-5554` → "Killed emulator-5554 (smoke2b-android)."; `avdmanager delete avd -n smoke2b-android` → deleted. `adb devices` empty; AVDs: Pixel_8_API_35; smoke2 simulators 0; `/tmp/grantiva-sessions` empty; no smoke2 process. |
+
+**Interpretation, row by row.**
+
+- **round2b-A1 / round2b-A1-03edit: a defect that this environment exposes, not a .10 regression.** The emulator ran at round-1 speed (01-browse 3.9 s, 02-favorite 6.9 s), yet 03-edit failed the same way 4 of 4 times. Runner .9 fails identically on the same AVD, so this is not a .10 regression. The round-1 pass (2.8 s) was on another AVD and host state that were not recorded.
+  - What happens: the UIAutomator2 server takes more than 10 s to answer the key-actions `POST /actions` for 8 characters on this software-rendered AVD. Every scroll drag on the same path takes 4-7 s, which points the same way.
+  - Host load contributes, but at load 5-12 it reproduces every time.
+  - The defect: a fixed 10 s client timeout fails a step whose text was in fact typed. The failure screenshot from the loaded run shows the full "Golden Gate Bridge Renamed".
+- **round2b-A3: defect.** The visible wait does poll for a crash (`crashPoll` 1 s, uiautomator2/commands.go:1477-1486), but one `POST /element` against the dying app blocks for the full 10 s HTTP timeout, so no crash check runs in that window.
+  - After the timeout the regex retry finds a "Landmarks" text and the assert **passes** on a dead app (2 of 3 runs). The likely sources are the crash dialog or the launcher label; no capture was taken at that step.
+  - So the crash short-circuit exists but does not cover a blocked server call, and the K97 fast fail (WDA) has no working counterpart on UIAutomator2 here.
+  - Round 1 (.9): `assertVisible` failed in 318 ms. The .9 comparison could not be repeated (see round2b-AB).
+- **round2b-A-K07: not a load artefact.** The flow lands on Landmark 22 in 3 of 3 runs on the fresh AVD and 2 of 2 on the round2 AVD, under both heavy and moderate load. The scroll is deterministic, but its distance on this AVD is 6 rows short of the 28-29 the fix device check saw. Either the held-drag distance depends on the device (graphics backend or frame pacing during the 4-7 s `/actions` drag), or the Landmark 28 expectation only holds for the AVD it was tuned on.

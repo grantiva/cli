@@ -1,0 +1,25 @@
+$ uptime
+ 7:03  up 3 days, 22:30, 5 users, load averages: 7.02 7.76 7.30
+$ $GRANTIVA emulator teardown --serial emulator-5554
+Killed emulator-5554 (smoke2b-android).
+exit=0
+$ avdmanager delete avd -n smoke2b-android
+
+AVD 'smoke2b-android' deleted.exit=0
+$ adb devices
+List of devices attached
+
+$ avdmanager list avd -c
+Pixel_8_API_35
+$ xcrun simctl list devices | grep -c smoke2
+0
+$ ls -la /tmp/grantiva-sessions
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 06:44 .
+drwxrwxrwt  218 root  wheel  6976 Oct 11 07:03 ..
+$ ps -Ao pid,args | grep smoke2 | grep -v grep
+$ ps -Ao pcpu,comm -r | head -4
+ %CPU COMM
+ 11.8 /sbin/launchd
+  9.1 /usr/sbin/coreaudiod
+  6.6 claude

@@ -1,0 +1,76 @@
+$ uptime
+ 7:00  up 3 days, 22:27, 5 users, load averages: 5.07 7.10 6.96
+$ (android/) time /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.9+android-drivers-2/grantiva-runner --platform android --device emulator-5554 test --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9 .maestro/03-edit.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9/2026-10-11_07-00-18
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ⚠ launchApp (6.2s)
+    ⚠ tapOn: text="Deep Links" (8.3s)
+    ✓ tapOn: text="Edit Landmark" (1.7s)
+    ✓ assertVisible: text="Edit Landmark" (2.3s)
+    ✓ tapOn: text="Name" (900ms)
+    ✗ inputText: " Renamed" (15.6s)
+      ╰─ Failed to input text: send request: Post "http://localhost/session/72aaa063-f17c-49b6-a384-70cf00bed059/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers) (cause: send request: Post "http://localhost/session/72aaa063-f17c-49b6-a384-70cf00bed059/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers))
+✗ 03-edit 38.3s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ⚠ launchApp (6.2s)
+    ⚠ tapOn (8.3s)
+    ✓ tapOn (1.7s)
+    ✓ assertVisible (2.3s)
+    ✓ tapOn (900ms)
+    ✗ inputText (18.9s)
+      ╰─ Failed to input text: send request: Post "http://localhost/session/72aaa063-f17c-49b6-a384-70cf00bed059/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers) (cause: send request: Post "http://localhost/session/72aaa063-f17c-49b6-a384-70cf00bed059/actions": context deadline exceeded (Client.Timeout exceeded while awaiting headers))
+    ✗ tapOn (0ms)
+    ✗ assertVisible (0ms)
+    ✗ takeScreenshot (0ms)
+✗ 03-edit 38.3s
+
+  5 steps passing (38.3s)
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✗ FAIL       9      5      1      3      38.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       9      5      1      3      38.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9/2026-10-11_07-00-18
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9/2026-10-11_07-00-18/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9/2026-10-11_07-00-18/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/ab9/2026-10-11_07-00-18/allure-results
+
+  Built by Grantiva
+
+$R --platform android --device emulator-5554 test --output $S/ab$v   1.02s user 0.78s system 4% cpu 43.833 total
+exit=1

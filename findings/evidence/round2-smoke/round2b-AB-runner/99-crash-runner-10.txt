@@ -1,0 +1,68 @@
+$ uptime
+ 7:02  up 3 days, 22:30, 5 users, load averages: 8.73 8.06 7.37
+$ (android/) time /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.10+android-drivers-2/grantiva-runner --platform android --device emulator-5554 test --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10 .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.10 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10/2026-10-11_07-02-39
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (6.6s, slow)
+    ✓ assertVisible: text="Landmarks" (5.6s, slow)
+    ✓ assertVisible: text="Featured" (352ms)
+    ✗ assertVisible: text="This never appears" (17.6s)
+      ╰─ Element not visible: text='This never appears' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Sierra Nevada, CA", "Battery 100 percent.", "Featured")
+✗ 99-crash 31.0s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (6.6s, slow)
+    ✓ assertVisible: text="Landmarks" (5.6s, slow)
+    ✓ assertVisible: text="Featured" (352ms)
+    ✗ assertVisible: text="This never appears" (17.6s)
+      ╰─ Element not visible: text='This never appears' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Sierra Nevada, CA", "Battery 100 percent.", "Featured")
+✗ 99-crash 31.0s
+
+  3 steps passing (31.0s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      3      1      0      31.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      3      1      0      31.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10/2026-10-11_07-02-39
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10/2026-10-11_07-02-39/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10/2026-10-11_07-02-39/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke2/abc10/2026-10-11_07-02-39/allure-results
+
+  Built by Grantiva
+
+$R --platform android --device emulator-5554 test --output $S/abc$v   1.39s user 1.10s system 7% cpu 35.467 total
+exit=1
