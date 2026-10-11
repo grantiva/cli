@@ -139,7 +139,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession()
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
         _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "terminate", "files 1234", "remove", "owner", "release"])
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "owner", "release"])
     }
 
     func testStopCleansStaleReusedPIDWithoutSignallingIt() async throws {
@@ -181,7 +181,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession(udid: "emulator-5554")
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
         _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "terminate", "files 1234", "orphans", "remove", "owner", "release"])
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans", "owner", "release"])
     }
 
     func testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms() {
@@ -222,7 +222,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             timeout: 5,
             sleep: {}
         )
-        XCTAssertEqual(attachment?.port, 61211)
+        XCTAssertEqual(attachment.attachment?.port, 61211)
         XCTAssertEqual(attempts.value, 3)
     }
 
@@ -232,7 +232,8 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             timeout: 0,
             sleep: {}
         )
-        XCTAssertNil(attachment)
+        XCTAssertNil(attachment.attachment)
+        XCTAssertNil(attachment.exitStatus)
     }
 
     // MARK: - K88: `runner stop` on a session whose runner already exited
@@ -242,7 +243,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
         dependencies.isAlive = { _ in false }
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(result, .exited(pid: 1234, udid: makeSession().udid))
+        XCTAssertEqual(result, .exited(pid: 1234, udid: makeSession().udid, details: .init(port: 8430, appID: "com.example")))
         XCTAssertEqual(RunnerStopCommand.render(result), "No running runner (pid 1234 had exited); cleaned up its session.")
         // Ruling (c): still `stopped`, flagged, with the platform's keys.
         let json = try decode(RunnerStopCommand.document(result))
@@ -266,7 +267,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         var dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
         dependencies.terminateGroup = { _ in events.append("terminate"); return .killed }
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(result, .stopped(pid: 1234, udid: session.udid, killed: true))
+        XCTAssertEqual(result, .stopped(pid: 1234, udid: session.udid, killed: true, details: .init(port: 8430, appID: "com.example")))
         XCTAssertTrue(events.value.contains("files 1234"), "\(events.value)")
         XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234; it ignored SIGINT and SIGTERM and was killed)")
     }
@@ -304,7 +305,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
 
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
         let reaped = ReapedProcess(pid: 1250, processGroup: 1250, kind: .diagnose, command: diagnose, killed: true)
-        XCTAssertEqual(result, .stopped(pid: 1234, udid: udid, killed: false, reaped: [reaped]))
+        XCTAssertEqual(result, .stopped(pid: 1234, udid: udid, killed: false, reaped: [reaped], details: .init(port: 8430, appID: "com.example")))
         XCTAssertEqual(signals.value.first, "\(SIGINT) 1250")
         XCTAssertFalse(alive.value.contains(1250), "stop returned before the helper exited")
 
@@ -344,7 +345,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         }
         let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
         XCTAssertEqual(events.value, ["stop 4267"])
-        XCTAssertEqual(result, .keepAlive([.released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!)]))
+        XCTAssertEqual(result, .keepAlive([.released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!)], details: [4267: .init(port: 8100, appID: nil)]))
         XCTAssertEqual(
             RunnerStopCommand.render(result),
             "Stopped keep-alive session (pid 4163, \(keepAlive.udid!))"
@@ -525,6 +526,195 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             XCTAssertTrue(help.contains("Path to a pre-built app: .app bundle or .ipa archive (iOS), .apk (Android). Skips the build step."), help)
         }
         XCTAssertTrue(RunCommand.helpMessage(columns: 1000).contains("UIAutomator2 on Android"))
+    }
+
+    // MARK: - L13: every stop document shares start's keys
+
+    private static let startKeysIOS: Set<String> = ["status", "pid", "port", "platform", "bundleId", "bundle_id", "udid"]
+    private static let startKeysAndroid: Set<String> = ["status", "pid", "port", "platform", "applicationId", "bundle_id", "udid", "serial"]
+    private static let stopOnlyKeys: Set<String> = ["runnerPid", "killed", "reaped", "alreadyExited", "sessions"]
+
+    private func assertStopShape(_ json: [String: Any], android: Bool, file: StaticString = #filePath, line: UInt = #line) {
+        let keys = Set(json.keys)
+        let start = android ? Self.startKeysAndroid : Self.startKeysIOS
+        XCTAssertTrue(start.isSubset(of: keys), "missing \(start.subtracting(keys))", file: file, line: line)
+        XCTAssertTrue(keys.subtracting(start).isSubset(of: Self.stopOnlyKeys), "undocumented \(keys.subtracting(start).subtracting(Self.stopOnlyKeys))", file: file, line: line)
+        XCTAssertNotNil(json["killed"] as? Bool, "killed is on every stopped document", file: file, line: line)
+        XCTAssertNotNil(json["runnerPid"], file: file, line: line)
+        XCTAssertNotNil(json["reaped"], file: file, line: line)
+    }
+
+    func testEveryStopShapeCarriesStartsKeysOnBothPlatforms() throws {
+        let iosUDID = makeSession().udid
+        let details = RunnerStopCommand.SessionDetails(port: 8987, appID: "com.kylebrowning.Landmarks")
+        let android = RunnerStopCommand.SessionDetails(port: 62621, appID: "com.kylebrowning.landmarks")
+        let stopped = try decode(RunnerStopCommand.document(.stopped(pid: 1, udid: iosUDID, killed: false, details: details)))
+        assertStopShape(stopped, android: false)
+        XCTAssertEqual(stopped["port"] as? Int, 8987)
+        XCTAssertEqual(stopped["bundleId"] as? String, "com.kylebrowning.Landmarks")
+        XCTAssertEqual(stopped["killed"] as? Bool, false)
+
+        let exited = try decode(RunnerStopCommand.document(.exited(pid: 2, udid: "emulator-5554", details: android)))
+        assertStopShape(exited, android: true)
+        XCTAssertEqual(exited["applicationId"] as? String, "com.kylebrowning.landmarks")
+        XCTAssertEqual(exited["port"] as? Int, 62621)
+        XCTAssertEqual(exited["alreadyExited"] as? Bool, true)
+
+        let multi = try decode(RunnerStopCommand.document(.keepAlive(
+            [
+                .released(grantivaPid: 4163, runnerPid: 4267, udid: iosUDID),
+                .terminated(runnerPid: 4300, udid: "emulator-5556", killed: true),
+            ],
+            details: [4267: details, 4300: android]
+        )))
+        assertStopShape(multi, android: false)
+        let entries = try XCTUnwrap(multi["sessions"] as? [[String: Any]])
+        assertStopShape(entries[0], android: false)
+        assertStopShape(entries[1], android: true)
+        XCTAssertEqual(entries[0]["killed"] as? Bool, false)
+        XCTAssertEqual(entries[1]["killed"] as? Bool, true)
+    }
+
+    func testAStopWhoseSessionRecordedNoPortOrAppWritesNull() throws {
+        let json = try decode(RunnerStopCommand.document(.stopped(pid: 1, udid: "emulator-5554", killed: false)))
+        assertStopShape(json, android: true)
+        XCTAssertTrue(json["port"] is NSNull)
+        XCTAssertTrue(json["applicationId"] is NSNull)
+    }
+
+    func testStopCarriesThePortAndAppTheSessionFileRecorded() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["port"] as? Int, 8430)
+        XCTAssertEqual(json["bundleId"] as? String, "com.example")
+    }
+
+    func testStopOfAKeepAliveSessionCarriesItsPortAndApp() async throws {
+        let events = LockedValue<[String]>([])
+        let keepAlive = KeepAliveSession(
+            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/x",
+            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false, appId: "com.example"
+        )
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { [keepAlive] }
+        dependencies.stopKeepAlive = { _ in .released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!) }
+        let json = try decode(RunnerStopCommand.document(try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)))
+        XCTAssertEqual(json["port"] as? Int, 8100)
+        XCTAssertEqual(json["bundleId"] as? String, "com.example")
+        XCTAssertEqual(json["killed"] as? Bool, false)
+    }
+
+    // MARK: - L36: `runner stop` of a foreground `runner start` is orderly
+
+    func testStopRemovesTheSessionFileBeforeSignallingTheRunner() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "owner", "release"])
+    }
+
+    func testAForegroundRunnerThatExitsOneAfterARunnerStopEndsInOrder() throws {
+        XCTAssertTrue(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: nil))
+        XCTAssertTrue(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: RunnerSessionInfo(
+            pid: 999, wdaPort: 1, bundleId: "b", udid: "emulator-5554", startedAt: Date()
+        )))
+        XCTAssertFalse(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: makeSession()))
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: true),
+            "Runner stopped (pid 1234); the session has ended."
+        )
+    }
+
+    func testAForegroundRunnerThatExitsOneUnpromptedStillFails() {
+        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
+            XCTAssertEqual($0.localizedDescription, "The runner exited with status 1; the session has ended.")
+        }
+        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: 0, pid: 1234, stopRequested: false),
+                       "Runner stopped (pid 1234); the session has ended.")
+    }
+
+    // MARK: - L37: the interrupt notice names the emulator on Android
+
+    func testTheForegroundSetUpForAnAndroidLaunchSaysEmulator() {
+        let saved = SignalRelay.shared.deviceNoun
+        defer {
+            SignalRelay.shared.untrack(group: 999_997)
+            SignalRelay.shared.deviceNoun = saved
+        }
+        RunnerStartCommand.trackRunner(group: 999_997, platform: .android)
+        XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
+        RunnerStartCommand.trackRunner(group: 999_997, platform: .ios)
+        XCTAssertEqual(SignalRelay.shared.deviceNoun, "simulator")
+    }
+
+    // MARK: - L38-a: a starting session is reported as starting
+
+    func testDumpHierarchyOnAStartingSessionSaysItIsStarting() {
+        let starting = RunnerSessionInfo.starting(pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(), platform: .android)
+        XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: starting, keepAlive: nil)) {
+            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+        }
+    }
+
+    // MARK: - L38-b: a new runner never adopts an orphaned UIAutomator2 server
+
+    /// `runner start` holds the device's lease when it gets here, so any
+    /// UIAutomator2 server on the device is a leftover (a `kill -9`'d keep-alive
+    /// run's): it is cleared before the runner is spawned, so the readiness
+    /// wait can only attach to the new runner's own session.
+    func testAnAndroidStartClearsALeftoverServerBeforeSpawningTheRunner() async {
+        let android = FakeDevicePlatform(platform: .android)
+        await RunnerStartCommand.clearOrphanedDriver(android, deviceID: "emulator-5558")
+        XCTAssertEqual(android.calls, ["cleanupOrphans"])
+        let ios = FakeDevicePlatform(platform: .ios)
+        await RunnerStartCommand.clearOrphanedDriver(ios, deviceID: "6A186B51-AE17-4808-8EB3-11972382F715")
+        XCTAssertEqual(ios.calls, [])
+    }
+
+    // MARK: - L48: the start wait ends when the runner dies
+
+    func testWaitForUIAutomator2EndsAsSoonAsTheRunnerExits() async {
+        let started = Date()
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: { throw GrantivaError.invalidArgument("never") },
+            timeout: 90,
+            runnerExit: { Date().timeIntervalSince(started) > 1 ? 1 : nil },
+            sleep: { try? await Task.sleep(for: .milliseconds(100)) }
+        )
+        XCTAssertEqual(result.exitStatus, 1)
+        XCTAssertNil(result.attachment)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2)
+    }
+
+    func testTheRunnersStartFailureIsReportedWithItsReason() {
+        let log = """
+          ⏳ Connecting to device emulator-5554...
+          ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+          ⏳ Starting UIAutomator2 server...
+        Error: failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 30s
+        """
+        let line = RunnerStartCommand.lastErrorLine(in: log)
+        XCTAssertEqual(line, "Error: failed to create driver: start UIAutomator2: UIAutomator2 server not ready after 30s")
+        XCTAssertEqual(
+            RunnerStartCommand.startupExitError(serial: "emulator-5554", status: 1, lastError: line, logPath: "/tmp/r.log").localizedDescription,
+            "The runner could not start UIAutomator2 on emulator-5554: UIAutomator2 server not ready after 30s. "
+                + "Raise the limit with GRANTIVA_DRIVER_START_TIMEOUT=<seconds>. Log: /tmp/r.log"
+        )
+        XCTAssertEqual(
+            RunnerStartCommand.startupExitError(serial: "emulator-5554", status: 2, lastError: nil, logPath: nil).localizedDescription,
+            "The runner exited (status 2) before UIAutomator2 was up on emulator-5554."
+        )
+        // Progress lines are not a reason: a runner killed mid-start says how it ended.
+        XCTAssertNil(RunnerStartCommand.lastErrorLine(in: "  ⏳ Connecting to device emulator-5558...\n"))
+        XCTAssertEqual(
+            RunnerStartCommand.startupExitError(serial: "emulator-5558", status: 9, signal: 9, lastError: nil, logPath: "/tmp/r.log").localizedDescription,
+            "The runner was killed by SIGKILL before UIAutomator2 was up on emulator-5558. Log: /tmp/r.log"
+        )
     }
 
     /// Convert process output into a cancellable stream. `availableData` blocks

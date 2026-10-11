@@ -30,6 +30,7 @@ public final class ChildProcess: @unchecked Sendable {
 
     private let stateLock = NSLock()
     private var exitStatus: Int32?
+    private var exitSignal: Int32?
 
     private init(pid: pid_t, executable: String, arguments: [String], logged: Bool) {
         self.pid = pid
@@ -65,17 +66,20 @@ public final class ChildProcess: @unchecked Sendable {
             &attributes,
             Int16(POSIX_SPAWN_SETPGROUP | POSIX_SPAWN_CLOEXEC_DEFAULT | POSIX_SPAWN_SETSIGMASK | POSIX_SPAWN_SETSIGDEF)
         )
-        // The child starts with no signal blocked and the termination signals
-        // at their defaults, whatever this process inherited (a CI runner or
-        // a script's `&` can hand grantiva SIGINT blocked or ignored). Without
+        // The child starts with no signal blocked and SIGINT and SIGTERM at
+        // their defaults, whatever this process inherited (a CI runner or a
+        // script's `&` can hand grantiva SIGINT blocked or ignored). Without
         // this, the runner and the lifetime watchdog could not be interrupted:
         // a shell cannot even trap a signal that was ignored on entry.
+        // SIGHUP, SIGQUIT and SIGPIPE are reset only when they are not ignored
+        // here: `nohup grantiva …` ignores SIGHUP so the command survives a
+        // closing terminal, and the runner it starts must survive it too (L11).
         var emptyMask = sigset_t()
         sigemptyset(&emptyMask)
         posix_spawnattr_setsigmask(&attributes, &emptyMask)
         var defaults = sigset_t()
         sigemptyset(&defaults)
-        for signal in [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE] { sigaddset(&defaults, signal) }
+        for signal in signalsToReset() { sigaddset(&defaults, signal) }
         posix_spawnattr_setsigdefault(&attributes, &defaults)
         // 0 == "make the child the leader of a new group whose id is its pid".
         posix_spawnattr_setpgroup(&attributes, processGroup)
@@ -140,6 +144,22 @@ public final class ChildProcess: @unchecked Sendable {
         return ChildProcess(pid: pid, executable: executable, arguments: arguments, logged: logged)
     }
 
+    /// The signals a spawned child gets at their default disposition:
+    /// SIGINT and SIGTERM always (`runner stop`, Ctrl-C and the watchdog rely
+    /// on them), SIGHUP, SIGQUIT and SIGPIPE only when this process does not
+    /// ignore them, so an ignored one is handed on as it is.
+    static func signalsToReset(isIgnored: (Int32) -> Bool = isIgnoredInThisProcess) -> [Int32] {
+        [SIGINT, SIGTERM] + [SIGHUP, SIGQUIT, SIGPIPE].filter { !isIgnored($0) }
+    }
+
+    /// Whether `signalNumber`'s disposition in this process is SIG_IGN.
+    static func isIgnoredInThisProcess(_ signalNumber: Int32) -> Bool {
+        var action = sigaction()
+        guard sigaction(signalNumber, nil, &action) == 0 else { return false }
+        // SIG_IGN is the handler value 1.
+        return unsafeBitCast(action.__sigaction_u.__sa_handler, to: Int.self) == 1
+    }
+
     /// True while the child itself has not been reaped.
     public var isRunning: Bool {
         stateLock.lock()
@@ -161,22 +181,65 @@ public final class ChildProcess: @unchecked Sendable {
         stateLock.unlock()
 
         var raw: Int32 = 0
-        while waitpid(pid, &raw, 0) < 0 {
-            if errno == EINTR { continue }
-            break
+        var result: pid_t
+        repeat {
+            result = waitpid(pid, &raw, 0)
+        } while result < 0 && errno == EINTR
+        if result < 0 {
+            // Reaped by a concurrent `poll()`: its record is the answer.
+            stateLock.lock()
+            defer { stateLock.unlock() }
+            return exitStatus ?? Self.terminationStatus(raw: raw)
         }
+        return record(raw: raw)
+    }
+
+    /// The exit status if the child has exited, without blocking; nil while
+    /// it runs. A child that has exited is reaped here, and `wait()` then
+    /// returns the same status.
+    @discardableResult
+    public func poll() -> Int32? {
+        stateLock.lock()
+        if let exitStatus {
+            stateLock.unlock()
+            return exitStatus
+        }
+        stateLock.unlock()
+        var raw: Int32 = 0
+        let result = waitpid(pid, &raw, WNOHANG)
+        guard result == pid else {
+            if result < 0, errno == ECHILD {
+                stateLock.lock()
+                defer { stateLock.unlock() }
+                return exitStatus
+            }
+            return nil
+        }
+        return record(raw: raw)
+    }
+
+    /// The signal that killed the child, once it has been reaped by one.
+    public var terminatingSignal: Int32? {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        return exitSignal
+    }
+
+    private func record(raw: Int32) -> Int32 {
         let status = Self.terminationStatus(raw: raw)
+        let signal: Int32? = raw & 0x7f == 0 ? nil : raw & 0x7f
         stateLock.lock()
         let first = exitStatus == nil
-        exitStatus = status
+        if first {
+            exitStatus = status
+            exitSignal = signal
+        }
+        let recorded = exitStatus ?? status
         stateLock.unlock()
         if first, logged {
-            SubprocessLog.ended(
-                executable: executable, arguments: arguments,
-                status: status, signal: raw & 0x7f == 0 ? nil : raw & 0x7f
-            )
+            SubprocessLog.ended(executable: executable, arguments: arguments, status: status, signal: signal)
         }
-        return status
+        return recorded
     }
 
     static func terminationStatus(raw: Int32) -> Int32 {

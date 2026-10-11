@@ -261,6 +261,21 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertEqual(result.sessionFilesRemoved.count, 2)
     }
 
+    /// L12: the keep-alive runner died on its own and grantiva removed its
+    /// sidecar on the way out; the runner's own file is all that is left.
+    func testForceTeardownRemovesADeadRunnersFileWithNoSidecar() async throws {
+        let directory = temporaryDirectory()
+        let sessionDirectory = "\(directory)/grantiva-sessions"
+        try FileManager.default.createDirectory(atPath: sessionDirectory, withIntermediateDirectories: true)
+        let runnerFile = "\(sessionDirectory)/12109-1791747326192132000.grantiva"
+        try Data(#"{"sessionId":"12109-1791747326192132000","port":8987,"pid":12109}"#.utf8).write(to: URL(fileURLWithPath: runnerFile))
+
+        let result = try await forceTeardown(directory: directory, sessionDirectory: sessionDirectory)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: runnerFile))
+        XCTAssertEqual(result.sessionFilesRemoved, [runnerFile])
+    }
+
     func testForceTeardownReapsADiagnoseThatAppearsAfterTheFirstKill() async throws {
         let directory = temporaryDirectory()
         func sleeper() throws -> Process {

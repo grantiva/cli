@@ -253,7 +253,7 @@ struct DiffCommand: AsyncParsableCommand {
     /// The runner session in this directory, if its runner is still the
     /// process that owns it and it drives `platform`.
     static func liveSession(for platform: Platform) async -> RunnerSessionInfo? {
-        guard let session = try? RunnerSessionInfo.load(), session.isAlive, session.drivesPlatform(platform),
+        guard let session = try? RunnerSessionInfo.load(), session.isAlive, session.isReady, session.drivesPlatform(platform),
               let snapshot = try? await SimulatorReaper.processSnapshot(),
               session.ownsRunnerProcess(in: snapshot) else { return nil }
         return session

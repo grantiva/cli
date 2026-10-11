@@ -13,7 +13,21 @@ enum RunnerExecution {
         let timedOut: Bool
         /// True when grantiva received SIGINT/SIGTERM and reaped the runner.
         var interrupted: Bool = false
+        /// The signal that killed the runner, when one did.
+        var terminatingSignal: Int32? = nil
     }
+
+    /// How the runner ended, for a failure reason: `exit 3`, or
+    /// `killed by SIGHUP` when a signal ended it (L11).
+    static func exitDescription(_ outcome: Outcome) -> String {
+        if let signal = outcome.terminatingSignal { return "killed by \(SubprocessLog.signalName(signal))" }
+        return "exit \(outcome.terminationStatus)"
+    }
+
+    /// How long the relay keeps reading after the runner has exited. A
+    /// descendant that outlives the runner (an orphaned xcodebuild) can hold
+    /// the output pipe open forever; the session ends with the runner.
+    static let outputGraceAfterExit: TimeInterval = 1
 
     struct Request {
         let executable: String
@@ -94,7 +108,11 @@ enum RunnerExecution {
         }
         defer {
             if request.keepAlive {
-                request.sessions.removeOwner(runnerPid: child.pid)
+                // The runner has been waited for by now. One that exited
+                // cleanly removed its own `<pid>-*.grantiva`; one killed by a
+                // signal never does, and once the sidecar goes nothing links
+                // that file to a device (L12). Remove both.
+                request.sessions.removeSessionFiles(runnerPid: child.pid)
             }
         }
 
@@ -102,8 +120,7 @@ enum RunnerExecution {
         // grantiva-runner, WebDriverAgent's xcodebuild, and any simctl diagnose
         // it started — and then releases the lease so the next run is not
         // refused by a lock whose owner is gone.
-        SignalRelay.shared.track(group: child.processGroup)
-        SignalRelay.shared.deviceNoun = request.platform == .android ? "emulator" : "simulator"
+        SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
         let lease = request.lease
         let readyFile = request.readyFile
         let cleanupToken = SignalRelay.shared.onTermination {
@@ -128,16 +145,17 @@ enum RunnerExecution {
         let silenced = request.silenced
         let sink = request.narrationSink
 
+        // Both pipes are read until EOF, or until the runner has exited and
+        // nothing more arrives (`outputGraceAfterExit`).
+        let runnerExited = ExitMark()
+
         // Every chunk goes through RunnerSession.narrate, the one place that
         // honours --quiet/--json for runner output.
         async let relayFinished: Void = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
                 var rewriter = OutputRewriter(replacements: pathMap)
                 var filter = initialFilter
-                let handle = FileHandle(fileDescriptor: stdoutFD, closeOnDealloc: false)
-                while true {
-                    let chunk = handle.availableData
-                    if chunk.isEmpty { break }
+                Self.drain(stdoutFD, after: runnerExited) { chunk in
                     let text = String(decoding: chunk, as: UTF8.self)
                     let rewritten = rewriter.isEmpty ? text : rewriter.consume(text)
                     let emit = filter.isEmpty ? rewritten : filter.consume(rewritten)
@@ -152,8 +170,8 @@ enum RunnerExecution {
 
         async let stderrText: String = withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .userInitiated).async {
-                let handle = FileHandle(fileDescriptor: stderrFD, closeOnDealloc: false)
-                let data = handle.readDataToEndOfFile()
+                var data = Data()
+                Self.drain(stderrFD, after: runnerExited) { data.append($0) }
                 continuation.resume(returning: String(decoding: data, as: UTF8.self))
             }
         }
@@ -211,6 +229,7 @@ enum RunnerExecution {
             }
         }
         timeoutTask.cancel()
+        runnerExited.mark()
         // SignalRelay marks itself terminating before it reaps the group, so a
         // runner killed by an interrupt is already visible as one here.
         let interrupted = SignalRelay.shared.isTerminating
@@ -229,7 +248,44 @@ enum RunnerExecution {
             terminationStatus: status,
             stderr: stderr,
             timedOut: killed.isSet,
-            interrupted: interrupted
+            interrupted: interrupted,
+            terminatingSignal: child.terminatingSignal
         )
     }
+
+    /// Reads `descriptor` until EOF, handing each chunk to `onChunk`. Once
+    /// `exited` is marked, it stops after `outputGraceAfterExit` without
+    /// data, so a descendant holding the pipe cannot hold grantiva.
+    static func drain(_ descriptor: Int32, after exited: ExitMark, onChunk: (Data) -> Void) {
+        var buffer = [UInt8](repeating: 0, count: 65_536)
+        var lastData = Date()
+        while true {
+            var poller = pollfd(fd: descriptor, events: Int16(POLLIN), revents: 0)
+            let ready = Darwin.poll(&poller, 1, 100)
+            if ready < 0 {
+                if errno == EINTR { continue }
+                return
+            }
+            if ready == 0 {
+                if let since = exited.markedAt, Date().timeIntervalSince(max(since, lastData)) >= outputGraceAfterExit { return }
+                continue
+            }
+            let count = Darwin.read(descriptor, &buffer, buffer.count)
+            if count < 0 {
+                if errno == EINTR || errno == EAGAIN { continue }
+                return
+            }
+            if count == 0 { return }
+            lastData = Date()
+            onChunk(Data(buffer[0..<count]))
+        }
+    }
+}
+
+/// When the runner was seen to exit; nil while it runs.
+final class ExitMark: @unchecked Sendable {
+    private let lock = NSLock()
+    private var date: Date?
+    func mark() { lock.withLock { if date == nil { date = Date() } } }
+    var markedAt: Date? { lock.withLock { date } }
 }

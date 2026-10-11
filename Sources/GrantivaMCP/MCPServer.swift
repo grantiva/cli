@@ -165,9 +165,11 @@ public struct GrantivaMCPServer: Sendable {
     ) throws -> RunnerSessionInfo {
         let sessionURL = projectDirectory.appendingPathComponent(RunnerSessionInfo.path)
         if let data = try? Data(contentsOf: sessionURL),
-           let session = try? JSONDecoder().decode(RunnerSessionInfo.self, from: data),
+           let session = try? RunnerSessionInfo.decode(data),
            session.isAlive, session.drivesPlatform(platform) {
             _ = try DeviceID.validate(session.udid, flag: "session UDID")
+            // Written at launch, before the driver answers (L38-a).
+            guard session.isReady else { throw RunnerSessionInfo.startingError(platform: platform) }
             return session
         }
         let project = KeepAliveOwner.canonicalDirectory(projectDirectory.path)
@@ -178,6 +180,12 @@ public struct GrantivaMCPServer: Sendable {
             return RunnerSessionInfo(
                 pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
             )
+        }
+        // A runner of this project's is up but has not published its session.
+        if keepAliveSessions.startingSessions().contains(where: {
+            $0.projectDirectory.map(KeepAliveOwner.canonicalDirectory) == project && $0.platform == platform
+        }) {
+            throw RunnerSessionInfo.startingError(platform: platform)
         }
         throw GrantivaError.noRunnerSession(
             sessionFile: sessionURL.path, directory: projectDirectory.path, ignored: live.count

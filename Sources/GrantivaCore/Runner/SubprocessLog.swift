@@ -88,7 +88,7 @@ public enum SubprocessLog {
         return shellQuoted(word)
     }
 
-    static func signalName(_ signal: Int32) -> String {
+    public static func signalName(_ signal: Int32) -> String {
         switch signal {
         case SIGINT: return "SIGINT"
         case SIGTERM: return "SIGTERM"

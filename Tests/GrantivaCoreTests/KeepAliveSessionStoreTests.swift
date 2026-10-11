@@ -274,4 +274,46 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         try Data(legacy.utf8).write(to: URL(fileURLWithPath: store.ownerPath(runnerPid: 301)))
         XCTAssertNil(try XCTUnwrap(KeepAliveSessionStore.loadOwner(path: store.ownerPath(runnerPid: 301))).appId)
     }
+
+    // MARK: - L12: a dead runner's file with no sidecar left
+
+    func testRemoveSessionsDropsADeadRunnersFileThatHasNoSidecar() throws {
+        let dead = try writeRunnerSession(pid: 12109, nanos: 1_791_747_326_192_132_000, port: 8987, sessionId: "dead")
+        let live = try writeRunnerSession(pid: 300, nanos: 1_791_747_326_192_132_001, port: 8988, sessionId: "live")
+        let removed = store(live: [300]).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+        XCTAssertEqual(removed, [dead])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: live))
+    }
+
+    func testRemoveSessionsKeepsADeadRunnersFileWhoseSidecarNamesAnotherDevice() throws {
+        let other = try writeRunnerSession(pid: 999, nanos: 1, port: 8101, sessionId: "other")
+        try write(KeepAliveOwner(udid: "OTHER-UDID", runnerPid: 999))
+        let removed = store(live: []).removeSessions(udid: "7E846901-F93F-4220-A153-7043061033D7")
+        XCTAssertEqual(removed, [])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: other))
+    }
+
+    // MARK: - L38-a: a session whose runner is up but has not published yet
+
+    func testAStartingSessionIsALiveOwnerWithoutARunnerFile() throws {
+        try write(KeepAliveOwner(
+            udid: "emulator-5554", runnerPid: 400, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+        ))
+        try write(KeepAliveOwner(
+            udid: "emulator-5556", runnerPid: 401, projectDirectory: "/private/tmp/p", platform: .android, detached: true
+        ))
+        try writeRunnerSession(pid: 401, nanos: 1, port: 0, sessionId: "ready")
+        try write(KeepAliveOwner(udid: "emulator-5558", runnerPid: 402, projectDirectory: "/private/tmp/p", platform: .android, detached: true))
+
+        let starting = store(live: [400, 401]).startingSessions()
+        XCTAssertEqual(starting.map(\.runnerPid), [400], "ready (401) and dead (402) runners are not starting")
+    }
+
+    func testAnAttachedStartingSessionWhoseGrantivaIsGoneIsNotStarting() throws {
+        try write(KeepAliveOwner(
+            udid: "emulator-5554", runnerPid: 400, grantivaPid: 77, projectDirectory: "/private/tmp/p", platform: .android, detached: false
+        ))
+        XCTAssertEqual(store(live: [400]).startingSessions(), [])
+        XCTAssertEqual(store(live: [400, 77]).startingSessions().map(\.runnerPid), [400])
+    }
 }

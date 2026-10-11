@@ -15,6 +15,14 @@ final class Once: @unchecked Sendable {
         }
         pending?()
     }
+
+    /// A flag set from one task and read from another.
+    final class Flag: @unchecked Sendable {
+        private let lock = NSLock()
+        private var value = false
+        func set() { lock.withLock { value = true } }
+        var isSet: Bool { lock.withLock { value } }
+    }
 }
 
 /// The foreground runner's output. Both streams go to the terminal through
@@ -26,6 +34,19 @@ final class RunnerOutputForwarder: @unchecked Sendable {
     let chunks: AsyncStream<Data>
     private let continuation: AsyncStream<Data>.Continuation
     private let narrate: @Sendable (String) -> Void
+    private let recentLock = NSLock()
+    private var recent = ""
+
+    /// The last few kilobytes of both streams, for the runner's own reason
+    /// when it exits during start-up (L48).
+    var recentText: String { recentLock.withLock { recent } }
+
+    private func remember(_ text: String) {
+        recentLock.withLock {
+            recent += text
+            if recent.utf8.count > 16_384 { recent = String(recent.suffix(8_192)) }
+        }
+    }
 
     init(narrate: @escaping @Sendable (String) -> Void = { RunnerSession.narrate($0) }) {
         (chunks, continuation) = AsyncStream<Data>.makeStream()
@@ -46,15 +67,21 @@ final class RunnerOutputForwarder: @unchecked Sendable {
     private func attach(_ handle: FileHandle, onData: @escaping @Sendable (Data) -> Void, onEnd: @escaping @Sendable () -> Void) {
         let lines = LineBuffer()
         let narrate = narrate
-        handle.readabilityHandler = { readable in
+        handle.readabilityHandler = { [weak self] readable in
             let data = readable.availableData
             guard !data.isEmpty else {
                 readable.readabilityHandler = nil
-                if let rest = lines.finish() { narrate(rest) }
+                if let rest = lines.finish() {
+                    self?.remember(rest)
+                    narrate(rest)
+                }
                 onEnd()
                 return
             }
-            if let complete = lines.consume(data) { narrate(complete) }
+            if let complete = lines.consume(data) {
+                self?.remember(complete)
+                narrate(complete)
+            }
             onData(data)
         }
     }

@@ -40,6 +40,16 @@ public struct LegacyJSONKeys: CodingKey, ExpressibleByStringLiteral {
     /// `runner start/stop` write `bundle_id` beside `applicationId`.
     public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
 
+    /// `.grantiva/session.json` keys 2.1.0 wrote that the file still writes
+    /// beside their replacements for one release (L43), and reads either way:
+    /// `wdaPort` beside `port`, and on Android `bundleId` beside
+    /// `applicationId`. The README lists them; the contract test checks the
+    /// file carries exactly these beside `runner start --json`'s keys.
+    public static let sessionFileTwins: [(new: String, old: String, androidOnly: Bool)] = [
+        ("port", "wdaPort", false),
+        ("applicationId", "bundleId", true),
+    ]
+
     /// snake_case alias → its camelCase key.
     public static let aliases: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.snake, $0.camel) })
 

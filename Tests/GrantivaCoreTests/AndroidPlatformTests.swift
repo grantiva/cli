@@ -14,7 +14,10 @@ final class AndroidPlatformTests: XCTestCase {
         try? FileManager.default.removeItem(at: scratch)
     }
 
-    private func platform(_ shell: ScriptedShell, options: AndroidPlatform.Options = .init()) -> AndroidPlatform {
+    private func platform(
+        _ shell: ScriptedShell, options: AndroidPlatform.Options = .init(),
+        environment: [String: String] = ["PATH": "/usr/bin", "JAVA_HOME": "/nonexistent"]
+    ) -> AndroidPlatform {
         let sdk = AndroidSDK(root: "/sdk")
         let adb = ADB(path: sdk.adb, execute: shell.execute)
         return AndroidPlatform(
@@ -25,7 +28,7 @@ final class AndroidPlatformTests: XCTestCase {
             captureSettings: AndroidCaptureSettings(adb: adb, stateDirectory: scratch.path),
             execute: shell.execute,
             options: options,
-            environment: ["PATH": "/usr/bin", "JAVA_HOME": "/nonexistent"]
+            environment: environment
         )
     }
 
@@ -40,6 +43,20 @@ final class AndroidPlatformTests: XCTestCase {
         XCTAssertEqual(env["MAESTRO_RUNNER_HOME"], "/home/.grantiva/runner")
         XCTAssertEqual(env["ANDROID_HOME"], "/sdk")
         XCTAssertEqual(env["PATH"], "/sdk/platform-tools:/sdk/emulator:/usr/bin")
+    }
+
+    // MARK: - L48: the UIAutomator2 start limit can be raised
+
+    func testRunnerArgumentsCarryTheDriverStartTimeoutWhenSet() {
+        let p = platform(ScriptedShell(), environment: ["PATH": "/usr/bin", AndroidPlatform.driverStartTimeoutVariable: "120"])
+        XCTAssertEqual(
+            p.runnerGlobalArguments(deviceID: "emulator-5554", appFile: nil),
+            ["--platform", "android", "--device", "emulator-5554", "--no-ansi", "--no-app-install", "--driver-start-timeout", "120"]
+        )
+        XCTAssertEqual(AndroidPlatform.driverStartTimeout(environment: [AndroidPlatform.driverStartTimeoutVariable: " 45 "]), 45)
+        XCTAssertNil(AndroidPlatform.driverStartTimeout(environment: [AndroidPlatform.driverStartTimeoutVariable: "soon"]))
+        XCTAssertNil(AndroidPlatform.driverStartTimeout(environment: [AndroidPlatform.driverStartTimeoutVariable: "0"]))
+        XCTAssertNil(AndroidPlatform.driverStartTimeout(environment: [:]))
     }
 
     func testBootDeviceWithARunningSerialUsesItDirectly() async throws {

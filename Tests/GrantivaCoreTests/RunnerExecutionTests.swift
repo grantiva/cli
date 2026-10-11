@@ -82,6 +82,7 @@ final class RunnerExecutionTests: XCTestCase {
             ls \(sessionsDir) > \(listing) 2>/dev/null
             sleep 0.5
             printf '{"version":1,"sessionId":"abc","createdAt":"x","pid":%d,"port":8577,"outputDir":"/o"}' $$ > \(sessionsDir)/$$-1791340478890825000.grantiva
+            cp -p \(sessionsDir)/$$-1791340478890825000.grantiva \(scratch.path)/published.grantiva
             sleep 1.5
             """,
             lease: lease,
@@ -99,20 +100,19 @@ final class RunnerExecutionTests: XCTestCase {
         // The ready file waited for the runner's session file, so a waiter
         // that then runs `grantiva hierarchy --udid` finds a resolvable session.
         XCTAssertTrue(signal.hasWritten)
-        let sessionFile = try XCTUnwrap(
-            try FileManager.default.contentsOfDirectory(atPath: sessionsDir).first { $0.hasSuffix(".grantiva") }
-        )
         let readyMTime = try XCTUnwrap(
             FileManager.default.attributesOfItem(atPath: readyPath)[.modificationDate] as? Date
         )
+        // A copy taken as the runner published (the stand-in, unlike the
+        // runner, does not remove its own file on exit; grantiva does, L12).
         let sessionMTime = try XCTUnwrap(
-            FileManager.default.attributesOfItem(atPath: "\(sessionsDir)/\(sessionFile)")[.modificationDate] as? Date
+            FileManager.default.attributesOfItem(atPath: scratch.appendingPathComponent("published.grantiva").path)[.modificationDate] as? Date
         )
         XCTAssertGreaterThanOrEqual(readyMTime, sessionMTime)
 
-        // Once the runner is gone the sidecar is removed and nothing resolves.
+        // Once the runner is gone its session files are removed and nothing resolves.
         let remaining = try FileManager.default.contentsOfDirectory(atPath: sessionsDir)
-        XCTAssertFalse(remaining.contains { $0.hasSuffix(".owner.json") }, "\(remaining)")
+        XCTAssertEqual(remaining, [], "\(remaining)")
         XCTAssertThrowsError(try store.locate(udid: udid))
     }
 
@@ -304,5 +304,49 @@ final class RunnerExecutionTests: XCTestCase {
             ))
             XCTAssertEqual(try ReadyFile.read(readyPath).reportDir, preserved ? reportDir.path : nil)
         }
+    }
+
+    // MARK: - L11/L12: a keep-alive runner that dies on its own
+
+    /// The stand-in publishes its session file, leaves a descendant that
+    /// ignores SIGTERM and holds the output pipe (as WebDriverAgent's
+    /// xcodebuild can), then dies of SIGHUP. grantiva must notice within a
+    /// few seconds, name the signal, and remove both session files.
+    func testAKeepAliveRunnerKilledBySIGHUPIsNoticedAndItsFilesRemoved() async throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let lease = try SimulatorLease.acquire(udid: udid, directory: leaseDirectory)
+        defer { lease.release() }
+        let store = sessionStore()
+        let pidFile = scratch.appendingPathComponent("runner.pid").path
+        let started = Date()
+        let outcome = await RunnerExecution.run(request(
+            script: """
+            mkdir -p \(store.directory)
+            echo $$ > \(pidFile)
+            printf '{"version":1,"sessionId":"abc","createdAt":"x","pid":%d,"port":8577,"outputDir":"/o"}' $$ > \(store.directory)/$$-1791340478890825000.grantiva
+            (trap '' TERM INT; exec sleep 8) &
+            sleep 0.3
+            kill -HUP $$
+            sleep 30
+            """,
+            lease: lease,
+            keepAlive: true,
+            sessions: store
+        ))
+        let elapsed = Date().timeIntervalSince(started)
+        if let pid = try? String(contentsOfFile: pidFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines),
+           let runnerPid = Int32(pid) {
+            kill(-runnerPid, SIGKILL)
+        }
+        XCTAssertLessThan(elapsed, 5, "grantiva kept waiting on a dead runner")
+        XCTAssertEqual(outcome.terminatingSignal, SIGHUP)
+        XCTAssertEqual(RunnerExecution.exitDescription(outcome), "killed by SIGHUP")
+        let remaining = (try? FileManager.default.contentsOfDirectory(atPath: store.directory)) ?? []
+        XCTAssertEqual(remaining, [], "the dead runner's session file and sidecar must go")
+    }
+
+    func testAnOrdinaryExitIsDescribedByItsStatus() {
+        let outcome = RunnerExecution.Outcome(terminationStatus: 3, stderr: "", timedOut: false)
+        XCTAssertEqual(RunnerExecution.exitDescription(outcome), "exit 3")
     }
 }
