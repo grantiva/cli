@@ -13,8 +13,13 @@ final class ScriptedShell: @unchecked Sendable {
     /// Every call succeeds with this answer when the script runs out.
     var fallback: String = ""
 
+    /// Called with every command before it is answered, for side effects a
+    /// real tool would have (sdkmanager creating the image directory).
+    var onExecute: (@Sendable (String) -> Void)?
+
     func execute(_ command: String) async throws -> String {
-        try lock.withLock {
+        onExecute?(command)
+        return try lock.withLock {
             recorded.append(command)
             guard !results.isEmpty else { return fallback }
             return try results.removeFirst().get()

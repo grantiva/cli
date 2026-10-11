@@ -33,7 +33,7 @@ struct TargetOptions: ParsableArguments {
     @Flag(name: .long, help: "Apply demo mode and animation settings on a physical device too (Android)")
     var allowDeviceSettings = false
 
-    @Flag(name: .long, help: "Boot an emulator without a window (Android)")
+    @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
     var headless = false
 
     var androidOptions: AndroidPlatform.Options {
@@ -130,8 +130,8 @@ struct TargetOptions: ParsableArguments {
     }
 
     /// See `AndroidProject.applicationID(override:binary:configured:)`.
-    static func androidAppID(flag: String?, binary: String?, configured: String?) -> (id: String?, warning: String?) {
-        AndroidProject.applicationID(override: flag, binary: binary, configured: configured)
+    static func androidAppID(flag: String?, binary: String?, configured: String?, purpose: AndroidProject.Purpose = .testing) -> (id: String?, warning: String?) {
+        AndroidProject.applicationID(override: flag, binary: binary, configured: configured, purpose: purpose)
     }
 
     /// The ID of the app to install and test once the build (or `--app-file`)
@@ -139,10 +139,10 @@ struct TargetOptions: ParsableArguments {
     /// `androidAppID` and hands any disagreement to `warn`.
     func installedAppID(
         platform: Platform, config: GrantivaConfig?, resolved: ResolvedProject, binaryID: String?,
-        warn: (String) -> Void
+        purpose: AndroidProject.Purpose = .testing, warn: (String) -> Void
     ) -> String? {
         guard platform == .android else { return resolved.bundleId ?? binaryID }
-        let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId)
+        let (id, warning) = Self.androidAppID(flag: applicationId, binary: binaryID, configured: config?.android?.applicationId, purpose: purpose)
         if let warning { warn(warning) }
         return id
     }

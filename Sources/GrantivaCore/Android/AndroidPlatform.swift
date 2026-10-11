@@ -136,6 +136,11 @@ public struct AndroidPlatform: DevicePlatform {
         )
     }
 
+    /// `pm list packages`; an adb failure says nothing about the app (nil).
+    public func isInstalled(appID: String, deviceID: String) async -> Bool? {
+        try? await adb.isInstalled(serial: deviceID, applicationId: appID)
+    }
+
     public func install(appID: String, productPath: String, deviceID: String) async throws {
         try await adb.install(serial: deviceID, apk: productPath, applicationId: appID)
     }

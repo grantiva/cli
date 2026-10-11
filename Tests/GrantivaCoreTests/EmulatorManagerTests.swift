@@ -463,6 +463,7 @@ final class EmulatorManagerTests: XCTestCase {
     }
 
     func testEnsureCreatesAMissingAVDAndBootsIt() async throws {
+        let root = scratch.appendingPathComponent("sdk").path
         let shell = ScriptedShell([
             .success(""),                                  // emulator -list-avds: none
             .success("/jdk"),                              // java_home
@@ -475,19 +476,25 @@ final class EmulatorManagerTests: XCTestCase {
             .success("package:/system/framework/framework-res.apk"),
             .success(""),                                  // dismiss-keyguard
         ])
-        let result = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: true)
+        // sdkmanager installs the image: its directory exists afterwards.
+        shell.onExecute = { command in
+            if command.contains("sdkmanager") {
+                try? FileManager.default.createDirectory(atPath: "\(root)/system-images/android-35/google_apis/arm64-v8a", withIntermediateDirectories: true)
+            }
+        }
+        let result = try await manager(shell, sdkRoot: root).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: true)
         XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5554", created: true, state: "Booted"))
         XCTAssertEqual(shell.commands, [
-            "'/sdk/emulator/emulator' -list-avds",
+            "'\(root)/emulator/emulator' -list-avds",
             "/usr/libexec/java_home",
-            "yes 2>/dev/null | JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/sdkmanager' --sdk_root='/sdk' 'system-images;android-35;google_apis;arm64-v8a'",
-            "echo no | JAVA_HOME='/jdk' '/sdk/cmdline-tools/latest/bin/avdmanager' create avd -n 'Pixel_8_API_35' -k 'system-images;android-35;google_apis;arm64-v8a' -d pixel_8",
-            "'/sdk/platform-tools/adb' devices -l",
-            "'/sdk/emulator/emulator' -list-avds",
-            "'/sdk/platform-tools/adb' devices -l",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell getprop 'sys.boot_completed'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'pm path android'",
-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'wm dismiss-keyguard'",
+            "yes 2>/dev/null | JAVA_HOME='/jdk' '\(root)/cmdline-tools/latest/bin/sdkmanager' --sdk_root='\(root)' 'system-images;android-35;google_apis;arm64-v8a' 2>&1",
+            "echo no | JAVA_HOME='/jdk' '\(root)/cmdline-tools/latest/bin/avdmanager' create avd -n 'Pixel_8_API_35' -k 'system-images;android-35;google_apis;arm64-v8a' -d pixel_8",
+            "'\(root)/platform-tools/adb' devices -l",
+            "'\(root)/emulator/emulator' -list-avds",
+            "'\(root)/platform-tools/adb' devices -l",
+            "'\(root)/platform-tools/adb' -s 'emulator-5554' shell getprop 'sys.boot_completed'",
+            "'\(root)/platform-tools/adb' -s 'emulator-5554' shell 'pm path android'",
+            "'\(root)/platform-tools/adb' -s 'emulator-5554' shell 'wm dismiss-keyguard'",
         ])
         XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), ["Pixel_8_API_35"])
     }
@@ -496,7 +503,7 @@ final class EmulatorManagerTests: XCTestCase {
         let shell = ScriptedShell([.success("Pixel_8_API_35")])
         let result = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
         XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: nil, created: false, state: "Shutdown"))
-        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds"])
+        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds", "'/sdk/platform-tools/adb' devices -l"], "a stopped AVD is looked for among the running emulators, not booted")
         XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), [])
     }
 
@@ -521,7 +528,7 @@ final class EmulatorManagerTests: XCTestCase {
         try ledger.registerCreatedAVD("Pixel_8_API_35")
         let shell = ScriptedShell([.success("Pixel_8_API_35\nOther")])
         _ = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
-        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds"], "the listing ensure already makes is reused")
+        XCTAssertEqual(shell.commands.filter { $0.hasSuffix("-list-avds") }, ["'/sdk/emulator/emulator' -list-avds"], "the listing ensure already makes is reused")
         XCTAssertEqual(try ledger.createdAVDs(), ["Pixel_8_API_35"])
     }
 
@@ -904,5 +911,165 @@ final class EmulatorManagerTests: XCTestCase {
             XCTAssertTrue(error.localizedDescription.contains("refusing to delete"), "\(error)")
         }
         XCTAssertFalse(shell.commands.contains { $0.contains("delete avd") })
+    }
+
+    // MARK: - K27 headless rule
+
+    /// Windowless only for --headless or GRANTIVA_EMULATOR_HEADLESS; a non-TTY
+    /// stdout (`serial=$(grantiva emulator ensure ...)`, pipes, CI) no longer
+    /// implies it.
+    func testHeadlessIsTheFlagOrTheEnvironmentVariableOnly() {
+        let key = EmulatorManager.headlessVariable
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: [:]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: true, environment: [:]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: [key: "1"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: true, environment: [key: "1"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: [key: "true"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: [key: "0"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: [key: ""]))
+    }
+
+    /// CI services set `CI`; any value but empty, 0 or false implies headless.
+    func testCIImpliesHeadless() {
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "true"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "1"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "woodpecker"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": ""]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": "0"]))
+        XCTAssertFalse(EmulatorManager.isHeadless(flag: false, environment: ["CI": "FALSE"]))
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: true, environment: ["CI": "false"]), "the flag still wins")
+        XCTAssertTrue(EmulatorManager.isHeadless(flag: false, environment: ["CI": "false", EmulatorManager.headlessVariable: "1"]))
+    }
+
+    func testBootUnderCIIsWindowless() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: shell.execute),
+            execute: shell.execute, spawn: spawn.spawn, provenance: AndroidProvenance(directory: scratch.path),
+            headless: false, bootTimeout: 1, pollInterval: 0.01, environment: ["CI": "true"], killTimeout: 1,
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+        )
+        _ = try await manager.boot(avd: "Pixel_8_API_35")
+        XCTAssertEqual(try XCTUnwrap(spawn.calls.first).1.last, "-no-window")
+    }
+
+    /// `swift test`'s stdout is not a terminal; the boot still gets a window.
+    func testBootWithoutHeadlessGetsAWindowWhenStdoutIsNotATerminal() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("List of devices attached"),
+            .success("1"), .success("package:x"), .success(""),
+        ])
+        _ = try await manager(shell, spawn: spawn, headless: false).boot(avd: "Pixel_8_API_35")
+        XCTAssertFalse(try XCTUnwrap(spawn.calls.first).1.contains("-no-window"), "\(spawn.calls)")
+    }
+
+    // MARK: - K29 ensure --no-boot on a running AVD
+
+    func testEnsureWithoutBootReportsARunningAVDAsBootedWithItsSerial() async throws {
+        let spawn = SpawnRecorder()
+        let shell = ScriptedShell([
+            .success("Other\nPixel_8_API_35"),                                   // -list-avds
+            .success("List of devices attached\nemulator-5554 device\nemulator-5556 device"),
+            .success("Other\nOK"),                                               // emulator-5554
+            .success("Pixel_8_API_35\nOK"),                                      // emulator-5556
+        ])
+        let result = try await manager(shell, spawn: spawn).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
+        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: "emulator-5556", created: false, state: "Booted"))
+        XCTAssertTrue(spawn.calls.isEmpty, "--no-boot never spawns an emulator")
+    }
+
+    func testEnsureWithoutBootReportsAStoppedAVDAsShutdownWhenAdbIsUnavailable() async throws {
+        let shell = ScriptedShell([
+            .success("Pixel_8_API_35"),
+            .failure(GrantivaError.commandFailed("adb: not found", 127)),
+        ])
+        let result = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
+        XCTAssertEqual(result, EmulatorProvisionResult(name: "Pixel_8_API_35", serial: nil, created: false, state: "Shutdown"))
+    }
+
+    // MARK: - K31 sdkmanager failures
+
+    private func sdkScratchRoot() -> String {
+        let root = scratch.appendingPathComponent("sdk").path
+        try? FileManager.default.createDirectory(atPath: "\(root)/system-images/android-35/google_apis/arm64-v8a", withIntermediateDirectories: true)
+        return root
+    }
+
+    /// sdkmanager exits 0 for an unknown package; the missing image directory
+    /// is what proves the install failed.
+    func testEnsureStopsWhenSdkmanagerExitsZeroButTheImageIsStillMissing() async throws {
+        let root = sdkScratchRoot()
+        let image = "system-images;android-99;bogus;arm64-v8a"
+        let shell = ScriptedShell([
+            .success(""), .success("/jdk"),
+            .success("WARNING: The SDK Manager CLI tool (sdkmanager) is deprecated.\nPackage system-images/android-99/bogus/arm64-v8a not found."),
+        ])
+        do {
+            _ = try await manager(shell, sdkRoot: root).ensure(avd: "fix-k31", systemImage: image, boot: false)
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix("sdkmanager could not install \(image): Package system-images/android-99/bogus/arm64-v8a not found."), message)
+            XCTAssertTrue(message.contains("Installed images: system-images;android-35;google_apis;arm64-v8a."), message)
+            XCTAssertFalse(message.contains("deprecated"), message)
+            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+            XCTAssertEqual(code, 1, "exit 0 with the image missing reports 1")
+        }
+        XCTAssertFalse(shell.commands.contains { $0.contains("avdmanager") }, "\(shell.commands)")
+        XCTAssertEqual(try AndroidProvenance(directory: scratch.path).createdAVDs(), [])
+    }
+
+    func testEnsureStopsWhenSdkmanagerExitsNonZero() async throws {
+        let root = sdkScratchRoot()
+        let image = "system-images;android-36;google_apis;arm64-v8a"
+        let shell = ScriptedShell([
+            .success(""), .success("/jdk"),
+            .failure(GrantivaError.commandFailed("Warning: Failed to find package '\(image)'\n[=====    ] 40% Fetch remote repository", 3)),
+        ])
+        do {
+            _ = try await manager(shell, sdkRoot: root).ensure(avd: "fix-k31", systemImage: image, boot: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.hasPrefix("sdkmanager could not install \(image): Warning: Failed to find package"), error.localizedDescription)
+            guard case GrantivaError.commandFailed(_, let code) = error else { return XCTFail("\(error)") }
+            XCTAssertEqual(code, 3, "sdkmanager's own exit code is passed through")
+        }
+        XCTAssertFalse(shell.commands.contains { $0.contains("avdmanager") }, "\(shell.commands)")
+    }
+
+    func testSdkmanagerOutputIsCapturedFromBothStreams() async throws {
+        let root = scratch.appendingPathComponent("sdk-missing").path
+        let shell = ScriptedShell([.success(""), .success("/jdk"), .success("")])
+        _ = try? await manager(shell, sdkRoot: root).ensure(avd: "fix-k31", systemImage: nil, boot: false)
+        XCTAssertEqual(shell.commands.dropFirst(2).first,
+                       "yes 2>/dev/null | JAVA_HOME='/jdk' '\(root)/cmdline-tools/latest/bin/sdkmanager' --sdk_root='\(root)' 'system-images;android-35;google_apis;arm64-v8a' 2>&1")
+    }
+
+    /// avdmanager's own `Error:` prefix and trailing `null` never reach the user.
+    func testAvdmanagerFailureMessageIsNormalised() async throws {
+        let root = sdkScratchRoot()
+        let shell = ScriptedShell([
+            .success(""), .success("/jdk"),
+            .failure(GrantivaError.commandFailed("Error: Package path is not valid. Valid system image paths are:\nsystem-images;android-35;google_apis;arm64-v8a\nnull", 1)),
+        ])
+        do {
+            _ = try await manager(shell, sdkRoot: root).ensure(avd: "fix-k31", systemImage: nil, boot: false)
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertFalse(message.hasPrefix("Error:"), message)
+            XCTAssertFalse(message.components(separatedBy: "\n").contains("null"), message)
+            XCTAssertTrue(message.contains("Package path is not valid."), message)
+        }
+    }
+
+    func testToolMessageNormalisationStripsErrorPrefixesAndNullLines() {
+        XCTAssertEqual(EmulatorManager.cleanedToolMessage("Error: Error: bad\nnull\n"), "bad")
+        XCTAssertEqual(EmulatorManager.cleanedToolMessage("fine"), "fine")
     }
 }

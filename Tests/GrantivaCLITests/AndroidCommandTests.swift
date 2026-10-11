@@ -328,4 +328,121 @@ final class AndroidCommandTests: XCTestCase {
         let firstShot = try XCTUnwrap(failureShots.first)
         XCTAssertFalse(FileManager.default.fileExists(atPath: ".grantiva/captures/\(firstShot)"), "nothing lands in the iOS directory")
     }
+
+    // MARK: - K25 / K32: --no-build, --app-file and the completion line
+
+    /// An explicit file wins over "assume it is installed".
+    func testBuildInstallWithNoBuildAndAppFileInstallsTheFile() async throws {
+        let apk = dir.appendingPathComponent("prebuilt.apk").path
+        try Data().write(to: URL(fileURLWithPath: apk))
+        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--app-file", apk])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        let stdout = try await captureStandardOutput { try await command.run() }
+        XCTAssertTrue(fake.calls.contains("install(com.fake.binary,\(apk))"), "\(fake.calls)")
+        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.binary installed on Fake (not launched)")
+    }
+
+    func testRunWithNoBuildAndAppFileInstallsTheFile() async throws {
+        let apk = dir.appendingPathComponent("prebuilt.apk").path
+        try Data().write(to: URL(fileURLWithPath: apk))
+        var command = try RunCommand.parse(["--no-build", "--app-file", apk, "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.binary,\(apk))"), "\(fake.calls)")
+    }
+
+    func testDiffCaptureWithNoBuildAndAppFileInstallsTheFile() async throws {
+        try """
+        module: app
+        emulator: Pixel_8_API_35
+        screens:
+          - name: Home
+            path: launch
+        """.write(to: dir.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let apk = dir.appendingPathComponent("prebuilt.apk").path
+        try Data().write(to: URL(fileURLWithPath: apk))
+        var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--app-file", apk])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        command.notes = NoteSink()
+        _ = try? await command.run()
+        XCTAssertTrue(fake.calls.contains("install(com.fake.binary,\(apk))"), "\(fake.calls)")
+    }
+
+    func testNoBuildHelpSaysAnAppFileIsStillInstalled() {
+        let help = InstallCommand.helpMessage(columns: 1000).split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        XCTAssertTrue(help.contains("With --app-file, that file is installed"), help)
+    }
+
+    /// `--no-build` alone installs nothing, so it never says "installed".
+    func testBuildInstallWithNoBuildAloneSaysTheInstallWasSkipped() async throws {
+        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        let stdout = try await captureStandardOutput { try await command.run() }
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("install(") }, "\(fake.calls)")
+        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.app on Fake (install skipped, not launched)")
+    }
+
+    func testBuildInstallJSONStatusIsSkippedWhenNothingWasInstalledOrLaunched() async throws {
+        var command = try InstallCommand.parse(["--no-launch", "--no-build", "--application-id", "com.fake.app", "--json"])
+        let fake = FakeDevicePlatform(platform: .android)
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        let stdout = try await captureStandardOutput { try await command.run() }
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(stdout.utf8)) as? [String: Any], stdout)
+        XCTAssertEqual(json["status"] as? String, "skipped", stdout)
+    }
+
+    /// K32: with --no-build the app is checked before launching; one that is
+    /// not there is reported in one line and never launched.
+    func testBuildInstallWithNoBuildRefusesToLaunchAnAppThatIsNotInstalled() async throws {
+        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.installed = false
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertEqual(message, InstallCommand.notInstalledMessage(appID: "com.fake.app", deviceName: "Fake", serial: "emulator-5598"))
+            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.fake.app", device: "Fake (emulator-5598)")), message)
+            XCTAssertTrue(message.hasPrefix("com.fake.app is not installed on Fake (emulator-5598)"), message)
+        }
+        XCTAssertFalse(fake.calls.contains("launch(com.fake.app)"), "\(fake.calls)")
+    }
+
+    func testBuildInstallWithNoBuildLaunchesAnInstalledApp() async throws {
+        var command = try InstallCommand.parse(["--no-build", "--application-id", "com.fake.app"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.installed = true
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        let stdout = try await captureStandardOutput { try await command.run() }
+        XCTAssertTrue(fake.calls.contains("launch(com.fake.app)"), "\(fake.calls)")
+        XCTAssertEqual(stdout.trimmingCharacters(in: .whitespacesAndNewlines), "[grantiva] Done — com.fake.app running on Fake (install skipped)")
+    }
+
+    /// AndroidPlatform answers `isInstalled`, so `run --no-build` refuses up
+    /// front when the app is missing, before any runner work.
+    func testRunWithNoBuildOnAndroidRefusesWhenTheAppIsMissing() async throws {
+        var command = try RunCommand.parse(["--no-build", "--application-id", "com.fake.app", "--timeout", "30"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.installed = false
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        command.runnerManager = stubRunner
+        do {
+            try await command.run()
+            XCTFail("expected an error")
+        } catch {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.fake.app", device: "Fake")), message)
+            XCTAssertTrue(message.contains("Drop --no-build or run grantiva build install"), message)
+        }
+        XCTAssertTrue(fake.calls.contains("isInstalled(com.fake.app)"), "\(fake.calls)")
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("launch(") || $0.hasPrefix("install(") }, "\(fake.calls)")
+    }
 }

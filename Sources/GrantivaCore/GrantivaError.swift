@@ -76,3 +76,12 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
         }
     }
 }
+
+extension GrantivaError {
+    /// The one root sentence every "app is not on the device" message starts
+    /// with (`run --no-build`, `build install --no-build`, a failed launch);
+    /// each caller appends its own remedy.
+    public static func notInstalledRoot(appID: String, device: String) -> String {
+        "\(appID) is not installed on \(device)"
+    }
+}

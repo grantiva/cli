@@ -252,17 +252,23 @@ grantiva run \
 The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
 `dataContainerPath`, and `simulator` with the selected simulator's `name` and `udid`. On Android
 it includes `status`, `applicationId`, `appPath`, and `device` with the
-emulator's `name` and adb `serial`.
+emulator's `name` and adb `serial`. `status` is `installed` (installed, not
+launched), `launched`, or `skipped` (`--no-build --no-launch`: nothing was
+installed or launched).
 `--derived-data-path` isolates Xcode products and intermediates for the run and
 supports absolute or relative paths, including paths containing spaces. It is
 available on every Grantiva command that builds the app and overrides a
 `-derivedDataPath` value in `build_settings` when both are supplied.
 `--no-build` assumes the app is already installed; the flow launches it with
-`launchApp` after fixture preparation.
+`launchApp` after fixture preparation. With `--app-file` as well, that file is
+installed and only the build is skipped (`build install`, `run`, `diff capture`,
+`ci run` alike).
 `diff capture --no-build` drives the simulator named by `--simulator`, else
 `simulator:` in grantiva.yml, else the live runner session's device, else the one
 booted simulator. With several booted and none of those set, it fails and names
-them rather than guessing.
+them rather than guessing. `diff capture --no-build --app-file <file>` instead
+boots the resolved device and installs the file, as a capture without
+`--no-build` does.
 
 This enables split build/test workflows in CI:
 
@@ -319,7 +325,7 @@ grantiva simulator delete   Explicitly delete a named simulator
 grantiva simulator sessions List Grantiva-managed simulator capacity slots
 grantiva simulator teardown End a managed session, or reclaim one simulator by UDID when no ledger entry exists (--udid <UDID> --force)
 grantiva simulator cleanup  Delete Grantiva-created simulators that are shut down and not part of an active session
-grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or the AVD name with --no-boot
+grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
 grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
 grantiva emulator sessions  List the emulators Grantiva started
 grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all

@@ -11,7 +11,7 @@ struct EmulatorCommand: AsyncParsableCommand {
 
     struct Ensure: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "Create the AVD when missing (installing its system image first) and boot it. stdout is the serial, or the AVD name with --no-boot."
+            abstract: "Create the AVD when missing (installing its system image first) and boot it. stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -24,7 +24,7 @@ struct EmulatorCommand: AsyncParsableCommand {
         @Flag(inversion: .prefixedNo, help: "Boot the emulator and wait for it to be ready. On by default; --no-boot creates it without booting.")
         var boot = true
 
-        @Flag(name: .long, help: "Boot without a window.")
+        @Flag(name: .long, help: "Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise the emulator gets a window, even when stdout is not a terminal.")
         var headless = false
 
         static func resolveName(flag: String?, config: GrantivaConfig?) throws -> String {
@@ -70,12 +70,15 @@ struct EmulatorCommand: AsyncParsableCommand {
         @Flag(name: .long, help: "Delete an AVD Grantiva did not create.")
         var force = false
 
+        static func renderJSON(name: String) throws -> String {
+            try JSONOutput.string(EmulatorDeleteResult(name: name, deleted: true))
+        }
+
         func run() async throws {
             let platform = try AndroidPlatform.live()
             try await platform.emulators.deleteAVD(name: name, force: force)
             if options.json {
-                let data = try JSONSerialization.data(withJSONObject: ["name": name, "deleted": true], options: [.sortedKeys])
-                Output.line(String(decoding: data, as: UTF8.self))
+                Output.line(try Self.renderJSON(name: name))
             } else {
                 Output.line("Deleted AVD \(name)")
             }
@@ -129,13 +132,27 @@ struct EmulatorCommand: AsyncParsableCommand {
         /// just stopped stay recorded, so `emulator delete` still knows
         /// Grantiva created them.
         static func teardown(_ emulators: EmulatorManager, serial: String?, force: Bool) async throws -> [EmulatorTeardownOutcome] {
-            let outcomes = if let serial {
-                [try await emulators.teardown(serial: serial, force: force)]
-            } else {
-                try await emulators.teardownAll()
+            // The prune runs on a refusal too (`defer` cannot await).
+            let outcomes: [EmulatorTeardownOutcome]
+            do {
+                outcomes = if let serial {
+                    [try await emulators.teardown(serial: serial, force: force)]
+                } else {
+                    try await emulators.teardownAll()
+                }
+            } catch {
+                _ = try? await emulators.pruneCreatedAVDs()
+                throw error
             }
             _ = try? await emulators.pruneCreatedAVDs()
             return outcomes
+        }
+
+        static func render(_ outcome: EmulatorTeardownOutcome) -> String {
+            let name = outcome.avd.map { " (\($0))" } ?? ""
+            if outcome.killed { return "Killed \(outcome.serial)\(name)." }
+            if outcome.recorded { return "\(outcome.serial)\(name) was already gone; dropped its record." }
+            return "\(outcome.serial) is not attached and has no record; nothing to do."
         }
 
         func validate() throws {
@@ -169,11 +186,14 @@ struct EmulatorCommand: AsyncParsableCommand {
             } else if outcomes.isEmpty {
                 Output.line("No emulators started by Grantiva are running.")
             } else {
-                for outcome in outcomes {
-                    let name = outcome.avd.map { " (\($0))" } ?? ""
-                    Output.line(outcome.killed ? "Killed \(outcome.serial)\(name)." : "\(outcome.serial)\(name) was already gone; dropped its record.")
-                }
+                outcomes.map(Self.render).forEach(Output.line)
             }
         }
     }
+}
+
+/// `emulator delete --json`.
+struct EmulatorDeleteResult: Codable, Equatable {
+    let name: String
+    let deleted: Bool
 }

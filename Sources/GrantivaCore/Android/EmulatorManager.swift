@@ -67,6 +67,40 @@ public struct EmulatorManager: Sendable {
     private let consolePortOwners: @Sendable (Int) async -> [Int32]?
 
     public static let bootTimeoutVariable = "GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS"
+    /// Set to 1 (or true/yes) to boot every emulator without a window, as
+    /// `--headless` does; `CI` does the same. A non-TTY stdout
+    /// (`serial=$(grantiva emulator ensure ...)`, pipes, agents) does not.
+    public static let headlessVariable = "GRANTIVA_EMULATOR_HEADLESS"
+
+    /// `--headless`, `GRANTIVA_EMULATOR_HEADLESS` (1/true/yes), or `CI` set to
+    /// anything but empty, `0` or `false`. A non-TTY stdout never implies it.
+    public static func isHeadless(flag: Bool, environment: [String: String]) -> Bool {
+        if flag { return true }
+        if let value = environment[headlessVariable]?.trimmingCharacters(in: .whitespaces).lowercased(),
+           ["1", "true", "yes"].contains(value) {
+            return true
+        }
+        if let ci = environment["CI"]?.trimmingCharacters(in: .whitespaces).lowercased(),
+           !ci.isEmpty, ci != "0", ci != "false" {
+            return true
+        }
+        return false
+    }
+
+    /// An SDK tool's failure text without its own `Error:` prefix (the CLI
+    /// adds one) and without the `null` lines avdmanager prints after it.
+    public static func cleanedToolMessage(_ message: String) -> String {
+        var lines = message.components(separatedBy: .newlines)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty && $0 != "null" }
+        if var first = lines.first {
+            while first.lowercased().hasPrefix("error:") {
+                first = String(first.dropFirst("error:".count)).trimmingCharacters(in: .whitespaces)
+            }
+            lines[0] = first
+        }
+        return lines.filter { !$0.isEmpty }.joined(separator: "\n")
+    }
 
     public init(
         sdk: AndroidSDK,
@@ -260,7 +294,7 @@ public struct EmulatorManager: Sendable {
             throw GrantivaError.invalidArgument("No free emulator port between 5554 and 5584; shut one down first.")
         }
         let serial = "emulator-\(port)"
-        let arguments = Self.bootArguments(avd: avd, port: port, headless: headless || isatty(STDOUT_FILENO) == 0)
+        let arguments = Self.bootArguments(avd: avd, port: port, headless: Self.isHeadless(flag: headless, environment: environment))
         GrantivaLog.logger.info("Booting AVD \(avd) as \(serial)")
         let pid = try spawn(sdk.emulator, arguments)
         try provenance.register(StartedEmulatorRecord(serial: serial, avd: avd, pid: pid, processStartTime: Self.processStartTime(pid)))
@@ -358,19 +392,96 @@ public struct EmulatorManager: Sendable {
             let image = systemImage ?? Self.defaultSystemImage
             let java = await javaPrefix()
             if !fileManager.fileExists(atPath: Self.systemImagePath(root: sdk.root, image: image)) {
-                GrantivaLog.logger.info("Installing \(image) with sdkmanager")
-                _ = try await execute("yes 2>/dev/null | \(java)\(shellQuoted(sdk.sdkmanager)) --sdk_root=\(shellQuoted(sdk.root)) \(shellQuoted(image))")
+                try await installSystemImage(image, java: java)
             }
             GrantivaLog.logger.info("Creating AVD \(avd)")
-            _ = try await execute("echo no | \(java)\(shellQuoted(sdk.avdmanager)) create avd -n \(shellQuoted(avd)) -k \(shellQuoted(image)) -d pixel_8")
+            do {
+                _ = try await execute("echo no | \(java)\(shellQuoted(sdk.avdmanager)) create avd -n \(shellQuoted(avd)) -k \(shellQuoted(image)) -d pixel_8")
+            } catch GrantivaError.commandFailed(let message, let code) {
+                throw GrantivaError.commandFailed("avdmanager could not create AVD \(avd): \(Self.cleanedToolMessage(message))", code)
+            }
             try provenance.registerCreatedAVD(avd)
             created = true
         }
         guard boot else {
+            // --no-boot only means "do not boot it": an AVD already running
+            // reports its serial and real state.
+            if !created, let running = await runningDevice(avd: avd) {
+                return EmulatorProvisionResult(name: avd, serial: running.serial, created: false, state: running.state)
+            }
             return EmulatorProvisionResult(name: avd, serial: nil, created: created, state: "Shutdown")
         }
         let device = try await selectDevice(configured: avd)
         return EmulatorProvisionResult(name: avd, serial: device.udid, created: created, state: "Booted")
+    }
+
+    /// The emulator running `avd`, if any: `Booted` when adb can use it,
+    /// `Booting` while it is still offline. adb failing (not installed, server
+    /// down) reads as not running.
+    private func runningDevice(avd: String) async -> (serial: String, state: String)? {
+        guard let devices = try? await adb.devices() else { return nil }
+        for device in devices where device.isEmulator {
+            guard (try? await adb.avdName(serial: device.serial)) == avd else { continue }
+            return (device.serial, device.isUsable ? "Booted" : "Booting")
+        }
+        return nil
+    }
+
+    /// Runs sdkmanager for `image` and checks the image directory exists
+    /// afterwards: sdkmanager exits 0 for a package it cannot find.
+    private func installSystemImage(_ image: String, java: String) async throws {
+        GrantivaLog.logger.info("Installing \(image) with sdkmanager")
+        let output: String
+        do {
+            output = try await execute("yes 2>/dev/null | \(java)\(shellQuoted(sdk.sdkmanager)) --sdk_root=\(shellQuoted(sdk.root)) \(shellQuoted(image)) 2>&1")
+        } catch GrantivaError.commandFailed(let message, let code) {
+            throw installFailure(image: image, output: message, code: code)
+        }
+        // sdkmanager exited 0 but the image is not there: no code of its own.
+        guard fileManager.fileExists(atPath: Self.systemImagePath(root: sdk.root, image: image)) else {
+            throw installFailure(image: image, output: output, code: 1)
+        }
+    }
+
+    private func installFailure(image: String, output: String, code: Int32) -> GrantivaError {
+        let reason = Self.sdkmanagerReason(output)
+        let installed = installedSystemImages()
+        let because = reason.map { ": " + ($0.hasSuffix(".") ? $0 : $0 + ".") } ?? "."
+        return GrantivaError.commandFailed(
+            "sdkmanager could not install \(image)\(because) Installed images: \(installed.isEmpty ? "(none)" : installed.joined(separator: ", ")).",
+            code
+        )
+    }
+
+    /// The line of sdkmanager's output that says why: an error, a "not found"
+    /// or "Failed to find" line, else the last line that is not a progress bar
+    /// or the deprecation notice.
+    static func sdkmanagerReason(_ output: String) -> String? {
+        let lines = output.components(separatedBy: CharacterSet(charactersIn: "\r\n"))
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { line in
+                !line.isEmpty && line != "null" && !line.hasPrefix("[") && !line.hasPrefix("WARNING: The SDK Manager")
+                    && !line.hasPrefix("The 'android' binary") && !line.hasPrefix("To learn more about the Android CLI")
+            }
+        let telling = lines.last { line in
+            let lower = line.lowercased()
+            return lower.contains("not found") || lower.contains("failed to find") || lower.hasPrefix("error") || lower.contains("warning: failed")
+        }
+        return (telling ?? lines.last).map(cleanedToolMessage)
+    }
+
+    /// `system-images;<api>;<tag>;<abi>` for every image directory on disk.
+    private func installedSystemImages() -> [String] {
+        let base = "\(sdk.root)/system-images"
+        var images: [String] = []
+        for api in ((try? fileManager.contentsOfDirectory(atPath: base)) ?? []).sorted() {
+            for tag in ((try? fileManager.contentsOfDirectory(atPath: "\(base)/\(api)")) ?? []).sorted() {
+                for abi in ((try? fileManager.contentsOfDirectory(atPath: "\(base)/\(api)/\(tag)")) ?? []).sorted() where !abi.hasPrefix(".") {
+                    images.append("system-images;\(api);\(tag);\(abi)")
+                }
+            }
+        }
+        return images
     }
 
     /// Drops names from created-avds.json whose AVD no longer exists on disk
@@ -424,7 +535,11 @@ public struct EmulatorManager: Sendable {
             )
         }
         let java = await javaPrefix()
-        _ = try await execute("\(java)\(shellQuoted(sdk.avdmanager)) delete avd -n \(shellQuoted(name))")
+        do {
+            _ = try await execute("\(java)\(shellQuoted(sdk.avdmanager)) delete avd -n \(shellQuoted(name))")
+        } catch GrantivaError.commandFailed(let message, let code) {
+            throw GrantivaError.commandFailed("avdmanager could not delete AVD \(name): \(Self.cleanedToolMessage(message))", code)
+        }
         try provenance.removeCreatedAVD(name)
     }
 

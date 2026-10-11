@@ -35,7 +35,11 @@ With no `emulator:`, the order is: the one running emulator, else the one emulat
 booting (waited on), else the only existing AVD (booted); otherwise the command fails and
 lists the AVDs. `--device <serial>` targets any attached device, including
 a physical one. On a physical device the demo-mode and animation settings are skipped
-unless `--allow-device-settings` is given. `--headless` boots without a window.
+unless `--allow-device-settings` is given. `--headless` boots without a window, and so do
+`GRANTIVA_EMULATOR_HEADLESS=1` (or `true`/`yes`) and `CI` set to any value other than empty,
+`0` or `false` (as CI services set it). Nothing else makes a boot windowless: without one of
+them an emulator Grantiva boots gets a window, even when stdout is not a terminal
+(`serial=$(grantiva emulator ensure ...)`, a pipe, an agent).
 
 `grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
 not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s
@@ -164,14 +168,18 @@ one.
 ## Emulator subcommand
 
     grantiva emulator ensure --name Pixel_8_API_35          # create if missing, boot, print the serial
-    grantiva emulator ensure --name Pixel_8_API_35 --no-boot
+    grantiva emulator ensure --name Pixel_8_API_35 --no-boot # create if missing; prints the serial if it is running, else the name
     grantiva emulator sessions                              # emulators Grantiva started
     grantiva emulator teardown --serial emulator-5554       # only emulators Grantiva started; --force for others
     grantiva emulator teardown --all
     grantiva emulator delete --name Pixel_8_API_35          # only AVDs Grantiva created; --force for others
 
 `ensure` installs the system image with `sdkmanager` when it is missing and creates the AVD
-with `avdmanager create avd -d pixel_8`. The system image comes from `--system-image`, then
+with `avdmanager create avd -d pixel_8`. When the image is still missing after `sdkmanager`
+(an unknown package, no network, a licence not accepted), `ensure` stops there with an error
+naming the package, sdkmanager's reason and the installed images, and creates nothing.
+`--no-boot` only means "do not boot it": an AVD that is already running is reported as
+`Booted` with its serial. The system image comes from `--system-image`, then
 `system_image` in the config, then `system-images;android-35;google_apis;arm64-v8a`.
 An emulator is recorded only while the process Grantiva spawned is alive and owns the
 serial's console port: a boot whose process exits, even if another emulator answers on that
@@ -183,4 +191,7 @@ serial without `--force`, whatever AVD it runs, so `teardown --all` never kills 
 someone else started. `delete` refuses while a running emulator's AVD name cannot be read.
 AVDs `ensure` created are listed in `~/.grantiva/android/created-avds.json`; `delete`
 removes the AVD from it, and `ensure`, `delete`, `sessions` and `teardown` drop names whose
-AVD no longer exists on disk (deleted with `avdmanager` or Android Studio).
+AVD no longer exists on disk (deleted with `avdmanager` or Android Studio); `teardown` does so
+even when it refuses the serial. `teardown --force` of a serial that is neither attached nor
+recorded says so and exits 0. `delete --json` prints `{"deleted": true, "name": ...}`,
+pretty-printed like every other `--json` document.

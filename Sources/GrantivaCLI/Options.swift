@@ -39,7 +39,7 @@ struct BuildOptions: ParsableArguments {
     @Option(name: .long, help: "Path to a pre-built .app bundle or .ipa archive. Skips the build step.")
     var appFile: String?
 
-    @Flag(name: .long, help: "Skip building and installing — assume the app is already on the device.")
+    @Flag(name: .long, help: "Skip building and installing — assume the app is already on the device. With --app-file, that file is installed (only the build is skipped).")
     var noBuild: Bool = false
 
     @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
@@ -48,8 +48,10 @@ struct BuildOptions: ParsableArguments {
     /// True when the xcodebuild step should be skipped.
     var shouldSkipBuild: Bool { noBuild || appFile != nil }
 
-    /// True when the install/launch step should be skipped (app already on sim).
-    var shouldSkipInstall: Bool { noBuild }
+    /// True when the install step should be skipped (app already on the
+    /// device). An explicit `--app-file` wins over `--no-build`'s "assume it
+    /// is installed": the file is installed.
+    var shouldSkipInstall: Bool { noBuild && appFile == nil }
 
     /// Merges command-line build options with project configuration. An
     /// explicit CLI DerivedData path takes precedence over build_settings.
