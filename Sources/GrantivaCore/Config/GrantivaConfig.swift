@@ -290,6 +290,14 @@ public struct GrantivaConfig: Sendable, Codable {
 
         // The .maestro/ fallback is an iOS-era convention; Android has none.
         guard platform == .ios, includeMaestroDirectory else { return nil }
+        // An Android-only directory (grantiva-android.yml or Gradle, no Xcode
+        // project) keeps Android flows in .maestro/; their appId is not an
+        // iOS bundle ID.
+        let resolver = PlatformResolver(directory: directory)
+        let detected = resolver.detectFromDirectory()
+        if !detected.contains(.ios), resolver.existingConfigFiles().contains(.android) || detected.contains(.android) {
+            return nil
+        }
         let maestroDir = directory.appendingPathComponent(".maestro")
         if fm.fileExists(atPath: maestroDir.path) {
             return try MaestroFlowParser.loadDirectory(maestroDir)

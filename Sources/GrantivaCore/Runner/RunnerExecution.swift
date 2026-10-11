@@ -34,6 +34,8 @@ enum RunnerExecution {
         let readyFile: ReadyFileSignal
         /// The platform recorded in the keep-alive owner sidecar.
         var platform: Platform? = nil
+        /// The app the run launches, recorded in the keep-alive owner sidecar.
+        var appID: String? = nil
         /// Where keep-alive sessions are discovered. Overridable for tests.
         var sessions: KeepAliveSessionStore = KeepAliveSessionStore()
         /// How long, after the flows finish, to wait for the runner's keep-alive
@@ -86,7 +88,8 @@ enum RunnerExecution {
         // moment the runner publishes it — and before any --ready-file exists.
         if request.keepAlive {
             request.sessions.recordOwner(
-                udid: request.lease.udid, runnerPid: child.pid, platform: request.platform, detached: false
+                udid: request.lease.udid, runnerPid: child.pid, platform: request.platform, detached: false,
+                appID: request.appID
             )
         }
         defer {

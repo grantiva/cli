@@ -27,11 +27,13 @@ public struct KeepAliveSession: Equatable, Sendable {
     /// grantiva process holds (`run --keep-alive`, foreground `runner start`),
     /// nil when not recorded.
     public let detached: Bool?
+    /// The app the session launched, when grantiva recorded it.
+    public let appId: String?
 
     public init(
         sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
         projectDirectory: String? = nil, platform: Platform? = nil,
-        ownerPid: Int32? = nil, detached: Bool? = nil
+        ownerPid: Int32? = nil, detached: Bool? = nil, appId: String? = nil
     ) {
         self.sessionId = sessionId
         self.port = port
@@ -42,6 +44,7 @@ public struct KeepAliveSession: Equatable, Sendable {
         self.platform = platform
         self.ownerPid = ownerPid
         self.detached = detached
+        self.appId = appId
     }
 }
 
@@ -60,10 +63,13 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     /// session (`run --keep-alive`, foreground `runner start`), so the session
     /// ends with it. Absent in sidecars written by earlier versions.
     public let detached: Bool?
+    /// The app the session launched (bundle ID or application ID). Absent in
+    /// sidecars written by earlier versions.
+    public let appId: String?
 
     public init(
         udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
-        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil
+        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil
     ) {
         self.udid = udid
         self.runnerPid = runnerPid
@@ -72,6 +78,7 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
         self.projectDirectory = projectDirectory
         self.platform = platform
         self.detached = detached
+        self.appId = appId
     }
 
     /// The canonical form both sides compare: absolute, standardized, with
@@ -131,13 +138,15 @@ public struct KeepAliveSessionStore: Sendable {
         runnerPid: Int32,
         projectDirectory: String = FileManager.default.currentDirectoryPath,
         platform: Platform? = nil,
-        detached: Bool? = nil
+        detached: Bool? = nil,
+        appID: String? = nil
     ) -> KeepAliveOwner? {
         let owner = KeepAliveOwner(
             udid: udid, runnerPid: runnerPid,
             projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
             platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios),
-            detached: detached
+            detached: detached,
+            appId: appID.flatMap { $0.isEmpty ? nil : $0 }
         )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -246,7 +255,7 @@ public struct KeepAliveSessionStore: Sendable {
                     // `/tmp` spelling of a `/private/tmp` directory.
                     projectDirectory: owner?.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
                     platform: owner?.platform,
-                    ownerPid: owner?.grantivaPid, detached: owner?.detached
+                    ownerPid: owner?.grantivaPid, detached: owner?.detached, appId: owner?.appId
                 )
                 return (session, Self.sortKey(fileName: name, path: path))
             }

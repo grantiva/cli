@@ -208,6 +208,7 @@ public enum RunnerSession {
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform,
+                appID: bundleId,
                 outputFilter: RunnerOutputFilter(
                     ephemeralReportDir: preserveReportDir ? nil : reportDir,
                     waitLabels: FlowGenerator.waitLabels(
@@ -539,6 +540,7 @@ public enum RunnerSession {
                 environment: runnerEnvironment(platform: platform, runnerDir: runnerDir, deviceID: udid),
                 readyFile: readySignal,
                 platform: platform.platform,
+                appID: bundleId,
                 outputFilter: RunnerOutputFilter(ephemeralReportDir: preserveReportDir ? nil : reportDir)
             ))
         }
