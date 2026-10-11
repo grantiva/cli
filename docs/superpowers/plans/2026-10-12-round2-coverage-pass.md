@@ -6,14 +6,14 @@
 
 **Architecture:** Task 0 (orchestrator, already done at dispatch) upgraded the test home and creates the slice worktrees. Task 1 derives the round-2 matrix from the round-1 matrix: results cleared, the round-1 expectation corrections applied, one `B2-K<nn>` row per round-2 brief quoting its acceptance criteria, and rows for every behaviour the fix wave added. Tasks 3-5 run the CLI, iOS and Android slices in parallel, one row at a time, with real flows and captured evidence. Task 6 merges the slice branches, triages every non-pass row into a brief, and writes the round report with the exit-criterion verdict.
 
-**Tech Stack:** grantiva CLI 2.1.0 release build at `~/.grantiva-qa/bin/grantiva` (main 5eab55d, grantiva-runner 1.1.28-grantiva.10); landmarks-demo (SwiftUI + Compose, Maestro-format flows); Xcode 27.0 with iOS 26.0/27.0 runtimes; Android SDK 35 emulator.
+**Tech Stack:** grantiva CLI 2.1.0 release build at `~/.grantiva-qa/bin/grantiva` (main c65fc17, grantiva-runner 1.1.28-grantiva.11); landmarks-demo (SwiftUI + Compose, Maestro-format flows); Xcode 27.0 with iOS 26.0/27.0 runtimes; Android SDK 35 emulator.
 
 **Spec:** `docs/superpowers/specs/2026-10-10-full-coverage-campaign-design.md`. Inputs: the 2.0.1 feature matrix (`~/.grantiva-qa/briefs/docs/superpowers/plans/2026-10-09-qa-feature-matrix.md`, 374 rows), the original briefs (`~/.grantiva-qa/briefs/docs/superpowers/plans/2026-10-09-qa-issues/`), the regression briefs R01-R05 (`docs/superpowers/plans/2026-10-10-regression-issues/`), the round-1 coverage report (`docs/superpowers/plans/2026-10-11-round1-coverage-report.md`), the round-1 matrix (`2026-10-11-round1-coverage-matrix.md`, corrected), the 118 round-2 briefs K01–K110 plus K111 (`docs/superpowers/plans/2026-10-11-coverage-issues/`), their expectation corrections (`00-expectation-corrections.md`), and the round-2 fix-wave rulings (`2026-10-11-round2-fix-wave.md` §Rulings).
 
 ## Global Constraints
 
 - Binary: `/Users/kyle/.grantiva-qa/bin/grantiva` with its `grantiva_GrantivaCore.bundle` beside it; `export GRANTIVA="$HOME/.grantiva-qa/bin/grantiva"`; never `swift build` in a slice; never another grantiva binary.
-- Runner home: `export GRANTIVA_RUNNER_HOME="$HOME/.grantiva-qa/runner"` in every shell (a clone of the owner's home, already upgraded to 1.1.28-grantiva.10 with the `-wda16.12.8-r1` caches). Never unset it; never write under `~/.grantiva/runner`; `GRANTIVA_API_KEY` unset; `export GRANTIVA_SESSION_ID=cov2-<slice>`.
+- Runner home: `export GRANTIVA_RUNNER_HOME="$HOME/.grantiva-qa/runner"` in every shell (a clone of the owner's home, already upgraded to 1.1.28-grantiva.11 with the `-wda16.12.8-r1` caches). Never unset it; never write under `~/.grantiva/runner`; `GRANTIVA_API_KEY` unset; `export GRANTIVA_SESSION_ID=cov2-<slice>`.
 - Devices: iOS slice owns `cov2-ios-1` (iPhone 17, 26.0) and `cov2-ios-2` (iPhone 17, 27.0); extra simulators `cov2-ios-3`/`-4` only inside a row that needs them, deleted before the row ends. Android slice owns AVD `cov2-android` (plus `cov2-android-2` inside a row that needs it). CLI slice has no devices; rows that need one are run by the iOS or Android slice instead (the matrix assigns them). Every device command names its device. Never touch `iPhone 17 Pro` (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C) or AVD `Pixel_8_API_35`; if `adb devices` lists a device you did not create, leave it alone. Never `teardown --all`, never kill a process you did not start, never `pkill`/`killall`.
 - Android shells begin with: `export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"; export ANDROID_HOME="$HOME/Library/Android/sdk"; export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"`.
 - Demo apps: copy `/Users/kyle/Developer/landmarks-demo/{ios,android}` (main b3f046f: coverage flows + the Android `10-seed-many` target) to scratch before building. Flows live in `.maestro/` (stock 01-12, 99-crash) and `.maestro/coverage/` (merged in round 1); `grantiva.yml` keeps the stock 12 flows and the five screens.
@@ -24,6 +24,7 @@
 ## New behaviours and findings carried from the round-2 fix wave (each becomes a matrix row)
 
 - N2-01 K111 screenrecord overrun is not trimmed (open brief; verify current behaviour, expect `fail` unless fixed).
+- Addendum briefs L01–L06 (`docs/superpowers/plans/2026-10-12-coverage-issues-round2/`): L01–L04 fixed by runner #20 / CLI #198 and bundled as runner .11 (rows B2-L01..L04 verify them); L05, L06 are open round-3 items (rows B2-L05/L06 are graded on the current binary).
 - N2-02 `grantiva runner --json` printed `Error: Unknown option '--json'` on the new binary; verify against README/help (`runner status --json`?).
 - N2-03 `simulator ensure --runtime 26.0` (version only) rejected while `--runtime "iOS 26.0"` works; check the help's documented form.
 - N2-04 `diff approve/compare --json` carry `ignored[]` (omitted when empty); configured-screen filter; all-filtered error names the missing screens.
@@ -56,9 +57,9 @@
 
 ### Task 0: Test home, worktrees, help corpus
 
-Run by the orchestrating session. Steps 1 and 3 were done in the round-2 fix wave's Task 14 (release binary 2.1.0 at main 5eab55d in `~/.grantiva-qa/bin/` with its bundle; `~/.grantiva-qa/runner` upgraded to `1.1.28-grantiva.10+android-drivers-2` with the four `-r1` caches; `findings/help/` regenerated and committed with the round-2 smoke).
+Run by the orchestrating session. Steps 1 and 3 were done in the round-2 fix wave's Task 14 (release binary 2.1.0 at main c65fc17 in `~/.grantiva-qa/bin/` with its bundle; `~/.grantiva-qa/runner` upgraded to `1.1.28-grantiva.11+android-drivers-2` with the four `-r1` caches; `findings/help/` regenerated and committed with the round-2 smoke).
 
-- [ ] **Step 1:** Verify: `GRANTIVA_RUNNER_HOME=~/.grantiva-qa/runner ~/.grantiva-qa/bin/grantiva runner install | tail -2` (expect already installed, 1.1.28-grantiva.10); `ls ~/.grantiva-qa/runner/cache/wda-builds | grep -c -- '-r1'` (expect 4); `~/.grantiva-qa/bin/grantiva --version` (2.1.0).
+- [ ] **Step 1:** Verify: `GRANTIVA_RUNNER_HOME=~/.grantiva-qa/runner ~/.grantiva-qa/bin/grantiva runner install | tail -2` (expect already installed, 1.1.28-grantiva.11); `ls ~/.grantiva-qa/runner/cache/wda-builds | grep -c -- '-r1'` (expect 4); `~/.grantiva-qa/bin/grantiva --version` (2.1.0).
 - [ ] **Step 2:** `cd /Users/kyle/Developer/grantiva-cli && for s in cli ios android; do git worktree add -q .worktrees/cov2-$s -b cov2/$s coverage-campaign; mkdir -p .worktrees/cov2-$s/findings/evidence/cov2-$s; done`.
 
 ---
@@ -69,7 +70,7 @@ Agent, worktree `.worktrees/regression` (branch `coverage-campaign`), no devices
 
 **Files:**
 - Create: `docs/superpowers/plans/2026-10-12-round2-coverage-matrix.md`.
-- Read: `docs/superpowers/plans/2026-10-11-round1-coverage-matrix.md` (corrected rows carry `(corrected round 2)`), `00-expectation-corrections.md`, every brief in `docs/superpowers/plans/2026-10-11-coverage-issues/K*.md`, `findings/help/*.txt`, `README.md`, `docs/*.md` (all at main 5eab55d), the N2 list above, the fix-wave rulings table.
+- Read: `docs/superpowers/plans/2026-10-11-round1-coverage-matrix.md` (corrected rows carry `(corrected round 2)`), `00-expectation-corrections.md`, every brief in `docs/superpowers/plans/2026-10-11-coverage-issues/K*.md`, `findings/help/*.txt`, `README.md`, `docs/*.md` (all at main c65fc17), the N2 list above, the fix-wave rulings table.
 
 **Interfaces:**
 - Produces: the round-2 matrix with the same row format and the same stable IDs as round 1 (`CLI-nnn`, `IOS-nnn`, `AND-nnn`, `MCP-nnn`, `X-nnn`, `B-<brief>`, `N-nn`), result column empty; plus new rows `B2-K<nn>[-a|-b]` (one per round-2 brief file, quoting its Acceptance criteria as the expected text, slice per its Platforms line; expectation-corrected briefs K09/K94 become `B2-K09` "far-side rule documented and row opens 10/10" and `B2-K94` "summary line present"), `N2-nn` rows for the list above, and rows for every new flag/key/message the help corpus diff shows (`git diff 51c597a..5eab55d -- README.md docs/` and the help pages that changed in the round-2 smoke commit).
