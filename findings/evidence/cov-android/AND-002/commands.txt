@@ -1,0 +1,8 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ sdkmanager --list_installed 2>/dev/null | grep system-images
+rc=0 elapsed=1.5s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator ensure --name cov-android-2 --system-image "system-images;android-99;bogus;arm64-v8a" --no-boot; avdmanager list avd | grep -c cov-android-2
+rc=1 elapsed=1.7s  (stdout 02.out, stderr 02.err)
+

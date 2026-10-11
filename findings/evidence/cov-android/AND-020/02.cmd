@@ -1,0 +1,1 @@
+adb -s emulator-5554 shell am force-stop com.kylebrowning.landmarks; $GRANTIVA build install; echo rc=$?; sleep 1; adb -s emulator-5554 shell pidof com.kylebrowning.landmarks; adb -s emulator-5554 shell dumpsys activity activities | grep -m1 -i "topResumedActivity\|mResumedActivity"

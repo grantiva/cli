@@ -1,0 +1,1 @@
+script -q /dev/null $GRANTIVA run --headless --emulator cov-android --no-build --flow .maestro/01-browse.yaml </dev/null > $S/and032.tty; echo rc=$?; ps -axo command | grep "[q]emu.*cov-android " | cut -c1-200; grep -aE "Boot|booted|PASS|FAIL" $S/and032.tty

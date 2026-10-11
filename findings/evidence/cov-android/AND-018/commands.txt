@@ -1,0 +1,34 @@
+# note: cov-android-2 booted by hand (see AND-011 commands.txt): nohup emulator -avd cov-android-2 -port 5556 ...
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA emulator ensure --name cov-android-2; cat ~/.grantiva/android/started.json
+rc=0 elapsed=0.1s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA run --device emulator-5556 --no-build --flow .maestro/01-browse.yaml
+rc=1 elapsed=8.8s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ adb devices; cat ~/.grantiva/android/started.json; ps -p $(cat $S/hand-boot.pid) -o pid=,command= | cut -c1-120
+rc=0 elapsed=0.1s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA run --emulator cov-android-2 --no-build --flow .maestro/01-browse.yaml
+rc=1 elapsed=6.6s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ adb devices; cat ~/.grantiva/android/started.json
+rc=0 elapsed=0.0s  (stdout 05.out, stderr 05.err)
+
+# note: 02 and 04 failed at launchApp: the app was not installed on the hand-booted AVD (userdata not kept); installing and re-running
+# [06] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk --no-launch
+rc=0 elapsed=0.7s  (stdout 06.out, stderr 06.err)
+
+# [07] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA run --emulator cov-android-2 --no-build --flow .maestro/01-browse.yaml
+rc=0 elapsed=7.2s  (stdout 07.out, stderr 07.err)
+
+# [08] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ adb devices; cat ~/.grantiva/android/started.json; $GRANTIVA emulator sessions
+rc=0 elapsed=0.2s  (stdout 08.out, stderr 08.err)
+

@@ -1,0 +1,22 @@
+# note: background: $GRANTIVA emulator ensure --name cov-android > $S/bg-ensure.log 2>&1 &  then after 6 s the run below
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/noemu
+$ $GRANTIVA run --no-build --flow .maestro/01-browse.yaml; echo rc=$?
+rc=0 elapsed=21.2s  (stdout 01.out, stderr 01.err)
+
+# note: 01: waiting worked but launchApp failed: com.kylebrowning.landmarks was missing after the cold boot (install right before `emu kill` was not persisted; .paid installed earlier survived). Reinstall + sync, then redo.
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA build install --device emulator-5554 --no-launch --no-build --app-file app/build/outputs/apk/free/debug/app-free-debug.apk; adb -s emulator-5554 shell sync; sleep 5; $GRANTIVA emulator teardown --serial emulator-5554; sleep 3; adb devices
+rc=0 elapsed=10.9s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/noemu
+$ $GRANTIVA run --no-build --flow .maestro/01-browse.yaml; echo rc=$?
+rc=0 elapsed=24.9s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator ensure --name cov-android; $GRANTIVA build install --device emulator-5554 --no-launch; adb -s emulator-5554 shell pm list packages | grep landmarks; adb -s emulator-5554 shell sync; sleep 8; $GRANTIVA emulator teardown --serial emulator-5554; sleep 3; adb devices
+rc=0 elapsed=14.8s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/noemu
+$ $GRANTIVA run --no-build --flow .maestro/01-browse.yaml; echo rc=$?
+rc=0 elapsed=20.2s  (stdout 05.out, stderr 05.err)
+

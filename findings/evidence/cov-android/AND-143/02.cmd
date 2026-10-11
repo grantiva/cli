@@ -1,0 +1,1 @@
+script -q /dev/null $GRANTIVA build install --emulator cov-android --headless --module app </dev/null; ps -axo command | grep "[q]emu.*cov-android " | cut -c1-200; adb -s emulator-5554 shell pidof com.kylebrowning.landmarks

@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ script -q /dev/null $GRANTIVA emulator ensure --name cov-android-2 --headless </dev/null; ps -axo pid,command | grep "[q]emu.*cov-android-2" | cut -c1-220
+rc=0 elapsed=16.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator teardown --serial emulator-5556
+rc=0 elapsed=2.6s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ script -q /dev/null $GRANTIVA emulator ensure --name cov-android-2 </dev/null; ps -axo pid,command | grep "[q]emu.*cov-android-2" | cut -c1-220
+rc=0 elapsed=16.3s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator ensure --name cov-android-2 | cat; $GRANTIVA emulator teardown --serial emulator-5556; sleep 3; adb devices; $GRANTIVA emulator delete --name cov-android-2; avdmanager list avd | grep Name
+rc=0 elapsed=26.0s  (stdout 04.out, stderr 04.err)
+

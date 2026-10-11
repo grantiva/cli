@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator ensure --name cov-android
+rc=0 elapsed=44.4s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ grep -E "hw.device.name|image.sysdir|abi.type|tag.id" ~/.android/avd/cov-android.avd/config.ini; adb devices; adb -s emulator-5554 emu avd name
+rc=0 elapsed=0.3s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ cat $GRANTIVA_RUNNER_HOME/../emulators/created-avds.json 2>/dev/null; ls ~/.grantiva-qa ~/.grantiva-qa/runner | head -40
+rc=0 elapsed=0.4s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ls -la ~/.grantiva/android/; cat ~/.grantiva/android/created-avds.json; echo; cat ~/.grantiva/android/started.json 2>/dev/null; find ~/.grantiva -maxdepth 2 -name "*.json" -newer $S/env.sh
+rc=0 elapsed=0.2s  (stdout 04.out, stderr 04.err)
+

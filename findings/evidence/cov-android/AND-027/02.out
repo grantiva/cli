@@ -1,0 +1,42 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Build finished: success=true duration=0.4s
+Warning: --application-id com.kylebrowning.landmarks.debug differs from the app's own application ID com.kylebrowning.landmarks; testing com.kylebrowning.landmarks.debug. Drop --application-id to test com.kylebrowning.landmarks.
+Installing com.kylebrowning.landmarks...
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+
+Execution
+  ⏳ Connecting to device emulator-5554...
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ⏳ Creating session...
+
+  [1/1] 01-browse (01-browse.yaml)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks.debug'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks.debug (cause: adb shell monkey -p com.kylebrowning.landmarks.debug -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks.debug, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks.debug"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.kylebrowning.landmarks.debug"
+data="android.intent.category.LAUNCHER"
+)
+✗ 01-browse 1.3s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks.debug'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks.debug (cause: adb shell monkey -p com.kylebrowning.landmarks.debug -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.kylebrowning.landmarks.debug, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.kylebrowning.landmarks.debug"
+package:com.kylebrowning.landmarks
+package:com.kylebrowning.landmarks.paid

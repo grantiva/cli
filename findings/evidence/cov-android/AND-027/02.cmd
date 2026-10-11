@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --application-id com.kylebrowning.landmarks.debug --flow .maestro/01-browse.yaml 2>&1 | grep -vE "^\s+[✓✗]|^─|^═" | head -40; adb -s emulator-5554 shell pm list packages | grep landmarks

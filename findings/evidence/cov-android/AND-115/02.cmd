@@ -1,0 +1,1 @@
+$GRANTIVA build install --device emulator-5554 --no-launch --no-build --app-file app/build/outputs/apk/free/debug/app-free-debug.apk; adb -s emulator-5554 shell sync; sleep 5; $GRANTIVA emulator teardown --serial emulator-5554; sleep 3; adb devices

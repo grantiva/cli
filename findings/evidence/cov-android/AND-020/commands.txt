@@ -1,0 +1,9 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ $GRANTIVA build install --device emulator-5556 --app-file $P/app/build/outputs/apk/free/debug/app-free-debug.apk
+rc=0 elapsed=1.9s  (stdout 01.out, stderr 01.err)
+
+# note: 01 above was on cov-android-2 with --app-file (incidental). Default run on cov-android follows.
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ adb -s emulator-5554 shell am force-stop com.kylebrowning.landmarks; $GRANTIVA build install; echo rc=$?; sleep 1; adb -s emulator-5554 shell pidof com.kylebrowning.landmarks; adb -s emulator-5554 shell dumpsys activity activities | grep -m1 -i "topResumedActivity\|mResumedActivity"
+rc=0 elapsed=2.1s  (stdout 02.out, stderr 02.err)
+

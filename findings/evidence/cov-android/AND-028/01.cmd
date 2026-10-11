@@ -1,0 +1,1 @@
+$GRANTIVA run --device emulator-5554 --app-file app/build/outputs/apk/free/debug/app-free-debug.apk --flow .maestro/01-browse.yaml --verbose 2>&1 | grep -E "apkanalyzer|gradlew|Installing|Using pre-built|PASS|FAIL" | cut -c1-300; echo rc=${PIPESTATUS[0]}

@@ -1,0 +1,1 @@
+pwd; ls -A; $GRANTIVA emulator ensure --name cov-android-2 --no-boot --json; grep -E "image.sysdir|hw.device.name" ~/.android/avd/cov-android-2.avd/config.ini; $GRANTIVA emulator delete --name cov-android-2 --json; avdmanager list avd | grep Name

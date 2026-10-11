@@ -1,0 +1,1 @@
+adb -s emulator-5554 uninstall com.kylebrowning.landmarks.paid; $GRANTIVA run --app-file app/build/outputs/apk/paid/debug/app-paid-debug.apk --flow .maestro/01-browse.yaml --device emulator-5554 --report-dir $S/out-a03 2>&1 | grep -E "Installing|Warning|Resolved|PASS|FAIL"; jq -r .app.id $S/out-a03/report.json; adb -s emulator-5554 shell pm list packages | grep landmarks

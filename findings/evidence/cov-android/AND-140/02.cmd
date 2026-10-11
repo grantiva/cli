@@ -1,0 +1,1 @@
+script -q /dev/null $GRANTIVA diff capture --emulator cov-android --module app --variant freeDebug --headless </dev/null > $S/and140.tty; echo rc=$?; ps -axo command | grep "[q]emu.*cov-android " | cut -c1-200
