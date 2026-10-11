@@ -1,0 +1,9 @@
+# note: keep-alives: $S/tools/ka.sh $E/AND-052/ka1 .maestro/01-browse.yaml (cwd android, emulator-5554) then, in android2, a run --keep-alive on emulator-5556 with 05-category
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA hierarchy | grep -o "text=\"[^\"]\+\"" | head -6
+rc=0 elapsed=0.2s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA emulator teardown --serial emulator-5556; sleep 3; $GRANTIVA emulator delete --name cov-android-2; adb devices; avdmanager list avd | grep Name
+rc=0 elapsed=6.6s  (stdout 02.out, stderr 02.err)
+

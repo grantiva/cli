@@ -2,3 +2,8 @@
 $ for i in 1 2 3; do $S/tools/seedmany.sh emulator-5554 a$i; done; for i in 1 2; do $S/tools/seedmany.sh emulator-5554 f$i --snapshot full; done
 rc=0 elapsed=70.9s  (stdout 01.out, stderr 01.err)
 
+# note: 05-: on cov-android-2 (fresh AVD from N-06 boot 3) after its first capture
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android2
+$ for i in 1 2; do $S/tools/seedmany.sh emulator-5556 fresh$i; done; $S/tools/seedmany.sh emulator-5556 freshfull --snapshot full
+rc=0 elapsed=58.9s  (stdout 02.out, stderr 02.err)
+

@@ -1,0 +1,76 @@
+Resolved: module=app variant=freeDebug device=emulator-5556 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5556
+Emulator booted: cov-android-2 (emulator-5556)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/05-category.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-881A249F-468E-4EA9-8626-1AA5C6AE18C0
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lakes" (835ms)
+    ✓ assertVisible: text="Lake Tahoe" (631ms)
+    ✓ assertVisible: text="Mono Lake" (33ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (81ms)
+    ✓ takeScreenshot (136ms)
+✓ 05-category 3.7s
+
+  [1/1] 05-category (.maestro/05-category.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn (835ms)
+    ✓ assertVisible (631ms)
+    ✓ assertVisible (33ms)
+    ✓ assertNotVisible (81ms)
+    ✓ takeScreenshot (136ms)
+✓ 05-category 3.7s
+
+  6 steps passing (3.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-category                    ✓ PASS       6      6      0      0       3.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       3.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-881A249F-468E-4EA9-8626-1AA5C6AE18C0
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-881A249F-468E-4EA9-8626-1AA5C6AE18C0/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-881A249F-468E-4EA9-8626-1AA5C6AE18C0/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-881A249F-468E-4EA9-8626-1AA5C6AE18C0/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: session=60882-1791705484020926000
+  /tmp/grantiva-sessions/60882-1791705484020926000.grantiva
+    Press Ctrl-C to release.

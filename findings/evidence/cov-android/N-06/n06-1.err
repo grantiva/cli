@@ -1,0 +1,91 @@
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7D5722BC-A13C-49A6-BA6A-0A7094ADE59B
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5556...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5556.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.2s)
+    ✓ waitForAnimationToEnd (737ms)
+    ✓ takeScreenshot (179ms)
+    ✓ tapOn: text="Favorites" (1.6s)
+    ✗ waitForAnimationToEnd (298ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/d1b3f447-78e4-4370-98a4-9ebfc87ce7f9/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused (cause: send request: Get "http://localhost/session/d1b3f447-78e4-4370-98a4-9ebfc87ce7f9/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused)
+✗ flow 5.0s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-187E2680-8929-42BF-8883-6CADD2FE707D/flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.2s)
+    ✓ waitForAnimationToEnd (737ms)
+    ✓ takeScreenshot (179ms)
+    ✓ tapOn (1.6s)
+    ✗ waitForAnimationToEnd (311ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session/d1b3f447-78e4-4370-98a4-9ebfc87ce7f9/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused (cause: send request: Get "http://localhost/session/d1b3f447-78e4-4370-98a4-9ebfc87ce7f9/screenshot": dial unix /tmp/uia2-emulator-5556.sock: connect: connection refused)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ tapOn (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ assertVisible (0ms)
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 5.0s
+
+  4 steps passing (5.0s)
+  1 steps failing
+  16 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL      21      4      1     16       5.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      21      4      1     16       5.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7D5722BC-A13C-49A6-BA6A-0A7094ADE59B
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7D5722BC-A13C-49A6-BA6A-0A7094ADE59B/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7D5722BC-A13C-49A6-BA6A-0A7094ADE59B/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-7D5722BC-A13C-49A6-BA6A-0A7094ADE59B/allure-results
+
+  Built by Grantiva
+
+Warning: could not restore global/sysui_demo_allowed on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Warning: could not restore global/window_animation_scale on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Warning: could not restore global/transition_animation_scale on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Warning: could not restore global/animator_duration_scale on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Warning: could not restore system/accelerometer_rotation on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Warning: could not restore system/user_rotation on emulator-5556: commandFailed("adb: device \'emulator-5556\' not found", 1)
+Error: Runner failed (exit 1); see the runner output above.
