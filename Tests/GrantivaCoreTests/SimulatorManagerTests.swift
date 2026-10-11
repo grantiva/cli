@@ -564,6 +564,27 @@ extension SimulatorManagerTests {
         XCTAssertTrue(FileManager.default.fileExists(atPath: home), "a run is using it")
     }
 
+    // A lease failure that is not "someone holds it" (here the locks
+    // directory cannot be created) is an error, not an empty result.
+    func testTeardownWithoutARecordReportsALeaseItCannotTake() async throws {
+        let simctl = FakeSimctl(devices: [
+            .init(name: "Manual", udid: "MANUAL-1", state: "Booted", runtime: "iOS-26-0", type: FakeSimctl.iPhone17),
+        ])
+        let (manager, capacity, _) = makeManager(simctl)
+        let home = try makeVersionedDeviceHome(capacity, stamp: "v1", "MANUAL-1")
+        // A file where the locks directory should be.
+        try Data().write(to: URL(fileURLWithPath: "\(capacity.directory)/runner/locks"))
+
+        do {
+            let outcomes = try await manager.teardown(udid: "MANUAL-1")
+            XCTFail("expected the lease failure to propagate, got \(outcomes)")
+        } catch {
+            XCTAssertFalse(SimulatorLease.isOwnershipRefusal(error), "\(error)")
+            XCTAssertFalse("\(error)".contains("is in use"), "\(error)")
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: home), "nothing removed without the lease")
+    }
+
     func testInUseMessageForARunnerStartSessionNamesRunnerStop() {
         let claim = SimulatorLeaseClaim(
             pid: 77, udid: "S-1", startedAt: Date(), runnerPID: 77, keepAlive: true,

@@ -100,11 +100,16 @@ public final class SimulatorLease: @unchecked Sendable {
     /// Test hook: called with the UDID whenever `acquire` is about to use the
     /// default directory (`<runner home>/locks`). Test bundles install one
     /// that fails the test and throws. Set once before tests run.
-    nonisolated(unsafe) public static var defaultDirectoryUseForTesting: ((String) throws -> Void)?
+    nonisolated(unsafe) static var defaultDirectoryUseForTesting: ((String) throws -> Void)?
 
     /// Whether XCTest is loaded in this process. The grantiva binary never
-    /// loads it; a test bundle always does.
+    /// loads it; a test bundle always does. Only debug builds (the ones
+    /// `swift test` runs) probe for it; a release build never evaluates it.
+    #if DEBUG
     static let runningUnderXCTest = NSClassFromString("XCTestCase") != nil
+    #else
+    static let runningUnderXCTest = false
+    #endif
 
     /// Under XCTest a lease without an explicit directory is refused, hook
     /// or not, so no test can take a lease in, or create, the user's runner
