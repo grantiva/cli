@@ -365,7 +365,7 @@ grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml 
 `grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
 timestamp, with a JSON report of the frame actually shown at each. On Android,
 `screenrecord` writes frames only when the screen changes, so Grantiva holds the last
-frame to `--duration`; if the last frame was on screen for more than half the recording, it
+frame to `--duration` (and trims a recording that ran past it); if the last frame was on screen for more than half the recording, it
 prints a note on stderr, since a device that disconnected mid-recording looks the same as an
 idle screen. `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
 A `--frames-at` value past `--duration` is refused (exit 64) before anything is recorded. Paths in

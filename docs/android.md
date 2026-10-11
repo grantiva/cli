@@ -155,11 +155,16 @@ before the halfway point), `record` prints a note on stderr naming when that fra
 expected for an idle screen, but a device that disconnected mid-recording looks the same. This
 holds whether Grantiva stretched the last frame or `screenrecord` already gave it a long sample
 (the note then says so and gives the track's length).
+When `screenrecord` stops it gives its last frame the previous frame's duration, so a recording
+can run past `--duration`; Grantiva then trims that last frame so the video ends at `--duration`.
+A last frame that itself starts after `--duration` is left as recorded (the `Held frame:` line
+says so).
 A late screen change (the status-bar clock, a blinking caret, a notification) suppresses the
 note. The JSON report adds `lastFrameMilliseconds` (when the last frame appears) and
-`recordedMilliseconds` (where the track ended before the hold), and `--verbose` prints one
-`Held frame:` line with the frame count, those times, the held span, the threshold and whether
-the note printed (or why the file could not be read).
+`recordedMilliseconds` (where the track ended before the hold or trim, so an overrun stays
+visible), and `--verbose` prints one `Held frame:` line with the frame count, those times, the
+held span (or the `trimmed=` span), the threshold and whether the note printed (or why the file
+could not be read).
 `--device <serial>` or `--emulator <AVD>` pick the target; the config's `emulator` is the
 default. The JSON report (`--json`, and the `.json` beside the video) names the device as
 `emulator` (the AVD name) and `serial`; the `simulator` and `udid` keys carry the same values

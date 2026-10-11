@@ -87,21 +87,98 @@ final class MP4LastFrameHoldTests: XCTestCase {
         XCTAssertEqual(timing.recordedSeconds, 0)
     }
 
-    /// K34-b: screenrecord can give its last frame a sample delta that already
-    /// reaches the requested length. Nothing is rewritten, but the timing is
-    /// still reported so the caller can tell how long that frame stayed.
+    /// K34-b: screenrecord can give its last frame a sample delta that
+    /// reaches past the requested length. The timing is still reported as
+    /// recorded so the caller can tell how long that frame stayed; since
+    /// K111 the track is trimmed to the requested length.
     func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
         let file = MP4Fixture(stts: [(1, 3_000), (1, 200_000)], mdhdDuration: 203_000, movieDuration: 2_256)
         let url = try temporaryFile(file.data)
         defer { try? FileManager.default.removeItem(at: url) }
-        guard case .unchanged(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
-            return XCTFail("expected the file to be left as it is")
+        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+            return XCTFail("expected the overrun to be trimmed")
         }
         XCTAssertEqual(timing.frameCount, 2)
         XCTAssertEqual(timing.lastFrameSeconds, 0.0333, accuracy: 0.0001)
         XCTAssertEqual(timing.recordedSeconds, 2.2556, accuracy: 0.0001)
+        XCTAssertEqual(MP4Fixture.Parsed(try Data(contentsOf: url)).stts, [[1, 3_000], [1, 177_000]] as [[UInt32]])
+    }
+
+    // MARK: - K111: an overrunning recording is trimmed to the requested length
+
+    /// Frames at 0 and 3.079 s; screenrecord gave the last one the previous
+    /// delta, so the track ends at 6.157 s for a 4 s request.
+    func testAnOverrunningTrackIsTrimmedToTheRequestedLength() throws {
+        let file = MP4Fixture(stts: [(1, 277_088), (1, 277_088)], mdhdDuration: 554_176, movieDuration: 6_157)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+            return XCTFail("expected the overrun to be trimmed")
+        }
+        XCTAssertEqual(timing.recordedSeconds, 6.1575, accuracy: 0.0001, "the pre-trim end stays visible")
+        XCTAssertEqual(timing.lastFrameSeconds, 3.0788, accuracy: 0.0001)
+        let parsed = MP4Fixture.Parsed(try Data(contentsOf: url))
+        XCTAssertEqual(parsed.stts, [[1, 277_088], [1, 82_912]] as [[UInt32]])
+        XCTAssertEqual(parsed.mdhdDuration, 360_000)
+        XCTAssertEqual(parsed.tkhdDuration, 4_000)
+        XCTAssertEqual(parsed.mvhdDuration, 4_000)
+        XCTAssertEqual(parsed.elstDuration, 4_000)
+        XCTAssertEqual(parsed.mdatPayload, MP4Fixture.mdatPayload)
+    }
+
+    func testATrackExactlyAsLongAsRequestedIsUnchanged() throws {
+        let file = MP4Fixture(stts: [(1, 277_088), (1, 82_912)], mdhdDuration: 360_000, movieDuration: 4_000)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+            return XCTFail("expected the file to be left as it is")
+        }
         XCTAssertEqual(try Data(contentsOf: url), file.data)
     }
+
+    /// The last frame itself starts after the requested length: trimming
+    /// would drop it, so the file is left as recorded.
+    func testALastFrameAfterTheRequestedLengthIsNotTrimmed() throws {
+        let file = MP4Fixture(stts: [(1, 400_000), (1, 100_000)], mdhdDuration: 500_000, movieDuration: 5_556)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .unchanged(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+            return XCTFail("expected the file to be left as it is")
+        }
+        XCTAssertGreaterThan(timing.lastFrameSeconds, 4)
+        XCTAssertEqual(try Data(contentsOf: url), file.data)
+    }
+
+    // MARK: - L25: a malformed extra track does not stop the hold
+
+    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+        for position in [MP4Fixture.ExtraTrak.Position.after, .before] {
+            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+                let file = MP4Fixture(
+                    stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0,
+                    extraTrak: .init(position: position, kind: kind)
+                )
+                let url = try temporaryFile(file.data)
+                defer { try? FileManager.default.removeItem(at: url) }
+                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+                    XCTFail("\(position) \(kind): expected the video track to be held"); continue
+                }
+                XCTAssertEqual(timing.frameCount, 1)
+                let held = try Data(contentsOf: url)
+                XCTAssertEqual(MP4Fixture.Parsed(held).stts, [[1, 360_000]] as [[UInt32]], "\(position) \(kind)")
+                XCTAssertEqual(MP4Fixture.traks(in: held).filter { !$0.contains(Array("stts".utf8)) },
+                               [file.extraTrakBytes], "\(position) \(kind): the extra trak is byte-identical")
+            }
+        }
+    }
+
+    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+        let file = MP4Fixture(stts: [(1, 0)], mdhdDuration: 0, movieDuration: 0, extraTrak: .init(position: .after, kind: .noMdia), omitVideo: true)
+        XCTAssertEqual(MP4LastFrameHold.timing(of: file.data), .failure(.init("the movie has no video track")))
+    }
+
+    // MARK: - Fixture helpers
+
 
     func testHoldFileReportsTheTimingOfAHeldTrack() throws {
         let file = MP4Fixture(stts: [(2, 4_500)], mdhdDuration: 9_000, movieDuration: 100)
@@ -176,13 +253,35 @@ private struct MP4Fixture {
     /// `version1` writes 64-bit mvhd/tkhd/mdhd/elst; `truncating` cuts that
     /// leaf box's payload just before its duration field (an mvhd/mdhd keeps
     /// its timescale).
-    init(stts: [(UInt32, UInt32)], mdhdDuration: UInt32, movieDuration: UInt32, version1: Bool = false, truncating: String? = nil) {
+    /// A second `trak` that is not a readable video track (L25).
+    struct ExtraTrak {
+        enum Position { case before, after }
+        enum Kind { case noMdia, mdiaWithoutHdlr }
+        let position: Position
+        let kind: Kind
+    }
+
+    /// The extra trak as written (empty without one).
+    let extraTrakBytes: [UInt8]
+
+    init(
+        stts: [(UInt32, UInt32)], mdhdDuration: UInt32, movieDuration: UInt32, version1: Bool = false, truncating: String? = nil,
+        extraTrak: ExtraTrak? = nil, omitVideo: Bool = false
+    ) {
         func box(_ type: String, _ body: [UInt8]) -> [UInt8] {
             let body = type == truncating ? Array(body.prefix(version1 ? 24 : 16)) : body
             return be(UInt32(body.count + 8)) + Array(type.utf8) + body
         }
         func full(_ type: String, _ body: [UInt8]) -> [UInt8] { box(type, [version1 ? 1 : 0, 0, 0, 0] + body) }
         func time(_ value: UInt32) -> [UInt8] { version1 ? be(0) + be(value) : be(value) }
+        func extraTrakBox(_ kind: ExtraTrak.Kind) -> [UInt8] {
+            let tkhd = full("tkhd", time(0) + time(0) + be(2) + be(0) + time(1_234) + [UInt8](repeating: 0, count: 60))
+            switch kind {
+            case .noMdia: return box("trak", tkhd)
+            case .mdiaWithoutHdlr:
+                return box("trak", tkhd + box("mdia", full("mdhd", time(0) + time(0) + be(1_000) + time(1_234) + be(0))))
+            }
+        }
         func moov(chunkOffset: UInt32) -> [UInt8] {
             let mvhd = full("mvhd", time(0) + time(0) + be(1_000) + time(movieDuration) + [UInt8](repeating: 0, count: 80))
             let tkhd = full("tkhd", time(0) + time(0) + be(1) + be(0) + time(movieDuration) + [UInt8](repeating: 0, count: 60))
@@ -192,13 +291,32 @@ private struct MP4Fixture {
             let sttsBox = box("stts", [0, 0, 0, 0] + be(UInt32(stts.count)) + stts.flatMap { be($0.0) + be($0.1) })
             let stco = box("stco", [0, 0, 0, 0] + be(1) + be(chunkOffset))
             let stbl = box("stbl", sttsBox + stco)
-            let trak = box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
-            return box("moov", mvhd + trak)
+            let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
+            let extra = extraTrak.map { extraTrakBox($0.kind) } ?? []
+            return box("moov", mvhd + (extraTrak?.position == .before ? extra + trak : trak + extra))
         }
+        extraTrakBytes = extraTrak.map { extraTrakBox($0.kind) } ?? []
         let ftyp = box("ftyp", Array("isom".utf8) + be(0))
         let offset = UInt32(ftyp.count + moov(chunkOffset: 0).count + 8)
         chunkOffset = offset
         data = Data(ftyp + moov(chunkOffset: offset) + box("mdat", Self.mdatPayload))
+    }
+
+    /// The raw bytes of every `trak` in the movie.
+    static func traks(in data: Data) -> [[UInt8]] {
+        let b = [UInt8](data)
+        var result: [[UInt8]] = []
+        func walk(_ start: Int, _ end: Int) {
+            var o = start
+            while o + 8 <= end {
+                let size = Int(read(b, o)); let type = String(decoding: b[(o + 4)..<(o + 8)], as: UTF8.self)
+                if type == "trak" { result.append(Array(b[o..<(o + size)])) }
+                if type == "moov" { walk(o + 8, o + size) }
+                o += size
+            }
+        }
+        walk(0, b.count)
+        return result
     }
 
     struct Parsed {

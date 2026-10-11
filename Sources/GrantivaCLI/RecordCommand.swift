@@ -145,7 +145,7 @@ struct RecordCommand: AsyncParsableCommand {
     ) -> (note: String?, statistics: String) {
         let timing: MP4LastFrameHold.Timing
         switch outcome {
-        case .held(let value), .unchanged(let value): timing = value
+        case .held(let value), .trimmed(let value), .unchanged(let value): timing = value
         case .outOfRange(let seconds):
             return (nil, "Held frame: not held; the requested length \(seconds)s is out of range")
         case .unreadable(let reason):
@@ -158,9 +158,20 @@ struct RecordCommand: AsyncParsableCommand {
         let endMs = milliseconds(timing.recordedSeconds)
         let held = stretchedByRecorder ? 0 : max(requestedMs - endMs, 0)
         let verdict = note != nil ? "printed" : "not printed (the screen changed after the halfway point)"
+        // K111: an overrun is trimmed to the request; trackEnd stays the
+        // recorded end so the overrun is visible.
+        let trim: String
+        switch outcome {
+        case .trimmed: trim = " trimmed=\(max(endMs - requestedMs, 0))ms"
+        case .unchanged where lastFrameMs > requestedMs:
+            trim = "; not trimmed: the last frame starts at \(lastFrameMs)ms, after the requested \(requestedMs)ms"
+        default: trim = ""
+        }
         let statistics = "Held frame: frames=\(timing.frameCount) lastFrame=\(lastFrameMs)ms trackEnd=\(endMs)ms "
-            + "requested=\(requestedMs)ms lastFrameOnScreen=\(max(requestedMs - lastFrameMs, 0))ms held=\(held)ms "
-            + "noteThreshold=>\(milliseconds(requestedSeconds / 2))ms note=\(verdict)"
+            + "requested=\(requestedMs)ms lastFrameOnScreen=\(max(requestedMs - lastFrameMs, 0))ms held=\(held)ms"
+            + (trim.hasPrefix(";") ? "" : trim)
+            + " noteThreshold=>\(milliseconds(requestedSeconds / 2))ms note=\(verdict)"
+            + (trim.hasPrefix(";") ? trim : "")
         return (note, statistics)
     }
 
