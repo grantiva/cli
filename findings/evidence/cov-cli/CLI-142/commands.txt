@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-142
+$ ls bin bin/grantiva_GrantivaCore.bundle/Contents/Resources | head -20; find rh -type f | sort | xargs shasum > before.sha
+# exit=0 elapsed=.311s -> setup.out / setup.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-142
+$ GRANTIVA_RUNNER_HOME=$PWD/rh ./bin/grantiva runner install; echo rc=$?; find rh -type f | sort | xargs shasum > after.sha; cmp before.sha after.sha && echo install-untouched; ls rh/versions
+# exit=0 elapsed=.429s -> install_existing.out / install_existing.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-142
+$ GRANTIVA_RUNNER_HOME=$PWD/fresh ./bin/grantiva runner install; echo rc=$?; find fresh -maxdepth 2 2>&1 | head
+# exit=0 elapsed=.024s -> install_fresh.out / install_fresh.err

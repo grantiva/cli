@@ -1,0 +1,4 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-083
+$ $GRANTIVA doctor --json | jq -c ".[] | {name,status}"; $GRANTIVA doctor >/dev/null; echo rc=$?
+# exit=0 elapsed=.374s -> doctor.out / doctor.err
+# A simulator (cov-flows-ios, owned by Task 2) is booted on this host, so 'no booted simulator' cannot be produced without touching another slice's device; CLI-081/text.out shows the Booted Simulator check as advisory (●) when it finds none
