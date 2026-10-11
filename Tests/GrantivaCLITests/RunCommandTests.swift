@@ -775,7 +775,9 @@ final class RunCommandTests: XCTestCase {
         again.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
         _ = try? await again.run()
         let kept = try ReadyFile.read(scratch.appendingPathComponent("out.ready").path)
-        XCTAssertEqual(kept.reportDir, "out")
+        // Absolute, as every ready file and `run --json` names it (K21-a).
+        XCTAssertTrue(kept.reportDir?.hasPrefix("/") == true, "\(String(describing: kept.reportDir))")
+        XCTAssertTrue(kept.reportDir?.hasSuffix("/out") == true, "\(String(describing: kept.reportDir))")
         XCTAssertNotNil(kept.error)
     }
 
