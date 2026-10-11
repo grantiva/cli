@@ -30,3 +30,6 @@ Task 5: fix round 1/5 result: all addressed (re-review clean at b58af30; two tex
 Task 5: fix round 2/5 result: verified by controller (8885a21; element/active lines exist with grep -a; OBS-03 rerun relabelled). Task 5: complete (cov2/android 8885a21: 372 pass / 31 fail / 6 fail-triage / 3 blocked / 2 n/a + AND2-OBS-01..07).
 Task 6 Step 1: cov2/cli, cov2/ios, cov2/android merged --no-ff into coverage-campaign (9fadf607).
 Task 6 Step 2: brief writers dispatched (opus ×2): M01–M21 → L08–L28; M22–M24 + M26–M42 → L29–L48 (M25 withdrawn → expectation correction).
+Task 6 Step 2a: expectation corrections applied (24 matrix cells marked '(corrected round 3)'; briefs K14, K68, R01 annotated in repo; C18, A01 annotated in ~/.grantiva-qa/briefs; 00-expectation-corrections-round2.md). Note: the corpus is already regenerated (a2876461) — CLI-003/D2-47 are closed. CLI-145 carries an M19 product note (kept).
+Task 6 Step 2: briefs L08–L28 written (22 files; M19 split L26-a/-b; triage notes L15, L24, L26-a, L28; causes sharpened for M05/M07/M12/M20) and pushed.
+Task 6 Steps 2–3: briefs L29–L48 (22 files; splits L38/L42) committed; report brief table + verdict filled: ROUND 2: 48 findings — round 3 fix wave required (44 new briefs + L05/L06/L07/K111).
