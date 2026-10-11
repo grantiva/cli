@@ -33,34 +33,31 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
         self.log = log
     }
 
-    // TODO: replace with LegacyJSONKeys after Task 4
-    private struct Key: CodingKey {
-        let stringValue: String
-        init(_ value: String) { stringValue = value }
-        init?(stringValue: String) { self.stringValue = stringValue }
-        var intValue: Int? { nil }
-        init?(intValue: Int) { nil }
-    }
-
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: Key.self)
-        try container.encode(status, forKey: Key("status"))
-        try container.encodeIfPresent(pid, forKey: Key("pid"))
-        try container.encodeIfPresent(runnerPid, forKey: Key("runnerPid"))
-        try container.encodeIfPresent(port, forKey: Key("port"))
-        try container.encodeIfPresent(platform?.rawValue, forKey: Key("platform"))
-        try container.encodeIfPresent(log, forKey: Key("log"))
-        try container.encodeIfPresent(killed, forKey: Key("killed"))
-        try container.encodeIfPresent(alreadyExited, forKey: Key("alreadyExited"))
-        try container.encodeIfPresent(sessions, forKey: Key("sessions"))
+        var container = encoder.container(keyedBy: LegacyJSONKeys.self)
+        try container.encode(status, forKey: "status")
+        try container.encodeIfPresent(pid, forKey: "pid")
+        try container.encodeIfPresent(runnerPid, forKey: "runnerPid")
+        try container.encodeIfPresent(port, forKey: "port")
+        try container.encodeIfPresent(platform?.rawValue, forKey: "platform")
+        try container.encodeIfPresent(log, forKey: "log")
+        try container.encodeIfPresent(killed, forKey: "killed")
+        try container.encodeIfPresent(alreadyExited, forKey: "alreadyExited")
+        try container.encodeIfPresent(sessions, forKey: "sessions")
         let android = platform == .android
         if let appID {
-            try container.encode(appID, forKey: Key(android ? "applicationId" : "bundleId"))
-            try container.encode(appID, forKey: Key("bundle_id"))
+            if android {
+                // `applicationId` is Android's name; `bundle_id` stays beside
+                // it for one release (LegacyJSONKeys.platformTwins).
+                try container.encode(appID, forKey: "applicationId")
+                try container.encode(appID, forKey: "bundle_id")
+            } else {
+                try container.encodeWithAlias(appID, "bundleId")
+            }
         }
         if let deviceID {
-            try container.encode(deviceID, forKey: Key("udid"))
-            if android { try container.encode(deviceID, forKey: Key("serial")) }
+            try container.encode(deviceID, forKey: "udid")
+            if android { try container.encode(deviceID, forKey: "serial") }
         }
     }
 }

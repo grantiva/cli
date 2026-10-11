@@ -449,6 +449,7 @@ removed in a later release. The keys still written in both spellings:
 - `diff_image_path` → `diffImagePath` (diff compare)
 - `approved_screens` → `approvedScreens` (diff approve)
 - `baseline_directory` → `baselineDirectory` (diff approve)
+- `bundle_id` → `bundleId` (runner start, runner stop; `applicationId` on Android)
 
 `run --json` has the same shape whether the run passed or failed. `screens`
 holds one entry per configured screen (`"kind": "screen"`) and one per flow

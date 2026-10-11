@@ -560,3 +560,30 @@ final class RunnerInstallNarrationTests: XCTestCase {
         XCTAssertEqual(json["status"] as? String, "installed")
     }
 }
+
+/// Foreground `runner start` output goes through the narration choke point,
+/// whole lines at a time.
+@available(macOS 15, *)
+final class RunnerOutputForwarderTests: XCTestCase {
+    func testOutputIsNarratedLineByLineAndParsed() async throws {
+        let narrated = LockedValue<[String]>([])
+        let forwarder = RunnerOutputForwarder(narrate: { narrated.append($0) })
+        let pipe = Pipe()
+        forwarder.attachOutput(pipe.fileHandleForReading)
+        let bytes = Array("WDA started successfully on port 8430 🙂\nnext".utf8)
+        pipe.fileHandleForWriting.write(Data(bytes.prefix(41)))
+        try await Task.sleep(for: .milliseconds(100))
+        pipe.fileHandleForWriting.write(Data(bytes.dropFirst(41)))
+        try pipe.fileHandleForWriting.close()
+        var received = Data()
+        for await chunk in forwarder.chunks { received.append(chunk) }
+        try await Task.sleep(for: .milliseconds(100))
+        XCTAssertEqual(narrated.value.joined(), "WDA started successfully on port 8430 🙂\nnext\n")
+        XCTAssertEqual(String(decoding: received, as: UTF8.self), "WDA started successfully on port 8430 🙂\nnext")
+    }
+
+    func testSilencedNarrationPrintsNothing() {
+        XCTAssertTrue(RunnerNarration.shouldSilence(json: true, quiet: false, verbose: false))
+        XCTAssertTrue(RunnerNarration.shouldSilence(json: false, quiet: true, verbose: false))
+    }
+}

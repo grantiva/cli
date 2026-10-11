@@ -147,6 +147,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
+        options.applyRunnerNarration()
         // Check for existing session
         if let existing = try? RunnerSessionInfo.load(), existing.isAlive,
            let snapshot = try? await SimulatorReaper.processSnapshot(),
@@ -408,15 +409,17 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// exiting on its own. The runner's output streams to stderr meanwhile.
     private func startForeground(_ launch: Launch, lease: SimulatorLease) async throws {
         let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
         let child = try ChildProcess.spawn(
             executable: launch.runnerBin,
             arguments: launch.runnerArgs,
             workingDirectory: launch.runnerDir,
             environment: launch.environment,
             stdout: stdoutPipe.fileHandleForWriting.fileDescriptor,
-            stderr: FileHandle.standardError.fileDescriptor
+            stderr: stderrPipe.fileHandleForWriting.fileDescriptor
         )
         try? stdoutPipe.fileHandleForWriting.close()
+        try? stderrPipe.fileHandleForWriting.close()
         // `kill -9` of this process must not leave the runner holding the device.
         let lifeline = child.bindLifetimeToParent(sessionDirectory: KeepAliveSessionStore.defaultDirectory)
         Self.recordKeepAliveOwner(launch, runnerPid: child.pid, detached: false)
@@ -438,8 +441,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
         // runner; this is the only place the lifeline closes.
         defer { if let lifeline { Darwin.close(lifeline) } }
 
-        let output = RunnerOutputForwarder(echo: !options.json && GrantivaLogLevel.current <= .info)
-        output.attach(stdoutPipe.fileHandleForReading)
+        // Through the narration choke point: --json and --quiet silence it.
+        let output = RunnerOutputForwarder()
+        output.attachOutput(stdoutPipe.fileHandleForReading)
+        output.attachErrors(stderrPipe.fileHandleForReading)
         let port: UInt16
         if launch.platform == .android {
             // The port comes from the forward, not the output.

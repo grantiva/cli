@@ -88,6 +88,28 @@ final class JSONKeyCasingContractTests: XCTestCase {
                 status: .installed, applicationId: "com.kylebrowning.landmarks",
                 device: .init(name: "fix2-4-android", serial: "emulator-5554"), appPath: "/b/app.apk"
             ))),
+            ("runner start (iOS)", try JSONOutput.string(RunnerLifecycleDocument(
+                status: "started", pid: 64253, port: 8235, appID: "com.kylebrowning.Landmarks",
+                deviceID: session.udid, platform: .ios, log: "/tmp/grantiva-runner.log"
+            ))),
+            ("runner start (Android, already running)", try JSONOutput.string(RunnerLifecycleDocument(
+                status: "already_running", pid: 7067, port: 57776, appID: "com.kylebrowning.landmarks",
+                deviceID: "emulator-5554", platform: .android, log: nil
+            ))),
+            ("runner stop", try JSONOutput.string(RunnerStopCommand.document(
+                .stopped(pid: 64253, udid: session.udid, killed: false)
+            ))),
+            ("runner stop (already exited)", try JSONOutput.string(RunnerStopCommand.document(
+                .exited(pid: 64253, udid: "emulator-5554")
+            ))),
+            ("runner stop (keep-alive sessions)", try JSONOutput.string(RunnerStopCommand.document(.keepAlive([
+                .released(grantivaPid: 4163, runnerPid: 4267, udid: session.udid),
+                .terminated(runnerPid: 4300, udid: session.udid, killed: true),
+            ])))),
+            ("runner stop (nothing running)", try JSONOutput.string(RunnerStopCommand.document(.notRunning))),
+            ("runner install", try JSONOutput.string(RunnerInstallCommand.Result(
+                path: "/rh/versions/v/grantiva-runner", version: "1.1.28-grantiva.9", extracted: false
+            ))),
             ("record", try JSONOutput.string(RecordReport(
                 simulator: "fix2-4-ios", udid: session.udid, emulator: nil, serial: nil, video: "out.mp4",
                 requestedDurationSeconds: 3, lastFrameMilliseconds: 2900, recordedMilliseconds: 3000,
@@ -153,7 +175,10 @@ final class JSONKeyCasingContractTests: XCTestCase {
         for (key, child) in object {
             if !isCamelCase(key) {
                 if let twin = LegacyJSONKeys.aliases[key] {
-                    if object[twin] == nil { problems.append("\(path).\(key) has no camelCase twin \(twin)") }
+                    let twins = [twin] + (LegacyJSONKeys.platformTwins[key] ?? [])
+                    if !twins.contains(where: { object[$0] != nil }) {
+                        problems.append("\(path).\(key) has no camelCase twin \(twin)")
+                    }
                 } else {
                     problems.append("\(path).\(key) is not camelCase")
                 }

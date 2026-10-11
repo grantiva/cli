@@ -37,7 +37,8 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
         runnerSessionStopped: Bool = false
     ) {
         self.init(udid: session.udid, session: session, deleted: deleted,
-                  deviceHomesRemoved: deviceHomesRemoved, deviceHomeFailures: deviceHomeFailures)
+                  deviceHomesRemoved: deviceHomesRemoved, deviceHomeFailures: deviceHomeFailures,
+                  runnerSessionStopped: runnerSessionStopped)
     }
 
     public init(
@@ -45,7 +46,8 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
         session: ManagedSimulatorSession?,
         deleted: Bool,
         deviceHomesRemoved: [String] = [],
-        deviceHomeFailures: [String] = []
+        deviceHomeFailures: [String] = [],
+        runnerSessionStopped: Bool = false
     ) {
         self.udid = udid
         self.session = session
@@ -56,12 +58,13 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped
+        case udid, session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        session = try container.decode(ManagedSimulatorSession.self, forKey: .session)
+        session = try container.decodeIfPresent(ManagedSimulatorSession.self, forKey: .session)
+        udid = try container.decodeIfPresent(String.self, forKey: .udid) ?? session?.udid ?? ""
         deleted = try container.decode(Bool.self, forKey: .deleted)
         deviceHomesRemoved = try container.decodeIfPresent([String].self, forKey: .deviceHomesRemoved) ?? []
         deviceHomeFailures = try container.decodeIfPresent([String].self, forKey: .deviceHomeFailures) ?? []

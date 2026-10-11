@@ -188,7 +188,7 @@ struct SimulatorCommand: AsyncParsableCommand {
         static func marking(_ outcomes: [SimulatorTeardownOutcome], stopped: [String]) -> [SimulatorTeardownOutcome] {
             outcomes.map { outcome in
                 var outcome = outcome
-                outcome.runnerSessionStopped = stopped.contains(outcome.session.udid)
+                outcome.runnerSessionStopped = stopped.contains(outcome.udid)
                 return outcome
             }
         }

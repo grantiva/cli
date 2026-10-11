@@ -33,7 +33,12 @@ public struct LegacyJSONKeys: CodingKey, ExpressibleByStringLiteral {
         ("diffImagePath", "diff_image_path", "diff compare"),
         ("approvedScreens", "approved_screens", "diff approve"),
         ("baselineDirectory", "baseline_directory", "diff approve"),
+        ("bundleId", "bundle_id", "runner start, runner stop"),
     ]
+
+    /// Aliases whose camelCase twin depends on the platform: on Android
+    /// `runner start/stop` write `bundle_id` beside `applicationId`.
+    public static let platformTwins: [String: [String]] = ["bundle_id": ["applicationId"]]
 
     /// snake_case alias → its camelCase key.
     public static let aliases: [String: String] = Dictionary(uniqueKeysWithValues: renamed.map { ($0.snake, $0.camel) })
