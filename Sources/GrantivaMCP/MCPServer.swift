@@ -137,8 +137,11 @@ public struct GrantivaMCPServer: Sendable {
     /// The directory must exist; a config file is optional (tools that need
     /// one say so when called).
     static func resolveProjectDirectory(_ directory: URL?) throws -> URL {
-        let resolved = (directory ?? URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
-            .standardizedFileURL
+        // realpath(3) spelling, as keep-alive owners record it: `/tmp/x`
+        // resolves to `/private/tmp/x` (`standardizedFileURL` would strip the
+        // `/private` instead).
+        let requested = (directory ?? URL(fileURLWithPath: FileManager.default.currentDirectoryPath))
+        let resolved = URL(fileURLWithPath: KeepAliveOwner.canonicalDirectory(requested.path), isDirectory: true)
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: resolved.path, isDirectory: &isDirectory),
               isDirectory.boolValue else {
@@ -181,11 +184,8 @@ public struct GrantivaMCPServer: Sendable {
                 pid: keepAlive.pid, wdaPort: port, bundleId: "", udid: udid, startedAt: Date()
             )
         }
-        let ignored = live.isEmpty
-            ? ""
-            : " \(live.count) keep-alive session(s) started from another project directory or for another platform were ignored."
-        throw GrantivaError.invalidArgument(
-            "No active runner session at \(sessionURL.path). Start one with 'grantiva runner start' or `grantiva run --keep-alive` in \(projectDirectory.path).\(ignored)"
+        throw GrantivaError.noRunnerSession(
+            sessionFile: sessionURL.path, directory: projectDirectory.path, ignored: live.count
         )
     }
 }

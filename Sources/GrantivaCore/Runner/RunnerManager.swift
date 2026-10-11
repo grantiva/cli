@@ -11,17 +11,27 @@ public struct RunnerManager: Sendable, Decodable {
     /// Tests that inject a fake runner point it at a temp directory so they
     /// never write into the user's runner home.
     public var leaseDirectory: String?
+    /// `ensureAvailable` that says what happened: true when the runner was
+    /// extracted, false when the installed stamp was already current.
+    /// `willExtract` runs just before an extraction starts, so a caller can
+    /// narrate it only when it happens.
+    public var install: @Sendable (_ willExtract: @escaping @Sendable () -> Void) async throws -> Bool
 
     public init(
         ensureAvailable: @escaping @Sendable () async throws -> Void,
         runnerPath: @escaping @Sendable () -> String,
         runnerDir: @escaping @Sendable () -> String,
-        leaseDirectory: String? = nil
+        leaseDirectory: String? = nil,
+        install: (@Sendable (_ willExtract: @escaping @Sendable () -> Void) async throws -> Bool)? = nil
     ) {
         self.ensureAvailable = ensureAvailable
         self.runnerPath = runnerPath
         self.runnerDir = runnerDir
         self.leaseDirectory = leaseDirectory
+        self.install = install ?? { _ in
+            try await ensureAvailable()
+            return false
+        }
     }
 }
 
@@ -229,34 +239,39 @@ extension RunnerManager {
     }
 
     public static let live = RunnerManager(
-        ensureAvailable: {
-            try installIfNeeded(
-                baseDir: currentInstallDir,
-                binaryPath: binaryPath,
-                versionFilePath: versionFilePath,
-                cacheDir: cacheDir,
-                version: installStamp,
-                lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
-                verify: {
-                    try verifyRunnerVersion(
-                        at: $0, expected: runnerVersion,
-                        bundlePath: resourceBundle?.bundlePath ?? "\(resourceBundleName).bundle"
-                    )
-                },
-                onInstalled: {
-                    pruneStaleInstalls(
-                        versionsDir: "\(baseDir)/versions",
-                        keeping: installStamp,
-                        locksDir: "\(baseDir)/locks",
-                        isInUse: { runnerProcessExists(installDir: installDir(baseDir: baseDir, stamp: $0)) }
-                    )
-                },
-                extract: { try extractEmbedded(into: $0) }
-            )
-        },
+        ensureAvailable: { try installLive(willExtract: {}) },
         runnerPath: { binaryPath },
-        runnerDir: { currentInstallDir }
+        runnerDir: { currentInstallDir },
+        install: { willExtract in try installLive(willExtract: willExtract) }
     )
+
+    @discardableResult
+    static func installLive(willExtract: () -> Void) throws -> Bool {
+        try installIfNeeded(
+            baseDir: currentInstallDir,
+            binaryPath: binaryPath,
+            versionFilePath: versionFilePath,
+            cacheDir: cacheDir,
+            version: installStamp,
+            lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
+            verify: {
+                try verifyRunnerVersion(
+                    at: $0, expected: runnerVersion,
+                    bundlePath: resourceBundle?.bundlePath ?? "\(resourceBundleName).bundle"
+                )
+            },
+            onInstalled: {
+                pruneStaleInstalls(
+                    versionsDir: "\(baseDir)/versions",
+                    keeping: installStamp,
+                    locksDir: "\(baseDir)/locks",
+                    isInUse: { runnerProcessExists(installDir: installDir(baseDir: baseDir, stamp: $0)) }
+                )
+            },
+            willExtract: willExtract,
+            extract: { try extractEmbedded(into: $0) }
+        )
+    }
 
     /// Installs the runner into `baseDir` unless `binaryPath` exists and the
     /// version file already holds `version`.
@@ -275,6 +290,9 @@ extension RunnerManager {
     /// staging; when it throws, nothing is swapped in and no stamp is written.
     /// Every call touches `baseDir/.last-used`; `onInstalled` runs after a
     /// fresh install.
+    /// Returns true when it extracted, false when the stamp was current;
+    /// `willExtract` runs just before an extraction.
+    @discardableResult
     static func installIfNeeded(
         baseDir: String,
         binaryPath: String,
@@ -284,8 +302,9 @@ extension RunnerManager {
         lockPath: String? = nil,
         verify: (String) throws -> Void = { _ in },
         onInstalled: () -> Void = {},
+        willExtract: () -> Void = {},
         extract: (String) throws -> Void
-    ) throws {
+    ) throws -> Bool {
         let fm = FileManager.default
         func isInstalled() -> Bool {
             fm.fileExists(atPath: binaryPath)
@@ -296,7 +315,7 @@ extension RunnerManager {
         if isInstalled() {
             try linkCache(cacheDir, into: baseDir)
             touchLastUsed(baseDir)
-            return
+            return false
         }
 
         var lockDescriptor: Int32 = -1
@@ -317,15 +336,17 @@ extension RunnerManager {
         if lockPath != nil, isInstalled() {
             try linkCache(cacheDir, into: baseDir)
             touchLastUsed(baseDir)
-            return
+            return false
         }
 
+        willExtract()
         try installUnlocked(
             baseDir: baseDir, binaryPath: binaryPath, versionFilePath: versionFilePath,
             cacheDir: cacheDir, version: version, verify: verify, extract: extract
         )
         touchLastUsed(baseDir)
         onInstalled()
+        return true
     }
 
     private static func installUnlocked(

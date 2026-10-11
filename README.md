@@ -390,6 +390,22 @@ for example, `hierarchy` emits XML by default and JSON with `--json` (the same
 as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,
 `install`, `version`) print a JSON result with `--json`.
 
+`runner start --json` and `runner stop --json` share one shape: `status`
+(`started`, `already_running`, `stopped`, `exited`, `not_running`), `pid` and
+`port` as numbers, `platform`, and the platform's own names for the app and the
+device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
+(`log` with `--detach`; `runnerPid` when `stop` released a `run --keep-alive`
+session, whose `pid` is that grantiva process). `bundle_id`, and `udid` on
+Android, are the 2.1 names, kept for one release and deprecated.
+
+```json
+{"pid": 64253, "platform": "ios", "port": 8235, "status": "started",
+ "bundleId": "com.example.app", "udid": "A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF"}
+```
+
+`runner install --json` reports `"extracted": false` when the installed runner
+was already current (the text output then says `Runner already installed at …`).
+
 ### stdout is the result, stderr is the commentary
 
 Everything a caller captures or parses — a `--json` payload, the `ensure` UDID,

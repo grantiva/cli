@@ -199,7 +199,8 @@ public struct IOSPlatform: DevicePlatform {
         let stderr = try FileHandle(forWritingTo: stderrURL)
         let recorder = Self.makeRecorder(deviceID: deviceID, path: path, log: stderr)
         do {
-            try recorder.run()
+            try SubprocessLog.run(recorder)
+            defer { if !recorder.isRunning { SubprocessLog.ended(recorder) } }
             try await RecorderLifecycle.withCleanup(for: recorder) {
                 try await RecorderLifecycle.waitForStart(of: outputURL)
                 try await Task.sleep(for: .seconds(seconds))

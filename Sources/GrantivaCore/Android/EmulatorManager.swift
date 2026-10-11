@@ -39,12 +39,28 @@ public struct EmulatorTeardownOutcome: Codable, Equatable, Sendable {
     public let avd: String?
     public let killed: Bool
     public let recorded: Bool
+    /// True when teardown also stopped a runner session on this serial.
+    public var runnerSessionStopped: Bool
 
-    public init(serial: String, avd: String?, killed: Bool, recorded: Bool) {
+    public init(serial: String, avd: String?, killed: Bool, recorded: Bool, runnerSessionStopped: Bool = false) {
         self.serial = serial
         self.avd = avd
         self.killed = killed
         self.recorded = recorded
+        self.runnerSessionStopped = runnerSessionStopped
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case serial, avd, killed, recorded, runnerSessionStopped
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        serial = try container.decode(String.self, forKey: .serial)
+        avd = try container.decodeIfPresent(String.self, forKey: .avd)
+        killed = try container.decode(Bool.self, forKey: .killed)
+        recorded = try container.decode(Bool.self, forKey: .recorded)
+        runnerSessionStopped = try container.decodeIfPresent(Bool.self, forKey: .runnerSessionStopped) ?? false
     }
 }
 

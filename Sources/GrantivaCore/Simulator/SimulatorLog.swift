@@ -96,7 +96,7 @@ extension SimulatorLog {
             process.standardOutput = pipe
             process.standardError = FileHandle.nullDevice
 
-            try process.run()
+            try SubprocessLog.run(process)
 
             let handle = pipe.fileHandleForReading
             while true {
@@ -107,6 +107,7 @@ extension SimulatorLog {
                 }
             }
             process.waitUntilExit()
+            SubprocessLog.ended(process)
         }
     )
 }

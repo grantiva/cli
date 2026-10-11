@@ -90,6 +90,7 @@ public final class LogStreamer: @unchecked Sendable {
     private let output = SerializedLogOutput()
     private var stopped = false
     private var terminationCleanup: UInt64?
+    private var terminationLogged: EndedOnce?
 
     public init() {}
 
@@ -150,8 +151,16 @@ public final class LogStreamer: @unchecked Sendable {
         forward(outPipe.fileHandleForReading, outDecoder)
         forward(errPipe.fileHandleForReading, errDecoder)
 
+        // `--verbose` names the stream when it ends, however it ends; the
+        // flag keeps stop() and the handler from logging it twice.
+        let ended = EndedOnce()
+        p.terminationHandler = { process in
+            ended.once { SubprocessLog.ended(process) }
+        }
+        terminationLogged = ended
+
         do {
-            try p.run()
+            try SubprocessLog.run(p)
         } catch {
             outPipe.fileHandleForReading.readabilityHandler = nil
             errPipe.fileHandleForReading.readabilityHandler = nil
@@ -187,14 +196,37 @@ public final class LogStreamer: @unchecked Sendable {
         output.write(stdoutDecoder?.finish() ?? [])
         output.write(stderrDecoder?.finish() ?? [])
 
-        if let p = process, p.isRunning {
-            p.terminate()
+        if let p = process {
+            if p.isRunning { p.terminate() }
+            // Wait briefly so the exit is logged here, in order, rather than
+            // from the termination handler after the caller has moved on.
+            let deadline = Date().addingTimeInterval(2)
+            while p.isRunning, Date() < deadline { usleep(10_000) }
+            if !p.isRunning { terminationLogged?.once { SubprocessLog.ended(p) } }
         }
+        terminationLogged = nil
         process = nil
         stdoutPipe = nil
         stderrPipe = nil
         stdoutDecoder = nil
         stderrDecoder = nil
+    }
+}
+
+/// Set once by whichever of `stop()` and the termination handler sees the
+/// log process's exit first.
+final class EndedOnce: @unchecked Sendable {
+    private let lock = NSLock()
+    private var claimed = false
+
+    /// Runs `body` the first time only. The lock is held while it runs, so a
+    /// second caller returns only after the first caller's line is out.
+    func once(_ body: () -> Void) {
+        lock.lock()
+        defer { lock.unlock() }
+        guard !claimed else { return }
+        claimed = true
+        body()
     }
 }
 

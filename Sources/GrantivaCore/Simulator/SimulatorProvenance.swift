@@ -25,12 +25,16 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
     public var deviceHomesRemoved: [String]
     /// One "<path>: <reason>" line per runner home that could not be removed.
     public var deviceHomeFailures: [String]
+    /// True when teardown stopped a runner session (`runner start` or
+    /// `run --keep-alive`) on this simulator first.
+    public var runnerSessionStopped: Bool
 
     public init(
         session: ManagedSimulatorSession,
         deleted: Bool,
         deviceHomesRemoved: [String] = [],
-        deviceHomeFailures: [String] = []
+        deviceHomeFailures: [String] = [],
+        runnerSessionStopped: Bool = false
     ) {
         self.init(udid: session.udid, session: session, deleted: deleted,
                   deviceHomesRemoved: deviceHomesRemoved, deviceHomeFailures: deviceHomeFailures)
@@ -48,6 +52,20 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
         self.deleted = deleted
         self.deviceHomesRemoved = deviceHomesRemoved
         self.deviceHomeFailures = deviceHomeFailures
+        self.runnerSessionStopped = runnerSessionStopped
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        session = try container.decode(ManagedSimulatorSession.self, forKey: .session)
+        deleted = try container.decode(Bool.self, forKey: .deleted)
+        deviceHomesRemoved = try container.decodeIfPresent([String].self, forKey: .deviceHomesRemoved) ?? []
+        deviceHomeFailures = try container.decodeIfPresent([String].self, forKey: .deviceHomeFailures) ?? []
+        runnerSessionStopped = try container.decodeIfPresent(Bool.self, forKey: .runnerSessionStopped) ?? false
     }
 }
 

@@ -288,4 +288,29 @@ final class SimulatorCommandTests: XCTestCase {
             XCTAssertEqual(EmulatorCommand.Teardown.exitCode(for: error), .validationFailure)
         }
     }
+
+    // MARK: - K15: teardown stops the simulator's runner session
+
+    func testTeardownStopsRunnerSessionsOfEveryTargetFirst() async throws {
+        let stopped = LockedList()
+        let lines = await SimulatorCommand.Teardown.stopRunnerSessions(udids: ["A", "B"]) { udid in
+            stopped.append(udid)
+            return udid == "A" ? [.released(grantivaPid: 4163, runnerPid: 4267, udid: "A")] : []
+        }
+        XCTAssertEqual(stopped.values, ["A", "B"])
+        XCTAssertEqual(lines.stopped, ["A"])
+        XCTAssertEqual(lines.lines, ["Stopped runner session (pid 4267) for A."])
+    }
+
+    func testTeardownOutcomeEncodesRunnerSessionStopped() throws {
+        var outcome = SimulatorTeardownOutcome(
+            session: ManagedSimulatorSession(
+                udid: "EXACT-UDID", name: "n", sessionId: "s", ownerPID: 1, acquiredAt: Date(), state: .active
+            ),
+            deleted: false
+        )
+        outcome.runnerSessionStopped = true
+        let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
+        XCTAssertEqual(object["runnerSessionStopped"] as? Bool, true)
+    }
 }

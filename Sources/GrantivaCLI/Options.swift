@@ -45,7 +45,7 @@ struct GlobalOptions: ParsableArguments {
 }
 
 struct BuildOptions: ParsableArguments {
-    @Option(name: .long, help: "Path to a pre-built .app bundle or .ipa archive. Skips the build step.")
+    @Option(name: .long, help: "Path to a pre-built app: .app bundle or .ipa archive (iOS), .apk (Android). Skips the build step.")
     var appFile: String?
 
     @Flag(name: .long, help: "Skip building and installing — assume the app is already on the device. With --app-file, that file is installed (only the build is skipped).")

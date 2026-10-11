@@ -12,6 +12,28 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertFalse(extracted)
     }
 
+    /// K45: the caller learns whether anything was extracted, and hears
+    /// about it before the extraction starts, so it can narrate truthfully.
+    func testInstallIfNeededReportsInstalledThenAlreadyCurrent() throws {
+        let paths = try makePaths()
+        var announced = 0
+        let first = try RunnerManager.installIfNeeded(
+            baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
+            version: "v1", willExtract: { announced += 1 },
+            extract: { FileManager.default.createFile(atPath: "\($0)/grantiva-runner", contents: Data()) }
+        )
+        XCTAssertTrue(first)
+        XCTAssertEqual(announced, 1)
+
+        let second = try RunnerManager.installIfNeeded(
+            baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
+            version: "v1", willExtract: { announced += 1 },
+            extract: { _ in XCTFail("an installed stamp must not be extracted again") }
+        )
+        XCTAssertFalse(second)
+        XCTAssertEqual(announced, 1)
+    }
+
     func testInstallWritesVersionAndExecutableRunner() throws {
         let paths = try makePaths()
         try RunnerManager.installIfNeeded(paths: paths, version: "v2") { destination in

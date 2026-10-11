@@ -37,7 +37,7 @@ struct HierarchyCommand: AsyncParsableCommand {
 
     // `.unconditional`: `--timeout -1` is rejected by range in validate(),
     // not reported as a missing value.
-    @Option(name: .long, parsing: .unconditional, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
+    @Option(name: .long, parsing: .unconditional, help: "Seconds to wait for GrantivaAgent's (iOS) or UIAutomator2's (Android) page-source response. Default: 60.")
     var timeout: Double = 60
 
     @Option(name: .long, help: "Output format: xml (default) or json. --json is the same as --format json.")
@@ -86,8 +86,9 @@ struct HierarchyCommand: AsyncParsableCommand {
 
         // The runner's `sessionId` is its own keep-alive identifier, not a
         // WebDriverAgent session, so the session-scoped route 404s. The bare
-        // /source route serves the current application's tree.
-        let path = outputFormat == .json ? "/source?format=json" : "/source"
+        // /source route serves the current application's tree. JSON is built
+        // from the XML, exactly as `runner dump-hierarchy --format json` does.
+        let path = "/source"
 
         guard let url = URL(string: "http://127.0.0.1:\(session.port)\(path)") else {
             throw GrantivaError.invalidArgument("Failed to build GrantivaAgent URL")
@@ -113,12 +114,35 @@ struct HierarchyCommand: AsyncParsableCommand {
             )
         }
 
-        // WDA wraps /source in {"value": "<xml>"}. Unwrap for cleanliness.
-        if outputFormat == .xml, let wrapped = unwrapWDASource(data) {
-            Output.line(wrapped)
-        } else {
-            Output.write(data)
-            Output.line("")
+        Output.line(try Self.renderIOSSource(data, format: outputFormat))
+    }
+
+    /// The agent's `/source` response as printed. WDA wraps the source in
+    /// `{"value": …, "sessionId": …}`; the envelope is never printed. XML is
+    /// the unwrapped XML; JSON is the element tree (`type`, `label`, …,
+    /// `children`) that `runner dump-hierarchy --format json` and the MCP
+    /// `grantiva_a11y_tree` tool print, parsed from that XML (or, when the
+    /// agent already answered with a JSON tree, that tree).
+    static func renderIOSSource(_ data: Data, format: OutputFormat) throws -> String {
+        let envelope = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        let value = envelope?["value"]
+        switch format {
+        case .xml:
+            if let xml = value as? String { return xml }
+            return String(decoding: data, as: UTF8.self)
+        case .json:
+            let tree: Any
+            if let xml = value as? String {
+                tree = try WDAHierarchyXMLParser(xml: xml).parse()
+            } else if let object = value as? [String: Any] {
+                tree = object
+            } else if let xml = String(data: data, encoding: .utf8), xml.hasPrefix("<") {
+                tree = try WDAHierarchyXMLParser(xml: xml).parse()
+            } else {
+                throw GrantivaError.commandFailed("GrantivaAgent returned a page source that is neither XML nor a JSON tree.", 1)
+            }
+            let json = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+            return String(decoding: json, as: UTF8.self)
         }
     }
 
@@ -170,13 +194,5 @@ struct HierarchyCommand: AsyncParsableCommand {
         try store.locate(udid: udid.map { try DeviceID.validate($0) })
     }
 
-    /// WDA returns `{"value": "<?xml…>", "sessionId": "…"}`. Extract the XML.
-    private func unwrapWDASource(_ data: Data) -> String? {
-        guard let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let value = obj["value"] as? String else {
-            return nil
-        }
-        return value
-    }
 }
 

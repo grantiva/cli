@@ -21,10 +21,17 @@ public struct KeepAliveSession: Equatable, Sendable {
     public let projectDirectory: String?
     /// The platform the session drives, when grantiva recorded it.
     public let platform: Platform?
+    /// The grantiva process that started the runner, when recorded.
+    public let ownerPid: Int32?
+    /// True for a `runner start --detach` hand-off, false for a session a
+    /// grantiva process holds (`run --keep-alive`, foreground `runner start`),
+    /// nil when not recorded.
+    public let detached: Bool?
 
     public init(
         sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
-        projectDirectory: String? = nil, platform: Platform? = nil
+        projectDirectory: String? = nil, platform: Platform? = nil,
+        ownerPid: Int32? = nil, detached: Bool? = nil
     ) {
         self.sessionId = sessionId
         self.port = port
@@ -33,6 +40,8 @@ public struct KeepAliveSession: Equatable, Sendable {
         self.path = path
         self.projectDirectory = projectDirectory
         self.platform = platform
+        self.ownerPid = ownerPid
+        self.detached = detached
     }
 }
 
@@ -46,10 +55,15 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     /// own project's session. Absent in sidecars written by earlier versions.
     public let projectDirectory: String?
     public let platform: Platform?
+    /// True when `runner start --detach` handed the runner off: the session
+    /// outlives `grantivaPid` by design. False when `grantivaPid` holds the
+    /// session (`run --keep-alive`, foreground `runner start`), so the session
+    /// ends with it. Absent in sidecars written by earlier versions.
+    public let detached: Bool?
 
     public init(
         udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
-        projectDirectory: String? = nil, platform: Platform? = nil
+        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil
     ) {
         self.udid = udid
         self.runnerPid = runnerPid
@@ -57,12 +71,19 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
         self.createdAt = createdAt
         self.projectDirectory = projectDirectory
         self.platform = platform
+        self.detached = detached
     }
 
     /// The canonical form both sides compare: absolute, standardized, with
-    /// symlinks resolved (so `/tmp/x` and `/private/tmp/x` match).
+    /// symlinks resolved the way realpath(3) resolves them, so `/tmp/x` and
+    /// `/private/tmp/x` both become `/private/tmp/x`. (Foundation's
+    /// `resolvingSymlinksInPath` strips a leading `/private` instead.) A path
+    /// that does not exist keeps its standardized spelling.
     public static func canonicalDirectory(_ path: String) -> String {
-        URL(fileURLWithPath: path).standardizedFileURL.resolvingSymlinksInPath().path
+        let standardized = URL(fileURLWithPath: path).standardizedFileURL.path
+        guard let resolved = realpath(standardized, nil) else { return standardized }
+        defer { free(resolved) }
+        return String(cString: resolved)
     }
 }
 
@@ -109,12 +130,14 @@ public struct KeepAliveSessionStore: Sendable {
         udid: String,
         runnerPid: Int32,
         projectDirectory: String = FileManager.default.currentDirectoryPath,
-        platform: Platform? = nil
+        platform: Platform? = nil,
+        detached: Bool? = nil
     ) -> KeepAliveOwner? {
         let owner = KeepAliveOwner(
             udid: udid, runnerPid: runnerPid,
             projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
-            platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios)
+            platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios),
+            detached: detached
         )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -137,6 +160,26 @@ public struct KeepAliveSessionStore: Sendable {
 
     public func removeOwner(runnerPid: Int32) {
         try? FileManager.default.removeItem(atPath: ownerPath(runnerPid: runnerPid))
+    }
+
+    /// Deletes `runnerPid`'s sidecar and its own `<pid>-<timestamp>.grantiva`
+    /// file whether or not the pid still looks alive: for callers that have
+    /// just stopped that runner (a SIGKILL'd runner never removes its file,
+    /// and an unreaped one still answers `kill(pid, 0)`). Returns the paths
+    /// removed.
+    @discardableResult
+    public func removeSessionFiles(runnerPid: Int32) -> [String] {
+        let fm = FileManager.default
+        guard runnerPid > 0, let contents = try? fm.contentsOfDirectory(atPath: directory) else { return [] }
+        var removed: [String] = []
+        for name in contents.sorted() {
+            let isOwner = name == "\(runnerPid).\(Self.ownerExtension)"
+            let isRunner = name.hasSuffix(".\(Self.runnerExtension)") && name.hasPrefix("\(runnerPid)-")
+            guard isOwner || isRunner else { continue }
+            let path = "\(directory)/\(name)"
+            if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
+        }
+        return removed
     }
 
     /// Deletes the session files of keep-alive runners that held `udid` and are
@@ -168,7 +211,14 @@ public struct KeepAliveSessionStore: Sendable {
     // MARK: - Reading
 
     /// Every session whose runner process is still alive, newest first.
-    public func liveSessions() -> [KeepAliveSession] {
+    ///
+    /// A session a grantiva process holds (`run --keep-alive`, foreground
+    /// `runner start`; owner `detached == false`) whose grantiva process is
+    /// gone is an orphan: its runner normally follows within seconds (see
+    /// `ChildProcess.bindLifetimeToParent`), and until then it is excluded
+    /// unless `includingOrphans` (for `runner stop` and teardown, which clean
+    /// orphans up).
+    public func liveSessions(includingOrphans: Bool = false) -> [KeepAliveSession] {
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(atPath: directory) else { return [] }
 
@@ -186,10 +236,17 @@ public struct KeepAliveSessionStore: Sendable {
                 let path = "\(directory)/\(name)"
                 guard let raw = Self.loadRunnerSession(path: path), isProcessAlive(raw.pid) else { return nil }
                 let owner = owners[raw.pid]
+                if !includingOrphans, let owner, owner.detached == false, !isProcessAlive(owner.grantivaPid) {
+                    return nil
+                }
                 let session = KeepAliveSession(
                     sessionId: raw.sessionId, port: raw.port, pid: raw.pid,
                     udid: owner?.udid, path: path,
-                    projectDirectory: owner?.projectDirectory, platform: owner?.platform
+                    // Re-canonicalised: sidecars written by 2.1.0 hold the
+                    // `/tmp` spelling of a `/private/tmp` directory.
+                    projectDirectory: owner?.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
+                    platform: owner?.platform,
+                    ownerPid: owner?.grantivaPid, detached: owner?.detached
                 )
                 return (session, Self.sortKey(fileName: name, path: path))
             }
@@ -211,9 +268,7 @@ public struct KeepAliveSessionStore: Sendable {
     public func locate(udid: String? = nil) throws -> KeepAliveSession {
         let live = liveSessions()
         guard !live.isEmpty else {
-            throw GrantivaError.invalidArgument(
-                "No keep-alive session found. Start one with `grantiva run --keep-alive` first."
-            )
+            throw GrantivaError.noRunnerSession()
         }
         guard let udid else { return live[0] }
 

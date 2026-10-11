@@ -99,7 +99,8 @@ struct SimulatorCommand: AsyncParsableCommand {
 
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
-            abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists."
+            abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists.",
+            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -137,17 +138,52 @@ struct SimulatorCommand: AsyncParsableCommand {
         private var session: String? { sessionId?.trimmingCharacters(in: .whitespacesAndNewlines) }
 
         func run() async throws {
+            // Runner sessions on the devices go first (K15): the runner gets
+            // to release WebDriverAgent before its simulator disappears.
+            let udids: [String]
+            if let target {
+                udids = [target]
+            } else {
+                udids = (try? await SimulatorManager.live.managedSessions())?
+                    .filter { $0.sessionId == session }.map(\.udid) ?? []
+            }
+            let stopped = await Self.stopRunnerSessions(udids: udids) { await DeviceRunnerSessions.live.stop(udid: $0) }
+            if !options.json { stopped.lines.forEach(Output.line) }
+
             if force {
                 try await runForce()
                 return
             }
             if let target {
                 let result = try await SimulatorManager.live.teardown(udid: target)
-                try report(outcomes: result, subject: target)
+                try report(outcomes: Self.marking(result, stopped: stopped.stopped), subject: target)
                 return
             }
             let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
-            try report(outcomes: outcomes, subject: session ?? "")
+            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped), subject: session ?? "")
+        }
+
+        /// Stops the runner sessions on each of `udids`; returns the devices
+        /// that had one and a line per stopped session.
+        static func stopRunnerSessions(
+            udids: [String], stop: (String) async -> [RunnerSessionStopper.Outcome]
+        ) async -> (stopped: [String], lines: [String]) {
+            var stopped: [String] = []
+            var lines: [String] = []
+            for udid in udids {
+                let outcomes = await stop(udid)
+                if !outcomes.isEmpty { stopped.append(udid) }
+                lines += outcomes.map(DeviceRunnerSessions.render)
+            }
+            return (stopped, lines)
+        }
+
+        static func marking(_ outcomes: [SimulatorTeardownOutcome], stopped: [String]) -> [SimulatorTeardownOutcome] {
+            outcomes.map { outcome in
+                var outcome = outcome
+                outcome.runnerSessionStopped = stopped.contains(outcome.session.udid)
+                return outcome
+            }
         }
 
         private func runForce() async throws {

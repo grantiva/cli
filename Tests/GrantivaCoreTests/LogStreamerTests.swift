@@ -92,6 +92,17 @@ final class LogStreamerTests: XCTestCase {
         XCTAssertTrue(waitForExit(second))
     }
 
+    /// K33: `adb logcat` and `simctl spawn … log stream` are named under
+    /// --verbose when they start and when they stop.
+    func testStartAndStopAreLoggedWithTheCommandLine() throws {
+        let streamer = LogStreamer()
+        let lines = try SubprocessLog.capturing {
+            try streamer.start(executable: "/bin/sleep", arguments: ["30"])
+            streamer.stop()
+        }
+        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGTERM: /bin/sleep 30"])
+    }
+
     private func waitForExit(_ pid: pid_t, timeout: TimeInterval = 5) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {

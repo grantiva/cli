@@ -76,13 +76,18 @@ enum RunnerExecution {
         try? stderrPipe.fileHandleForWriting.close()
 
         request.lease.recordRunner(pid: child.pid, keepAlive: request.keepAlive)
+        // If grantiva dies without running its cleanups (`kill -9`), the
+        // runner's group is interrupted rather than left holding the device.
+        child.bindLifetimeToParent()
 
         // The runner's own session file (/tmp/grantiva-sessions/<pid>-<ts>.grantiva)
         // carries no simulator UDID. Record udid -> runner pid now, before the
         // flows run, so `grantiva hierarchy --udid` can resolve the session the
         // moment the runner publishes it — and before any --ready-file exists.
         if request.keepAlive {
-            request.sessions.recordOwner(udid: request.lease.udid, runnerPid: child.pid, platform: request.platform)
+            request.sessions.recordOwner(
+                udid: request.lease.udid, runnerPid: child.pid, platform: request.platform, detached: false
+            )
         }
         defer {
             if request.keepAlive {

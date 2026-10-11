@@ -118,4 +118,88 @@ final class ChildProcessTests: XCTestCase {
         let text = try String(contentsOfFile: outPath, encoding: .utf8)
         XCTAssertTrue(text.contains("/tmp"), text)
     }
+    // MARK: - K79: the runner's lifetime is bound to grantiva's
+
+    /// Closing the watchdog's pipe is exactly what the kernel does when
+    /// grantiva dies, however it dies (`kill -9` included): the watchdog then
+    /// interrupts the runner's whole group.
+    func testTheWatchdogInterruptsTheGroupWhenItsParentGoesAway() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+        )
+        defer { child.terminateGroup(gracePeriod: 1) }
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+        usleep(200_000)
+        XCTAssertTrue(child.isRunning, "the watchdog must not fire while the parent lives")
+
+        Darwin.close(lifeline)
+        let started = Date()
+        let status = child.wait()
+        XCTAssertLessThan(Date().timeIntervalSince(started), 5)
+        XCTAssertEqual(status, SIGINT)
+    }
+
+    func testTheWatchdogJoinsTheRunnersProcessGroup() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "sleep 30"], stdout: output, stderr: output
+        )
+        let lifeline = try XCTUnwrap(child.bindLifetimeToParent())
+        defer { Darwin.close(lifeline) }
+        // Terminating the group also takes the watchdog down, so a normal exit
+        // never leaves it behind.
+        XCTAssertEqual(child.terminateGroup(gracePeriod: 1), .interrupted)
+        child.wait()
+        let deadline = Date().addingTimeInterval(5)
+        while Date() < deadline, kill(-child.pid, 0) == 0 { usleep(50_000) }
+        XCTAssertNotEqual(kill(-child.pid, 0), 0, "the watchdog outlived its group")
+    }
+
+    // MARK: - K87: terminateGroup says how it ended
+
+    func testTerminateGroupReportsWhenItHadToKill() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(
+            executable: "/bin/sh", arguments: ["-c", "trap '' INT TERM; while :; do sleep 0.1; done"],
+            stdout: output, stderr: output
+        )
+        usleep(200_000)
+        XCTAssertEqual(child.terminateGroup(gracePeriod: 0.3), .killed)
+        XCTAssertEqual(child.wait(), SIGKILL)
+    }
+
+    func testTerminateGroupOfAGoneGroupSaysSo() {
+        XCTAssertEqual(ChildProcess.terminateGroup(999_999, gracePeriod: 0.1), .alreadyGone)
+    }
+
+    // MARK: - K33: --verbose names every long-running subprocess
+
+    func testSpawnAndWaitAreLoggedLikeShell() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let lines = try SubprocessLog.capturing {
+            let child = try ChildProcess.spawn(
+                executable: "/bin/sh", arguments: ["-c", "exit 3"], stdout: output, stderr: output
+            )
+            child.wait()
+        }
+        XCTAssertEqual(lines, ["$ /bin/sh -c 'exit 3'", "exit 3: /bin/sh -c 'exit 3'"])
+    }
+
+    func testASignalledChildIsLoggedAsStopped() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let lines = try SubprocessLog.capturing {
+            let child = try ChildProcess.spawn(
+                executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output
+            )
+            child.signalGroup(SIGINT)
+            child.wait()
+        }
+        XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGINT: /bin/sleep 30"])
+    }
 }

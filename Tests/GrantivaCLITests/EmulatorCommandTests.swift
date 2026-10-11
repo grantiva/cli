@@ -122,6 +122,64 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertEqual(outcomes, [EmulatorTeardownOutcome(serial: "emulator-5598", avd: nil, killed: false, recorded: false)])
     }
 
+    // MARK: - K15: teardown stops the device's runner session
+
+    func testTeardownStopsTheRunnerSessionOfTheTornDownSerial() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let stopped = LockedList()
+        let outcomes = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { serial in
+                stopped.append(serial)
+                return [.terminated(runnerPid: 27331, udid: serial, killed: false)]
+            }
+        )
+        XCTAssertEqual(stopped.values, ["emulator-5598"])
+        XCTAssertEqual(outcomes.first?.runnerSessionStopped, true)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(outcomes).utf8)) as? [[String: Any]])
+        XCTAssertEqual(json.first?["runnerSessionStopped"] as? Bool, true)
+        XCTAssertEqual(
+            DeviceRunnerSessions.render(.terminated(runnerPid: 27331, udid: "emulator-5598", killed: false)),
+            "Stopped runner session (pid 27331) for emulator-5598."
+        )
+    }
+
+    func testARefusedTeardownStopsNothing() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let stopped = LockedList()
+        _ = try? await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: false,
+            stopRunners: { stopped.append($0); return [] }
+        )
+        XCTAssertEqual(stopped.values, [])
+    }
+
+    /// The session.json `runner start` wrote is handed to the stopper and
+    /// removed only when it names the torn-down serial.
+    func testSessionFileNamingTheSerialIsStoppedAndRemoved() async {
+        let removed = LockedList()
+        let handed = LockedList()
+        let file = RunnerSessionInfo(pid: 27331, wdaPort: 53095, bundleId: "b", udid: "emulator-5556", startedAt: Date(), platform: .android)
+        let sessions = DeviceRunnerSessions(
+            loadSession: { file },
+            removeSession: { removed.append("session.json") },
+            stopSessions: { udid, runnerStart in
+                handed.append("\(udid) \(runnerStart?.pid ?? 0)")
+                return runnerStart?.udid == udid ? [.terminated(runnerPid: 27331, udid: udid, killed: false)] : []
+            }
+        )
+        let outcomes = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(outcomes.count, 1)
+        XCTAssertEqual(removed.values, ["session.json"])
+
+        let other = await sessions.stop(udid: "emulator-5554")
+        XCTAssertTrue(other.isEmpty)
+        XCTAssertEqual(removed.values, ["session.json"], "a session naming another serial is left alone")
+        XCTAssertEqual(handed.values, ["emulator-5556 27331", "emulator-5554 27331"])
+    }
+
     // MARK: - K30 delete --json
 
     func testDeleteJSONIsPrettyPrintedLikeItsSiblings() throws {
@@ -171,4 +229,11 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertTrue(EmulatorCommand.Ensure.helpMessage(columns: 1000).contains("CI=true"))
         XCTAssertTrue(InstallCommand.helpMessage(columns: 1000).contains("CI=true"))
     }
+}
+
+final class LockedList: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: [String] = []
+    func append(_ value: String) { lock.withLock { storage.append(value) } }
+    var values: [String] { lock.withLock { storage } }
 }
