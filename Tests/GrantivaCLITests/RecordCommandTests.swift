@@ -110,8 +110,10 @@ final class RecordCommandTests: XCTestCase {
         }
         XCTAssertEqual(try RecordCommand.target(platform: .android, simulator: nil, emulator: nil, device: "emulator-5556", config: nil), "emulator-5556")
         XCTAssertEqual(try RecordCommand.target(platform: .android, simulator: nil, emulator: "Pixel", device: nil, config: nil), "Pixel")
-        XCTAssertThrowsError(try RecordCommand.target(platform: .android, simulator: nil, emulator: "Pixel", device: "emulator-5556", config: nil)) { error in
-            XCTAssertTrue("\(error)".contains("mutually exclusive"), "\(error)")
+        // `--device` with `--emulator` is refused by validate() (L26-b).
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--emulator", "Pixel", "--device", "emulator-5556"])) { error in
+            XCTAssertEqual(RecordCommand.message(for: error), "--device and --emulator are mutually exclusive; pass one.")
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure)
         }
         XCTAssertEqual(try RecordCommand.target(platform: .android, simulator: nil, emulator: nil, device: nil,
                                                 config: GrantivaConfig(platform: .android, android: AndroidProject(emulator: "Pixel_8_API_35"))), "Pixel_8_API_35")
@@ -183,16 +185,11 @@ final class RecordCommandTests: XCTestCase {
     func testOutputWithoutAnExtensionIsRejectedBeforeRecording() async throws {
         let dir = try makeAndroidProject()
         defer { restoreDirectory(dir) }
-        var command = try RecordCommand.parse(["--duration", "1", "--output", "clip"])
-        let fake = FakeDevicePlatform(platform: .android)
-        command.devicePlatform = InjectedDevicePlatform(fake)
-        do {
-            try await command.run()
-            XCTFail("expected an error")
-        } catch {
-            XCTAssertEqual(error as? ExitCode, .validationFailure, "\(error)")
+        // Refused at parse time (L26-a), so no device is touched.
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "1", "--output", "clip"])) { error in
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertTrue(RecordCommand.message(for: error).contains("must end in .mp4"), RecordCommand.message(for: error))
         }
-        XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
     }
 
     func testOutputExtensionMustMatchThePlatformsContainer() {
@@ -216,16 +213,13 @@ final class RecordCommandTests: XCTestCase {
         let previous = FileManager.default.currentDirectoryPath
         FileManager.default.changeCurrentDirectoryPath(dir.path)
         defer { restoreDirectory((dir, previous)) }
-        var command = try RecordCommand.parse(["--duration", "1", "--platform", "ios", "--simulator", "Fake", "--output", "clip.mp4"])
-        let fake = FakeDevicePlatform(platform: .ios)
-        command.devicePlatform = InjectedDevicePlatform(fake)
-        do {
-            try await command.run()
-            XCTFail("expected an error")
-        } catch {
-            XCTAssertEqual(error as? ExitCode, .validationFailure, "\(error)")
+        // Refused at parse time (L26-a), so the simulator is never touched.
+        XCTAssertThrowsError(
+            try RecordCommand.parse(["--duration", "1", "--platform", "ios", "--simulator", "Fake", "--output", "clip.mp4"])
+        ) { error in
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertTrue(RecordCommand.message(for: error).contains("must end in .mov"), RecordCommand.message(for: error))
         }
-        XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
     }
 
     /// A05: a static screen gives screenrecord one frame at 0 ms and a zero
@@ -434,5 +428,22 @@ final class RecordCommandTests: XCTestCase {
             XCTAssertEqual(RecordCommand.message(for: error), "--duration must be greater than zero")
             XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure)
         }
+    }
+
+    /// L26-a: the --output extension error has the usage-error shape: exit
+    /// 64, the message, then the Usage and See lines.
+    func testTheOutputExtensionErrorPrintsTheUsageLines() {
+        for (platform, output, expected) in [("ios", "a.mp4", "mov"), ("android", "a.mov", "mp4"), ("ios", "a", "mov")] {
+            let arguments = ["record", "--duration", "2", "--output", output, "--platform", platform]
+            XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(arguments)) { error in
+                let lines = GrantivaCommand.fullMessage(for: error).components(separatedBy: "\n")
+                XCTAssertEqual(lines.first, "Error: " + (RecordCommand.outputExtensionProblem(output, platform: Platform(rawValue: platform)!) ?? ""), "\(lines)")
+                XCTAssertTrue(lines.first?.contains("must end in .\(expected)") == true, "\(lines)")
+                XCTAssertTrue(lines.count > 1 && lines[1].hasPrefix("Usage: grantiva record"), "\(lines)")
+                XCTAssertFalse(lines.joined().contains("Invalid argument"), "\(lines)")
+                XCTAssertEqual(GrantivaCommand.exitCode(for: error), .validationFailure)
+            }
+        }
+        XCTAssertNoThrow(try GrantivaCommand.parseAsRoot(["record", "--duration", "2", "--output", "a.mov", "--platform", "ios"]))
     }
 }

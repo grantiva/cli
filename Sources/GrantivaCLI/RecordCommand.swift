@@ -49,6 +49,13 @@ struct RecordCommand: AsyncParsableCommand {
         if let problem = Self.framePastDurationProblem(frames: frames, duration: duration) {
             throw ValidationError(problem)
         }
+        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
+        // The extension depends on the platform, so resolve it first (L26-a).
+        // When it cannot be resolved here, run() reports why.
+        if let output, let platform = try? platformOptions.resolve(),
+           let problem = Self.outputExtensionProblem(output, platform: platform) {
+            throw ValidationError(problem)
+        }
     }
 
     /// A requested frame past the end of the recording can be refused before
@@ -109,9 +116,6 @@ struct RecordCommand: AsyncParsableCommand {
             return name
         case .android:
             if simulator != nil { throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android) }
-            if device != nil, emulator != nil {
-                throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
-            }
             if let device { _ = try DeviceID.validate(device, flag: "--device") }
             return device ?? emulator ?? config?.android?.emulator ?? ""
         }
@@ -206,14 +210,8 @@ struct RecordCommand: AsyncParsableCommand {
                 "Android recordings are capped at \(AndroidPlatform.maximumRecordingSeconds) seconds per file (screenrecord --time-limit); --duration \(duration) is too long."
             )
         }
+        // validate() has checked --output's extension against this platform.
         let outputPath = output ?? Self.defaultOutput(for: platform)
-        if let problem = Self.outputExtensionProblem(outputPath, platform: platform) {
-            // A usage error, but it needs the resolved platform, so it is
-            // raised here rather than in validate(); ExitCode keeps the
-            // usage line out of it.
-            GrantivaLog.logger.error("\(problem)")
-            throw ExitCode.validationFailure
-        }
         let platformDevice = try devicePlatform.make(platform)
 
         let booted = try await platformDevice.bootDevice(named: targetName)

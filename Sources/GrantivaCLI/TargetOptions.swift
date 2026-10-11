@@ -36,6 +36,12 @@ struct TargetOptions: ParsableArguments {
     @Flag(name: .long, help: "Boot an emulator without a window (Android). GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal.")
     var headless = false
 
+    /// Runs at parse time, before any config is read: `--device` with
+    /// `--emulator` is a usage error (exit 64 with the Usage lines).
+    func validate() throws {
+        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
+    }
+
     var androidOptions: AndroidPlatform.Options {
         AndroidPlatform.Options(allowDeviceSettings: allowDeviceSettings, headless: headless)
     }
@@ -54,9 +60,6 @@ struct TargetOptions: ParsableArguments {
         let wrong = platform == .ios ? androidFlags : iosFlags
         if let offending = wrong.first(where: { $0.1 })?.0 {
             throw Self.otherPlatformFlagError(offending, platform: platform)
-        }
-        if device != nil, emulator != nil {
-            throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
         }
         if let device {
             _ = try DeviceID.validate(device, flag: "--device")
@@ -174,5 +177,14 @@ struct TargetOptions: ParsableArguments {
         case .android:
             return "Application ID is required. Pass --application-id, set application_id in grantiva-android.yml, build from source, or pass --app-file <apk>."
         }
+    }
+}
+
+/// The usage error for two flags given together (`ExclusiveFlags`), thrown
+/// from `validate()` so it exits 64 with the command's Usage lines and the
+/// plain `Error:` prefix.
+func requireExclusive(_ first: (flag: String, given: Bool), _ second: (flag: String, given: Bool)) throws {
+    if let problem = ExclusiveFlags.problem(first, second) {
+        throw ValidationError(problem)
     }
 }

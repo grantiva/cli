@@ -118,7 +118,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             case (nil, nil):
                 throw ValidationError("Pass --session-id <id> or --udid <UDID>.")
             case (.some, .some):
-                throw ValidationError("--session-id and --udid are mutually exclusive; pass one.")
+                throw ValidationError(ExclusiveFlags.message("--session-id", "--udid"))
             default:
                 break
             }

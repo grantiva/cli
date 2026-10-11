@@ -262,7 +262,6 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertTrue(two.contains("access it; /r/devices/U: denied. Delete it by hand."), two)
     }
 
-
     /// K42: usage errors read `Error: <message>` with exit 64, never the
     /// runtime "Invalid argument:" prefix.
     func testTeardownUsageErrorsCarryNoInvalidArgumentPrefix() {
