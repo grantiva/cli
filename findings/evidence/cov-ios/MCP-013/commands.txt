@@ -1,0 +1,34 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF --flow .maestro/coverage/19-park-edit.yaml --keep-alive --ready-file $S/ka19.ready  > ka19.out 2> ka19.err &
+# ready after 14s pid=10226: {
+  "finishedAt" : "2026-10-11T08:28:58Z",
+  "flows" : [
+    {
+      "name" : "19-park-edit",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios
+$ python3 -I $S/mcp/client.py type/requests.json type/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios --verbose
+# elapsed=0s -> type/transcript.txt, stdout.raw, server.stderr
+# keep-alive released (exit 130)
+# first attempt passed --verbose to grantiva mcp: rejected (Unknown option '--verbose'), no calls made; redone below without it
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF --flow .maestro/coverage/19-park-edit.yaml --keep-alive --ready-file $S/ka19b.ready --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/ka19b > ka19b.out 2> ka19b.err &
+# ready after 15s pid=10846: {
+  "finishedAt" : "2026-10-11T08:29:22Z",
+  "flows" : [
+    {
+      "name" : "19-park-edit",
+      "status" : "passed"
+    }
+  ],
+  "reportDir" : "\/private\/tmp\/claude-501\/-Users-kyle-Developer-grantiva-cli\/b9f2e919-f7a5-4b94-a1bc-202f523560f4\/scratchpad\/cov-ios\/rep\/ka19b",
+  "status" : "passed"
+}
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios
+$ python3 -I $S/mcp/client.py type2/requests.json type2/ /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios -- $GRANTIVA mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios 
+# elapsed=3s -> type2/transcript.txt, stdout.raw, server.stderr
+# keep-alive released (exit 130)
