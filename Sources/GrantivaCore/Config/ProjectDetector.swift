@@ -55,16 +55,18 @@ extension ProjectDetector {
         }
     }
 
-    static func detect(
+    /// The Xcode container in a directory listing and every scheme
+    /// `xcodebuild -list` reports for it. The one scheme detection both
+    /// `init` and the resolver use, so they never disagree. Throws when the
+    /// directory has no `.xcworkspace` or `.xcodeproj`.
+    static func listSchemes(
         contents: [String],
         runShell: @escaping @Sendable (String) async throws -> String
-    ) async throws -> DetectedProject {
-        // Find workspace or project
+    ) async throws -> (workspace: String?, project: String?, schemes: [String]) {
         let sortedContents = contents.sorted()
         let workspace = sortedContents.first { $0.hasSuffix(".xcworkspace") && !$0.hasPrefix(".") }
         let project = sortedContents.first { $0.hasSuffix(".xcodeproj") && !$0.hasPrefix(".") }
 
-        // Run xcodebuild -list to get schemes
         var listCmd = "xcodebuild -list -json"
         if let workspace {
             listCmd += " -workspace \(shellQuoted(workspace))"
@@ -88,6 +90,22 @@ extension ProjectDetector {
         } else {
             schemes = []
         }
+        return (workspace, project, schemes)
+    }
+
+    /// `listSchemes` for a directory on disk, via `xcodebuild -list`.
+    public static func listSchemes(inDirectory directory: String) async throws -> (workspace: String?, project: String?, schemes: [String]) {
+        let contents = try FileManager.default.contentsOfDirectory(atPath: directory)
+        return try await listSchemes(contents: contents) { command in
+            try await shell("cd \(shellQuoted(directory)) && \(command)")
+        }
+    }
+
+    static func detect(
+        contents: [String],
+        runShell: @escaping @Sendable (String) async throws -> String
+    ) async throws -> DetectedProject {
+        let (workspace, project, schemes) = try await listSchemes(contents: contents, runShell: runShell)
 
         guard let scheme = schemes.first else {
             throw GrantivaError.invalidArgument("No schemes found in Xcode project")
@@ -154,14 +172,52 @@ extension ProjectDetector {
             for item in contents where
                 !item.hasPrefix(".") && (item.hasSuffix(".xcodeproj") || item.hasSuffix(".xcworkspace")) {
                 let containerURL = projectDirectory.appendingPathComponent(item)
-                if let modificationDate = try? fm.attributesOfItem(atPath: containerURL.path)[.modificationDate] as? Date,
-                   modificationDate > cacheDate {
-                    return nil // Cache invalidated
+                for path in schemeStatePaths(container: containerURL, fileManager: fm) {
+                    if let modificationDate = try? fm.attributesOfItem(atPath: path)[.modificationDate] as? Date,
+                       modificationDate > cacheDate {
+                        return nil // Cache invalidated
+                    }
                 }
             }
         }
 
         return cached
+    }
+
+    /// The files and directories whose modification time changes when the
+    /// container's scheme set does: the container itself, its project file,
+    /// and every `xcschemes` directory (shared and per-user). Adding or
+    /// removing a `.xcscheme` touches its directory, never the container's,
+    /// so watching only the container let a cache recorded with one scheme
+    /// keep picking it after a second appeared. A workspace also covers the
+    /// projects it references.
+    static func schemeStatePaths(container: URL, fileManager fm: FileManager = .default, includeReferences: Bool = true) -> [String] {
+        var paths = [
+            container.path,
+            container.appendingPathComponent("project.pbxproj").path,
+            container.appendingPathComponent("contents.xcworkspacedata").path,
+            container.appendingPathComponent("xcshareddata").path,
+            container.appendingPathComponent("xcshareddata/xcschemes").path,
+            container.appendingPathComponent("xcuserdata").path,
+        ]
+        let userData = container.appendingPathComponent("xcuserdata")
+        for user in (try? fm.contentsOfDirectory(atPath: userData.path)) ?? [] {
+            paths.append(userData.appendingPathComponent(user).path)
+            paths.append(userData.appendingPathComponent(user).appendingPathComponent("xcschemes").path)
+        }
+        if includeReferences, container.pathExtension == "xcworkspace",
+           let data = fm.contents(atPath: container.appendingPathComponent("contents.xcworkspacedata").path),
+           let xml = String(data: data, encoding: .utf8) {
+            let base = container.deletingLastPathComponent()
+            for match in xml.matches(of: /location\s*=\s*"(group|container|absolute):([^"]+\.xcodeproj)"/) {
+                let reference = String(match.2)
+                let project = match.1 == "absolute"
+                    ? URL(fileURLWithPath: reference)
+                    : base.appendingPathComponent(reference)
+                paths += schemeStatePaths(container: project, fileManager: fm, includeReferences: false)
+            }
+        }
+        return paths
     }
 
     public static func saveCache(_ project: DetectedProject) {

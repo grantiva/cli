@@ -27,7 +27,9 @@ struct RecordCommand: AsyncParsableCommand {
     @Option(name: .long, help: "adb serial of an attached emulator or device (Android)")
     var device: String?
 
-    @Option(name: .long, help: "Recording duration in seconds (Android caps a recording at 180)")
+    // `.unconditional`: `--duration -1` is a value to reject by range, not a
+    // missing value followed by an unknown option.
+    @Option(name: .long, parsing: .unconditional, help: "Recording duration in seconds (Android caps a recording at 180)")
     var duration: Double
 
     @Option(name: .long, help: "Output video path. Must end in .mov on iOS and .mp4 on Android, the containers each platform records (default: .grantiva/recordings/recording.mov on iOS, .mp4 on Android)")
@@ -40,6 +42,9 @@ struct RecordCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func validate() throws {
+        guard duration > 0 else {
+            throw ValidationError("--duration must be greater than zero")
+        }
         let frames = try Self.parseTimestamps(framesAt)
         if let problem = Self.framePastDurationProblem(frames: frames, duration: duration) {
             throw ValidationError(problem)
@@ -96,14 +101,14 @@ struct RecordCommand: AsyncParsableCommand {
     static func target(platform: Platform, simulator: String?, emulator: String?, device: String?, config: GrantivaConfig?) throws -> String {
         switch platform {
         case .ios:
-            if emulator != nil { throw GrantivaError.invalidArgument("--emulator is an Android option, but this is an iOS project.") }
-            if device != nil { throw GrantivaError.invalidArgument("--device is an Android option, but this is an iOS project.") }
+            if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
+            if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }
             guard let name = simulator ?? config?.simulator else {
                 throw GrantivaError.invalidArgument("No simulator named. Pass --simulator or set simulator in grantiva.yml.")
             }
             return name
         case .android:
-            if simulator != nil { throw GrantivaError.invalidArgument("--simulator is an iOS option, but this is an Android project.") }
+            if simulator != nil { throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android) }
             if device != nil, emulator != nil {
                 throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
             }
@@ -183,9 +188,6 @@ struct RecordCommand: AsyncParsableCommand {
     }
 
     func run() async throws {
-        guard duration > 0 else {
-            throw GrantivaError.invalidArgument("--duration must be greater than zero")
-        }
         let (platform, config) = try platformOptions.loadConfig()
         let targetName = try Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
         if platform == .android, !(duration.isFinite && duration <= Double(AndroidPlatform.maximumRecordingSeconds)) {

@@ -5,6 +5,6 @@ import GrantivaCLI
 struct Grantiva {
     static func main() async {
         LoggingBootstrap.bootstrap()
-        await GrantivaCommand.main()
+        await GrantivaCommand.main(GrantivaCommand.normalizedArguments(Array(CommandLine.arguments.dropFirst())))
     }
 }

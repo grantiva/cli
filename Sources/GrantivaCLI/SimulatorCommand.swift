@@ -125,11 +125,9 @@ struct SimulatorCommand: AsyncParsableCommand {
             // non-nil and so satisfied the check above, then matched no
             // process, released no lease, and exited 0 — reporting a
             // reclaimed device to a script that had named none.
-            do {
+            try usageCheck {
                 if let udid { _ = try SimulatorUDID.validate(udid) }
                 if let sessionId { _ = try SimulatorUDID.validateSessionID(sessionId) }
-            } catch let error as GrantivaError {
-                throw ValidationError(error.errorDescription ?? String(describing: error))
             }
         }
 

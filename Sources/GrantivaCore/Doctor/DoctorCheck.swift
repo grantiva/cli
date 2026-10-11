@@ -15,6 +15,11 @@ public struct DoctorCheck: Sendable, Codable {
 
     public enum Section: String, Sendable, Codable {
         case required = "Required"
+        /// Checks that can never fail doctor: device state (a booted
+        /// simulator, AVDs, a running emulator), the runner install (extracted
+        /// on first use) and, when no single platform is detected, the
+        /// toolchains doctor inspects only as advice.
+        case advisory = "Advisory"
         case project = "Project"
         case cloud = "CI / Cloud"
     }
@@ -25,5 +30,10 @@ public struct DoctorCheck: Sendable, Codable {
         self.message = message
         self.fix = fix
         self.section = section
+    }
+
+    /// The same check reported under another heading.
+    public func inSection(_ section: Section) -> DoctorCheck {
+        DoctorCheck(name: name, status: status, message: message, fix: fix, section: section)
     }
 }

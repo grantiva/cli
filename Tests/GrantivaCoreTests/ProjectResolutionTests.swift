@@ -118,6 +118,70 @@ final class ProjectResolutionTests: XCTestCase {
             XCTAssertTrue(error.localizedDescription.contains("ProjectDetector.failing"))
         }
     }
+
+    /// K71: `build build` has no --app-file, so its advice does not offer it.
+    func testTheNoSchemeAdviceOffersAppFileOnlyToCommandsThatTakeIt() async {
+        let detector = ProjectDetector { DetectedProject(scheme: "A", schemes: ["A", "B"]) }
+        for acceptsAppFile in [false, true] {
+            do {
+                _ = try await ResolvedProject.resolve(detector: detector, loadCache: { nil }, saveCache: { _ in }, acceptsAppFile: acceptsAppFile)
+                XCTFail("expected failure")
+            } catch {
+                let message = error.localizedDescription
+                XCTAssertEqual(message.contains("--app-file"), acceptsAppFile, message)
+                XCTAssertTrue(message.contains("Pass --scheme"), message)
+                XCTAssertTrue(message.hasSuffix("Found: A, B."), message)
+            }
+        }
+        XCTAssertEqual(ResolvedProject.noSchemeMessage(acceptsAppFile: false), "No scheme specified. Pass --scheme or set it in grantiva.yml.")
+    }
+
+    /// K72: a cache recorded when the project had one scheme cannot supply
+    /// it once a second scheme file appears.
+    func testACachedSingleSchemeIsDroppedWhenTheProjectGainsASecond() async throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("k72-\(UUID().uuidString)", isDirectory: true)
+        let schemes = root.appendingPathComponent("App.xcodeproj/xcshareddata/xcschemes", isDirectory: true)
+        try fm.createDirectory(at: schemes, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: root) }
+        try "<Scheme/>".write(to: schemes.appendingPathComponent("A.xcscheme"), atomically: true, encoding: .utf8)
+        let past = Date().addingTimeInterval(-120)
+        for path in ProjectDetector.schemeStatePaths(container: root.appendingPathComponent("App.xcodeproj")) where fm.fileExists(atPath: path) {
+            try fm.setAttributes([.modificationDate: past], ofItemAtPath: path)
+        }
+        let cacheURL = root.appendingPathComponent(".grantiva/config.json")
+        try ProjectDetector.writeCache(DetectedProject(scheme: "A", schemes: ["A"]), cacheURL: cacheURL)
+        try fm.setAttributes([.modificationDate: Date().addingTimeInterval(-60)], ofItemAtPath: cacheURL.path)
+        XCTAssertEqual(ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root)?.scheme, "A", "unchanged project: cache holds")
+
+        try "<Scheme/>".write(to: schemes.appendingPathComponent("B.xcscheme"), atomically: true, encoding: .utf8)
+        let detector = ProjectDetector { DetectedProject(scheme: "A", schemes: ["A", "B"]) }
+        do {
+            _ = try await ResolvedProject.resolve(
+                detector: detector,
+                loadCache: { ProjectDetector.loadCache(cacheURL: cacheURL, projectDirectory: root) },
+                saveCache: { _ in }
+            )
+            XCTFail("expected the no-scheme error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("No scheme specified"), error.localizedDescription)
+            XCTAssertTrue(error.localizedDescription.contains("Found: A, B."), error.localizedDescription)
+        }
+    }
+
+    func testAWorkspaceCoversTheSchemeDirectoriesOfTheProjectsItReferences() throws {
+        let fm = FileManager.default
+        let root = fm.temporaryDirectory.appendingPathComponent("k72ws-\(UUID().uuidString)", isDirectory: true)
+        let workspace = root.appendingPathComponent("App.xcworkspace", isDirectory: true)
+        try fm.createDirectory(at: workspace, withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: root) }
+        let elsewhere = fm.temporaryDirectory.appendingPathComponent("k72abs-\(UUID().uuidString)/Other.xcodeproj").path
+        try #"<Workspace version = "1.0"><FileRef location = "group:Sub/App.xcodeproj"></FileRef><FileRef location = "absolute:\#(elsewhere)"></FileRef></Workspace>"#
+            .write(to: workspace.appendingPathComponent("contents.xcworkspacedata"), atomically: true, encoding: .utf8)
+        let paths = ProjectDetector.schemeStatePaths(container: workspace)
+        XCTAssertTrue(paths.contains(root.appendingPathComponent("Sub/App.xcodeproj/xcshareddata/xcschemes").path), "\(paths)")
+        XCTAssertTrue(paths.contains(elsewhere + "/xcshareddata/xcschemes"), "\(paths)")
+    }
 }
 
 private final class LockedValue<Value>: @unchecked Sendable {

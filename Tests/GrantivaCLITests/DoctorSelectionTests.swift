@@ -60,4 +60,16 @@ final class DoctorSelectionTests: XCTestCase {
         XCTAssertNil(try DoctorCommand.platformSelection(flag: .ios, directory: dir, environment: [:]).advice)
         XCTAssertEqual(try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: ["GRANTIVA_PLATFORM": "android"]).platforms, [.android])
     }
+
+    func testBothProjectsDetectedPutsNoAdvisoryCheckUnderRequired() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir.appendingPathComponent("App.xcodeproj"), withIntermediateDirectories: true)
+        try "".write(to: dir.appendingPathComponent("settings.gradle.kts"), atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: dir) }
+
+        let selection = try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: [:])
+        let checks = await DoctorRunner().runAllChecks(platforms: selection.platforms, required: selection.required)
+        XCTAssertFalse(checks.contains { $0.section == .required && $0.status != .ok })
+        XCTAssertEqual(checks.first { $0.name == "Xcode" }?.section, .advisory)
+    }
 }

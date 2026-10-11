@@ -12,18 +12,22 @@ public struct DoctorRunner: Sendable {
     /// detected, so both platforms are reported).
     public func runAllChecks(platforms: [Platform], required: Bool) async -> [DoctorCheck] {
         var checks: [DoctorCheck] = []
+        // A toolchain doctor only advises on (nothing or both detected) is
+        // listed under "Advisory", not "Required": the heading agrees with the
+        // summary, which counts its warning as optional.
+        let toolchain: DoctorCheck.Section = required ? .required : .advisory
         if platforms.contains(.ios) {
-            checks.append(await checkXcode(required: required))
-            checks.append(await checkXcodeVersion(required: required))
+            checks.append(await checkXcode(required: required).inSection(toolchain))
+            checks.append(await checkXcodeVersion(required: required).inSection(toolchain))
             checks.append(await checkBootedSimulator())
         }
         if platforms.contains(.android) {
             let sdk = AndroidSDK.locate()
-            checks.append(checkAndroidSDK(sdk: sdk, required: required))
+            checks.append(checkAndroidSDK(sdk: sdk, required: required).inSection(toolchain))
             if let sdk {
-                checks.append(await checkADB(sdk: sdk, required: required))
-                checks.append(checkEmulatorBinary(sdk: sdk, required: required))
-                checks.append(await checkJDK(required: required))
+                checks.append(await checkADB(sdk: sdk, required: required).inSection(toolchain))
+                checks.append(checkEmulatorBinary(sdk: sdk, required: required).inSection(toolchain))
+                checks.append(await checkJDK(required: required).inSection(toolchain))
                 let manager = EmulatorManager(sdk: sdk, adb: ADB(path: sdk.adb))
                 checks.append(await checkAVDs(list: { (try? await manager.listAVDs()) ?? [] }))
                 checks.append(await checkRunningEmulator(adb: ADB(path: sdk.adb)))
@@ -89,7 +93,7 @@ public struct DoctorRunner: Sendable {
             let device = try await SimulatorManager.live.bootedDevice()
             return DoctorCheck(
                 name: "Booted Simulator", status: .ok,
-                message: "\(device.name) — \(device.runtime)", fix: nil
+                message: "\(device.name) — \(device.runtime)", fix: nil, section: .advisory
             )
         } catch {
             return Self.noBootedSimulatorCheck(newestIPhone: await SimulatorManager.live.newestIPhone())
@@ -102,7 +106,8 @@ public struct DoctorRunner: Sendable {
         DoctorCheck(
             name: "Booted Simulator", status: .warning,
             message: "No simulator booted",
-            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\""
+            fix: "Run: grantiva simulator ensure --name \"\(newestIPhone ?? "iPhone 17 Pro")\"",
+            section: .advisory
         )
     }
 
@@ -121,19 +126,19 @@ public struct DoctorRunner: Sendable {
                 return DoctorCheck(
                     name: "Runner", status: .warning,
                     message: "Installed grantiva-runner \(found); expected \(expectedVersion)",
-                    fix: "Run: grantiva runner install"
+                    fix: "Run: grantiva runner install", section: .advisory
                 )
             }
             return DoctorCheck(
                 name: "Runner", status: .ok,
                 message: "grantiva-runner \(installedVersion)",
-                fix: nil
+                fix: nil, section: .advisory
             )
         }
         return DoctorCheck(
             name: "Runner", status: .warning,
             message: "Not extracted — will be extracted on first use",
-            fix: "Run: grantiva runner install"
+            fix: "Run: grantiva runner install", section: .advisory
         )
     }
 
@@ -184,17 +189,17 @@ public struct DoctorRunner: Sendable {
     func checkAVDs(list: () async -> [String]) async -> DoctorCheck {
         let avds = await list()
         guard !avds.isEmpty else {
-            return DoctorCheck(name: "Android AVDs", status: .warning, message: "No AVD exists", fix: "Run: scripts/android-env.sh (creates Pixel_8_API_35)")
+            return DoctorCheck(name: "Android AVDs", status: .warning, message: "No AVD exists", fix: "Run: scripts/android-env.sh (creates Pixel_8_API_35)", section: .advisory)
         }
-        return DoctorCheck(name: "Android AVDs", status: .ok, message: avds.joined(separator: ", "), fix: nil)
+        return DoctorCheck(name: "Android AVDs", status: .ok, message: avds.joined(separator: ", "), fix: nil, section: .advisory)
     }
 
     func checkRunningEmulator(adb: ADB) async -> DoctorCheck {
         let running = ((try? await adb.devices()) ?? []).filter { $0.isEmulator && $0.isUsable }
         guard !running.isEmpty else {
-            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd Pixel_8_API_35")
+            return DoctorCheck(name: "Running Emulator", status: .warning, message: "No emulator running", fix: "Grantiva boots the configured AVD on demand; or run: emulator -avd Pixel_8_API_35", section: .advisory)
         }
-        return DoctorCheck(name: "Running Emulator", status: .ok, message: running.map(\.serial).joined(separator: ", "), fix: nil)
+        return DoctorCheck(name: "Running Emulator", status: .ok, message: running.map(\.serial).joined(separator: ", "), fix: nil, section: .advisory)
     }
 
     func checkConfig(for platform: Platform, directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {

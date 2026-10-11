@@ -165,13 +165,11 @@ struct EmulatorCommand: AsyncParsableCommand {
                 break
             }
             if let serial {
-                do {
+                try usageCheck {
                     let trimmed = try DeviceID.validate(serial, flag: "--serial")
                     guard DeviceID.isAndroidSerial(trimmed) else {
                         throw GrantivaError.invalidArgument("--serial \(trimmed) is a simulator UDID, not an emulator serial. Use `grantiva simulator teardown` for simulators.")
                     }
-                } catch let error as GrantivaError {
-                    throw ValidationError(error.errorDescription ?? String(describing: error))
                 }
             }
         }

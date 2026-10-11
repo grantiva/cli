@@ -23,6 +23,9 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
     case ipaExtractionFailed(String)
     case permissionDenied(String)
     case notFound(String)
+    /// A config file that loads but configures nothing the command can do
+    /// (no screens, no flows). The message is the whole sentence.
+    case configuration(String)
     case aborted
 
     public var errorDescription: String? {
@@ -71,9 +74,18 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
             return message
         case .notFound(let message):
             return message
+        case .configuration(let message):
+            return message
         case .aborted:
             return "Aborted."
         }
+    }
+
+    /// The message without the "Invalid argument: " prefix, for a caller
+    /// that reports it as a usage error (`Error: <message>`, exit 64).
+    public var usageMessage: String {
+        if case .invalidArgument(let message) = self { return message }
+        return errorDescription ?? String(describing: self)
     }
 }
 

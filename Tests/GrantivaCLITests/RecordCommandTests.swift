@@ -427,4 +427,12 @@ final class RecordCommandTests: XCTestCase {
         FileManager.default.changeCurrentDirectoryPath(state.1)
         try? FileManager.default.removeItem(at: state.0)
     }
+
+    /// K41: `--duration -1` is a usage error about the value.
+    func testANegativeDurationIsTheRangeErrorNotAMissingValue() {
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "-1"])) { error in
+            XCTAssertEqual(RecordCommand.message(for: error), "--duration must be greater than zero")
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure)
+        }
+    }
 }

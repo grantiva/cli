@@ -48,6 +48,11 @@ struct DiffCommand: AsyncParsableCommand {
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
             try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
+            // No config means no screens: say so before scheme resolution,
+            // with the same sentence `run` gives.
+            if config == nil {
+                throw DiffCommand.noScreensError(platform: platform, config: nil)
+            }
             let device = try devicePlatform.make(platform, android: target.androidOptions)
 
             // Resolve the app binary first (if provided) so we can derive bundle ID
@@ -738,7 +743,7 @@ struct DiffCommand: AsyncParsableCommand {
         guard config != nil else {
             return .notFound(GrantivaConfig.missingFileMessage(platform: platform, directory: directory))
         }
-        return .invalidArgument("No screens configured in \(platform.configFileName)")
+        return .configuration("No screens configured in \(platform.configFileName)")
     }
 
     static func captureDirectory(for platform: Platform) -> String {

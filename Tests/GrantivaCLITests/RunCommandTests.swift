@@ -628,18 +628,16 @@ final class RunCommandTests: XCTestCase {
             files: ["settings.gradle.kts": "rootProject.name = \"x\"\n"],
             ["--no-build", "--platform", "android"], platform: .android
         )
-        XCTAssertEqual(
-            (error as? GrantivaError)?.errorDescription,
-            "Invalid argument: No grantiva-android.yml here. Create one with grantiva init --platform android."
-        )
+        let description = (error as? GrantivaError)?.errorDescription ?? "\(String(describing: error))"
+        XCTAssertTrue(description.hasPrefix("grantiva-android.yml not found at /"), description)
+        XCTAssertTrue(description.hasSuffix("/grantiva-android.yml. Create one with grantiva init --platform android."), description)
     }
 
     func testNoIOSConfigNamesGrantivaYmlAndInit() async {
         let error = await runIn(files: [:], ["--no-build"], platform: .ios)
-        XCTAssertEqual(
-            (error as? GrantivaError)?.errorDescription,
-            "Invalid argument: No grantiva.yml here. Create one with grantiva init."
-        )
+        let description = (error as? GrantivaError)?.errorDescription ?? "\(String(describing: error))"
+        XCTAssertTrue(description.hasPrefix("grantiva.yml not found at /"), description)
+        XCTAssertTrue(description.hasSuffix("/grantiva.yml. Create one with grantiva init."), description)
     }
 
     func testEmptyConfigSaysNothingIsConfiguredInTheResolvedFile() async {
@@ -649,8 +647,156 @@ final class RunCommandTests: XCTestCase {
         )
         XCTAssertEqual(
             (error as? GrantivaError)?.errorDescription,
-            "Invalid argument: No screens or flows configured in grantiva-android.yml"
+            "No screens or flows configured in grantiva-android.yml"
         )
+    }
+
+    /// K52: with no config, `run` (with and without --no-build) and `diff
+    /// capture` say the same sentence, and the missing file is reported
+    /// before scheme resolution would complain about several schemes.
+    func testMissingConfigIsTheSameSentenceAsDiffCaptureAndBeatsTheSchemeError() async throws {
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-k52-\(UUID().uuidString)")
+        // Two shared schemes: resolution would fail with "No scheme specified
+        // ... Found: App, App (UI Testing)." if it ran first.
+        let schemes = scratch.appendingPathComponent("App.xcodeproj/xcshareddata/xcschemes")
+        try fileManager.createDirectory(at: schemes, withIntermediateDirectories: true)
+        for name in ["App", "App (UI Testing)"] {
+            try "<Scheme/>".write(to: schemes.appendingPathComponent("\(name).xcscheme"), atomically: true, encoding: .utf8)
+        }
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+        let expected = GrantivaConfig.missingFileMessage(
+            platform: .ios, directory: URL(fileURLWithPath: fileManager.currentDirectoryPath, isDirectory: true)
+        )
+
+        func runError(_ arguments: [String]) async -> String {
+            do {
+                var command = try RunCommand.parse(arguments)
+                command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+                try await command.run()
+                return "no error"
+            } catch {
+                return (error as? LocalizedError)?.errorDescription ?? "\(error)"
+            }
+        }
+        let built = await runError([])
+        let noBuild = await runError(["--no-build"])
+        var capture = "no error"
+        do {
+            var command = try DiffCommand.CaptureCommand.parse([])
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+            try await command.run()
+        } catch {
+            capture = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+        }
+        XCTAssertEqual(built, expected)
+        XCTAssertEqual(noBuild, expected)
+        XCTAssertEqual(capture, expected)
+        XCTAssertFalse(built.contains("No scheme specified"), built)
+    }
+
+    /// A config that configures nothing is a configuration error, without
+    /// the usage prefix, from both run and diff capture.
+    func testAnEmptyConfigIsAConfigurationErrorForRunAndCapture() async throws {
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-empty-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        try "scheme: Demo\nsimulator: fake\nbundle_id: com.example.demo\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+
+        var run = try RunCommand.parse(["--no-build"])
+        run.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        do { try await run.run(); XCTFail("expected a failure") } catch {
+            guard case .configuration(let message)? = error as? GrantivaError else { return XCTFail("\(error)") }
+            XCTAssertEqual(message, "No screens or flows configured in grantiva.yml")
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, message)
+        }
+        var capture = try DiffCommand.CaptureCommand.parse(["--no-build"])
+        capture.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        do { try await capture.run(); XCTFail("expected a failure") } catch {
+            guard case .configuration(let message)? = error as? GrantivaError else { return XCTFail("\(error)") }
+            XCTAssertEqual(message, "No screens configured in grantiva.yml")
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, message)
+        }
+    }
+
+    /// K39: a setup failure's ready file says why, and names no report
+    /// directory that was never created.
+    func testASetupFailureReadyFileHasTheErrorAndNoMissingReportDir() async throws {
+        let fileManager = FileManager.default
+        let previous = fileManager.currentDirectoryPath
+        let scratch = fileManager.temporaryDirectory.appendingPathComponent("grantiva-run-k39-\(UUID().uuidString)")
+        try fileManager.createDirectory(at: scratch, withIntermediateDirectories: true)
+        defer {
+            fileManager.changeCurrentDirectoryPath(previous)
+            try? fileManager.removeItem(at: scratch)
+        }
+        try "scheme: Demo\nsimulator: fake\nbundle_id: com.example.demo\nflows: []\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        fileManager.changeCurrentDirectoryPath(scratch.path)
+
+        var command = try RunCommand.parse(["--report-dir", "out", "--ready-file", "out.ready", "--json"])
+        command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        let captured = CapturedLines()
+        command.resultOutput = ResultOutput { captured.append($0) }
+        do {
+            try await command.run()
+            XCTFail("expected a failure")
+        } catch {}
+
+        XCTAssertFalse(fileManager.fileExists(atPath: scratch.appendingPathComponent("out").path))
+        let state = try ReadyFile.read(scratch.appendingPathComponent("out.ready").path)
+        XCTAssertEqual(state.status, "failed")
+        XCTAssertEqual(state.error, "No screens or flows configured in grantiva.yml")
+        XCTAssertNil(state.reportDir)
+        let document = try XCTUnwrap(captured.values.first)
+        XCTAssertTrue(document.contains(#""error" : "No screens or flows configured in grantiva.yml""#), document)
+
+        // Once the directory exists, a setup failure keeps pointing at it.
+        try fileManager.createDirectory(at: scratch.appendingPathComponent("out"), withIntermediateDirectories: true)
+        var again = try RunCommand.parse(["--report-dir", "out", "--ready-file", "out.ready"])
+        again.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+        _ = try? await again.run()
+        let kept = try ReadyFile.read(scratch.appendingPathComponent("out.ready").path)
+        XCTAssertEqual(kept.reportDir, "out")
+        XCTAssertNotNil(kept.error)
+    }
+
+    /// K40: an invalid --snapshot lists the valid values.
+    func testAnInvalidSnapshotListsTheValidValues() {
+        XCTAssertThrowsError(try RunCommand.parse(["--snapshot", "bogus"])) { error in
+            let message = RunCommand.message(for: error)
+            for value in ["failure", "trailing", "full"] {
+                XCTAssertTrue(message.contains("'\(value)'"), message)
+            }
+            XCTAssertEqual(RunCommand.exitCode(for: error), .validationFailure)
+        }
+    }
+
+    /// K41: a negative --timeout is an invalid value, not a missing one.
+    func testANegativeTimeoutIsTheRangeErrorNotAMissingValue() throws {
+        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "-1"])) { error in
+            let message = RunCommand.message(for: error)
+            XCTAssertEqual(message, "--timeout must be at least 30 seconds.")
+            XCTAssertEqual(RunCommand.exitCode(for: error), .validationFailure)
+        }
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-ready-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let readyFile = directory.appendingPathComponent("r.ready").path
+        XCTAssertThrowsError(try RunCommand.parse(["--timeout", "-1", "--ready-file", readyFile]))
+        XCTAssertEqual(try ReadyFile.read(readyFile).error, "--timeout must be at least 30 seconds.")
     }
 
     // MARK: - --no-build with the app missing (I15)

@@ -32,9 +32,7 @@ public struct IOSPlatform: DevicePlatform {
 
     public func build(_ request: PlatformBuildRequest) async throws -> BuildResult {
         guard let scheme = request.resolved.scheme else {
-            throw GrantivaError.invalidArgument(
-                "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
-            )
+            throw GrantivaError.invalidArgument(ResolvedProject.noSchemeMessage(acceptsAppFile: true))
         }
         return try await xcodebuild.build(
             scheme: scheme,

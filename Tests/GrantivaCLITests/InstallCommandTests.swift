@@ -141,4 +141,49 @@ final class InstallCommandTests: XCTestCase {
             "[grantiva] Done — com.example.app running on iPhone 17\nData container: /tmp/simulator/data"
         )
     }
+
+    /// K73: a --bundle-id that is not the built app's ID is named, with both
+    /// IDs, before install; the container lookup never runs under it.
+    func testABundleIDThatIsNotTheBuiltAppsFailsNamingBothBeforeInstall() async throws {
+        let fm = FileManager.default
+        let previous = fm.currentDirectoryPath
+        let root = fm.temporaryDirectory.appendingPathComponent("k73-\(UUID().uuidString)", isDirectory: true)
+        let app = root.appendingPathComponent("Demo.app", isDirectory: true)
+        try fm.createDirectory(at: app, withIntermediateDirectories: true)
+        defer {
+            fm.changeCurrentDirectoryPath(previous)
+            try? fm.removeItem(at: root)
+        }
+        let plist = try PropertyListSerialization.data(fromPropertyList: ["CFBundleIdentifier": "com.example.A"], format: .xml, options: 0)
+        try plist.write(to: app.appendingPathComponent("Info.plist"))
+        try "scheme: Demo\nsimulator: fake\n".write(to: root.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        fm.changeCurrentDirectoryPath(root.path)
+
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.buildResult = BuildResult(success: true, scheme: "Demo", duration: 0, warnings: [], errors: [], productPath: app.path)
+        var command = try InstallCommand.parse(["--no-launch", "--platform", "ios", "--bundle-id", "com.example.B"])
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected the mismatch error")
+        } catch {
+            let message = (error as? GrantivaError)?.errorDescription ?? "\(error)"
+            XCTAssertTrue(message.contains("--bundle-id com.example.B does not match the built app (com.example.A, "), message)
+            XCTAssertTrue(message.contains("Demo.app/Info.plist"), message)
+            XCTAssertFalse(message.contains("NSPOSIXErrorDomain"), message)
+        }
+        XCTAssertFalse(fake.calls.contains { $0.hasPrefix("install(") }, "\(fake.calls)")
+    }
+
+    func testAMatchingOrAbsentBundleIDIsNotAMismatch() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("k73b-\(UUID().uuidString)/Demo.app", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root.deletingLastPathComponent()) }
+        let plist = try PropertyListSerialization.data(fromPropertyList: ["CFBundleIdentifier": "com.example.A"], format: .xml, options: 0)
+        try plist.write(to: root.appendingPathComponent("Info.plist"))
+        XCTAssertNil(InstallCommand.bundleIDMismatch(flag: "com.example.A", configured: "com.other", productPath: root.path))
+        XCTAssertNil(InstallCommand.bundleIDMismatch(flag: nil, configured: nil, productPath: root.path))
+        let configured = InstallCommand.bundleIDMismatch(flag: nil, configured: "com.other", productPath: root.path)?.errorDescription ?? ""
+        XCTAssertTrue(configured.contains("bundle_id com.other in grantiva.yml does not match the built app (com.example.A"), configured)
+    }
 }

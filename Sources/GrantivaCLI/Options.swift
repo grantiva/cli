@@ -181,3 +181,15 @@ struct PlatformOptions: ParsableArguments {
         return (resolved, config)
     }
 }
+
+/// Runs a `validate()` check whose `GrantivaError` is a usage error. Every
+/// usage error reads `Error: <message>` and exits 64; a GrantivaError thrown
+/// from `validate()` as is, or wrapped with its description, carried the
+/// runtime "Invalid argument:" prefix instead.
+func usageCheck<T>(_ check: () throws -> T) throws -> T {
+    do {
+        return try check()
+    } catch let error as GrantivaError {
+        throw ValidationError(error.usageMessage)
+    }
+}

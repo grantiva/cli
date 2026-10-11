@@ -1,3 +1,4 @@
+import ArgumentParser
 import Foundation
 import XCTest
 @testable import GrantivaCLI
@@ -180,6 +181,72 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
         XCTAssertNoThrow(try ConsoleReleasesCommand.UpdateCommand.parse(["N1", "--title", "x"]))
         XCTAssertThrowsError(try ConsoleReleasesCommand.ListCommand.parse(["--per", "0"]))
         XCTAssertEqual(try ConsoleReleasesCommand.ListCommand.parse(["--app", "com.x", "--page", "2"]).page, 2)
+    }
+
+    /// K50: the option no longer shadows the inherited `--version` flag.
+    func testReleasesUpdateTakesReleaseVersionAndLeavesVersionToTheFlag() throws {
+        XCTAssertEqual(try ConsoleReleasesCommand.UpdateCommand.parse(["NOTE", "--release-version", "2.2.0"]).version, "2.2.0")
+        let help = GrantivaCommand.helpMessage(for: ConsoleReleasesCommand.UpdateCommand.self)
+        XCTAssertEqual(help.components(separatedBy: "--version").count - 1, 1, help)
+        XCTAssertTrue(help.contains("--release-version <release-version>"), help)
+
+        // The old spelling with a value still sets the release version; a
+        // bare --version is left for the version flag.
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "N", "--version", "2.2.0"]),
+            ["console", "releases", "update", "N", "--release-version", "2.2.0"]
+        )
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "N", "--version=2.2.0"]),
+            ["console", "releases", "update", "N", "--release-version=2.2.0"]
+        )
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "--version"]),
+            ["console", "releases", "update", "--version"]
+        )
+        XCTAssertEqual(GrantivaCommand.normalizedArguments(["run", "--version", "x"]), ["run", "--version", "x"])
+        // Options before `update` do not hide the command path.
+        for prefix in [
+            ["console", "releases", "--json", "update"],
+            ["console", "--json", "releases", "update"],
+            ["--json", "console", "releases", "update"],
+            ["console", "--per", "10", "releases", "update"],
+            ["console", "--per=10", "releases", "--verbose", "update"],
+        ] {
+            XCTAssertEqual(
+                GrantivaCommand.normalizedArguments(prefix + ["N", "--version", "2.2.0"]),
+                prefix + ["N", "--release-version", "2.2.0"], "\(prefix)"
+            )
+            XCTAssertEqual(
+                GrantivaCommand.normalizedArguments(prefix + ["N", "--version=2.2.0"]),
+                prefix + ["N", "--release-version=2.2.0"], "\(prefix)"
+            )
+            XCTAssertEqual(GrantivaCommand.normalizedArguments(prefix + ["N", "--version"]), prefix + ["N", "--version"])
+        }
+        // ArgumentParser rejects --json before `update` either way; what
+        // matters is that the value is not swallowed into a silent version
+        // print with exit 0.
+        XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(GrantivaCommand.normalizedArguments(
+            ["console", "releases", "--json", "update", "N", "--version", "2.2.0"]
+        ))) { error in
+            XCTAssertNotEqual(GrantivaCommand.exitCode(for: error), .success, GrantivaCommand.message(for: error))
+        }
+        let parsed = try XCTUnwrap(
+            try GrantivaCommand.parseAsRoot(GrantivaCommand.normalizedArguments(
+                ["console", "releases", "update", "--json", "N", "--version=2.2.0"]
+            )) as? ConsoleReleasesCommand.UpdateCommand
+        )
+        XCTAssertEqual(parsed.version, "2.2.0")
+        XCTAssertTrue(parsed.options.json)
+        // A value token is not taken for a subcommand name.
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "--per", "update", "releases", "x", "--version", "1"]),
+            ["console", "--per", "update", "releases", "x", "--version", "1"]
+        )
+        XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(["console", "releases", "update", "--version"])) { error in
+            XCTAssertEqual(GrantivaCommand.exitCode(for: error), .success)
+            XCTAssertEqual(GrantivaCommand.message(for: error), grantivaVersion)
+        }
     }
 
     func testReleasesDeleteRefusesWithoutYesOffTTY() async throws {
