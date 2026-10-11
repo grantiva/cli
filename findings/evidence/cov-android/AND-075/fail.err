@@ -1,0 +1,107 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting emulator: emulator-5554
+Emulator booted: cov-android (emulator-5554)
+Skipping build and install (--no-build)
+Streaming emulator logs
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B584DAEB-FDE9-4C3C-AB6D-EF8569085D3F
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+[log] --------- beginning of main
+[log] 10-11 00:17:31.807 I/wning.landmarks(30652): Late-enabling -Xcheck:jni
+[log] 10-11 00:17:31.825 I/wning.landmarks(30652): Using CollectorTypeCMC GC.
+[log] 10-11 00:17:31.872 W/ziparchive(30652): Unable to open '/data/app/~~pz4r2C4ceke7so83zDKqNA==/com.kylebrowning.landmarks-VSMmvJ0dN8ryGG2zK3fI_w==/base.dm': No such file or directory
+[log] 10-11 00:17:31.872 W/ziparchive(30652): Unable to open '/data/app/~~pz4r2C4ceke7so83zDKqNA==/com.kylebrowning.landmarks-VSMmvJ0dN8ryGG2zK3fI_w==/base.dm': No such file or directory
+[log] 10-11 00:17:32.075 I/Landmarks(30652): launch action=android.intent.action.MAIN data=null extras=[LANDMARKS_CRASH_ON_LAUNCH=1] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): Common causes for lock verification issues are non-optimized dex code
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): and incorrect proguard optimizations.
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:32.076 W/wning.landmarks(30652): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+[log] 10-11 00:17:32.077 W/wning.landmarks(30652): Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+[log] 10-11 00:17:32.105 W/HWUI    (30652): Unknown dataspace 0
+[log] 10-11 00:17:32.240 I/wning.landmarks(30652): Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals()
+[log] 10-11 00:17:32.380 I/EGL_emulation(30652): Opening libGLESv1_CM_emulation.so
+[log] 10-11 00:17:32.380 I/EGL_emulation(30652): Opening libGLESv2_emulation.so
+[log] 10-11 00:17:32.382 W/HWUI    (30652): Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+[log] 10-11 00:17:32.383 W/HWUI    (30652): Failed to initialize 101010-2 format, error = EGL_SUCCESS
+[log] 10-11 00:17:32.390 I/Gralloc4(30652): mapper 4.x is not supported
+[log] --------- beginning of crash
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): FATAL EXCEPTION: main
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): Process: com.kylebrowning.landmarks, PID: 30652
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at com.kylebrowning.landmarks.LandmarksApp$Companion.scheduleCrashIfRequested$lambda$0(LandmarksApp.kt:15)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at com.kylebrowning.landmarks.LandmarksApp$Companion.$r8$lambda$ix4YNiGBvCpx2x1g2pgvnXpn7Gs(Unknown Source:0)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at com.kylebrowning.landmarks.LandmarksApp$Companion$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at android.os.Handler.handleCallback(Handler.java:959)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at android.os.Handler.dispatchMessage(Handler.java:100)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at android.os.Looper.loopOnce(Looper.java:232)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at android.os.Looper.loop(Looper.java:317)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at java.lang.reflect.Method.invoke(Native Method)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+[log] 10-11 00:17:32.598 E/AndroidRuntime(30652): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+[log] 10-11 00:17:32.603 I/Process (30652): Sending signal. PID: 30652 SIG: 9
+    ✗ launchApp (1.6s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+✗ 99-crash 2.7s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: google sdk_gphone64_arm64 (android 35 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (2.6s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+    ✗ assertVisible (0ms)
+✗ 99-crash 2.6s
+
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      0      1      3       2.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      0      1      3       2.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B584DAEB-FDE9-4C3C-AB6D-EF8569085D3F
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B584DAEB-FDE9-4C3C-AB6D-EF8569085D3F/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B584DAEB-FDE9-4C3C-AB6D-EF8569085D3F/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-B584DAEB-FDE9-4C3C-AB6D-EF8569085D3F/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/captures/android/failure-1791703054.png
+Error: Runner failed (exit 1); see the runner output above.

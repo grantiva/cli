@@ -1,0 +1,1 @@
+$GRANTIVA hierarchy --format json > $S/h054.json; echo rc=$?; python3 -c "import json;d=json.load(open(\"$S/h054.json\"));print(list(d.keys()) if isinstance(d,dict) else type(d))"; head -c 1200 $S/h054.json

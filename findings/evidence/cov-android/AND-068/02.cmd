@@ -1,0 +1,1 @@
+ps -p 95285 -o pid= || echo orphan-runner-exited; $S/tools/settings.sh; $GRANTIVA run --no-build --flow .maestro/01-browse.yaml --device emulator-5554 --verbose > $E/AND-068/next.out 2> $E/AND-068/next.err; echo exit $?; grep -n -i "restor\|android-settings" $E/AND-068/next.err | head -8 | cut -c1-220; ls .grantiva; $S/tools/settings.sh

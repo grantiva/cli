@@ -1,0 +1,1 @@
+$S/tools/intrun.sh $E/AND-060/run 12 --device emulator-5554 --no-build --flow .maestro/coverage/18-long-wait.yaml --keep-alive --logs --ready-file $S/int.ready; sleep 5; cat $S/int.ready; echo; ps -axo pid,ppid,command | grep "[a]db.*logcat" || echo no-logcat; ls /tmp/grantiva-sessions/; $S/tools/settings.sh; tail -6 $E/AND-060/run.err

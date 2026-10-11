@@ -1,0 +1,15 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "qa", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"method": "notifications/initialized", "jsonrpc": "2.0"}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_list", "arguments": {}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Name | Serial | State\nPixel_8_API_35 | - | Shutdown\ncov-android | emulator-5554 | Booted", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_boot", "arguments": {"name": "cov-android"}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Emulator booted: cov-android (emulator-5554)", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_boot", "arguments": {}}, "id": 4, "jsonrpc": "2.0"}
+<< [0.1s] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Emulator booted: cov-android (emulator-5554)", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_ensure", "arguments": {"name": "cov-android-2", "boot": false}}, "id": 5, "jsonrpc": "2.0"}
+<< [0.5s] {"id": 5, "jsonrpc": "2.0", "result": {"content": [{"text": "{\n  \"created\" : true,\n  \"name\" : \"cov-android-2\",\n  \"state\" : \"Shutdown\"\n}", "type": "text"}]}}
+>> {"method": "tools/call", "params": {"name": "grantiva_emulator_delete", "arguments": {"name": "cov-android-2"}}, "id": 6, "jsonrpc": "2.0"}
+<< [0.5s] {"id": 6, "jsonrpc": "2.0", "result": {"content": [{"text": "{\"deleted\":true,\"name\":\"cov-android-2\"}", "type": "text"}]}}
+nonjson_lines=0 server_alive=True
+exit=0

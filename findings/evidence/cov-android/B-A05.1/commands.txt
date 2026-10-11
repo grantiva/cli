@@ -1,0 +1,8 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA record --device emulator-5554 --duration 2 --frames-at 1000 --output $S/a05.mp4 --json; echo "exit $?"; ffprobe -v error -show_entries format=duration -of csv=p=0 $S/a05.mp4; ls $S/a05-frames
+rc=0 elapsed=2.5s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/Users/kyle/Developer/grantiva-cli
+$ ffprobe -v error -select_streams v:0 -show_entries frame=pts_time,duration_time -of csv=p=0 $S/a05.mp4
+rc=0 elapsed=0.0s  (stdout 02.out, stderr 02.err)
+

@@ -1,0 +1,8 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 > $E/AND-068/killed.out 2> $E/AND-068/killed.err & p=$!; sleep 6; kill -9 $p; sleep 2; echo "killed $p"; ls .grantiva; $S/tools/settings.sh; ps -axo pid,ppid,command | grep "[g]rantiva-runner" | cut -c1-160
+rc=0 elapsed=8.3s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ps -p 95285 -o pid= || echo orphan-runner-exited; $S/tools/settings.sh; $GRANTIVA run --no-build --flow .maestro/01-browse.yaml --device emulator-5554 --verbose > $E/AND-068/next.out 2> $E/AND-068/next.err; echo exit $?; grep -n -i "restor\|android-settings" $E/AND-068/next.err | head -8 | cut -c1-220; ls .grantiva; $S/tools/settings.sh
+rc=0 elapsed=7.3s  (stdout 02.out, stderr 02.err)
+

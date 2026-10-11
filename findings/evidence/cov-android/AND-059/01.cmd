@@ -1,0 +1,1 @@
+kill -INT $(cat $S/ka.pid); sleep 6; ps -p $(cat $S/ka.pid) -o pid= || echo run-exited; tail -5 $E/AND-051/ka.err; ls /tmp/grantiva-sessions/; $S/tools/settings.sh; ls .grantiva; ls .grantiva/captures/android | grep -c failure; cat $S/fail-before.txt; cat $S/ka.ready

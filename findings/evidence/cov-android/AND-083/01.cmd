@@ -1,0 +1,1 @@
+$GRANTIVA runner start --detach --application-id com.kylebrowning.landmarks.paid --emulator cov-android; echo rc=$?; cat .grantiva/session.json; echo; sleep 2; adb -s emulator-5554 shell dumpsys activity activities | grep -m1 topResumedActivity; $GRANTIVA runner stop

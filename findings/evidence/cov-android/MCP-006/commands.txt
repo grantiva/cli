@@ -1,0 +1,14 @@
+# note: keep-alive: $S/tools/ka.sh $E/MCP-006/ka .maestro/coverage/20-park-deeplinks.yaml
+$ python3 client.py /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/mcp/m006a.json /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/MCP-006/mcp-01 /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android -- /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android   # (client.py = scratch tools/client.py, copied from the regression iOS evidence)
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA hierarchy --format json > $S/gl.json; python3 -c "
+import json
+def walk(n):
+    yield n
+    for c in n.get(\"children\",[]): yield from walk(c)
+for n in walk(json.load(open(\"$S/gl.json\"))):
+    if n.get(\"identifier\")==\"gesture-pad\" or str(n.get(\"label\",\"\")).startswith((\"Taps\",\"Last\")) or str(n.get(\"text\",\"\")).startswith((\"Taps\",\"Last\")): print(json.dumps({k:n.get(k) for k in (\"identifier\",\"label\",\"text\",\"frame\")}))
+"
+rc=0 elapsed=0.2s  (stdout 01.out, stderr 01.err)
+
+$ python3 client.py /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/mcp/m006b.json /Users/kyle/Developer/grantiva-cli/.worktrees/cov-android/findings/evidence/cov-android/MCP-006/mcp-02 /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android -- /Users/kyle/.grantiva-qa/bin/grantiva mcp --project-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android   # (client.py = scratch tools/client.py, copied from the regression iOS evidence)

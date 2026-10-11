@@ -1,0 +1,1 @@
+grep -c '^ *\[' dh.tree; grep -o '<android[^ ]*\|<androidx[^ ]*\|<[a-z]*\.[^ ]*' dh.xml | wc -l; grep -c '"type"' dh.json; grep -o 'text="[^"]\+"' dh.xml | head -5; grep -o '"text" : "[^"]*"\|"label" : "[^"]*"' dh.json | head -5; grep -o '"[^"]*"' dh.tree | grep -v 'id=' | head -5

@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ echo "{\"pid\":99999,\"bundleId\":\"com.kylebrowning.landmarks\",\"platform\":\"android\",\"startedAt\":813396000,\"udid\":\"emulator-5554\",\"wdaPort\":1}" > .grantiva/session.json; ps -p 99999 -o pid= || echo pid-99999-dead; $GRANTIVA runner start --detach; echo rc=$?; cat .grantiva/session.json; echo; $GRANTIVA runner dump-hierarchy | head -3
+rc=0 elapsed=1.7s  (stdout 01.out, stderr 01.err)
+

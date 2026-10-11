@@ -1,0 +1,12 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ MCP_WAIT=40 MCP_TIMEOUT=90 MCP_STDERR=$E/AND-104/server.err bash $S/tools/send.sh $P android $S/mcp/burst.jsonl > $S/burst.out; python3 -c "
+import json
+ids=[];err=0;iserr=0
+for l in open(\"$S/burst.out\"):
+    o=json.loads(l); 
+    if \"error\" in o: err+=1
+    if o.get(\"result\",{}).get(\"isError\"): iserr+=1
+    ids.append(o.get(\"id\"))
+print(\"responses\",len(ids),\"ids\",sorted(i for i in ids if i is not None),\"rpc_errors\",err,\"isError\",iserr)"
+rc=0 elapsed=40.1s  (stdout 01.out, stderr 01.err)
+

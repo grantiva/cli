@@ -1,0 +1,1 @@
+$GRANTIVA record --device emulator-5554 --duration 2 --frames-at 1000 --output $S/a05.mp4 --json; echo "exit $?"; ffprobe -v error -show_entries format=duration -of csv=p=0 $S/a05.mp4; ls $S/a05-frames

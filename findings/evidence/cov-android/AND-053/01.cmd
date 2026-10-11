@@ -1,0 +1,1 @@
+adb -s emulator-5554 shell pidof com.kylebrowning.landmarks; $GRANTIVA hierarchy > $S/h053.xml; echo rc=$?; head -c 400 $S/h053.xml; echo; grep -o "text=\"[^\"]\+\"" $S/h053.xml | head -12; adb -s emulator-5554 shell pidof com.kylebrowning.landmarks

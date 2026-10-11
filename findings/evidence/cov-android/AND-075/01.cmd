@@ -1,0 +1,1 @@
+$GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs > $E/AND-075/ok.out 2> $E/AND-075/ok.err; echo exit $?; sleep 3; ps -axo pid,ppid,command | grep "[a]db.*logcat" || echo no-logcat

@@ -1,0 +1,32 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs  --verbose 2>&1 | grep -E 'logcat' | grep -v 'exit ' | head -2 | cut -c1-260; $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs  2>&1 | grep '^\[log\]' | awk '{print substr($4,1,1)}' | sort | uniq -c | tr '\n' ' '
+rc=0 elapsed=15.7s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level default --verbose 2>&1 | grep -E 'logcat' | grep -v 'exit ' | head -2 | cut -c1-260; $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level default 2>&1 | grep '^\[log\]' | awk '{print substr($4,1,1)}' | sort | uniq -c | tr '\n' ' '
+rc=0 elapsed=16.2s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level info --verbose 2>&1 | grep -E 'logcat' | grep -v 'exit ' | head -2 | cut -c1-260; $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level info 2>&1 | grep '^\[log\]' | awk '{print substr($4,1,1)}' | sort | uniq -c | tr '\n' ' '
+rc=0 elapsed=16.5s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level debug --verbose 2>&1 | grep -E 'logcat' | grep -v 'exit ' | head -2 | cut -c1-260; $GRANTIVA run --no-build --flow .maestro/08-caching.yaml --device emulator-5554 --logs --logs-level debug 2>&1 | grep '^\[log\]' | awk '{print substr($4,1,1)}' | sort | uniq -c | tr '\n' ' '
+rc=0 elapsed=16.1s  (stdout 04.out, stderr 04.err)
+
+# [05] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ($GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 --logs  >/dev/null 2>&1 &) ; sleep 5; ps -axo command | grep '[a]db.*logcat' | cut -c1-200; sleep 6
+rc=0 elapsed=11.1s  (stdout 05.out, stderr 05.err)
+
+# [06] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ($GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 --logs --logs-level default >/dev/null 2>&1 &) ; sleep 5; ps -axo command | grep '[a]db.*logcat' | cut -c1-200; sleep 6
+rc=0 elapsed=11.1s  (stdout 06.out, stderr 06.err)
+
+# [07] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ($GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 --logs --logs-level info >/dev/null 2>&1 &) ; sleep 5; ps -axo command | grep '[a]db.*logcat' | cut -c1-200; sleep 6
+rc=0 elapsed=11.1s  (stdout 07.out, stderr 07.err)
+
+# [08] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-android/android
+$ ($GRANTIVA run --no-build --flow .maestro/11-slow.yaml --device emulator-5554 --logs --logs-level debug >/dev/null 2>&1 &) ; sleep 5; ps -axo command | grep '[a]db.*logcat' | cut -c1-200; sleep 6
+rc=0 elapsed=11.1s  (stdout 08.out, stderr 08.err)
+
