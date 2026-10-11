@@ -58,7 +58,15 @@ One round = fix wave → repack → smoke → full coverage pass → triage. The
 - Task 5 Android slice: complete (cov2/android 8885a21): 372 pass / 31 fail / 6 triage / 3 blocked / 2 n/a + AND2-OBS-01..07 (quiet-host re-runs recorded as `rerun` lines).
 - Triage prep: `findings/ledgers/cluster-map-round2.md` covers CLI + iOS fails (24 clusters M01–M24, 19 expectation corrections); Android folds in when its slice lands.
 - Task 6: complete. Slices merged (9fadf607); cluster map `00-cluster-map-round2.md` (41 clusters); briefs L08–L48 (44 files) in `2026-10-12-coverage-issues-round2/`; expectation corrections applied (`(corrected round 3)`, `00-expectation-corrections-round2.md`); report `2026-10-12-round2-coverage-report.md` — verdict **ROUND 2: 48 findings — round 3 fix wave required** (44 new + open L05/L06/L07/K111).
-- Round-3 fix wave: plan `docs/superpowers/plans/2026-10-13-round3-fix-wave.md` (10 tasks; rulings table inside). Task 0 done; Tasks 1–2 (runner) and 4–6 (CLI) dispatched in parallel; ledger copy `findings/ledgers/2026-10-13-round3-fix-wave-ledger.md`. Then T7 docs/CI, T8 repack .12, T9 smoke, T10 round-3 coverage pass (`cov3-*`).
+- Round-3 fix wave: plan `docs/superpowers/plans/2026-10-13-round3-fix-wave.md` (10 tasks; rulings table inside); ledger copy `findings/ledgers/2026-10-13-round3-fix-wave-ledger.md`. State as of 2026-10-13:
+  - Task 4 (CLI MCP/ownership): merged, CLI PR #200 → main a1551645.
+  - Task 6 (CLI output/config, PR #202): approved; rebasing onto main, merges next.
+  - Task 2 (runner gestures, PR #21): approved; merges after runner PR #22 (rebase). landmarks-demo PR #3 merged (main 75acc87).
+  - Task 1 (runner crash/timing, PR #22): fix round 1 in progress; L49/L50 addendum ruled into this task.
+  - Task 5 (CLI lifecycle, PR #201): fix round 1 in progress (L38-b kill-free option b with ownership evidence; L48 wait = max(90, 2n+30); L36 unprompted death exits 1; minors 4–10). Merges last of the CLI PRs.
+  - Merge order ruling: CLI 200 → 202 → 201 → T7 docs → T8 bundle; runner 22 → 21.
+  - Brief L51 filed (screen/point swipes still `input swipe`; round 4 unless cov3 fails on it). L10 brief corrected: `--quiet` keeps the result summaries (README contract).
+  - Then T7 docs/CI (after 4–6 merge), T8 repack 1.1.28-grantiva.12 + bundle PR, T9 release build + smoke (`smoke4-*`), T10 round-3 coverage pass (`cov3-*`).
 
 ## Incidents to report to the owner
 1. Round 1, CLI slice: README quick-start resolved `init`'s default simulator to the owner's `iPhone 18 Pro` and booted it with the demo app (shut down afterwards, not deleted).
