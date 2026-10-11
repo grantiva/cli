@@ -123,6 +123,26 @@ final class RunnerHelperReaperTests: XCTestCase {
         XCTAssertEqual(signals.value, [])
     }
 
+    /// A descendant's pid reused by an unrelated process does not make that
+    /// process's children the runner's: the parent link counts only while
+    /// the parent still runs the command it had as a member.
+    func testAChildOfAReusedDescendantPidIsNotReaped() async {
+        let table = Locked("\(runner)\n\(xcodebuild)")
+        let signals = Locked<[String]>([])
+        let alive = Locked<Set<Int32>>([102])
+        let reaper = reaper(table: table, signals: signals, alive: alive)
+        let reused = [
+            "101   555   555 /bin/zsh -l",
+            "102   101   102 /usr/bin/xcrun simctl diagnose --udid=\(udid) --no-archive",
+        ].joined(separator: "\n")
+        let (_, reaped) = await reaper.stopping(runnerPid: 100, udid: udid) { () async -> Int in
+            table.mutate { $0 = reused }
+            return 0
+        }
+        XCTAssertEqual(reaped, [])
+        XCTAssertEqual(signals.value, [])
+    }
+
     /// A helper that ignores SIGINT gets SIGKILL once the grace period ends,
     /// and the reaper waits for it to go.
     func testEscalatesToSIGKILLAndWaits() async {

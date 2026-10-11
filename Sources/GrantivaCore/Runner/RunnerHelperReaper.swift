@@ -47,12 +47,13 @@ struct RunnerLineage: Sendable {
     }
 
     mutating func observe(_ processes: [HostProcess]) {
+        let table = Self.byPid(processes)
         var changed = true
         while changed {
             changed = false
             for process in processes where process.pid != runnerPid && process.pid > 1 {
                 let descends = process.ppid == runnerPid || process.pgid == runnerPid
-                    || (members[process.ppid] != nil && process.ppid > 1)
+                    || isMemberParent(process.ppid, in: table)
                 guard descends, members[process.pid] != process.command else { continue }
                 members[process.pid] = process.command
                 changed = true
@@ -64,11 +65,23 @@ struct RunnerLineage: Sendable {
     /// member, or seen as a member with this same command line (a reused pid
     /// runs something else).
     /// The runner itself is not one: stopping it is the caller's job.
-    func owns(_ process: HostProcess) -> Bool {
+    func owns(_ process: HostProcess, in table: [Int32: HostProcess]) -> Bool {
         guard process.pid != runnerPid else { return false }
         if process.pgid == runnerPid || process.ppid == runnerPid { return true }
-        if process.ppid > 1, members[process.ppid] != nil { return true }
+        if isMemberParent(process.ppid, in: table) { return true }
         return members[process.pid] == process.command
+    }
+
+    /// True when `ppid` is a member that still runs the command it had as
+    /// one: a member's pid reused by something else is not a member, and
+    /// neither are its children.
+    func isMemberParent(_ ppid: Int32, in table: [Int32: HostProcess]) -> Bool {
+        guard ppid > 1, let recorded = members[ppid], let parent = table[ppid] else { return false }
+        return parent.command == recorded
+    }
+
+    static func byPid(_ processes: [HostProcess]) -> [Int32: HostProcess] {
+        Dictionary(processes.map { ($0.pid, $0) }, uniquingKeysWith: { first, _ in first })
     }
 }
 
@@ -170,10 +183,11 @@ public struct RunnerHelperReaper: Sendable {
         let processes = HostProcess.parse(table)
         if followLineage { lineage.observe(processes) }
         let me = getpid()
+        let byPid = RunnerLineage.byPid(processes)
         var targets = processes.compactMap { process -> ReapedProcess? in
             guard process.pid > 1, process.pid != me,
                   let kind = SimulatorReaper.kind(of: process.command, owning: udid), kind != .grantiva,
-                  (followLineage && lineage.owns(process))
+                  (followLineage && lineage.owns(process, in: byPid))
                     || writesIntoRunDirectory(process.command, runnerPid: lineage.runnerPid, udid: udid)
             else { return nil }
             return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
@@ -184,6 +198,11 @@ public struct RunnerHelperReaper: Sendable {
 
     /// True when `command` writes into the run directory runner `runnerPid`
     /// created for `udid` under one of `runnerBases`.
+    ///
+    /// The run directory is `run-<runner pid>-<start timestamp>`; only the
+    /// pid is matched and the timestamp suffix is ignored. The pid, the
+    /// device directory and the runner home together name the stopped
+    /// runner's run, and the reaper never runs while that runner is alive.
     func writesIntoRunDirectory(_ command: String, runnerPid: Int32, udid: String) -> Bool {
         let needle = command.lowercased()
         let device = "/devices/\(udid.lowercased())/"

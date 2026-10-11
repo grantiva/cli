@@ -342,6 +342,17 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertEqual(list.first?["kind"] as? String, "diagnose")
     }
 
+    /// A non-force `--udid` with no ledger record deletes nothing, so it has
+    /// nothing to warn about; a managed device or session is checked.
+    func testLeftoverCheckCoversOnlyDevicesTheTeardownDeletes() {
+        typealias T = SimulatorCommand.Teardown
+        let record = ManagedSimulatorSession(udid: "MANAGED", name: "n", sessionId: "S1", ownerPID: 1, acquiredAt: Date(), state: .active)
+        XCTAssertEqual(T.leftoverCheckTargets(udid: "UNMANAGED", sessionId: nil, managed: [record]), [])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: "MANAGED", sessionId: nil, managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: nil, sessionId: "S1", managed: [record]), ["MANAGED"])
+        XCTAssertEqual(T.leftoverCheckTargets(udid: nil, sessionId: "other", managed: [record]), [])
+    }
+
     func testTeardownOutcomeEncodesRunnerSessionStopped() throws {
         var outcome = SimulatorTeardownOutcome(
             session: ManagedSimulatorSession(
