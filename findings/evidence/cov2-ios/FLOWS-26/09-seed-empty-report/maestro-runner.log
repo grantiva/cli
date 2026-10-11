@@ -1,0 +1,64 @@
+10:25:58.813642 [INFO] === Test execution started ===
+10:25:58.813702 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-26/09-seed-empty
+10:25:58.813708 [INFO] Platform: ios
+10:25:58.813712 [INFO] Driver: wda
+10:25:58.813951 [INFO] Validated 1 flow(s)
+10:25:58.921831 [INFO] Single device execution mode
+10:25:58.921849 [INFO] Starting flow execution (parallel: false, devices: [])
+10:25:58.921854 [INFO] Creating driver for single device execution
+10:25:58.921858 [INFO] Using specified iOS device: 7E846901-F93F-4220-A153-7043061033D7
+10:25:59.024335 [INFO] Device 7E846901-F93F-4220-A153-7043061033D7 is a simulator
+10:25:59.024384 [INFO] Building WDA for device 7E846901-F93F-4220-A153-7043061033D7 (team ID: )
+10:25:59.228380 [INFO] WDA build reused from cache
+10:25:59.228398 [INFO] Starting WDA on device 7E846901-F93F-4220-A153-7043061033D7 (port: 8987)
+10:25:59.467102 [INFO] Starting GrantivaAgent (attempt 1/4)
+10:26:01.470775 [INFO] GrantivaAgent started
+10:26:01.470843 [INFO] WDA started successfully on port 8987
+10:26:01.804700 [DEBUG] WDA GET /window/size
+10:26:01.983678 [DEBUG] WDA GET /window/size completed (178ms, status: 200)
+10:26:01.983750 [INFO] Driver created: ios on cov2-ios-1
+10:26:01.985884 [INFO] === Starting flow: 09-seed-empty ===
+10:26:01.985889 [INFO] Flow file: .maestro/09-seed-empty.yaml
+10:26:01.985893 [INFO] Total steps: 3
+10:26:01.986036 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:26:01.986627 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+10:26:01.986690 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+10:26:04.623851 [DEBUG] WDA POST /session completed (2637ms, status: 200)
+10:26:04.623933 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+10:26:04.625051 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings completed (1ms, status: 200)
+10:26:04.625165 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:26:04.625954 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings completed (0ms, status: 200)
+10:26:04.626391 [DEBUG] Executing step 0: launchApp
+10:26:05.036213 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_SEED:empty]
+10:26:05.036279 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:26:05.037031 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/appium/settings completed (0ms, status: 200)
+10:26:05.037115 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:26:05.037608 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/wda/apps/terminate completed (0ms, status: 200)
+10:26:05.037637 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_SEED":"empty"}}
+10:26:06.559832 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/wda/apps/launch completed (1522ms, status: 200)
+10:26:06.559901 [DEBUG] Step 0 completed successfully (1933ms): launchApp
+10:26:06.560335 [DEBUG] Executing step 1: assertVisible: text="No landmarks yet"
+10:26:06.677921 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+10:26:06.677960 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/alert/text
+10:26:06.794066 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/alert/text completed (116ms, status: 404)
+10:26:06.794139 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element body={"using":"predicate string","value":"(label ==[c] 'No landmarks yet' OR value ==[c] 'No landmarks ye...
+10:26:06.841217 [DEBUG] WDA POST /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element completed (47ms, status: 200)
+10:26:06.841286 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/rect
+10:26:06.841308 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/displayed
+10:26:06.841344 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/name
+10:26:06.841373 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/text
+10:26:06.863008 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/rect completed (21ms, status: 200)
+10:26:06.886886 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/displayed completed (45ms, status: 200)
+10:26:06.905961 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/name completed (64ms, status: 200)
+10:26:06.923741 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/element/37000000-0000-0000-0035-000000000000/text completed (82ms, status: 200)
+10:26:06.923793 [DEBUG] Step 1 completed successfully (363ms): assertVisible: text="No landmarks yet"
+10:26:06.924240 [DEBUG] Executing step 2: takeScreenshot
+10:26:06.924417 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/screenshot
+10:26:06.991691 [DEBUG] WDA GET /session/4AA7AC43-2C73-43C3-BA30-B90F474D9E0C/screenshot completed (67ms, status: 200)
+10:26:06.992776 [DEBUG] Step 2 completed successfully (68ms): takeScreenshot
+10:26:06.993881 [INFO] === Flow completed: 09-seed-empty (status: passed, duration: 5007ms, passed: 3, failed: 0, skipped: 0) ===
+10:26:07.062812 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+10:26:07.062962 [INFO] Generating reports...
+10:26:07.063768 [INFO] Shutting down devices started by maestro-runner...
+10:26:07.063787 [INFO] Shutting down all tracked emulators
+10:26:07.063797 [INFO] Shutting down all tracked simulators

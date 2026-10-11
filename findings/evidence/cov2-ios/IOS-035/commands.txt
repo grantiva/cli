@@ -1,0 +1,19 @@
+# uptime: 10:14  up 4 days,  1:42, 5 users, load averages: 14.85 67.40 98.18
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios (background)
+$ $GRANTIVA run --no-build --simulator 7E846901-F93F-4220-A153-7043061033D7 --flow .maestro/coverage/22-show-note.yaml --keep-alive --ready-file $S/ka.ready --env LANDMARKS_NOTE=a=b c > ka.out 2> ka.err &
+# ready after 12s pid=77254: {
+  "finishedAt" : "2026-10-11T17:14:49Z",
+  "flows" : [
+    {
+      "name" : "22-show-note",
+      "status" : "passed"
+    }
+  ],
+  "status" : "passed"
+}
+# (the --env value above is passed as one argv element: 'LANDMARKS_NOTE=a=b c')
+# uptime: 10:14  up 4 days,  1:42, 5 users, load averages: 16.22 65.13 96.83
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA hierarchy --udid $U1 > $E/IOS-035/h035.xml; echo exit=$?; grep -o "label=\"[^\"]*a=b c[^\"]*\"" $E/IOS-035/h035.xml | head; grep -c "a=b c" $E/IOS-035/h035.xml
+# exit=0 elapsed=.634s -> hierarchy.out / hierarchy.err
+# kill -INT 77254; exited rc=130 after 1s

@@ -1,0 +1,12 @@
+# uptime: 10:01  up 4 days,  1:29, 5 users, load averages: 143.93 92.36 67.54
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name "cov2-ios-4 Pin" --device-type "iPhone 17" --runtime latest
+# exit=0 elapsed=32.562s -> ensure-pin.out / ensure-pin.err
+# uptime: 10:02  up 4 days,  1:29, 5 users, load averages: 370.31 150.67 89.45
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl list devices | grep -B30 "cov2-ios-4 Pin" | grep -E "^-- |cov2-ios-4"; xcrun simctl list runtimes
+# exit=0 elapsed=1.090s -> simctl.out / simctl.err
+# uptime: 10:02  up 4 days,  1:29, 5 users, load averages: 451.79 175.39 98.94
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ xcrun simctl list devices -j | python3 -I -c "import json,sys; d=json.load(sys.stdin)[\"devices\"]; [print(rt, x[\"name\"], x[\"udid\"], x[\"state\"], x.get(\"deviceTypeIdentifier\")) for rt,l in d.items() for x in l if x[\"name\"].startswith(\"cov2-\")]"
+# exit=0 elapsed=.570s -> devtype.out / devtype.err

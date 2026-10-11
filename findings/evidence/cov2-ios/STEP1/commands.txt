@@ -1,0 +1,16 @@
+# uptime:  9:52  up 4 days,  1:19, 5 users, load averages: 2.55 3.81 6.71
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1= cov2-ios-1 26.0; U2= cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name cov2-ios-1 --device-type "iPhone 17" --runtime "iOS 26.0"
+# exit=0 elapsed=22.801s -> ensure-1.out / ensure-1.err
+# uptime:  9:52  up 4 days,  1:20, 5 users, load averages: 28.76 9.79 8.78
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios  (U1= cov2-ios-1 26.0; U2= cov2-ios-2 27.0)
+$ $GRANTIVA simulator ensure --name cov2-ios-2 --device-type "iPhone 17" --runtime "iOS 27.0"
+# exit=0 elapsed=32.379s -> ensure-2.out / ensure-2.err
+# uptime:  9:53  up 4 days,  1:20, 5 users, load averages: 277.19 71.42 31.12
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA build install --scheme "Landmarks (UI Testing)" --simulator $U1
+# exit=0 elapsed=29.193s -> install-26.out / install-26.err
+# uptime:  9:53  up 4 days,  1:21, 5 users, load averages: 460.50 136.49 56.16
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA build install --scheme "Landmarks (UI Testing)" --simulator $U2
+# exit=0 elapsed=10.714s -> install-27.out / install-27.err
