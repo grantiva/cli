@@ -255,7 +255,7 @@ public enum RunnerSession {
     /// Removes the configured screens' previous captures before a capture run,
     /// so a failed or partial run leaves those screens missing rather than
     /// stale. Other files in the directory are left alone.
-    static func invalidateCaptures(of screens: [GrantivaConfig.Screen], in outputDir: String) throws {
+    public static func invalidateCaptures(of screens: [GrantivaConfig.Screen], in outputDir: String) throws {
         let fileManager = FileManager.default
         for screen in screens {
             // The legacy (percent-encoded) name too: diff compare still reads
@@ -816,30 +816,30 @@ public enum RunnerSession {
         case .launch:
             return [StepResult(action: "Launch app", status: .passed, duration: 0)]
         case .steps(let steps):
-            return steps.map { step in
-                let action: String
-                if let label = step.tap {
-                    action = step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\""
-                } else if let direction = step.swipe {
-                    action = step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
-                } else if let text = step.type {
-                    action = "Type \"\(text)\""
-                } else if let seconds = step.wait {
-                    action = "Wait \(seconds)s"
-                } else if let seconds = step.settle {
-                    action = "Wait for animation to end (\(seconds)s max)"
-                } else if let label = step.assertVisible {
-                    action = step.assertVisibleById ? "Assert visible id \"\(label)\"" : "Assert visible \"\(label)\""
-                } else if let label = step.assertNotVisible {
-                    action = step.assertNotVisibleById
-                        ? "Assert not visible id \"\(label)\"" : "Assert not visible \"\(label)\""
-                } else if let path = step.runFlow {
-                    action = "Run flow \"\(path)\""
-                } else {
-                    action = "Unknown step"
-                }
-                return StepResult(action: action, status: .passed, duration: 0)
-            }
+            return steps.map { StepResult(action: stepAction(for: $0), status: .passed, duration: 0) }
         }
+    }
+
+    /// How a screen step is named in capture results.
+    public static func stepAction(for step: GrantivaConfig.Screen.Step) -> String {
+        if let label = step.tap {
+            return step.tapById ? "Tap on id \"\(label)\"" : "Tap on \"\(label)\""
+        } else if let direction = step.swipe {
+            return step.swipeFrom.map { "Swipe \(direction) from \"\($0)\"" } ?? "Swipe \(direction)"
+        } else if let text = step.type {
+            return "Type \"\(text)\""
+        } else if let seconds = step.wait {
+            return "Wait \(seconds)s"
+        } else if let seconds = step.settle {
+            return "Wait for animation to end (\(seconds)s max)"
+        } else if let label = step.assertVisible {
+            return step.assertVisibleById ? "Assert visible id \"\(label)\"" : "Assert visible \"\(label)\""
+        } else if let label = step.assertNotVisible {
+            return step.assertNotVisibleById
+                ? "Assert not visible id \"\(label)\"" : "Assert not visible \"\(label)\""
+        } else if let path = step.runFlow {
+            return "Run flow \"\(path)\""
+        }
+        return "Unknown step"
     }
 }

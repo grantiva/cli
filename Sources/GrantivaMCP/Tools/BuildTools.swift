@@ -123,6 +123,18 @@ enum BuildTools {
         }
     }
 
+    /// With no config file and no argument naming what to build (`scheme`
+    /// on iOS, `module` on Android), the missing file is the problem: say
+    /// so instead of reporting a missing scheme. `message` is nil when the
+    /// caller does not know where the file was looked for.
+    static func missingConfigError(
+        platform: Platform, config: GrantivaConfig?, arguments: [String: Value], message: String?
+    ) -> CallTool.Result? {
+        guard config == nil, let message else { return nil }
+        let named = platform == .ios ? arguments["scheme"]?.stringValue : arguments["module"]?.stringValue
+        return named == nil ? toolError(message) : nil
+    }
+
     private static func toolError(_ message: String) -> CallTool.Result {
         CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
     }
@@ -131,8 +143,12 @@ enum BuildTools {
         device: any DevicePlatform,
         platform: Platform,
         config: GrantivaConfig?,
-        arguments: [String: Value]
+        arguments: [String: Value],
+        missingConfig: String? = nil
     ) async throws -> CallTool.Result {
+        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+            return missing
+        }
         let resolved: ResolvedProject
         do {
             resolved = try resolvedProject(platform: platform, config: config, arguments: arguments)
@@ -166,8 +182,12 @@ enum BuildTools {
         device: any DevicePlatform,
         platform: Platform,
         config: GrantivaConfig?,
-        arguments: [String: Value]
+        arguments: [String: Value],
+        missingConfig: String? = nil
     ) async throws -> CallTool.Result {
+        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+            return missing
+        }
         let resolved: ResolvedProject
         do {
             resolved = try resolvedProject(platform: platform, config: config, arguments: arguments)
@@ -218,10 +238,14 @@ enum BuildTools {
         platform: Platform,
         config: GrantivaConfig?,
         simManager: SimulatorManager,
-        arguments: [String: Value]
+        arguments: [String: Value],
+        missingConfig: String? = nil
     ) async throws -> CallTool.Result {
         guard platform == .ios else {
             return toolError("grantiva_test runs xcodebuild test and is iOS-only; run ./gradlew connectedAndroidTest yourself.")
+        }
+        if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
+            return missing
         }
         let scheme = arguments["scheme"]?.stringValue ?? config?.scheme
         guard let scheme else {
