@@ -231,6 +231,8 @@ struct CICommand: AsyncParsableCommand {
             let resolved = try await target.resolve(
                 platform: platform, config: config, skipBuild: buildOptions.shouldSkipBuild, appID: appBundleId
             )
+            // A default simulator the user created is refused before anything else (L08).
+            try await device.checkDefault(for: resolved)
             log("Resolved: scheme=\(resolved.scheme ?? "(none)") simulator=\(resolved.simulator) screens=\(resolved.screens.count)")
 
             guard !resolved.screens.isEmpty else {
@@ -286,7 +288,7 @@ struct CICommand: AsyncParsableCommand {
                 // 1. Boot → Build → Install → Launch → Capture
                 let deviceNoun = platform == .ios ? "simulator" : "emulator"
                 rlog(RunCommand.bootNarration(platform: platform, target: resolved.simulator))
-                let booted = try await device.bootDevice(named: resolved.simulator)
+                let booted = try await device.bootDevice(for: resolved)
                 rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
 
                 var productPath: String?

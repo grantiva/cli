@@ -135,9 +135,14 @@ extension VRTTools {
         _ screens: [GrantivaConfig.Screen], appID: String, udid: String, platform: Platform, driver: DriverClient,
         device: any DevicePlatform, outputDir: String, pause: @escaping @Sendable (Double) async -> Void
     ) async throws -> [ScreenCapture] {
+        // The one launch is timed (terminate, launch, settle): the first
+        // launch-only screen reports it; a later one reports null, since the
+        // app was not launched again for it. Never 0 (L23).
+        let launchStart = Date()
         try? await device.terminate(appID: appID, deviceID: udid)
         try await device.launch(appID: appID, deviceID: udid)
         await settle(driver: driver, timeout: settleTimeout, pause: pause)
+        var launchDuration: Double? = Date().timeIntervalSince(launchStart)
         let rules = try await SelectorRules.current(platform: platform, screens: screens, driver: driver)
 
         var captures: [ScreenCapture] = []
@@ -155,7 +160,8 @@ extension VRTTools {
                     results.append(StepResult(action: action, status: .passed, duration: Date().timeIntervalSince(stepStart)))
                 }
             } else {
-                results.append(StepResult(action: "Launch app", status: .passed, duration: 0))
+                results.append(StepResult(action: "Launch app", status: .passed, duration: launchDuration))
+                launchDuration = nil
             }
             await settle(driver: driver, timeout: settleTimeout, pause: pause)
             let path = "\(outputDir)/\(ScreenArtifact.fileName(for: screen.name))"

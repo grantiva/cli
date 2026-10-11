@@ -173,7 +173,7 @@ enum UITools {
             )
         } else {
             return CallTool.Result(
-                content: [.text(text: "Error: provide either 'label' or both 'x' and 'y' coordinates.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: Provide either 'label' or both 'x' and 'y' coordinates.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
@@ -182,7 +182,7 @@ enum UITools {
     static func swipe(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let direction = arguments["direction"]?.stringValue else {
             return CallTool.Result(
-                content: [.text(text: "Error: 'direction' is required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: 'direction' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
@@ -199,7 +199,7 @@ enum UITools {
     static func type(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let text = arguments["text"]?.stringValue else {
             return CallTool.Result(
-                content: [.text(text: "Error: 'text' is required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: 'text' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }

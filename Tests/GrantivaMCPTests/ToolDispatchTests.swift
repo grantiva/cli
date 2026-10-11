@@ -29,13 +29,13 @@ final class ToolDispatchTests: XCTestCase {
     func testAnUnknownToolNameReturnsAnErrorResultRatherThanThrowing() async throws {
         let result = try await call("grantiva_teleport")
         XCTAssertEqual(result.isError, true)
-        XCTAssertEqual(try textContent(of: result), "Unknown tool: grantiva_teleport")
+        XCTAssertEqual(try textContent(of: result), "Error: Unknown tool: grantiva_teleport")
     }
 
     func testToolNameDispatchIsCaseSensitive() async throws {
         let result = try await call("GRANTIVA_TAP", ["label": .string("A")])
         XCTAssertEqual(result.isError, true)
-        XCTAssertTrue(try textContent(of: result).hasPrefix("Unknown tool:"))
+        XCTAssertTrue(try textContent(of: result).hasPrefix("Error: Unknown tool:"))
     }
 
     func testAnEmptyToolNameIsRejected() async throws {

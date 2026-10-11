@@ -92,8 +92,8 @@ public struct SimulatorProvenance: Sendable {
     public let directory: String
 
     public init(directory: String? = nil) {
-        self.directory = directory ?? FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".grantiva/simulator-capacity").path
+        // Beside the capacity registry, scoped to the runner home the same way.
+        self.directory = directory ?? SimulatorCapacity.defaultDirectory()
     }
 
     private var ledgerPath: String { "\(directory)/created.json" }
@@ -106,7 +106,8 @@ public struct SimulatorProvenance: Sendable {
     }
 
     public func contains(udid: String) throws -> Bool {
-        try withLedgerLock { records in records.contains { $0.udid == udid } }
+        guard ledgerExists else { return false }
+        return try withLedgerLock { records in records.contains { $0.udid == udid } }
     }
 
     public func remove(udid: String) throws {
@@ -114,8 +115,13 @@ public struct SimulatorProvenance: Sendable {
     }
 
     public func all() throws -> [CreatedSimulatorRecord] {
-        try withLedgerLock { $0 }
+        guard ledgerExists else { return [] }
+        return try withLedgerLock { $0 }
     }
+
+    /// A read of a ledger that was never written finds nothing, and creates
+    /// nothing (doctor, init and the default-simulator check only read).
+    private var ledgerExists: Bool { FileManager.default.fileExists(atPath: ledgerPath) }
 
     /// Serializes a provisioning critical section across processes. Unlike
     /// `withLedgerLock`, the body may suspend (it runs `simctl`), so the lock

@@ -94,3 +94,17 @@ public struct SimulatorProvisionResult: Sendable, Codable, Equatable {
         try c.encodeIfPresentWithAlias(displayScale, "displayScale")
     }
 }
+
+extension SimulatorDevice {
+    /// simctl's runtime identifier tail as people read it: `iOS-26-0` becomes
+    /// `iOS 26.0`. The one spelling every runtime Grantiva shows uses.
+    public static func runtimeDisplayName(_ runtime: String) -> String {
+        let short = runtime.replacingOccurrences(of: "com.apple.CoreSimulator.SimRuntime.", with: "")
+        guard let dash = short.firstIndex(of: "-") else { return short }
+        let version = short[short.index(after: dash)...].replacingOccurrences(of: "-", with: ".")
+        return "\(short[..<dash]) \(version)"
+    }
+
+    /// This device's runtime, spelled as `runtimeDisplayName` spells it.
+    public var runtimeName: String { Self.runtimeDisplayName(runtime) }
+}

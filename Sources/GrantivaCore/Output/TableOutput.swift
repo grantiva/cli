@@ -6,7 +6,7 @@ public struct TableFormatter: Sendable {
     public func formatDevices(_ devices: [SimulatorDevice]) -> String {
         guard !devices.isEmpty else { return "No simulators found." }
         let names = devices.map { singleLineCell($0.name) }
-        let runtimes = devices.map { singleLineCell($0.runtime) }
+        let runtimes = devices.map { singleLineCell($0.runtimeName) }
         var lines: [String] = []
         let maxName = max(names.map(\.count).max() ?? 0, 4)
         let header = "Name".padding(toLength: maxName, withPad: " ", startingAt: 0) + "  State     Runtime"

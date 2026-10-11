@@ -150,7 +150,12 @@ final class MCPFakeDevicePlatform: DevicePlatform, @unchecked Sendable {
         record("build(scheme=\(request.resolved.scheme ?? "-"),module=\(request.resolved.android?.module ?? "-"),variant=\(request.resolved.android?.variant ?? "-"))"); return buildResult
     }
     func install(appID: String, productPath: String, deviceID: String) async throws { record("install(\(appID),\(productPath))") }
-    func launch(appID: String, deviceID: String) async throws { record("launch(\(appID))") }
+    /// How long `launch` takes, for tests that time it.
+    var launchDelay: UInt64 = 0
+    func launch(appID: String, deviceID: String) async throws {
+        record("launch(\(appID))")
+        if launchDelay > 0 { try await Task.sleep(nanoseconds: launchDelay) }
+    }
     func terminate(appID: String, deviceID: String) async throws { record("terminate(\(appID))") }
     func uninstall(appID: String, deviceID: String) async throws { record("uninstall(\(appID))") }
     func prepareForCapture(deviceID: String) async { record("prepare") }

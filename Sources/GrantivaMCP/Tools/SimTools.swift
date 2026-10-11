@@ -96,17 +96,19 @@ enum SimTools {
     /// simctl's runtime identifier fragment as people read it:
     /// `iOS-26-0` becomes `iOS 26.0`.
     static func runtimeName(_ runtime: String) -> String {
-        guard let dash = runtime.firstIndex(of: "-") else { return runtime }
-        let version = runtime[runtime.index(after: dash)...].replacingOccurrences(of: "-", with: ".")
-        return "\(runtime[..<dash]) \(version)"
+        SimulatorDevice.runtimeDisplayName(runtime)
     }
 
     static func boot(
         simManager: SimulatorManager,
         arguments: [String: Value]
     ) async throws -> CallTool.Result {
-        let name = arguments["name"]?.stringValue ?? DefaultSimulator.name
-        let device = try await simManager.boot(nameOrUDID: name)
+        // Unnamed, only a default-named simulator Grantiva created is booted (L08).
+        let device = if let name = arguments["name"]?.stringValue {
+            try await simManager.boot(nameOrUDID: name)
+        } else {
+            try await simManager.bootDefault(name: DefaultSimulator.name, override: "name:")
+        }
 
         return CallTool.Result(
             content: [
@@ -123,7 +125,7 @@ enum SimTools {
             // Invalid model input is a tool error the model can read and correct,
             // not a JSON-RPC protocol error that reads as a transport failure.
             return CallTool.Result(
-                content: [.text(text: "Error: 'name' is required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: 'name' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
@@ -139,7 +141,7 @@ enum SimTools {
     static func delete(simManager: SimulatorManager, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let name = arguments["name"]?.stringValue else {
             return CallTool.Result(
-                content: [.text(text: "Error: 'name' is required.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: 'name' is required.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }

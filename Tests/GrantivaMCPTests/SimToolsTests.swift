@@ -44,7 +44,7 @@ final class SimToolsTests: XCTestCase {
     }
 
     func testContextUsesTheSameRuntimeSpelling() async {
-        let section = await ContextTool.simulatorSection(session: nil, configured: nil, listSimulators: { [devices] in devices })
+        let section = await ContextTool.simulatorSection(session: nil, configured: "fix2-10-ios", listSimulators: { [devices] in devices })
         XCTAssertTrue(section.contains("runtime: iOS 26.0"), section)
     }
 }

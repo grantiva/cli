@@ -32,6 +32,23 @@ public enum DefaultSimulator {
             + "or pass --simulator <name|UDID> or set simulator: in grantiva.yml."
     }
 
+    /// The refusal for a simulator that has the default name but that
+    /// Grantiva did not create (L08): the default is a stock device-type
+    /// name, so the user may own a simulator of that name for something else,
+    /// and an unnamed run must never boot or drive it. `override` is how the
+    /// caller names a simulator: `--simulator` on the CLI, `simulator:` (the
+    /// tool's argument) in MCP. `soleBooted` is the `--no-build` capture's
+    /// default, the only booted simulator, rather than the default name.
+    public static func notCreatedRefusal(
+        name: String, udid: String, override: String = "--simulator", soleBooted: Bool = false
+    ) -> String {
+        "Simulator \"\(name)\" (\(udid)) was not created by Grantiva. "
+            + (soleBooted ? "It is the only booted simulator, " : "It has the default simulator's name, ")
+            + "and Grantiva does not take a simulator you created as its default. "
+            + "Pass \(override) \"\(name)\" to use it anyway, or set simulator: in grantiva.yml "
+            + "(create one with grantiva simulator ensure --name \"Grantiva \(name)\")."
+    }
+
     /// The phrase tool schemas use for the default. Static on purpose: a
     /// schema is built at registration, and finding the name runs simctl.
     public static let description = "the newest installed iPhone type"

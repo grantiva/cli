@@ -3,7 +3,9 @@ import Foundation
 public struct XcodeBuildRunner: Sendable {
     private let execute: @Sendable (String) async throws -> String
 
-    public init(execute: @escaping @Sendable (String) async throws -> String = { try await shell($0) }) {
+    /// The default stops xcodebuild and simctl when the calling task is
+    /// cancelled (a cancelled MCP build, L14).
+    public init(execute: @escaping @Sendable (String) async throws -> String = { try await shell($0, terminateOnCancel: true) }) {
         self.execute = execute
     }
 

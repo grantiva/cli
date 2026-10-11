@@ -106,13 +106,19 @@ enum JSONRPCScreen: Equatable {
 
 /// Wraps the server's transport and screens each incoming message (see
 /// `JSONRPCScreen`), so a malformed line never gets a reply the client
-/// cannot correlate.
+/// cannot correlate, and a cancelled request gets no reply at all
+/// (`CancellationTracker`).
 actor ValidatingTransport: Transport {
     nonisolated let logger: Logger
     private let inner: any Transport
+    private var cancellations = CancellationTracker()
+    /// When a cancel is handed to the SDK again, after the request's task has
+    /// had time to register (milliseconds after the first delivery).
+    private let cancelRetries: [UInt64]
 
-    init(wrapping inner: any Transport) {
+    init(wrapping inner: any Transport, cancelRetries: [UInt64] = [50, 250, 1000]) {
         self.inner = inner
+        self.cancelRetries = cancelRetries
         self.logger = Logger(label: "grantiva.mcp.transport")
     }
 
@@ -120,7 +126,35 @@ actor ValidatingTransport: Transport {
 
     func disconnect() async { await inner.disconnect() }
 
-    func send(_ data: Data) async throws { try await inner.send(JSONRPCScreen.outgoing(data)) }
+    func send(_ data: Data) async throws {
+        guard let kept = cancellations.outgoing(data) else { return }
+        try await inner.send(JSONRPCScreen.outgoing(kept))
+    }
+
+    /// Notes `data`, then forwards it; a cancel for an unanswered request is
+    /// forwarded again on `cancelRetries` while that request is unanswered.
+    private func forward(_ data: Data, to continuation: AsyncThrowingStream<Data, Swift.Error>.Continuation) {
+        let notes = cancellations.incoming(data)
+        continuation.yield(data)
+        for case .cancelled(let id, let cancel) in notes {
+            let retries = cancelRetries
+            Task {
+                var elapsed: UInt64 = 0
+                for delay in retries {
+                    try? await Task.sleep(nanoseconds: (delay - elapsed) * 1_000_000)
+                    elapsed = delay
+                    guard self.cancellations.isCancelled(id) else { return }
+                    continuation.yield(cancel)
+                }
+                // A grace period for a tool that returns after its task was
+                // cancelled (the handler then throws), then let it go.
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                self.forgetCancelled(id)
+            }
+        }
+    }
+
+    private func forgetCancelled(_ id: String) { cancellations.forget(id) }
 
     func receive() -> AsyncThrowingStream<Data, Swift.Error> {
         let inner = self.inner
@@ -129,11 +163,11 @@ actor ValidatingTransport: Transport {
                 do {
                     for try await data in await inner.receive() {
                         switch JSONRPCScreen.screen(data) {
-                        case .forward: continuation.yield(data)
+                        case .forward: self.forward(data, to: continuation)
                         case .drop: continue
                         case .reply(let reply): try? await inner.send(reply)
                         case .split(let valid, let reply):
-                            continuation.yield(valid)
+                            self.forward(valid, to: continuation)
                             if let reply { try? await inner.send(reply) }
                         }
                     }

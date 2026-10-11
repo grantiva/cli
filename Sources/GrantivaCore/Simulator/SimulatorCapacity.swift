@@ -77,11 +77,28 @@ public struct SimulatorCapacity: Sendable {
         pollInterval: TimeInterval = 1
     ) {
         let environment = ProcessInfo.processInfo.environment
-        self.directory = directory ?? FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".grantiva/simulator-capacity").path
+        self.directory = directory ?? Self.defaultDirectory(environment: environment)
         self.maximum = maximum ?? Self.positiveInt(environment["GRANTIVA_MAX_SIMULATORS"]) ?? 4
         self.waitTimeout = waitTimeout ?? Self.nonnegativeDouble(environment["GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS"]) ?? 600
         self.pollInterval = pollInterval
+    }
+
+    /// Where the capacity registry and the created-simulator ledger live.
+    ///
+    /// The default runner home (`~/.grantiva/runner`) keeps the location
+    /// every earlier release used, `~/.grantiva/simulator-capacity`, so its
+    /// records carry over untouched. Any other `GRANTIVA_RUNNER_HOME` (a QA
+    /// or CI home) gets its own `<runner home>/simulator-capacity`: it never
+    /// counts, tears down, or treats as its own the simulators recorded by
+    /// another home. Records an earlier release wrote while such a home was
+    /// set stay with the default home.
+    public static func defaultDirectory(environment: [String: String] = ProcessInfo.processInfo.environment) -> String {
+        let runnerHome = RunnerManager.resolveBaseDir(environment: environment)
+        guard runnerHome != RunnerManager.resolveBaseDir(environment: [:]) else {
+            return FileManager.default.homeDirectoryForCurrentUser
+                .appendingPathComponent(".grantiva/simulator-capacity").path
+        }
+        return "\(runnerHome)/simulator-capacity"
     }
 
     public var sessionId: String? {
@@ -284,7 +301,9 @@ public struct SimulatorCapacity: Sendable {
     }
 
     public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
-        try withRegistryLock { records in
+        // A registry never written holds nothing; reading it creates nothing.
+        guard FileManager.default.fileExists(atPath: registryPath) else { return [] }
+        return try withRegistryLock { records in
             Self.prune(&records, devices: devices)
             return records.sorted { $0.acquiredAt < $1.acquiredAt }
         }

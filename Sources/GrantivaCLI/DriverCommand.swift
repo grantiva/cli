@@ -183,7 +183,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let targetName = Self.target(platform: platform, simulator: simulator, emulator: emulator, device: device, config: config)
 
         let platformDevice = try devicePlatform.make(platform, android: .init(headless: headless))
-        let booted = try await platformDevice.bootDevice(named: targetName)
+        // The default name (nothing named a simulator) boots only a simulator Grantiva created (L08).
+        let booted = platform == .ios && simulator == nil && config?.simulator == nil
+            ? try await platformDevice.bootDefaultDevice(named: targetName, override: "--simulator")
+            : try await platformDevice.bootDevice(named: targetName)
         // Held until the runner is up, then handed to the runner process: this
         // command returns immediately, but the session it started still owns
         // the device until `runner stop`.

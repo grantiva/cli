@@ -85,7 +85,7 @@ struct DiffCommand: AsyncParsableCommand {
             if !buildOptions.shouldSkipInstall {
                 // Full lifecycle: boot → build → install → launch → capture
                 // OR: boot → install pre-built → launch → capture
-                booted = try await device.bootDevice(named: resolved.simulator)
+                booted = try await device.bootDevice(for: resolved)
 
                 var productPath: String?
 
@@ -346,7 +346,7 @@ struct DiffCommand: AsyncParsableCommand {
                     throw DiffCommand.noScreensError(platform: platform, config: config)
                 }
 
-                let booted = try await device.bootDevice(named: resolved.simulator)
+                let booted = try await device.bootDevice(for: resolved)
                 var builtAppID: String?
                 var appID: String?
 

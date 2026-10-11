@@ -32,19 +32,39 @@ final class EmulatorToolsTests: XCTestCase {
         XCTAssertEqual(log.value, ["listAVDs", "listDevices", "avdName(emulator-5554)"])
     }
 
+    /// L45: the configured AVD is already running as emulator-5554, so the
+    /// tool says it reused it rather than booted it.
     func testBootFallsBackToTheConfiguredEmulator() async throws {
         let log = Log()
         let config = GrantivaConfig(platform: .android, android: AndroidProject(emulator: "Pixel_8_API_35"))
         let result = try await EmulatorTools.boot(deps: deps(log), config: config, arguments: [:])
-        XCTAssertTrue(try textContent(of: result).contains("Emulator booted: Pixel_8_API_35 (emulator-5554)"))
-        XCTAssertEqual(log.value, ["boot(Pixel_8_API_35)"])
+        XCTAssertEqual(try textContent(of: result), "Emulator reused: Pixel_8_API_35 (emulator-5554), already running")
+        XCTAssertEqual(log.value, ["listDevices", "boot(Pixel_8_API_35)"])
+    }
+
+    func testBootOfAShutDownAVDSaysBooted() async throws {
+        let log = Log()
+        var shutDown = deps(log)
+        shutDown.listDevices = { log.add("listDevices"); return [] }
+        for arguments: [String: Value] in [["name": .string("Pixel_8_API_35")], [:]] {
+            let result = try await EmulatorTools.boot(deps: shutDown, config: nil, arguments: arguments)
+            XCTAssertEqual(try textContent(of: result), "Emulator booted: Pixel_8_API_35 (emulator-5554)")
+        }
+    }
+
+    func testBootByNameOrSerialOfARunningEmulatorSaysReused() async throws {
+        for name in ["Pixel_8_API_35", "emulator-5554"] {
+            let result = try await EmulatorTools.boot(deps: deps(Log()), config: nil, arguments: ["name": .string(name)])
+            let text = try textContent(of: result)
+            XCTAssertTrue(text.hasPrefix("Emulator reused: "), text)
+        }
     }
 
     func testEnsureRequiresANameAndReturnsJSON() async throws {
         let log = Log()
         let missing = try await EmulatorTools.ensure(deps: deps(log), arguments: [:])
         XCTAssertEqual(missing.isError, true)
-        XCTAssertTrue(try textContent(of: missing).contains("'name' is required"))
+        XCTAssertEqual(try textContent(of: missing), "Error: Invalid argument: 'name' is required.")
         let result = try await EmulatorTools.ensure(deps: deps(log), arguments: ["name": .string("New"), "system_image": .string("img"), "boot": .bool(true)])
         XCTAssertNil(result.isError)
         XCTAssertTrue(try textContent(of: result).contains(#""serial" : "emulator-5556""#))

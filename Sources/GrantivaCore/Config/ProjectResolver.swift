@@ -9,6 +9,10 @@ public struct ResolvedProject: Sendable {
     public let bundleId: String?
     public let buildSettings: [String]
     public let simulator: String
+    /// True when `simulator` is `DefaultSimulator.name` because no flag,
+    /// argument, or config named one: it is then booted only if Grantiva
+    /// created it (`DevicePlatform.bootDevice(for:)`).
+    public let simulatorIsDefault: Bool
     public let screens: [GrantivaConfig.Screen]
     public let flows: [String]
     public let diff: GrantivaConfig.DiffConfig
@@ -23,6 +27,7 @@ public struct ResolvedProject: Sendable {
         bundleId: String? = nil,
         buildSettings: [String] = [],
         simulator: String = DefaultSimulator.name,
+        simulatorIsDefault: Bool = false,
         screens: [GrantivaConfig.Screen] = [],
         flows: [String] = [],
         diff: GrantivaConfig.DiffConfig = .init(),
@@ -35,6 +40,7 @@ public struct ResolvedProject: Sendable {
         self.bundleId = bundleId
         self.buildSettings = buildSettings
         self.simulator = simulator
+        self.simulatorIsDefault = simulatorIsDefault
         self.screens = screens
         self.flows = flows
         self.diff = diff
@@ -139,6 +145,7 @@ extension ResolvedProject {
             bundleId: bundleId,
             buildSettings: config?.buildSettings ?? [],
             simulator: simulator,
+            simulatorIsDefault: flagSim == nil && configSim == nil,
             screens: config?.screens ?? [],
             flows: config?.flows ?? [],
             diff: config?.diff ?? .init(),

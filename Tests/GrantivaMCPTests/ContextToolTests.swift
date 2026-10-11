@@ -1,5 +1,5 @@
 import Foundation
-import GrantivaCore
+@testable import GrantivaCore
 import MCP
 import XCTest
 @testable import GrantivaMCP
@@ -74,13 +74,53 @@ final class ContextToolTests: XCTestCase {
         XCTAssertFalse(simulator.contains(Self.first.udid), simulator)
     }
 
-    func testWithNeitherSessionNorConfiguredSimulatorTheFirstBootedIsLabelled() async throws {
+    /// L17: with neither a session nor a configured simulator there is no
+    /// device; booted simulators are listed as a hint, never as "the device".
+    func testWithNeitherSessionNorConfiguredSimulatorThereIsNoDevice() async throws {
         let result = try await ContextTool.context(
-            config: nil, platform: .ios, session: nil, listSimulators: { [Self.first, Self.second] }, emulators: nil
+            config: nil, platform: .ios, session: nil, listSimulators: { [Self.first, Self.second, Self.shutdown] }, emulators: nil
         )
         let simulator = section("Simulator", in: try textContent(of: result))
-        XCTAssertTrue(simulator.contains("udid: \(Self.first.udid)"), simulator)
-        XCTAssertTrue(simulator.contains("first booted simulator"), simulator)
+        XCTAssertEqual(simulator, """
+
+              No runner session and no simulator in grantiva.yml.
+              Booted (a hint only; the UI tools use only a runner session's device): iPhone 17 Pro (\(Self.first.udid)), qa-c06 (\(Self.second.udid))
+            """)
+        XCTAssertFalse(simulator.contains("source:"), simulator)
+    }
+
+    /// L17: the [Config] line names the directory searched, not "current directory".
+    func testWithoutConfigTheConfigSectionNamesTheProjectDirectory() async throws {
+        let directory = URL(fileURLWithPath: "/x/empty", isDirectory: true)
+        let forced = try await ContextTool.context(
+            config: nil, platform: .ios, session: nil, listSimulators: { [] }, emulators: nil,
+            projectDirectory: directory, platformDetected: false
+        )
+        let config = section("Config", in: try textContent(of: forced))
+        XCTAssertEqual(config, "\n  grantiva.yml not found at /x/empty/grantiva.yml. Create one with grantiva init.")
+        XCTAssertFalse(config.contains("current directory"), config)
+
+        let detected = try await ContextTool.context(
+            config: nil, platform: .ios, session: nil, listSimulators: { [] }, emulators: nil,
+            projectDirectory: directory, platformDetected: true
+        )
+        XCTAssertEqual(
+            section("Config", in: try textContent(of: detected)),
+            "\n  Neither grantiva.yml nor grantiva-android.yml found in /x/empty. Create one with grantiva init (or grantiva init --platform android)."
+        )
+    }
+
+    func testTheRegistryPassesItsProjectDirectoryToContext() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-l17-\(UUID().uuidString)")
+        let registry = ToolRegistry(
+            connection: RunnerConnection(resolveSession: { throw GrantivaError.unavailable("none") }, attach: { _ in throw GrantivaError.unavailable("none") }),
+            platform: .ios, device: MCPFakeDevicePlatform(platform: .ios), config: nil,
+            simulatorManager: SimulatorManager(execute: { _ in #"{"devices":{}}"# }), buildRunner: XcodeBuildRunner(), emulators: nil,
+            projectDirectory: directory, platformDetected: false
+        )
+        let result = try await registry.call(name: "grantiva_context", arguments: [:], notify: { _ in })
+        let config = section("Config", in: try textContent(of: result))
+        XCTAssertTrue(config.contains("\(directory.path)/grantiva.yml"), config)
     }
 
     // MARK: Android

@@ -88,6 +88,14 @@ public protocol DevicePlatform: Sendable {
     var platform: Platform { get }
 
     func bootDevice(named nameOrID: String) async throws -> BootedDevice
+    /// Boots the platform default device, used when nothing (flag, config,
+    /// tool argument) named one. On iOS only a simulator Grantiva created is
+    /// taken; one the user created with the default name is refused (L08).
+    /// `override` is how the caller names a device in its refusal.
+    func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice
+    /// `bootDefaultDevice`'s refusal without booting, so a command can
+    /// refuse before it narrates or prepares the runner.
+    func checkDefaultDevice(named name: String, override: String) async throws
     /// The attached device with this serial, never booting anything. Only
     /// Android has serials; elsewhere the ID is taken as given.
     func attachedDevice(serial: String) async throws -> BootedDevice
@@ -143,6 +151,27 @@ extension DevicePlatform {
     }
 
     public func isInstalled(appID: String, deviceID: String) async -> Bool? { nil }
+
+    public func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+        try await bootDevice(named: name)
+    }
+
+    public func checkDefaultDevice(named name: String, override: String) async throws {}
+
+    /// Refuses up front a default simulator Grantiva did not create; a
+    /// named one, or another platform, passes.
+    public func checkDefault(for resolved: ResolvedProject, override: String = "--simulator") async throws {
+        guard resolved.simulatorIsDefault else { return }
+        try await checkDefaultDevice(named: resolved.simulator, override: override)
+    }
+
+    /// Boots `resolved.simulator`: through `bootDefaultDevice` when it is the
+    /// default no flag or config named, else as named.
+    public func bootDevice(for resolved: ResolvedProject, override: String = "--simulator") async throws -> BootedDevice {
+        resolved.simulatorIsDefault
+            ? try await bootDefaultDevice(named: resolved.simulator, override: override)
+            : try await bootDevice(named: resolved.simulator)
+    }
 }
 
 public enum DevicePlatformFactory {

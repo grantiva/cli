@@ -8,7 +8,8 @@ public struct GradleBuildRunner: Sendable {
     nonisolated(unsafe) private let fileManager: FileManager
 
     public init(
-        execute: @escaping @Sendable (String) async throws -> String = { try await shell($0) },
+        // A cancelled MCP build stops its Gradle client (L14).
+        execute: @escaping @Sendable (String) async throws -> String = { try await shell($0, terminateOnCancel: true) },
         fileManager: FileManager = .default
     ) {
         self.execute = execute

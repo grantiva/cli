@@ -138,6 +138,47 @@ public struct SimulatorManager: Sendable, Decodable {
         return try await exactDevice(nameOrUDID: device.udid)
     }
 
+    /// Boots the default simulator `name`, which nothing named: only one
+    /// Grantiva created (it is in the created-simulator ledger). A simulator
+    /// of that name the user created is refused, booted or not, before any
+    /// slot is reserved or `simctl boot` runs; the refusal names it and how to
+    /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
+    public func bootDefault(name: String, ephemeral: Bool = false, override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await checkDefault(name: name, override: override)
+        return try await boot(nameOrUDID: device.udid, ephemeral: ephemeral)
+    }
+
+    /// `bootDefault`'s check alone, so a command can refuse before it says
+    /// or prepares anything: the simulator named `name`, if Grantiva created it.
+    @discardableResult
+    public func checkDefault(name: String, override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await exactDevice(nameOrUDID: name)
+        guard try provenance.contains(udid: device.udid) else {
+            throw GrantivaError.invalidArgument(
+                DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
+            )
+        }
+        return device
+    }
+
+    /// The only booted simulator, as the `--no-build` capture's default
+    /// (nothing named one, no runner session), only if Grantiva created it:
+    /// the same rule as the default name (L08).
+    public func soleBootedDefault(override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await soleBootedDevice()
+        guard try provenance.contains(udid: device.udid) else {
+            throw GrantivaError.invalidArgument(DefaultSimulator.notCreatedRefusal(
+                name: device.name, udid: device.udid, override: override, soleBooted: true
+            ))
+        }
+        return device
+    }
+
+    /// The UDIDs in the created-simulator ledger; empty when it cannot be read.
+    public func createdUDIDs() -> Set<String> {
+        Set(((try? provenance.all()) ?? []).map(\.udid))
+    }
+
     /// Resolves only the requested name or UDID. It never substitutes an arbitrary booted device.
     public func exactDevice(nameOrUDID: String) async throws -> SimulatorDevice {
         let matches = try await listDevices().filter { $0.name == nameOrUDID || $0.udid == nameOrUDID }
@@ -201,7 +242,12 @@ public struct SimulatorManager: Sendable, Decodable {
                 let runtimeMatches = pinnedRuntime.map { existing.runtime == $0.shortName } ?? true
                 guard typeMatches && runtimeMatches else {
                     let requested = [requestedType?.name, pinnedRuntime?.name].compactMap { $0 }.joined(separator: ", ")
-                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(existing.deviceTypeIdentifier ?? "unknown"), runtime: \(existing.runtime)); requested \(requested)")
+                    // Names, as the result reports them; the identifier only
+                    // when the catalog has no name for it.
+                    let typeName = catalog.deviceTypes.first { $0.identifier == existing.deviceTypeIdentifier }?.name
+                        ?? existing.deviceTypeIdentifier ?? "unknown"
+                    let runtimeName = catalog.runtimes.first { $0.shortName == existing.runtime }?.name ?? existing.runtimeName
+                    throw GrantivaError.invalidArgument("Simulator \"\(name)\" exists with incompatible configuration (device type: \(typeName), runtime: \(runtimeName)); requested \(requested)")
                 }
                 return (false, existing.udid)
             }
@@ -507,6 +553,9 @@ struct SimctlDeviceList: Decodable {
                 )
             }
         }
-        .sorted { $0.name < $1.name }
+        // A total order: simctl's JSON is a dictionary keyed by runtime, so
+        // devices sharing a name would otherwise come back in a different
+        // order from one process to the next.
+        .sorted { ($0.name, $0.runtime, $0.udid) < ($1.name, $1.runtime, $1.udid) }
     }
 }

@@ -189,7 +189,7 @@ A flow header `env:` block defines `${VAR}` values and is also passed to the app
 | `GRANTIVA_PLATFORM` | `ios` or `android`, like `--platform`. |
 | `GRANTIVA_SESSION_ID` | Durable owner for simulator capacity slots (see below). |
 | `GRANTIVA_MAX_SIMULATORS`, `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS` | Simulator capacity policy. |
-| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`. When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner. A relative path is resolved against the current directory. |
+| `GRANTIVA_RUNNER_HOME` | Runner directory, default `~/.grantiva/runner`. It holds simulator `locks/`, the WebDriverAgent build `cache/`, and one runner install per version under `versions/<stamp>/`; a home other than the default also holds its own `simulator-capacity/` (see Simulators Grantiva created). When an install is needed (no install of this version yet), grantiva first checks the `grantiva_GrantivaCore.bundle` beside the binary: a bundle from another release fails the install, names the bundle and either both runner versions or the tarball it lacks, leaves any existing install untouched, and leaves no empty `versions/<stamp>/` directory. An existing install of the current version is used as it is, without reading the bundle; `grantiva runner install` then warns when the bundle does not carry that runner. A relative path is resolved against the current directory. |
 
 
 ## CI Integration
@@ -271,8 +271,9 @@ installed and only the build is skipped (`build install`, `run`, `diff capture`,
 `ci run` alike).
 `diff capture --no-build` drives the simulator named by `--simulator`, else
 `simulator:` in grantiva.yml, else the live runner session's device, else the one
-booted simulator. With several booted and none of those set, it fails and names
-them rather than guessing. `diff capture --no-build --app-file <file>` instead
+booted simulator, which is used only if Grantiva created it (a simulator you
+created is refused, named, with `--simulator` as the remedy). With several booted
+and none of those set, it fails and names them rather than guessing. `diff capture --no-build --app-file <file>` instead
 boots the resolved device and installs the file, as a capture without
 `--no-build` does.
 When the device it drives is the one a live
@@ -593,7 +594,22 @@ with no session record deletes nothing and warns about nothing.
 
 Every simulator `simulator ensure` creates is recorded in
 `~/.grantiva/simulator-capacity/created.json`. Simulators you created yourself are
-never recorded and never deleted by Grantiva. `simulator teardown --session-id`
+never recorded and never deleted by Grantiva, and never used as the default: when
+nothing names a simulator (no `--simulator`, no `simulator:` in `grantiva.yml`),
+`run`, `build`, `diff capture`, `ci`, `runner start` and the MCP tools use the
+default name (the newest installed iPhone type) only if Grantiva created that
+simulator, and otherwise stop with an error naming it and `--simulator`, before
+preparing anything. `diff capture --no-build` applies the same rule to its
+fallback, the only booted simulator.
+
+The ledger and the capacity records beside it (`sessions.json`) belong to the
+runner home. With the default home (`~/.grantiva/runner`) they stay in
+`~/.grantiva/simulator-capacity`, as in earlier releases. With any other
+`GRANTIVA_RUNNER_HOME` they live in `<runner home>/simulator-capacity`, so a second
+home (a QA or CI home) neither counts, tears down, nor treats as its own the
+simulators another home recorded, and `GRANTIVA_MAX_SIMULATORS` applies per home.
+Records an earlier release wrote while such a home was set stay in
+`~/.grantiva/simulator-capacity`, with the default home. `simulator teardown --session-id`
 deletes the Grantiva-created simulators of that session and only shuts down the
 ones it booted but did not create (`deleted` in `--json`). `grantiva simulator
 cleanup` deletes every Grantiva-created simulator that is shut down and not part

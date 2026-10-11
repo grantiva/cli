@@ -105,3 +105,38 @@ final class InitAndroidTests: XCTestCase {
         await assertInitFails([], mentioning: "Pass --platform ios|android or set GRANTIVA_PLATFORM.")
     }
 }
+
+/// L09: Android `init` warns, like iOS, when the default AVD exists and
+/// Grantiva did not create it; one sentence shape for both.
+final class InitAndroidDefaultAVDTests: XCTestCase {
+    func testWarnsForAnExistingAVDGrantivaDidNotCreate() {
+        XCTAssertEqual(
+            InitCommand.existingAVDWarning(name: DefaultEmulator.name, avds: ["Other", DefaultEmulator.name], createdByGrantiva: []),
+            "An AVD named \"Pixel_8_API_35\" already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+                + "To keep them off it, set emulator: in grantiva-android.yml to a name of your own, for example \"Grantiva_Pixel_8_API_35\" "
+                + "(create it with `grantiva emulator ensure --name Grantiva_Pixel_8_API_35`)."
+        )
+    }
+
+    func testNoWarningWhenAbsentOrCreatedByGrantiva() {
+        XCTAssertNil(InitCommand.existingAVDWarning(name: DefaultEmulator.name, avds: ["Other"], createdByGrantiva: []))
+        XCTAssertNil(InitCommand.existingAVDWarning(name: DefaultEmulator.name, avds: [DefaultEmulator.name], createdByGrantiva: [DefaultEmulator.name]))
+    }
+
+    func testTheIOSWarningHasTheSameShape() throws {
+        let device = SimulatorDevice(name: "iPhone 18 Pro", udid: "FE441EE5", state: "Shutdown", runtime: "iOS-27-0", isAvailable: true)
+        let warning = try XCTUnwrap(InitCommand.existingSimulatorWarning(name: "iPhone 18 Pro", devices: [device], createdByGrantiva: []))
+        XCTAssertEqual(
+            warning,
+            "A simulator named \"iPhone 18 Pro\" (FE441EE5) already exists and was not created by Grantiva; runs from this directory will boot and drive it. "
+                + "To keep them off it, set simulator: in grantiva.yml to a name of your own, for example \"Grantiva iPhone 18 Pro\" "
+                + "(create it with `grantiva simulator ensure --name \"Grantiva iPhone 18 Pro\"`)."
+        )
+    }
+
+    func testTheDefaultAVDNameIsDefinedOnce() throws {
+        let source = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("Sources/GrantivaCLI/InitCommand.swift")
+        XCTAssertFalse(try String(contentsOf: source, encoding: .utf8).contains("\"Pixel_8_API_35\""))
+    }
+}

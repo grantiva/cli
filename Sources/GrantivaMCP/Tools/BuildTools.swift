@@ -101,10 +101,11 @@ enum BuildTools {
             guard let scheme = arguments["scheme"]?.stringValue ?? config?.scheme else {
                 throw GrantivaError.invalidArgument("no scheme specified. Pass 'scheme' or set it in grantiva.yml.")
             }
+            let named = arguments["simulator"]?.stringValue ?? config?.simulator
             return ResolvedProject(
                 scheme: scheme, project: config?.project, workspace: config?.workspace,
                 bundleId: config?.bundleId, buildSettings: config?.buildSettings ?? [],
-                simulator: arguments["simulator"]?.stringValue ?? config?.simulator ?? DefaultSimulator.name
+                simulator: named ?? DefaultSimulator.name, simulatorIsDefault: named == nil
             )
         case .android:
             let configured = config?.android ?? AndroidProject()
@@ -135,6 +136,9 @@ enum BuildTools {
         return named == nil ? toolError(message) : nil
     }
 
+    /// How these tools name a simulator, for the default-simulator refusal.
+    static let simulatorOverride = "simulator:"
+
     private static func toolError(_ message: String) -> CallTool.Result {
         CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
     }
@@ -157,15 +161,17 @@ enum BuildTools {
         }
         // iOS builds for a booted simulator destination. Android only
         // compiles, like `grantiva build build`: nothing is booted.
-        let deviceID = platform == .ios ? try await device.bootDevice(named: resolved.simulator).udid : ""
+        // The default name boots only a simulator Grantiva created (L08).
+        let booted = platform == .ios ? try await device.bootDevice(for: resolved, override: simulatorOverride) : nil
         let result = try await device.build(PlatformBuildRequest(
-            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: deviceID, extraBuildSettings: resolved.buildSettings
+            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted?.udid ?? "", extraBuildSettings: resolved.buildSettings
         ))
-        let target = platform == .android
-            ? "Module: \(resolved.android?.module ?? "(none)")\nVariant: \(resolved.android?.variant ?? "(none)")"
-            : "Scheme: \(result.scheme ?? "(none)")"
+        // The destination is named, as grantiva_run names its device.
+        let target = booted.map { "Scheme: \(result.scheme ?? "(none)")\nSimulator: \($0.name) (\($0.udid))" }
+            ?? "Module: \(resolved.android?.module ?? "(none)")\nVariant: \(resolved.android?.variant ?? "(none)")"
+        // A failure is an isError result, and every such text starts with `Error: `.
         var summary = """
-            Build \(result.success ? "succeeded" : "FAILED")
+            \(result.success ? "Build succeeded" : "Error: Build FAILED")
             \(target)
             Duration: \(String(format: "%.1fs", result.duration))
             Warnings: \(result.warnings.count)
@@ -198,13 +204,16 @@ enum BuildTools {
             return toolError(error.errorDescription ?? "\(error)")
         }
 
-        let booted = try await device.bootDevice(named: resolved.simulator)
+        let booted = try await device.bootDevice(for: resolved, override: simulatorOverride)
         let buildResult = try await device.build(PlatformBuildRequest(
             config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted.udid, extraBuildSettings: resolved.buildSettings
         ))
         guard buildResult.success else {
             return CallTool.Result(
-                content: [.text(text: "Build failed:\n\(buildResult.errors.joined(separator: "\n"))", annotations: nil, _meta: nil)],
+                content: [.text(
+                    text: "Error: Build failed:\n\(buildResult.errors.joined(separator: "\n"))\n\(platform == .ios ? "Simulator" : "Device"): \(booted.name) (\(booted.udid))",
+                    annotations: nil, _meta: nil
+                )],
                 isError: true
             )
         }
@@ -232,7 +241,7 @@ enum BuildTools {
         var text: String
         switch platform {
         case .ios:
-            text = "App built and launched.\nScheme: \(resolved.scheme ?? "")\nBundle ID: \(appID)\nSimulator: \(booted.name)"
+            text = "App built and launched.\nScheme: \(resolved.scheme ?? "")\nBundle ID: \(appID)\nSimulator: \(booted.name) (\(booted.udid))"
         case .android:
             let android = resolved.android ?? AndroidProject()
             text = "App built and launched.\nModule: \(android.module) (\(android.variant))\nApplication ID: \(appID)\nDevice: \(booted.name) (\(booted.udid))"
@@ -271,13 +280,17 @@ enum BuildTools {
         let scheme = arguments["scheme"]?.stringValue ?? config?.scheme
         guard let scheme else {
             return CallTool.Result(
-                content: [.text(text: "Error: no scheme specified. Pass 'scheme' or set it in grantiva.yml.", annotations: nil, _meta: nil)],
+                content: [.text(text: "Error: Invalid argument: no scheme specified. Pass 'scheme' or set it in grantiva.yml.", annotations: nil, _meta: nil)],
                 isError: true
             )
         }
 
-        let simName = arguments["simulator"]?.stringValue ?? config?.simulator ?? DefaultSimulator.name
-        let device = try await simManager.boot(nameOrUDID: simName)
+        let named = arguments["simulator"]?.stringValue ?? config?.simulator
+        let device = if let named {
+            try await simManager.boot(nameOrUDID: named)
+        } else {
+            try await simManager.bootDefault(name: DefaultSimulator.name, override: simulatorOverride)
+        }
         let destination = "platform=iOS Simulator,id=\(device.udid)"
 
         let result = try await runner.test(
@@ -288,7 +301,10 @@ enum BuildTools {
         )
 
         return CallTool.Result(
-            content: [.text(text: testSummary(result), annotations: nil, _meta: nil)],
+            content: [.text(
+                text: (result.success ? "" : "Error: ") + testSummary(result, simulator: "\(device.name) (\(device.udid))"),
+                annotations: nil, _meta: nil
+            )],
             isError: !result.success ? true : nil
         )
     }
@@ -297,11 +313,11 @@ enum BuildTools {
     /// lines and failing test cases, then the tail of the output, bounded so a
     /// long log does not flood the model's context.
     static func testSummary(
-        _ result: TestResult, tailLines: Int = 40, maxTailBytes: Int = 4096, maxReasonLineBytes: Int = 500
+        _ result: TestResult, simulator: String? = nil, tailLines: Int = 40, maxTailBytes: Int = 4096, maxReasonLineBytes: Int = 500
     ) -> String {
         var summary = """
             Tests \(result.success ? "passed" : "FAILED")
-            Scheme: \(result.scheme)
+            Scheme: \(result.scheme)\(simulator.map { "\nSimulator: \($0)" } ?? "")
             Duration: \(String(format: "%.1fs", result.duration))
             Passed: \(result.testsPassed)
             Failed: \(result.testsFailed)

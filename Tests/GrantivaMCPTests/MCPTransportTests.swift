@@ -155,6 +155,91 @@ final class MCPTransportTests: XCTestCase {
     }
 }
 
+/// L14: a `tools/call` cancelled with `notifications/cancelled` gets no
+/// response, whether the cancel arrives before the request's task starts or
+/// while the tool runs; a cancel for an unknown id changes nothing.
+@available(macOS 15, *)
+final class MCPCancellationTests: XCTestCase {
+    private func json(_ data: Data) -> [String: Any]? {
+        try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    }
+
+    /// Sends `lines` (each after its delay) to a server whose one tool sleeps
+    /// 1 s and then returns an isError result, and returns the reply ids.
+    private func replyIDs(
+        _ lines: [(delay: UInt64, line: String)], expect: Int, toolSleeps: UInt64 = 1_000_000_000
+    ) async throws -> [String] {
+        let (clientSide, serverSide) = await InMemoryTransport.createConnectedPair()
+        let server = Server(name: "grantiva-test", version: "0.0.0", capabilities: .init(tools: .init(listChanged: false)))
+        await server.withMethodHandler(ListTools.self) { _ in ListTools.Result(tools: []) }
+        await GrantivaMCPServer.registerToolCalls(on: server) { _, _ in
+            if toolSleeps > 0 { try? await Task.sleep(nanoseconds: toolSleeps) }
+            return CallTool.Result(content: [.text(text: "Error: late", annotations: nil, _meta: nil)], isError: true)
+        }
+        try await server.start(transport: ValidatingTransport(wrapping: serverSide))
+        try await clientSide.connect()
+        let replies = Replies()
+        let stream = await clientSide.receive()
+        let reader = Task { for try await data in stream { replies.append(data) } }
+        defer { reader.cancel() }
+
+        try await clientSide.send(Data(#"{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"qa","version":"1"}}}"#.utf8))
+        try await clientSide.send(Data(#"{"jsonrpc":"2.0","method":"notifications/initialized"}"#.utf8))
+        for (delay, line) in lines {
+            if delay > 0 { try await Task.sleep(nanoseconds: delay * 1_000_000) }
+            try await clientSide.send(Data(line.utf8))
+        }
+        let deadline = Date().addingTimeInterval(5)
+        while replies.all.count < expect, Date() < deadline { try await Task.sleep(nanoseconds: 50_000_000) }
+        try await Task.sleep(nanoseconds: 1_500_000_000)  // a late result would arrive now
+        await server.stop()
+        return replies.all.compactMap(json).map { "\($0["id"] ?? "none")" }
+    }
+
+    private let call10 = #"{"jsonrpc":"2.0","id":10,"method":"tools/call","params":{"name":"grantiva_build","arguments":{}}}"#
+    private let cancel10 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":10,"reason":"test"}}"#
+    private let list11 = #"{"jsonrpc":"2.0","id":11,"method":"tools/list"}"#
+
+    func testACancelRightBehindTheRequestYieldsNoResponse() async throws {
+        let ids = try await replyIDs([(0, call10), (0, cancel10), (0, list11)], expect: 2)
+        XCTAssertEqual(ids.sorted(), ["1", "11"])
+    }
+
+    func testACancelWhileTheToolRunsYieldsNoResponse() async throws {
+        let ids = try await replyIDs([(0, call10), (200, cancel10), (0, list11)], expect: 2)
+        XCTAssertEqual(ids.sorted(), ["1", "11"])
+    }
+
+    /// A tool that fails in milliseconds and never sees the cancellation:
+    /// the SDK handles a batch's request before its cancel, so only the
+    /// transport's drop keeps the answer from the client.
+    func testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch() async throws {
+        let batch = "[" + call10 + "," + cancel10 + "]"
+        let ids = try await replyIDs([(0, batch), (0, list11)], expect: 2, toolSleeps: 0)
+        XCTAssertEqual(ids.sorted(), ["1", "11"])
+    }
+
+    func testTheTrackerDropsOnlyACancelledPendingRequestsAnswer() {
+        var tracker = CancellationTracker()
+        XCTAssertEqual(tracker.incoming(Data(call10.utf8)), [.none])
+        XCTAssertEqual(tracker.incoming(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":"10"}}"#.utf8)), [])
+        let notes = tracker.incoming(Data(cancel10.utf8))
+        XCTAssertEqual(notes.count, 1)
+        let answer10 = Data(#"{"jsonrpc":"2.0","id":10,"result":{"content":[],"isError":true}}"#.utf8)
+        let answer11 = Data(#"{"jsonrpc":"2.0","id":11,"result":{"tools":[]}}"#.utf8)
+        XCTAssertNil(tracker.outgoing(answer10))
+        XCTAssertEqual(tracker.outgoing(answer11), answer11)
+        // Answered (dropped) once: a later id 10 is no longer cancelled.
+        XCTAssertEqual(tracker.outgoing(answer10), answer10)
+    }
+
+    func testACancelForAnUnknownIDIsIgnored() async throws {
+        let cancel99 = #"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":99}}"#
+        let ids = try await replyIDs([(0, cancel99), (0, call10), (0, list11)], expect: 3)
+        XCTAssertEqual(ids.sorted(), ["1", "10", "11"])
+    }
+}
+
 private final class Replies: @unchecked Sendable {
     private let lock = NSLock()
     private var items: [Data] = []

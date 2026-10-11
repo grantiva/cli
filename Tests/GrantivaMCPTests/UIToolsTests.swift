@@ -52,7 +52,7 @@ final class UIToolsTests: XCTestCase {
         let recorder = WDARecorder()
         let result = try await UITools.tap(driver: MCPTestSupport.fakeDriver(recorder: recorder), arguments: [:])
         XCTAssertEqual(result.isError, true)
-        XCTAssertTrue(try textContent(of: result).contains("provide either 'label' or both 'x' and 'y'"))
+        XCTAssertTrue(try textContent(of: result).contains("Provide either 'label' or both 'x' and 'y'"))
         XCTAssertTrue(recorder.calls.isEmpty, "A rejected tap must not touch WDA")
     }
 
