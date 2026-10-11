@@ -28,7 +28,7 @@ final class MP4LastFrameHoldFixtureTests: XCTestCase {
             XCTAssertNil(MP4LastFrameHold.hold(Data(truncated), toSeconds: 2), "length \(length)")
             let path = dir.appendingPathComponent("truncated-\(length).mp4").path
             try Data(truncated).write(to: URL(fileURLWithPath: path))
-            XCTAssertNil(try MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2))
+            XCTAssertTrue(try Self.isUnreadable(MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2)), "length \(length)")
             XCTAssertEqual(try Data(contentsOf: URL(fileURLWithPath: path)), Data(truncated))
         }
     }
@@ -43,7 +43,7 @@ final class MP4LastFrameHoldFixtureTests: XCTestCase {
         XCTAssertNil(MP4LastFrameHold.hold(corrupt, toSeconds: 2))
         let path = dir.appendingPathComponent("fuzzed.mp4").path
         try corrupt.write(to: URL(fileURLWithPath: path))
-        XCTAssertNil(try MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2))
+        XCTAssertTrue(try Self.isUnreadable(MP4LastFrameHold.holdFile(atPath: path, toSeconds: 2)))
         XCTAssertEqual(try Data(contentsOf: URL(fileURLWithPath: path)), corrupt)
     }
 
@@ -72,8 +72,11 @@ final class MP4LastFrameHoldFixtureTests: XCTestCase {
         let before = try await AVURLAsset(url: url).load(.duration)
         XCTAssertLessThan(CMTimeGetSeconds(before), 1.5)
 
-        let recorded = try XCTUnwrap(try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2))
-        XCTAssertEqual(recorded, CMTimeGetSeconds(before), accuracy: 0.05)
+        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+            return XCTFail("expected the last frame to be held")
+        }
+        XCTAssertEqual(timing.recordedSeconds, CMTimeGetSeconds(before), accuracy: 0.05)
+        XCTAssertEqual(timing.lastFrameSeconds, 0.5, accuracy: 0.05, "the second frame appears at 500 ms")
 
         let asset = AVURLAsset(url: url)
         let after = try await asset.load(.duration)
@@ -89,12 +92,21 @@ final class MP4LastFrameHoldFixtureTests: XCTestCase {
     }
 
     func testHeldRecordingNoteOnlyWhenMoreThanHalfWasHeld() {
-        XCTAssertNil(RecordCommand.heldRecordingNote(recordedSeconds: 1.2, requestedSeconds: 2))
-        XCTAssertNil(RecordCommand.heldRecordingNote(recordedSeconds: 1.0, requestedSeconds: 2))
-        let note = RecordCommand.heldRecordingNote(recordedSeconds: 0, requestedSeconds: 2)
+        func timing(_ lastFrame: Double) -> MP4LastFrameHold.Timing {
+            .init(frameCount: 1, lastFrameSeconds: lastFrame, recordedSeconds: lastFrame)
+        }
+        XCTAssertNil(RecordCommand.heldRecordingNote(timing: timing(1.2), requestedSeconds: 2))
+        XCTAssertNil(RecordCommand.heldRecordingNote(timing: timing(1.0), requestedSeconds: 2))
+        let note = RecordCommand.heldRecordingNote(timing: timing(0), requestedSeconds: 2)
         XCTAssertNotNil(note)
         XCTAssertTrue(note?.contains("last frame is at 0ms") == true, note ?? "")
         XCTAssertTrue(note?.contains("device stayed connected") == true, note ?? "")
+    }
+
+    /// K34-b: a file `hold` cannot read is reported with a reason, never a bare nil.
+    private static func isUnreadable(_ outcome: MP4LastFrameHold.Outcome) -> Bool {
+        if case .unreadable(let reason) = outcome { return !reason.isEmpty }
+        return false
     }
 
     private func boxOffset(_ type: String, in bytes: [UInt8]) -> Int? {

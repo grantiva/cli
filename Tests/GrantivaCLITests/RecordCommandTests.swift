@@ -243,6 +243,9 @@ final class RecordCommandTests: XCTestCase {
         let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
         XCTAssertEqual(frames.map { $0["requestedMilliseconds"] as? Int }, [1000, 2000])
         XCTAssertEqual(frames.map { $0["actualMilliseconds"] as? Int }, [0, 0], "the held frame is the one shown")
+        // K34-b: the report says when the screen last changed and how long the track ran before the hold.
+        XCTAssertEqual(report?["lastFrameMilliseconds"] as? Int, 0)
+        XCTAssertEqual(report?["recordedMilliseconds"] as? Int, 0)
         for frame in frames {
             XCTAssertTrue(FileManager.default.fileExists(atPath: try XCTUnwrap(frame["path"] as? String)))
         }
@@ -250,19 +253,164 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
     }
 
-    func testAndroidFrameBeyondTheRequestedDurationStillThrows() async throws {
-        let dir = try makeAndroidProject()
-        defer { restoreDirectory(dir) }
-        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])
-        let fake = FakeDevicePlatform(platform: .android)
+    /// K84: a frame past --duration is refused before anything is recorded.
+    func testAndroidFrameBeyondTheRequestedDurationIsRefusedBeforeRecording() throws {
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])) { error in
+            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 2500 is past --duration 2 (2000 ms).")
+        }
+    }
+
+    // MARK: - K34: the held-frame note and its statistics
+
+    /// K34-a: frames at 0 ms and 50 ms held to 2 s: the last frame is at 50 ms,
+    /// the value the JSON report gives for a frame requested after it.
+    func testHeldRecordingNoteNamesTheLastFramesStart() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.050, recordedSeconds: 0.100)
+        let note = try XCTUnwrap(RecordCommand.heldRecordingNote(timing: timing, requestedSeconds: 2))
+        XCTAssertTrue(note.contains("last frame is at 50ms"), note)
+        XCTAssertFalse(note.contains("100ms"), note)
+    }
+
+    /// K34-b: the note prints when the last frame stays on screen for more
+    /// than half of the requested duration, and not at exactly half.
+    func testHeldRecordingNoteThresholdBoundary() {
+        func note(_ lastFrame: Double) -> String? {
+            RecordCommand.heldRecordingNote(
+                timing: .init(frameCount: 2, lastFrameSeconds: lastFrame, recordedSeconds: lastFrame + 0.05), requestedSeconds: 2
+            )
+        }
+        XCTAssertNil(note(1.0), "held exactly half")
+        XCTAssertNotNil(note(0.999), "held more than half")
+        XCTAssertNil(note(1.5))
+    }
+
+    /// K34-b: screenrecord gave the last frame (at 33 ms) a sample delta that
+    /// already reaches the requested length, so nothing was rewritten; the
+    /// frame was still on screen for nearly all of it, so the note prints.
+    func testNotePrintsWhenTheRecorderAlreadyStretchedTheLastFrame() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.033, recordedSeconds: 4.02)
+        let diagnostics = RecordCommand.holdDiagnostics(.unchanged(timing), requestedSeconds: 4)
+        XCTAssertNotNil(diagnostics.note)
+        XCTAssertEqual(
+            diagnostics.statistics,
+            "Held frame: frames=2 lastFrame=33ms trackEnd=4020ms requested=4000ms lastFrameOnScreen=3967ms held=0ms noteThreshold=>2000ms note=printed"
+        )
+    }
+
+    func testStatisticsExplainAMissingNote() {
+        let late = RecordCommand.holdDiagnostics(
+            .held(.init(frameCount: 3, lastFrameSeconds: 2.5, recordedSeconds: 2.55)), requestedSeconds: 4
+        )
+        XCTAssertNil(late.note)
+        XCTAssertEqual(
+            late.statistics,
+            "Held frame: frames=3 lastFrame=2500ms trackEnd=2550ms requested=4000ms lastFrameOnScreen=1500ms held=1450ms noteThreshold=>2000ms note=not printed (the screen changed after the halfway point)"
+        )
+        let unreadable = RecordCommand.holdDiagnostics(.unreadable("no moov box"), requestedSeconds: 4)
+        XCTAssertNil(unreadable.note)
+        XCTAssertEqual(unreadable.statistics, "Held frame: not held; the recording could not be read (no moov box)")
+    }
+
+    // MARK: - K84: --frames-at past --duration
+
+    func testFramesAtPastTheDurationIsAUsageErrorBeforeRecording() throws {
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "5000"])) { error in
+            XCTAssertEqual(RecordCommand.exitCode(for: error), .validationFailure, "\(error)")
+            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 5000 is past --duration 2 (2000 ms).")
+        }
+        XCTAssertEqual(try RecordCommand.parse(["--duration", "2", "--frames-at", "0,2000"]).requestedFrames, [0, 2000])
+        XCTAssertThrowsError(try RecordCommand.parse(["--duration", "1.5", "--frames-at", "1501"])) { error in
+            XCTAssertEqual(RecordCommand.message(for: error), "--frames-at 1501 is past --duration 1.5 (1500 ms).")
+        }
+    }
+
+    /// K84: a timestamp within --duration passes validation; a recording
+    /// that then ends short of it still fails after recording, as before.
+    /// iOS has no hold, so the near-empty fixture ends before 1000 ms.
+    func testRecordingThatEndsShortOfAValidTimestampStillFailsAfterRecording() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-short-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+        let fake = FakeDevicePlatform(platform: .ios)
         fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
         command.devicePlatform = InjectedDevicePlatform(fake)
         do {
             try await command.run()
-            XCTFail("expected an error")
+            XCTFail("expected the post-recording error")
         } catch {
-            XCTAssertTrue("\(error)".contains("ended at 2000ms before requested frame 2500ms"), "\(error)")
+            XCTAssertTrue("\(error)".contains("before requested frame 1000ms"), "\(error)")
         }
+        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+    }
+
+    /// K34-b fix round: when screenrecord already stretched the last frame,
+    /// the note says so and gives the track's length, not "held to".
+    func testNoteForARecorderStretchedFrameGivesTheTrackLength() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 2, lastFrameSeconds: 0.033, recordedSeconds: 4.02)
+        let note = try XCTUnwrap(RecordCommand.holdDiagnostics(.unchanged(timing), requestedSeconds: 4).note)
+        XCTAssertTrue(note.contains("last frame is at 33ms; screenrecord already kept it on screen to the end of the 4020ms track (requested 4.0s)"), note)
+        XCTAssertFalse(note.contains("held to the requested"), note)
+        let held = try XCTUnwrap(RecordCommand.holdDiagnostics(.held(timing), requestedSeconds: 5).note)
+        XCTAssertTrue(held.contains("it was held to the requested 5.0s"), held)
+    }
+
+    func testOutcomeTimingAndOutOfRangeDiagnostics() {
+        let timing = MP4LastFrameHold.Timing(frameCount: 1, lastFrameSeconds: 0, recordedSeconds: 0)
+        XCTAssertEqual(MP4LastFrameHold.Outcome.held(timing).timing, timing)
+        XCTAssertEqual(MP4LastFrameHold.Outcome.unchanged(timing).timing, timing)
+        XCTAssertNil(MP4LastFrameHold.Outcome.unreadable("x").timing)
+        XCTAssertNil(MP4LastFrameHold.Outcome.outOfRange(.infinity).timing)
+        let diagnostics = RecordCommand.holdDiagnostics(.outOfRange(.infinity), requestedSeconds: .infinity)
+        XCTAssertNil(diagnostics.note)
+        XCTAssertEqual(diagnostics.statistics, "Held frame: not held; the requested length infs is out of range")
+    }
+
+    // MARK: - K85: one path style per report
+
+    func testRelativeOutputGivesRelativePathsThroughout() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", "clips/a.mp4", "--json"])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: "clips/a.json"))) as? [String: Any]
+        XCTAssertEqual(report?["video"] as? String, "clips/a.mp4")
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.compactMap { $0["path"] as? String }, ["clips/a-frames/001000ms.png"])
+        XCTAssertTrue(FileManager.default.fileExists(atPath: "clips/a-frames/001000ms.png"))
+
+        // Text mode prints the same relative paths, the frame report included.
+        let decoded = try JSONDecoder().decode(RecordReport.self, from: Data(contentsOf: URL(fileURLWithPath: "clips/a.json")))
+        XCTAssertEqual(RecordCommand.textLines(decoded, reportPath: RecordCommand.reportPath(forOutput: "clips/a.mp4")), [
+            "Recording: clips/a.mp4",
+            "Frame report: clips/a.json",
+            "  1000ms -> 0ms: clips/a-frames/001000ms.png",
+        ])
+        XCTAssertEqual(RecordCommand.reportPath(forOutput: "/abs/a.mp4"), "/abs/a.json")
+        XCTAssertEqual(RecordCommand.reportPath(forOutput: "a.mov"), "a.json")
+    }
+
+    func testAbsoluteOutputGivesAbsolutePathsThroughout() async throws {
+        let dir = try makeAndroidProject()
+        defer { restoreDirectory(dir) }
+        let output = dir.0.appendingPathComponent("abs/a.mp4").path
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--output", output])
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let reportPath = dir.0.appendingPathComponent("abs/a.json").path
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: reportPath))) as? [String: Any]
+        XCTAssertEqual(report?["video"] as? String, output)
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.compactMap { $0["path"] as? String }, [dir.0.appendingPathComponent("abs/a-frames/001000ms.png").path])
     }
 
     private func makeAndroidProject() throws -> (URL, String) {

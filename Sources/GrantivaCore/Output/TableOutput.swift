@@ -91,7 +91,9 @@ public struct TableFormatter: Sendable {
         let newCount = result.screens.filter { $0.status == .newScreen }.count
         let errCount = result.screens.filter { $0.status == .error }.count
 
-        lines.append(result.passed ? "✓ Visual diff passed" : "✗ Visual diff failed")
+        lines.append(compareHeadline(
+            passed: result.passed, failures: failCount + errCount, newScreens: newCount, compared: passCount
+        ))
         lines.append("  Duration: \(String(format: "%.1f", result.duration))s")
         lines.append("  Passed: \(passCount)  Failed: \(failCount)  New: \(newCount)  Errors: \(errCount)")
         lines.append("")
@@ -116,6 +118,18 @@ public struct TableFormatter: Sendable {
             }
         }
         return lines.joined(separator: "\n")
+    }
+
+    /// A screen without a baseline is not a pass: with no baselines at all
+    /// nothing was compared, and with some it says what is still missing.
+    private func compareHeadline(passed: Bool, failures: Int, newScreens: Int, compared: Int) -> String {
+        if passed { return "✓ Visual diff passed" }
+        guard failures == 0, newScreens > 0 else { return "✗ Visual diff failed" }
+        let screens = "\(newScreens) new screen\(newScreens == 1 ? "" : "s")"
+        if compared == 0 {
+            return "? No baselines: \(screens). Run: grantiva diff approve"
+        }
+        return "? Visual diff incomplete: \(screens) \(newScreens == 1 ? "has" : "have") no baseline. Run: grantiva diff approve"
     }
 
     public func formatApprove(_ result: ApproveResult) -> String {

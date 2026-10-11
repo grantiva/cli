@@ -66,6 +66,18 @@ public struct CaptureResult: Sendable, Codable {
         self.simulator = simulator
         self.emulator = emulator
     }
+
+    /// The one shape `diff capture --json` and the MCP live-session capture
+    /// both report: the device under `simulator`, and on Android the same
+    /// object again under `emulator`.
+    public init(
+        screens: [ScreenCapture], directory: String, duration: Double, target: CaptureSimulatorTarget, platform: Platform
+    ) {
+        self.init(
+            screens: screens, directory: directory, duration: duration,
+            simulator: target, emulator: platform == .android ? target : nil
+        )
+    }
 }
 
 public struct CaptureSimulatorTarget: Sendable, Codable, Equatable {
@@ -150,15 +162,53 @@ public struct ScreenDiff: Sendable, Codable {
     }
 }
 
+/// The two checks a compared screen must pass, and the line that says which
+/// one it failed. Shared by `diff compare` and `ci run`.
+public enum DiffVerdict {
+    public static func passes(pixelDiffPercent: Double, perceptualDistance: Double, pixelThreshold: Double, perceptualThreshold: Double) -> Bool {
+        pixelDiffPercent <= pixelThreshold && perceptualDistance <= perceptualThreshold
+    }
+
+    /// `Passed`, or `Failed:` naming each exceeded threshold and its limit,
+    /// with the other measurement in parentheses. The pixel share and its
+    /// threshold print as percent, as `pixel=` always has.
+    public static func message(pixelDiffPercent: Double, perceptualDistance: Double, pixelThreshold: Double, perceptualThreshold: Double) -> String {
+        let pixel = "pixel=\(percent(pixelDiffPercent))"
+        let pixelLimit = "threshold \(percent(pixelThreshold))"
+        let perceptual = "perceptual=\(String(format: "%.1f", perceptualDistance))"
+        let perceptualLimit = "perceptual_threshold \(String(format: "%.1f", perceptualThreshold))"
+        let pixelFailed = pixelDiffPercent > pixelThreshold
+        let perceptualFailed = perceptualDistance > perceptualThreshold
+        switch (pixelFailed, perceptualFailed) {
+        case (true, true):
+            return "Failed: \(pixel) exceeds \(pixelLimit) and \(perceptual) exceeds \(perceptualLimit)"
+        case (true, false):
+            return "Failed: \(pixel) exceeds \(pixelLimit) (\(perceptual), \(perceptualLimit))"
+        case (false, true):
+            return "Failed: \(perceptual) exceeds \(perceptualLimit) (\(pixel), \(pixelLimit))"
+        case (false, false):
+            return "Passed"
+        }
+    }
+
+    private static func percent(_ fraction: Double) -> String {
+        String(format: "%.2f%%", fraction * 100)
+    }
+}
+
 public struct CompareResult: Sendable, Codable {
     public let screens: [ScreenDiff]
     public let passed: Bool
     public let duration: Double
+    /// Files in the capture directory that are not configured screens and
+    /// were left out of the comparison; absent when there were none.
+    public let ignored: [String]?
 
-    public init(screens: [ScreenDiff], passed: Bool, duration: Double) {
+    public init(screens: [ScreenDiff], passed: Bool, duration: Double, ignored: [String] = []) {
         self.screens = screens
         self.passed = passed
         self.duration = duration
+        self.ignored = ignored.isEmpty ? nil : ignored
     }
 }
 
@@ -167,14 +217,19 @@ public struct CompareResult: Sendable, Codable {
 public struct ApproveResult: Sendable, Codable {
     public let approvedScreens: [String]
     public let baselineDirectory: String
+    /// Files in the capture directory that are not configured screens and
+    /// were not approved; absent when there were none.
+    public let ignored: [String]?
 
-    public init(approvedScreens: [String], baselineDirectory: String) {
+    public init(approvedScreens: [String], baselineDirectory: String, ignored: [String] = []) {
         self.approvedScreens = approvedScreens
         self.baselineDirectory = baselineDirectory
+        self.ignored = ignored.isEmpty ? nil : ignored
     }
 
     enum CodingKeys: String, CodingKey {
         case approvedScreens = "approved_screens"
         case baselineDirectory = "baseline_directory"
+        case ignored
     }
 }

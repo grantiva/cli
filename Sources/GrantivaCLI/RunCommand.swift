@@ -160,6 +160,14 @@ struct RunCommand: AsyncParsableCommand {
         }
     }
 
+    /// Where `run` keeps its takeScreenshot shots and failure screenshots
+    /// when no --report-dir is given. Kept apart from `diff`'s
+    /// `.grantiva/captures` so `diff approve` and `diff compare` never take a
+    /// run artefact for a screen.
+    static func captureDirectory(for platform: Platform) -> String {
+        platform == .ios ? ".grantiva/run-captures" : ".grantiva/run-captures/android"
+    }
+
     static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
         switch platform {
         case .ios:
@@ -239,10 +247,11 @@ struct RunCommand: AsyncParsableCommand {
         let device = try devicePlatform.make(platform, android: target.androidOptions)
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
-        // screenshots go there and nothing is written to ./.grantiva.
+        // screenshots go there and nothing is written to ./.grantiva. Without
+        // it they go to the run directory, never to `diff`'s captures (K82-b).
         let captureDir = reportDir.map { dir in
             (dir.hasPrefix("/") ? dir : FileManager.default.currentDirectoryPath + "/" + dir) + "/captures"
-        } ?? DiffCommand.captureDirectory(for: platform)
+        } ?? Self.captureDirectory(for: platform)
 
         // Resolve app binary first (if --app-file provided)
         let resolvedBinary: ResolvedBinary? = if let appFile = buildOptions.appFile { try await device.resolveBinary(appFile) } else { nil }

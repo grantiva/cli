@@ -312,6 +312,30 @@ final class SessionLifecycleTests: XCTestCase {
         XCTAssertEqual(screens.compactMap { $0["path"] as? String }, [".grantiva/captures/Home.png", ".grantiva/captures/Detail.png"])
     }
 
+    /// K55: the live-session capture document has the shape of `diff capture
+    /// --json`: Android adds the `emulator` object, iOS does not.
+    func testVRTCaptureThroughTheSessionHasTheCLIDocumentShapeOnBothPlatforms() async throws {
+        for platform in [Platform.android, .ios] {
+            let directory = try temporaryDirectory()
+            let device = MCPFakeDevicePlatform(platform: platform)
+            if platform == .ios { device.bootedID = udid }
+            let registry = liveRegistry(
+                directory: directory, config: screensConfig([.init(name: "Home", path: .launch)]),
+                driver: MCPTestSupport.fakeDriver(recorder: WDARecorder()), device: device, platform: platform
+            )
+            let result = try await registry.call(name: "grantiva_vrt_capture", arguments: [:], server: MCPTestSupport.disconnectedServer())
+            let text = try textContent(of: result)
+            XCTAssertNil(result.isError, text)
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any])
+            if platform == .android {
+                XCTAssertEqual(json.keys.sorted(), ["directory", "duration", "emulator", "screens", "simulator"])
+                XCTAssertEqual(json["emulator"] as? NSDictionary, json["simulator"] as? NSDictionary)
+            } else {
+                XCTAssertEqual(json.keys.sorted(), ["directory", "duration", "screens", "simulator"])
+            }
+        }
+    }
+
     func testVRTCaptureThroughTheSessionReportsTheFailingStepAndRestoresTheStatusBar() async throws {
         let directory = try temporaryDirectory()
         let driver = MCPTestSupport.fakeDriver(recorder: WDARecorder())

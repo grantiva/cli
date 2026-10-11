@@ -118,7 +118,8 @@ extension VRTTools {
                 )
             }
             let result = CaptureResult(
-                screens: reported, directory: relativeDir, duration: Date().timeIntervalSince(start), simulator: target
+                screens: reported, directory: relativeDir, duration: Date().timeIntervalSince(start),
+                target: target, platform: platform
             )
             return CallTool.Result(content: [.text(text: try JSONOutput.string(result), annotations: nil, _meta: nil)])
         } catch let failure as StepFailure {

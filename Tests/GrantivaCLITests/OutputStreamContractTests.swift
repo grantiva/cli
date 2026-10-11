@@ -57,6 +57,10 @@ final class OutputStreamContractTests: XCTestCase {
         // A 1x1 RGB PNG.
         let png = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC")!
         try png.write(to: captures.appendingPathComponent("Home.png"))
+        // A matching baseline: a screen without one fails the compare (K89).
+        let baselines = dir.appendingPathComponent(".grantiva/baselines")
+        try FileManager.default.createDirectory(at: baselines, withIntermediateDirectories: true)
+        try png.write(to: baselines.appendingPathComponent("Home.png"))
 
         let run = try grantiva(
             ["diff", "compare", "--json"], in: dir,
@@ -68,6 +72,33 @@ final class OutputStreamContractTests: XCTestCase {
         XCTAssertNoThrow(try JSONSerialization.jsonObject(with: Data(run.stdout.utf8)), run.stdout)
         XCTAssertFalse(run.stdout.contains("unknown key"), run.stdout)
         XCTAssertTrue(run.stderr.contains(#"unknown key "schem""#), run.stderr)
+    }
+
+    /// K82-b fix round: the files `diff compare` and `diff approve` set aside
+    /// are listed in the `--json` document, not only in a stderr note.
+    func testCompareAndApproveJSONListTheIgnoredFiles() throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let captures = dir.appendingPathComponent(".grantiva/captures")
+        let baselines = dir.appendingPathComponent(".grantiva/baselines")
+        let home = dir.appendingPathComponent("home")
+        for directory in [captures, baselines, home] {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        try "bundle_id: com.example\nscreens:\n  - name: Home\n    path: launch\n".write(
+            to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8
+        )
+        let png = Data(base64Encoded: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR4nGP4z8AAAAMBAQDJ/pLvAAAAAElFTkSuQmCC")!
+        for url in [captures.appendingPathComponent("Home.png"), captures.appendingPathComponent("failure-1.png"), baselines.appendingPathComponent("Home.png")] {
+            try png.write(to: url)
+        }
+        let environment: [String: String?] = ["GRANTIVA_API_KEY": nil, "HOME": home.path, "CFFIXED_USER_HOME": home.path]
+        for command in [["diff", "compare", "--json"], ["diff", "approve", "--json"]] {
+            let run = try grantiva(command, in: dir, environment: environment)
+            XCTAssertEqual(run.status, 0, "\(command): \(run.stderr)")
+            let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(run.stdout.utf8)) as? [String: Any], run.stdout)
+            XCTAssertEqual(json["ignored"] as? [String], ["failure-1"], "\(command): \(run.stdout)")
+        }
     }
 
     /// `run --json` with nothing to run fails at project resolution, before

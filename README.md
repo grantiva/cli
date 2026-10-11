@@ -92,11 +92,11 @@ grantiva hierarchy > state.xml
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<runner version>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed runner version, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
 - **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
-- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
+- **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs. Without `--report-dir`, `run` writes its `takeScreenshot` shots and the failure screenshot (`failure-<timestamp>.png`) to `.grantiva/run-captures/` (`.grantiva/run-captures/android/` on Android), never to `.grantiva/captures/`, so `diff approve` and `diff compare` never take a run artefact for a screen.
 - **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
 - **`--timeout <seconds>`** — Maximum time to wait for the runner before it is killed with SIGTERM. Default 600, **minimum 30** (a smaller value exits 64 with `--timeout must be at least 30 seconds.`). The timeout itself is ignored under `--keep-alive`, where the session is held until you release it, but the 30 s minimum is still validated.
 - **`--flow <path>`** — Override configured flows to run a single YAML file. Useful for iterating on one test at a time.
-- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
+- **`--report-dir <path>`** — Writes the runner's `report.json`, assets, failure screenshots, and trace artifacts under that directory, for `screens:` as well as `flows:`. When both run, the screens session's report goes to `<path>/screens/`. Flow paths in `report.json`, `flows/*.json`, `junit-report.xml`, and `maestro-runner.log` are the paths you passed. Nothing is written to `./.grantiva/run-captures` when it is given. `--timeout` and `--continue-on-failure` also apply to `screens:`; with `--continue-on-failure` a failed screens session is reported and the configured flows still run. Screens run as one flow, so a failed screen stops the remaining screens; the flag lets the configured flows run afterwards.
 
 ## Configuration
 
@@ -346,8 +346,12 @@ grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml 
 `grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
 timestamp, with a JSON report of the frame actually shown at each. On Android,
 `screenrecord` writes frames only when the screen changes, so Grantiva holds the last
-frame to `--duration`; if more than half the recording was held, it prints a note on
-stderr, since a device that disconnected mid-recording looks the same as an idle screen.
+frame to `--duration`; if the last frame was on screen for more than half the recording, it
+prints a note on stderr, since a device that disconnected mid-recording looks the same as an
+idle screen. `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
+A `--frames-at` value past `--duration` is refused (exit 64) before anything is recorded. Paths in
+the output and the JSON report follow `--output`: relative to the current directory when it is
+relative, absolute when it is absolute.
 
 ### Dashboard commands
 
@@ -474,6 +478,16 @@ grantiva diff compare
 # Approve current screenshots as the new baseline
 grantiva diff approve
 ```
+
+`diff capture` writes `.grantiva/captures/<screen>.png` for each configured screen. `diff approve` (with no names) and
+`diff compare` work on the screens configured in `grantiva.yml`; any other file in `.grantiva/captures/` (for example a
+shot an older `grantiva run` left there) is listed in a note (and under `ignored` in `--json`) and left alone. A failing screen's line names the check it
+failed and its limit, for example `Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)`.
+
+`diff compare` exits 0 only when every screen has a baseline and passes. It exits 1 when a screen fails or errors,
+and also when a screen has no baseline: with no baselines at all it prints `? No baselines: <n> new screens. Run:
+grantiva diff approve`, and when only some are missing `? Visual diff incomplete: …`; `--json` has `"passed": false`
+in both cases. (`ci run` keeps reporting a new screen as `new_screen` without failing the run.)
 
 Local baselines are stored in `.grantiva/baselines/`. Connect to [Grantiva](https://grantiva.io) to store baselines remotely and enable CI across machines.
 

@@ -123,17 +123,20 @@ struct CIComparisonPipeline {
             if let baselineData {
                 do {
                     let output = try compare(baselineData, captureData)
-                    let passed = output.pixelDiffPercent <= pixelThreshold
-                        && output.perceptualDistance <= perceptualThreshold
+                    let passed = DiffVerdict.passes(
+                        pixelDiffPercent: output.pixelDiffPercent, perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: pixelThreshold, perceptualThreshold: perceptualThreshold
+                    )
                     var diffData: Data?
                     if !passed {
                         allPassed = false
                         try writeDiff(capture.screenName, output.diffImageData)
                         diffData = output.diffImageData
                     }
-                    let message = passed
-                        ? "Passed"
-                        : "Failed: pixel=\(String(format: "%.2f%%", output.pixelDiffPercent * 100)) perceptual=\(String(format: "%.1f", output.perceptualDistance))"
+                    let message = DiffVerdict.message(
+                        pixelDiffPercent: output.pixelDiffPercent, perceptualDistance: output.perceptualDistance,
+                        pixelThreshold: pixelThreshold, perceptualThreshold: perceptualThreshold
+                    )
                     uploads.append(RunScreenUpload(
                         name: capture.screenName, status: passed ? "passed" : "failed",
                         pixelDiffPercent: output.pixelDiffPercent,

@@ -77,7 +77,10 @@ baselines refuse Android with "Android baselines are local only until the Granti
 supports platforms; use local baselines". `diff capture`, `diff compare`, and
 `diff approve` work locally. On Android, `diff capture` prints `Emulator: <AVD> (<serial>)`,
 and its `--json` document adds an `emulator` object (name, udid, dimensions, scale) next
-to `simulator`, which carries the same values and is kept for compatibility.
+to `simulator`, which carries the same values and is kept for compatibility. The MCP
+`grantiva_vrt_capture` tool returns the same document through a live runner session.
+`grantiva run` keeps its own screenshots in `.grantiva/run-captures/android/`, apart from the
+visual-diff captures.
 
 Before each capture Grantiva enables System UI demo mode (clock 09:41, full battery,
 no notifications), sets the three animation scales to 0, and pins portrait. The previous
@@ -122,9 +125,17 @@ Records with `screenrecord` to `.grantiva/recordings/recording.mp4` and extracts
 as PNGs. Android caps a recording at 180 seconds; longer durations are refused.
 `screenrecord` writes a frame only when the screen changes; Grantiva holds the last frame
 until `--duration`, so a static screen still yields a video of the requested length and a PNG
-for every timestamp (`actualMilliseconds` is the frame on screen at that moment). When more
-than half of the requested duration was held, `record` prints a note on stderr: expected for an
-idle screen, but a device that disconnected mid-recording looks the same.
+for every timestamp (`actualMilliseconds` is the frame on screen at that moment). When the
+last frame was on screen for more than half of the requested duration (the screen last changed
+before the halfway point), `record` prints a note on stderr naming when that frame appears:
+expected for an idle screen, but a device that disconnected mid-recording looks the same. This
+holds whether Grantiva stretched the last frame or `screenrecord` already gave it a long sample
+(the note then says so and gives the track's length).
+A late screen change (the status-bar clock, a blinking caret, a notification) suppresses the
+note. The JSON report adds `lastFrameMilliseconds` (when the last frame appears) and
+`recordedMilliseconds` (where the track ended before the hold), and `--verbose` prints one
+`Held frame:` line with the frame count, those times, the held span, the threshold and whether
+the note printed (or why the file could not be read).
 `--device <serial>` or `--emulator <AVD>` pick the target; the config's `emulator` is the
 default. The JSON report (`--json`, and the `.json` beside the video) names the device as
 `emulator` (the AVD name) and `serial`; the `simulator` and `udid` keys carry the same values
