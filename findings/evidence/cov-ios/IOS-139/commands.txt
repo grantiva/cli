@@ -1,0 +1,19 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 & P=$!; sleep 20; echo "alive_after_20s=$(kill -0 $P 2>/dev/null && echo yes || echo no)"; ls /tmp/grantiva-sessions; kill -INT $P; wait $P; echo exit=$?; sleep 1; ls /tmp/grantiva-sessions; ls .grantiva/session.json 2>&1; echo runners=$(ps -axo command | grep grantiva-runner | grep -v grep | grep -c "device $U1")
+# exit=0 elapsed=21.125s -> foreground.out / foreground.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA runner stop; echo exit=$?; ls .grantiva/session.json /tmp/grantiva-sessions/ 2>&1
+# exit=1 elapsed=.023s -> stale-cleanup.out / stale-cleanup.err
+# retry with stdin held open by a pipe (the first try ran as a background job with stdin=/dev/null)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ (sleep 120 | $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1) & sleep 20; P=$(pgrep -f "grantiva runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1" | head -1); echo "grantiva pid=$P alive=$(kill -0 $P 2>/dev/null && echo yes || echo no)"; ls /tmp/grantiva-sessions; kill -INT $P; sleep 4; echo "after INT alive=$(kill -0 $P 2>/dev/null && echo yes || echo no)"; ls /tmp/grantiva-sessions; ls .grantiva/session.json 2>&1; ps -axo pid,command | grep grantiva-runner | grep -v grep | grep "$U1" | cut -c1-80; pkill -P $$ sleep 2>/dev/null; true
+# exit=0 elapsed=24.139s -> foreground-stdin.out / foreground-stdin.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA runner stop; ls .grantiva/session.json /tmp/grantiva-sessions/ 2>&1
+# exit=1 elapsed=.022s -> cleanup2.out / cleanup2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ timeout -s INT 30 $GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1; echo exit=$?; ls /tmp/grantiva-sessions; ls .grantiva/session.json 2>&1
+# exit=0 elapsed=3.758s -> foreground-timeout.out / foreground-timeout.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/ios  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA runner stop; echo exit=$?; ls -la /tmp/grantiva-sessions/; ls .grantiva/session.json 2>&1; ps -p 67062 >/dev/null && echo alive || echo "67062 not running"
+# exit=0 elapsed=.026s -> cleanup3.out / cleanup3.err

@@ -1,0 +1,84 @@
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:42Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: $ xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: exit 0: xcrun simctl getenv 'A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T08:07:43Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-47964A10-1D35-4FE8-90E8-F66727718E1C
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8235
+
+  [1/1] flow (flow.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ tapOn: text="Mount "Denali" 🏔️" (12.9s)
+      ╰─ Element not found: text='Mount "Denali" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount "Denali" 🏔️' OR value ==[c] 'Mount "Denali" 🏔️')'; page source: no elements match selector; closest on-screen texts: "Mountains", "mountain.2", "Deep Links")
+✗ flow 18.1s
+
+  [1/1] flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-9059E157-A13C-4862-9FE1-FF45E085BF61/flow.yaml) - Device: cov-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ tapOn (13.6s)
+      ╰─ Element not found: text='Mount "Denali" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount "Denali" 🏔️' OR value ==[c] 'Mount "Denali" 🏔️')'; page source: no elements match selector; closest on-screen texts: "Mountains", "mountain.2", "Deep Links")
+    ✗ waitForAnimationToEnd (0ms)
+    ✗ takeScreenshot (0ms)
+✗ flow 15.5s
+
+  1 steps passing (18.1s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  flow                           ✗ FAIL       4      1      1      2      18.1s  cov-ios-1 (ios 26.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      1      1      2      18.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-47964A10-1D35-4FE8-90E8-F66727718E1C
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-47964A10-1D35-4FE8-90E8-F66727718E1C/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-47964A10-1D35-4FE8-90E8-F66727718E1C/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-47964A10-1D35-4FE8-90E8-F66727718E1C/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-11T08:08:05Z com.grantiva.cli: $ xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear
+[debug] 2026-10-11T08:08:05Z com.grantiva.cli: exit 0: xcrun simctl status_bar A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF clear
+Error: Runner failed (exit 1); see the runner output above.

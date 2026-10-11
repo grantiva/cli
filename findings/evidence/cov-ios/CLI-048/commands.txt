@@ -1,0 +1,20 @@
+# fixtures from cov-cli/CLI-048/fixtures (C1 UDID replaced by cov-ios-1), Landmarks project copied beside them, under $S/cli/CLI-048
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/cfg  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=1 elapsed=.438s -> relative.out / relative.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/elsewhere  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=1 elapsed=.416s -> missing.out / missing.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/elsewhere  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ timeout 60 $GRANTIVA run --no-build --simulator $U1 --flow m.yaml
+# exit=1 elapsed=.825s -> run-flow-missing.out / run-flow-missing.err
+# first try: fixtures as given fail before run_flow resolution with 'Bundle ID is required for screen capture' (no bundle_id in the fixture config, no detection). Second try adds 'bundle_id: com.kylebrowning.Landmarks' to both grantiva.yml and sets m.yaml appId to com.kylebrowning.Landmarks
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/cfg  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=0 elapsed=11.777s -> relative2.out / relative2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/elsewhere  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build
+# exit=1 elapsed=1.326s -> missing2.out / missing2.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/cli/CLI-048/elsewhere  (U1=A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF cov-ios-1 26.0; U2=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 cov-ios-2 27.0)
+$ timeout 60 $GRANTIVA run --no-build --simulator $U1 --flow m.yaml
+# exit=1 elapsed=1.875s -> run-flow-missing2.out / run-flow-missing2.err
