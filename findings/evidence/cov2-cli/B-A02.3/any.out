@@ -1,0 +1,66 @@
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:29:        let config = try GrantivaConfig.load(platform: .android, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:49:        let android = try XCTUnwrap(try GrantivaConfig.load(platform: .android, from: dir).android)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:58:        XCTAssertThrowsError(try GrantivaConfig.load(platform: .android, from: dir)) { error in
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:65:        let config = try GrantivaConfig.load(from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:73:        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:81:        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .android, from: dir))
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:83:        XCTAssertThrowsError(try GrantivaConfig.loadIfPresent(platform: .android, from: dir))
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:88:        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .android, from: dir))
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:93:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:101:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:108:        let config = try GrantivaConfig.load(platform: .android, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:116:        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:123:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:138:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:163:        let config = try GrantivaConfig.load(platform: .android, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:179:        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:197:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:231:        XCTAssertEqual(try GrantivaConfig.load(platform: .ios, from: dir).warnings, [])
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:241:        XCTAssertEqual(try GrantivaConfig.load(platform: .ios, from: dir).warnings, [])
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:253:        XCTAssertThrowsError(try GrantivaConfig.load(platform: .ios, from: dir)) { error in
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:272:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:289:        let config = try GrantivaConfig.load(platform: .ios, from: dir)
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:307:        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:311:        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+c65fc17:Tests/GrantivaCoreTests/GrantivaConfigPlatformTests.swift:319:        XCTAssertEqual(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir)?.bundleId, "com.example.ios")
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:18:        XCTAssertEqual(AppBinaryResolver.bundleId(from: app.path), "com.example.app")
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:32:        XCTAssertNil(AppBinaryResolver.bundleId(from: app.path))
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:45:        try makeZip(at: ipa, from: root, entries: ["placeholder"])
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:55:        try makeZip(at: ipa, from: root, entries: ["Payload"])
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:67:        try makeZip(at: ipa, from: root, entries: ["Payload"])
+c65fc17:Tests/GrantivaCoreTests/AppBinaryResolverTests.swift:70:        XCTAssertEqual(AppBinaryResolver.bundleId(from: result.appPath), "com.example.ipa")
+c65fc17:Tests/GrantivaCoreTests/ReadyFileTests.swift:160:        try JSONDecoder().decode(RunnerReportIndex.self, from: Data(json.utf8))
+c65fc17:Tests/GrantivaCoreTests/BaselineStoreSafetyTests.swift:9:                ScreenArtifact.screenName(from: ScreenArtifact.fileName(for: name)),
+c65fc17:Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:280:            SimulatorLeaseClaim.self, from: JSONEncoder.leaseEncoder.encode(claim)
+c65fc17:Tests/GrantivaCoreTests/SimulatorLeaseTests.swift:285:        XCTAssertNil(try JSONDecoder.leaseDecoder.decode(SimulatorLeaseClaim.self, from: Data(legacy.utf8)).temporaryDirectories)
+c65fc17:Tests/GrantivaCoreTests/ProjectResolutionTests.swift:7:        XCTAssertEqual(ProjectIdentifier.parseSlug(from: "https://github.com/grantiva/cli.git\n"), "grantiva/cli")
+c65fc17:Tests/GrantivaCoreTests/ProjectResolutionTests.swift:8:        XCTAssertEqual(ProjectIdentifier.parseSlug(from: "git@github.com:grantiva/cli.git"), "grantiva/cli")
+c65fc17:Tests/GrantivaCoreTests/ProjectResolutionTests.swift:9:        XCTAssertEqual(ProjectIdentifier.parseSlug(from: "ssh://git@github.com/grantiva/cli.git"), "grantiva/cli")
+c65fc17:Tests/GrantivaCoreTests/ProjectResolutionTests.swift:10:        XCTAssertEqual(ProjectIdentifier.parseSlug(from: "local-repository"), "local-repository")
+c65fc17:Tests/GrantivaCoreTests/SimulatorCapacityTests.swift:112:        let records = try JSONDecoder().decode([ManagedSimulatorSession].self, from: Data(legacy.utf8))
+c65fc17:Tests/GrantivaCoreTests/AuthStoreSecurityTests.swift:94:        let decoded = try JSONDecoder().decode(AuthCredentials.self, from: Data(contentsOf: URL(fileURLWithPath: path)))
+c65fc17:Tests/GrantivaCoreTests/GrantivaCoreTests.swift:135:        let config = try YAMLDecoder().decode(GrantivaConfig.self, from: yaml)
+c65fc17:Tests/GrantivaCoreTests/GrantivaCoreTests.swift:150:        let config = try YAMLDecoder().decode(GrantivaConfig.self, from: yaml)
+c65fc17:Tests/GrantivaCoreTests/GrantivaCoreTests.swift:162:        let config = try YAMLDecoder().decode(GrantivaConfig.self, from: yaml)
+c65fc17:Tests/GrantivaCoreTests/GrantivaCoreTests.swift:178:        let config = try YAMLDecoder().decode(GrantivaConfig.self, from: yaml)
+c65fc17:Tests/GrantivaCoreTests/WDAClientTests.swift:6:        XCTAssertEqual(DriverClient.elementID(from: ["ELEMENT": "legacy-id"]), "legacy-id")
+c65fc17:Tests/GrantivaCoreTests/WDAClientTests.swift:8:            DriverClient.elementID(from: [
+c65fc17:Tests/GrantivaCoreTests/WDAClientTests.swift:17:        XCTAssertNil(DriverClient.elementID(from: ["label": "not-an-element-id"]))
+c65fc17:Tests/GrantivaCoreTests/AndroidCaptureSettingsTests.swift:59:        let saved = try JSONDecoder().decode([String: String?].self, from: Data(contentsOf: URL(fileURLWithPath: state)))
+c65fc17:Tests/GrantivaCoreTests/FlowStagingTests.swift:130:        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .ios, from: scratch))
+c65fc17:Tests/GrantivaCoreTests/FlowStagingTests.swift:224:        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .android, from: scratch))
+c65fc17:Tests/GrantivaCoreTests/FlowStagingTests.swift:241:        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .android, from: scratch))
+c65fc17:Tests/GrantivaCoreTests/EmulatorManagerTests.swift:103:        let all = stride(from: 5554, through: 5584, by: 2).map { "emulator-\($0)" }
+c65fc17:Tests/GrantivaCoreTests/ScreenArtifactTests.swift:24:            XCTAssertEqual(ScreenArtifact.screenName(from: ScreenArtifact.fileName(for: name)), name, name)
+c65fc17:Tests/GrantivaCoreTests/ScreenArtifactTests.swift:25:            XCTAssertEqual(ScreenArtifact.screenName(from: ScreenArtifact.legacyFileName(for: name)), name, name)
+c65fc17:Tests/GrantivaCoreTests/ScreenArtifactTests.swift:28:        XCTAssertEqual(ScreenArtifact.screenName(from: "Deep%20Links.png"), "Deep Links")
+c65fc17:Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:48:        let metadata = try JSONDecoder().decode(APKOutputMetadata.self, from: Data(universal.utf8))
+c65fc17:Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:53:        let metadata = try JSONDecoder().decode(APKOutputMetadata.self, from: Data(split.utf8))
+c65fc17:Tests/GrantivaCoreTests/APKOutputMetadataTests.swift:59:        let metadata = try JSONDecoder().decode(APKOutputMetadata.self, from: Data(split.utf8))
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:157:        XCTAssertThrowsError(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir))
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:158:        XCTAssertNil(try GrantivaConfig.loadIfPresent(platform: .ios, from: dir, includeMaestroDirectory: false))
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:210:            from: "Lake Tahoe"
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:213:            from:
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:281:            in: "appId: a.b\n---\n- swipe:\n    direction: LEFT\n    from: \"Lake Tahoe\"\n", relativeTo: "/p"
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:303:            from: "Lake Tahoe"
+c65fc17:Tests/GrantivaCoreTests/MaestroStandardFormsTests.swift:330:            from: "Lake Tahoe"

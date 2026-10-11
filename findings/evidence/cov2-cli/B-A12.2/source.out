@@ -1,0 +1,15 @@
+    func checkGitRepository(directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
+        // Walk path strings, not URLs: on some Foundation versions
+        // `URL("/").deletingLastPathComponent()` is "/..", so a URL walk
+        // never reaches a fixed point and the check hangs outside a repo.
+        var path = URL(fileURLWithPath: directory, isDirectory: true).standardizedFileURL.path
+        var insideWorkTree = false
+        while true {
+            if FileManager.default.fileExists(atPath: (path as NSString).appendingPathComponent(".git")) {
+                insideWorkTree = true
+                break
+            }
+            let parent = (path as NSString).deletingLastPathComponent
+            if parent.isEmpty || parent == path || path == "/" { break }
+            path = parent
+        }

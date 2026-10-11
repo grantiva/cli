@@ -1,0 +1,7 @@
+The server attaches to a live `grantiva runner start` session in the project's
+`.grantiva/session.json`, or else to a `grantiva run --keep-alive` (or `runner start`)
+session that was started from the same project directory for the same platform. A
+keep-alive session started from another directory, for the other platform, or by an earlier
+Grantiva (which did not record the directory) is never used. `grantiva_context`
+reports the session's simulator or emulator; without a session it reports the configured
+one.
