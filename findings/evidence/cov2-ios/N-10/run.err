@@ -1,0 +1,108 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+[debug] 2026-10-11T18:48:12Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:12Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:12Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl get_app_container '7E846901-F93F-4220-A153-7043061033D7' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl get_app_container '7E846901-F93F-4220-A153-7043061033D7' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: $ xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T18:48:13Z com.grantiva.cli: exit 0: xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T18:48:14Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/grantiva-runner --platform ios --device 7E846901-F93F-4220-A153-7043061033D7 --no-ansi --no-app-install test --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-ECB72213-51B8-4BD1-B44D-F8A9B6931869/0/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (664ms)
+    ✓ tapOn: text="Landmarks" (696ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (248ms)
+    ✓ takeScreenshot (65ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (654ms)
+    ✓ tapOn: text="Remove" (2.0s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (190ms)
+    ✓ takeScreenshot (73ms)
+✓ 02-favorite 17.3s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.8s)
+    ✓ assertVisible: text="Unfavorite" (664ms)
+    ✓ tapOn: text="Landmarks" (696ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (248ms)
+    ✓ takeScreenshot (65ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (654ms)
+    ✓ tapOn: text="Remove" (2.0s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (190ms)
+    ✓ takeScreenshot (73ms)
+✓ 02-favorite 17.3s
+
+  13 steps passing (17.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      17.3s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      17.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-11T18:48:34Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/grantiva-runner --platform ios --device 7E846901-F93F-4220-A153-7043061033D7 --no-ansi --no-app-install test --output /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/n10 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-ECB72213-51B8-4BD1-B44D-F8A9B6931869/0/02-favorite.yaml
+[debug] 2026-10-11T18:48:34Z com.grantiva.cli: $ xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 clear
+[debug] 2026-10-11T18:48:34Z com.grantiva.cli: exit 0: xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 clear
