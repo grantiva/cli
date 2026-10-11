@@ -147,44 +147,83 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | IOS-150 | pass | IOS-150/ | flow 04 ten times: 10/10 exit 0 (the app's "Discard Changes?" alert is left for the flow's own taps, not auto-dismissed) |
 | IOS-151 | pass | IOS-151/maps-nobuild.*, IOS-151/maestro-runner.log | from a dir without config (`--no-build`; without it the run refuses: no .xcodeproj, maps.err): Maps launched, `↳ accepted system alert "Allow “Maps” to use your location?" (Allow Once)` in the run output, flow passes; runner log `alert/accept body={"name":"Allow Once"}` |
 | IOS-201 | pass | FLOWS-26/01-browse.* | `tapOn: "Golden Gate Bridge"` → `San Francisco, CA`, `Plan Visit` asserted |
+| IOS-201@27.0 | pass | FLOWS-27/01-browse.* | 27.0: `tapOn: "Golden Gate Bridge"` → San Francisco, CA / Plan Visit |
 | IOS-202 | pass | FLOWS-26/01-selectors.* | `tapOn: {text: "Lake Tahoe", exact: true}` and `{text: "Lakes"}` tap the matching element; `Sierra Nevada, CA` asserted |
+| IOS-202@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: `{text: "Lake Tahoe", exact: true}` and `{text: "Lakes"}` taps; Sierra Nevada, CA |
 | IOS-203 | pass | FLOWS-26/01-selectors.* | `assertVisible: id="clock"` and `tapOn: id="clock"` on Caching Demo pass (identifier, no element has text `clock`) |
+| IOS-203@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: `assertVisible/tapOn id="clock"` ✓ |
 | IOS-204 | pass | FLOWS-26/01-selectors.* | `tapOn: "Golden Gate.*"` taps; `assertVisible: ".*Lake.*"` passes; `assertNotVisible: "Lake"` passes (no whole-value match on Lake Tahoe) |
+| IOS-204@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: regex tap ✓, `.*Lake.*` ✓, `assertNotVisible: "Lake"` ✓ |
 | IOS-205 | pass | FLOWS-26/01-selectors.* | regex assert ✓, `assertNotVisible: text="Golden Gate.*", exact=true` ✓ (exact honoured), exact tap opens Lake Tahoe; no `not supported` warning |
+| IOS-205@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: regex assert ✓, exact assertNotVisible ✓, exact tap opens Lake Tahoe; no warning |
 | IOS-206 | pass | FLOWS-26/02-exact-negative.* | `✗ assertVisible: text="Golden Gate.*", exact=true`, `Element not visible: text='Golden Gate.*', exact=true`; exit 1 |
+| IOS-206@27.0 | pass | FLOWS-27/02-exact-negative.* | 27.0: `✗ assertVisible: text="Golden Gate.*", exact=true`, Element not visible naming it, exit 1 |
 | IOS-207 | pass | FLOWS-26/01-selectors.* | `tapOn: text="(Lake .*|.* Lake)", index=1` opened Mono Lake (`Lee Vining, CA` asserted) |
+| IOS-207@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: `index=1` opened Mono Lake (Lee Vining, CA) |
 | IOS-208 | pass | FLOWS-26/04-point-taps.* | `tapOn: point="50%,50%"` → `Last tap: center`, `Taps: 1` |
+| IOS-208@27.0 | pass | FLOWS-27/04-point-taps.* | 27.0: `point="50%,50%"` → Last tap: center, Taps: 1 |
 | IOS-209 | pass | FLOWS-26/04-point-taps.* | `point="100%,100%"` ✓ (371 ms) and `0%,0%` ✓; no out-of-bounds error |
+| IOS-209@27.0 | pass | FLOWS-27/04-point-taps.* | 27.0: 100%,100% and 0%,0% ✓ |
 | IOS-210 | pass | FLOWS-26/03-gesture-lab-taps.* | `doubleTapOn: id="gesture-pad"` → `Double taps: 1`, `Taps` stays 1 (no single taps added) |
+| IOS-210@27.0 | pass | FLOWS-27/03-gesture-lab-taps.* | 27.0: Double taps: 1, Taps stays 1 |
 | IOS-211 | pass | FLOWS-26/03-gesture-lab-taps.* | `longPressOn` (1.4 s) → `Long presses: 1` |
+| IOS-211@27.0 | pass | FLOWS-27/03-gesture-lab-taps.* | 27.0: Long presses: 1 |
 | IOS-212 | pass | FLOWS-26/03-edit.*, FLOWS-26/03-edit-report/report.json | `inputText: " Renamed"` → `Golden Gate Bridge Renamed` visible; report.json has no `warning` |
+| IOS-212@27.0 | pass | FLOWS-27/03-edit.* | 27.0: `Golden Gate Bridge Renamed` visible |
 | IOS-213 | pass | FLOWS-26/15-input-unicode.* | `inputText: " · Ünïcødé ✓"` → `San Francisco, CA · Ünïcødé ✓` visible, unmangled |
+| IOS-213@27.0 | pass | FLOWS-27/15-input-unicode.* | 27.0: `San Francisco, CA · Ünïcødé ✓` visible |
 | IOS-214 | pass | FLOWS-26/01-browse.*, FLOWS-26/01-selectors.* | string, `{text:}`, regex and `{id:}` assertVisible all ✓ |
+| IOS-214@27.0 | pass | FLOWS-27/01-browse.*, FLOWS-27/01-selectors.* | 27.0: string, {text:}, regex, {id:} asserts ✓ |
 | IOS-215 | pass | FLOWS-26/05-category.* | `assertNotVisible: "Golden Gate Bridge"` on Lakes ✓ |
+| IOS-215@27.0 | pass | FLOWS-27/05-category.* | 27.0: `assertNotVisible: "Golden Gate Bridge"` on Lakes ✓ |
 | IOS-216 | pass | FLOWS-26/05-swipe-forms.* | LEFT/RIGHT/UP/DOWN each followed by `Last swipe: left/right/up/down` |
+| IOS-216@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: LEFT/RIGHT/UP/DOWN → Last swipe left/right/up/down |
 | IOS-217 | pass | FLOWS-26/02-favorite.* | flow 02 passes: swipe LEFT from `Lake Tahoe`, `Remove` tapped, empty state asserted |
+| IOS-217@27.0 | pass | FLOWS-27/02-favorite.* | 27.0: flow 02 passes (swipe from Lake Tahoe, Remove, empty state) |
 | IOS-218 | pass | FLOWS-26/05-swipe-forms.* | `swipe: UP from id="gesture-pad"` → `Last swipe: up` |
+| IOS-218@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: `swipe: UP from id="gesture-pad"` → Last swipe: up |
 | IOS-219 | pass | FLOWS-26/07-swipe-from-missing.* | `✗ swipe: LEFT from text="No Such Row"`, `Element not found for swipe: text='No Such Row'`, exit 1 |
+| IOS-219@27.0 | pass | FLOWS-27/07-swipe-from-missing.* | 27.0: `Element not found for swipe: text='No Such Row'`, exit 1 |
 | IOS-220 | pass | FLOWS-26/05-swipe-forms.* | `swipe: start="80%, 50%" end="20%, 50%"` → `Last swipe: left` |
+| IOS-220@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: start/end % → Last swipe: left |
 | IOS-221 | pass | FLOWS-26/06-swipe-absolute.* | outcome (a): `swipe: start="300, 600" end="60, 600"` read as points, `Last swipe: left` asserted |
+| IOS-221@27.0 | pass | FLOWS-27/06-swipe-absolute.* | 27.0: outcome (a): points, Last swipe: left |
 | IOS-222 | pass | FLOWS-26/05-swipe-forms.* | `swipe: RIGHT` with duration 1500 took 1.9 s (others ~0.5 s) and registered `Last swipe: right` |
+| IOS-222@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: duration 1500 swipe took 1.9 s, Last swipe: right |
 | IOS-223 | pass | FLOWS-26/10-seed-many.* | four bare `scroll` (each `scroll: DOWN`), `Landmark 30` visible |
+| IOS-223@27.0 | pass | FLOWS-27/10-seed-many.* | 27.0: four scrolls, Landmark 30 visible |
 | IOS-224 | pass | FLOWS-26/08-scroll.* | `scrollUntilVisible` Landmark 70 DOWN ✓ (8.4 s, slow) and Golden Gate Bridge UP ✓ (7.6 s, slow); both found |
+| IOS-224@27.0 | pass | FLOWS-27/08-scroll.* | 27.0: Landmark 70 (8.3 s, slow) and Golden Gate Bridge (7.7 s, slow) found |
 | IOS-225 | pass | FLOWS-26/14-runflow.* | `runFlow: 14-runflow-sub.yaml` and `runFlow: {file: …}` each ran the sub-flow ✓ |
+| IOS-225@27.0 | pass | FLOWS-27/14-runflow.* | 27.0: both runFlow forms ran the sub-flow |
 | IOS-226 | pass | FLOWS-26/14b-runflow-inline.* | `runFlow: {commands: [...]}` ✓ (Favorites empty state asserted inside) |
+| IOS-226@27.0 | pass | FLOWS-27/14b-runflow-inline.* | 27.0: inline runFlow ✓ |
 | IOS-227 | pass | FLOWS-26/11-slow.* | `extendedWaitUntil: visible text="Loaded after delay"` ✓ |
+| IOS-227@27.0 | pass | FLOWS-27/11-slow.* | 27.0: Loaded after delay within 10 s |
 | IOS-228 | pass | FLOWS-26/09-waits.* | `extendedWaitUntil: notVisible text="Loading…"` ✓ (5.0 s), then `Loaded after delay` |
+| IOS-228@27.0 | pass | FLOWS-27/09-waits.* | 27.0: extendedWaitUntil notVisible ✓ (4.8 s) |
 | IOS-229 | pass | FLOWS-26/09-waits.* | bare `waitForAnimationToEnd` ✓ (212 ms) and `{timeout: 2000}` ✓ (201 ms) |
+| IOS-229@27.0 | pass | FLOWS-27/09-waits.* | 27.0: bare and {timeout: 2000} waitForAnimationToEnd ✓ |
 | IOS-230 | pass | FLOWS-26/01-browse.* | bare `launchApp` ✓, Landmarks/Featured asserted |
+| IOS-230@27.0 | pass | FLOWS-27/01-browse.* | 27.0: bare launchApp ✓ |
 | IOS-231 | pass | FLOWS-26/10-lifecycle.*, FLOWS-26/10-lifecycle-report/maestro-runner.log | Lake Tahoe favorited, then `launchApp (clearState)` → Favorites empty; runner log `clearState com.kylebrowning.Landmarks: uninstalled and reinstalled from …/Landmarks.app (0.3s)`; no --app-file |
+| IOS-231@27.0 | pass | FLOWS-27/10-lifecycle.*, FLOWS-27/10-lifecycle-report/maestro-runner.log | 27.0: Favorites empty after clearState; runner log `clearState … uninstalled and reinstalled` |
 | IOS-232 | pass | FLOWS-26/11-launch-environment.* | `from step` visible on Deep Links, `from header` not visible |
+| IOS-232@27.0 | pass | FLOWS-27/11-launch-environment.* | 27.0: `from step` shown, `from header` absent |
 | IOS-233 | pass | FLOWS-26/10-lifecycle.* | `stopApp` before any launch ✓ and twice in a row ✓ (2 ms) |
+| IOS-233@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: stopApp before launch and twice ✓ |
 | IOS-234 | pass | FLOWS-26/10-lifecycle.* | `killApp` then `launchApp` → `Featured` |
+| IOS-234@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: killApp then launchApp → Featured |
 | IOS-235 | pass | FLOWS-26/07-deeplink.*, FLOWS-26/07-deeplink-report/files.txt | capture `07-deeplink-cmd-004-Deep Link Lakes.png` (space kept) |
+| IOS-235@27.0 | pass | FLOWS-27/07-deeplink-report/files.txt | 27.0: `07-deeplink-cmd-004-Deep Link Lakes.png` |
 | IOS-236 | pass | FLOWS-26/09-seed-empty.* | header `env: LANDMARKS_SEED: empty` reaches the app: `No landmarks yet` |
+| IOS-236@27.0 | pass | FLOWS-27/09-seed-empty.* | 27.0: header env reaches the app: No landmarks yet |
 | IOS-237 | pass | FLOWS-26/16-setpermissions.* | `setPermissions` ✓ with the header appId; bare `scroll: DOWN` ✓ |
+| IOS-237@27.0 | pass | FLOWS-27/16-setpermissions.* | 27.0: setPermissions ✓, bare scroll ✓ |
 | IOS-238 | pass | FLOWS-26/10-lifecycle-report/maestro-runner.log | `argv=["--flag" "true"] env=map[]` |
+| IOS-238@27.0 | pass | FLOWS-27/10-lifecycle-report/maestro-runner.log | 27.0: `argv=["--flag" "true"] env=map[]` |
 | IOS-239 | pass | IOS-151/maps-nobuild.* | Maps location prompt auto-accepted (`↳ accepted system alert … (Allow Once)`); the optional tapOn shows `✓ … (8.3s, slow)`, no unexplained ⚠ |
+| IOS-239@27.0 | pass | FLOWS-27/21-system-alert-maps.* | 27.0: Maps prompt auto-accepted (`↳ accepted system alert … (Allow Once)`), flow passes |
 | IOS-099 | pass | MCP-080/run2/stdout.raw, MCP-LIVE1/run/stdout.raw | tools/list: 22 tools before and after `runner start`; required: grantiva_sim_ensure [name], grantiva_swipe [direction], grantiva_type [text], grantiva_script [steps] (also sim_delete/emulator_ensure/emulator_delete [name]) |
 | IOS-100 | pass | MCP-*/*/transcript.txt (nonjson_lines=0 in all 16 server runs), IOS-116/platform-ios/stdout.raw | stdout carries only JSON-RPC in every server run; requests answered while xcodebuild/simctl/runner subprocesses ran (MCP-029, MCP-031, MCP-080); a `notifications/initialized` sent without `"jsonrpc"` now draws no response (round-1 parse-error reply gone) |
 | IOS-101 | pass | MCP-LIVE1/run/transcript.txt | runner start session on cov2-ios-1, cov2-ios-2 and the user's iPhone 17 Pro also booted: `[Config] platform: ios`; `[Simulator] udid: 7E84…` (the session's), `source: runner session` |
@@ -343,6 +382,7 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | X-022 | pass | MCP-063/, MCP-029/with-config/ (iOS half) | vrt_capture JSON = `diff capture --json` shape with a live session and without |
 | X-023 | pass | IOS-073/ (iOS half) | `Error: grantiva killed the runner after 30s (--timeout <seconds> to raise the cap). The runner's last output above shows how far it got.`; no stray colon |
 | X-024 | pass | IOS-061/ (iOS half) | `[log] <date> <time> <level> <process>[pid:tid] [subsystem:category] …` lines interleaved on stderr |
+| B2-K01 | pass | FLOWS-26/, FLOWS-27/, B2-K01/ | live lines, summary and runner log read `tapOn: text="(Lake .*|.* Lake)", index=1`, `tapOn: point="50%,50%"`, `swipe: start="80%, 50%" end="20%, 50%"`, `swipe: start="300, 600" end="60, 600"`, `doubleTapOn: point="50%,50%"`, `longPressOn: point="50%,50%"`; no bare `tapOn:`; 26.0 and 27.0 identical (iOS half) |
 | B2-K03 | pass | N-14/crash.err, IOS-069/ | summary block: one `✗` (the failing assertVisible) and the later steps as `- assertVisible: … (skipped)` with no duration; 2 skipped lines = `2 steps skipped` = table Skip 2 |
 | B2-K05 | pass | N-17/analysis.txt | live, summary block and report.json agree per step and per flow (passing and failing) |
 | B2-K10 | pass | IOS-073/, IOS-135/, IOS-058/ | after a --timeout kill (flow and screens path) the output ends with grantiva's timeout sentence; no `interrupt` line (0 matches); a genuine SIGINT still reports `received SIGINT` and ready `interrupted` (IOS-058) |
@@ -355,6 +395,7 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | B2-K20 | pass | IOS-134/, IOS-135/ | `--continue-on-failure`: `Broken ✗ Tap on "No Such Element"` with reason, `Home` captured, then 01-browse runs, exit 1; `Screens: 2 total, 1 captured, 1 failed` and `Flows: 1 total, 1 passed` separately; no grantiva-flows path in the output; timeout variant names screen "Slow" |
 | B2-K21-a | pass | B2-K21-a/, IOS-074/ | with --report-dir the passing document has `reportDir` (absolute) in the same form as the failing one; `error` absent on success (README §run --json says it appears only on failure); without --report-dir no `reportDir` (IOS-074 pass-json) |
 | B2-K21-b | pass | IOS-074/ | passing and failing documents both list one `kind: flow` entry per flow with name, passed, steps (status, message on failure) and `screenshots[{name, path}]` |
+| B2-K22 | pass | FLOWS-26/14b-runflow-inline.*, FLOWS-27/14b-runflow-inline.*, D2-05/ | inline `runFlow: {commands: […]}` runs on 26.0 and 27.0 (nested steps in the report's subCommands); `{file:}` keeps working (14-runflow, D2-05) |
 | B2-K23-b | pass | IOS-126/ | under --no-build no detection: error says `Project detection runs only when building, and --no-build skips it. Pass --bundle-id or set appId …`; README states the order with `Project detection runs only when building`; with a build, detection finds the ID |
 | B2-K25 | pass | B2-K25/ | iOS half: with the app uninstalled `build install --no-launch --no-build --app-file Landmarks.app --json` installs it (`status: installed`, app listed); `run --no-build --app-file` likewise installs and passes; `--no-build` alone reports `status: skipped`; help says `With --app-file, that file is installed (only the build is skipped)` |
 | B2-K33 | pass | IOS-154/verbose.err, B-I07.2/verbose.err | under --verbose: `$ … simctl io … recordVideo` + `exit 0: …`; `$ … simctl spawn … log stream …` + `exit 143: …`; `$ …/grantiva-runner --platform ios …` + `exit 0: …`; none of these without --verbose (IOS-152 plain) |
@@ -371,7 +412,10 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | B2-K71 | pass | B2-K71/ | `build build` with no scheme: `Pass --scheme or set it in grantiva.yml. Found: …` (no --app-file); `build install`, `run`, `diff capture` add `or use --app-file to provide a pre-built binary` |
 | B2-K72 | pass | B-I13.2/, B-I13.1/ | after a cached one-scheme detection and a second scheme added, `build build` exits 1 `No scheme specified … Found: Landmarks, Landmarks (UI Testing).`; one-scheme project auto-detects silently |
 | B2-K73 | pass | IOS-123/install-other.* | `build install --bundle-id com.kylebrowning.NotThis`: exit 1 naming both IDs and the Info.plist (`does not match the built app (com.kylebrowning.Landmarks, …/Info.plist)`), no NSPOSIXErrorDomain text; matching ID behaves as before (IOS-022/023) |
+| B2-K74 | pass | FLOWS-26/10-lifecycle-report/, FLOWS-27/10-lifecycle-report/ | argv only: `argv=["--flag" "true"] env=map[]` on 26.0 and 27.0; 10-lifecycle passes on both |
+| B2-K75 | pass | FLOWS-26/07-swipe-from-missing.*, FLOWS-27/07-swipe-from-missing.* | 26.0 and 27.0: `Element not found for swipe: text='No Such Row'` (closest-texts cause follows), exit 1 |
 | B2-K76-a | pass | FLOWS-26/09-waits.*, FLOWS-26/08-scroll.*, IOS-151/ | slow passed steps print `✓ … (8.4s, slow)` / `(5.0s)`, never `⚠` |
+| B2-K76-b | pass | FLOWS-27/08-scroll-report/maestro-runner.log, FLOWS-26/08-scroll-report/ | runner log per iteration `scrollUntilVisible N: look …ms, scroll …ms, settle 250ms`; each search 7.6-8.4 s on 26.0 and 27.0 (≤ 17 s), both elements found |
 | B2-K77 | pass | FLOWS-26/10-lifecycle-report/maestro-runner.log, FLOWS-26/10-lifecycle.* | runner log Info `[wda] clearState com.kylebrowning.Landmarks: uninstalled and reinstalled from …/Landmarks.app (0.3s)`; step line `launchApp (clearState)`; Favorites cleared |
 | B2-K78 | pass | MCP-LIVE1/heart*, MCP-013/type/, $S/ref/docs/mcp.md | contract written in docs/mcp.md (label, then identifier, then placeholder; fallback says so): `Favorites` taps the tab; `heart` matches only by identifier with `(matched by identifier)`; `Name` on Edit Landmark `(matched by placeholder)` |
 | B2-K79 | pass | IOS-054/ | after kill -9 of the keep-alive grantiva run its runner exits too and the session files go; `hierarchy` exits 1 in 0.02 s with the no-session error, never the tree |
@@ -410,11 +454,13 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | B2-L04 | pass | B2-L04/ | 3 of 3 cycles on cov2-ios-3 (iOS 26.0): `runner start --detach --json` started, `runner stop --json` stopped; `ps` lists no grantiva-runner, xcodebuild or simctl diagnose naming the UDID right after stop and 60 s later |
 | N2-03 | fail | N2-03/ | behaviour as expected: `--runtime 26.0` creates, `--runtime "iOS 26.0"` reuses (`Reused cov2-ios-3`); a model-less new name fails for both spellings with `Could not infer a device type … or pass --device-type.`; a reuse with `--runtime 27.0` is refused. Fail on the refusal text, which prints raw identifiers beside the user's form: `exists with incompatible configuration (device type: com.apple.CoreSimulator.SimDeviceType.iPhone-17, runtime: iOS-26-0); requested iOS 27.0` (doctor likewise shows `iOS-26-0`, B-C21.1/doctor.out) |
 | N2-05 | fail | N2-05/ | (a) after kill -9 of the runner: `status: stopped`, `alreadyExited: true`, the orphaned WDA xcodebuild reaped, session.json and files gone; (b) two keep-alive sessions (cov2-ios-1, cov2-ios-3) from one dir: one `runner stop --json` lists both under `sessions` with pid, runnerPid, udid, both processes gone, leases released; runnerPid equals the runner pid and pid is a number. Fail on (c): no stop document carries `port` (README: start and stop share one shape with pid and port), same gap as B2-K16 |
+| N2-07 | fail | N2-07/key-scan.txt | iOS half: ensure, diff capture/compare/approve carry every README pair in both spellings with equal values and no unlisted snake_case key; runner start/already_running carry `bundleId` + `bundle_id`. But README names `runner stop` for the `bundle_id` → `bundleId` pair and `runner stop --json` carries neither key (same gap as B2-K16) |
 | N2-08 | fail | N2-08/, IOS-074/, IOS-153/, B2-K21-a/, MCP-063/ | `run --json` (pass and fail) and a plain `diff capture --json` give every step a positive `duration`; but a `diff capture --no-build --json` through a live `runner start` session reports Home's `Launch app` step with `duration: 0` (session-capture-json.out; the MCP vrt_capture through a session likewise, MCP-063), where README says a step the runner did not measure is `null`, never 0 |
 | N2-09 | pass | N2-09/, B2-K82-b/ | without --report-dir run shots and failure-*.png go to .grantiva/run-captures/, nothing to .grantiva/captures/, and diff approve/compare never list them (no `ignored` entries); with --report-dir nothing is written to .grantiva/run-captures (the shots land in <dir>/captures) |
 | N2-11 | pass | B2-K86-b/ | stock screens: `diff capture --no-build` captures 5/5 through the runner start session, which stays up (dump-hierarchy answers, `runner stop` reports stopped); with cfg/screens-steps the runFlow screen fails fast asking for `grantiva runner stop` |
 | N2-12 | pass | IOS-151/ | `↳ accepted system alert "Allow “Maps” to use your location?" (Allow Once)` under the step; report.json/flow json carry a `notes` entry naming the alert on that step |
 | N2-13 | fail | N2-13/analysis.txt, N2-13/flows/ | 99-crash 3/3: the first assertVisible fails in 135-144 ms with `error.type: app_crash`; extendedWaitUntil visible (7 ms), assertNotVisible (10 ms) and scrollUntilVisible (338 ms) right after launchApp likewise fail at once with `app_crash`. But `waitForAnimationToEnd` right after launchApp passes (506 ms) against the dead app; only the next assertVisible fails (app_crash) |
+| N2-14 | pass | FLOWS-26/08-scroll.*, FLOWS-27/08-scroll.*, FLOWS-*/09-waits.* | iOS: each scrollUntilVisible under 10 s (8.4/7.6 s on 26.0, 8.3/7.7 s on 27.0); slow passed steps read `✓ … (8.3s, slow)`; no `⚠` anywhere |
 | N2-15 | pass | N2-15/ | foreground `runner start`: stays attached, streams the runner's output to stderr; `runner dump-hierarchy` from another process answers; SIGINT → exit 130; ended by `runner stop` from another process → `Runner stopped …; the session has ended.`, exit 0; either way session.json and /tmp/grantiva-sessions files removed; `--quiet` and `--json` print no runner lines (2 stderr lines: grantiva's own SIGINT notice) |
 | N2-18 | fail | N2-18/ | from a parent blocking SIGINT/SIGTERM, `runner start --detach` gives a runner whose blocked mask is 0, and `runner stop --verbose` stops it on the first signal (no escalation) — as expected. Deferred minor recorded as fail: under `nohup grantiva run --keep-alive`, a SIGHUP to the runner kills it at once while the nohup'd grantiva survives (the run then exits 1 on SIGINT). Afterwards the dead runner's `12109-*.grantiva` session file stayed in /tmp/grantiva-sessions, and `teardown --udid --force` (which killed the orphaned WDA and diagnose) did not remove it (leftover-session.out; removed by hand) |
 | S2-02 | pass | S2-02/ | `runner start --detach` then `runner stop`; after 2 min no process names the UDID (ps-before.out); `teardown --udid --force --json` `reclaimed: false`, text `No processes were holding <udid>.`, no `Killed diagnose` |
@@ -448,11 +494,12 @@ Rows run on 26.0 (`cov2-ios-1`) unless the ID carries a `@27.0` suffix (flow-com
 | CLI-061 | pass | CLI-061/ | Maestro-format `tapOn: "Mount \"Denali\" 🏔️"` parses; the staged step is `tapOn: text="Mount "Denali" 🏔️"` byte for byte (bytes.out: …f0 9f 8f 94 ef b8 8f); the tap then fails only because the app has no such label |
 | CLI-064 | pass | CLI-064/ | `tapOn: {text: Favorites}` staged as `tapOn: text="Favorites"` (taps), `tapOn: {id: favoritesTab}` as `tapOn: id="favoritesTab"` (fails only because the app has no such identifier: `Element not found: id='favoritesTab'`) |
 | CLI-066 | pass | CLI-066/ | `- scroll` → `swipe: UP` (finger up, content down); `scroll: {direction: up}` → `swipe: DOWN`; run exit 0 |
+| TEARDOWN | pass | TEARDOWN/ | cov2-ios-1 and cov2-ios-2 deleted by name; `xcrun simctl list devices | grep -c cov2-ios` = 0; no device homes under the QA runner home's versions/*/devices/; no lock file for either UDID (the 699 remaining lock files are the clone's pre-existing FAKE-/TEST-REPORT-/older-device files); no cov2 entry in created.json; /tmp/grantiva-sessions empty. Left on purpose: the capacity record of the user's iPhone 18 Pro (FE441EE5…) under session cov2-ios, which MCP-031 booted (B2-K37.2); not touched |
 
 ## Counts
 
-Matrix rows of the iOS slice (442): pass 410, fail 21, blocked 4, n/a 0 (total 435); not yet recorded: 7.
+Matrix rows of the iOS slice (442): pass 416, fail 16, fail (matrix/brief error — triage) 6, blocked 4, n/a 0 (total 442); not yet recorded: 0. STEP1 and TEARDOWN: pass.
 
-27.0 repeats: pass 0, fail 0, blocked 0, n/a 0 (total 0).
+27.0 repeats: pass 39, fail 0, fail (matrix/brief error — triage) 0, blocked 0, n/a 0 (total 39).
 
-Other rows (handed-over / observation): pass 4, fail 1, blocked 0, n/a 0 (total 5).
+CLI rows handed over by the CLI slice (CLI-048, CLI-049, CLI-061, CLI-064, CLI-066): pass 4, fail 1, fail (matrix/brief error — triage) 0, blocked 0, n/a 0 (total 5).

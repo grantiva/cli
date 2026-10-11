@@ -1,0 +1,68 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=BEE381AC-0D32-4D84-B304-068815F08B2F screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: BEE381AC-0D32-4D84-B304-068815F08B2F
+Simulator booted: cov2-ios-2 (BEE381AC-0D32-4D84-B304-068815F08B2F)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/07-swipe-from-missing.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios27.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8819
+
+  [1/1] 07-swipe-from-missing (07-swipe-from-missing.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✗ swipe: LEFT from text="No Such Row" (12.5s)
+      ╰─ Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+✗ 07-swipe-from-missing 20.4s
+
+  [1/1] 07-swipe-from-missing (.maestro/coverage/07-swipe-from-missing.yaml) - Device: cov2-ios-2 (ios 27.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✗ swipe: LEFT from text="No Such Row" (12.5s)
+      ╰─ Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+✗ 07-swipe-from-missing 20.4s
+
+  1 steps passing (20.4s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  07-swipe-from-missing          ✗ FAIL       2      1      1      0      20.4s  cov2-ios-2 (ios 27.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      20.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/reports/FLOWS-27/07-swipe-from-missing/captures/failure-1791748128.png
+Error: Runner failed (exit 1): 07-swipe-from-missing: swipe: LEFT from text="No Such Row": Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
