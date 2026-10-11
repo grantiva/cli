@@ -132,4 +132,63 @@ final class ContextToolTests: XCTestCase {
         XCTAssertTrue(emulator.contains("Could not list devices"), emulator)
         XCTAssertFalse(emulator.contains("No emulator running"), emulator)
     }
+
+    // MARK: - K56: keep-alive sessions show their app ID and port
+
+    private func context(
+        platform: Platform, session: RunnerSessionInfo?, config: GrantivaConfig? = nil,
+        configSource: String? = nil, driverPort: Int? = nil
+    ) async throws -> String {
+        let result = try await ContextTool.context(
+            config: config, platform: platform, session: session,
+            listSimulators: { [] }, emulators: nil, configSource: configSource, driverPort: driverPort
+        )
+        return try textContent(of: result)
+    }
+
+    func testAKeepAliveSessionRendersItsAppIDAndNoEmptyValues() async throws {
+        let ios = RunnerSessionInfo(pid: 4267, wdaPort: 8235, bundleId: "com.kylebrowning.Landmarks", udid: Self.first.udid, startedAt: Date())
+        let iosSession = section("Runner Session", in: try await context(platform: .ios, session: ios))
+        XCTAssertTrue(iosSession.contains("bundle_id: com.kylebrowning.Landmarks"), iosSession)
+
+        let android = RunnerSessionInfo(pid: 79748, wdaPort: 0, bundleId: "com.kylebrowning.landmarks", udid: "emulator-5554", startedAt: Date())
+        let forwarded = section("Runner Session", in: try await context(platform: .android, session: android))
+        XCTAssertTrue(forwarded.contains("driver_port: (forwarded on attach)"), forwarded)
+        XCTAssertTrue(forwarded.contains("application_id: com.kylebrowning.landmarks"), forwarded)
+        let attached = section("Runner Session", in: try await context(platform: .android, session: android, driverPort: 61211))
+        XCTAssertTrue(attached.contains("driver_port: 61211"), attached)
+
+        for text in [iosSession, forwarded, attached] {
+            XCTAssertFalse(text.components(separatedBy: "\n").contains { $0.hasSuffix(": ") || $0.hasSuffix(":") }, text)
+        }
+    }
+
+    func testASessionFromAnOlderGrantivaSaysTheAppIDIsUnknown() async throws {
+        let legacy = RunnerSessionInfo(pid: 4267, wdaPort: 8235, bundleId: "", udid: Self.first.udid, startedAt: Date())
+        let text = section("Runner Session", in: try await context(platform: .ios, session: legacy))
+        XCTAssertTrue(text.contains("bundle_id: (unknown)"), text)
+    }
+
+    // MARK: - K58: the config names its source
+
+    func testTheConfigNamesItsSource() async throws {
+        let maestro = section("Config", in: try await context(
+            platform: .ios, session: nil, config: GrantivaConfig(bundleId: "com.example.ios"), configSource: ".maestro/ (no grantiva.yml)"
+        ))
+        XCTAssertTrue(maestro.contains("  source: .maestro/ (no grantiva.yml)"), maestro)
+        let file = section("Config", in: try await context(
+            platform: .ios, session: nil, config: GrantivaConfig(scheme: "Demo"), configSource: "grantiva.yml"
+        ))
+        XCTAssertTrue(file.contains("  source: grantiva.yml"), file)
+    }
+
+    func testTheRegistryTellsAFileFromTheMaestroFallback() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("k58-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        XCTAssertNil(ToolRegistry.configSource(platform: .ios, config: nil, directory: directory))
+        XCTAssertEqual(ToolRegistry.configSource(platform: .ios, config: GrantivaConfig(), directory: directory), ".maestro/ (no grantiva.yml)")
+        try Data().write(to: directory.appendingPathComponent("grantiva.yml"))
+        XCTAssertEqual(ToolRegistry.configSource(platform: .ios, config: GrantivaConfig(), directory: directory), "grantiva.yml")
+    }
 }

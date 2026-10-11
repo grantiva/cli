@@ -64,20 +64,28 @@ enum VRTTools {
         return URL(fileURLWithPath: argv0).standardizedFileURL.path
     }
 
-    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
-        "\(shellQuoted(executable)) diff capture --no-build --json --platform \(platform.rawValue)"
+    static func captureCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "capture", "--no-build", "--json", "--platform", platform.rawValue]
     }
 
-    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> String {
-        "\(shellQuoted(executable)) diff compare --json --platform \(platform.rawValue)"
+    static func compareCommand(platform: Platform, executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "compare", "--json", "--platform", platform.rawValue]
     }
 
-    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> String {
-        var cmd = "\(shellQuoted(executable)) diff approve --json --platform \(platform.rawValue)"
-        if !screens.isEmpty {
-            cmd += " " + screens.map(shellQuoted).joined(separator: " ")
+    /// Screen names are passed as they are, one argument each: no shell is
+    /// involved, so nothing in them is interpreted.
+    static func approveCommand(platform: Platform, screens: [String], executable: String = VRTTools.executable) -> [String] {
+        [executable, "diff", "approve", "--json", "--platform", platform.rawValue] + screens
+    }
+
+    /// The one shape of a VRT failure: `Error: <message>`, with the CLI's
+    /// own leading `Error: ` (one or more) folded into it.
+    static func failure(_ message: String) -> CallTool.Result {
+        var text = message.trimmingCharacters(in: .whitespacesAndNewlines)
+        while text.hasPrefix("Error:") {
+            text = String(text.dropFirst("Error:".count)).trimmingCharacters(in: .whitespaces)
         }
-        return cmd
+        return CallTool.Result(content: [.text(text: "Error: \(text)", annotations: nil, _meta: nil)], isError: true)
     }
 
     static func capture(
@@ -85,18 +93,10 @@ enum VRTTools {
         executable: String = VRTTools.executable, environment: [String: String]? = nil
     ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(captureCommand(platform: platform, executable: executable), environment: environment)
-            return CallTool.Result(
-                content: [.text(text: output, annotations: nil, _meta: nil)]
-            )
-        } catch let error as GrantivaError {
-            if case .commandFailed(let msg, _) = error {
-                return CallTool.Result(
-                    content: [.text(text: "Capture failed:\n\(msg)", annotations: nil, _meta: nil)],
-                    isError: true
-                )
-            }
-            throw error
+            let output = try await run(captureCommand(platform: platform, executable: executable), environment: environment)
+            return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
+        } catch GrantivaError.commandFailed(let message, _) {
+            return failure(message)
         }
     }
 
@@ -105,27 +105,22 @@ enum VRTTools {
         executable: String = VRTTools.executable, environment: [String: String]? = nil
     ) async throws -> CallTool.Result {
         do {
-            let output = try await shell(compareCommand(platform: platform, executable: executable), environment: environment)
-            return CallTool.Result(
-                content: [.text(text: output, annotations: nil, _meta: nil)]
-            )
-        } catch let error as GrantivaError {
-            if case .commandFailed(let msg, _) = error {
-                return compareFailureResult(message: msg)
-            }
-            throw error
+            let output = try await run(compareCommand(platform: platform, executable: executable), environment: environment)
+            return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
+        } catch GrantivaError.commandFailed(let message, _) {
+            return compareFailureResult(message: message)
         }
     }
 
+    /// A failed comparison's JSON verdict is a result, not an error; any
+    /// other failure is a VRT failure.
     static func compareFailureResult(message: String) -> CallTool.Result {
         let data = Data(message.utf8)
         let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
         let isDiffVerdict = json?["passed"] as? Bool == false
             && json?["screens"] is [[String: Any]]
-        return CallTool.Result(
-            content: [.text(text: message, annotations: nil, _meta: nil)],
-            isError: isDiffVerdict ? nil : true
-        )
+        guard isDiffVerdict else { return failure(message) }
+        return CallTool.Result(content: [.text(text: message, annotations: nil, _meta: nil)])
     }
 
     static func approve(
@@ -134,18 +129,59 @@ enum VRTTools {
     ) async throws -> CallTool.Result {
         let screens = arguments["screens"]?.arrayValue?.compactMap(\.stringValue) ?? []
         do {
-            let output = try await shell(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
-            return CallTool.Result(
-                content: [.text(text: output, annotations: nil, _meta: nil)]
-            )
-        } catch let error as GrantivaError {
-            if case .commandFailed(let msg, _) = error {
-                return CallTool.Result(
-                    content: [.text(text: "Approve failed:\n\(msg)", annotations: nil, _meta: nil)],
-                    isError: true
-                )
+            let output = try await run(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
+            return CallTool.Result(content: [.text(text: output, annotations: nil, _meta: nil)])
+        } catch GrantivaError.commandFailed(let message, _) {
+            return failure(message)
+        }
+    }
+
+    /// Runs `argv` directly (no shell) with a null stdin, so the child can
+    /// never read the MCP server's input. Returns trimmed stdout; a non-zero
+    /// exit throws `commandFailed` with stderr (or stdout), as `shell` does.
+    static func run(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: argv[0])
+        process.arguments = Array(argv.dropFirst())
+        if let environment {
+            process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+        }
+        let stdout = Pipe()
+        let stderr = Pipe()
+        process.standardInput = FileHandle.nullDevice
+        process.standardOutput = stdout
+        process.standardError = stderr
+        GrantivaLog.logger.debug("$ \(argv.map(shellQuoted).joined(separator: " "))")
+        // The exit is observed through the termination handler: blocking in
+        // waitUntilExit on a cooperative thread can miss it.
+        let exited = AsyncStream<Void> { continuation in
+            process.terminationHandler = { _ in
+                continuation.yield()
+                continuation.finish()
             }
-            throw error
+        }
+        try process.run()
+        // Drain both pipes concurrently so neither fills and blocks the child.
+        async let out = readAll(stdout.fileHandleForReading)
+        async let err = readAll(stderr.fileHandleForReading)
+        let (outData, errData) = await (out, err)
+        for await _ in exited {}
+        let output = String(decoding: outData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard process.terminationStatus == 0 else {
+            let errors = String(decoding: errData, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+            let message = errors.isEmpty
+                ? (output.isEmpty ? "\(argv.joined(separator: " ")) exited with code \(process.terminationStatus)" : output)
+                : errors
+            throw GrantivaError.commandFailed(message, process.terminationStatus)
+        }
+        return output
+    }
+
+    private static func readAll(_ handle: FileHandle) async -> Data {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                continuation.resume(returning: handle.readDataToEndOfFile())
+            }
         }
     }
 }

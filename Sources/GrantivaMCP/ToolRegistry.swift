@@ -19,6 +19,9 @@ struct ToolRegistry: Sendable {
     /// Reads the config file again when there was none at start, so a file
     /// created while the server runs is used.
     var loadConfig: (@Sendable () throws -> GrantivaConfig?)? = nil
+    /// The resources the client subscribed to; hierarchy updates go only to
+    /// a subscriber.
+    var subscriptions = ResourceSubscriptions()
 
     // MARK: - Tool Definitions
 
@@ -60,27 +63,34 @@ struct ToolRegistry: Sendable {
         "grantiva_screenshot", "grantiva_tap", "grantiva_swipe", "grantiva_type",
         "grantiva_a11y_tree", "grantiva_a11y_check", "grantiva_script",
     ]
-    static let uiMutatingTools: Set<String> = ["grantiva_tap", "grantiva_swipe", "grantiva_type", "grantiva_script"]
 
     func call(
         name: String,
         arguments: [String: Value],
         server: Server
     ) async throws -> CallTool.Result {
-        let result: CallTool.Result
+        try await call(name: name, arguments: arguments, notify: { uri in
+            try? await server.notify(ResourceUpdatedNotification.message(.init(uri: uri)))
+        })
+    }
 
+    /// Every failure of every tool comes back as an `isError` result; only
+    /// cancellation is thrown. `notify` sends `resources/updated` for a URI.
+    func call(
+        name: String,
+        arguments: [String: Value],
+        notify: @Sendable (String) async -> Void
+    ) async throws -> CallTool.Result {
         if Self.sessionTools.contains(name) {
             let current: RunnerConnection.Current
             do {
                 current = try await connection.current()
             } catch {
-                return CallTool.Result(
-                    content: [.text(text: "Error: \(error.localizedDescription)", annotations: nil, _meta: nil)],
-                    isError: true
-                )
+                return Self.errorResult(error)
             }
+            let outcome: (result: CallTool.Result, mutated: Bool)
             do {
-                result = try await callSessionTool(name: name, current: current, arguments: arguments)
+                outcome = try await callSessionTool(name: name, current: current, arguments: arguments)
             } catch let cancellation as CancellationError {
                 throw cancellation
             } catch {
@@ -88,20 +98,27 @@ struct ToolRegistry: Sendable {
                 // internal error; it is a tool result like any other failure.
                 return Self.sessionToolError(error, session: current.session)
             }
-            // After UI-mutating actions, notify resource subscribers about hierarchy change
-            if Self.uiMutatingTools.contains(name) {
-                try? await notifyHierarchyUpdate(server: server)
+            // Only a call that may have changed the UI, and only for a client
+            // that subscribed: a rejected or failed call changed nothing.
+            if outcome.mutated, await subscriptions.contains(Self.hierarchyURI) {
+                await notify(Self.hierarchyURI)
             }
-            return result
+            return outcome.result
         }
 
+        do {
+            return try await callTool(name: name, arguments: arguments)
+        } catch let cancellation as CancellationError {
+            throw cancellation
+        } catch {
+            return Self.errorResult(error)
+        }
+    }
+
+    private func callTool(name: String, arguments: [String: Value]) async throws -> CallTool.Result {
         let config: GrantivaConfig?
         if Self.configTools.contains(name) {
-            do {
-                config = try currentConfig()
-            } catch {
-                return Self.errorResult(error)
-            }
+            config = try currentConfig()
         } else {
             config = self.config
         }
@@ -110,38 +127,43 @@ struct ToolRegistry: Sendable {
         switch name {
         // Build Tools
         case "grantiva_build":
-            result = try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments, missingConfig: missingConfig)
+            return try await BuildTools.build(device: device, platform: platform, config: config, arguments: arguments, missingConfig: missingConfig)
         case "grantiva_run":
-            result = try await BuildTools.run(device: device, platform: platform, config: config, arguments: arguments, missingConfig: missingConfig)
+            return try await BuildTools.run(
+                device: device, platform: platform, config: config, arguments: arguments,
+                missingConfig: missingConfig, projectDirectory: projectDirectory
+            )
         case "grantiva_test":
-            result = try await BuildTools.test(runner: buildRunner, platform: platform, config: config, simManager: simulatorManager, arguments: arguments, missingConfig: missingConfig)
+            return try await BuildTools.test(runner: buildRunner, platform: platform, config: config, simManager: simulatorManager, arguments: arguments, missingConfig: missingConfig)
 
         // Sim Tools
         case "grantiva_sim_list":
-            result = try await SimTools.list(simManager: simulatorManager, arguments: arguments)
+            return try await SimTools.list(simManager: simulatorManager, arguments: arguments)
         case "grantiva_sim_boot":
-            result = try await SimTools.boot(simManager: simulatorManager, arguments: arguments)
+            return try await SimTools.boot(simManager: simulatorManager, arguments: arguments)
         case "grantiva_sim_ensure":
-            result = try await SimTools.ensure(simManager: simulatorManager, arguments: arguments)
+            return try await SimTools.ensure(simManager: simulatorManager, arguments: arguments)
         case "grantiva_sim_delete":
-            result = try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
+            return try await SimTools.delete(simManager: simulatorManager, arguments: arguments)
 
         // Emulator Tools
         case "grantiva_emulator_list":
-            result = try await EmulatorTools.list(deps: emulators, arguments: arguments)
+            return try await EmulatorTools.list(deps: emulators, arguments: arguments)
         case "grantiva_emulator_boot":
-            result = try await EmulatorTools.boot(deps: emulators, config: config, arguments: arguments)
+            return try await EmulatorTools.boot(deps: emulators, config: config, arguments: arguments)
         case "grantiva_emulator_ensure":
-            result = try await EmulatorTools.ensure(deps: emulators, arguments: arguments)
+            return try await EmulatorTools.ensure(deps: emulators, arguments: arguments)
         case "grantiva_emulator_delete":
-            result = try await EmulatorTools.delete(deps: emulators, arguments: arguments)
+            return try await EmulatorTools.delete(deps: emulators, arguments: arguments)
 
         // Context
         case "grantiva_context":
-            result = try await ContextTool.context(
+            return try await ContextTool.context(
                 config: config, platform: platform, session: await connection.session(),
                 listSimulators: { [simulatorManager] in try await simulatorManager.listDevices() },
-                emulators: emulators
+                emulators: emulators,
+                configSource: Self.configSource(platform: platform, config: config, directory: projectDirectory),
+                driverPort: await connection.attachedPort()
             )
 
         // VRT Tools
@@ -149,23 +171,21 @@ struct ToolRegistry: Sendable {
             // A live session holds the device: capture through it rather
             // than start a second runner that the device lease refuses.
             if let session = await connection.session() {
-                result = await VRTTools.captureThroughSession(
+                return await VRTTools.captureThroughSession(
                     config: config, missingConfig: missingConfig, platform: platform, session: session,
                     driver: { [connection] in try await connection.current().driver },
                     device: device, projectDirectory: projectDirectory
                 )
             } else if config == nil {
                 // Say so here rather than start `diff capture` to find out.
-                result = CallTool.Result(
-                    content: [.text(text: "Capture failed:\n\(missingConfig)", annotations: nil, _meta: nil)], isError: true
-                )
+                return VRTTools.failure(missingConfig)
             } else {
-                result = try await VRTTools.capture(platform: platform, arguments: arguments)
+                return try await VRTTools.capture(platform: platform, arguments: arguments)
             }
         case "grantiva_vrt_compare":
-            result = try await VRTTools.compare(platform: platform, arguments: arguments)
+            return try await VRTTools.compare(platform: platform, arguments: arguments)
         case "grantiva_vrt_approve":
-            result = try await VRTTools.approve(platform: platform, arguments: arguments)
+            return try await VRTTools.approve(platform: platform, arguments: arguments)
 
         default:
             return CallTool.Result(
@@ -173,8 +193,18 @@ struct ToolRegistry: Sendable {
                 isError: true
             )
         }
+    }
 
-        return result
+    static let hierarchyURI = "grantiva://hierarchy"
+
+    /// Where the config `grantiva_context` shows came from: the file, the
+    /// `.maestro/` fallback (iOS), or nil when there is none.
+    static func configSource(platform: Platform, config: GrantivaConfig?, directory: URL) -> String? {
+        guard config != nil else { return nil }
+        if FileManager.default.fileExists(atPath: directory.appendingPathComponent(platform.configFileName).path) {
+            return platform.configFileName
+        }
+        return ".maestro/ (no \(platform.configFileName))"
     }
 
     /// Tools that read the config file.
@@ -190,7 +220,7 @@ struct ToolRegistry: Sendable {
         return try loadConfig?()
     }
 
-    private static func errorResult(_ error: Error) -> CallTool.Result {
+    static func errorResult(_ error: Error) -> CallTool.Result {
         let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
         return CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)
     }
@@ -208,58 +238,82 @@ struct ToolRegistry: Sendable {
         return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)], isError: true)
     }
 
+    /// The tool's result, and whether the call may have changed the UI.
     private func callSessionTool(
         name: String,
         current: RunnerConnection.Current,
         arguments: [String: Value]
-    ) async throws -> CallTool.Result {
+    ) async throws -> (result: CallTool.Result, mutated: Bool) {
         let driver = current.driver
+        func changed(_ result: CallTool.Result) -> (CallTool.Result, Bool) { (result, result.isError != true) }
         switch name {
         case "grantiva_screenshot":
-            return try await UITools.screenshot(driver: driver, device: device, session: current.session, arguments: arguments)
+            return (try await UITools.screenshot(driver: driver, device: device, session: current.session, arguments: arguments), false)
         case "grantiva_tap":
-            return try await UITools.tap(driver: driver, arguments: arguments)
+            return changed(try await UITools.tap(driver: driver, arguments: arguments))
         case "grantiva_swipe":
-            return try await UITools.swipe(driver: driver, arguments: arguments)
+            return changed(try await UITools.swipe(driver: driver, arguments: arguments))
         case "grantiva_type":
-            return try await UITools.type(driver: driver, arguments: arguments)
+            return changed(try await UITools.type(driver: driver, arguments: arguments))
         case "grantiva_a11y_tree":
-            return try await UITools.a11yTree(driver: driver)
+            return (try await UITools.a11yTree(driver: driver), false)
         case "grantiva_a11y_check":
-            return try await UITools.a11yCheck(driver: driver, config: try? currentConfig(), platform: platform)
+            return (try await UITools.a11yCheck(driver: driver, config: try? currentConfig(), platform: platform), false)
         default: // grantiva_script
-            return try await ScriptTools.script(driver: driver, arguments: arguments)
+            let outcome = try await ScriptTools.run(driver: driver, arguments: arguments)
+            // A script whose first steps ran and a later step failed still
+            // changed the UI.
+            return (outcome.result, outcome.stepsRun > 0)
         }
     }
 
     // MARK: - Resource Read
 
+    /// The JSON-RPC error code a resource read answers when there is no
+    /// usable runner session (none, or one still starting). Documented in
+    /// docs/mcp.md.
+    static let noSessionResourceErrorCode = -32002
+
     func readResource(uri: String) async throws -> [Resource.Content] {
         switch uri {
-        case "grantiva://hierarchy":
-            let tree = try await connection.current().driver.hierarchy()
-            let jsonData = try JSONSerialization.data(
-                withJSONObject: tree, options: [.prettyPrinted, .sortedKeys]
-            )
-            let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
-            return [.text(jsonString, uri: uri, mimeType: "application/json")]
-
-        case "grantiva://screenshot":
-            let imageData = try await connection.current().driver.screenshot()
-            return [.binary(imageData, uri: uri, mimeType: "image/png")]
-
+        case "grantiva://hierarchy", "grantiva://screenshot":
+            do {
+                return try await readSessionResource(uri: uri)
+            } catch let cancellation as CancellationError {
+                throw cancellation
+            } catch let error as MCPError {
+                throw error
+            } catch {
+                throw MCPError.serverError(code: Self.noSessionResourceErrorCode, message: Self.resourceErrorMessage(error))
+            }
         default:
             throw MCPError.invalidRequest("Unknown resource URI: \(uri)")
         }
     }
 
-    // MARK: - Notifications
+    private func readSessionResource(uri: String) async throws -> [Resource.Content] {
+        let current = try await connection.current()
+        if uri == "grantiva://screenshot" {
+            let imageData = try await current.driver.screenshot()
+            return [.binary(imageData, uri: uri, mimeType: "image/png")]
+        }
+        let tree = try await current.driver.hierarchy()
+        let jsonData = try JSONSerialization.data(withJSONObject: tree, options: [.prettyPrinted, .sortedKeys])
+        let jsonString = String(data: jsonData, encoding: .utf8) ?? "{}"
+        return [.text(jsonString, uri: uri, mimeType: "application/json")]
+    }
 
-    private func notifyHierarchyUpdate(server: Server) async throws {
-        let notification = ResourceUpdatedNotification.message(
-            .init(uri: "grantiva://hierarchy")
-        )
-        try await server.notify(notification)
+    /// The session tools' text for the same failure, without the `Error: `
+    /// prefix (and without a misplaced `Invalid argument: `).
+    static func resourceErrorMessage(_ error: Error) -> String {
+        if case GrantivaError.invalidArgument(let message) = error { return message }
+        let result = sessionToolError(error, session: RunnerSessionInfo(pid: 0, wdaPort: 0, bundleId: "", udid: "", startedAt: Date()))
+        var text = result.content.compactMap { content -> String? in
+            if case .text(let text, _, _) = content { return text }
+            return nil
+        }.joined(separator: "\n")
+        if text.hasPrefix("Error: ") { text.removeFirst("Error: ".count) }
+        return text
     }
 }
 
@@ -282,4 +336,13 @@ extension ToolRegistry {
             simulatorManager: simulatorManager, buildRunner: buildRunner, emulators: emulators
         )
     }
+}
+
+/// The resource URIs the client subscribed to with `resources/subscribe`.
+actor ResourceSubscriptions {
+    private var uris: Set<String> = []
+
+    func subscribe(_ uri: String) { uris.insert(uri) }
+    func unsubscribe(_ uri: String) { uris.remove(uri) }
+    func contains(_ uri: String) -> Bool { uris.contains(uri) }
 }

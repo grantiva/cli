@@ -44,6 +44,12 @@ actor RunnerConnection {
         try? resolveSession()
     }
 
+    /// The local port of the attached driver, if one is attached (on
+    /// Android, the port forwarded on attach).
+    func attachedPort() -> Int? {
+        attached?.attachment.port
+    }
+
     /// The live session and an attached driver. Throws the "No active runner
     /// session" error when there is none.
     func current() async throws -> Current {

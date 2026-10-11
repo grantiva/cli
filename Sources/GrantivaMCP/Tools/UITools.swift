@@ -29,13 +29,13 @@ enum UITools {
         ),
         Tool(
             name: "grantiva_tap",
-            description: "Tap on a UI element by accessibility label or by coordinates. After tapping, returns the updated accessibility tree so you can see what changed.",
+            description: "Tap on a UI element by accessibility label or by coordinates. A label is matched against the accessibility label first; on iOS, when no element has that label, against the accessibility identifier (WDA's name) and then a text field's placeholder, and the result says which matched. After tapping, returns the updated accessibility tree so you can see what changed.",
             inputSchema: .object([
                 "type": .string("object"),
                 "properties": .object([
                     "label": .object([
                         "type": .string("string"),
-                        "description": .string("Accessibility label of the element to tap"),
+                        "description": .string("Accessibility label of the element to tap (iOS falls back to the identifier, then a text field's placeholder)"),
                     ]),
                     "x": .object([
                         "type": .string("number"),
@@ -139,8 +139,14 @@ enum UITools {
 
     static func tap(driver: DriverClient, arguments: [String: Value]) async throws -> CallTool.Result {
         if let label = arguments["label"]?.stringValue {
+            let match: LabelMatch
             do {
-                try await driver.tapByLabel(label)
+                if let tapByLabelMatch = driver.tapByLabelMatch {
+                    match = try await tapByLabelMatch(label)
+                } else {
+                    try await driver.tapByLabel(label)
+                    match = .label
+                }
             } catch let error as GrantivaError {
                 guard case .elementNotFound = error else { throw error }
                 return CallTool.Result(
@@ -153,7 +159,7 @@ enum UITools {
             let tree = try await fetchHierarchyJSON(driver: driver)
             return CallTool.Result(
                 content: [
-                    .text(text: "Tapped on \"\(label)\". Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
+                    .text(text: "Tapped on \"\(label)\"\(matchNote(match)). Updated hierarchy:\n\(tree)", annotations: nil, _meta: nil),
                 ]
             )
         } else if let x = arguments["x"]?.doubleValue, let y = arguments["y"]?.doubleValue {
@@ -197,7 +203,16 @@ enum UITools {
                 isError: true
             )
         }
-        try await driver.typeText(text)
+        do {
+            try await driver.typeText(text)
+        } catch let error as GrantivaError {
+            // No focused field: nothing was typed, the model can tap one.
+            guard case .notFound = error else { throw error }
+            return CallTool.Result(
+                content: [.text(text: "Error: \(error.localizedDescription)", annotations: nil, _meta: nil)],
+                isError: true
+            )
+        }
         try await Task.sleep(nanoseconds: 300_000_000)
         let tree = try await fetchHierarchyJSON(driver: driver)
         return CallTool.Result(
@@ -279,6 +294,11 @@ enum UITools {
     }
 
     // MARK: - Private Helpers
+
+    /// Nothing for a label match; otherwise which fallback matched.
+    static func matchNote(_ match: LabelMatch) -> String {
+        match == .label ? "" : " (matched by \(match.rawValue))"
+    }
 
     private static func fetchHierarchyJSON(driver: DriverClient) async throws -> String {
         let tree = try await driver.hierarchy()

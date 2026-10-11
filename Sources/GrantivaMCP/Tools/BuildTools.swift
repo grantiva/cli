@@ -33,7 +33,7 @@ enum BuildTools {
                     ]),
                     "emulator": .object([
                         "type": .string("string"),
-                        "description": .string("AVD name to use, booting it if needed (Android; uses grantiva-android.yml)"),
+                        "description": .string("Not used by grantiva_build: an Android build only compiles and boots nothing (grantiva_run boots the emulator)"),
                     ]),
                 ]),
             ]),
@@ -155,9 +155,11 @@ enum BuildTools {
         } catch let error as GrantivaError {
             return toolError(error.errorDescription ?? "\(error)")
         }
-        let booted = try await device.bootDevice(named: resolved.simulator)
+        // iOS builds for a booted simulator destination. Android only
+        // compiles, like `grantiva build build`: nothing is booted.
+        let deviceID = platform == .ios ? try await device.bootDevice(named: resolved.simulator).udid : ""
         let result = try await device.build(PlatformBuildRequest(
-            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: booted.udid, extraBuildSettings: resolved.buildSettings
+            config: config ?? GrantivaConfig(), resolved: resolved, deviceID: deviceID, extraBuildSettings: resolved.buildSettings
         ))
         let target = platform == .android
             ? "Module: \(resolved.android?.module ?? "(none)")\nVariant: \(resolved.android?.variant ?? "(none)")"
@@ -183,7 +185,8 @@ enum BuildTools {
         platform: Platform,
         config: GrantivaConfig?,
         arguments: [String: Value],
-        missingConfig: String? = nil
+        missingConfig: String? = nil,
+        projectDirectory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
     ) async throws -> CallTool.Result {
         if let missing = missingConfigError(platform: platform, config: config, arguments: arguments, message: missingConfig) {
             return missing
@@ -193,9 +196,6 @@ enum BuildTools {
             resolved = try resolvedProject(platform: platform, config: config, arguments: arguments)
         } catch let error as GrantivaError {
             return toolError(error.errorDescription ?? "\(error)")
-        }
-        if platform == .ios, resolved.bundleId == nil {
-            return toolError("no bundle_id in grantiva.yml. Cannot launch app.")
         }
 
         let booted = try await device.bootDevice(named: resolved.simulator)
@@ -210,10 +210,18 @@ enum BuildTools {
         }
         // Android tests the app the build produced, not application_id in the
         // config; a disagreement is reported in the result.
+        // iOS: grantiva.yml's bundle_id wins, else the built app's
+        // CFBundleIdentifier (so a `scheme` argument stands in for the file).
         let (chosen, idWarning): (String?, String?) = platform == .android
             ? AndroidProject.applicationID(override: nil, binary: buildResult.applicationId, configured: config?.android?.applicationId)
-            : (resolved.bundleId ?? buildResult.applicationId, nil)
+            : (resolved.bundleId ?? buildResult.applicationId ?? buildResult.productPath.flatMap(bundleIdentifier(ofApp:)), nil)
         guard let appID = chosen else {
+            if platform == .ios {
+                let configured = config == nil
+                    ? "no \(platform.configFileName) in \(projectDirectory.path)"
+                    : "\(platform.configFileName) has no bundle_id"
+                return toolError("No bundle ID: \(configured) and the built app has no CFBundleIdentifier.")
+            }
             return toolError("no application_id in grantiva-android.yml and the build did not report one. Cannot launch app.")
         }
         if let productPath = buildResult.productPath {
@@ -221,7 +229,7 @@ enum BuildTools {
         }
         try await device.launch(appID: appID, deviceID: booted.udid)
 
-        let text: String
+        var text: String
         switch platform {
         case .ios:
             text = "App built and launched.\nScheme: \(resolved.scheme ?? "")\nBundle ID: \(appID)\nSimulator: \(booted.name)"
@@ -230,7 +238,20 @@ enum BuildTools {
             text = "App built and launched.\nModule: \(android.module) (\(android.variant))\nApplication ID: \(appID)\nDevice: \(booted.name) (\(booted.udid))"
                 + (idWarning.map { "\nWarning: \($0)" } ?? "")
         }
+        // The same product line grantiva_build prints.
+        if let productPath = buildResult.productPath {
+            text += "\nProduct: \(productPath)"
+        }
         return CallTool.Result(content: [.text(text: text, annotations: nil, _meta: nil)])
+    }
+
+    /// `CFBundleIdentifier` from an `.app` bundle's Info.plist.
+    static func bundleIdentifier(ofApp path: String) -> String? {
+        let plist = URL(fileURLWithPath: path).appendingPathComponent("Info.plist")
+        guard let data = try? Data(contentsOf: plist),
+              let object = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any],
+              let identifier = object["CFBundleIdentifier"] as? String, !identifier.isEmpty else { return nil }
+        return identifier
     }
 
     static func test(

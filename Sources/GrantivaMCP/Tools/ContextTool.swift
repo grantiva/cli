@@ -23,17 +23,23 @@ enum ContextTool {
 
     /// `session` is the session the UI tools would use (nil when none), so
     /// the device section and the session section never disagree.
+    /// `configSource` names where `config` came from (the file, or the
+    /// `.maestro/` fallback); `driverPort` is the attached driver's local
+    /// port, shown when the session records none (Android keep-alive).
     static func context(
         config: GrantivaConfig?,
         platform: Platform,
         session: RunnerSessionInfo?,
         listSimulators: @Sendable () async throws -> [SimulatorDevice],
-        emulators: EmulatorToolDependencies?
+        emulators: EmulatorToolDependencies?,
+        configSource: String? = nil,
+        driverPort: Int? = nil
     ) async throws -> CallTool.Result {
         var sections: [String] = []
 
         if let config {
             var configLines = ["[Config]", "  platform: \(platform.rawValue)"]
+            if let configSource { configLines.append("  source: \(configSource)") }
             switch platform {
             case .ios:
                 if let scheme = config.scheme { configLines.append("  scheme: \(scheme)") }
@@ -74,12 +80,17 @@ enum ContextTool {
         }
 
         if let session {
+            // A keep-alive session on Android records port 0: the driver's
+            // port is forwarded when the tools attach. A session from an
+            // older Grantiva records no app ID.
+            let port = session.wdaPort > 0 ? "\(session.wdaPort)" : driverPort.map(String.init) ?? "(forwarded on attach)"
+            let appID = session.bundleId.isEmpty ? "(unknown)" : session.bundleId
             sections.append("""
                 [Runner Session]
                   pid: \(session.pid)
-                  \(platform == .ios ? "wda_port" : "driver_port"): \(session.wdaPort)
-                  \(platform == .ios ? "bundle_id" : "application_id"): \(session.bundleId)
-                  udid: \(session.udid)
+                  \(platform == .ios ? "wda_port" : "driver_port"): \(port)
+                  \(platform == .ios ? "bundle_id" : "application_id"): \(appID)
+                  udid: \(session.udid.isEmpty ? "(unknown)" : session.udid)
                 """)
         } else {
             sections.append("[Runner Session]\n  No active session.")
@@ -91,7 +102,7 @@ enum ContextTool {
     // MARK: - Device sections
 
     private static func describe(_ device: SimulatorDevice, source: String) -> String {
-        "[Simulator]\n  name: \(device.name)\n  udid: \(device.udid)\n  runtime: \(device.runtime)\n  state: \(device.state)\n  source: \(source)"
+        "[Simulator]\n  name: \(device.name)\n  udid: \(device.udid)\n  runtime: \(SimTools.runtimeName(device.runtime))\n  state: \(device.state)\n  source: \(source)"
     }
 
     /// The session's simulator; else the configured one; else the first

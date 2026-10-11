@@ -113,7 +113,12 @@ enum EmulatorTools {
     static func delete(deps: EmulatorToolDependencies?, arguments: [String: Value]) async throws -> CallTool.Result {
         guard let deps else { return unavailable() }
         guard let name = arguments["name"]?.stringValue else { return toolError("'name' is required.") }
-        try await deps.delete(name, arguments["force"]?.boolValue ?? false)
+        do {
+            try await deps.delete(name, arguments["force"]?.boolValue ?? false)
+        } catch GrantivaError.invalidArgument(let message) where message.contains("Pass --force") {
+            // The refusal is worded for the CLI; name this tool's argument.
+            return toolError(message.replacingOccurrences(of: "Pass --force", with: "Pass force: true"))
+        }
         let data = try JSONSerialization.data(withJSONObject: ["deleted": true, "name": name], options: [.sortedKeys])
         return CallTool.Result(content: [.text(text: String(decoding: data, as: UTF8.self), annotations: nil, _meta: nil)])
     }

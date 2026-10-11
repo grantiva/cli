@@ -44,8 +44,11 @@ final class ArgumentValidationTests: XCTestCase {
         XCTAssertTrue(device.calls.isEmpty)
     }
 
-    func testRunWithASchemeButNoBundleIdIsRejectedBeforeBooting() async throws {
+    /// K95: with no bundle_id the built app's CFBundleIdentifier is used;
+    /// when that is missing too, nothing is launched and the error says why.
+    func testRunWithASchemeButNoBundleIdAnywhereLaunchesNothing() async throws {
         let device = MCPFakeDevicePlatform(platform: .ios)
+        device.buildResult = BuildResult(success: true, duration: 0, warnings: [], errors: [], productPath: "/nonexistent/App.app")
         let result = try await BuildTools.run(
             device: device,
             platform: .ios,
@@ -53,8 +56,8 @@ final class ArgumentValidationTests: XCTestCase {
             arguments: [:]
         )
         XCTAssertEqual(result.isError, true)
-        XCTAssertTrue(try textContent(of: result).contains("no bundle_id in grantiva.yml"))
-        XCTAssertTrue(device.calls.isEmpty)
+        XCTAssertTrue(try textContent(of: result).contains("grantiva.yml has no bundle_id and the built app has no CFBundleIdentifier"))
+        XCTAssertFalse(device.calls.contains { $0.hasPrefix("install") || $0.hasPrefix("launch") })
     }
 
     func testASchemeOfTheWrongTypeFallsBackToConfigAndIsThenRejected() async throws {
