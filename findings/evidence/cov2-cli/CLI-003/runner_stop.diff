@@ -1,0 +1,21 @@
+5,12c5,15
+< session files and device lease are removed. Without one, it releases a
+< `grantiva run --keep-alive` session started from this directory (every one, if
+< there are several) the way Ctrl-C would, by sending that grantiva process
+< SIGINT, and waits for it to exit. A run whose flows had already finished keeps
+< the ready file it wrote (`passed` or `failed`): the ready file is written once,
+< and the `stopped` result here is the record of the release. Sessions started
+< from other directories are left alone. With no session at all it prints "No
+< active session found." and exits 0.
+---
+> session files and device lease are removed. Helpers the runner started for the
+> device that outlive it (on iOS, the `simctl diagnose` WebDriverAgent's
+> xcodebuild starts when it is interrupted) are stopped too and listed (`reaped`
+> in --json); on Android the runner's port forwards and UIAutomator2 server are
+> cleared. Without one, it releases a `grantiva run --keep-alive` session started
+> from this directory (every one, if there are several) the way Ctrl-C would, by
+> sending that grantiva process SIGINT, and waits for it to exit. A run whose
+> flows had already finished keeps the ready file it wrote (`passed` or
+> `failed`): the ready file is written once, and the `stopped` result here is the
+> record of the release. Sessions started from other directories are left alone.
+> With no session at all it prints "No active session found." and exits 0.

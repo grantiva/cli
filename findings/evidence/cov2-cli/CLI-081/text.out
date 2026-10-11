@@ -1,0 +1,34 @@
+
+  Grantiva Doctor
+  ──────────────────────────────────────────────────
+
+  Required
+
+    ✗ Xcode          /nonexistent does not exist
+                       Point at an installed Xcode: sudo xcode-select -s /Applications/Xcode.app (or unset DEVELOPER_DIR)
+    ✗ Xcode Version  Could not determine Xcode version
+                       Ensure Xcode is properly installed
+
+  Advisory
+
+    ● Booted Simulator  Could not list simulators: xcrun: error: missing DEVELOPER_DIR path: /nonexistent
+                          Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again
+    ✓ Runner            grantiva-runner 1.1.28-grantiva.11+android-drivers-2
+
+  Project
+
+    ● grantiva.yml    Not found
+                        Run: grantiva init
+    ● Git Repository  Not a git repository
+                        Run: git init
+
+  CI / Cloud
+
+    ● Grantiva Auth  Not authenticated — remote baselines unavailable
+                       Run: grantiva auth login
+    ● GitHub App     GitHub App not configured — Check Runs won't be posted
+                       Install the GitHub App from your Grantiva dashboard settings
+
+  ──────────────────────────────────────────────────
+  1 passed · 5 optional · 2 failed
+
