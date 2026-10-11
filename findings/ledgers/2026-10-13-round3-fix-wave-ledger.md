@@ -16,3 +16,4 @@ Spec: docs/superpowers/specs/2026-10-10-full-coverage-campaign-design.md (read).
 Rulings table from the plan adopted verbatim (L15, L24, L26-a, L28, L30, L31, L38-a, L38-b, L41, L05, L07).
 Ruling: runner T1–T2 and CLI T4–T6 dispatched in parallel (separate worktrees); T7 after T4–T6 merge; merge order CLI: T4 → T5 → T6 → T7 → T8, each rebasing — cost if wrong: rebases.
 Task 0: complete (bases runner grantiva/main 1be68db, CLI origin/main c65fc17; worktrees created; briefs extracted).
+Dispatched (opus, parallel): Task 1 runner crash/timing (fix3-crash; BASE 1be68db), Task 2 runner gestures + demo PR (fix3-gestures; 1be68db), Task 4 CLI MCP/ownership (fix3-mcp; BASE c65fc17), Task 5 CLI lifecycle (fix3-lifecycle; c65fc17), Task 6 CLI output/config (fix3-output; c65fc17). Task 7 after 4–6 merge; T8–T10 sequential.
