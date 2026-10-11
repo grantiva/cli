@@ -27,10 +27,18 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     func bootDevice(named nameOrID: String) async throws -> BootedDevice {
         record("bootDevice(\(nameOrID))"); return BootedDevice(udid: bootedID, name: bootedName)
     }
+    func attachedDevice(serial: String) async throws -> BootedDevice {
+        record("attachedDevice(\(serial))"); return BootedDevice(udid: serial, name: bootedName)
+    }
     func displayGeometry(deviceID: String) async throws -> DeviceGeometry {
         record("displayGeometry(\(deviceID))"); return DeviceGeometry(pixelWidth: 1080, pixelHeight: 2400, scale: 2.625)
     }
+    private var buildDeviceID: String?
+    /// The `deviceID` of the last build request.
+    var lastBuildDeviceID: String? { lock.withLock { buildDeviceID } }
+
     func build(_ request: PlatformBuildRequest) async throws -> BuildResult {
+        lock.withLock { buildDeviceID = request.deviceID }
         record("build(module=\(request.resolved.android?.module ?? "-"),variant=\(request.resolved.android?.variant ?? "-"),args=\(request.extraBuildSettings))"); return buildResult
     }
     func install(appID: String, productPath: String, deviceID: String) async throws { record("install(\(appID),\(productPath))") }

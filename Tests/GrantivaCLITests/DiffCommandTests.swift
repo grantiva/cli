@@ -177,6 +177,41 @@ final class DiffCommandTests: XCTestCase {
         XCTAssertEqual(fake.calls, ["bootDevice(B)"])
     }
 
+    /// R04: with no config file, capture names the missing file and its path
+    /// instead of reporting that the (absent) file has no screens.
+    func testCaptureWithoutAConfigFileNamesTheMissingFile() async throws {
+        try await inTemporaryDirectory { dir in
+            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+            let fake = FakeDevicePlatform(platform: .ios)
+            command.devicePlatform = InjectedDevicePlatform(fake)
+            do {
+                try await command.run()
+                XCTFail("expected the missing config file to stop the capture")
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription ?? "\(error)"
+                XCTAssertTrue(message.contains("grantiva.yml not found at "), message)
+                XCTAssertTrue(message.contains("/grantiva.yml"), message)
+                XCTAssertTrue(message.contains("grantiva init"), message)
+                XCTAssertFalse(message.contains("No screens configured"), message)
+            }
+            XCTAssertTrue(fake.calls.isEmpty, "\(fake.calls)")
+        }
+    }
+
+    func testCaptureWithAConfigFileWithoutScreensStillSaysSo() async throws {
+        try await inTemporaryDirectory { dir in
+            try "bundle_id: com.example.app\n".write(to: dir.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+            var command = try DiffCommand.CaptureCommand.parse(["--no-build", "--platform", "ios"])
+            command.devicePlatform = InjectedDevicePlatform(FakeDevicePlatform(platform: .ios))
+            do {
+                try await command.run()
+                XCTFail("expected the empty screens list to stop the capture")
+            } catch {
+                XCTAssertTrue("\(error)".contains("No screens configured in grantiva.yml"), "\(error)")
+            }
+        }
+    }
+
     /// I02 end to end through `run()`: config `simulator: B` under --no-build reaches the platform as B.
     func testCaptureNoBuildRunUsesTheConfiguredSimulator() async throws {
         try await inTemporaryDirectory { dir in

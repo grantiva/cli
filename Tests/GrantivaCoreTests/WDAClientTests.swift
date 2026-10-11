@@ -43,6 +43,14 @@ final class WDAClientTests: XCTestCase {
         XCTAssertNil(root["frame"])
     }
 
+    /// Text selectors read the placeholder, so the tree carries it.
+    func testHierarchyParserKeepsThePlaceholderValue() throws {
+        let xml = #"<XCUIElementTypeApplication><XCUIElementTypeTextField placeholderValue="Search"/><XCUIElementTypeTextField placeholderValue=""/></XCUIElementTypeApplication>"#
+        let children = try XCTUnwrap(try WDAHierarchyXMLParser(xml: xml).parse()["children"] as? [[String: Any]])
+        XCTAssertEqual(children[0]["placeholderValue"] as? String, "Search")
+        XCTAssertNil(children[1]["placeholderValue"])
+    }
+
     func testHierarchyParserRejectsEmptyXML() {
         XCTAssertThrowsError(try WDAHierarchyXMLParser(xml: "").parse())
     }

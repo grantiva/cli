@@ -49,6 +49,18 @@ final class UIAutomator2HierarchyParserTests: XCTestCase {
         XCTAssertNoThrow(try JSONSerialization.data(withJSONObject: root))
     }
 
+    /// Text selectors read the hint and the error text, so the tree carries them.
+    func testHintAndErrorTextAreKept() throws {
+        let xml = """
+        <hierarchy class="hierarchy"><android.widget.EditText class="android.widget.EditText" text="" hint="Email" error="Required" bounds="[0,0][10,10]" /><android.widget.EditText class="android.widget.EditText" text="" hint="" bounds="[0,0][10,10]" /></hierarchy>
+        """
+        let children = try XCTUnwrap(try UIAutomator2HierarchyXMLParser(xml: xml, scale: 1).parse()["children"] as? [[String: Any]])
+        XCTAssertEqual(children[0]["hint"] as? String, "Email")
+        XCTAssertEqual(children[0]["error"] as? String, "Required")
+        XCTAssertNil(children[1]["hint"])
+        XCTAssertNil(children[1]["error"])
+    }
+
     func testScaleOneKeepsPixels() throws {
         let root = try UIAutomator2HierarchyXMLParser(xml: sample, scale: 1).parse()
         let text = try XCTUnwrap(((root["children"] as? [[String: Any]])?.first?["children"] as? [[String: Any]])?.first)

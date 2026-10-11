@@ -93,8 +93,16 @@ struct EmulatorCommand: AsyncParsableCommand {
             }
         }
 
+        /// The live sessions, then housekeeping: forget created AVDs that
+        /// are gone from disk.
+        static func sessions(_ emulators: EmulatorManager) async throws -> [EmulatorSessionRecord] {
+            let sessions = try await emulators.sessions()
+            _ = try? await emulators.pruneCreatedAVDs()
+            return sessions
+        }
+
         func run() async throws {
-            let sessions = try await AndroidPlatform.live().emulators.sessions()
+            let sessions = try await Self.sessions(AndroidPlatform.live().emulators)
             if options.json {
                 Output.line(try JSONOutput.string(sessions))
             } else {
@@ -115,6 +123,20 @@ struct EmulatorCommand: AsyncParsableCommand {
 
         @Flag(name: .long, help: "Kill the serial even though Grantiva did not start it.")
         var force = false
+
+        /// One serial, or every recorded emulator when `serial` is nil. Then
+        /// housekeeping: forget created AVDs that are gone from disk. The AVDs
+        /// just stopped stay recorded, so `emulator delete` still knows
+        /// Grantiva created them.
+        static func teardown(_ emulators: EmulatorManager, serial: String?, force: Bool) async throws -> [EmulatorTeardownOutcome] {
+            let outcomes = if let serial {
+                [try await emulators.teardown(serial: serial, force: force)]
+            } else {
+                try await emulators.teardownAll()
+            }
+            _ = try? await emulators.pruneCreatedAVDs()
+            return outcomes
+        }
 
         func validate() throws {
             switch (serial, all) {
@@ -138,13 +160,10 @@ struct EmulatorCommand: AsyncParsableCommand {
         }
 
         func run() async throws {
-            let emulators = try AndroidPlatform.live().emulators
-            let outcomes: [EmulatorTeardownOutcome]
-            if let serial {
-                outcomes = [try await emulators.teardown(serial: serial.trimmingCharacters(in: .whitespacesAndNewlines), force: force)]
-            } else {
-                outcomes = try await emulators.teardownAll()
-            }
+            let outcomes = try await Self.teardown(
+                AndroidPlatform.live().emulators,
+                serial: serial?.trimmingCharacters(in: .whitespacesAndNewlines), force: force
+            )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))
             } else if outcomes.isEmpty {

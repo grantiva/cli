@@ -279,7 +279,7 @@ struct CICommand: AsyncParsableCommand {
 
                 // 1. Boot → Build → Install → Launch → Capture
                 let deviceNoun = platform == .ios ? "simulator" : "emulator"
-                rlog("Booting \(deviceNoun): \(resolved.simulator)")
+                rlog(RunCommand.bootNarration(platform: platform, target: resolved.simulator))
                 let booted = try await device.bootDevice(named: resolved.simulator)
                 rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
 

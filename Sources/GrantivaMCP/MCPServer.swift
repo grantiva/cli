@@ -69,7 +69,9 @@ public struct GrantivaMCPServer: Sendable {
             config: config,
             simulatorManager: SimulatorManager.live,
             buildRunner: XcodeBuildRunner(),
-            emulators: try? EmulatorToolDependencies.live()
+            emulators: try? EmulatorToolDependencies.live(),
+            projectDirectory: projectDirectory,
+            loadConfig: { try GrantivaConfig.loadIfPresent(platform: platform, from: projectDirectory) }
         )
 
         let allTools = tools.allTools()

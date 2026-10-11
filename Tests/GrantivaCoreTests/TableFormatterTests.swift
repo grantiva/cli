@@ -17,6 +17,20 @@ final class TableFormatterTests: XCTestCase {
         XCTAssertEqual(lines[1], String(repeating: "─", count: lines[1].count))
     }
 
+    /// A13: Android captures name the emulator, not a simulator.
+    func testCaptureNamesTheDeviceInEachPlatformsTerms() {
+        let target = CaptureSimulatorTarget(
+            name: "qa-reg-android", udid: "emulator-5554",
+            geometry: SimulatorDisplayGeometry(points: [411, 914], pixels: [1080, 2400], scale: 2.625)
+        )
+        let result = CaptureResult(screens: [], directory: ".grantiva/captures/android", duration: 1, simulator: target)
+        let android = TableFormatter().formatCapture(result, platform: .android)
+        XCTAssertTrue(android.contains("  Emulator: qa-reg-android (emulator-5554)"), android)
+        XCTAssertFalse(android.contains("Simulator:"), android)
+        let ios = TableFormatter().formatCapture(result)
+        XCTAssertTrue(ios.contains("  Simulator: qa-reg-android (emulator-5554)"), ios)
+    }
+
     func testAndroidBuildPrintsTheAPKPathInPlaceOfTheScheme() {
         let output = TableFormatter().formatBuild(BuildResult(
             success: true, duration: 1, warnings: [], errors: [],

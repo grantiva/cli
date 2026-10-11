@@ -300,7 +300,13 @@ final class MCPServerTests: XCTestCase {
             let result = try await client.callTool(name: "grantiva_build", arguments: [:])
             XCTAssertEqual(result.isError, true)
             let text = result.content.compactMap { if case .text(let t, _, _) = $0 { return t } else { return nil } }.joined()
-            XCTAssertTrue(text.contains("grantiva.yml"), text)
+            XCTAssertTrue(text.contains("grantiva.yml not found at \(directory.standardizedFileURL.path)/grantiva.yml"), text)
+
+            // R04 repro: vrt_capture in the same empty directory, no session.
+            let capture = try await client.callTool(name: "grantiva_vrt_capture", arguments: [:])
+            XCTAssertEqual(capture.isError, true)
+            let captureText = capture.content.compactMap { if case .text(let t, _, _) = $0 { return t } else { return nil } }.joined()
+            XCTAssertTrue(captureText.contains("grantiva.yml not found at \(directory.standardizedFileURL.path)/grantiva.yml"), captureText)
         }
     }
 

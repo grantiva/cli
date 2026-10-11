@@ -72,6 +72,19 @@ public struct AndroidProvenance: Sendable {
         try withCreatedLock { $0 }
     }
 
+    /// Drops the names in `candidates` that are not in `existing`; returns
+    /// the ones dropped. `candidates` is the ledger as read before `existing`
+    /// was listed, so a name another process registered after the listing
+    /// is never dropped for missing from it.
+    @discardableResult
+    public func pruneCreatedAVDs(keeping existing: [String], among candidates: [String]) throws -> [String] {
+        try withCreatedLock { names in
+            let gone = names.filter { candidates.contains($0) && !existing.contains($0) }
+            names.removeAll { gone.contains($0) }
+            return gone
+        }
+    }
+
     public func removeCreatedAVD(_ name: String) throws {
         try withCreatedLock { $0.removeAll { $0 == name } }
     }

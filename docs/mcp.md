@@ -15,7 +15,17 @@ the registered tool names drift apart.
 and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
 until one exists they return an error (`isError`) naming `grantiva runner start` and
 `grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
-is replaced). Tools that need a config file say which file is missing.
+is replaced). In the seconds after `grantiva runner start --detach` returns, while WDA has no session yet,
+they return an error (`isError`) saying the session is starting and to retry in a few seconds; a call
+made once WDA is ready attaches as usual. `grantiva_screenshot` is the exception when the session records
+its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it succeeds during that window. Session tools report every failure as an `isError` result,
+never as a JSON-RPC error.
+
+Tools that need a config file (`grantiva_build`, `grantiva_run`, `grantiva_test`, `grantiva_vrt_capture`)
+return an error naming the file and where it was looked for, for example
+`grantiva.yml not found at /path/to/project/grantiva.yml. Create one with grantiva init.` A `scheme`
+(iOS) or `module` (Android) argument stands in for the file for `grantiva_build` and `grantiva_run`.
+A config file created after the server started is read on the next call.
 
 The server uses a live `grantiva runner start` session in the project's `.grantiva/session.json`, or
 else a `grantiva run --keep-alive` (or `runner start`) session started from the same project directory
@@ -28,6 +38,7 @@ there is no session.
 | --- | --- |
 | yes | Drives the app through the held runner session. |
 | no | Shells out to `xcodebuild`, Gradle, `simctl`, `adb`, or the diff pipeline; does not use the session. |
+| when live | Uses the session when one is live, and works without one. |
 
 ## Tools
 
@@ -74,6 +85,6 @@ there is no session.
 
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
-| `grantiva_vrt_capture` | iOS, Android | no | Capture screenshots for all configured screens. Equivalent to `grantiva diff capture --no-build --json`; assumes the app is already running on the device. |
+| `grantiva_vrt_capture` | iOS, Android | when live | Capture screenshots for all configured screens. Without a session, equivalent to `grantiva diff capture --no-build --json`; assumes the app is installed on the device. With a live runner session it does not start another runner (the session's device lease would refuse it): it captures on the session's device, ignoring `simulator:` or `emulator:` in the config file, relaunches the app, runs each screen's steps through the session's driver, takes each screenshot through that driver as grantiva-runner does, and returns the same JSON as `diff capture --json`. Selectors follow the bundled grantiva-runner's rules. On both platforms `text` is a case-insensitive regex over the whole value (`Open` does not match `Talk · Open`; write `.*Open.*`) and `exact: true` is the whole value as written. iOS: `text` reads the label, value and placeholder; `id:` reads the accessibility identifier, ignoring case (on an agent that does not report identifiers, WDA's `name`). Android: `text` reads the text, content-desc and hint, and without `exact` also the error text; `id:` reads the resource id, whole or after its last `/`. Screens with `runFlow`, a swipe from an element, a swipe between points, or a swipe with a duration are refused before anything runs; stop the session with `grantiva runner stop` to capture those. |
 | `grantiva_vrt_compare` | iOS, Android | no | Compare current captures against baselines. Equivalent to `grantiva diff compare --json`. |
 | `grantiva_vrt_approve` | iOS, Android | no | Promote current captures to baselines. Equivalent to `grantiva diff approve [screens] --json`; approves all screens if none are specified. |

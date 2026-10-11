@@ -252,6 +252,131 @@ final class RunnerManagerTests: XCTestCase {
         XCTAssertEqual(try String(contentsOfFile: paths.version, encoding: .utf8), "v1")
     }
 
+    // MARK: - The extracted runner must be the version the stamp names
+
+    /// Writes a shell script standing in for grantiva-runner that prints `output` for `--version`.
+    private func writeFakeRunner(at path: String, output: String) throws {
+        try "#!/bin/sh\nprintf '%s\\n' '\(output)'\n".write(toFile: path, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: path)
+    }
+
+    private func verifier(expected: String, bundlePath: String) -> (String) throws -> Void {
+        { try RunnerManager.verifyRunnerVersion(at: $0, expected: expected, bundlePath: bundlePath) }
+    }
+
+    func testInstallRefusesARunnerThatReportsAnotherVersionAndKeepsThePreviousInstall() throws {
+        let paths = try makePaths()
+        try seedInstall(paths, version: "v1", binary: "old-runner")
+        let before = try snapshot(paths.base)
+        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+            baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
+            version: "1.1.28-grantiva.8+android-drivers-2",
+            verify: verifier(expected: "1.1.28-grantiva.8", bundlePath: "/opt/grantiva/grantiva_GrantivaCore.bundle")
+        ) { destination in
+            try self.writeFakeRunner(at: "\(destination)/grantiva-runner", output: "grantiva-runner 1.1.18-grantiva.7")
+            try FileManager.default.createDirectory(atPath: "\(destination)/drivers/android", withIntermediateDirectories: true)
+            try "new-apk".write(toFile: "\(destination)/drivers/android/new.apk", atomically: true, encoding: .utf8)
+        }) { error in
+            let message = (error as? GrantivaError)?.errorDescription ?? ""
+            XCTAssertTrue(message.contains("1.1.18-grantiva.7"), message)
+            XCTAssertTrue(message.contains("1.1.28-grantiva.8"), message)
+            XCTAssertTrue(message.contains("/opt/grantiva/grantiva_GrantivaCore.bundle"), message)
+        }
+        XCTAssertEqual(try snapshot(paths.base), before, "the previous install is untouched and no stamp is written")
+    }
+
+    func testInstallAcceptsARunnerThatReportsTheExpectedVersion() throws {
+        let paths = try makePaths()
+        try RunnerManager.installIfNeeded(
+            baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
+            version: "1.1.28-grantiva.8+android-drivers-2",
+            verify: verifier(expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle")
+        ) { destination in
+            try self.writeFakeRunner(at: "\(destination)/grantiva-runner", output: "grantiva-runner 1.1.28-grantiva.8\n  Commit:  2f2ee31")
+        }
+        XCTAssertEqual(try String(contentsOfFile: paths.version, encoding: .utf8), "1.1.28-grantiva.8+android-drivers-2")
+    }
+
+    func testInstallRefusesARunnerThatCannotRunAndSaysSoInsteadOfBlamingTheBundle() throws {
+        let paths = try makePaths()
+        var stagedPath = ""
+        XCTAssertThrowsError(try RunnerManager.installIfNeeded(
+            baseDir: paths.base, binaryPath: paths.binary, versionFilePath: paths.version, cacheDir: paths.cache,
+            version: "v2", verify: verifier(expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle")
+        ) { destination in
+            stagedPath = "\(destination)/grantiva-runner"
+            FileManager.default.createFile(atPath: stagedPath, contents: Data())
+        }) { error in
+            let message = (error as? GrantivaError)?.errorDescription ?? ""
+            XCTAssertTrue(message.hasPrefix("Could not run \(stagedPath): "), message)
+            XCTAssertFalse(message.contains("another release"), "a runner that cannot run is not a version mismatch: \(message)")
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: paths.version))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: paths.binary))
+    }
+
+    func testReportedVersionReadsTheFirstLineOfVersionOutput() throws {
+        let paths = try makePaths()
+        try writeFakeRunner(at: paths.binary, output: "grantiva-runner 1.1.28-grantiva.8\n  Go: go1.27.1")
+        XCTAssertEqual(try RunnerManager.reportedVersion(ofRunnerAt: paths.binary).get(), "1.1.28-grantiva.8")
+    }
+
+    func testReportedVersionSaysWhyARunnerCouldNotRun() throws {
+        let paths = try makePaths()
+        func reason(_ path: String, timeout: TimeInterval = 30) -> String? {
+            if case .failure(let failure) = RunnerManager.reportedVersion(ofRunnerAt: path, timeout: timeout) { return failure.reason }
+            return nil
+        }
+        XCTAssertNotNil(reason("\(paths.base)/missing"), "launch failure")
+
+        let failing = "\(paths.base)/failing"
+        try "#!/bin/sh\nexit 3\n".write(toFile: failing, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: failing)
+        XCTAssertEqual(reason(failing), "it exited with status 3")
+
+        let silent = "\(paths.base)/silent"
+        try "#!/bin/sh\nexit 0\n".write(toFile: silent, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: silent)
+        XCTAssertEqual(reason(silent), "it printed no version")
+
+        let hanging = "\(paths.base)/hanging"
+        try "#!/bin/sh\nexec sleep 30\n".write(toFile: hanging, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: hanging)
+        XCTAssertEqual(reason(hanging, timeout: 0.5), "it did not exit within 0.5 seconds")
+    }
+
+    func testVerifySeparatesARunnerThatCannotRunFromAVersionMismatch() {
+        XCTAssertThrowsError(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .failure(.init(reason: "it exited with status 3")) }
+        )) { error in
+            XCTAssertEqual(
+                (error as? GrantivaError)?.errorDescription,
+                "Could not run /s/grantiva-runner: it exited with status 3. "
+                    + "It was extracted from /b.bundle; reinstall grantiva if this persists. The installed runner was left as it was."
+            )
+        }
+        XCTAssertThrowsError(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .success("1.1.18-grantiva.7") }
+        )) { error in
+            let message = (error as? GrantivaError)?.errorDescription ?? ""
+            XCTAssertTrue(message.hasPrefix("The grantiva-runner in /b.bundle reports version 1.1.18-grantiva.7, but this grantiva expects 1.1.28-grantiva.8."), message)
+        }
+        XCTAssertNoThrow(try RunnerManager.verifyRunnerVersion(
+            at: "/s/grantiva-runner", expected: "1.1.28-grantiva.8", bundlePath: "/b.bundle",
+            reportedVersion: { _ in .success("1.1.28-grantiva.8") }
+        ))
+    }
+
+    func testEmbeddedRunnerReportsTheVersionItIsStampedWith() throws {
+        let base = FileManager.default.temporaryDirectory.appendingPathComponent("runner-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: base) }
+        try FileManager.default.createDirectory(atPath: base, withIntermediateDirectories: true)
+        try RunnerManager.extractEmbedded(into: base)
+        XCTAssertEqual(try RunnerManager.reportedVersion(ofRunnerAt: "\(base)/grantiva-runner").get(), RunnerManager.runnerVersion)
+    }
+
     private func seedInstall(_ paths: Paths, version: String, binary: String) throws {
         try binary.write(toFile: paths.binary, atomically: true, encoding: .utf8)
         try version.write(toFile: paths.version, atomically: true, encoding: .utf8)
@@ -295,6 +420,28 @@ final class RunnerManagerTests: XCTestCase {
         }
     }
 
+    func testArchTarballsShipPrebuiltAgentCachesUnderTheNamesTheRunnerLooksFor() throws {
+        // The runner accepts a WebDriverAgent build cache by name only, and the
+        // name carries the bundled agent's revision. A cache under any other
+        // name is ignored and every first run on that runtime rebuilds the agent.
+        let configs = ["26.0", "26.2", "26.4", "27.0"].map { "sim-ios\($0)-iphone-wda16.12.8-r1" }
+        for arch in ["arm64", "amd64"] {
+            let url = try XCTUnwrap(RunnerManager.embeddedTarballURL(arch: arch))
+            let listing = try listTarball(url)
+            for config in configs {
+                XCTAssertTrue(
+                    listing.contains { $0.hasPrefix("./cache/wda-builds/\(config)/DerivedData/Build/Products/") && $0.hasSuffix(".xctestrun") },
+                    "\(arch) is missing a prebuilt \(config)"
+                )
+            }
+            let shipped = Set(listing.compactMap { entry -> String? in
+                let parts = entry.split(separator: "/")
+                return parts.count > 3 && parts[1] == "cache" && parts[2] == "wda-builds" ? String(parts[3]) : nil
+            })
+            XCTAssertEqual(shipped, Set(configs), "only caches the runner reads ship: \(arch)")
+        }
+    }
+
     func testEmbeddedDriversTarballContainsTheUIAutomator2APKs() throws {
         let url = try XCTUnwrap(RunnerManager.embeddedDriversTarballURL())
         let listing = try listTarball(url)
@@ -305,8 +452,8 @@ final class RunnerManagerTests: XCTestCase {
     }
 
     func testInstallStampChangesWhenDriversMoveButRunnerVersionDoesNot() {
-        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.8")
-        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.8+android-drivers-2")
+        XCTAssertEqual(RunnerManager.runnerVersion, "1.1.28-grantiva.9")
+        XCTAssertEqual(RunnerManager.installStamp, "1.1.28-grantiva.9+android-drivers-2")
     }
 
     func testLiveExtractionLaysOutBothTarballs() throws {

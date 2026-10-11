@@ -32,6 +32,20 @@ public struct SimulatorDisplayGeometry: Sendable, Codable, Equatable {
     }
 }
 
+extension SimulatorDisplayGeometry {
+    /// Points derived from a device's pixels and scale.
+    public init(_ geometry: DeviceGeometry) {
+        self.init(
+            points: [
+                Int((Double(geometry.pixelWidth) / geometry.scale).rounded()),
+                Int((Double(geometry.pixelHeight) / geometry.scale).rounded()),
+            ],
+            pixels: [geometry.pixelWidth, geometry.pixelHeight],
+            scale: geometry.scale
+        )
+    }
+}
+
 public struct SimulatorProvisionResult: Sendable, Codable, Equatable {
     public struct Dimensions: Sendable, Codable, Equatable {
         public let width: Int

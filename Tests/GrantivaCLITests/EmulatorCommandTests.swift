@@ -32,6 +32,42 @@ final class EmulatorCommandTests: XCTestCase {
         }
     }
 
+    /// A ledger with "Kept" (on disk) and "Gone" (deleted behind Grantiva's
+    /// back), and an emulator manager whose listing shows only "Kept".
+    private func ledgerAndManager() throws -> (AndroidProvenance, EmulatorManager, URL) {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("emu-cmd-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let ledger = AndroidProvenance(directory: dir.path)
+        try ledger.registerCreatedAVD("Kept")
+        try ledger.registerCreatedAVD("Gone")
+        let execute: @Sendable (String) async throws -> String = { command in
+            if command.hasSuffix("-list-avds") { return "Kept" }
+            if command.hasSuffix("devices -l") { return "List of devices attached" }
+            return ""
+        }
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
+            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1
+        )
+        return (ledger, manager, dir)
+    }
+
+    func testSessionsPrunesCreatedAVDsGoneFromDisk() async throws {
+        let (ledger, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let sessions = try await EmulatorCommand.Sessions.sessions(manager)
+        XCTAssertEqual(sessions, [])
+        XCTAssertEqual(try ledger.createdAVDs(), ["Kept"])
+    }
+
+    func testTeardownPrunesCreatedAVDsGoneFromDisk() async throws {
+        let (ledger, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let outcomes = try await EmulatorCommand.Teardown.teardown(manager, serial: nil, force: false)
+        XCTAssertEqual(outcomes, [])
+        XCTAssertEqual(try ledger.createdAVDs(), ["Kept"])
+    }
+
     func testTeardownNeedsExactlyOneTarget() {
         XCTAssertThrowsError(try EmulatorCommand.Teardown.parse([]))
         XCTAssertThrowsError(try EmulatorCommand.Teardown.parse(["--serial", "emulator-5554", "--all"]))

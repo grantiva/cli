@@ -68,12 +68,13 @@ public struct TableFormatter: Sendable {
 
     // MARK: - Diff
 
-    public func formatCapture(_ result: CaptureResult) -> String {
+    /// `platform` picks the device noun: the target is an emulator on Android.
+    public func formatCapture(_ result: CaptureResult, platform: Platform = .ios) -> String {
         var lines: [String] = []
         lines.append("Captured \(result.screens.count) screen\(result.screens.count == 1 ? "" : "s") in \(String(format: "%.1f", result.duration))s")
         lines.append("  Directory: \(result.directory)")
         if let simulator = result.simulator {
-            lines.append("  Simulator: \(simulator.name) (\(simulator.udid))")
+            lines.append("  \(platform == .ios ? "Simulator" : "Emulator"): \(simulator.name) (\(simulator.udid))")
             lines.append("  Display: \(simulator.pointDimensions.width)x\(simulator.pointDimensions.height) points, \(simulator.pixelDimensions.width)x\(simulator.pixelDimensions.height) pixels @\(simulator.displayScale)x")
         }
         for screen in result.screens {

@@ -207,6 +207,48 @@ final class SimulatorCommandTests: XCTestCase {
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
         XCTAssertEqual(object["deleted"] as? Bool, true)
         XCTAssertEqual((object["session"] as? [String: Any])?["sessionId"] as? String, "APP-652")
+        XCTAssertEqual(object["deviceHomesRemoved"] as? [String], [])
+        XCTAssertEqual(object["deviceHomeFailures"] as? [String], [])
+    }
+
+    func testForceTeardownJSONStillFailsWhenARunnerHomeCouldNotBeRemoved() async throws {
+        try XCTSkipIf(geteuid() == 0, "a read-only parent does not stop root from removing the home")
+        let fm = FileManager.default
+        let directory = fm.temporaryDirectory.appendingPathComponent("grantiva-force-json-\(UUID().uuidString)").path
+        let udid = "F0F0F0F0-1111-2222-3333-444455556666"
+        let devices = "\(directory)/runner/versions/v1/devices"
+        try fm.createDirectory(atPath: "\(devices)/\(udid)", withIntermediateDirectories: true)
+        try fm.setAttributes([.posixPermissions: 0o555], ofItemAtPath: devices)
+        defer {
+            try? fm.setAttributes([.posixPermissions: 0o755], ofItemAtPath: devices)
+            try? fm.removeItem(atPath: directory)
+        }
+        let result = try await SimulatorReaper.forceTeardown(
+            udid: udid,
+            capacity: SimulatorCapacity(directory: directory),
+            leaseDirectory: directory,
+            runnerBase: "\(directory)/runner",
+            sessions: KeepAliveSessionStore(directory: "\(directory)/sessions", isProcessAlive: { _ in false }),
+            snapshot: { "" },
+            gracePeriod: 0,
+            isProcessAlive: { _ in false }
+        )
+
+        let output = try SimulatorCommand.Teardown.forceOutput([result], json: true)
+
+        XCTAssertEqual(output.lines.count, 1, "--json prints one document")
+        let objects = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(output.lines[0].utf8)) as? [[String: Any]])
+        XCTAssertEqual((objects.first?["deviceHomeFailures"] as? [String])?.count, 1)
+        let message = try XCTUnwrap(output.error?.errorDescription)
+        XCTAssertTrue(message.contains("\(devices)/\(udid)"), message)
+    }
+
+    func testTeardownFailsWhenARunnerHomeCouldNotBeRemoved() throws {
+        XCTAssertNil(SimulatorCommand.Teardown.deviceHomeError([]))
+        let error = try XCTUnwrap(SimulatorCommand.Teardown.deviceHomeError(["/r/versions/v1/devices/U: denied"]))
+        let message = error.errorDescription ?? ""
+        XCTAssertTrue(message.contains("/r/versions/v1/devices/U: denied"), message)
+        XCTAssertTrue(message.contains("Delete it by hand"), message)
     }
 
 }

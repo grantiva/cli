@@ -513,6 +513,77 @@ final class EmulatorManagerTests: XCTestCase {
         ])
     }
 
+    /// created-avds.json drops names whose AVD is gone from disk (deleted
+    /// with avdmanager behind Grantiva's back) when ensure lists the AVDs.
+    func testEnsurePrunesCreatedAVDsThatNoLongerExist() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("Gone")
+        try ledger.registerCreatedAVD("Pixel_8_API_35")
+        let shell = ScriptedShell([.success("Pixel_8_API_35\nOther")])
+        _ = try await manager(shell).ensure(avd: "Pixel_8_API_35", systemImage: nil, boot: false)
+        XCTAssertEqual(shell.commands, ["'/sdk/emulator/emulator' -list-avds"], "the listing ensure already makes is reused")
+        XCTAssertEqual(try ledger.createdAVDs(), ["Pixel_8_API_35"])
+    }
+
+    func testPruneCreatedAVDsKeepsOnlyAVDsOnDisk() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("qa-reg-android")
+        try ledger.registerCreatedAVD("qa-reg-android-2")
+        try ledger.registerCreatedAVD("fix-6-android")
+        let shell = ScriptedShell([.success("fix-6-android\nPixel_8_API_35")])
+        let removed = try await manager(shell).pruneCreatedAVDs()
+        XCTAssertEqual(removed, ["qa-reg-android", "qa-reg-android-2"])
+        XCTAssertEqual(try ledger.createdAVDs(), ["fix-6-android"])
+    }
+
+    /// A concurrent `ensure` that registers its AVD after this listing ran
+    /// keeps its name: only names already in the ledger before the listing
+    /// can be pruned.
+    func testPruneKeepsANameRegisteredWhileTheListingRan() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("Gone")
+        let directory = scratch.path
+        let execute: @Sendable (String) async throws -> String = { command in
+            if command.hasSuffix("-list-avds") {
+                // Another process creates and registers its AVD mid-listing.
+                try AndroidProvenance(directory: directory).registerCreatedAVD("Racer")
+            }
+            return ""
+        }
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
+            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:]
+        )
+        let removed = try await manager.pruneCreatedAVDs()
+        XCTAssertEqual(removed, ["Gone"])
+        XCTAssertEqual(try ledger.createdAVDs(), ["Racer"])
+    }
+
+    /// A failed listing proves nothing: the ledger is left alone.
+    func testPruneCreatedAVDsLeavesTheLedgerWhenTheListingFails() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("Kept")
+        let shell = ScriptedShell([.failure(GrantivaError.commandFailed("emulator missing", 127))])
+        let removed = try? await manager(shell).pruneCreatedAVDs()
+        XCTAssertNil(removed)
+        XCTAssertEqual(try ledger.createdAVDs(), ["Kept"])
+    }
+
+    /// `emulator delete` of an AVD already gone from disk still drops it
+    /// from created-avds.json, then reports it missing.
+    func testDeleteOfAnAVDAlreadyGoneFromDiskDropsItsLedgerEntry() async throws {
+        let ledger = AndroidProvenance(directory: scratch.path)
+        try ledger.registerCreatedAVD("Gone")
+        let shell = ScriptedShell([.success("List of devices attached"), .success("Pixel_7_API_34")])
+        do {
+            try await manager(shell).deleteAVD(name: "Gone", force: false)
+            XCTFail("expected an error")
+        } catch {
+            XCTAssertTrue(error.localizedDescription.contains("No AVD named \"Gone\""), "\(error)")
+        }
+        XCTAssertEqual(try ledger.createdAVDs(), [])
+    }
+
     func testSystemImagePathReplacesSemicolons() {
         XCTAssertEqual(
             EmulatorManager.systemImagePath(root: "/sdk", image: "system-images;android-35;google_apis;arm64-v8a"),

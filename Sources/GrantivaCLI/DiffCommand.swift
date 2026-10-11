@@ -42,6 +42,8 @@ struct DiffCommand: AsyncParsableCommand {
 
         /// Empty means "make one from the resolved platform"; tests inject a fake.
         var devicePlatform = InjectedDevicePlatform()
+        var runnerManager: RunnerManager = .live
+        var notes = NoteSink()
 
         func run() async throws {
             let (platform, config) = try platformOptions.loadConfig()
@@ -59,7 +61,7 @@ struct DiffCommand: AsyncParsableCommand {
             )
 
             guard !resolved.screens.isEmpty else {
-                throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
+                throw DiffCommand.noScreensError(platform: platform, config: config)
             }
 
             let outputDir = DiffCommand.captureDirectory(for: platform)
@@ -117,8 +119,6 @@ struct DiffCommand: AsyncParsableCommand {
                     try await device.launch(appID: bid, deviceID: booted.udid)
                     try await Task.sleep(for: .seconds(2))
                 }
-
-                options.note("Capturing \(resolved.screens.count) screen(s)...")
             } else {
                 // --no-build honours flag > config > runner session, and only
                 // then the platform default, which on iOS refuses to pick among
@@ -146,13 +146,14 @@ struct DiffCommand: AsyncParsableCommand {
                 geometry: DiffCommand.simulatorGeometry(geometry)
             )
 
-            options.note("Capturing \(resolved.screens.count) screen(s)...")
+            notes.note("Capturing \(resolved.screens.count) screen(s)...", options: options)
 
             let captures = try await RunnerSession.run(
                 screens: resolved.screens,
                 bundleId: bid,
                 udid: booted.udid,
                 platform: device,
+                runner: runnerManager,
                 outputDir: outputDir,
                 expectedPixels: captureTarget.pixelDimensions
             )
@@ -172,19 +173,26 @@ struct DiffCommand: AsyncParsableCommand {
                 Output.line("")
             }
 
-            let result = CaptureResult(
-                screens: captures,
-                directory: outputDir,
-                duration: Date().timeIntervalSince(start),
-                simulator: captureTarget
+            let result = DiffCommand.captureResult(
+                screens: captures, directory: outputDir, duration: Date().timeIntervalSince(start),
+                target: captureTarget, platform: platform
             )
 
             if options.json {
                 Output.line(try JSONOutput.string(result))
             } else {
-                Output.line(TableFormatter().formatCapture(result))
+                Output.line(TableFormatter().formatCapture(result, platform: platform))
             }
         }
+    }
+
+    static func captureResult(
+        screens: [ScreenCapture], directory: String, duration: Double, target: CaptureSimulatorTarget, platform: Platform
+    ) -> CaptureResult {
+        CaptureResult(
+            screens: screens, directory: directory, duration: duration,
+            simulator: target, emulator: platform == .android ? target : nil
+        )
     }
 
     // MARK: - --no-build device
@@ -274,7 +282,7 @@ struct DiffCommand: AsyncParsableCommand {
                 )
 
                 guard !resolved.screens.isEmpty else {
-                    throw GrantivaError.invalidArgument("No screens configured in grantiva.yml")
+                    throw DiffCommand.noScreensError(platform: platform, config: config)
                 }
 
                 let booted = try await device.bootDevice(named: resolved.simulator)
@@ -643,6 +651,18 @@ struct DiffCommand: AsyncParsableCommand {
     static let androidLocalOnlyMessage =
         "Android baselines are local only until the Grantiva backend supports platforms; use local baselines"
 
+    /// Why there is nothing to capture: no config file (named, with its
+    /// path), or a file without screens.
+    static func noScreensError(
+        platform: Platform, config: GrantivaConfig?,
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+    ) -> GrantivaError {
+        guard config != nil else {
+            return .notFound(GrantivaConfig.missingFileMessage(platform: platform, directory: directory))
+        }
+        return .invalidArgument("No screens configured in \(platform.configFileName)")
+    }
+
     static func captureDirectory(for platform: Platform) -> String {
         platform == .ios ? ".grantiva/captures" : ".grantiva/captures/android"
     }
@@ -675,13 +695,6 @@ struct DiffCommand: AsyncParsableCommand {
     /// `SimulatorManager.displayGeometry` derives it: points are pixels over
     /// scale, rounded.
     static func simulatorGeometry(_ geometry: DeviceGeometry) -> SimulatorDisplayGeometry {
-        SimulatorDisplayGeometry(
-            points: [
-                Int((Double(geometry.pixelWidth) / geometry.scale).rounded()),
-                Int((Double(geometry.pixelHeight) / geometry.scale).rounded()),
-            ],
-            pixels: [geometry.pixelWidth, geometry.pixelHeight],
-            scale: geometry.scale
-        )
+        SimulatorDisplayGeometry(geometry)
     }
 }
