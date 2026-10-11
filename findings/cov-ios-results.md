@@ -2,6 +2,7 @@
 
 Binary `~/.grantiva-qa/bin/grantiva` 2.1.0; runner home `~/.grantiva-qa/runner` (1.1.28-grantiva.9); `GRANTIVA_SESSION_ID=cov-ios`.
 Devices: `cov-ios-1` iPhone 17 iOS 26.0 (A1C8EC2A-FB08-4EAC-A738-51E98D13CDBF), `cov-ios-2` iPhone 17 iOS 27.0 (C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961).
+Fix round 1 (2026-10-11): `cov-ios-1` was re-created as 3F0B20E7-982A-425C-B814-75864BA60E2A for the B-I06.2 and IOS-092 re-runs and deleted afterwards (see `inputs/README.txt`).
 App: scratch copy of landmarks-demo/ios at 4e49dc4 (config `simulator:` set to `cov-ios-1`). Evidence: `findings/evidence/cov-ios/<ID>/`.
 Rows run on 26.0 unless the ID carries a `@27.0` suffix (flow-command rows and the stock set repeated on 27.0).
 
