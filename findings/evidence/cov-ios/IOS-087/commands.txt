@@ -6,3 +6,4 @@ $ sleep 1; ls /tmp/grantiva-sessions/; ls .grantiva/session.json 2>&1; ps -axo p
 # exit=0 elapsed=1.118s -> after.out / after.err
 # later observation (after N-05/mcp-5x-b, 5 runner start/stop cycles):
 $ ls -la /tmp/grantiva-sessions; cat /tmp/grantiva-sessions/*.grantiva; ps -p 15919
+# after-the-fact note (fix round 1, 2026-10-11T09:08:27Z): at the end of the slice (2026-10-11 ~09:00Z) I ran `rm -f /tmp/grantiva-sessions/15919-1791707634281100000.grantiva` in the shared /tmp/grantiva-sessions after copying it to stale-session-file.txt; pid 15919 was my own runner (N-05 cycles) and was dead

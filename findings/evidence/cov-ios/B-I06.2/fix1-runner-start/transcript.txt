@@ -1,0 +1,33 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "cov", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s @02:05:39] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+## shell [5.0s] exit=0: /Users/kyle/.grantiva-qa/bin/grantiva runner start --bundle-id com.kylebrowning.Landmarks --simulator 3F0B20E7-982A-425C-B814-75864BA60E2A --detach
+## stdout: Runner started (detached)
+  WDA port: 8358
+  PID:      50221
+  Log:      /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791709540.log
+  Session:  .grantiva/session.json
+
+Tail the log with: tail -f /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791709540.log
+Use 'grantiva runner stop' to stop the session.
+
+## stderr: Starting runner...
+  Bundle ID: com.kylebrowning.Landmarks
+  Simulator: cov-ios-1 (3F0B20E7-982A-425C-B814-75864BA60E2A)
+
+## sleep 12
+>> {"method": "tools/call", "params": {"name": "grantiva_script", "arguments": {"steps": [{"tap": "Deep Links"}, {"wait": 1}, {"tap": "Edit Landmark"}, {"wait": 1}, {"tap": "Name"}, {"wait": 1}]}}, "id": 2, "jsonrpc": "2.0"}
+<< [4.3s @02:06:00] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Element not found: \"Name\". Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_type", "arguments": {"text": " Renamed"}}, "id": 3, "jsonrpc": "2.0"}
+<< (other) {"jsonrpc": "2.0", "method": "notifications/resources/updated", "params": {"uri": "grantiva://hierarchy"}}
+<< [1.2s @02:06:01] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Typed \" Renamed\". Updated hierarchy:\n{\n  \"children\" : [\n    {\n      \"children\" : [\n        {\n          \"children\" : [\n            {\n              \"children\" : [\n                {\n                  \"children\" : [\n                    {\n                      \"children\" : [\n                        {\n                          \"children\" : [\n                            {\n                              \"children\" : [\n                                {\n                                  \"children\" : [\n                                    {\n                                      \"children\" : [\n                                        {\n                                          \"children\" : [\n                                            {\n                                              \"children\" : [\n                                                {\n                                                  \"children\" : [\n                                                    {\n                                                      \"children\" : [\n                                                        {\n                                                          \"children\" : [\n                                                            {\n                                                              \"children\" : [\n                                                                {\n                                                                  \"children\" : [\n\n                                                                  ],\n                                                                  \"enabled\" : true,\n                                                                  \"frame\" : {\n                                                                    \"height\" : \"36\",\n                                                                    \"width\" : \"69\",\n                                                                    \"x\" : \"20\",\n                                                                    \"y\" : \"66\"\n                                                                  },\n                                                                  \"label\" : \"Cancel\",\n                                                                  \"name\" : \"Cancel\",\n                                                                  \"type\" : \"XCUIElementTypeButton\",\n                                                                  \"visible\" : true\n                                                                }\n                                                              ],\n                                                              \"enabled\" : true,\n                                                              \"frame\" : {\n                                                                \"height\" : \"36\",\n                                                                \"width\" : \"69\",\n                                                                \"x\" : \"20\",\n                                                                \"y\" : \"66\"\n                                                              },\n                                                              \"type\" : \"XCUIElementTypeOther\",\n                                                              \"visible\" : true\n                                                            }\n                                                          ],\n                                                          \"enabled\" : true,\n                                                          \"frame\" : {\n                                                            \"height\" : \"36\",\n                                                            \"width\" : \"69\",\n                                                            \"x\" : \"20\",\n
+## shell [0.1s] exit=0: grep -n -i 'keys\|/wda/\|POST' $(ls -t /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-*.log | head -1) | tail -40; echo LOG=$(ls -t /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-*.log | head -1)
+## stdout: LOG=/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-runner-1791709540.log
+
+## stderr: 
+## shell [0.2s] exit=0: /Users/kyle/.grantiva-qa/bin/grantiva runner stop
+## stdout: Runner stopped (pid 50221)
+
+## stderr: 
+nonjson_lines=0 server_alive=True
+exit=0
