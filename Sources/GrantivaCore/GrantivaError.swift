@@ -75,6 +75,13 @@ public enum GrantivaError: Error, LocalizedError, Sendable {
             return "Aborted."
         }
     }
+
+    /// The message without the "Invalid argument: " prefix, for a caller
+    /// that reports it as a usage error (`Error: <message>`, exit 64).
+    public var usageMessage: String {
+        if case .invalidArgument(let message) = self { return message }
+        return errorDescription ?? String(describing: self)
+    }
 }
 
 extension GrantivaError {

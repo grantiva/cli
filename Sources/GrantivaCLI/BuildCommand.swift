@@ -35,12 +35,12 @@ struct BuildOnlyCommand: AsyncParsableCommand {
         try target.checkFlags(for: platform, derivedDataPath: derivedDataPath)
         let device = try devicePlatform.make(platform, android: target.androidOptions)
 
-        let resolved = try await target.resolve(platform: platform, config: config, skipBuild: false, appID: nil)
+        let resolved = try await target.resolve(
+            platform: platform, config: config, skipBuild: false, appID: nil, acceptsAppFile: false
+        )
 
         if platform == .ios, resolved.scheme == nil {
-            throw GrantivaError.invalidArgument(
-                "No scheme specified. Pass --scheme or set it in grantiva.yml."
-            )
+            throw GrantivaError.invalidArgument(ResolvedProject.noSchemeMessage(acceptsAppFile: false))
         }
 
         // iOS builds for a simulator destination. Android only compiles: the
@@ -167,6 +167,13 @@ struct InstallCommand: AsyncParsableCommand {
             )
         }
 
+        if platform == .ios, let productPath,
+           let mismatch = Self.bundleIDMismatch(
+               flag: target.bundleId, configured: config?.bundleId, productPath: productPath
+           ) {
+            throw mismatch
+        }
+
         if let productPath {
             let installID = TargetOptions.installAppID(platform: platform, testID: bid, binaryID: builtAppID ?? appBundleId)
             options.note("[grantiva] Installing \(installID)...")
@@ -213,6 +220,23 @@ struct InstallCommand: AsyncParsableCommand {
                 installSkipped: !installed
             ))
         }
+    }
+
+    /// An explicit iOS bundle ID (`--bundle-id`, else `bundle_id` in
+    /// grantiva.yml) that is not the app being installed. simctl installs the
+    /// product whatever the ID says, and the later container lookup under
+    /// the wrong ID failed with a bare NSPOSIXErrorDomain error; this names
+    /// both IDs before anything is installed.
+    static func bundleIDMismatch(flag: String?, configured: String?, productPath: String) -> GrantivaError? {
+        guard let explicit = flag ?? configured,
+              let productID = AppBinaryResolver.bundleId(from: productPath),
+              productID != explicit else { return nil }
+        let source = flag != nil ? "--bundle-id \(explicit)" : "bundle_id \(explicit) in grantiva.yml"
+        let plist = URL(fileURLWithPath: productPath).appendingPathComponent("Info.plist").path
+        return GrantivaError.invalidArgument(
+            "\(source) does not match the built app (\(productID), \(plist)). "
+                + "Pass --bundle-id \(productID), or build the target whose bundle ID is \(explicit)."
+        )
     }
 
     /// DevicePlatform has no data-container call yet; on iOS this is the same

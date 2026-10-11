@@ -170,7 +170,10 @@ struct ConsoleReleasesCommand: AsyncParsableCommand {
         @Argument(help: "Release note ID.")
         var note: String
 
-        @Option(name: .long, help: "New version.")
+        /// `--release-version`: a long `--version` here shadowed the
+        /// inherited `--version` flag. `--version <value>` still sets it
+        /// (`GrantivaCommand.normalizedArguments` rewrites it).
+        @Option(name: .customLong("release-version"), help: "New version.")
         var version: String?
 
         @Option(name: .long, help: "New title.")

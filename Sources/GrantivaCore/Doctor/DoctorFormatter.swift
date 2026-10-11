@@ -27,7 +27,7 @@ public struct DoctorFormatter: Sendable {
         lines.append("  Grantiva Doctor")
         lines.append("  " + String(repeating: "─", count: 50))
 
-        let sections: [DoctorCheck.Section] = [.required, .project, .cloud]
+        let sections: [DoctorCheck.Section] = [.required, .advisory, .project, .cloud]
 
         for section in sections {
             let sectionChecks = checks.filter { $0.section == section }

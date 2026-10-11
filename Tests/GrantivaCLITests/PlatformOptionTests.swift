@@ -86,4 +86,18 @@ final class PlatformOptionTests: XCTestCase {
             XCTAssertTrue("\(error)".contains("Create grantiva-android.yml with grantiva init --platform android."), "\(error)")
         }
     }
+
+    /// K43: `runner start` and `record` reject an other-platform flag with
+    /// the same sentence as build/run/diff, naming where the platform came from.
+    func testRunnerStartAndRecordUseTheSharedOtherPlatformMessage() {
+        let iosAppID = TargetOptions.otherPlatformFlagError("--application-id", platform: .ios).errorDescription
+        XCTAssertThrowsError(try RunnerStartCommand.appID(platform: .ios, bundleId: nil, applicationId: "a.b", config: nil)) { error in
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, iosAppID)
+        }
+        let androidSim = TargetOptions.otherPlatformFlagError("--simulator", platform: .android).errorDescription
+        XCTAssertThrowsError(try RecordCommand.target(platform: .android, simulator: "X", emulator: nil, device: nil, config: nil)) { error in
+            XCTAssertEqual((error as? GrantivaError)?.errorDescription, androidSim)
+        }
+        XCTAssertTrue(androidSim?.contains("(resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory)") == true)
+    }
 }

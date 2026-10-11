@@ -90,6 +90,9 @@ extension RunnerManager {
                     + "so the embedded runner cannot be extracted. Reinstall grantiva, or keep the bundle beside the binary when copying it."
             )
         }
+        if let problem = missingTarballsMessage(bundle: bundle) {
+            throw GrantivaError.unavailable(problem + " Nothing was installed.")
+        }
         guard let runner = bundle.url(forResource: "grantiva-runner-\(currentArch)", withExtension: "tar.gz"),
               let drivers = bundle.url(forResource: "android-drivers", withExtension: "tar.gz") else {
             throw GrantivaError.runnerNotFound
@@ -104,6 +107,70 @@ extension RunnerManager {
                 throw GrantivaError.commandFailed("Failed to extract \(tarball.lastPathComponent)", process.terminationStatus)
             }
         }
+    }
+
+    /// The tarballs this release's install needs, named by file.
+    static var expectedTarballs: [String] {
+        ["grantiva-runner-\(currentArch).tar.gz", "android-drivers.tar.gz"]
+    }
+
+    /// Why `bundle` cannot supply this release's runner: the tarballs it
+    /// lacks. A bundle from before 2.1 has no `android-drivers.tar.gz`; this
+    /// names the bundle and the missing file instead of the bare "Runner
+    /// binary not found", which named neither.
+    static func missingTarballsMessage(bundle: Bundle) -> String? {
+        let missing = expectedTarballs.filter { name in
+            let base = String(name.dropLast(".tar.gz".count))
+            return bundle.url(forResource: base, withExtension: "tar.gz") == nil
+        }
+        guard !missing.isEmpty else { return nil }
+        return "The resource bundle \(bundle.bundlePath) has no \(missing.joined(separator: " or ")): "
+            + "it is from another grantiva release than this binary (which expects grantiva-runner \(runnerVersion)). "
+            + "Reinstall grantiva so the binary and its bundle match."
+    }
+
+    /// Whether this release's runner is already installed: `ensureAvailable`
+    /// then returns without looking at the resource bundle.
+    public static func isCurrentInstallPresent() -> Bool {
+        FileManager.default.fileExists(atPath: binaryPath)
+            && FileManager.default.contents(atPath: versionFilePath)
+                .flatMap { String(data: $0, encoding: .utf8) }?
+                .trimmingCharacters(in: .whitespacesAndNewlines) == installStamp
+    }
+
+    /// A warning when the resource bundle beside the binary does not carry
+    /// the runner the current install holds. The install is used as it is
+    /// (it is the right version); the bundle would fail the next fresh
+    /// install, so say so now. nil when the bundle matches or is absent.
+    public static func bundleMismatchWarning() -> String? {
+        guard let bundle = resourceBundle else { return nil }
+        return bundleMismatchWarning(bundle: bundle, installed: runnerVersion, installDir: currentInstallDir)
+    }
+
+    static func bundleMismatchWarning(
+        bundle: Bundle, installed: String, installDir: String,
+        reportedVersion: (String) -> Result<String, RunnerProbeFailure> = { reportedVersion(ofRunnerAt: $0) }
+    ) -> String? {
+        if let problem = missingTarballsMessage(bundle: bundle) {
+            return problem + " The installed runner (\(installDir)) was left as it is."
+        }
+        guard let tarball = bundle.url(forResource: "grantiva-runner-\(currentArch)", withExtension: "tar.gz") else { return nil }
+        let fm = FileManager.default
+        let scratch = fm.temporaryDirectory.appendingPathComponent("grantiva-bundle-check-\(UUID().uuidString)").path
+        defer { try? fm.removeItem(atPath: scratch) }
+        guard (try? fm.createDirectory(atPath: scratch, withIntermediateDirectories: true)) != nil else { return nil }
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/tar")
+        process.arguments = ["-xzf", tarball.path, "-C", scratch, "./grantiva-runner"]
+        process.standardError = FileHandle.nullDevice
+        guard (try? process.run()) != nil else { return nil }
+        process.waitUntilExit()
+        let binary = "\(scratch)/grantiva-runner"
+        guard process.terminationStatus == 0, fm.fileExists(atPath: binary),
+              case .success(let found) = reportedVersion(binary), found != installed else { return nil }
+        return "The grantiva-runner in \(bundle.bundlePath) reports version \(found), but the installed runner is \(installed) "
+            + "(\(installDir)). The resource bundle beside the grantiva binary is from another release; "
+            + "the installed runner was left as it is. Reinstall grantiva so the binary and its bundle match."
     }
 
     /// Shared runner state: `locks/` (simulator leases), the WDA build
@@ -265,6 +332,12 @@ extension RunnerManager {
         extract: (String) throws -> Void
     ) throws {
         let fm = FileManager.default
+        // A failed first install of this stamp must not leave an empty
+        // `versions/<stamp>/` behind; one that replaces an earlier install
+        // keeps the directory (and that install) as it was.
+        let createdBaseDir = !fm.fileExists(atPath: baseDir)
+        var installed = false
+        defer { if createdBaseDir, !installed { try? fm.removeItem(atPath: baseDir) } }
         try fm.createDirectory(atPath: baseDir, withIntermediateDirectories: true)
         let staging = "\(baseDir)/.staging-\(UUID().uuidString)"
         let backup = "\(baseDir)/.previous-\(UUID().uuidString)"
@@ -313,6 +386,7 @@ extension RunnerManager {
         try linkCache(cacheDir, into: baseDir)
         mergeMissing(from: "\(staging)/cache", into: cacheDir, depth: 1)
         try version.write(toFile: versionFilePath, atomically: true, encoding: .utf8)
+        installed = true
     }
 
     /// Why `<runner> --version` gave no version.

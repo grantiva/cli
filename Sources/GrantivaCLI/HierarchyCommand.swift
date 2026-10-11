@@ -35,7 +35,9 @@ struct HierarchyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Simulator UDID or adb serial to target (default: newest keep-alive session)")
     var udid: String?
 
-    @Option(name: .long, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
+    // `.unconditional`: `--timeout -1` is rejected by range in validate(),
+    // not reported as a missing value.
+    @Option(name: .long, parsing: .unconditional, help: "Seconds to wait for GrantivaAgent's page-source response. Default: 60.")
     var timeout: Double = 60
 
     @Option(name: .long, help: "Output format: xml (default) or json. --json is the same as --format json.")
@@ -48,7 +50,7 @@ struct HierarchyCommand: AsyncParsableCommand {
 
     var devicePlatform = InjectedDevicePlatform()
 
-    enum OutputFormat: String, ExpressibleByArgument {
+    enum OutputFormat: String, CaseIterable, ExpressibleByArgument {
         case xml
         case json
     }
@@ -57,7 +59,7 @@ struct HierarchyCommand: AsyncParsableCommand {
         guard timeout > 0 else {
             throw ValidationError("--timeout must be greater than zero")
         }
-        if let udid { _ = try DeviceID.validate(udid) }
+        if let udid { _ = try usageCheck { try DeviceID.validate(udid) } }
         if options.json, format == .xml {
             throw ValidationError("--json and --format xml conflict; pass one.")
         }

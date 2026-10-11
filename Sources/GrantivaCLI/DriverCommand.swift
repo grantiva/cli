@@ -32,7 +32,14 @@ struct RunnerInstallCommand: AsyncParsableCommand {
         options.note("Extracting runner...")
 
         let manager = RunnerManager.live
+        let alreadyInstalled = RunnerManager.isCurrentInstallPresent()
         try await manager.ensureAvailable()
+        // An existing install is kept without reading the bundle; check it
+        // here so a bundle from another release is reported before the next
+        // fresh install trips over it.
+        if alreadyInstalled, let warning = RunnerManager.bundleMismatchWarning() {
+            GrantivaLog.logger.warning("\(warning)")
+        }
 
         if options.json {
             Output.line(try JSONOutput.string([
@@ -126,12 +133,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
         let (platform, config) = try platformOptions.loadConfig()
         if platform == .ios {
-            if emulator != nil { throw GrantivaError.invalidArgument("--emulator is an Android option, but this is an iOS project.") }
-            if device != nil { throw GrantivaError.invalidArgument("--device is an Android option, but this is an iOS project.") }
-            if headless { throw GrantivaError.invalidArgument("--headless is an Android option, but this is an iOS project.") }
+            if emulator != nil { throw TargetOptions.otherPlatformFlagError("--emulator", platform: .ios) }
+            if device != nil { throw TargetOptions.otherPlatformFlagError("--device", platform: .ios) }
+            if headless { throw TargetOptions.otherPlatformFlagError("--headless", platform: .ios) }
         }
         if platform == .android, simulator != nil {
-            throw GrantivaError.invalidArgument("--simulator is an iOS option, but this is an Android project.")
+            throw TargetOptions.otherPlatformFlagError("--simulator", platform: .android)
         }
         if device != nil, emulator != nil {
             throw GrantivaError.invalidArgument("--device and --emulator are mutually exclusive; pass one.")
@@ -192,13 +199,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
     static func appID(platform: Platform, bundleId: String?, applicationId: String?, config: GrantivaConfig?) throws -> String {
         switch platform {
         case .ios:
-            if applicationId != nil { throw GrantivaError.invalidArgument("--application-id is an Android option, but this is an iOS project.") }
+            if applicationId != nil { throw TargetOptions.otherPlatformFlagError("--application-id", platform: .ios) }
             guard let id = bundleId ?? config?.bundleId else {
                 throw GrantivaError.invalidArgument("No bundle ID. Pass --bundle-id or set bundle_id in grantiva.yml.")
             }
             return id
         case .android:
-            if bundleId != nil { throw GrantivaError.invalidArgument("--bundle-id is an iOS option, but this is an Android project.") }
+            if bundleId != nil { throw TargetOptions.otherPlatformFlagError("--bundle-id", platform: .android) }
             guard let id = applicationId ?? config?.android?.applicationId else {
                 throw GrantivaError.invalidArgument("No application ID. Pass --application-id or set application_id in grantiva-android.yml.")
             }
@@ -713,7 +720,7 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func validate() throws {
-        if let udid { _ = try DeviceID.validate(udid) }
+        if let udid { _ = try usageCheck { try DeviceID.validate(udid) } }
         if options.json, let format, format.lowercased() != "json" {
             throw ValidationError("--json and --format \(format) conflict; pass one.")
         }

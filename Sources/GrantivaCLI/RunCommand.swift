@@ -36,7 +36,7 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Snapshot policy: failure (default — one shot after failure), trailing (last-good step + failure step), full (every step).")
     var snapshot: SnapshotMode = .failure
 
-    enum SnapshotMode: String, ExpressibleByArgument {
+    enum SnapshotMode: String, CaseIterable, ExpressibleByArgument {
         case failure
         case trailing
         case full
@@ -48,7 +48,9 @@ struct RunCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write the runner's report.json + assets to this directory (workspace-relative). Survives grantiva's cleanup so CI can upload it. Default: ephemeral tmp dir.")
     var reportDir: String?
 
-    @Option(name: .long, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Minimum 30. Ignored under --keep-alive. Bump this for long multi-flow suites.")
+    // `.unconditional`: `--timeout -1` reaches validate() and gets the range
+    // error (and a ready file), not "Missing value".
+    @Option(name: .long, parsing: .unconditional, help: "Max seconds to wait for the runner subprocess before killing it with SIGTERM. Default: 600 (10 min). Minimum 30. Ignored under --keep-alive. Bump this for long multi-flow suites.")
     var timeout: Int = 600
 
     @Option(name: .long, help: "Write this file once the run reaches a terminal state, containing its status. Deleted at startup, and always written — a setup failure records `failed` rather than leaving a waiter hanging. Missing parent directories are created. Wait on it with `while [ ! -f <path> ]; do sleep 0.2; done` instead of polling report.json — useful with --keep-alive, where the session outlives the flows.")
@@ -178,11 +180,14 @@ struct RunCommand: AsyncParsableCommand {
     }
 
     /// Why there is nothing to run: no config file for the resolved platform
-    /// (say which file and how to create it), or a file with no screens or flows.
-    static func nothingToRunMessage(platform: Platform, hasConfig: Bool) -> String {
+    /// (the same sentence `diff capture` and MCP give: the file, where it was
+    /// looked for, and how to create it), or a file with no screens or flows.
+    static func nothingToRunMessage(
+        platform: Platform, hasConfig: Bool,
+        directory: URL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath, isDirectory: true)
+    ) -> String {
         guard hasConfig else {
-            let initCommand = platform == .ios ? "grantiva init" : "grantiva init --platform \(platform.rawValue)"
-            return "No \(platform.configFileName) here. Create one with \(initCommand)."
+            return GrantivaConfig.missingFileMessage(platform: platform, directory: directory)
         }
         return "No screens or flows configured in \(platform.configFileName)"
     }
@@ -215,9 +220,15 @@ struct RunCommand: AsyncParsableCommand {
             // waiters test against the documented vocabulary
             // (passed | failed | interrupted); a fifth status would read as
             // "not failed" to every `[ "$s" = failed ]` in the wild.
+            // `error` says why, as the --json document does; `reportDir` only
+            // when that directory exists, since a waiter reads it next.
             if let readyFile, !FileManager.default.fileExists(atPath: readyFile) {
                 try? ReadyFile.write(
-                    RunReadyState(status: "failed", flows: [], reportDir: reportDir),
+                    RunReadyState(
+                        status: "failed", flows: [],
+                        reportDir: reportDir.flatMap { FileManager.default.fileExists(atPath: $0) ? $0 : nil },
+                        error: Self.failureMessage(error)
+                    ),
                     to: readyFile
                 )
             }
@@ -244,6 +255,12 @@ struct RunCommand: AsyncParsableCommand {
             for: platform, derivedDataPath: buildOptions.derivedDataPath,
             logsPredicate: logsPredicate, logsTag: logsTag
         )
+        // No config and no --flow: nothing can run, whatever the project
+        // resolves to. Said before scheme resolution, whose "several schemes"
+        // error would otherwise hide the missing file.
+        if config == nil, flow == nil {
+            throw GrantivaError.notFound(Self.nothingToRunMessage(platform: platform, hasConfig: false))
+        }
         let device = try devicePlatform.make(platform, android: target.androidOptions)
         let launchEnvironment = try FlowEnvironment.parse(env)
         // With --report-dir the report directory is the run's artifact home, so
@@ -284,7 +301,7 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         guard !resolved.screens.isEmpty || !resolved.flows.isEmpty else {
-            throw GrantivaError.invalidArgument(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
+            throw GrantivaError.notFound(Self.nothingToRunMessage(platform: platform, hasConfig: config != nil))
         }
 
         log(Self.resolvedNarration(platform: platform, resolved: resolved))

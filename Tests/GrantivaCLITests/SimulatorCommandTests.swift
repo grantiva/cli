@@ -251,4 +251,41 @@ final class SimulatorCommandTests: XCTestCase {
         XCTAssertTrue(message.contains("Delete it by hand"), message)
     }
 
+
+    /// K42: usage errors read `Error: <message>` with exit 64, never the
+    /// runtime "Invalid argument:" prefix.
+    func testTeardownUsageErrorsCarryNoInvalidArgumentPrefix() {
+        let cases: [([String], String)] = [
+            (["--udid", "", "--force"], "--udid is empty"),
+            (["--udid", "not-a-udid-at-all", "--force"], "--udid not-a-udid-at-all is not a simulator UDID"),
+            (["--session-id", ""], "--session-id is empty"),
+        ]
+        for (arguments, prefix) in cases {
+            XCTAssertThrowsError(try SimulatorCommand.Teardown.parse(arguments)) { error in
+                let message = SimulatorCommand.Teardown.message(for: error)
+                XCTAssertTrue(message.hasPrefix(prefix), "\(arguments): \(message)")
+                XCTAssertFalse(message.contains("Invalid argument"), message)
+                XCTAssertEqual(SimulatorCommand.Teardown.exitCode(for: error), .validationFailure, "\(arguments)")
+            }
+        }
+    }
+
+    func testDeviceIDUsageErrorsOnHierarchyAndDumpHierarchyHaveTheSameShape() {
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--udid", ""])) { error in
+            let message = HierarchyCommand.message(for: error)
+            XCTAssertFalse(message.contains("Invalid argument"), message)
+            XCTAssertTrue(message.hasPrefix("--udid is empty"), message)
+            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+        }
+        XCTAssertThrowsError(try DumpHierarchyCommand.parse(["--udid", ""])) { error in
+            let message = DumpHierarchyCommand.message(for: error)
+            XCTAssertFalse(message.contains("Invalid argument"), message)
+            XCTAssertEqual(DumpHierarchyCommand.exitCode(for: error), .validationFailure)
+        }
+        XCTAssertThrowsError(try EmulatorCommand.Teardown.parse(["--serial", ""])) { error in
+            let message = EmulatorCommand.Teardown.message(for: error)
+            XCTAssertFalse(message.contains("Invalid argument"), message)
+            XCTAssertEqual(EmulatorCommand.Teardown.exitCode(for: error), .validationFailure)
+        }
+    }
 }

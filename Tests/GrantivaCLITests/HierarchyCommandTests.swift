@@ -1,3 +1,4 @@
+import ArgumentParser
 import Foundation
 import GrantivaCore
 import XCTest
@@ -194,4 +195,23 @@ func XCTAssertThrowsErrorAsync(_ expression: @autoclosure () async throws -> Voi
         try await expression()
         XCTFail("expected an error", file: file, line: line)
     } catch {}
+}
+
+final class HierarchyCommandUsageTests: XCTestCase {
+    /// K40: every enum option lists its values when given a bad one.
+    func testAnInvalidFormatListsTheValidValues() {
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--format", "bogus"])) { error in
+            let message = HierarchyCommand.message(for: error)
+            XCTAssertTrue(message.contains("'xml'") && message.contains("'json'"), message)
+            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+        }
+    }
+
+    /// K41: a negative --timeout is rejected by range, not "Missing value".
+    func testANegativeTimeoutIsTheRangeError() {
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--timeout", "-1"])) { error in
+            XCTAssertEqual(HierarchyCommand.message(for: error), "--timeout must be greater than zero")
+            XCTAssertEqual(HierarchyCommand.exitCode(for: error), .validationFailure)
+        }
+    }
 }

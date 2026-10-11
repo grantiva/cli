@@ -71,12 +71,16 @@ struct TargetOptions: ParsableArguments {
         )
     }
 
-    func resolve(platform: Platform, config: GrantivaConfig?, skipBuild: Bool, appID: String?) async throws -> ResolvedProject {
+    /// `acceptsAppFile: false` for a command without `--app-file` (`build
+    /// build`), so a missing scheme is not answered with advice it rejects.
+    func resolve(
+        platform: Platform, config: GrantivaConfig?, skipBuild: Bool, appID: String?, acceptsAppFile: Bool = true
+    ) async throws -> ResolvedProject {
         switch platform {
         case .ios:
             return try await ResolvedProject.resolve(
                 schemeFlag: scheme, simulatorFlag: simulator, bundleIdFlag: bundleId, config: config,
-                skipBuild: skipBuild, appBundleId: appID
+                skipBuild: skipBuild, appBundleId: appID, acceptsAppFile: acceptsAppFile
             )
         case .android:
             return try Self.resolveAndroid(

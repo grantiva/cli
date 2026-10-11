@@ -1,3 +1,4 @@
+import ArgumentParser
 import Foundation
 import XCTest
 @testable import GrantivaCLI
@@ -180,6 +181,34 @@ final class ConsoleVRTReleasesCommandTests: XCTestCase {
         XCTAssertNoThrow(try ConsoleReleasesCommand.UpdateCommand.parse(["N1", "--title", "x"]))
         XCTAssertThrowsError(try ConsoleReleasesCommand.ListCommand.parse(["--per", "0"]))
         XCTAssertEqual(try ConsoleReleasesCommand.ListCommand.parse(["--app", "com.x", "--page", "2"]).page, 2)
+    }
+
+    /// K50: the option no longer shadows the inherited `--version` flag.
+    func testReleasesUpdateTakesReleaseVersionAndLeavesVersionToTheFlag() throws {
+        XCTAssertEqual(try ConsoleReleasesCommand.UpdateCommand.parse(["NOTE", "--release-version", "2.2.0"]).version, "2.2.0")
+        let help = GrantivaCommand.helpMessage(for: ConsoleReleasesCommand.UpdateCommand.self)
+        XCTAssertEqual(help.components(separatedBy: "--version").count - 1, 1, help)
+        XCTAssertTrue(help.contains("--release-version <release-version>"), help)
+
+        // The old spelling with a value still sets the release version; a
+        // bare --version is left for the version flag.
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "N", "--version", "2.2.0"]),
+            ["console", "releases", "update", "N", "--release-version", "2.2.0"]
+        )
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "N", "--version=2.2.0"]),
+            ["console", "releases", "update", "N", "--release-version=2.2.0"]
+        )
+        XCTAssertEqual(
+            GrantivaCommand.normalizedArguments(["console", "releases", "update", "--version"]),
+            ["console", "releases", "update", "--version"]
+        )
+        XCTAssertEqual(GrantivaCommand.normalizedArguments(["run", "--version", "x"]), ["run", "--version", "x"])
+        XCTAssertThrowsError(try GrantivaCommand.parseAsRoot(["console", "releases", "update", "--version"])) { error in
+            XCTAssertEqual(GrantivaCommand.exitCode(for: error), .success)
+            XCTAssertEqual(GrantivaCommand.message(for: error), grantivaVersion)
+        }
     }
 
     func testReleasesDeleteRefusesWithoutYesOffTTY() async throws {

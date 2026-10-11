@@ -46,11 +46,22 @@ public struct ResolvedProject: Sendable {
 // MARK: - Resolve
 
 extension ResolvedProject {
+    /// What to do when no scheme is known. `--app-file` is offered only to a
+    /// command that takes it (`build build` does not), so the advice never
+    /// names an option the failing command rejects.
+    public static func noSchemeMessage(acceptsAppFile: Bool) -> String {
+        acceptsAppFile
+            ? "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
+            : "No scheme specified. Pass --scheme or set it in grantiva.yml."
+    }
+
     /// Merges CLI flags → grantiva.yml → cache → live auto-detection.
     /// CLI flags and grantiva.yml always win. Cache/detection only fill in missing fields.
     ///
     /// When `skipBuild` is true, scheme is not required (no xcodebuild needed).
     /// When `appBundleId` is provided (derived from a binary), it's used as a fallback for bundle ID.
+    /// `acceptsAppFile` says whether the calling command takes `--app-file`,
+    /// which decides whether the no-scheme error suggests it.
     public static func resolve(
         schemeFlag: String? = nil,
         simulatorFlag: String? = nil,
@@ -60,7 +71,8 @@ extension ResolvedProject {
         loadCache: @Sendable () -> DetectedProject? = { ProjectDetector.loadCache() },
         saveCache: @Sendable (DetectedProject) -> Void = { ProjectDetector.saveCache($0) },
         skipBuild: Bool = false,
-        appBundleId: String? = nil
+        appBundleId: String? = nil,
+        acceptsAppFile: Bool = true
     ) async throws -> ResolvedProject {
         // Start with what we have from flags and config
         let flagScheme = schemeFlag
@@ -102,7 +114,7 @@ extension ResolvedProject {
         // Resolution: flags > config > detected. Detection only picks a scheme
         // when there is exactly one; with several, guessing builds the wrong
         // target silently, so it is the same error as finding none.
-        let noSchemeMessage = "No scheme specified. Pass --scheme, set it in grantiva.yml, or use --app-file to provide a pre-built binary."
+        let noSchemeMessage = Self.noSchemeMessage(acceptsAppFile: acceptsAppFile)
         if flagScheme == nil, configScheme == nil, !skipBuild,
            let found = detected?.schemes, found.count > 1 {
             throw GrantivaError.invalidArgument("\(noSchemeMessage) Found: \(found.joined(separator: ", ")).")

@@ -277,4 +277,37 @@ final class DoctorTests: XCTestCase {
         XCTAssertTrue(checks.contains { $0.name == "Xcode" })
         XCTAssertFalse(DoctorRunner.hasFailures(checks.filter { $0.name.hasPrefix("Android") || $0.name == "adb" || $0.name == "JDK" }))
     }
+
+    func testAdvisoryToolchainChecksAreNeverUnderRequired() async {
+        let checks = await DoctorRunner().runAllChecks(platforms: [.ios, .android], required: false)
+        XCTAssertFalse(checks.contains { $0.section == .required && $0.status != .ok },
+                       "\(checks.filter { $0.section == .required }.map { "\($0.name) \($0.status)" })")
+        for name in ["Xcode", "Xcode Version", "Booted Simulator"] {
+            let check = checks.first { $0.name == name }
+            XCTAssertEqual(check?.section, .advisory, name)
+        }
+    }
+
+    func testBootedSimulatorIsAdvisoryEvenForARequiredProject() async {
+        let checks = await DoctorRunner().runAllChecks(platforms: [.ios], required: true)
+        XCTAssertEqual(checks.first { $0.name == "Booted Simulator" }?.section, .advisory)
+        XCTAssertEqual(checks.first { $0.name == "Xcode" }?.section, .required)
+        XCTAssertEqual(DoctorRunner.noBootedSimulatorCheck(newestIPhone: nil).section, .advisory)
+    }
+
+    func testAdvisorySectionIsPrintedUnderItsOwnHeadingAndEncoded() throws {
+        let checks = [
+            DoctorCheck(name: "Xcode", status: .warning, message: "/nonexistent does not exist", fix: nil, section: .advisory),
+            DoctorCheck(name: "Runner", status: .ok, message: "grantiva-runner x", fix: nil),
+        ]
+        let text = DoctorFormatter(color: false).format(checks)
+        let required = try XCTUnwrap(text.range(of: "  Required\n"))
+        let advisory = try XCTUnwrap(text.range(of: "  Advisory\n"))
+        let xcode = try XCTUnwrap(text.range(of: "Xcode"))
+        XCTAssertLessThan(required.lowerBound, advisory.lowerBound)
+        XCTAssertGreaterThan(xcode.lowerBound, advisory.lowerBound)
+        XCTAssertTrue(text.contains("1 passed · 1 optional"), text)
+        let json = String(data: try JSONEncoder().encode(checks[0]), encoding: .utf8) ?? ""
+        XCTAssertTrue(json.contains(#""section":"Advisory""#), json)
+    }
 }
