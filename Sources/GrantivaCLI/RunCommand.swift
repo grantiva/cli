@@ -382,6 +382,8 @@ struct RunCommand: AsyncParsableCommand {
         }
         try Self.checkFlowFiles(resolved.flows)
 
+        // A default simulator the user created is refused before anything is said or prepared (L08).
+        try await device.checkDefault(for: resolved)
         log(Self.resolvedNarration(platform: platform, resolved: resolved))
 
         // Prepare runner

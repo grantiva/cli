@@ -144,13 +144,34 @@ public struct SimulatorManager: Sendable, Decodable {
     /// slot is reserved or `simctl boot` runs; the refusal names it and how to
     /// pick a simulator (`override`, see `DefaultSimulator.notCreatedRefusal`).
     public func bootDefault(name: String, ephemeral: Bool = false, override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await checkDefault(name: name, override: override)
+        return try await boot(nameOrUDID: device.udid, ephemeral: ephemeral)
+    }
+
+    /// `bootDefault`'s check alone, so a command can refuse before it says
+    /// or prepares anything: the simulator named `name`, if Grantiva created it.
+    @discardableResult
+    public func checkDefault(name: String, override: String = "--simulator") async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: name)
         guard try provenance.contains(udid: device.udid) else {
             throw GrantivaError.invalidArgument(
                 DefaultSimulator.notCreatedRefusal(name: device.name, udid: device.udid, override: override)
             )
         }
-        return try await boot(nameOrUDID: device.udid, ephemeral: ephemeral)
+        return device
+    }
+
+    /// The only booted simulator, as the `--no-build` capture's default
+    /// (nothing named one, no runner session), only if Grantiva created it:
+    /// the same rule as the default name (L08).
+    public func soleBootedDefault(override: String = "--simulator") async throws -> SimulatorDevice {
+        let device = try await soleBootedDevice()
+        guard try provenance.contains(udid: device.udid) else {
+            throw GrantivaError.invalidArgument(DefaultSimulator.notCreatedRefusal(
+                name: device.name, udid: device.udid, override: override, soleBooted: true
+            ))
+        }
+        return device
     }
 
     /// The UDIDs in the created-simulator ledger; empty when it cannot be read.

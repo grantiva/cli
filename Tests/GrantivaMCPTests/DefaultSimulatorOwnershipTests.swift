@@ -74,7 +74,7 @@ final class DefaultSimulatorOwnershipTests: XCTestCase {
         XCTAssertEqual(
             try textContent(of: result),
             "Error: Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
-                + "and Grantiva does not take a simulator you created as its default. Pass the 'simulator' argument \"\(name)\" to use it anyway, "
+                + "and Grantiva does not take a simulator you created as its default. Pass simulator: \"\(name)\" to use it anyway, "
                 + "or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name \"Grantiva \(name)\")."
         )
         XCTAssertFalse(host.commands.contains { $0.hasPrefix("xcrun simctl boot") }, "\(host.commands)")
@@ -83,21 +83,55 @@ final class DefaultSimulatorOwnershipTests: XCTestCase {
         XCTAssertTrue(sessions.isEmpty)
     }
 
+    private func refusal(_ override: String) -> String {
+        let name = DefaultSimulator.name
+        return "Invalid argument: Simulator \"\(name)\" (USER-0001) was not created by Grantiva. It has the default simulator's name, "
+            + "and Grantiva does not take a simulator you created as its default. Pass \(override) \"\(name)\" to use it anyway, "
+            + "or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name \"Grantiva \(name)\")."
+    }
+
+    private func message(_ body: () async throws -> Any) async -> String? {
+        do {
+            _ = try await body()
+            return nil
+        } catch {
+            return (error as? LocalizedError)?.errorDescription
+        }
+    }
+
     func testRunAndTestAndSimBootWithTheDefaultNameRefuseItToo() async throws {
         let host = userOwned
         let (platform, manager, _) = try makePlatform(host, created: [])
-        await XCTAssertThrowsErrorAsync(try await BuildTools.run(device: platform, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:]))
-        await XCTAssertThrowsErrorAsync(try await BuildTools.test(
-            runner: XcodeBuildRunner(execute: host.execute), platform: .ios, config: GrantivaConfig(scheme: "Demo"),
-            simManager: manager, arguments: [:]
-        ))
-        do {
-            _ = try await SimTools.boot(simManager: manager, arguments: [:])
-            XCTFail("expected a refusal")
-        } catch {
-            XCTAssertTrue("\(error.localizedDescription)".contains("Pass the 'name' argument"), "\(error)")
+        let run = await message { try await BuildTools.run(device: platform, platform: .ios, config: GrantivaConfig(scheme: "Demo"), arguments: [:]) }
+        XCTAssertEqual(run, refusal("simulator:"))
+        let test = await message {
+            try await BuildTools.test(
+                runner: XcodeBuildRunner(execute: host.execute), platform: .ios, config: GrantivaConfig(scheme: "Demo"),
+                simManager: manager, arguments: [:]
+            )
         }
+        XCTAssertEqual(test, refusal("simulator:"))
+        let boot = await message { try await SimTools.boot(simManager: manager, arguments: [:]) }
+        XCTAssertEqual(boot, refusal("name:"))
         XCTAssertFalse(host.commands.contains { $0.hasPrefix("xcrun simctl boot") }, "\(host.commands)")
+    }
+
+    /// The `--no-build` capture's default (the sole booted simulator) follows
+    /// the same rule; `grantiva_vrt_capture` without a session runs that capture.
+    func testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt() async throws {
+        let user = Host([.init(name: "Mine", udid: "USER-0002", state: "Booted")])
+        let (refusing, _, _) = try makePlatform(user, created: [])
+        let text = await message { try await refusing.defaultDevice() }
+        XCTAssertEqual(
+            text,
+            "Invalid argument: Simulator \"Mine\" (USER-0002) was not created by Grantiva. It is the only booted simulator, "
+                + "and Grantiva does not take a simulator you created as its default. Pass --simulator \"Mine\" to use it anyway, "
+                + "or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name \"Grantiva Mine\")."
+        )
+        let ours = Host([.init(name: "qa", udid: "OURS-2", state: "Booted")])
+        let (using, _, _) = try makePlatform(ours, created: ["OURS-2"])
+        let device = try await using.defaultDevice()
+        XCTAssertEqual(device.udid, "OURS-2")
     }
 
     func testANamedSimulatorIsUsedAsBeforeEvenWithTheDefaultName() async throws {
@@ -137,13 +171,4 @@ final class DefaultSimulatorOwnershipTests: XCTestCase {
         XCTAssertFalse(try BuildTools.resolvedProject(platform: .ios, config: GrantivaConfig(scheme: "D", simulator: "x"), arguments: [:]).simulatorIsDefault)
         XCTAssertFalse(try BuildTools.resolvedProject(platform: .ios, config: nil, arguments: ["scheme": .string("D"), "simulator": .string("x")]).simulatorIsDefault)
     }
-}
-
-func XCTAssertThrowsErrorAsync<T>(
-    _ expression: @autoclosure () async throws -> T, file: StaticString = #filePath, line: UInt = #line
-) async {
-    do {
-        _ = try await expression()
-        XCTFail("expected an error", file: file, line: line)
-    } catch {}
 }

@@ -137,7 +137,7 @@ enum BuildTools {
     }
 
     /// How these tools name a simulator, for the default-simulator refusal.
-    static let simulatorOverride = "the 'simulator' argument"
+    static let simulatorOverride = "simulator:"
 
     private static func toolError(_ message: String) -> CallTool.Result {
         CallTool.Result(content: [.text(text: "Error: \(message)", annotations: nil, _meta: nil)], isError: true)

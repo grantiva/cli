@@ -47,8 +47,10 @@ same conditions without that label.
 installed iPhone type (for example `iPhone 18 Pro`). That is a stock name, so it may be a simulator you
 created for something else: the default is used only when Grantiva created that simulator (it is in
 Grantiva's created-simulator ledger, see the README). Otherwise the call boots nothing and returns
-``Error: Invalid argument: Simulator "iPhone 18 Pro" (<udid>) was not created by Grantiva. It has the default simulator's name, and Grantiva does not take a simulator you created as its default. Pass the 'simulator' argument "iPhone 18 Pro" to use it anyway, or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name "Grantiva iPhone 18 Pro").``
-(`grantiva_sim_boot` names its `name` argument). A simulator you name is used as named. Every
+``Error: Invalid argument: Simulator "iPhone 18 Pro" (<udid>) was not created by Grantiva. It has the default simulator's name, and Grantiva does not take a simulator you created as its default. Pass simulator: "iPhone 18 Pro" to use it anyway, or set simulator: in grantiva.yml (create one with grantiva simulator ensure --name "Grantiva iPhone 18 Pro").``
+(`grantiva_sim_boot` says `Pass name: "iPhone 18 Pro"`). `grantiva_vrt_capture` without a session
+captures on the only booted simulator when the config names none, under the same rule: a sole booted
+simulator Grantiva did not create is refused (`It is the only booted simulator, ...`). A simulator you name is used as named. Every
 `grantiva_build`, `grantiva_run` and `grantiva_test` result on iOS names the simulator it used:
 `Simulator: <name> (<udid>)` (`Device: <name> (<serial>)` for `grantiva_run` on Android; an Android
 `grantiva_build` boots nothing). The CLI's `run`, `build`, `diff capture`, `ci` and `runner start`

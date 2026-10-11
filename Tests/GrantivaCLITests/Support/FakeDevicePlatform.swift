@@ -25,7 +25,26 @@ final class FakeDevicePlatform: DevicePlatform, @unchecked Sendable {
     }
 
     func bootDevice(named nameOrID: String) async throws -> BootedDevice {
-        record("bootDevice(\(nameOrID))"); return BootedDevice(udid: bootedID, name: bootedName)
+        record("bootDevice(\(nameOrID))")
+        if let bootFailure { throw bootFailure }
+        return BootedDevice(udid: bootedID, name: bootedName)
+    }
+
+    /// Thrown by `bootDevice` / `bootDefaultDevice` when set.
+    var bootFailure: Error?
+    /// Thrown by `checkDefaultDevice` and `bootDefaultDevice` when set: the
+    /// refusal of a default simulator Grantiva did not create.
+    var defaultRefusal: Error?
+
+    func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
+        record("bootDefaultDevice(\(name))")
+        if let error = defaultRefusal ?? bootFailure { throw error }
+        return BootedDevice(udid: bootedID, name: bootedName)
+    }
+
+    func checkDefaultDevice(named name: String, override: String) async throws {
+        record("checkDefaultDevice(\(name))")
+        if let defaultRefusal { throw defaultRefusal }
     }
     func attachedDevice(serial: String) async throws -> BootedDevice {
         record("attachedDevice(\(serial))"); return BootedDevice(udid: serial, name: bootedName)

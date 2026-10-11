@@ -107,7 +107,7 @@ enum SimTools {
         let device = if let name = arguments["name"]?.stringValue {
             try await simManager.boot(nameOrUDID: name)
         } else {
-            try await simManager.bootDefault(name: DefaultSimulator.name, override: "the 'name' argument")
+            try await simManager.bootDefault(name: DefaultSimulator.name, override: "name:")
         }
 
         return CallTool.Result(

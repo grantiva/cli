@@ -271,8 +271,9 @@ installed and only the build is skipped (`build install`, `run`, `diff capture`,
 `ci run` alike).
 `diff capture --no-build` drives the simulator named by `--simulator`, else
 `simulator:` in grantiva.yml, else the live runner session's device, else the one
-booted simulator. With several booted and none of those set, it fails and names
-them rather than guessing. `diff capture --no-build --app-file <file>` instead
+booted simulator, which is used only if Grantiva created it (a simulator you
+created is refused, named, with `--simulator` as the remedy). With several booted
+and none of those set, it fails and names them rather than guessing. `diff capture --no-build --app-file <file>` instead
 boots the resolved device and installs the file, as a capture without
 `--no-build` does.
 When the device it drives is the one a live
@@ -597,7 +598,9 @@ never recorded and never deleted by Grantiva, and never used as the default: whe
 nothing names a simulator (no `--simulator`, no `simulator:` in `grantiva.yml`),
 `run`, `build`, `diff capture`, `ci`, `runner start` and the MCP tools use the
 default name (the newest installed iPhone type) only if Grantiva created that
-simulator, and otherwise stop with an error naming it and `--simulator`.
+simulator, and otherwise stop with an error naming it and `--simulator`, before
+preparing anything. `diff capture --no-build` applies the same rule to its
+fallback, the only booted simulator.
 
 The ledger and the capacity records beside it (`sessions.json`) belong to the
 runner home. With the default home (`~/.grantiva/runner`) they stay in

@@ -28,6 +28,10 @@ public struct IOSPlatform: DevicePlatform {
         return BootedDevice(udid: device.udid, name: device.name)
     }
 
+    public func checkDefaultDevice(named name: String, override: String) async throws {
+        try await simulators.checkDefault(name: name, override: override)
+    }
+
     public func bootDefaultDevice(named name: String, override: String) async throws -> BootedDevice {
         let device = try await simulators.bootDefault(name: name, ephemeral: true, override: override)
         return BootedDevice(udid: device.udid, name: device.name)
@@ -111,7 +115,8 @@ public struct IOSPlatform: DevicePlatform {
     }
 
     public func defaultDevice() async throws -> BootedDevice {
-        let device = try await simulators.soleBootedDevice()
+        // Only one Grantiva created: the sole booted simulator may be the user's (L08).
+        let device = try await simulators.soleBootedDefault()
         return BootedDevice(udid: device.udid, name: device.name)
     }
 

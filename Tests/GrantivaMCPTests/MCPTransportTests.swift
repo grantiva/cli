@@ -166,12 +166,14 @@ final class MCPCancellationTests: XCTestCase {
 
     /// Sends `lines` (each after its delay) to a server whose one tool sleeps
     /// 1 s and then returns an isError result, and returns the reply ids.
-    private func replyIDs(_ lines: [(delay: UInt64, line: String)], expect: Int) async throws -> [String] {
+    private func replyIDs(
+        _ lines: [(delay: UInt64, line: String)], expect: Int, toolSleeps: UInt64 = 1_000_000_000
+    ) async throws -> [String] {
         let (clientSide, serverSide) = await InMemoryTransport.createConnectedPair()
         let server = Server(name: "grantiva-test", version: "0.0.0", capabilities: .init(tools: .init(listChanged: false)))
         await server.withMethodHandler(ListTools.self) { _ in ListTools.Result(tools: []) }
         await GrantivaMCPServer.registerToolCalls(on: server) { _, _ in
-            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            if toolSleeps > 0 { try? await Task.sleep(nanoseconds: toolSleeps) }
             return CallTool.Result(content: [.text(text: "Error: late", annotations: nil, _meta: nil)], isError: true)
         }
         try await server.start(transport: ValidatingTransport(wrapping: serverSide))
@@ -206,6 +208,29 @@ final class MCPCancellationTests: XCTestCase {
     func testACancelWhileTheToolRunsYieldsNoResponse() async throws {
         let ids = try await replyIDs([(0, call10), (200, cancel10), (0, list11)], expect: 2)
         XCTAssertEqual(ids.sorted(), ["1", "11"])
+    }
+
+    /// A tool that fails in milliseconds and never sees the cancellation:
+    /// the SDK handles a batch's request before its cancel, so only the
+    /// transport's drop keeps the answer from the client.
+    func testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch() async throws {
+        let batch = "[" + call10 + "," + cancel10 + "]"
+        let ids = try await replyIDs([(0, batch), (0, list11)], expect: 2, toolSleeps: 0)
+        XCTAssertEqual(ids.sorted(), ["1", "11"])
+    }
+
+    func testTheTrackerDropsOnlyACancelledPendingRequestsAnswer() {
+        var tracker = CancellationTracker()
+        XCTAssertEqual(tracker.incoming(Data(call10.utf8)), [.none])
+        XCTAssertEqual(tracker.incoming(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":"10"}}"#.utf8)), [])
+        let notes = tracker.incoming(Data(cancel10.utf8))
+        XCTAssertEqual(notes.count, 1)
+        let answer10 = Data(#"{"jsonrpc":"2.0","id":10,"result":{"content":[],"isError":true}}"#.utf8)
+        let answer11 = Data(#"{"jsonrpc":"2.0","id":11,"result":{"tools":[]}}"#.utf8)
+        XCTAssertNil(tracker.outgoing(answer10))
+        XCTAssertEqual(tracker.outgoing(answer11), answer11)
+        // Answered (dropped) once: a later id 10 is no longer cancelled.
+        XCTAssertEqual(tracker.outgoing(answer10), answer10)
     }
 
     func testACancelForAnUnknownIDIsIgnored() async throws {
