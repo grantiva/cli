@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-026
+$ $GRANTIVA doctor
+# exit=0 elapsed=.232s -> doctor.out / doctor.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-026
+$ env -u JAVA_HOME DEVELOPER_DIR=/nonexistent $GRANTIVA doctor | tail -25
+# exit=0 elapsed=.091s -> doctor_nojava.out / doctor_nojava.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-026
+$ env -u JAVA_HOME DEVELOPER_DIR=/nonexistent $GRANTIVA doctor >/dev/null; echo doctor_rc=$?
+# exit=0 elapsed=.106s -> doctor_nojava_rc.out / doctor_nojava_rc.err

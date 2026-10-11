@@ -1,0 +1,9 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-014
+$ $GRANTIVA doctor > out.txt; echo rc=$?; grep -c $'' out.txt; cat out.txt
+# exit=0 elapsed=.249s -> redirect.out / redirect.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-014
+$ script -q tty.txt $GRANTIVA doctor >/dev/null; grep -c $'\[' tty.txt
+# exit=0 elapsed=.257s -> tty.out / tty.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-014
+$ NO_COLOR=1 script -q tty_nc.txt $GRANTIVA doctor >/dev/null; grep -c $'\[' tty_nc.txt
+# exit=1 elapsed=.251s -> tty_nocolor.out / tty_nocolor.err

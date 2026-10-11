@@ -1,0 +1,22 @@
+     1	scheme: "Landmarks (UI Testing)"
+     2	simulator: 00000000-0000-0000-0000-0000000000C1
+     3	bundle_id: com.kylebrowning.Landmarks
+     4	screens:
+     5	  - name: Launch
+     6	    path: launch
+     7	  - name: Steps
+     8	    path:
+     9	      - tap: "Favorites"
+    10	      - tap: {text: "Landmarks", exact: true}
+    11	      - swipe: up
+    12	      - swipe: down
+    13	      - swipe: left
+    14	      - swipe: right
+    15	      - swipe: UP
+    16	      - type: "hello"
+    17	      - wait: 1
+    18	      - assert_visible: "Landmarks"
+    19	      - assert_visible: {text: "Landmarks", exact: true}
+    20	      - assert_not_visible: "Nope"
+    21	      - assert_not_visible: {text: "Nope", exact: true}
+    22	      - run_flow: "sub/flow.yaml"

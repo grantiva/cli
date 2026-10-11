@@ -1,0 +1,24 @@
+OVERVIEW: End a managed session, or reclaim one simulator by UDID when no
+ledger entry exists.
+
+USAGE: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --session-id <session-id>
+                          Ticket/session identifier to shut down and release.
+  --udid <udid>           Simulator UDID to reclaim. Use with --force when a
+                          run was killed and left processes owning the device.
+  --force                 Reclaim by live process inspection instead of the
+                          session ledger: kills the grantiva-runner,
+                          WebDriverAgent xcodebuild, and simctl diagnose
+                          processes holding the simulator, breaks the lease,
+                          and reconciles the session registry.
+  --version               Show the version.
+  -h, --help              Show help information.
+

@@ -1,0 +1,12 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-039
+$ cat -n grantiva.yml
+# exit=0 elapsed=.010s -> cat.out / cat.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-039
+$ $GRANTIVA run --no-build --simulator 00000000-0000-0000-0000-0000000000C1
+# exit=1 elapsed=.131s -> run.out / run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-039
+$ $GRANTIVA doctor | sed -n "/Project/,/CI/p"
+# exit=0 elapsed=.188s -> doctor.out / doctor.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-cli/CLI-039
+$ $GRANTIVA doctor --json | jq -c ".[] | select(.section==\"Project\")"
+# exit=0 elapsed=.180s -> doctor_json.out / doctor_json.err

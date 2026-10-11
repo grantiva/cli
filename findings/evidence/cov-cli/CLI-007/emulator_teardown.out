@@ -1,0 +1,18 @@
+OVERVIEW: Kill emulators Grantiva started: one by serial, or all of them. Stops
+the UIAutomator2 server and removes the serial's adb forwards first.
+
+USAGE: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --serial <serial>       Emulator serial to kill, e.g. emulator-5554.
+  --all                   Kill every emulator Grantiva started.
+  --force                 Kill the serial even though Grantiva did not start it.
+  --version               Show the version.
+  -h, --help              Show help information.
+
