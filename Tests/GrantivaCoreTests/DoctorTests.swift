@@ -368,4 +368,19 @@ final class DoctorTests: XCTestCase {
         }
         XCTAssertEqual(Set(checks.map(\.name)), ["Runner", "Android AVDs", "Running Emulator", "Booted Simulator"])
     }
+
+    // MARK: - K62: the status values README's jq filter selects on
+
+    /// README documents `select(.status == "error")` and names these three
+    /// values; renaming one must break this test and prompt a README update.
+    func testTheEncodedStatusesAreExactlyOkWarningAndError() throws {
+        XCTAssertEqual(DoctorCheck.Status.allCases.map(\.rawValue), ["ok", "warning", "error"])
+        for status in DoctorCheck.Status.allCases {
+            let check = DoctorCheck(name: "X", status: status, message: "m", fix: nil)
+            let json = String(decoding: try JSONEncoder().encode(check), as: UTF8.self)
+            XCTAssertTrue(json.contains(#""status":"\#(status.rawValue)""#), json)
+        }
+        XCTAssertFalse(DoctorRunner.hasFailures([DoctorCheck(name: "X", status: .warning, message: "m", fix: nil)]))
+        XCTAssertTrue(DoctorRunner.hasFailures([DoctorCheck(name: "X", status: .error, message: "m", fix: nil)]))
+    }
 }

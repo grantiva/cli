@@ -8,7 +8,7 @@ import Foundation
 /// decorations destroys the two things callers do with this text:
 ///
 ///     udid=$(grantiva simulator ensure --name "iPhone 17")
-///     grantiva doctor --json | jq '.[] | select(.status == "fail")'
+///     grantiva doctor --json | jq '.[] | select(.status == "error")'
 ///
 /// A command substitution captures stdout verbatim, and `jq` refuses anything
 /// that is not a bare JSON document. Both broke in 1.7.0, when `ensure` put a

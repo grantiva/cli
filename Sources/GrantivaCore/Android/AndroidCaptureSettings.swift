@@ -32,10 +32,25 @@ public struct AndroidCaptureSettings: Sendable {
 
     private let adb: ADB
     private let stateDirectory: String
+    private let reconnectTimeout: TimeInterval
+    private let absentGrace: TimeInterval
+    private let pollInterval: Duration
 
-    public init(adb: ADB, stateDirectory: String = ".grantiva") {
+    /// `reconnectTimeout` bounds the wait for a device that left adb during a
+    /// restore (a freshly booted emulator's adbd restarts once shortly after
+    /// boot); `absentGrace` is the shorter wait for a serial adb did not list
+    /// at all when the restore started; `pollInterval` is how often `adb
+    /// devices` is read meanwhile.
+    public init(
+        adb: ADB, stateDirectory: String = ".grantiva",
+        reconnectTimeout: TimeInterval = 30, absentGrace: TimeInterval = 5,
+        pollInterval: Duration = .milliseconds(500)
+    ) {
         self.adb = adb
         self.stateDirectory = stateDirectory
+        self.reconnectTimeout = reconnectTimeout
+        self.absentGrace = absentGrace
+        self.pollInterval = pollInterval
     }
 
     public static func statePath(serial: String, directory: String = ".grantiva") -> String {
@@ -66,26 +81,107 @@ public struct AndroidCaptureSettings: Sendable {
     /// Exits demo mode and writes the saved values back. Never throws: a
     /// failed restore is logged and the state file is still removed so the
     /// next run does not loop on it.
-    public func restore(serial: String) async {
+    ///
+    /// No state file means `prepare` never changed the device, so nothing is
+    /// sent. A device that leaves adb mid-restore (`device '<serial>' not
+    /// found`, `device offline`) is waited on once, for up to
+    /// `reconnectTimeout`, and the failed command is retried. A device adb
+    /// does not list at all when the restore starts gets only
+    /// `absentGrace` to appear, so a dead emulator fails fast. A device that
+    /// does not come back, or leaves again, gets a single warning and nothing
+    /// more is sent to it. Returns the warnings it logged.
+    @discardableResult
+    public func restore(serial: String) async -> [String] {
         let path = Self.statePath(serial: serial, directory: stateDirectory)
+        guard FileManager.default.fileExists(atPath: path) else { return [] }
+        defer { try? FileManager.default.removeItem(atPath: path) }
         let saved = (try? Data(contentsOf: URL(fileURLWithPath: path)))
             .flatMap { try? JSONDecoder().decode([String: String?].self, from: $0) } ?? [:]
-        _ = try? await adb.shell(serial: serial, "am broadcast -a com.android.systemui.demo -e command exit")
+
+        var commands: [(id: String?, command: String)] = [(nil, "am broadcast -a com.android.systemui.demo -e command exit")]
         for setting in Self.trackedSettings {
             guard let entry = saved[setting.id] else { continue }
-            let command: String
             if let value = entry {
-                command = "settings put \(setting.namespace) \(setting.key) \(value)"
+                commands.append((setting.id, "settings put \(setting.namespace) \(setting.key) \(value)"))
             } else {
-                command = "settings delete \(setting.namespace) \(setting.key)"
-            }
-            do {
-                try await adb.shell(serial: serial, command)
-            } catch {
-                GrantivaLog.logger.warning("could not restore \(setting.id) on \(serial): \(error)")
+                commands.append((setting.id, "settings delete \(setting.namespace) \(setting.key)"))
             }
         }
-        try? FileManager.default.removeItem(atPath: path)
+
+        var warnings: [String] = []
+        func warn(_ message: String) {
+            GrantivaLog.logger.warning("\(message)")
+            warnings.append(message)
+        }
+        func gone(_ detail: String) -> [String] {
+            warn("could not restore Android settings on \(serial): the device \(detail)")
+            return warnings
+        }
+
+        // A serial adb does not list at all is most likely a dead emulator:
+        // give it a short grace rather than the full reconnect wait.
+        var waitLimit = reconnectTimeout
+        if let devices = try? await adb.devices(), !devices.contains(where: { $0.serial == serial }) {
+            waitLimit = min(absentGrace, reconnectTimeout)
+        }
+
+        var waited = false
+        for (id, command) in commands {
+            do {
+                try await adb.shell(serial: serial, command)
+                continue
+            } catch where Self.deviceLeftAdb(error) && !waited {
+                waited = true
+                guard await waitForDevice(serial: serial, timeout: waitLimit) else {
+                    return gone("left adb and did not come back within \(Self.seconds(waitLimit)) s")
+                }
+                do {
+                    try await adb.shell(serial: serial, command)
+                } catch where Self.deviceLeftAdb(error) {
+                    return gone("left adb again")
+                } catch {
+                    if let id { warn("could not restore \(id) on \(serial): \(error)") }
+                }
+            } catch where Self.deviceLeftAdb(error) {
+                return gone("left adb again")
+            } catch {
+                // Exiting demo mode is best effort, as before.
+                if let id { warn("could not restore \(id) on \(serial): \(error)") }
+            }
+        }
+        return warnings
+    }
+
+    private static func seconds(_ interval: TimeInterval) -> String {
+        interval >= 1 ? String(Int(interval)) : String(format: "%.2f", interval)
+    }
+
+    /// adb's own wordings for a device that is not (or no longer) attached.
+    /// Only adb's phrasing counts: a command that ran on the device and
+    /// printed "not found" (`settings: not found`) is an ordinary failure.
+    /// `error: closed` is adb's transport dropping mid-command and `device
+    /// still connecting` a device coming back; both clear once it is back.
+    static func deviceLeftAdb(_ error: Error) -> Bool {
+        let text: String
+        if case GrantivaError.commandFailed(let message, _) = error { text = message } else { text = "\(error)" }
+        if text.range(of: #"device '[^']*' not found"#, options: .regularExpression) != nil { return true }
+        return ["device offline", "no devices/emulators found", "error: closed", "device still connecting"]
+            .contains { text.contains($0) }
+    }
+
+    /// Polls `adb devices` until `serial` is listed as `device`, for up to
+    /// `timeout`.
+    private func waitForDevice(serial: String, timeout: TimeInterval) async -> Bool {
+        let clock = ContinuousClock()
+        let deadline = clock.now.advanced(by: .milliseconds(Int(timeout * 1000)))
+        GrantivaLog.logger.info("\(serial) left adb; waiting up to \(Self.seconds(timeout)) s for it to come back before restoring settings")
+        while true {
+            if let devices = try? await adb.devices(), devices.contains(where: { $0.serial == serial && $0.isUsable }) {
+                return true
+            }
+            if clock.now >= deadline { return false }
+            try? await Task.sleep(for: pollInterval)
+        }
     }
 
     /// A state file at the start of a run means the previous run crashed

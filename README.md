@@ -20,8 +20,14 @@ brew install grantiva/tap/grantiva
 git clone https://github.com/grantiva/cli.git
 cd cli
 swift build -c release
-cp .build/release/grantiva /usr/local/bin/grantiva
+cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/
 ```
+
+Copy `grantiva_GrantivaCore.bundle` together with the binary and keep the two side by side: the bundle carries the
+embedded runner, and `grantiva runner install` (and every command that needs a device) extracts it from beside the
+`grantiva` executable. A binary copied on its own fails with `The grantiva_GrantivaCore.bundle resource bundle was not
+found next to the grantiva executable`. To install into a prefix instead, copy both into one directory and link the
+binary onto your `PATH`.
 
 **Requirements:** macOS 15+, Xcode 16+, Swift 6.1+
 
@@ -89,7 +95,7 @@ grantiva hierarchy > state.xml
   `status` is `interrupted` after Ctrl-C (or `kill -INT`/`-TERM`) and `failed` after a `--timeout` kill; either way a flow the run never finished is listed as `interrupted` or `failed`, never `running`. `reportDir` is present whenever `--report-dir` was given and the directory exists, pass or fail: the default report directory is deleted when the run exits. When a run has both `screens:` and `flows:`, `flows` lists the screens session as `screens` ahead of the flows.
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
-- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<runner version>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed runner version, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown; when the owner is a `grantiva runner start` session the message says so and names `grantiva runner stop`. A run's lease file (`<runner home>/locks/<udid>.lock`) is removed when the run ends, and a deleted simulator's when it is deleted.
+- **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<stamp>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner` and `<stamp>` is the installed runner's stamp: the runner version plus the bundled Android driver tag, such as `1.1.28-grantiva.10+android-drivers-2`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed `versions/<stamp>/`, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown; when the owner is a `grantiva runner start` session the message says so and names `grantiva runner stop`. A run's lease file (`<runner home>/locks/<udid>.lock`) is removed when the run ends, and a deleted simulator's when it is deleted.
 - **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
 - **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs. Without `--report-dir`, `run` writes its `takeScreenshot` shots and the failure screenshot (`failure-<timestamp>.png`) to `.grantiva/run-captures/` (`.grantiva/run-captures/android/` on Android), never to `.grantiva/captures/`, so `diff approve` and `diff compare` never take a run artefact for a screen. With `--report-dir`, `trailing` also trims the report directory's `assets/` and `allure-results/` to that set. Step shots go to `captures/trace/`; only `takeScreenshot` captures are listed as screenshots.
@@ -423,11 +429,13 @@ neither sees the other's output:
 
 ```bash
 udid=$(grantiva simulator ensure --name "iPhone 17 Pro")
-grantiva doctor --json | jq '.[] | select(.status == "fail")'
+grantiva doctor --json | jq '.[] | select(.status == "error")'
 ```
 
+Each doctor check's `status` is `ok`, `warning` or `error`. Only `error` makes `grantiva doctor` exit non-zero;
+a `warning` (an advisory check such as no booted simulator) never does.
+
 Every `--json` document, and the `--ready-file` file, uses camelCase keys.
-(`runner start` and `runner stop` complete the rule in a sibling change.)
 
 Some documents used snake_case keys before. For one deprecation period they
 write each of those values twice, under the camelCase key and under the old
@@ -560,8 +568,23 @@ leaves the simulator itself alone, and reports the homes in an entry with `udid`
 and `deviceHomesRemoved` but no `session`.
 
 A simulator held by a `grantiva runner start` session is released with
-`grantiva runner stop`, from the directory that started it; `teardown --force`
-is only for a session whose runner was killed.
+`grantiva runner stop`, from the directory that started it. `simulator teardown`
+(with or without `--force`) also stops a runner session it finds on a simulator
+it tears down, a `runner start` or a `run --keep-alive` one, before tearing the
+simulator down, removes that session's files, and reports it as
+`runnerSessionStopped` in `--json`.
+
+### Simulators Grantiva created
+
+Every simulator `simulator ensure` creates is recorded in
+`~/.grantiva/simulator-capacity/created.json`. Simulators you created yourself are
+never recorded and never deleted by Grantiva. `simulator teardown --session-id`
+deletes the Grantiva-created simulators of that session and only shuts down the
+ones it booted but did not create (`deleted` in `--json`). `grantiva simulator
+cleanup` deletes every Grantiva-created simulator that is shut down and not part
+of an active session, and drops ledger entries for simulators that no longer
+exist; it is safe to run at any time, for example from a scheduled job. Concurrent
+`ensure` calls for the same new name create one simulator, not two.
 
 Override the host policy with `GRANTIVA_MAX_SIMULATORS` and
 `GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS`. Only simulators Grantiva boots count

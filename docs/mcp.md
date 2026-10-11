@@ -25,6 +25,15 @@ with `Error: `, never as a JSON-RPC error: a missing simulator or AVD, a refused
 a missing config file, a VRT command that fails. JSON-RPC errors are left for protocol faults (an
 unknown method, a malformed request). Cancelling a call still cancels it.
 
+The texts read as follows. With no session, a session tool says
+``Error: No active runner session at <project>/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in <project>.``
+(adding how many keep-alive sessions from another directory or platform were ignored, when there
+were any). A failure caused by an argument, such as a simulator or AVD that does not exist or an AVD
+that is still running, carries the label `Invalid argument: ` after `Error: `, for example
+`Error: Invalid argument: Simulator not found: "no-such-sim"` or
+``Error: Invalid argument: AVD "x" is running as emulator-5554. Run `grantiva emulator teardown --serial emulator-5554` first.``
+The resource reads below report the same conditions without that label.
+
 Tools that need a config file (`grantiva_build`, `grantiva_run`, `grantiva_test`, `grantiva_vrt_capture`)
 return an error naming the file and where it was looked for, for example
 `grantiva.yml not found at /path/to/project/grantiva.yml. Create one with grantiva init.` A `scheme`
