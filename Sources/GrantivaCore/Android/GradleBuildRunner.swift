@@ -62,7 +62,12 @@ public struct GradleBuildRunner: Sendable {
         } catch let error as GrantivaError {
             guard case .commandFailed(let message, _) = error else { throw error }
             let lines = message.components(separatedBy: "\n")
-            let errors = Self.errorLines(lines)
+            var errors = Self.errorLines(lines)
+            if let available = await availableTargetsLine(
+                errors: errors, projectRoot: projectRoot, module: module, javaHome: javaHome
+            ) {
+                errors.append(available)
+            }
             return BuildResult(
                 success: false, duration: Date().timeIntervalSince(start),
                 warnings: lines.filter { Self.isWarningLine($0) },
@@ -83,6 +88,64 @@ public struct GradleBuildRunner: Sendable {
             warnings: warnings, errors: [], productPath: apk,
             applicationId: located.metadata.applicationId
         )
+    }
+
+    /// The longest the variant or module lookup may take before the hint
+    /// alone is reported.
+    static let listingTimeoutSeconds = 60
+
+    /// For an unknown variant or module (L41): one extra Gradle call, bounded
+    /// by `listingTimeoutSeconds`, that lists what exists:
+    /// `Variants of :app: freeDebug, ….` or `Modules: app.` Nil for any other
+    /// failure, or when the listing fails (the hint then stands alone).
+    func availableTargetsLine(errors: [String], projectRoot: String, module: String, javaHome: String?) async -> String? {
+        let unknownModule = errors.contains { $0.contains("not found in root project") }
+        let unknownTask = errors.contains { $0.contains("Cannot locate tasks that match") }
+        guard unknownModule || unknownTask else { return nil }
+        let task = unknownModule ? "projects" : ":\(Self.normalizedModule(module)):tasks"
+        var parts = ["cd \(shellQuoted(projectRoot)) &&"]
+        if let javaHome { parts.append("JAVA_HOME=\(shellQuoted(javaHome))") }
+        // perl's alarm bounds the call: macOS has no timeout(1).
+        parts.append("perl -e 'alarm shift; exec @ARGV' \(Self.listingTimeoutSeconds)")
+        parts.append(fileManager.fileExists(atPath: "\(projectRoot)/gradlew") ? "./gradlew" : "gradle")
+        parts += ["-q", shellQuoted(task)] + (unknownModule ? [] : ["--all"]) + ["--console=plain"]
+        guard let output = try? await execute(parts.joined(separator: " ")) else { return nil }
+        if unknownModule {
+            let modules = Self.modules(fromProjectsListing: output)
+            return modules.isEmpty ? nil : "Modules: \(modules.joined(separator: ", "))."
+        }
+        let variants = Self.variants(fromTasksListing: output)
+        return variants.isEmpty ? nil : "Variants of :\(Self.normalizedModule(module)): \(variants.joined(separator: ", "))."
+    }
+
+    /// The buildable variants in `./gradlew :<module>:tasks --all`: each
+    /// `assemble<Variant>` task, without test variants and without the
+    /// aggregates (`assembleFree`, `assembleDebug`) that name only a flavor
+    /// or a build type of a longer variant.
+    static func variants(fromTasksListing output: String) -> [String] {
+        let testSuffixes = ["AndroidTest", "UnitTest", "TestFixtures"]
+        let names = output.components(separatedBy: "\n").compactMap { line -> String? in
+            let task = line.trimmingCharacters(in: .whitespaces).prefix { !$0.isWhitespace }
+            guard task.hasPrefix("assemble"), task.count > "assemble".count else { return nil }
+            let suffix = String(task.dropFirst("assemble".count))
+            guard suffix.first?.isUppercase == true, !testSuffixes.contains(where: { suffix.hasSuffix($0) }) else { return nil }
+            return suffix
+        }
+        let unique = names.reduce(into: [String]()) { if !$0.contains($1) { $0.append($1) } }
+        let full = unique.filter { name in
+            !unique.contains { $0 != name && ($0.hasPrefix(name) || $0.hasSuffix(name)) }
+        }
+        return full.map { $0.prefix(1).lowercased() + $0.dropFirst() }.sorted()
+    }
+
+    /// The module paths in `./gradlew projects` (`+--- Project ':app'`).
+    static func modules(fromProjectsListing output: String) -> [String] {
+        output.components(separatedBy: "\n").compactMap { line in
+            guard let start = line.range(of: "Project ':") else { return nil }
+            let rest = line[start.upperBound...]
+            guard let end = rest.firstIndex(of: "'") else { return nil }
+            return String(rest[..<end])
+        }
     }
 
     static func isWarningLine(_ line: String) -> Bool {
