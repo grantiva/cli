@@ -349,3 +349,42 @@ Error: No captures found in No capture found for "Home; touch …/pwn-cov". Run:
 | B-C10.1 | pass | FLOWS-26/16-setpermissions.*, B-C10.2/ | `setPermissions` (header appId) and bare `scroll` (`scroll: DOWN`) both pass |
 | B-C10.2 | pass | B-C10.2/ | from a dir with no config and no --bundle-id: `Resolved: scheme=(none)`, the flow's appId used, setPermissions + scroll pass, exit 0 |
 | B-C01.2 | pass | B-C01.2/ | `runner install` (`Extracting runner...`, `Runner installed at …`) while flow 11 held the lease: flow passed; every file under locks/ and reports/, both grantiva-wda.xcconfig files and version files have identical hashes before and after |
+| IOS-201@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 01 `tapOn: "Golden Gate Bridge"` passes |
+| IOS-202@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: `{text:, exact}` and `{text:, index}` taps pass |
+| IOS-203@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: `assertVisible/tapOn: id="clock"` pass |
+| IOS-204@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: regex tap and asserts pass, `assertNotVisible: "Lake"` passes |
+| IOS-205@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: exact assertNotVisible and exact taps pass; no not-supported warning |
+| IOS-206@27.0 | pass | FLOWS-27/02-exact-negative.* | 27.0: fails at the exact assert naming `Golden Gate.*`, exit 1 |
+| IOS-207@27.0 | pass | FLOWS-27/01-selectors.* | 27.0: index 1 opens Mono Lake (step line omits the index, as on 26.0) |
+| IOS-208@27.0 | fail | FLOWS-27/04-point-taps.* | 27.0: `Last tap: center`/`Taps: 1` pass, but each point tap prints `✓ tapOn:  (1.1s)` with no target (as IOS-208) |
+| IOS-209@27.0 | pass | FLOWS-27/04-point-taps.* | 27.0: `100%,100%` and `0%,0%` taps ✓ |
+| IOS-210@27.0 | pass | FLOWS-27/03-gesture-lab-taps.* | 27.0: `Double taps: 1`, `Taps: 1` |
+| IOS-211@27.0 | pass | FLOWS-27/03-gesture-lab-taps.* | 27.0: `Long presses: 1` |
+| IOS-212@27.0 | pass | FLOWS-27/03-edit.*, $S/rep/27/03-edit | 27.0: `Golden Gate Bridge Renamed` visible; inputText has no `warning` in report |
+| IOS-213@27.0 | pass | FLOWS-27/15-input-unicode.* | 27.0: unicode text appended unmangled |
+| IOS-214@27.0 | pass | IOS-118/, FLOWS-27/01-selectors.* | 27.0: all assertVisible forms pass |
+| IOS-215@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 05 passes |
+| IOS-216@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: four directions each read back |
+| IOS-217@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 02 (swipe from Lake Tahoe) passes |
+| IOS-218@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: swipe UP from `{id: gesture-pad}` → `Last swipe: up` |
+| IOS-219@27.0 | fail | FLOWS-27/07-swipe-from-missing.* | 27.0: `✗ swipe: LEFT … Element not found: text='No Such Row'` (no "for swipe"), exit 1 |
+| IOS-220@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: start/end % swipe → `Last swipe: left` |
+| IOS-221@27.0 | pass | FLOWS-27/06-swipe-absolute.* | 27.0: outcome (a), points, `Last swipe: left` |
+| IOS-222@27.0 | pass | FLOWS-27/05-swipe-forms.* | 27.0: duration swipe `✓ swipe: RIGHT (2.0s)`, read back right |
+| IOS-223@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 10 (four bare scrolls, Landmark 30) passes |
+| IOS-224@27.0 | fail | FLOWS-27/08-scroll.* | 27.0: both found, but `⚠ scrollUntilVisible: text="Landmark 70" (33.8s)` / `⚠ … "Golden Gate Bridge" (36.0s)` with no explanation |
+| IOS-225@27.0 | pass | FLOWS-27/14-runflow.* | 27.0: string and `file:` forms each run the sub-flow |
+| IOS-226@27.0 | fail | FLOWS-27/14b-runflow-inline.* | 27.0: inline `runFlow: {commands:}` rejected: `Invalid runFlow command: object form requires a string 'file' field` (+ a failure screenshot) |
+| IOS-227@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 11 passes |
+| IOS-228@27.0 | pass | FLOWS-27/09-waits.* | 27.0: `✓ extendedWaitUntil: notVisible text="Loading…" (2.8s)` (no ⚠ here; on 26.0 the 5.2 s wait showed ⚠, IOS-228) |
+| IOS-229@27.0 | pass | FLOWS-27/09-waits.* | 27.0: both waitForAnimationToEnd forms ✓ |
+| IOS-230@27.0 | pass | IOS-118/stock-27.* | 27.0: bare launchApp ✓ |
+| IOS-231@27.0 | fail | FLOWS-27/10-lifecycle.* | 27.0: Favorites empty after clearState, but the runner log again shows only terminate/launch, no app-data clearing line |
+| IOS-232@27.0 | pass | FLOWS-27/11-launch-environment.* | 27.0: step environment shown (`from step`) |
+| IOS-233@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: stopApp before launch and twice ✓ |
+| IOS-234@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: killApp then launchApp ✓ |
+| IOS-235@27.0 | pass | $S/rep/IOS-118/captures listing | 27.0: `07-deeplink-cmd-004-Deep Link Lakes.png` (space kept) |
+| IOS-236@27.0 | pass | IOS-118/stock-27.* | 27.0: flow 09 passes without --env (header env reaches the app) |
+| IOS-237@27.0 | pass | FLOWS-27/16-setpermissions.* | 27.0: setPermissions + bare scroll pass |
+| IOS-238@27.0 | pass | FLOWS-27/10-lifecycle.* | 27.0: runner log `argv=["--flag" "true"]` (the env leak of IOS-077 too) |
+| IOS-239@27.0 | pass | FLOWS-27/21-system-alert-maps.* | 27.0 (from a dir without config): Maps location prompt accepted (`alert/accept … Allow Once`), flow passes |

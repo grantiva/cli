@@ -1,0 +1,72 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961
+Simulator booted: cov-ios-2 (C2C8E2D3-F7E6-4FBF-A2FE-7A25B9363961)
+Skipping build and install (--no-build)
+Running 1 flow(s)...
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/07-swipe-from-missing.yaml
+
+  grantiva-runner 1.1.28-grantiva.9 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ⏳ Building GrantivaAgent...
+  ✓ Using cached GrantivaAgent build (sim-ios27.0-iphone-wda16.12.8-r1)
+  ✓ GrantivaAgent built
+  ⏳ Starting GrantivaAgent...
+Starting GrantivaAgent...
+GrantivaAgent started
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8317
+
+  [1/1] 07-swipe-from-missing (07-swipe-from-missing.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✗ swipe: LEFT (13.0s)
+      ╰─ Element not found: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+✗ 07-swipe-from-missing 20.6s
+
+  [1/1] 07-swipe-from-missing (.maestro/coverage/07-swipe-from-missing.yaml) - Device: cov-ios-2 (ios 27.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✗ swipe (13.7s)
+      ╰─ Element not found: text='No Such Row' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Road With Lane Markings", "show map", "Vertical scroll bar, 2 pages")
+✗ 07-swipe-from-missing 16.8s
+
+  1 steps passing (20.6s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  07-swipe-from-missing          ✗ FAIL       2      1      1      0      20.6s  cov-ios-2 (ios 27.0 Simulator)
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      20.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov-ios/rep/27/07-swipe-from-missing/captures/failure-1791708679.png
+Error: Runner failed (exit 1); see the runner output above.
