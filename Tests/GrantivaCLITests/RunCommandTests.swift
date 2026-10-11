@@ -532,6 +532,36 @@ final class RunCommandTests: XCTestCase {
         XCTAssertFalse(RunCommand.wantsFailureScreenshot(error: error, report: report))
     }
 
+    /// A10: the catch path of `run` takes no failure screenshot when an
+    /// interrupt released a run whose flows all passed, and still emits the
+    /// passing `--json` document; a real failure gets its screenshot.
+    func testSuiteFailureHandlerSkipsTheScreenshotAfterAPassedRunIsReleased() async throws {
+        let error = GrantivaError.commandFailed("Runner interrupted:\n", 130)
+        let captureDir = FileManager.default.temporaryDirectory.appendingPathComponent("captures-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: captureDir) }
+
+        let released = RunnerFailureReport()
+        released.markPassedBeforeInterrupt()
+        let fake = FakeDevicePlatform(platform: .android)
+        let emitted = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: error, report: released, device: fake, deviceID: "emulator-5554", captureDir: captureDir,
+            json: true, resultOutput: ResultOutput { emitted.append($0) }, log: { _ in }
+        )
+        XCTAssertFalse(fake.calls.contains("screenshot"), "\(fake.calls)")
+        XCTAssertEqual(emitted.values.count, 1)
+        XCTAssertTrue(emitted.values.first?.contains(#""allPassed" : true"#) ?? false, "\(emitted.values)")
+
+        let failed = FakeDevicePlatform(platform: .android)
+        let none = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: error, report: RunnerFailureReport(), device: failed, deviceID: "emulator-5554", captureDir: captureDir,
+            json: false, resultOutput: ResultOutput { none.append($0) }, log: { _ in }
+        )
+        XCTAssertTrue(failed.calls.contains("screenshot"), "\(failed.calls)")
+        XCTAssertEqual(none.values, [], "no document without --json")
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

@@ -131,6 +131,35 @@ struct RunCommand: AsyncParsableCommand {
         !SimulatorLease.isOwnershipRefusal(error) && !report.passedBeforeInterruption
     }
 
+    /// What the suite's catch does before rethrowing: a failure screenshot
+    /// when `wantsFailureScreenshot` says so, and the `--json` document.
+    static func handleSuiteFailure(
+        error: Error, report: RunnerFailureReport, device: any DevicePlatform, deviceID: String, captureDir: String,
+        json: Bool, resultOutput: ResultOutput, log: (String) -> Void
+    ) async {
+        // The device belongs to another run: this run never drove it.
+        if SimulatorLease.isOwnershipRefusal(error) { return }
+        if wantsFailureScreenshot(error: error, report: report) {
+            await takeFailureScreenshot(device: device, deviceID: deviceID, captureDir: captureDir, log: log)
+        }
+        if json {
+            try? resultOutput.emit(Self.failureResult(error: error, report: report))
+        }
+    }
+
+    /// The device's current state, so the developer can see where it stopped.
+    static func takeFailureScreenshot(device: any DevicePlatform, deviceID: String, captureDir: String, log: (String) -> Void) async {
+        let failurePath = "\(captureDir)/failure-\(Int(Date().timeIntervalSince1970)).png"
+        let fm = FileManager.default
+        if !fm.fileExists(atPath: captureDir) {
+            try? fm.createDirectory(atPath: captureDir, withIntermediateDirectories: true)
+        }
+        try? await device.screenshot(deviceID: deviceID, to: failurePath)
+        if fm.fileExists(atPath: failurePath) {
+            log("Failure screenshot: \(failurePath)")
+        }
+    }
+
     static func logStreamNarration(platform: Platform, predicate: String?, tag: String?) -> String {
         switch platform {
         case .ios:
@@ -416,29 +445,10 @@ struct RunCommand: AsyncParsableCommand {
                 }
             )
         } catch {
-            // The device belongs to another run: this run never drove it.
-            if SimulatorLease.isOwnershipRefusal(error) { throw error }
-            guard Self.wantsFailureScreenshot(error: error, report: failureReport) else {
-                if options.json {
-                    try? resultOutput.emit(Self.failureResult(error: error, report: failureReport))
-                }
-                throw error
-            }
-            // Runner failed — take a failure screenshot so the developer can see the current state
-            let failurePath = "\(captureDir)/failure-\(Int(Date().timeIntervalSince1970)).png"
-            let fm = FileManager.default
-            if !fm.fileExists(atPath: captureDir) {
-                try? fm.createDirectory(atPath: captureDir, withIntermediateDirectories: true)
-            }
-            try? await device.screenshot(deviceID: booted.udid, to: failurePath)
-            if fm.fileExists(atPath: failurePath) {
-                log("Failure screenshot: \(failurePath)")
-            }
-            if options.json {
-                try? resultOutput.emit(Self.failureResult(error: error, report: failureReport))
-            }
-            // The --ready-file waiter is released by `run`, which covers this
-            // path and every setup failure that never reaches the runner.
+            await Self.handleSuiteFailure(
+                error: error, report: failureReport, device: device, deviceID: booted.udid, captureDir: captureDir,
+                json: options.json, resultOutput: resultOutput, log: log
+            )
             throw error
         }
 
