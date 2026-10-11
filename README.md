@@ -90,7 +90,7 @@ grantiva hierarchy > state.xml
 - **`--env KEY=VALUE`** — Sets an environment variable for the app under test (repeatable). Forwarded through the flow's `launchApp` (`environment:` on iOS, `arguments:` intent extras on Android), so an ephemeral port or test fixture can be passed in per run.
 - **`grantiva hierarchy`** — Reads the current UI accessibility tree of the running app via the held session. Pure read, no relaunch, no state loss. XML (default) or JSON. Finds the newest live `--keep-alive` session in `/tmp/grantiva-sessions/`, or a specific device's with `--udid <UDID or adb serial>`; sessions whose runner has exited are ignored. See [docs/dump-hierarchy.md](docs/dump-hierarchy.md).
 - **Concurrent runs** — Runs on different simulator UDIDs execute in parallel. Each simulator launches WebDriverAgent from its own runner home (`<runner home>/versions/<runner version>/devices/<udid>`, where the runner home is `GRANTIVA_RUNNER_HOME` or `~/.grantiva/runner`), which holds an APFS clone of the cached WDA build, so every run gets its own xctestrun, port, and DerivedData without rebuilding WDA. `simulator teardown` (with or without `--force`) and `simulator delete` remove the device's home under every installed runner version, and teardown exits non-zero naming any home it could not remove; homes of simulators that no longer exist are pruned on the next run. A second run targeting an already-owned simulator fails immediately with guidance to provision a unique simulator, protecting the active WDA session from cross-run teardown.
-- **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
+- **`--logs`** — Streams app logs from the simulator or emulator, prefixed with `[log]` and interleaved with the flow output. On iOS (`xcrun simctl spawn log stream`) the predicate is scoped to your app: subsystems starting with its bundle ID, plus every line from its process (the installed app's `CFBundleExecutable`); override it with `--logs-predicate`. On Android `logcat` is filtered to the app's uid; `--logs-tag <tag>` keeps one tag and implies `--logs`. `--logs-level default|info|debug` sets the level on both (see [docs/android.md](docs/android.md#logs)).
 - **`--logs-predicate '<NSPredicate>'`** — Custom log filter (iOS) for narrowing to specific subsystems, categories, or processes. Implies `--logs`.
 - **`--snapshot failure|trailing|full`** — How many screenshots the runner keeps. `failure` (default) takes one shot after a failing step, `trailing` keeps the last good step plus the failing one, `full` captures every step. Applies to both `screens:` and flow-file runs.
 - **`--continue-on-failure`** — Keep running the remaining flows after one fails. The default is fail-fast: the suite stops at the first broken flow, which matches CI semantics.
@@ -140,9 +140,10 @@ Each screen has a `name` and a `path`. The path describes how to navigate there:
 - `- assert_not_visible: "Label"` — verify an element is hidden
 - `- run_flow: "path/to/flow.yaml"` — include steps from another YAML file
 
-A label matches any element whose text *contains* it, case-insensitively, so `tap: "Landmarks"` can hit a
-`landmarks://…` link before the tab called "Landmarks". `tap`, `assert_visible`, and `assert_not_visible` also take
-`{text: "Landmarks", exact: true}` to require the element's full text to equal the label, on iOS and Android alike.
+A label is a case-insensitive regular expression matched against an element's whole text, on iOS and Android alike:
+`tap: "Open"` matches an element whose text is "Open" or "open", not "Talk · Open" (write `.*Open.*` to match part of
+the text). `tap`, `assert_visible`, and `assert_not_visible` also take `{text: "Landmarks", exact: true}` to require
+the element's text to equal the label exactly as written.
 
 Grantiva navigates to each screen in order, captures a screenshot, then moves to the next. After every `tap`, `swipe`, `type`,
 and `run_flow`, and before every screenshot, it waits (up to 5 s) for the screen to stop changing, so a capture never shows
@@ -357,7 +358,7 @@ grantiva console flags --help
 
 # Examples: inspect analytics, review VRT runs, and manage webhooks
 grantiva console analytics overview --days 30
-grantiva console vrt runs
+grantiva console vrt runs list my-project
 grantiva console webhooks list
 ```
 
