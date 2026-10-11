@@ -128,6 +128,23 @@ final class InstallCommandTests: XCTestCase {
         XCTAssertNil(json["simulator"])
     }
 
+    /// L39: every document carries `appPath`, null when nothing was installed.
+    func testASkippedInstallReportsANullAppPath() throws {
+        let android = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(AndroidInstallResult(
+            status: .skipped, applicationId: "com.kylebrowning.landmarks",
+            device: .init(name: "fix3-6-android", serial: "emulator-5554"), appPath: nil
+        )).utf8)) as? [String: Any])
+        XCTAssertEqual(Set(android.keys), ["status", "applicationId", "device", "appPath"])
+        XCTAssertTrue(android["appPath"] is NSNull)
+
+        let ios = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(InstallResult(
+            status: .skipped, scheme: nil, bundleId: "com.kylebrowning.Landmarks",
+            simulator: .init(name: "fix3-6-ios", udid: "U"), appPath: nil, dataContainerPath: nil
+        )).utf8)) as? [String: Any])
+        XCTAssertEqual(Set(ios.keys), ["status", "scheme", "bundleId", "simulator", "appPath", "dataContainerPath"])
+        XCTAssertTrue(ios["appPath"] is NSNull)
+    }
+
     func testHumanCompletionIncludesDataContainerPath() {
         let message = InstallCommand.completionMessage(
             status: .launched,

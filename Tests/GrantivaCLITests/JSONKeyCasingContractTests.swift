@@ -88,6 +88,14 @@ final class JSONKeyCasingContractTests: XCTestCase {
                 status: .installed, applicationId: "com.kylebrowning.landmarks",
                 device: .init(name: "fix2-4-android", serial: "emulator-5554"), appPath: "/b/app.apk"
             ))),
+            ("build install (iOS, skipped)", try JSONOutput.string(InstallResult(
+                status: .skipped, scheme: nil, bundleId: "com.kylebrowning.Landmarks",
+                simulator: .init(name: "fix2-4-ios", udid: session.udid), appPath: nil, dataContainerPath: nil
+            ))),
+            ("build install (Android, skipped)", try JSONOutput.string(AndroidInstallResult(
+                status: .skipped, applicationId: "com.kylebrowning.landmarks",
+                device: .init(name: "fix2-4-android", serial: "emulator-5554"), appPath: nil
+            ))),
             ("runner start (iOS)", try JSONOutput.string(RunnerLifecycleDocument(
                 status: "started", pid: 64253, port: 8235, appID: "com.kylebrowning.Landmarks",
                 deviceID: session.udid, platform: .ios, log: "/tmp/grantiva-runner.log"

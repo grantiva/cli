@@ -56,7 +56,8 @@ them an emulator Grantiva boots gets a window, even when stdout is not a termina
 (`serial=$(grantiva emulator ensure ...)`, a pipe, an agent).
 
 `grantiva build build` only compiles: it never resolves or boots a device, so `emulator:` does
-not apply to it. Where the variant has ABI split APKs, the one reported is for `--device`'s
+not apply to it, and its help does not list `--emulator`, `--headless` or
+`--allow-device-settings` (they are still accepted, hidden, and change nothing). Where the variant has ABI split APKs, the one reported is for `--device`'s
 ABI when given, else for this host's emulators (`arm64-v8a` on Apple silicon). A `--device`
 serial must already be attached; otherwise the command fails naming the attached devices.
 `grantiva build install` resolves the device as above and logs `Booting AVD <name> as

@@ -260,7 +260,9 @@ The JSON result includes `status`, `scheme`, `bundleId`, `appPath`,
 it includes `status`, `applicationId`, `appPath`, and `device` with the
 emulator's `name` and adb `serial`. `status` is `installed` (installed, not
 launched), `launched`, or `skipped` (`--no-build --no-launch`: nothing was
-installed or launched).
+installed or launched). Every key is present in every document; `appPath` is `null` when
+nothing was installed (`--no-build` without `--app-file`), and `scheme` and
+`dataContainerPath` are `null` when there is none.
 `--derived-data-path` isolates Xcode products and intermediates for the run and
 supports absolute or relative paths, including paths containing spaces. It is
 available on every Grantiva command that builds the app and overrides a

@@ -188,3 +188,60 @@ func requireExclusive(_ first: (flag: String, given: Bool), _ second: (flag: Str
         throw ValidationError(problem)
     }
 }
+
+/// `TargetOptions` for `build build`, which only compiles: it never resolves
+/// or boots a device to run on, so the boot flags (`--emulator`, `--headless`,
+/// `--allow-device-settings`) are hidden from its help (L29). They still
+/// parse, so a script that passes them keeps working; they change nothing.
+/// `--device` stays: it lends its ABI to the choice of split APK.
+struct BuildTargetOptions: ParsableArguments {
+    @Option(name: .long, help: "Scheme to build (iOS)")
+    var scheme: String?
+
+    @Option(name: .long, help: "Simulator name or UDID (iOS)")
+    var simulator: String?
+
+    @Option(name: .long, help: "Bundle identifier (iOS)")
+    var bundleId: String?
+
+    @Option(name: .long, help: "Gradle module to assemble (Android; default app)")
+    var module: String?
+
+    @Option(name: .long, help: "Gradle build variant, e.g. debug or freeDebug (Android; default debug)")
+    var variant: String?
+
+    @Option(name: .long, help: "Application ID (Android; read from the build or the APK when omitted)")
+    var applicationId: String?
+
+    @Option(name: .long, help: ArgumentHelp(visibility: .hidden))
+    var emulator: String?
+
+    @Option(name: .long, help: "adb serial of an attached emulator or device whose ABI picks the split APK (Android)")
+    var device: String?
+
+    @Flag(name: .long, help: ArgumentHelp(visibility: .hidden))
+    var allowDeviceSettings = false
+
+    @Flag(name: .long, help: ArgumentHelp(visibility: .hidden))
+    var headless = false
+
+    func validate() throws {
+        try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
+    }
+
+    /// The same values as a `TargetOptions`, for the shared checks and resolution.
+    var target: TargetOptions {
+        var target = TargetOptions()
+        target.scheme = scheme
+        target.simulator = simulator
+        target.bundleId = bundleId
+        target.module = module
+        target.variant = variant
+        target.applicationId = applicationId
+        target.emulator = emulator
+        target.device = device
+        target.allowDeviceSettings = allowDeviceSettings
+        target.headless = headless
+        return target
+    }
+}

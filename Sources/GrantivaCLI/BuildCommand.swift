@@ -25,13 +25,17 @@ struct BuildOnlyCommand: AsyncParsableCommand {
     @Option(name: .long, help: "Write Xcode build products and intermediates to this DerivedData directory.")
     var derivedDataPath: String?
 
-    @OptionGroup var target: TargetOptions
+    @OptionGroup var buildTarget: BuildTargetOptions
+
+    /// The target flags; the boot flags are hidden here (L29).
+    var target: TargetOptions { buildTarget.target }
 
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
 
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
+        let target = self.target
         try target.checkFlags(for: platform, derivedDataPath: derivedDataPath)
         let device = try devicePlatform.make(platform, android: target.androidOptions)
 
@@ -307,6 +311,20 @@ struct InstallResult: Codable, Equatable {
     let simulator: Simulator
     let appPath: String?
     let dataContainerPath: String?
+
+    enum CodingKeys: String, CodingKey { case status, scheme, bundleId, simulator, appPath, dataContainerPath }
+
+    /// Every documented key in every document: `null` where there is no
+    /// value (`appPath` when nothing was installed, L39).
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(status, forKey: .status)
+        try c.encode(scheme, forKey: .scheme)
+        try c.encode(bundleId, forKey: .bundleId)
+        try c.encode(simulator, forKey: .simulator)
+        try c.encode(appPath, forKey: .appPath)
+        try c.encode(dataContainerPath, forKey: .dataContainerPath)
+    }
 }
 
 /// `build install --json` on Android: application ID and adb serial instead
@@ -322,4 +340,15 @@ struct AndroidInstallResult: Codable, Equatable {
     let applicationId: String
     let device: Device
     let appPath: String?
+
+    enum CodingKeys: String, CodingKey { case status, applicationId, device, appPath }
+
+    /// `appPath` is `null` when nothing was installed (L39).
+    func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(status, forKey: .status)
+        try c.encode(applicationId, forKey: .applicationId)
+        try c.encode(device, forKey: .device)
+        try c.encode(appPath, forKey: .appPath)
+    }
 }
