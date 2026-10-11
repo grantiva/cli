@@ -5,6 +5,32 @@ Updated: 2026-10-12 (round-2 coverage pass in progress). This file is the tool-a
 ## Goal and exit criterion
 Spec: `docs/superpowers/specs/2026-10-10-full-coverage-campaign-design.md`. Loop: fix wave → repack → smoke → full coverage pass → triage, until one full pass yields zero `fail` rows. Release is the owner's decision; the campaign never declares a release.
 
+## Goals (the owner's words and intent)
+- "The goal isn't to get a 2.1.0 out. It's to fully test everything with real flows (minus auth flows) before release. Anything that doesn't make sense, seems like a bug, or is 'minor' needs to be fixed." Repacking and re-testing is expected; it never means the release is approved.
+- Coverage means every grantiva subcommand, flag and MCP tool, exercised with real Maestro-format flows on iOS 26.0, iOS 27.0 and Android API 35, through the release binary, on both platforms wherever the command exists. `auth` and `console` are out of scope (no credentials).
+- Integration is by pull request: an agent opens the PR, a reviewer gates it, the controller squash-merges after the review loop and CI. Demo-app changes go through PRs to landmarks-demo.
+- There is no "minor, leave it" bucket: every reviewer minor is fixed in a fix round, and every doubtful behaviour a slice sees is a `fail` with evidence.
+- Nothing is ever asked of the owner mid-plan; conflicts are decided by a recorded ruling (`Ruling: <decision> — <why> — <cost if wrong>` in the ledger) so the owner can undo a wrong one later.
+
+## The loop, and how it works
+One round = fix wave → repack → smoke → full coverage pass → triage. The exit criterion is one full coverage pass with zero `fail` rows. Round 1 (fix wave from the 2.1.0 regression, then the first full pass) produced 118 briefs; round 2 (fix wave for those, then the second full pass) is in progress; its fails become round 3.
+
+### 1. Fix wave (a plan executed with subagent-driven development)
+- Input: the briefs from the previous pass (`K`/`L` files: Expected / Actual / Repro / Evidence / Suspected cause / Acceptance criteria; severity crash | wrong-result | contract | docs | ux). A writing-plans pass groups them into tasks by code area (runner output, UIAutomator2, WDA, CLI run output, keep-alive, simulator, emulator, diff/record, usage/doctor, MCP, docs) and records rulings for any brief whose expectation is doubtful (`Triage note:`).
+- Per task: one implementer agent in its own worktree/branch, TDD against the briefs' acceptance criteria, device check on devices it creates (`fix<N>-<task>-ios/-android`) and deletes, PR opened but never merged by the implementer. Then one task reviewer (spec compliance + quality, with the diff as a file). Findings → fix round (resume the implementer; rounds ≥4 escalate to a fresh, stronger agent), each round ending in a scoped re-review; up to 5 rounds, then the controller adjudicates and parks with a ruling. Clean → CI → squash-merge → verify MERGED → remove the worktree. Parallel tasks are allowed in separate worktrees; a merge order is ruled and later PRs rebase.
+- Then: repack the runner (`scripts/build-runner.sh --version 1.1.28-grantiva.<n> --wda-cache <home> --cli <cli worktree>`; WDA caches `sim-ios<rt>-iphone-wda16.12.8-r<rev>` for 26.0/26.2/26.4/27.0 — 26.2/26.4 are copies of 26.0 on this host), bundle PR, docs PR, then build the release binary from `main`, copy binary + bundle to `~/.grantiva-qa/bin`, `runner install` into `~/.grantiva-qa/runner`.
+- Smoke: stock 12 flows + 5 screens + `99-crash` on one iOS simulator and one Android emulator, plus one flow per risky fix. Smoke fails get briefs immediately (that is how L01–L07 appeared) and an addendum PR if they would poison the coverage pass.
+
+### 2. Coverage pass (a plan with slices)
+- Matrix: one row per command/flag/README example/flow command/MCP tool × platform, plus `B-<brief>` rows quoting each original brief's acceptance criteria, `B2-K<nn>` rows for the previous wave's briefs, `N`/`N2` rows for carried findings, `X` rows for cross-platform shape, `D2` rows for docs/help diffs, `S2` for smoke follow-ups. Row format `| ID | command/tool | inputs | expected (source) | platform | slice | flow | result |`. IDs are stable across rounds; corrected expectations carry `(corrected round N)`.
+- Slices: CLI (no devices), iOS (`cov<N>-ios-1` 26.0, `cov<N>-ios-2` 27.0; flow-command rows repeated on 27.0 with an `@27.0` suffix), Android (`cov<N>-android`, default software-rendered AVD). Each slice is one agent in its own worktree/branch; it runs every row in order, records `pass | fail | fail (matrix/brief error — triage) | blocked <reason> | n/a <reason>`, cites `findings/evidence/cov<N>-<slice>/<ROW>/commands.txt` + raw output, commits every ~40 rows, tears down, and reports. Rows needing a device that land in the CLI slice are handed to iOS.
+- Each slice gets a task review (coverage scripted against the matrix; evidence spot-checks; doubtful passes become fails) and fix rounds exactly like code tasks.
+- Triage: a cluster map groups fail rows by root cause (one cluster = one brief), separates expectation corrections (row/brief text predates a merged fix) and blocked rows. One brief per cluster, the round report (versions, counts per slice, Review Focus verdicts, brief list, host state, verdict line), push, then the next fix-wave plan.
+
+### 3. Who does what
+- The controller (this session or its successor) never edits product code; it writes plans, briefs, ledgers and reports, dispatches and reviews, merges PRs, and rules on conflicts. Implementers and slices never spawn reviewers. Every artifact is a file; agents are handed paths, not pasted history.
+- Resume procedure for a new agent: read this file, the current plan, the live ledger (or its copy under `findings/ledgers/`), and the latest task report under the SDD workspace (`.superpowers/sdd/<plan>/task-<N>-report.md`); then continue at the first task without a `complete` line, re-dispatching nothing that is marked complete.
+
 ## Standing rules (binding for every agent)
 - Never boot, shut down, erase, delete or command simulator `iPhone 17 Pro` (B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C), `iPhone 18 Pro` (FE441EE5-BBFC-4981-B68A-59C0DBCE26D6), AVD `Pixel_8_API_35`, or any device you did not create. Always pass `--simulator/--udid/--device` explicitly. Never `teardown --all`, `xcrun simctl shutdown all`, `simulator cleanup`, `pkill`/`killall`, or kill a PID you did not start. Never `git stash`.
 - Test environment: `GRANTIVA="$HOME/.grantiva-qa/bin/grantiva"` (release build of grantiva/cli `main`, with `grantiva_GrantivaCore.bundle` beside it — without the bundle `runner install` silently uses a stale bundle), `GRANTIVA_RUNNER_HOME="$HOME/.grantiva-qa/runner"`, `GRANTIVA_SESSION_ID=<slice>`, `GRANTIVA_API_KEY` unset. Never write under `~/.grantiva/runner`. Android shells: `export JAVA_HOME="$(brew --prefix openjdk@21)/libexec/openjdk.jdk/Contents/Home"; export ANDROID_HOME="$HOME/Library/Android/sdk"; export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"`.
@@ -28,9 +54,9 @@ Spec: `docs/superpowers/specs/2026-10-10-full-coverage-campaign-design.md`. Loop
 ## Status of the round-2 coverage pass (see the ledger copy for detail)
 - Task 1 matrix: complete.
 - Task 3 CLI slice: complete (cov2/cli 33c3a4e): 335 pass / 7 fail / 13 fail-triage / 6 blocked / 4 n/a + EXTRA-01..07.
-- Task 4 iOS slice: implementer done (cov2/ios 6b7d686): 416 pass / 16 fail / 6 triage / 4 blocked; 39 @27.0 pass; review found 2 text fixes → fix round 1 in progress (B2-K37.2 precision, IOS-134 regrade).
+- Task 4 iOS slice: fix round 1 done (cov2/ios 7bed447): 415 pass / 17 fail / 6 triage / 4 blocked; 39 @27.0 pass; 5 handed CLI rows 4 pass / 1 fail; scoped re-review pending.
 - Task 5 Android slice: running (device `cov2-android`, session `cov2-android`).
-- Triage prep: `cluster-map-round2.md` (CLI + iOS fails) being written in the SDD workspace; Android to fold in.
+- Triage prep: `findings/ledgers/cluster-map-round2.md` covers CLI + iOS fails (24 clusters M01–M24, 19 expectation corrections); Android folds in when its slice lands.
 - Task 6 (next): `git merge --no-ff cov2/cli cov2/ios cov2/android` into `coverage-campaign`; one brief per fail in `docs/superpowers/plans/2026-10-12-coverage-issues-round2/` (continue the L numbering from L08; format as the K/L briefs); expectation corrections for the `fail (matrix/brief error — triage)` rows; report `docs/superpowers/plans/2026-10-12-round2-coverage-report.md` with the verdict `ROUND 2: <n> findings — round 3 fix wave required`; push; then write `2026-10-13-round3-fix-wave.md` (writing-plans) and execute it (runner + CLI PRs, repack .12, smoke, round-3 coverage pass).
 
 ## Incidents to report to the owner
