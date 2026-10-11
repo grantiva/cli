@@ -1,0 +1,1 @@
+for i in 1 2 3 4 5 6 7 8 9 10; do /Users/kyle/.grantiva-qa/bin/grantiva diff capture --device emulator-5554 --no-build >/dev/null 2>&1; echo "run $i exit=$? home=$(md5 -q .grantiva/captures/android/Home.png) deeplinks=$(md5 -q '.grantiva/captures/android/Deep Links.png') homeKB=$(( $(stat -f %z .grantiva/captures/android/Home.png)/1024 ))"; done

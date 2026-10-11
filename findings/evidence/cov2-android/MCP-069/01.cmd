@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva runner start --detach --device emulator-5554 >/dev/null 2>&1; cp .maestro/coverage/cfg/screens-steps.grantiva-android.yml grantiva-android.yml; ls -la .grantiva/captures/android | wc -l
