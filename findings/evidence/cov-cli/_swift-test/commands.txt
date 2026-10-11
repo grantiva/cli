@@ -1,5 +1,4 @@
-# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli (build output stays in the worktree .build/)
-$ swift build --build-tests
-# BUILD_RC=0
-$ swift test --skip-build
-# TEST_RC=0; swift-test.log keeps the Test Case / Executed lines of the raw log
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/cov-cli (build output stays in the worktree's .build/; no binary copied anywhere)
+$ swift test 2>&1 | tee findings/evidence/cov-cli/_swift-test/swift-test-full.log
+# verbatim, unfiltered log. Result: 'All tests' passed in all four bundles: 191 + 669 + 436 + 101 = 1397 XCTest cases, 0 failures
+# (the log's 1523 'started' / 1523 'passed' Test Case lines also count the swift-testing pass). The earlier filtered swift-test.log was removed.
