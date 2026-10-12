@@ -734,3 +734,25 @@ Rows: 27 + 23 + 44 = 94; placed 94.
   is counted under M30 and cited by M31.
 - **Not counted as fails:** blocked rows (CLI 6, iOS 4, Android 3, plus CLI-083's blocked half), listed in §Blocked;
   Android n/a AND-069/070; B2-L01 (now pass).
+
+## Round 3 smoke
+
+Source: findings/round3-smoke.md (grantiva 2.1.0 @ main dc965716, runner 1.1.28-grantiva.12; 31 rows, 21 pass,
+9 fail, 1 blocked). Evidence under findings/evidence/round3-smoke/. Briefs L54-L60 (2026-10-11).
+
+| fail row | brief | component | note |
+|---|---|---|---|
+| A1 Android stock flows + screens | none | environment | adb dropped emulator-5554 for ~1 s (`device offline`, then `not found`) at load 42.8 while both stock runs and the parallel builds shared the host; rerun alone passed 12/12 + 5/5. Slices run flows serially. |
+| A3 Android 99-crash x3 | L57 | runner | launchApp passes 1-3 s after the crash (first frame masks the `am_crash`); failure 3.2-4.3 s after the crash; wall 28-30 s |
+| A1-03edit 03-edit alone x3 | L58 | runner | first `tapOn` 3.7-4.2 s: four clickable-only lookups miss before the plain lookup (not L57's cause) |
+| A-doubletap Android doubleTap x5 | L59 | runner | one W3C sequence, stretched to 0.7-1.3 s on the device; 4 of 5 counted as two taps |
+| TD-ios foreground `runner start` torn down | L54 | cli | teardown finds sessions only through the runner's published file; marker written, nobody signalled |
+| TD-android same on Android | L54 | cli | same cause |
+| KA-stop-during `runner stop` during a keep-alive run's flows | L55 | cli | "No active session found." until the hold is armed (same lookup as L54, L52) |
+| KA-after-hold stop after the hold → earned status | L56 | cli | SignalRelay exits 130 unconditionally; failed-flow summary lost to the race |
+| REC-ios `record --duration 3` x3 | L60 | cli | one-sample `.mov`, 0.067 s by ffprobe (3.045 s by AVFoundation); hold/trim run on Android only |
+
+Not a fail: **MCP-build** (`grantiva_build` without a simulator) was blocked, not run: the owner simulators
+`iPhone 17 Pro` and `iPhone 18 Pro` were booted before, during and after the smoke (MCP-build/blocked.txt).
+
+Rows: 9 fails placed: 8 in the seven briefs L54-L60 (TD-ios and TD-android both under L54), A1 as environment; 1 blocked.
