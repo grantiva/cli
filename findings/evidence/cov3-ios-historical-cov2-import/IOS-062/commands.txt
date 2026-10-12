@@ -1,0 +1,12 @@
+# uptime: 10:48  up 4 days,  2:16, 5 users, load averages: 10.10 13.25 28.73
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/08-caching.yaml --logs-predicate 'subsystem == "com.kylebrowning.Landmarks"'
+# exit=0 elapsed=16.306s -> pred.out / pred.err
+# uptime: 10:48  up 4 days,  2:16, 5 users, load averages: 10.24 13.14 28.42
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/08-caching.yaml --logs-predicate 'process == "Landmarks" AND subsystem == "com.apple.xpc"'
+# exit=0 elapsed=16.365s -> pred2.out / pred2.err
+# uptime: 10:49  up 4 days,  2:16, 5 users, load averages: 8.78 12.67 27.98
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ for f in pred pred2; do echo $f lines=$(grep -c '^\[log\]' $E/IOS-062/$f.err) nonmatching=$(grep '^\[log\]' $E/IOS-062/$f.err | grep -vc 'com.apple.xpc'); done
+# exit=0 elapsed=.017s -> count.out / count.err

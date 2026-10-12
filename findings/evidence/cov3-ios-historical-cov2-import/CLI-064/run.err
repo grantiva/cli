@@ -1,0 +1,92 @@
+Resolved: scheme=(none) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=1 flows=0
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-11T17:47:19Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: $ xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: exit 0: xcrun simctl getenv '7E846901-F93F-4220-A153-7043061033D7' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: $ xcrun simctl get_app_container '7E846901-F93F-4220-A153-7043061033D7' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: exit 0: xcrun simctl get_app_container '7E846901-F93F-4220-A153-7043061033D7' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+Capturing 1 screen(s)...
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: $ xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: exit 0: xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-11T17:47:20Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/grantiva-runner --platform ios --device 7E846901-F93F-4220-A153-7043061033D7 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-0F8FB4B5-BFA7-4ACA-8482-43CE8EBA7856 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-44B91E77-1567-4765-A78C-F6F7DFA6F88A/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Favorites" (1.9s)
+    ✓ waitForAnimationToEnd (864ms)
+    ✗ tapOn: id="favoritesTab" (12.2s)
+      ╰─ Element not found: id='favoritesTab' (cause: context deadline exceeded: no elements match selector)
+✗ screens 19.7s
+
+  [1/1] screens (grantiva.yml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ tapOn: text="Favorites" (1.9s)
+    ✓ waitForAnimationToEnd (864ms)
+    ✗ tapOn: id="favoritesTab" (12.2s)
+      ╰─ Element not found: id='favoritesTab' (cause: context deadline exceeded: no elements match selector)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 19.7s
+
+  3 steps passing (19.7s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       6      3      1      2      19.7s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      19.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-11T17:47:43Z com.grantiva.cli: exit 1: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.11+android-drivers-2/grantiva-runner --platform ios --device 7E846901-F93F-4220-A153-7043061033D7 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-0F8FB4B5-BFA7-4ACA-8482-43CE8EBA7856 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-44B91E77-1567-4765-A78C-F6F7DFA6F88A/grantiva.yml
+[debug] 2026-10-11T17:47:43Z com.grantiva.cli: $ xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 clear
+[debug] 2026-10-11T17:47:43Z com.grantiva.cli: exit 0: xcrun simctl status_bar 7E846901-F93F-4220-A153-7043061033D7 clear
+[debug] 2026-10-11T17:47:43Z com.grantiva.cli: $ xcrun simctl io '7E846901-F93F-4220-A153-7043061033D7' screenshot '.grantiva/run-captures/failure-1791740863.png'
+[debug] 2026-10-11T17:47:44Z com.grantiva.cli: exit 0: xcrun simctl io '7E846901-F93F-4220-A153-7043061033D7' screenshot '.grantiva/run-captures/failure-1791740863.png'
+Failure screenshot: .grantiva/run-captures/failure-1791740863.png
+Error: Runner failed (exit 1): Screen "S" failed at tapOn: id="favoritesTab": Element not found: id='favoritesTab' (cause: context deadline exceeded: no elements match selector)
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

@@ -1,0 +1,25 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "cov2", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s @12:41:26] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_compare", "arguments": {}}, "id": 2, "jsonrpc": "2.0"}
+<< [0.0s @12:41:26] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No captures found in .grantiva/captures. Run: grantiva diff capture", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {"screens": ["Nope"]}}, "id": 3, "jsonrpc": "2.0"}
+<< [0.0s @12:41:26] {"id": 3, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No captures found in .grantiva/captures. Run: grantiva diff capture", "type": "text"}], "isError": true}}
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_approve", "arguments": {}}, "id": 4, "jsonrpc": "2.0"}
+<< [0.0s @12:41:26] {"id": 4, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: No captures found in .grantiva/captures. Run: grantiva diff capture", "type": "text"}], "isError": true}}
+## shell [3.9s] exit=0: cd '/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pd241' && '/Users/kyle/.grantiva-qa/bin/grantiva' runner start --bundle-id com.kylebrowning.Landmarks --simulator 7E846901-F93F-4220-A153-7043061033D7 --detach >/dev/null; echo started
+## stdout: started
+
+## stderr: Starting runner...
+  Bundle ID: com.kylebrowning.Landmarks
+  Simulator: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+
+## sleep 15
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_capture", "arguments": {}}, "id": 5, "jsonrpc": "2.0"}
+<< [6.5s @12:41:52] {"id": 5, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: Screen \"Typed\", step 2 (Type \"x\"): No focused text field: tap a field before typing \"x\".", "type": "text"}], "isError": true}}
+## shell [0.3s] exit=0: cd '/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pd241' && '/Users/kyle/.grantiva-qa/bin/grantiva' runner stop
+## stdout: Runner stopped (pid 21947)
+
+## stderr: 
+nonjson_lines=0 server_alive=True
+exit=0

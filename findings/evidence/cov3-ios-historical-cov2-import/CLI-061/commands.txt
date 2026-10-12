@@ -1,0 +1,9 @@
+# handed over by the CLI slice (blocked needs a device); fixtures from the CLI slice's CLI-061 (simulator cov2-ios-1, bundle_id added where a config needs one, Landmarks project copied beside them) under $S/cli/CLI-061; copies in fixtures/
+# uptime: 10:46  up 4 days,  2:14, 5 users, load averages: 11.05 14.48 31.04
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/cli/CLI-061  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff capture --no-build --simulator $U1 --verbose
+# exit=1 elapsed=23.067s -> capture.out / capture.err
+# uptime: 10:48  up 4 days,  2:15, 5 users, load averages: 12.15 13.97 29.53
+# cwd: /Users/kyle/Developer/grantiva-cli/.worktrees/regression  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ grep -m1 -o 'tapOn: text="Mount "Denali"[^"]*"' $E/CLI-061/capture.err | xxd | head -3; printf 'Mount "Denali" 🏔️' | xxd
+# exit=0 elapsed=.014s -> bytes.out / bytes.err

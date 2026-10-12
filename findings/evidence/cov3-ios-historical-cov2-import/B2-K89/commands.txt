@@ -1,0 +1,9 @@
+# project $S/pdiff; Home baseline moved aside for the mixed case, restored after
+# uptime: 12:08  up 4 days,  3:36, 5 users, load averages: 16.67 50.51 45.16
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pdiff  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ mv .grantiva/baselines/Home.png $S/home-baseline.png; $GRANTIVA diff compare; echo exit=$?; $GRANTIVA diff compare --json | python3 -I -c "import json,sys; d=json.load(sys.stdin); print(\"passed\", d[\"passed\"], [(s[\"screenName\"], s[\"status\"]) for s in d[\"screens\"]])"; mv $S/home-baseline.png .grantiva/baselines/Home.png
+# exit=0 elapsed=.396s -> mixed.out / mixed.err
+# uptime: 12:08  up 4 days,  3:36, 5 users, load averages: 16.67 50.51 45.16
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pdiff  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ mkdir -p $S/k89 && cd $S/k89 && rm -rf .grantiva && cp ../pdiff/grantiva.yml . && mkdir -p .grantiva/captures && cp ../pdiff/.grantiva/captures/*.png .grantiva/captures/ && $GRANTIVA diff compare --json | head -5; echo exit=${PIPESTATUS[0]}
+# exit=0 elapsed=.030s -> none-json.out / none-json.err

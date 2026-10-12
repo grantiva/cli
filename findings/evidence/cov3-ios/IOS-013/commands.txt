@@ -1,0 +1,8 @@
+# uptime:  2:47  up 4 days, 18:15, 5 users, load averages: 140.03 56.09 43.75
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/empty  (U1=563907E1-703D-4322-AE5F-FC3B06D03143 cov3-ios-26 26.0; U2=1B1102EC-224B-4EF7-937E-370A0DC317DA cov3-ios-27 27.0)
+$ GRANTIVA_MAX_SIMULATORS=3 GRANTIVA_SIMULATOR_WAIT_TIMEOUT_SECONDS=5 $GRANTIVA simulator ensure --name "cov3-ios-4 T5 iPhone 17"
+# exit=1 elapsed=6.921s -> t5.out / t5.err
+# uptime:  2:47  up 4 days, 18:15, 5 users, load averages: 141.15 57.71 44.40
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/empty  (U1=563907E1-703D-4322-AE5F-FC3B06D03143 cov3-ios-26 26.0; U2=1B1102EC-224B-4EF7-937E-370A0DC317DA cov3-ios-27 27.0)
+$ xcrun simctl list devices | grep "cov3-ios-4" ; echo simctl_count=$(xcrun simctl list devices | grep -c "cov3-ios-4"); echo ledger_count=$(grep -c "cov3-ios-4" $GRANTIVA_RUNNER_HOME/simulator-capacity/created.json)
+# exit=0 elapsed=.257s -> after.out / after.err

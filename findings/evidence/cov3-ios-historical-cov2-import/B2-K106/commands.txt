@@ -1,0 +1,12 @@
+# uptime: 12:14  up 4 days,  3:42, 5 users, load averages: 10.90 24.14 34.12
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/18-long-wait.yaml > $E/B2-K106/run.out 2> $E/B2-K106/run.err & P=$!; sleep 12; ls -d $TMPDIR/grantiva-* | sort > $S/k106-during.txt; kill -9 $P; echo killed $P; sleep 2
+# exit=0 elapsed=14.041s -> run-and-kill.out / run-and-kill.err
+# uptime: 12:15  up 4 days,  3:42, 5 users, load averages: 11.08 23.56 33.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA simulator teardown --udid $U1 --force --json
+# exit=0 elapsed=3.491s -> teardown.out / teardown.err
+# uptime: 12:15  up 4 days,  3:42, 5 users, load averages: 11.08 23.56 33.74
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ ls -d $TMPDIR/grantiva-* 2>/dev/null | sort > $S/k106-after.txt; echo "-- new during run:"; comm -13 $S/k106-before.txt $S/k106-during.txt; echo "-- left after teardown (comm):"; comm -12 <(comm -13 $S/k106-before.txt $S/k106-during.txt) $S/k106-after.txt
+# exit=0 elapsed=.030s -> compare.out / compare.err

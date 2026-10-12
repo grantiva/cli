@@ -1,0 +1,4 @@
+# uptime: 11:38  up 4 days,  3:05, 5 users, load averages: 15.25 48.33 40.40
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/ios  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ rm -rf outI11; $GRANTIVA run --no-build --simulator $U1 --flow .maestro/09-seed-empty.yaml --report-dir outI11; echo exit=$?; echo "-- var/folders:"; grep -rl /var/folders outI11; grep -rho "\"sourceFile\" *: *\"[^\"]*\"" outI11 | sort -u; grep -o "name=\"file\" value=\"[^\"]*\"" outI11/junit-report.xml
+# exit=0 elapsed=9.749s -> run.out / run.err

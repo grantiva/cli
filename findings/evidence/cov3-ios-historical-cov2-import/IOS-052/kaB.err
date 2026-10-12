@@ -1,0 +1,69 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=BEE381AC-0D32-4D84-B304-068815F08B2F screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: BEE381AC-0D32-4D84-B304-068815F08B2F
+Simulator booted: cov2-ios-2 (BEE381AC-0D32-4D84-B304-068815F08B2F)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/05-category.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios27.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8819
+
+  [1/1] 05-category (05-category.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✓ tapOn: text="Lakes" (1.6s)
+    ✓ assertVisible: text="Lake Tahoe" (349ms)
+    ✓ assertVisible: text="Mono Lake" (160ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (293ms)
+    ✓ takeScreenshot (144ms)
+✓ 05-category 9.7s
+
+  [1/1] 05-category (.maestro/05-category.yaml) - Device: cov2-ios-2 (ios 27.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (3.2s)
+    ✓ tapOn: text="Lakes" (1.6s)
+    ✓ assertVisible: text="Lake Tahoe" (349ms)
+    ✓ assertVisible: text="Mono Lake" (160ms)
+    ✓ assertNotVisible: text="Golden Gate Bridge" (293ms)
+    ✓ takeScreenshot (144ms)
+✓ 05-category 9.7s
+
+  6 steps passing (9.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  05-category                    ✓ PASS       6      6      0      0       9.7s  cov2-ios-2 (ios 27.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       6      6      0      0       9.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8819 session=29663-1791739976331100000
+  /tmp/grantiva-sessions/29663-1791739976331100000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...

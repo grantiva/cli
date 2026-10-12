@@ -1,0 +1,20 @@
+>> {"method": "initialize", "params": {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "cov2", "version": "1"}}, "id": 1, "jsonrpc": "2.0"}
+<< [0.0s @11:56:43] {"id": 1, "jsonrpc": "2.0", "result": {"capabilities": {"resources": {"listChanged": false, "subscribe": true}, "tools": {"listChanged": false}}, "instructions": "Grantiva MCP server for iOS simulator and Android emulator automation. Use grantiva_* tools to interact with the device: tap, swipe, type, take screenshots, inspect the accessibility tree, build and run apps, manage simulators and emulators, and run visual regression tests.", "protocolVersion": "2025-03-26", "serverInfo": {"name": "grantiva", "version": "2.1.0"}}}
+>> {"jsonrpc": "2.0", "method": "notifications/initialized"}
+## shell [4.0s] exit=0: cd '/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12' && '/Users/kyle/.grantiva-qa/bin/grantiva' runner start --bundle-id com.kylebrowning.Landmarks --simulator 7E846901-F93F-4220-A153-7043061033D7 --detach >/dev/null; echo started
+## stdout: started
+
+## stderr: Starting runner...
+  Bundle ID: com.kylebrowning.Landmarks
+  Simulator: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+
+## sleep 10
+>> {"method": "tools/call", "params": {"name": "grantiva_vrt_capture", "arguments": {}}, "id": 2, "jsonrpc": "2.0"}
+<< [1.4s @11:56:58] {"id": 2, "jsonrpc": "2.0", "result": {"content": [{"text": "Error: The runner session is starting (WDA on port 8987 has no session yet). Retry in a few seconds.", "type": "text"}], "isError": true}}
+## shell [0.3s] exit=0: cd '/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pn12' && '/Users/kyle/.grantiva-qa/bin/grantiva' runner stop; mkdir -p .grantiva/baselines; cp .grantiva/captures/*.png .grantiva/baselines/; ls .grantiva/baselines
+## stdout: Runner stopped (pid 59438)
+
+## stderr: cp: .grantiva/captures/*.png: No such file or directory
+
+nonjson_lines=0 server_alive=True
+exit=0

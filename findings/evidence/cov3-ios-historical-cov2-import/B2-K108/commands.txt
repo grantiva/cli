@@ -1,0 +1,13 @@
+# project $S/psteps (baselines approved in IOS-094, Caching recaptured with a changed clock)
+# uptime: 12:09  up 4 days,  3:36, 5 users, load averages: 16.57 49.38 44.82
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/psteps  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ sed -i '' 's/^  threshold: .*/  threshold: 0.0001/; s/^  perceptual_threshold: .*/  perceptual_threshold: 80.0/' grantiva.yml; tail -3 grantiva.yml; $GRANTIVA diff compare | grep -A1 '✗'; $GRANTIVA diff compare --json | python3 -I -c 'import json,sys; [print(s["screenName"], s["message"]) for s in json.load(sys.stdin)["screens"] if s["status"]!="passed"]'
+# exit=0 elapsed=.586s -> pixel-only.out / pixel-only.err
+# uptime: 12:09  up 4 days,  3:36, 5 users, load averages: 16.57 49.38 44.82
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/psteps  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ sed -i '' 's/^  perceptual_threshold: .*/  perceptual_threshold: 5.0/' grantiva.yml; $GRANTIVA diff compare | grep -A1 '✗'
+# exit=0 elapsed=.293s -> both.out / both.err
+# uptime: 12:09  up 4 days,  3:36, 5 users, load averages: 16.57 49.38 44.82
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/psteps  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ sed -i '' 's/^  threshold: .*/  threshold: 1.0/' grantiva.yml; $GRANTIVA diff compare | grep -A1 '✗'
+# exit=0 elapsed=.292s -> perceptual-only.out / perceptual-only.err

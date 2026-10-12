@@ -1,0 +1,59 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=7E846901-F93F-4220-A153-7043061033D7 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 7E846901-F93F-4220-A153-7043061033D7
+Simulator booted: cov2-ios-1 (7E846901-F93F-4220-A153-7043061033D7)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/flows/n05.yaml
+
+  grantiva-runner 1.1.28-grantiva.11 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8987
+
+  [1/1] n05 (n05.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ tapOn: text="No Such" (13.6s)
+      ╰─ Element not found: text='No Such' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such' OR value ==[c] 'No Such')'; page source: no elements match selector; closest on-screen texts: "Vertical scroll bar, 2 pages", "Lake Tahoe, Sierra Nevada, CA", "Golden Gate Bridge, San Francisco, CA")
+✗ n05 18.8s
+
+  [1/1] n05 (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/flows/n05.yaml) - Device: cov2-ios-1 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ tapOn: text="No Such" (13.6s)
+      ╰─ Element not found: text='No Such' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such' OR value ==[c] 'No Such')'; page source: no elements match selector; closest on-screen texts: "Vertical scroll bar, 2 pages", "Lake Tahoe, Sierra Nevada, CA", "Golden Gate Bridge, San Francisco, CA")
+✗ n05 18.8s
+
+  1 steps passing (18.8s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  n05                            ✗ FAIL       2      1      1      0      18.8s  cov2-ios-1 (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      18.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/failure-1791744708.png
+Error: Runner failed (exit 1): n05: tapOn: text="No Such": Element not found: text='No Such' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such' OR value ==[c] 'No Such')'; page source: no elements match selector; closest on-screen texts: "Vertical scroll bar, 2 pages", "Lake Tahoe, Sierra Nevada, CA", "Golden Gate Bridge, San Francisco, CA")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

@@ -1,0 +1,9 @@
+# project $S/pdiff
+# uptime: 12:09  up 4 days,  3:36, 5 users, load averages: 13.74 45.60 43.61
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pdiff  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA run --no-build --simulator $U1 --flow .maestro/01-browse.yaml >/dev/null 2>&1; $GRANTIVA run --no-build --simulator $U1 --flow .maestro/coverage/02-exact-negative.yaml >/dev/null 2>&1; echo "-- captures"; ls .grantiva/captures; echo "-- run-captures"; ls .grantiva/run-captures
+# exit=0 elapsed=35.506s -> runs.out / runs.err
+# uptime: 12:10  up 4 days,  3:37, 5 users, load averages: 14.13 42.18 42.44
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov2-ios/pdiff  (U1=7E846901-F93F-4220-A153-7043061033D7 cov2-ios-1 26.0; U2=BEE381AC-0D32-4D84-B304-068815F08B2F cov2-ios-2 27.0)
+$ $GRANTIVA diff approve; ls .grantiva/baselines; $GRANTIVA diff compare | head -4
+# exit=0 elapsed=.267s -> approve-compare.out / approve-compare.err

@@ -1,0 +1,18 @@
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- scrollUntilVisible:
+    element: "Crater Lake"
+    direction: DOWN
+    timeout: 30000
+- takeScreenshot: "Scrolled"
+- runFlow: sub.yaml
+- runFlow:
+    file: back.yaml
+- runFlow:
+    commands:
+      - tapOn: "Favorites"
+- extendedWaitUntil:
+    visible: "Landmarks you favorite will appear here."
+    timeout: 4000
+- takeScreenshot: "Favs"
