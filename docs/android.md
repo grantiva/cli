@@ -41,6 +41,10 @@ matches against the resource ID or test tag.
 A `run --flow` with no config and no `--application-id` launches the app the flow's literal
 `appId:` header names.
 
+A `variant` or `module` Gradle does not know fails the build with Gradle's reason and a line
+listing what exists, read with one bounded Gradle call: `Variants of :app: freeDebug, freeRelease,
+paidDebug, paidRelease.` or `Modules: app.`
+
 ## Devices
 
 `emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
@@ -178,7 +182,9 @@ and are kept for compatibility.
     grantiva mcp                         # in another terminal, or from an agent config
     grantiva runner stop
 
-`runner start` records the forwarded local port in `.grantiva/session.json`; `runner stop`
+`runner start` writes `.grantiva/session.json` as soon as it spawns the runner, with
+`"state": "starting"` and no port, and records the forwarded local port there once
+UIAutomator2 answers (`"state": "ready"`); `runner stop`
 kills the runner, stops the UIAutomator2 server, and removes the serial's forwards. The MCP
 server resolves the platform like every command (a directory with only
 `grantiva-android.yml` is Android; `grantiva mcp --platform ios|android` chooses when both
@@ -195,8 +201,9 @@ list tools and provision a device first. Only the device tools (`grantiva_tap`,
 `grantiva_swipe`, `grantiva_type`, `grantiva_screenshot`, `grantiva_a11y_tree`,
 `grantiva_a11y_check`, `grantiva_script`) need a session: until one exists they return an
 error naming `grantiva runner start` and `grantiva run --keep-alive`, and they pick up a
-session on the next call once it starts. Tools that need a config file say which file is
-missing.
+session on the next call once it starts. While a session is starting they say so instead:
+`Error: The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.`
+(see [mcp.md](mcp.md)). Tools that need a config file say which file is missing.
 
 The server attaches to a live `grantiva runner start` session in the project's
 `.grantiva/session.json`, or else to a `grantiva run --keep-alive` (or `runner start`)

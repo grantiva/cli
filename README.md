@@ -412,7 +412,9 @@ device: `bundleId` and `udid` on iOS, `applicationId` and `serial` on Android
 `alreadyExited` one, and each entry of `sessions`) carries all of those keys;
 `port` and the app ID are `null` when the session did not record them. On top
 of them a stop document has `runnerPid`, `killed` and `reaped`, and
-`alreadyExited` and `sessions` when they apply. `runnerPid` is the stable field: it
+`alreadyExited` and `sessions` when they apply. An `already_running` result for
+a session that is still starting has `"port": null`, and its text says
+`Runner already running (pid N, starting)`. `runnerPid` is the stable field: it
 is always the runner's pid, while `pid` is the grantiva process that was
 holding a released `run --keep-alive` session. `killed` is true when the runner
 ignored SIGINT and SIGTERM and took SIGKILL, false otherwise. A stop that found the runner
@@ -508,7 +510,10 @@ Without `--json`, `run` prints one block per screen and per flow, then `Screens:
 when a failure stopped the run before some flows started), then the screenshot directory. A
 failing run prints the same for whatever ran, the failed step marked `✗`, before its `Error:`
 line; a failure before anything ran prints no summary. A step that must match exactly reads
-`(exact)` in these blocks, and a `wait:` step reads as the live line does (`Wait 3s`).
+`(exact)` in these blocks, and a `wait:` step reads as the live line does (`Wait 3s`). Steps and
+failure messages name flow files as you wrote them or by their project-relative path, never by
+the staged copy grantiva hands the runner: `runFlow: 14-runflow-sub.yaml` reads the same in the
+text and in `--json`, and so does every file a `runFlow` cycle error lists.
 
 `run --json` has the same shape whether the run passed or failed. `screens`
 holds one entry per configured screen (`"kind": "screen"`) and one per flow
@@ -539,7 +544,7 @@ Two flags adjust the stderr side only; neither changes stdout:
 
 - **`--verbose`** — adds debug-level detail, with timestamps and labels, including every subprocess Grantiva runs and its exit status.
 - **`--quiet`** — silences progress narration, including the runner's own
-  output (banner, step lines, summary, report paths). Warnings and errors still
+  output (its banner, step lines, summary and report paths). Warnings and errors still
   print — a failing run's `Error:` line names the failed step — and the
   command's result on stdout is untouched, so
   `grantiva doctor --json --quiet | jq` is still valid JSON. A failing `run --quiet` still
@@ -599,7 +604,7 @@ grantiva simulator teardown --udid "$UDID" --force
 
 This kills whatever is holding that simulator (including a `simctl diagnose` the
 dying runner starts), releases the lease, removes the killed runner's keep-alive
-session files and the killed run's temp directories (its staged flows and, without
+session files (`sessionFilesRemoved` in `--json`) and the killed run's temp directories (its staged flows and, without
 `--report-dir`, its report directory; `--json` lists them under
 `temporaryDirectoriesRemoved`, and a `--report-dir` is never touched), and clears
 any stale capacity record: a pending reservation, or a record with no session ID
@@ -694,7 +699,8 @@ grantiva diff approve
 
 `diff capture` writes `.grantiva/captures/<screen>.png` for each configured screen. `diff approve` (with no names) and
 `diff compare` work on the screens configured in `grantiva.yml`; any other file in `.grantiva/captures/` (for example a
-shot an older `grantiva run` left there) is listed in a note (and under `ignored` in `--json`) and left alone. A failing screen's line names the check it
+shot an older `grantiva run` left there) is listed in a note (and under `ignored` in `--json`) and left alone. `diff approve <screen>...` approves the named
+screens; when any of them has no capture it names every missing one in one error and approves none. A failing screen's line names the check it
 failed and its limit, for example `Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)`.
 
 `diff compare` exits 0 only when every screen has a baseline and passes. It exits 1 when a screen fails or errors,
