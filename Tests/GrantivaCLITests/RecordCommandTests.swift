@@ -247,6 +247,48 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
     }
 
+    /// L60: simctl's idle-screen movie (one 40/600 s sample, headers at
+    /// 3.045 s) goes through the same hold as Android: 3.000 s by every box,
+    /// the timing fields in the report, the held frame at every request.
+    func testIOSStaticScreenRecordingIsHeldToExactlyTheRequestedDuration() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-ios-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var command = try RecordCommand.parse([
+            "--platform", "ios", "--simulator", "Fake", "--duration", "3", "--frames-at", "0,1500,2900",
+        ])
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.recordingData = try XCTUnwrap(Data(base64Encoded: SimctlRecordingFixture.idleScreenBase64))
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        try await command.run()
+
+        let report = try JSONSerialization.jsonObject(with: Data(contentsOf: URL(fileURLWithPath: ".grantiva/recordings/recording.json"))) as? [String: Any]
+        XCTAssertEqual(report?["lastFrameMilliseconds"] as? Int, 0)
+        XCTAssertEqual(report?["recordedMilliseconds"] as? Int, 67)
+        let frames = try XCTUnwrap(report?["frames"] as? [[String: Any]])
+        XCTAssertEqual(frames.map { $0["actualMilliseconds"] as? Int }, [0, 0, 0])
+        let video = URL(fileURLWithPath: ".grantiva/recordings/recording.mov")
+        let duration = try await AVURLAsset(url: video).load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(duration), 3, accuracy: 0.001, "AVFoundation read 3.045 s before")
+        let timing = try MP4LastFrameHold.timing(of: Data(contentsOf: video)).get()
+        XCTAssertEqual(timing.recordedSeconds, 3, accuracy: 0.001, "the samples, which ffmpeg reads, last 3 s too")
+    }
+
+    /// L60: the iOS note names neither screenrecord nor a disconnected device.
+    func testTheIOSHeldFrameNoteNamesNoAndroidTool() throws {
+        let timing = MP4LastFrameHold.Timing(frameCount: 1, lastFrameSeconds: 0, recordedSeconds: 0.067)
+        let note = try XCTUnwrap(RecordCommand.heldRecordingNote(timing: timing, requestedSeconds: 3, platform: .ios))
+        XCTAssertEqual(
+            note,
+            "The recording's last frame is at 0ms; it was held to the requested 3.0s. "
+                + "The simulator records a frame only when the screen changes, so this is expected for an idle screen."
+        )
+        XCTAssertFalse(note.contains("screenrecord"))
+        XCTAssertFalse(note.contains("connected"))
+    }
+
     /// K84: a frame past --duration is refused before anything is recorded.
     func testAndroidFrameBeyondTheRequestedDurationIsRefusedBeforeRecording() throws {
         XCTAssertThrowsError(try RecordCommand.parse(["--duration", "2", "--frames-at", "2500"])) { error in
@@ -318,10 +360,11 @@ final class RecordCommandTests: XCTestCase {
         }
     }
 
-    /// K84: a timestamp within --duration passes validation; a recording
-    /// that then ends short of it still fails after recording, as before.
-    /// iOS has no hold, so the near-empty fixture ends before 1000 ms.
-    func testRecordingThatEndsShortOfAValidTimestampStillFailsAfterRecording() async throws {
+    /// K84: a timestamp within --duration passes validation. A recording
+    /// that then ends short of it used to fail after recording on iOS, which
+    /// had no hold; since L60 the near-empty movie is held to --duration on
+    /// both platforms, so the frame resolves to the held one.
+    func testARecordingThatEndsShortOfAValidTimestampIsHeldOnIOS() async throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-short-\(UUID().uuidString)", isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         let previous = FileManager.default.currentDirectoryPath
@@ -331,13 +374,10 @@ final class RecordCommandTests: XCTestCase {
         let fake = FakeDevicePlatform(platform: .ios)
         fake.recordingData = try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64))
         command.devicePlatform = InjectedDevicePlatform(fake)
-        do {
-            try await command.run()
-            XCTFail("expected the post-recording error")
-        } catch {
-            XCTAssertTrue("\(error)".contains("before requested frame 1000ms"), "\(error)")
-        }
+        try await command.run()
         XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+        let duration = try await AVURLAsset(url: URL(fileURLWithPath: ".grantiva/recordings/recording.mov")).load(.duration)
+        XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
     }
 
     /// K34-b fix round: when screenrecord already stretched the last frame,

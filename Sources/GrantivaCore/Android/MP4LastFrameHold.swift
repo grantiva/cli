@@ -1,8 +1,10 @@
 import Foundation
 
-/// Holds the last video frame of an MP4 until a requested duration.
+/// Holds the last video frame of an MP4 or QuickTime movie until a
+/// requested duration.
 ///
-/// `screenrecord` writes a frame only when the screen changes, so a recording
+/// `screenrecord` (Android) and `simctl io recordVideo` (iOS) write a frame
+/// only when the screen changes, so a recording
 /// of a static screen is a single frame at 0 ms with a zero duration, and a
 /// recording whose screen stopped changing ends at its last change. This
 /// rewrites the container's timing (the last `stts` sample delta and the
@@ -11,6 +13,13 @@ import Foundation
 /// (screenrecord gives its last frame the previous frame's delta when it
 /// stops) has its last sample shortened to end there instead. No frame is
 /// re-encoded.
+///
+/// Either way the track header, its edit list and the movie header are set
+/// to exactly the requested length, so readers that go by the container
+/// (AVFoundation) and readers that go by the samples (ffmpeg) agree (L60).
+/// simctl's `.mov` uses the same boxes: time scale 600, one edit
+/// (`elst`) spanning the wall-clock recording (past the last sample, which
+/// ffmpeg ignores), and on a changing screen B-frames (`ctts`, `cslg`).
 public enum MP4LastFrameHold {
     /// The video track's frames as recorded, before any hold.
     public struct Timing: Sendable, Equatable {
@@ -86,10 +95,17 @@ public enum MP4LastFrameHold {
 
     /// Rewrites the file in place when its last frame must be held, and says
     /// what it found either way.
-    public static func holdFile(atPath path: String, toSeconds seconds: Double) throws -> Outcome {
+    ///
+    /// `dropFramesPastEnd`: a recording whose last frame starts after the
+    /// requested length is cut to it with its edit list (the frames past
+    /// the end are not shown) instead of being left as recorded. simctl
+    /// records a changing screen at up to 60 frames a second and stops a
+    /// little after the request, so its last frame is nearly always past it;
+    /// screenrecord's sparse frames are kept (K111).
+    public static func holdFile(atPath path: String, toSeconds seconds: Double, dropFramesPastEnd: Bool = false) throws -> Outcome {
         guard isInRange(seconds) else { return .outOfRange(seconds) }
         let url = URL(fileURLWithPath: path)
-        switch process(try Data(contentsOf: url), toSeconds: seconds) {
+        switch process(try Data(contentsOf: url), toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd) {
         case .failure(let error):
             return .unreadable(error.reason)
         case .success(.unchanged(let timing)):
@@ -108,8 +124,10 @@ public enum MP4LastFrameHold {
 
     /// The rewritten file, or nil when nothing needs to change, the length is
     /// out of range, or the file is malformed. Never traps on bad input.
-    public static func hold(_ data: Data, toSeconds seconds: Double) -> Held? {
-        guard isInRange(seconds), case .success(.held(let held)) = process(data, toSeconds: seconds) else { return nil }
+    public static func hold(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool = false) -> Held? {
+        guard isInRange(seconds),
+              case .success(.held(let held)) = process(data, toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd)
+        else { return nil }
         return held
     }
 
@@ -120,7 +138,7 @@ public enum MP4LastFrameHold {
 
     /// Parses the file once, reads the video timing from that parse, and
     /// rewrites the same structure when the last frame needs holding.
-    private static func process(_ data: Data, toSeconds seconds: Double) -> Result<Processed, Unreadable> {
+    private static func process(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool) -> Result<Processed, Unreadable> {
         let bytes = [UInt8](data)
         let movie: (top: [Box], moovIndex: Int)
         switch parseMovie(bytes) {
@@ -143,7 +161,7 @@ public enum MP4LastFrameHold {
         var heldAny = false
         var trimmedAny = false
         for index in moov.children.indices where moov.children[index].type == "trak" {
-            switch holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget) {
+            switch holdTrack(&moov.children[index], seconds: seconds, movieTarget: movieTarget, dropFramesPastEnd: dropFramesPastEnd) {
             case .failure(let error): return .failure(error)
             case .success(.held): heldAny = true
             case .success(.trimmed): trimmedAny = true
@@ -151,14 +169,11 @@ public enum MP4LastFrameHold {
             }
         }
         guard heldAny || trimmedAny else { return .success(.unchanged(timing)) }
-        if movieDuration < movieTarget { mvhd.setDuration(movieTarget) }
-        if trimmedAny, !heldAny {
-            // The movie ends with its longest track, now the trimmed one
-            // unless another track runs longer.
-            let longest = moov.children.filter { $0.type == "trak" }
-                .compactMap { $0.child("tkhd")?.trackDuration() }.max() ?? movieTarget
-            if movieDuration > longest { mvhd.setDuration(longest) }
-        }
+        // The movie ends with its longest track: the held or trimmed video
+        // track, now exactly the requested length, unless another runs longer.
+        let longest = moov.children.filter { $0.type == "trak" }
+            .compactMap { $0.child("tkhd")?.trackDuration() }.max() ?? movieTarget
+        if movieDuration != longest { mvhd.setDuration(longest) }
         moov.replaceChild(mvhd)
 
         let oldSize = top[moovIndex].end - top[moovIndex].start
@@ -225,9 +240,14 @@ public enum MP4LastFrameHold {
             frames += UInt64(entry.count)
         }
         // The last sample's start is the end minus its own delta; a run of
-        // zero samples at the end does not move it.
+        // zero samples at the end does not move it. With B-frames (`ctts`)
+        // the frame shown last is the one with the latest presentation time.
         let last = entries.last(where: { $0.count > 0 })
-        let lastStart = end - UInt64(last?.delta ?? 0)
+        var lastStart = end - UInt64(last?.delta ?? 0)
+        if let ctts = mdia.child("minf")?.child("stbl")?.child("ctts"),
+           let presented = latestPresentation(stts: entries, ctts: ctts) {
+            lastStart = presented
+        }
         return .success(Timing(
             frameCount: Int(frames),
             lastFrameSeconds: Double(lastStart) / Double(scale),
@@ -235,20 +255,49 @@ public enum MP4LastFrameHold {
         ))
     }
 
+    /// The latest presentation time (decode time plus composition offset)
+    /// of any sample, never negative; nil when `ctts` cannot be read or does
+    /// not cover the samples.
+    private static func latestPresentation(stts: [(count: UInt32, delta: UInt32)], ctts: Box) -> UInt64? {
+        guard let offsets = ctts.cttsEntries() else { return nil }
+        var decode: Int64 = 0
+        var latest: Int64 = 0
+        var cursor = offsets.makeIterator()
+        var current = cursor.next()
+        var remaining = current?.count ?? 0
+        for entry in stts {
+            for _ in 0..<entry.count {
+                while remaining == 0 {
+                    guard let next = cursor.next() else { return nil }
+                    current = next
+                    remaining = next.count
+                }
+                latest = max(latest, decode + Int64(current?.offset ?? 0))
+                remaining -= 1
+                decode += Int64(entry.delta)
+            }
+        }
+        return UInt64(max(latest, 0))
+    }
+
     private enum TrackChange { case none, held, trimmed }
 
     /// Holds a video track's last frame to the requested length, or trims a
     /// track that ran past it (K111): what changed, `.none` for a track that
     /// is not provably video (no mdia or hdlr, L25), already exactly long
-    /// enough, or whose last frame starts after the requested length; or the
-    /// atom that stopped it.
-    private static func holdTrack(_ trak: inout Box, seconds: Double, movieTarget: UInt64) -> Result<TrackChange, Unreadable> {
+    /// enough, or whose last frame starts after the requested length (unless
+    /// `dropFramesPastEnd` and it has an edit list to cut it with); or the
+    /// atom that stopped it. A changed track's header and edit list are set
+    /// to exactly `movieTarget` (L60).
+    private static func holdTrack(
+        _ trak: inout Box, seconds: Double, movieTarget: UInt64, dropFramesPastEnd: Bool
+    ) -> Result<TrackChange, Unreadable> {
         guard var mdia = trak.child("mdia"),
               mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .success(.none) }
         guard var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0, mdhd.duration() != nil else {
             return .failure(Unreadable("the video track's mdhd box is missing or too short"))
         }
-        guard var tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration() else {
+        guard let tkhd = trak.child("tkhd"), let previous = tkhd.trackDuration() else {
             return .failure(Unreadable("the video track's tkhd box is missing or too short"))
         }
         guard var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
@@ -261,49 +310,68 @@ public enum MP4LastFrameHold {
             guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
             current = sum
         }
+        let hasEdit = trak.child("edts")?.child("elst") != nil
+
+        /// The media now ends at the target: stts, mdhd and (B-frames) cslg say so.
+        func endMedia(_ entries: [(count: UInt32, delta: UInt32)]) {
+            stts.setSttsEntries(entries)
+            stbl.replaceChild(stts)
+            if var cslg = stbl.child("cslg") {
+                cslg.setCompositionEnd(mediaTarget)
+                stbl.replaceChild(cslg)
+            }
+            minf.replaceChild(stbl); mdia.replaceChild(minf)
+            mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
+            trak.replaceChild(mdia)
+        }
+
+        let change: TrackChange
         if current > mediaTarget {
             // Shorten the last sample so the track ends at the target, never
             // before the last frame starts.
             guard let last = entries.last, last.count > 0 else { return .success(.none) }
             let lastStart = current - UInt64(last.delta)
-            guard lastStart < mediaTarget else { return .success(.none) }
-            entries.removeLast()
-            if last.count > 1 { entries.append((last.count - 1, last.delta)) }
-            entries.append((1, UInt32(mediaTarget - lastStart)))
-            stts.setSttsEntries(entries)
-            stbl.replaceChild(stts); minf.replaceChild(stbl); mdia.replaceChild(minf)
-            mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
-            trak.replaceChild(mdia)
-            if previous > movieTarget {
-                tkhd.setTrackDuration(movieTarget); trak.replaceChild(tkhd)
-                if var edts = trak.child("edts"), var elst = edts.child("elst") {
-                    elst.shortenLastEdit(by: previous - movieTarget)
-                    edts.replaceChild(elst); trak.replaceChild(edts)
-                }
+            if lastStart < mediaTarget {
+                entries.removeLast()
+                if last.count > 1 { entries.append((last.count - 1, last.delta)) }
+                entries.append((1, UInt32(mediaTarget - lastStart)))
+                endMedia(entries)
+            } else if !(dropFramesPastEnd && hasEdit) {
+                return .success(.none)
             }
-            return .success(.trimmed)
+            // Otherwise the edit list alone ends the movie at the target; the
+            // samples past it stay in the file, unshown.
+            change = .trimmed
+        } else if current < mediaTarget {
+            let last = entries.removeLast()
+            let heldDelta = UInt64(last.delta) + (mediaTarget - current)
+            guard heldDelta <= UInt64(UInt32.max) else {
+                return .failure(Unreadable("the held stts sample delta does not fit in 32 bits"))
+            }
+            if last.count > 1 { entries.append((last.count - 1, last.delta)) }
+            entries.append((1, UInt32(heldDelta)))
+            endMedia(entries)
+            change = .held
+        } else if previous != movieTarget {
+            // The samples already end at the target; only the headers do not.
+            change = previous > movieTarget ? .trimmed : .held
+        } else {
+            return .success(.none)
         }
-        guard current < mediaTarget else { return .success(.none) }
-        let last = entries.removeLast()
-        let heldDelta = UInt64(last.delta) + (mediaTarget - current)
-        guard heldDelta <= UInt64(UInt32.max) else {
-            return .failure(Unreadable("the held stts sample delta does not fit in 32 bits"))
-        }
-        if last.count > 1 { entries.append((last.count - 1, last.delta)) }
-        entries.append((1, UInt32(heldDelta)))
-        stts.setSttsEntries(entries)
-        stbl.replaceChild(stts); minf.replaceChild(stbl); mdia.replaceChild(minf)
-        mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
-        trak.replaceChild(mdia)
 
-        if previous < movieTarget {
+        if previous != movieTarget {
+            var tkhd = tkhd
             tkhd.setTrackDuration(movieTarget); trak.replaceChild(tkhd)
             if var edts = trak.child("edts"), var elst = edts.child("elst") {
-                elst.extendLastEdit(by: movieTarget - previous)
+                if previous < movieTarget {
+                    elst.extendLastEdit(by: movieTarget - previous)
+                } else {
+                    elst.shortenLastEdit(by: previous - movieTarget)
+                }
                 edts.replaceChild(elst); trak.replaceChild(edts)
             }
         }
-        return .success(.held)
+        return .success(change)
     }
 
     // MARK: - Boxes
@@ -371,6 +439,24 @@ public enum MP4LastFrameHold {
             var out = Array(payload[0..<4]) + be32(UInt32(entries.count))
             for entry in entries { out += be32(entry.count) + be32(entry.delta) }
             payload = out
+        }
+        /// `ctts` entries; offsets are signed (version 1, and in practice
+        /// the version 0 tables simctl writes).
+        func cttsEntries() -> [(count: UInt32, offset: Int32)]? {
+            guard payload.count >= 8 else { return nil }
+            let count = Int(read32(payload, 4))
+            guard payload.count >= 8 + count * 8 else { return nil }
+            return (0..<count).map { (read32(payload, 8 + $0 * 8), Int32(bitPattern: read32(payload, 12 + $0 * 8))) }
+        }
+        /// `cslg`'s compositionEndTime (version 0: 32-bit, version 1: 64-bit).
+        mutating func setCompositionEnd(_ value: UInt64) {
+            if version == 1 {
+                guard payload.count >= 44 else { return }
+                write64(&payload, 36, value)
+            } else {
+                guard payload.count >= 24 else { return }
+                write32(&payload, 20, UInt32(min(value, UInt64(Int32.max))))
+            }
         }
         mutating func extendLastEdit(by amount: UInt64) {
             guard payload.count >= 8 else { return }
