@@ -59,14 +59,10 @@ One round = fix wave → repack → smoke → full coverage pass → triage. The
 - Triage prep: `findings/ledgers/cluster-map-round2.md` covers CLI + iOS fails (24 clusters M01–M24, 19 expectation corrections); Android folds in when its slice lands.
 - Task 6: complete. Slices merged (9fadf607); cluster map `00-cluster-map-round2.md` (41 clusters); briefs L08–L48 (44 files) in `2026-10-12-coverage-issues-round2/`; expectation corrections applied (`(corrected round 3)`, `00-expectation-corrections-round2.md`); report `2026-10-12-round2-coverage-report.md` — verdict **ROUND 2: 48 findings — round 3 fix wave required** (44 new + open L05/L06/L07/K111).
 - Round-3 fix wave: plan `docs/superpowers/plans/2026-10-13-round3-fix-wave.md` (10 tasks; rulings table inside); ledger copy `findings/ledgers/2026-10-13-round3-fix-wave-ledger.md`. State as of 2026-10-13:
-  - Task 4 (CLI MCP/ownership): merged, CLI PR #200 → main a1551645.
-  - Task 6 (CLI output/config): merged, CLI PR #202 → main e8714f0e.
-  - Task 5 (CLI lifecycle): merged after 3 fix rounds, CLI PR #201 → main ffc661ae (stop marker `<pid>.stop.json` beside the owner file in /tmp/grantiva-sessions; parked: holder pid reuse can leave a stale marker — brief L52 if cov3 shows one).
-  - Task 1 (runner crash/timing + L49/L50 addendum): merged after 3 fix rounds, runner PR #22 → grantiva/main f10f0f5.
-  - Task 2 (runner gestures, PR #21): approved; rebasing onto grantiva/main (CHANGELOG hand-merge, lint must go green) → merge next. landmarks-demo PR #3 merged (main 75acc87).
-  - Task 7 (docs/CI, L30/L31 + consistency pass): implementer running on `.worktrees/fix3-docs`, branch fix3/docs-ci from ffc661ae.
-  - Brief L51 filed (screen/point swipes still `input swipe`; round 4 unless cov3 fails on it). L10 brief corrected: `--quiet` keeps the result summaries (README contract).
-  - Then T8 repack 1.1.28-grantiva.12 + bundle PR, T9 release build + smoke (`smoke4-*`), T10 round-3 coverage pass (`cov3-*`).
+  - ALL round-3 fix PRs merged: runner #22 (T1 + L49/L50), #21 (T2) → grantiva/main 2d1b625; CLI #200 (T4), #202 (T6), #201 (T5), #203 (T7 docs/CI), #204 (T8 bundle runner 1.1.28-grantiva.12) → CLI main dc965716; landmarks-demo #3 (main 75acc87).
+  - New briefs: L49, L50 (fixed in #22), L51 (screen/point swipes still `input swipe`, round 4), L52 (hierarchy lacks `starting` for keep-alive runs, round 4), L53 (runner accepts `--device ""`, round 4). L10 corrected (`--quiet` keeps the result summaries). Parked: holder-pid-reuse stale stop marker (L54 if seen).
+  - Task 9 Step 1 (release build dc965716 → ~/.grantiva-qa/bin; runner .12 → ~/.grantiva-qa/runner) running; Step 2 smoke (`smoke4-*`, findings/round3-smoke.md) next.
+  - Task 10 Step 1 done: `docs/superpowers/plans/2026-10-13-round3-coverage-pass.md` + `2026-10-13-round3-coverage-matrix.md` (1157 rows; +57 B3-, +16 N3-). Step 2 (slices cov3-cli/ios/android via SDD) starts after the smoke is clean.
 
 ## Incidents to report to the owner
 1. Round 1, CLI slice: README quick-start resolved `init`'s default simulator to the owner's `iPhone 18 Pro` and booted it with the demo app (shut down afterwards, not deleted).
