@@ -180,9 +180,14 @@ struct EmulatorCommand: AsyncParsableCommand {
             _ = try? await emulators.pruneCreatedAVDs()
             // After the kill, so a refused teardown touches nothing; the
             // runner's own adb cleanup has nothing left to do by then.
+            // A runner marked above counts as stopped by this teardown even
+            // when it was gone before `stopRunners` got to it: it died with
+            // its emulator, or its `runner start` read the marker (L54).
             if let stopRunners {
                 for index in outcomes.indices {
-                    outcomes[index].runnerSessionStopped = !(await stopRunners(outcomes[index].serial)).isEmpty
+                    let serial = outcomes[index].serial
+                    let stopped = await stopRunners(serial)
+                    outcomes[index].runnerSessionStopped = !stopped.isEmpty || !(marked[serial] ?? []).isEmpty
                 }
             }
             // A runner that died on its own left its session file (L12).
