@@ -79,7 +79,7 @@ grantiva run --flow flows/onboarding.yaml --keep-alive --logs
 grantiva hierarchy > state.xml
 ```
 
-- **`--keep-alive`** — Holds the GrantivaAgent session open after flows complete. The app stays frozen in whatever state the flow left it. Ctrl-C (or `kill -INT` on a backgrounded run) releases it, reaping grantiva-runner, WebDriverAgent, and any diagnostics they started.
+- **`--keep-alive`** — Holds the GrantivaAgent session open after flows complete. The app stays frozen in whatever state the flow left it. Ctrl-C (or `kill -INT` on a backgrounded run, or `grantiva runner stop` from the same directory) releases it, reaping grantiva-runner, WebDriverAgent, and any diagnostics they started. A release once the hold is armed (`Press Ctrl-C to release.` printed) ends the run with the status its flows earned: the flow blocks and `Flows:` summary print, and it exits 0 for a pass, 1 for a failure (with the `Error:` line), as without `--keep-alive`; the ready file keeps the `passed` or `failed` it wrote. A stop during the flows, or a second Ctrl-C during a release, interrupts the run: exit 130, ready file `interrupted`.
 - **`--ready-file <path>`** — Writes that file once, atomically, when the run reaches a terminal state. With `--keep-alive` the session deliberately outlives the flows, so process exit is not a completion signal and `report.json` is rewritten incrementally; wait on this file instead:
 
   ```bash
@@ -370,11 +370,17 @@ grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml 
 ```
 
 `grantiva record --duration <s> --frames-at <ms,...>` writes the video and one PNG per
-timestamp, with a JSON report of the frame actually shown at each. On Android,
-`screenrecord` writes frames only when the screen changes, so Grantiva holds the last
-frame to `--duration` (and trims a recording that ran past it); if the last frame was on screen for more than half the recording, it
-prints a note on stderr, since a device that disconnected mid-recording looks the same as an
-idle screen. `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
+timestamp, with a JSON report of the frame actually shown at each. Both recorders
+(`simctl` on iOS, writing `.mov`; `screenrecord` on Android, writing `.mp4`) write frames
+only when the screen changes, so Grantiva holds the last frame to `--duration` and trims a
+recording that ran past it: the video is `--duration` long by any reader (AVFoundation and
+ffmpeg agree), and each frame's `actualMilliseconds` is the presentation time of the frame
+on screen at the requested time. On iOS, whose recorder stops a little after the request, a
+last frame that starts past `--duration` is cut by the movie's edit list; on Android it is
+kept. The report carries `lastFrameMilliseconds` and `recordedMilliseconds` on both. If the
+last frame was on screen for more than half the recording, `record` prints a note on stderr
+(expected for an idle screen; on Android a device that disconnected mid-recording looks the
+same). `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
 A `--frames-at` value past `--duration` is refused (exit 64) before anything is recorded. Paths in
 the output and the JSON report follow `--output`: relative to the current directory when it is
 relative, absolute when it is absolute.
@@ -444,8 +450,9 @@ written by 2.1 are still read:
 - `bundleId` → `applicationId` (.grantiva/session.json on Android)
 
 A foreground `runner start` ended by `grantiva runner stop` exits 0. One ended
-by `simulator teardown` or `emulator teardown`, run from any directory, exits 0
-too and says `Runner stopped by teardown (pid N); the session has ended.`: the
+by `simulator teardown` or `emulator teardown`, run from any directory and at
+any point after `Runner started` (its session flow still running or its hold
+armed), exits 0 too and says `Runner stopped by teardown (pid N); the session has ended.`: the
 teardown writes `<pid>.stop.json` beside the runner's owner file in
 `/tmp/grantiva-sessions` before it stops it, so the marker is found whatever
 the directory or runner home either side uses. A marker counts only for the
@@ -453,9 +460,12 @@ very process it names, and it is removed once read, or once its runner and
 its `runner start` are both gone.
 
 `runner stop` releases a `run --keep-alive` session started from the current
-directory as Ctrl-C would. If that run's flows had already finished, its
-`--ready-file` keeps the `passed` or `failed` it wrote (the ready file is
-written once); the `stopped` result of `runner stop` is the record of the release.
+directory as Ctrl-C would, whether its flows are still running (the run ends
+interrupted, exit 130; `port` is `null` in `--json` until the runner has
+published its session) or finished. If that run's flows had already finished,
+its `--ready-file` keeps the `passed` or `failed` it wrote (the ready file is
+written once) and the run exits with the status they earned; the `stopped`
+result of `runner stop` is the record of the release.
 
 ```json
 {"pid": 64253, "platform": "ios", "port": 8235, "status": "started",
