@@ -36,6 +36,18 @@ public struct RunnerSessionStopper: Sendable {
             case .released(_, _, _, let reaped), .terminated(_, _, _, let reaped): return reaped
             }
         }
+
+        /// This outcome with `more` helpers added to `reaped` (those it
+        /// already lists are not repeated).
+        public func adding(reaped more: [ReapedProcess]) -> Outcome {
+            let merged = reaped + more.filter { extra in !reaped.contains(where: { $0.pid == extra.pid }) }
+            switch self {
+            case .released(let grantivaPid, let runnerPid, let udid, _):
+                return .released(grantivaPid: grantivaPid, runnerPid: runnerPid, udid: udid, reaped: merged)
+            case .terminated(let runnerPid, let udid, let killed, _):
+                return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: merged)
+            }
+        }
     }
 
     public var store: KeepAliveSessionStore

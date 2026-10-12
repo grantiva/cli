@@ -32,6 +32,10 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
     /// did not start and did not stop (L04): a non-force teardown names them
     /// instead of killing them. `--force` reclaims them.
     public var leftoverProcesses: [ReapedProcess] = []
+    /// Helpers the stopped runner left running on the device that the
+    /// teardown ended before removing its runner homes (L63): on iOS, the
+    /// `simctl diagnose` WebDriverAgent's interrupted xcodebuild starts.
+    public var reapedProcesses: [ReapedProcess] = []
 
     public init(
         session: ManagedSimulatorSession,
@@ -62,7 +66,7 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case udid, session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped, leftoverProcesses
+        case udid, session, deleted, deviceHomesRemoved, deviceHomeFailures, runnerSessionStopped, leftoverProcesses, reapedProcesses
     }
 
     public init(from decoder: Decoder) throws {
@@ -74,6 +78,7 @@ public struct SimulatorTeardownOutcome: Codable, Equatable, Sendable {
         deviceHomeFailures = try container.decodeIfPresent([String].self, forKey: .deviceHomeFailures) ?? []
         runnerSessionStopped = try container.decodeIfPresent(Bool.self, forKey: .runnerSessionStopped) ?? false
         leftoverProcesses = try container.decodeIfPresent([ReapedProcess].self, forKey: .leftoverProcesses) ?? []
+        reapedProcesses = try container.decodeIfPresent([ReapedProcess].self, forKey: .reapedProcesses) ?? []
     }
 }
 

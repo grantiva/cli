@@ -177,6 +177,58 @@ public struct RunnerHelperReaper: Sendable {
         await reap(udid: udid, lineage: RunnerLineage(runnerPid: exitedRunnerPid), followLineage: false)
     }
 
+    /// After a teardown stopped the runners on `udid` (L63): ends the
+    /// WebDriverAgent `xcodebuild` and `simctl diagnose` still writing into
+    /// the device's runner home (`<runner home>/…/devices/<udid>`), so the
+    /// home the teardown then removes stays removed.
+    ///
+    /// An interrupted xcodebuild starts diagnose in a process group of its
+    /// own and exits, so neither the runner's group nor its lineage holds it
+    /// by the time the teardown looks; the device home it writes into names
+    /// it as the stopped run's. Ending an xcodebuild can start another
+    /// diagnose, so the table is read again after each round, up to `rounds`
+    /// times. Each round is `runner stop`'s bound: SIGINT, `gracePeriod`,
+    /// then SIGKILL; a helper that outlives it is killed, not left.
+    public func reapDeviceHome(udid: String, rounds: Int = 3) async -> [ReapedProcess] {
+        guard !udid.isEmpty else { return [] }
+        let me = getpid()
+        var reaped: [ReapedProcess] = []
+        for _ in 0..<max(rounds, 1) {
+            guard let table = try? await snapshot() else { break }
+            var targets = HostProcess.parse(table).compactMap { process -> ReapedProcess? in
+                guard process.pid > 1, process.pid != me,
+                      !reaped.contains(where: { $0.pid == process.pid && $0.command == process.command }),
+                      let kind = SimulatorReaper.kind(of: process.command, owning: udid),
+                      kind == .diagnose || kind == .webDriverAgent,
+                      writesIntoDeviceHome(process.command, udid: udid)
+                else { return nil }
+                return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
+            }
+            guard !targets.isEmpty else { break }
+            await terminate(&targets)
+            reaped += targets
+        }
+        return reaped.sorted { $0.pid < $1.pid }
+    }
+
+    /// True when a path in `command` lies in the runner home of `udid`
+    /// (`<runner base>/…/devices/<udid>`) under one of `runnerBases`.
+    func writesIntoDeviceHome(_ command: String, udid: String) -> Bool {
+        let needle = command.lowercased()
+        let device = "/devices/\(udid.lowercased())"
+        return runnerBases.contains { base in
+            guard !base.isEmpty else { return false }
+            let prefix = base.lowercased() + "/"
+            var rest = needle[...]
+            while let start = rest.range(of: prefix) {
+                let path = rest[start.upperBound...].prefix { $0 != " " }
+                if path.contains(device + "/") || path.hasSuffix(device) { return true }
+                rest = rest[start.upperBound...]
+            }
+            return false
+        }
+    }
+
     private func reap(udid: String, lineage: RunnerLineage, followLineage: Bool = true) async -> [ReapedProcess] {
         guard !udid.isEmpty, let table = try? await snapshot() else { return [] }
         var lineage = lineage
