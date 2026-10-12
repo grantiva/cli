@@ -4,7 +4,7 @@ Grantiva exposes the live UI accessibility tree of a running simulator or emulat
 
 There are two ways to read the hierarchy, depending on how you started the session.
 
-## Primary: `grantiva hierarchy` (v1.1.0+)
+## Primary: `grantiva hierarchy`
 
 Pairs with `grantiva run --keep-alive`. Recommended for agent-driven flows.
 

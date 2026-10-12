@@ -16,7 +16,7 @@ Android projects apart on its own when no config exists.
 - Android has its own config file, `grantiva-android.yml`, beside `grantiva.yml`.
 - The embedded Go runner (grantiva/runner, derived from devicelab-dev/maestro-runner)
   stays. Its UIAutomator2 path is reused. The Swift-native runner plan in
-  `docs/plans/v2-swift-native-runner.md` is shelved.
+  `docs/superpowers/plans/v2-swift-native-runner.md` is shelved.
 - Emulators are the default device. Physical devices are used only when named
   explicitly with `--device <serial>`.
 - Android CI runs on self-hosted Macs or developer machines. GitHub-hosted macOS runners
