@@ -665,6 +665,37 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(usage.values, [])
     }
 
+    /// L56: a signal that releases an armed keep-alive hold leaves the run
+    /// to print its summary and exit 1 for a failure, not 130; a signal
+    /// during the flows still exits through the relay.
+    func testAReleasedHoldEndsThroughTheFailurePathNotTheRelay() async {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        SignalRelay.shared.track(group: 434_343, deviceNoun: "simulator")
+        defer { SignalRelay.shared.untrack(group: 434_343) }
+        SignalRelay.shared.armHold(group: 434_343)
+        XCTAssertFalse(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { _ in }))
+        XCTAssertFalse(RunCommand.exitsThroughSignalRelay())
+
+        let report = RunnerFailureReport()
+        report.recordEarlierCaptures([
+            ScreenCapture(screenName: "99-crash", path: "", sizeBytes: 0, steps: [
+                StepResult(action: "launchApp", status: .failed, duration: 1, message: "app crashed"),
+            ], kind: .flow),
+        ])
+        let stdout = CapturedLines()
+        await RunCommand.handleSuiteFailure(
+            error: GrantivaError.commandFailed("Runner failed (exit 1)", 1), report: report,
+            device: FakeDevicePlatform(platform: .ios), deviceID: "U", captureDir: NSTemporaryDirectory(),
+            json: false, resultOutput: ResultOutput { stdout.append($0) }, log: { _ in }
+        )
+        XCTAssertTrue(stdout.values.joined(separator: "\n").contains("Flows: 1 total, 0 passed, 1 failed"), "\(stdout.values)")
+
+        SignalRelay.shared.resetTerminationForTesting()
+        SignalRelay.shared.untrack(group: 434_343)
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertTrue(RunCommand.exitsThroughSignalRelay())
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)

@@ -132,6 +132,7 @@ enum RunnerExecution {
             lease.release()
         }
         defer {
+            SignalRelay.shared.disarmHold(group: child.processGroup)
             SignalRelay.shared.untrack(group: child.processGroup)
             SignalRelay.shared.removeCleanup(cleanupToken)
         }
@@ -185,14 +186,28 @@ enum RunnerExecution {
         // flow goes terminal, so a waiter that polls the ready file and then
         // immediately runs `grantiva hierarchy` could race it. Hold the ready
         // file (briefly) until that session file is on disk.
-        let watcher = readyFile.path.map { _ in
-            Task.detached(priority: .utility) {
-                var completeSince: Date?
-                while !Task.isCancelled {
-                    if let index = RunnerReportIndex.load(reportDir: request.reportDir),
-                       index.isComplete(expectedFlows: request.expectedFlows) {
-                        if request.keepAlive, child.isRunning,
-                           request.sessions.session(forRunnerPid: child.pid) == nil {
+        //
+        // The same watcher arms the keep-alive hold (L56): once every flow is
+        // terminal and the runner has published its session file, the
+        // runner is holding and the verdict is settled, so the first Ctrl-C
+        // or `runner stop` releases the hold and the run ends with the
+        // runner's own status instead of 130.
+        let group = child.processGroup
+        let watcher: Task<Void, Never>? = (readyFile.path != nil || request.keepAlive) ? Task.detached(priority: .utility) {
+            var completeSince: Date?
+            var wroteReady = readyFile.path == nil
+            var armed = !request.keepAlive
+            while !Task.isCancelled {
+                if let index = RunnerReportIndex.load(reportDir: request.reportDir),
+                   index.isComplete(expectedFlows: request.expectedFlows) {
+                    let published = request.keepAlive && child.isRunning
+                        && request.sessions.session(forRunnerPid: child.pid) != nil
+                    if published, !armed {
+                        SignalRelay.shared.armHold(group: group)
+                        armed = true
+                    }
+                    if !wroteReady {
+                        if request.keepAlive, child.isRunning, !published {
                             let since = completeSince ?? Date()
                             completeSince = since
                             if Date().timeIntervalSince(since) < request.sessionFileGrace {
@@ -207,12 +222,13 @@ enum RunnerExecution {
                             reportDir: request.readyReportDir
                         )
                         readyFile.write(state)
-                        return
+                        wroteReady = true
                     }
-                    try? await Task.sleep(nanoseconds: 200_000_000)
+                    if armed || !child.isRunning { return }
                 }
+                try? await Task.sleep(nanoseconds: 200_000_000)
             }
-        }
+        } : nil
         defer { watcher?.cancel() }
 
         let killed = KilledFlag()
@@ -230,6 +246,8 @@ enum RunnerExecution {
         }
         timeoutTask.cancel()
         runnerExited.mark()
+        // Nothing is held any more: a signal from here on interrupts.
+        SignalRelay.shared.disarmHold(group: child.processGroup)
         // SignalRelay marks itself terminating before it reaps the group, so a
         // runner killed by an interrupt is already visible as one here.
         let interrupted = SignalRelay.shared.isTerminating

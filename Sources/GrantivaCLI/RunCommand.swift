@@ -312,11 +312,19 @@ struct RunCommand: AsyncParsableCommand {
                     to: readyFile
                 )
             }
-            if SignalRelay.shared.isTerminating {
+            if Self.exitsThroughSignalRelay() {
                 await Self.awaitSignalRelayExit()
             }
             throw error
         }
+    }
+
+    /// True after an interrupt: the relay exits 130 once its cleanups run.
+    /// False after a signal released an armed keep-alive hold (L56): the
+    /// run's flows had finished, so it ends here with the status they
+    /// earned (1 for a failure), after printing its summary.
+    static func exitsThroughSignalRelay(_ relay: SignalRelay = .shared) -> Bool {
+        relay.isTerminating
     }
 
     /// On Ctrl-C the runner dies first, so this thread unwinds with a runner

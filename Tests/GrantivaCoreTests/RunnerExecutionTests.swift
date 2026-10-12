@@ -349,4 +349,115 @@ final class RunnerExecutionTests: XCTestCase {
         let outcome = RunnerExecution.Outcome(terminationStatus: 3, stderr: "", timedOut: false)
         XCTAssertEqual(RunnerExecution.exitDescription(outcome), "exit 3")
     }
+
+    // MARK: - L56: a release after the hold ends with the earned status
+
+    /// A stand-in for a keep-alive runner whose flows are over: it writes the
+    /// report (`flowStatus`), publishes its session file and holds; SIGINT
+    /// releases the hold and it exits `releaseStatus`, as the runner does.
+    private func holdingRunner(report: String, sessions: String, flowStatus: String, releaseStatus: Int) -> String {
+        """
+        trap 'exit \(releaseStatus)' INT
+        printf '{"status":"\(flowStatus)","flows":[{"name":"f","status":"\(flowStatus)"}]}' > \(report)
+        mkdir -p \(sessions)
+        printf '{"version":1,"sessionId":"abc","createdAt":"x","pid":%d,"port":8577,"outputDir":"/o"}' $$ > \(sessions)/$$-1791340478890825000.grantiva
+        while :; do sleep 0.1; done
+        """
+    }
+
+    /// Sends one signal through the relay once the hold is armed (the ready
+    /// file is written after arming); returns whether the relay would exit.
+    private func signalOnceArmed(readyPath: String, release: @escaping @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Task<Bool, Never> {
+        Task.detached {
+            for _ in 0..<200 where !FileManager.default.fileExists(atPath: readyPath) {
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            return SignalRelay.shared.simulateSignalForTesting(SIGINT, release: release)
+        }
+    }
+
+    func testAReleaseAfterTheHoldEndsWithTheRunnersFailedStatusNotAnInterrupt() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        let store = sessionStore()
+        let reportDir = scratch.appendingPathComponent("report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        let readyPath = scratch.appendingPathComponent("ready.json").path
+
+        let signal = signalOnceArmed(readyPath: readyPath)
+        let outcome = await RunnerExecution.run(request(
+            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+                                  flowStatus: "failed", releaseStatus: 1),
+            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+            keepAlive: true, sessions: store
+        ))
+        let wouldExit = await signal.value
+        XCTAssertFalse(wouldExit, "a release must not exit 130")
+        XCTAssertFalse(outcome.interrupted)
+        XCTAssertEqual(outcome.terminationStatus, 1)
+        XCTAssertTrue(SignalRelay.shared.isReleasingHold)
+        XCTAssertFalse(SignalRelay.shared.isTerminating)
+        XCTAssertEqual(try ReadyFile.read(readyPath).status, "failed", "the ready file is written once")
+    }
+
+    func testAReleaseAfterTheHoldOfAPassedRunEndsWithStatusZero() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        let store = sessionStore()
+        let reportDir = scratch.appendingPathComponent("report")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        let readyPath = scratch.appendingPathComponent("ready.json").path
+
+        let signal = signalOnceArmed(readyPath: readyPath)
+        let outcome = await RunnerExecution.run(request(
+            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+                                  flowStatus: "passed", releaseStatus: 0),
+            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+            keepAlive: true, sessions: store
+        ))
+        let wouldExit = await signal.value
+        XCTAssertFalse(wouldExit)
+        XCTAssertFalse(outcome.interrupted)
+        XCTAssertEqual(outcome.terminationStatus, 0)
+    }
+
+    /// Before the hold is armed (flows still running) a signal interrupts,
+    /// as today: the outcome is `interrupted` and the relay would exit 130.
+    func testASignalDuringTheFlowsIsStillAnInterrupt() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let lease = try SimulatorLease.acquire(udid: "SIM-1", directory: leaseDirectory)
+        defer { lease.release() }
+        let store = sessionStore()
+        let started = scratch.appendingPathComponent("started").path
+        let signal = Task.detached {
+            for _ in 0..<200 where !FileManager.default.fileExists(atPath: started) {
+                try? await Task.sleep(nanoseconds: 50_000_000)
+            }
+            return SignalRelay.shared.simulateSignalForTesting(SIGINT)
+        }
+        let outcome = await RunnerExecution.run(request(
+            script: "touch \(started); while :; do sleep 0.1; done",
+            lease: lease, keepAlive: true, sessions: store
+        ))
+        let wouldExit = await signal.value
+        XCTAssertTrue(wouldExit)
+        XCTAssertTrue(outcome.interrupted)
+    }
+
+    /// A second signal while a release is under way interrupts (exit 130).
+    func testASecondSignalDuringAReleaseInterrupts() {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        SignalRelay.shared.track(group: 424_242, deviceNoun: "simulator")
+        defer { SignalRelay.shared.untrack(group: 424_242) }
+        SignalRelay.shared.armHold(group: 424_242)
+        let released = Locked<[pid_t]>([])
+        XCTAssertFalse(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
+        XCTAssertEqual(released.value, [424_242])
+        SignalRelay.shared.untrack(group: 424_242)
+        XCTAssertTrue(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { released.append($0) }))
+        XCTAssertEqual(released.value, [424_242])
+    }
 }
