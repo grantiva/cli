@@ -1,0 +1,13 @@
+# HOME points at a scratch dir (rows/B-C16.1/home) so no stored credentials are used and nothing reaches the dashboard
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C16.1
+$ HOME=$PWD/home $GRANTIVA console webhooks create https://x.example --event not.an.event
+# exit=1 elapsed=.018s -> create.out / create.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C16.1
+$ HOME=$PWD/home $GRANTIVA console webhooks update WH-1 --event not.an.event
+# exit=1 elapsed=.018s -> update.out / update.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C16.1
+$ HOME=$PWD/home $GRANTIVA console webhooks events
+# exit=64 elapsed=.018s -> events.out / events.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -n 'func testUnknownWebhookEventsAreLeftToTheServer\|func testWebhookEventsIsNotASubcommand' Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift
+# exit=0 elapsed=.011s -> tests.out / tests.err

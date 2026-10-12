@@ -1,0 +1,13 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -n 'holdTrack' Sources | cut -c1-160 | head; grep -rn 'holdTrack\|malformed\|extra track\|nonVideo\|audio' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift | cut -c1-200 | head -20
+# exit=0 elapsed=.536s -> source.out / source.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ sed -n 120,160p Sources/GrantivaCore/Android/MP4LastFrameHold.swift; sed -n 215,235p Sources/GrantivaCore/Android/MP4LastFrameHold.swift; grep -n 'func test' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift
+# exit=0 elapsed=.017s -> hold_loop.out / hold_loop.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -n 'func test' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift | cut -c1-200; grep -n -i 'track has no mdia\|second track\|non-video\|audio\|soun' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift | head
+# exit=0 elapsed=.015s -> tests.out / tests.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -n -A3 'L25' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift | head -30; grep -n 'func test' Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift | sed -n '1,60p' | grep -i -E 'track|malformed|mdia|extra'
+# exit=0 elapsed=.015s -> l25_tests.out / l25_tests.err
+# round-3 re-run: the round-2 commands replayed with paths mapped to the 8f2cff67 tree / runner fd9d8e8 source (inputs/replay.py), outputs compared with round 2 (inputs/cmpold.py)

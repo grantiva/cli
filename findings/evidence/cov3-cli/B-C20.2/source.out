@@ -1,0 +1,29 @@
+    func checkConfig(for platform: Platform, directory: String = FileManager.default.currentDirectoryPath) -> DoctorCheck {
+        let name = platform.configFileName
+        let path = "\(directory)/\(name)"
+        if FileManager.default.fileExists(atPath: path) {
+            // The same parse `run` does, so a file `run` refuses is not "Found".
+            // `parse` rather than `load`: load also logs the unknown-key
+            // warnings, which doctor reports itself below.
+            let config: GrantivaConfig
+            do {
+                config = try GrantivaConfig.parse(
+                    String(contentsOfFile: path, encoding: .utf8), platform: platform, fileName: name
+                )
+            } catch {
+                var message = (error as? GrantivaError).flatMap { error -> String? in
+                    if case .invalidArgument(let message) = error { return message }
+                    return nil
+                } ?? error.localizedDescription
+                if message.hasPrefix("\(name) ") { message.removeFirst(name.count + 1) }
+                let firstLine = message.split(separator: "\n", maxSplits: 1).first.map(String.init) ?? message
+                return DoctorCheck(
+                    name: name, status: .error, message: firstLine,
+                    fix: firstLine.hasPrefix("could not be parsed") ? "Fix the YAML in \(path)" : "Fix \(path)",
+                    section: .project
+                )
+            }
+            if !config.warnings.isEmpty {
+                return DoctorCheck(
+                    name: name, status: .warning, message: config.warnings.joined(separator: "; "),
+                    fix: "Fix or remove the unknown keys; they are ignored", section: .project

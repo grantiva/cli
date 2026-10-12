@@ -1,0 +1,10 @@
+137:    func testUnknownWebhookEventsAreLeftToTheServer() {
+138-        XCTAssertNoThrow(try ConsoleWebhooksCommand.CreateCommand.parse(["https://x.example.com", "--event", "brand.new.event"]))
+139-        XCTAssertNoThrow(try ConsoleWebhooksCommand.UpdateCommand.parse(["wh_1", "--event", "brand.new.event"]))
+140-    }
+141-
+142:    func testWebhookEventsIsNotASubcommand() {
+143-        XCTAssertThrowsError(try ConsoleWebhooksCommand.parseAsRoot(["events"]))
+144-    }
+145-
+146-    func testWebhookCommandsRejectBlankResourceIDs() {

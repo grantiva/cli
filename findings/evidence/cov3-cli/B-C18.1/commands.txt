@@ -1,0 +1,20 @@
+# setup: and/ = landmarks-demo android copy without grantiva-android.yml; ios/ = ios copy without grantiva.yml; empty/ = empty grantiva.yml
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/and
+$ $GRANTIVA run
+# exit=1 elapsed=.020s -> android_noconfig.out / android_noconfig.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/ios
+$ $GRANTIVA run --no-build
+# exit=1 elapsed=.246s -> ios_noconfig.out / ios_noconfig.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/ios
+$ $GRANTIVA run --scheme Landmarks
+# exit=1 elapsed=.241s -> ios_noconfig_build.out / ios_noconfig_build.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/empty
+$ $GRANTIVA run --no-build
+# exit=1 elapsed=.130s -> empty_file.out / empty_file.err
+# INCIDENT: ios_noconfig / ios_noconfig_build used a full iOS copy whose .maestro/ flows are auto-detected without grantiva.yml, so run resolved the default simulator (the owner's iPhone 18 Pro) and stopped at the L08 refusal 'was not created by Grantiva' before any device work (0.24 s); booted list after (booted_after.out) shows nothing new, iPhone 18 Pro was already booted and was not touched. Not a valid fixture for the row; redone in ios_xcodeproj_only/ (Landmarks.xcodeproj only, as round 2)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/ios_xcodeproj_only
+$ $GRANTIVA run --no-build
+# exit=1 elapsed=.020s -> ios_noconfig_r3.out / ios_noconfig_r3.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C18.1/ios_xcodeproj_only
+$ $GRANTIVA run --scheme Landmarks
+# exit=1 elapsed=.021s -> ios_noconfig_build_r3.out / ios_noconfig_build_r3.err

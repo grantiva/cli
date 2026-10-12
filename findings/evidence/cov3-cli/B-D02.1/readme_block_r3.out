@@ -1,0 +1,10 @@
+4:grantiva run                Run Maestro flows against a simulator or emulator. No visual regression: reports step pass/fail and captures a screenshot on failure (see --keep-alive, --logs, --flow)
+5:grantiva record             Record a simulator or emulator and extract PNG frames at exact requested timestamps
+7:grantiva build build        Build the app for a simulator (xcodebuild) or emulator (Gradle); `grantiva build` alone runs this
+8:grantiva build install      Build and install the app on a simulator or emulator, then optionally launch it (--no-launch to skip)
+18:grantiva emulator ensure    Create the AVD when missing (installing its system image first) and boot it; stdout is the serial, or with --no-boot the AVD name (the serial when it is already running)
+19:grantiva emulator delete    Delete an AVD Grantiva created; others need --force; a running AVD is never deleted
+20:grantiva emulator sessions  List the emulators Grantiva started
+21:grantiva emulator teardown  Kill emulators Grantiva started: one by --serial, or --all
+22:grantiva console            Manage your Grantiva dashboard from the terminal (see `grantiva console --help`)
+31:grantiva runner dump-hierarchy  Dump the view hierarchy from a running app for agent inspection

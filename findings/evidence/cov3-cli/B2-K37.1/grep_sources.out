@@ -1,0 +1,11 @@
+Sources/GrantivaCore/Output/Output.swift:10:///     udid=$(grantiva simulator ensure --name "iPhone 17")
+Sources/GrantivaCore/Simulator/DefaultSimulator.swift:13:    public static let fallback = "iPhone 17 Pro"
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:200:    /// model inferred from the name (so `--name "iPhone 17"` is enough); the
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:261:                            + "Include a device model in the name (for example \"iPhone 17\") or pass --device-type."
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:443:    /// longest match wins so "BLE iPhone 17 Pro" resolves to "iPhone 17 Pro"
+Sources/GrantivaCore/Simulator/SimulatorManager.swift:444:    /// rather than "iPhone 17".
+Sources/GrantivaMCP/Tools/SimTools.swift:43:            description: "Create or idempotently reuse an exact named simulator, optionally booting it to readiness. Only 'name' is required: an existing simulator with that na
+Sources/GrantivaCLI/SimulatorCommand.swift:14:            abstract: "Create or reuse a named simulator and boot it. `--name` alone reuses an existing simulator with that name. To create one, the name must contain a devic
+Sources/GrantivaCLI/SimulatorCommand.swift:18:        @Option(name: .long, help: "Simulator name. An existing simulator with this name is reused as-is. When creating, the device type is read from the name if --device-typ
+Sources/GrantivaCLI/SimulatorCommand.swift:21:        @Option(name: .long, help: "Device type name (\"iPhone 17 Pro\") or identifier. Defaults to the device model named in --name. Checked against an existing simulator on
+Sources/GrantivaCLI/SimulatorCommand.swift:47:        ///     udid=$(grantiva simulator ensure --name "iPhone 17")

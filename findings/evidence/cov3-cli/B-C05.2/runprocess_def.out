@@ -1,0 +1,21 @@
+Sources/GrantivaCore/Shell.swift:99:public func runProcess(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
+Sources/GrantivaCore/Shell.swift:100:    precondition(!argv.isEmpty, "runProcess needs an executable")
+Sources/GrantivaMCP/Tools/VRTTools.swift:96:            let output = try await runProcess(captureCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:108:            let output = try await runProcess(compareCommand(platform: platform, executable: executable), environment: environment)
+Sources/GrantivaMCP/Tools/VRTTools.swift:132:            let output = try await runProcess(approveCommand(platform: platform, screens: screens, executable: executable), environment: environment)
+Sources/GrantivaCore/Shell.swift:99:public func runProcess(_ argv: [String], environment: [String: String]? = nil) async throws -> String {
+Sources/GrantivaCore/Shell.swift-100-    precondition(!argv.isEmpty, "runProcess needs an executable")
+Sources/GrantivaCore/Shell.swift-101-    let process = Process()
+Sources/GrantivaCore/Shell.swift-102-    process.executableURL = URL(fileURLWithPath: argv[0])
+Sources/GrantivaCore/Shell.swift-103-    process.arguments = Array(argv.dropFirst())
+Sources/GrantivaCore/Shell.swift-104-    if let environment {
+Sources/GrantivaCore/Shell.swift-105-        process.environment = ProcessInfo.processInfo.environment.merging(environment) { _, new in new }
+Sources/GrantivaCore/Shell.swift-106-    }
+Sources/GrantivaCore/Shell.swift-107-    let stdout = Pipe()
+Sources/GrantivaCore/Shell.swift-108-    let stderr = Pipe()
+Sources/GrantivaCore/Shell.swift-109-    process.standardInput = FileHandle.nullDevice
+Sources/GrantivaCore/Shell.swift-110-    process.standardOutput = stdout
+Sources/GrantivaCore/Shell.swift-111-    process.standardError = stderr
+Sources/GrantivaCore/Shell.swift-112-    let command = argv.map(shellQuoted).joined(separator: " ")
+Sources/GrantivaCore/Shell.swift-113-    GrantivaLog.logger.debug("$ \(command)")
+Sources/GrantivaCore/Shell.swift-114-    let exited = AsyncStream<Void> { continuation in

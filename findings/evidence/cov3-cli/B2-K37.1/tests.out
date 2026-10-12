@@ -1,0 +1,21 @@
+Tests/GrantivaMCPTests/ToolSchemaTests.swift:39:            XCTAssertTrue(description.contains("default: \(DefaultSimulator.description)"), "\(name): \(description)")
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:35:        XCTAssertEqual(result.simulator, DefaultSimulator.name)
+Tests/GrantivaCoreTests/ProjectResolutionTests.swift:36:        XCTAssertEqual(ResolvedProject().simulator, DefaultSimulator.name)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:6:final class DefaultSimulatorTests: XCTestCase {
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:18:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: Data(catalog.utf8)), "iPhone 17 Pro")
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:22:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: nil), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:23:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: Data("not json".utf8)), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:28:        let data = DefaultSimulator.catalogJSON(executable: "/bin/sleep", arguments: ["30"], timeout: 0.5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:31:        XCTAssertEqual(DefaultSimulator.name(catalogJSON: data), DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:35:        let data = DefaultSimulator.catalogJSON(executable: "/bin/echo", arguments: ["hello"], timeout: 5)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:37:        XCTAssertNil(DefaultSimulator.catalogJSON(executable: "/usr/bin/false", arguments: [], timeout: 5))
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:41:        XCTAssertEqual(DefaultSimulator.name, DefaultSimulator.resolved ?? DefaultSimulator.fallback)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:42:        XCTAssertFalse(DefaultSimulator.name.isEmpty)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:45:    func testAMissingDefaultSimulatorSaysHowToCreateOrOverrideIt() async {
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:48:            _ = try await manager.exactDevice(nameOrUDID: DefaultSimulator.name)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:52:            XCTAssertTrue(message.contains("Simulator not found: \"\(DefaultSimulator.name)\""), message)
+Tests/GrantivaCoreTests/DefaultSimulatorTests.swift:53:            XCTAssertTrue(message.contains("grantiva simulator ensure --name \"\(DefaultSimulator.name)\""), message)
+Tests/GrantivaCLITests/InitIOSTests.swift:23:        XCTAssertTrue(yaml.contains("simulator: \(DefaultSimulator.fallback)\n"), yaml)
+Tests/GrantivaCLITests/InitIOSTests.swift:25:        XCTAssertTrue(warnings[0].contains("simulator \"\(DefaultSimulator.fallback)\" is a placeholder"), warnings[0])
+Tests/GrantivaCLITests/InitIOSTests.swift:29:    func testTheTemplateWritesTheSharedDefaultSimulator() {
+ToolSchemaTests.swift

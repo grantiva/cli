@@ -1,0 +1,23 @@
+ls: CHANGELOG.md: No such file or directory
+ci.yml
+release.yml
+6:    tags:
+7:      # Bare SemVer only: 2.0.1, 2.1.0-rc1. Tags are never prefixed with v.
+28:      - name: Check the tag matches the compiled-in version
+30:          # The git tag IS the version: no v prefix, exactly what
+31:          # `grantiva --version` prints. Verify they agree before anything is
+33:          # formula claiming a version the binary does not report.
+34:          VERSION="${{ github.ref_name }}"
+35:          case "$VERSION" in
+37:              echo "Tag $VERSION has a v prefix. Tags are bare SemVer (e.g. 2.0.1); retag without the v." >&2
+40:          DECLARED=$(sed -n 's/.*grantivaVersion = "\(.*\)".*/\1/p' Sources/GrantivaCore/Version.swift)
+42:            echo "Could not read grantivaVersion from Sources/GrantivaCore/Version.swift" >&2
+45:          if [ "$VERSION" != "$DECLARED" ]; then
+46:            echo "Tag is $VERSION, but Version.swift declares $DECLARED." >&2
+47:            echo "Bump Version.swift to match the tag, or tag the version the binary reports." >&2
+50:          echo "tag $VERSION matches Version.swift"
+76:          # The tag is the bare version, so it names the git tag, the release
+77:          # asset, and Homebrew's `version` field without any rewriting.
+78:          VERSION="${{ github.ref_name }}"
+87:            url "https://github.com/grantiva/cli/releases/download/${VERSION}/grantiva-${VERSION}-macos.tar.gz"
+89:            version "${VERSION}"

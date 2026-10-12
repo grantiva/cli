@@ -1,0 +1,84 @@
+    /// file cannot be read. With several video tracks, the longest one.
+    public static func timing(of data: Data) -> Result<Timing, Unreadable> {
+        parseMovie([UInt8](data)).flatMap { videoTiming(of: $0.top[$0.moovIndex]) }
+    }
+
+    /// The rewritten file, or nil when nothing needs to change, the length is
+    /// out of range, or the file is malformed. Never traps on bad input.
+    public static func hold(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool = false) -> Held? {
+        guard isInRange(seconds),
+              case .success(.held(let held)) = process(data, toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd)
+        else { return nil }
+        return held
+    }
+
+    private enum Processed {
+        case held(Held)
+        case unchanged(Timing)
+    }
+
+    /// Parses the file once, reads the video timing from that parse, and
+    /// rewrites the same structure when the last frame needs holding.
+    private static func process(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool) -> Result<Processed, Unreadable> {
+        let bytes = [UInt8](data)
+        let movie: (top: [Box], moovIndex: Int)
+        switch parseMovie(bytes) {
+        case .success(let value): movie = value
+        case .failure(let error): return .failure(error)
+        }
+        let (top, moovIndex) = movie
+        var moov = top[moovIndex]
+        let timing: Timing
+        switch videoTiming(of: moov) {
+        case .success(let value): timing = value
+        case .failure(let error): return .failure(error)
+        }
+        guard var mvhd = moov.child("mvhd") else { return .failure(Unreadable("the moov has no mvhd box")) }
+        guard let movieScale = mvhd.timescale(), movieScale > 0, let movieDuration = mvhd.duration() else {
+            return .failure(Unreadable("the mvhd box is too short or has a zero timescale"))
+        }
+        let movieTarget = UInt64((seconds * Double(movieScale)).rounded(.up))
+
+                if error != notVideo { reason = error.reason }
+            }
+        }
+        return best.map { .success($0) } ?? .failure(Unreadable(reason))
+    }
+
+    private static let notVideo = Unreadable("not a video track")
+
+    private static func trackTiming(_ trak: Box) -> Result<Timing, Unreadable> {
+        // A track without mdia/hdlr is not provably video: skipped, as the
+        // hold skips it (L25).
+        guard let mdia = trak.child("mdia"),
+              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .failure(notVideo) }
+        guard let mdhd = mdia.child("mdhd"), let scale = mdhd.timescale(), scale > 0, mdhd.duration() != nil else {
+            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
+        }
+        guard let stts = mdia.child("minf")?.child("stbl")?.child("stts"), let entries = stts.sttsEntries(), !entries.isEmpty else {
+            return .failure(Unreadable("the video track has no readable stts box"))
+        }
+        var end: UInt64 = 0
+        var frames: UInt64 = 0
+8:    func testSingleZeroLengthFrameIsHeldToTheRequestedDuration() throws {
+21:    func testRunOfEqualDeltasIsSplitAndChunkOffsetsFollowTheGrownMoov() throws {
+32:    func testRecordingAlreadyAsLongAsRequestedIsLeftAlone() {
+38:    func testVersion1BoxesAreHeldThroughTheir64BitFields() throws {
+52:    func testRecordedSecondsIsTheTrackLengthBeforeTheHold() throws {
+59:    func testShortHeaderBoxesAreLeftAloneInsteadOfTrapping() {
+71:    func testTimingReportsTheLastFramesStartAndTheTrackEnd() throws {
+82:    func testASingleFrameStartsAndEndsAtZero() throws {
+94:    func testHoldFileReportsTheTimingWhenTheTrackAlreadyLastsTheRequestedLength() throws {
+111:    func testAnOverrunningTrackIsTrimmedToTheRequestedLength() throws {
+129:    func testATrackExactlyAsLongAsRequestedIsUnchanged() throws {
+141:    func testALastFrameAfterTheRequestedLengthIsNotTrimmed() throws {
+157:    func testASimctlOneSampleMovieIsHeldToExactlyTheRequestedLength() throws {
+187:    func testASimctlMovieThatRanPastTheRequestIsTrimmedWithItsEditList() throws {
+216:    func testALastDecodedSampleThatIsNotTheLastShownIsNotShortened() throws {
+243:    func testAHeldMovieWithBFramesMovesItsCompositionEnd() throws {
+260:    func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
+281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+289:    func testHoldFileReportsTheTimingOfAHeldTrack() throws {
+302:    func testAFileThatCannotBeParsedReportsWhy() throws {
+322:    func testOutOfRangeLengthAndMissingAtomsAreNamed() throws {
+347:    func testNonMP4InputIsLeftAlone() {

@@ -1,0 +1,10 @@
+  --logs-level <logs-level>
+                          Log level for --logs: default, info, debug. Defaults
+                          to `default`. iOS passes it to `log stream --level`;
+                          on Android default and info keep logcat priority I
+                          and above, debug adds D. (values: default, info,
+123:`--logs-level` maps to a minimum logcat priority, for the tag or for every tag:
+125:| `--logs-level`      | logcat filter |
+127:| (none) or `default` | `*:I`         |
+128:| `info`              | `*:I`         |
+129:| `debug`             | `*:D`         |

@@ -1,0 +1,10 @@
+# setup: bin/grantiva = copy of ~/.grantiva-qa/bin/grantiva with no bundle beside it; existing = copy of CLI-141's rh (a .13 install); fresh = new home; HOME's ~/.grantiva/runner checked before/after
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C01.1
+$ GRANTIVA_RUNNER_HOME=$PWD/fresh ./bin/grantiva runner install
+# exit=1 elapsed=.431s -> fresh.out / fresh.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C01.1
+$ find fresh 2>&1
+# exit=0 elapsed=.011s -> fresh_tree.out / fresh_tree.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B-C01.1
+$ GRANTIVA_RUNNER_HOME=$PWD/existing ./bin/grantiva runner install
+# exit=0 elapsed=.019s -> existing.out / existing.err
