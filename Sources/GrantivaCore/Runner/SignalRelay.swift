@@ -189,10 +189,14 @@ public final class SignalRelay: @unchecked Sendable {
     }
 
     /// How a runner whose hold was released ended: with the verdict its
-    /// flows earned (0 or 1), or, when it exited 130 or was killed by a
-    /// signal (the release's escalation), as an interrupt.
-    public static func releaseWasInterrupted(status: Int32, signal: Int32?) -> Bool {
-        status == 130 || signal != nil
+    /// flows earned (0 or 1), or as an interrupt when it exited 130 or was
+    /// killed by SIGINT, SIGTERM or SIGKILL (the release and its
+    /// escalation). A crash (SIGSEGV, SIGABRT, SIGPIPE, …) during the
+    /// release is a failure, and so is a `--timeout` kill (`timedOut`).
+    public static func releaseWasInterrupted(status: Int32, signal: Int32?, timedOut: Bool = false) -> Bool {
+        guard !timedOut else { return false }
+        if let signal { return [SIGINT, SIGTERM, SIGKILL].contains(signal) }
+        return status == 130
     }
 
     static func releaseAnnouncement(signalName: String) -> String {

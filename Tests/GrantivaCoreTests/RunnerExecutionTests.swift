@@ -455,6 +455,43 @@ final class RunnerExecutionTests: XCTestCase {
         }
     }
 
+    /// A released runner that crashes (SIGABRT) during its release teardown
+    /// failed; it was not interrupted.
+    func testAReleasedRunnerThatCrashesIsAFailureNotAnInterrupt() async throws {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        let lease = try SimulatorLease.acquire(udid: "SIM-crash", directory: leaseDirectory)
+        defer { lease.release() }
+        let store = KeepAliveSessionStore(directory: scratch.appendingPathComponent("sessions-crash").path)
+        let reportDir = scratch.appendingPathComponent("report-crash")
+        try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+        let readyPath = scratch.appendingPathComponent("ready-crash.json").path
+        let crash: @Sendable (pid_t) -> Void = { pgid in _ = kill(-pgid, SIGABRT) }
+        let signal = signalOnceArmed(readyPath: readyPath, release: crash)
+        let outcome = await RunnerExecution.run(request(
+            script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+                                  flowStatus: "passed", releaseStatus: nil),
+            lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+            keepAlive: true, sessions: store
+        ))
+        let wouldExit = await signal.value
+        XCTAssertFalse(wouldExit)
+        XCTAssertEqual(outcome.terminatingSignal, SIGABRT)
+        XCTAssertFalse(outcome.interrupted)
+    }
+
+    func testOnlyAReleasesOwnSignalsOrExit130AreAnInterrupt() {
+        XCTAssertTrue(SignalRelay.releaseWasInterrupted(status: 130, signal: nil))
+        for signal in [SIGINT, SIGTERM, SIGKILL] {
+            XCTAssertTrue(SignalRelay.releaseWasInterrupted(status: 0, signal: signal), "\(signal)")
+            XCTAssertFalse(SignalRelay.releaseWasInterrupted(status: 0, signal: signal, timedOut: true), "\(signal) after --timeout")
+        }
+        for signal in [SIGSEGV, SIGABRT, SIGPIPE, SIGBUS] {
+            XCTAssertFalse(SignalRelay.releaseWasInterrupted(status: 0, signal: signal), "\(signal)")
+        }
+        XCTAssertFalse(SignalRelay.releaseWasInterrupted(status: 1, signal: nil))
+        XCTAssertFalse(SignalRelay.releaseWasInterrupted(status: 0, signal: nil))
+    }
+
     /// Before the hold is armed (flows still running) a signal interrupts,
     /// as today: the outcome is `interrupted` and the relay would exit 130.
     func testASignalDuringTheFlowsIsStillAnInterrupt() async throws {

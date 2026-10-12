@@ -191,6 +191,8 @@ public struct RunnerSessionStopper: Sendable {
         }
         if let file = runnerStartSession, file.udid.caseInsensitiveCompare(udid) == .orderedSame,
            !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
+            // session.json records no start time to check; the runner is
+            // matched by process name only.
             outcomes.append(await terminate(runnerPid: file.pid, udid: udid))
         }
         return outcomes

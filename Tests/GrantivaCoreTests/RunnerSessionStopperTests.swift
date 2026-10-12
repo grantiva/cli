@@ -234,6 +234,25 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertTrue(events.value.contains("terminate 701"), "the recorded runner itself is stopped: \(events.value)")
     }
 
+    /// An owner file written before `runnerStartTime` existed decodes with
+    /// nil, and its orphaned runner is still terminated, matched by process
+    /// name alone.
+    func testALegacyOwnerFileWithoutAStartTimeIsStillTerminatedByName() async throws {
+        let legacy = #"{"udid":"\#(udid)","runnerPid":701,"grantivaPid":700,"createdAt":"2026-10-07T10:00:00Z","detached":false}"#
+        try Data(legacy.utf8).write(to: directory.appendingPathComponent("701.owner.json"))
+        let owner = try XCTUnwrap(KeepAliveSessionStore.loadOwner(path: directory.appendingPathComponent("701.owner.json").path))
+        XCTAssertNil(owner.runnerStartTime)
+
+        let alive = Locked<Set<Int32>>([701])
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        stopper.processStartTime = { _ in 2_000 }
+        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+        XCTAssertEqual(outcomes.map(\.runnerPid), [701])
+        XCTAssertTrue(events.value.contains("terminate 701"), "\(events.value)")
+    }
+
     /// `recordOwner` writes the runner's start time (additive key).
     func testTheOwnerFileRecordsTheRunnersStartTime() throws {
         let store = KeepAliveSessionStore(directory: directory.path)
