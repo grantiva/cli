@@ -1,0 +1,20 @@
+    func testErrorAndReportDirAreOmittedWhenAbsent() throws {
+        let path = scratch.appendingPathComponent("ready.json").path
+        try ReadyFile.write(RunReadyState(status: "passed", flows: []), to: path)
+        let json = try String(contentsOfFile: path, encoding: .utf8)
+        XCTAssertFalse(json.contains("reportDir"), json)
+        XCTAssertFalse(json.contains("error"), json)
+
+        try ReadyFile.write(RunReadyState(status: "failed", flows: [], error: "--timeout must be at least 30 seconds."), to: path)
+        XCTAssertEqual(try ReadyFile.read(path).error, "--timeout must be at least 30 seconds.")
+    }
+}
+
+private final class LockedValue<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: Value
+
+    init(_ value: Value) {
+        storage = value
+    }
+

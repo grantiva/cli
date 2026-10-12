@@ -16,6 +16,8 @@ def m(s):
     s=s.replace(SP+'/cov2-cli/', SP+'/cov3-cli/')
     s=s.replace("sed 's#^#c65fc17:#'", "sed 's#^#8f2cff67:#'").replace("runner@1be68db","runner@fd9d8e8")
     s=s.replace('src-c65fc17','tree')
+    s=s.replace('/Users/kyle/Developer/grantiva-cli/.worktrees/regression','/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli')
+    s=s.replace(' findings/evidence/cov2-cli/inputs/', ' /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli/inputs/')
     return s
 row=sys.argv[1]
 t=open(os.path.join(O,row,'commands.txt')).read().split('\n')
@@ -28,3 +30,12 @@ for l in t:
         lab=mm.group(1)
         print('mkdir -p %s 2>/dev/null; cd %s && ev %s %s %s' % (q(cwd),q(cwd),row,q(lab),q(cmd)))
         cmd=None
+# MCP send.sh lines (round-2 format: '$ MCP_STDERR=... send.sh ... > out' then '# exit=N')
+cwd=None
+for i,l in enumerate(t):
+    if l.startswith('# cwd: '): cwd=m(l[7:]); continue
+    if l.startswith('$ MCP_STDERR=') and 'send.sh' in l:
+        cmd=m(l[2:])
+        req=re.search(r'send\.sh \S+ \S+ (\S+)',l).group(1)
+        print('mkdir -p %s; cp %s %s' % (q(os.path.dirname(m(req))), q(req), q(m(req))))
+        print('mkdir -p %s 2>/dev/null; cd %s && { echo "# cwd: $PWD"; echo %s; } >> $E/%s/commands.txt && bash -c %s 2> $E/%s/_mcp.exit; echo "# $(cat $E/%s/_mcp.exit)" >> $E/%s/commands.txt' % (q(cwd),q(cwd),q('$ '+cmd),row,q(cmd),row,row,row))

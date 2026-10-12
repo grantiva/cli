@@ -3,8 +3,9 @@ import re,sys,os,difflib
 O='/Users/kyle/Developer/grantiva-cli/.worktrees/cov2-cli/findings/evidence/cov2-cli'
 N='/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/evidence/cov3-cli'
 def norm(s,lines=True):
-    s=s.replace('c65fc17','8f2cff67').replace('1be68db','fd9d8e8').replace('cov2-cli','cov3-cli').replace('src-8f2cff67','tree').replace('1.1.28-grantiva.11','1.1.28-grantiva.13')
+    s=s.replace('c65fc17','8f2cff67').replace('1be68db','fd9d8e8').replace('cov2-','cov3-').replace('src-8f2cff67','tree').replace('1.1.28-grantiva.11','1.1.28-grantiva.13')
     s=re.sub(r'grantiva-runner-fd9d8e8[0-9a-f]+','RUNNER',s)
+    s=re.sub(r'\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d(\.\d+)?Z','TS',s)
     if lines: s=re.sub(r':\d+:',':N:',s); s=re.sub(r'^\d+[:-]','N:',s,flags=re.M)
     return s
 row=sys.argv[1]; res=[]

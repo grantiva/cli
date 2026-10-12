@@ -1,0 +1,19 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K45
+$ GRANTIVA_RUNNER_HOME=$PWD/rh $GRANTIVA runner install
+# exit=0 elapsed=1.121s -> first.out / first.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K45
+$ GRANTIVA_RUNNER_HOME=$PWD/rh $GRANTIVA runner install
+# exit=0 elapsed=.448s -> second.out / second.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K45
+$ GRANTIVA_RUNNER_HOME=$PWD/rh $GRANTIVA runner install --json
+# exit=0 elapsed=.479s -> json.out / json.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/B2-K45
+$ $GRANTIVA runner install --help | head -6
+# exit=0 elapsed=.022s -> help.out / help.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -E 'func test.*(AlreadyCurrent|AlreadyInstalled|Extracted|NoExtracting|SecondInstall)' Tests | cut -c1-200 | head
+# exit=0 elapsed=.044s -> tests.out / tests.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/tree
+$ grep -rn -B2 -A6 'Extracting' Tests/GrantivaCLITests | head -30
+# exit=0 elapsed=.016s -> tests_cli.out / tests_cli.err
+# round-3 re-run: the round-2 commands replayed with paths mapped to the 8f2cff67 tree (inputs/replay.py) in fixtures rebuilt as round 2 had them; outputs compared with round 2 (inputs/cmpold.py)

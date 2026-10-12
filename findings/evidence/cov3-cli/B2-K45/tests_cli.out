@@ -1,0 +1,25 @@
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-894-@available(macOS 15, *)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-895-final class RunnerInstallNarrationTests: XCTestCase {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:896:    func testOnlyAnInstallThatExtractsSaysExtracting() async throws {
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-897-        let installed = LockedValue(false)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-898-        let manager = RunnerManager(
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-899-            ensureAvailable: {},
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-900-            runnerPath: { "/rh/versions/v/grantiva-runner" },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-901-            runnerDir: { "/rh/versions/v" },
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-902-            install: { willExtract in
+--
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-909-        let first = LockedValue<[String]>([])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-910-        let firstResult = try await RunnerInstallCommand.install(manager: manager, note: { first.append($0) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:911:        XCTAssertEqual(first.value, ["Extracting runner..."])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-912-        XCTAssertTrue(firstResult.extracted)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-913-        XCTAssertEqual(RunnerInstallCommand.lines(firstResult).first, "Runner installed at /rh/versions/v/grantiva-runner")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-914-
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-915-        let second = LockedValue<[String]>([])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-916-        let secondResult = try await RunnerInstallCommand.install(manager: manager, note: { second.append($0) })
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:917:        XCTAssertFalse(second.value.contains { $0.contains("Extracting") }, "\(second.value)")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-918-        XCTAssertFalse(secondResult.extracted)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-919-        XCTAssertEqual(RunnerInstallCommand.lines(secondResult).first, "Runner already installed at /rh/versions/v/grantiva-runner")
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-920-
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-921-        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(secondResult).utf8)) as? [String: Any])
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-922-        XCTAssertEqual(json["extracted"] as? Bool, false)
+Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-923-        XCTAssertEqual(json["status"] as? String, "installed")

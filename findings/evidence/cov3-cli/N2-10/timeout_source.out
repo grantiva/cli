@@ -1,0 +1,5 @@
+57:    /// takes longer than `timeout` (it is then killed): a wedged
+62:        timeout: TimeInterval = 5
+80:        guard exited.wait(timeout: .now() + timeout) == .success else {
+82:            if exited.wait(timeout: .now() + 1) != .success { kill(process.processIdentifier, SIGKILL) }
+85:        _ = reader.wait(timeout: .now() + 1)

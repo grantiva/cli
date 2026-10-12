@@ -1,0 +1,21 @@
+## Resources
+
+| URI | Contents |
+| --- | --- |
+| `grantiva://hierarchy` | The current view hierarchy as a JSON tree (`application/json`), as `grantiva_a11y_tree` returns it. |
+| `grantiva://screenshot` | The current screenshot as a PNG (`image/png`, base64 blob). |
+
+Both read through the runner session. When there is no usable session (none, one still starting, a
+driver that is not answering yet, or an app under test that is not running), `resources/read` answers
+the JSON-RPC error code `-32002` whose message is the session tools' text, for example
+`No active runner session ... Start one with ...` or `The runner session is starting ... Retry in a few
+seconds.` Any other failure while reading (for example a page source that cannot be parsed) is
+`-32603` with its own text. An unknown URI is `-32600`.
+
+`resources/subscribe` to `grantiva://hierarchy` turns on `notifications/resources/updated` for it, and
+`resources/unsubscribe` turns them off. A notification follows only a `grantiva_tap`, `grantiva_swipe`,
+`grantiva_type` or `grantiva_script` call that may have changed the UI: a call that failed or was
+rejected sends none (a script that ran at least one step before failing does send one). Nothing is
+sent to a client that did not subscribe.
+
+Tests/GrantivaMCPTests/ToolErrorContractTests.swift:174:    func testResourceReadWithoutASessionIsNotAnInternalError() async throws {
