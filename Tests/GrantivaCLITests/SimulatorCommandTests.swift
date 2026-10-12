@@ -415,7 +415,7 @@ final class SimulatorCommandTests: XCTestCase {
             loadSession: { nil }, removeSession: {},
             stopSessions: { udid, file in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
         )
-        let (stopped, lines) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
+        let (stopped, lines, _) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
         XCTAssertEqual(stopped, [udid])
         XCTAssertEqual(lines, ["Stopped runner session (pid 701) for \(udid)."])
         XCTAssertEqual(events.value, ["terminate 701", "files 701"])

@@ -16,6 +16,9 @@ struct DeviceRunnerSessions: Sendable {
     var sweepStops: @Sendable () -> Void = {}
     /// Waits (bounded) for a marked runner to exit; true once it has.
     var waitForExit: @Sendable (_ runnerPid: Int32) async -> Bool = { _ in false }
+    /// Ends the WebDriverAgent helpers still writing into a simulator's
+    /// runner home once its runners are stopped (L63). Inert unless set.
+    var reapHelpers: @Sendable (_ udid: String) async -> [ReapedProcess] = { _ in [] }
 
     static let live = DeviceRunnerSessions(
         loadSession: { try? RunnerSessionInfo.load() },
@@ -25,7 +28,8 @@ struct DeviceRunnerSessions: Sendable {
         },
         markStops: { udid in markLive(udid: udid) },
         sweepStops: { RunnerStopMarker().sweep() },
-        waitForExit: { pid in await waitForExit(pid) }
+        waitForExit: { pid in await waitForExit(pid) },
+        reapHelpers: { udid in await RunnerHelperReaper.live().reapDeviceHome(udid: udid) }
     )
 
     /// Up to `timeout` for `pid` to be gone.
@@ -69,6 +73,9 @@ struct DeviceRunnerSessions: Sendable {
     /// A marked foreground `runner start` also stops its runner itself when
     /// it reads the marker (L54), so the stop may find it already ending;
     /// once its runner has exited it counts as stopped by this teardown.
+    /// On a simulator where a runner was stopped, the WebDriverAgent helpers
+    /// left writing into its runner home are then ended and added to the
+    /// last outcome's `reaped` (L63).
     func stop(udid: String) async -> [RunnerSessionStopper.Outcome] {
         let marked = markStops(udid)
         let file = loadSession()
@@ -78,6 +85,14 @@ struct DeviceRunnerSessions: Sendable {
         var outcomes = await stopSessions(udid, file)
         for pid in marked where !outcomes.contains(where: { $0.runnerPid == pid }) {
             if await waitForExit(pid) { outcomes.append(.terminated(runnerPid: pid, udid: udid, killed: false)) }
+        }
+        // An interrupted WebDriverAgent run leaves `simctl diagnose` writing
+        // into the device home, outside the runner's group and lineage
+        // (L63): end it here, so the teardown that removes the home next
+        // does not see it come back.
+        if let last = outcomes.indices.last, !DeviceID.isAndroidSerial(udid) {
+            let reaped = await reapHelpers(udid)
+            if !reaped.isEmpty { outcomes[last] = outcomes[last].adding(reaped: reaped) }
         }
         sweepStops()
         return outcomes
