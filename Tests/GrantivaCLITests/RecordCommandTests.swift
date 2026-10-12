@@ -380,6 +380,42 @@ final class RecordCommandTests: XCTestCase {
         XCTAssertEqual(CMTimeGetSeconds(duration), 2, accuracy: 0.01)
     }
 
+    /// K84: a recording the hold cannot rewrite (here a video time scale
+    /// so fine that the held sample's delta overflows 32 bits) and that ends
+    /// short of a valid timestamp still fails after recording.
+    func testARecordingTheHoldCannotRewriteStillFailsShortOfATimestamp() async throws {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("record-short-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let previous = FileManager.default.currentDirectoryPath
+        FileManager.default.changeCurrentDirectoryPath(dir.path)
+        defer { restoreDirectory((dir, previous)) }
+        var bytes = [UInt8](try XCTUnwrap(Data(base64Encoded: ScreenrecordFixture.staticScreenBase64)))
+        // The first mdhd is the video track's (version 0): time scale at +16
+        // from its type.
+        let type = Array("mdhd".utf8)
+        let at = try XCTUnwrap((0..<(bytes.count - 4)).first { Array(bytes[$0..<($0 + 4)]) == type })
+        let scale: UInt32 = 3_000_000_000
+        for index in 0..<4 { bytes[at + 16 + index] = UInt8(truncatingIfNeeded: scale >> (24 - 8 * index)) }
+        let data = Data(bytes)
+        let probe = dir.appendingPathComponent("probe.mp4")
+        try data.write(to: probe)
+        guard case .unreadable = try MP4LastFrameHold.holdFile(atPath: probe.path, toSeconds: 2) else {
+            return XCTFail("expected the hold to refuse this file")
+        }
+
+        var command = try RecordCommand.parse(["--duration", "2", "--frames-at", "1000", "--platform", "ios", "--simulator", "Fake"])
+        let fake = FakeDevicePlatform(platform: .ios)
+        fake.recordingData = data
+        command.devicePlatform = InjectedDevicePlatform(fake)
+        do {
+            try await command.run()
+            XCTFail("expected the post-recording error")
+        } catch {
+            XCTAssertTrue("\(error)".contains("before requested frame 1000ms"), "\(error)")
+        }
+        XCTAssertTrue(fake.calls.contains { $0.hasPrefix("recordVideo(") }, "\(fake.calls)")
+    }
+
     /// K34-b fix round: when screenrecord already stretched the last frame,
     /// the note says so and gives the track's length, not "held to".
     func testNoteForARecorderStretchedFrameGivesTheTrackLength() throws {

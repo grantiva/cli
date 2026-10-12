@@ -373,11 +373,12 @@ grantiva init               Generate grantiva.yml (iOS) or grantiva-android.yml 
 timestamp, with a JSON report of the frame actually shown at each. Both recorders
 (`simctl` on iOS, writing `.mov`; `screenrecord` on Android, writing `.mp4`) write frames
 only when the screen changes, so Grantiva holds the last frame to `--duration` and trims a
-recording that ran past it: the video is `--duration` long by any reader (AVFoundation and
-ffmpeg agree), and each frame's `actualMilliseconds` is the presentation time of the frame
-on screen at the requested time. On iOS, whose recorder stops a little after the request, a
-last frame that starts past `--duration` is cut by the movie's edit list; on Android it is
-kept. The report carries `lastFrameMilliseconds` and `recordedMilliseconds` on both. If the
+recording that ran past it: the video is `--duration` long by AVFoundation and by ffprobe,
+and each frame's `actualMilliseconds` is the presentation time of the frame on screen at the
+requested time. On iOS, whose recorder stops a little after the request, frames past
+`--duration` are cut by the movie's edit list: they are not shown, but they remain in the
+file (ffprobe's frame count includes them). On Android a last frame that starts past
+`--duration` is kept. The report carries `lastFrameMilliseconds` and `recordedMilliseconds` on both. If the
 last frame was on screen for more than half the recording, `record` prints a note on stderr
 (expected for an idle screen; on Android a device that disconnected mid-recording looks the
 same). `--verbose` prints the numbers behind it (frames, last frame, held span, threshold).
