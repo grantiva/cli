@@ -27,7 +27,7 @@
 
 ## New behaviours and rulings carried from the round-3 fix wave (each is a matrix row)
 
-Fix-wave PRs: runner #21, #22 (grantiva/main 2d1b625), CLI #200–#203 (main 7d7694d5) and the bundle PR (fill: <SHA>); landmarks-demo #3 (75acc87). Rows: `B3-L<nn>` per brief, `N3-nn` per new behaviour.
+Fix-wave PRs: runner #21, #22 (grantiva/main 2d1b625), CLI #200–#203 (main 7d7694d5) and the bundle PR #204 (main dc965716); landmarks-demo #3 (75acc87). Rows: `B3-L<nn>` per brief, `N3-nn` per new behaviour.
 
 - Rulings that changed a brief's acceptance (the `B3` rows use the ruling, not the brief's original text):
   - L10 (reversed during execution): `--quiet` suppresses progress and runner narration only; the screen/flow blocks and the `Screens:`/`Flows:` lines are the command's result and print on stdout on a failing `run --quiet` as on a passing one.
@@ -65,7 +65,7 @@ Round 2 left 7 real rows blocked (report §Blocked). Round 3 re-runs the ones th
 
 ### Task 0: Test home, worktrees, help corpus
 
-Run by the orchestrating session. Fix-wave Task 9 built the release binary from main (fill: <SHA>), installed it with its bundle in `~/.grantiva-qa/bin/`, upgraded `~/.grantiva-qa/runner` to `1.1.28-grantiva.12+android-drivers-2`, ran the round-3 smoke (`findings/round3-smoke.md`) and regenerated `findings/help/`.
+Run by the orchestrating session. Fix-wave Task 9 built the release binary from main dc965716, installed it with its bundle in `~/.grantiva-qa/bin/`, upgraded `~/.grantiva-qa/runner` to `1.1.28-grantiva.12+android-drivers-2`, ran the round-3 smoke (`findings/round3-smoke.md`) and regenerated `findings/help/`.
 
 - [ ] **Step 1:** Verify: `GRANTIVA_RUNNER_HOME=~/.grantiva-qa/runner ~/.grantiva-qa/bin/grantiva runner install | tail -2` (expect already installed, `1.1.28-grantiva.12`); `ls ~/.grantiva-qa/runner/cache/wda-builds | grep -c -- '-r1'` (expect 4; `-r2` if task-8-report says the caches were rebuilt); `~/.grantiva-qa/bin/grantiva --version` (2.1.0); `findings/round3-smoke.md` records the no-simulator MCP build as `isError` with nothing booted.
 - [ ] **Step 2:** `cd /Users/kyle/Developer/grantiva-cli && for s in cli ios android; do git worktree add -q .worktrees/cov3-$s -b cov3/$s coverage-campaign; mkdir -p .worktrees/cov3-$s/findings/evidence/cov3-$s; done`.
