@@ -136,7 +136,10 @@ public struct RunnerSessionStopper: Sendable {
     /// holder to exit, so nothing of the session is left when it returns.
     ///
     /// `deadline` (a teardown's, L63) caps every wait here and in the helper
-    /// reap; nil keeps `waitTimeout` and the reaper's own bounds.
+    /// reap; nil keeps `waitTimeout` and the reaper's own bounds. The process
+    /// group termination's own grace (`terminateGroup`, 5 s live) is not
+    /// cut short, so a runner that ignores SIGTERM can take the stop up to
+    /// that grace past the deadline.
     public func stop(_ session: KeepAliveSession, deadline: Date? = nil) async throws -> Outcome {
         let udid = session.udid ?? ""
         let waitTimeout = Self.capped(waitTimeout, by: deadline)
@@ -164,8 +167,12 @@ public struct RunnerSessionStopper: Sendable {
             }
             guard exited else {
                 let how = foregroundStart ? "its runner was stopped" : "SIGINT"
+                // A teardown's deadline that cut the wait short is named as
+                // such, not as "within 0s".
+                let when = deadline != nil && waitTimeout < self.waitTimeout
+                    ? "by the teardown deadline after" : "within \(Int(waitTimeout))s of"
                 throw GrantivaError.unavailable(
-                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of \(how). "
+                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit \(when) \(how). "
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }

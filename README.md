@@ -646,7 +646,8 @@ simulator's runner home (an interrupted xcodebuild starts diagnose in a process
 group of its own), before it removes that home, so the home stays removed: the
 xcodebuild takes SIGKILL at once, a diagnose SIGINT and then SIGKILL after 3 s.
 Stopping the sessions, waiting for their runners and this reap share one 30 s
-deadline. It lists them under `reapedProcesses` in `--json` (same fields as
+deadline, which a runner that ignores SIGTERM can overrun by at most one
+process-group grace (about 5 s). It lists them under `reapedProcesses` in `--json` (same fields as
 `leftoverProcesses`, `killed: true`; with `--force` too) and prints `Also stopped
 diagnose pid <pid>, which the runner left running for <udid>.` for each. Without
 `--force`, a process still holding the simulator, other than those of the run it

@@ -24,6 +24,8 @@ struct DeviceRunnerSessions: Sendable {
     var reapHelpers: @Sendable (_ udid: String, _ deadline: Date) async -> [ReapedProcess] = { _, _ in [] }
     /// The whole stop of one device (sessions, marked runners, helper reap)
     /// shares one deadline this far from its start (L63).
+    /// A runner that ignores SIGTERM can overrun it by at most one process
+    /// group grace (about 5 s): that grace runs to its end.
     var budget: TimeInterval = 30
 
     static let live = DeviceRunnerSessions(

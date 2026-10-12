@@ -211,7 +211,8 @@ struct SimulatorCommand: AsyncParsableCommand {
 
         /// Stops the runner sessions on each of `udids`; returns the devices
         /// that had one, a line per stopped session and per helper it ended,
-        /// and the helpers (`simctl diagnose`, …) ended per device (L63).
+        /// and the helpers (`simctl diagnose`, …) ended per device (L63),
+        /// keyed by the uppercased UDID so a `--udid` in any case matches.
         static func stopRunnerSessions(
             udids: [String], stop: (String) async -> [RunnerSessionStopper.Outcome]
         ) async -> (stopped: [String], lines: [String], reaped: [String: [ReapedProcess]]) {
@@ -224,7 +225,7 @@ struct SimulatorCommand: AsyncParsableCommand {
                 lines += outcomes.map(DeviceRunnerSessions.render)
                 let helpers = outcomes.flatMap(\.reaped)
                 lines += RunnerStopCommand.reapedLines(helpers, udid: udid)
-                if !helpers.isEmpty { reaped[udid] = helpers }
+                if !helpers.isEmpty { reaped[udid.uppercased(), default: []] += helpers }
             }
             return (stopped, lines, reaped)
         }
@@ -237,7 +238,7 @@ struct SimulatorCommand: AsyncParsableCommand {
                 var outcome = outcome
                 outcome.runnerSessionStopped = stopped.contains(outcome.udid)
                 outcome.leftoverProcesses = leftovers[outcome.udid] ?? []
-                outcome.reapedProcesses = reaped[outcome.udid] ?? []
+                outcome.reapedProcesses = reaped[outcome.udid.uppercased()] ?? []
                 return outcome
             }
         }
@@ -275,7 +276,7 @@ struct SimulatorCommand: AsyncParsableCommand {
         static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult]) -> [ForceTeardownResult] {
             results.map { result in
                 var result = result
-                result.reapedProcesses = reaped[result.udid] ?? []
+                result.reapedProcesses = reaped[result.udid.uppercased()] ?? []
                 if !result.reapedProcesses.isEmpty { result.reclaimed = true }
                 return result
             }

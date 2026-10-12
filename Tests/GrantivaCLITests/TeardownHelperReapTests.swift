@@ -246,6 +246,24 @@ final class TeardownHelperReapTests: XCTestCase {
         XCTAssertEqual(calls.value, [])
     }
 
+    /// A `--udid` typed in lowercase still gets the helpers the stop ended,
+    /// with and without `--force`.
+    func testReapedHelpersMatchAUdidInAnyCase() async {
+        let lower = udid.lowercased()
+        let helper = ReapedProcess(pid: 77, processGroup: 77, kind: .diagnose, command: "simctl diagnose", killed: true)
+        let result = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [lower]) { udid in
+            [.terminated(runnerPid: 5, udid: udid, killed: false, reaped: [helper])]
+        }
+        let outcome = SimulatorTeardownOutcome(udid: udid, session: nil, deleted: true)
+        XCTAssertEqual(SimulatorCommand.Teardown.marking([outcome], stopped: [udid], reaped: result.reaped).first?.reapedProcesses, [helper])
+        let lowerOutcome = SimulatorTeardownOutcome(udid: lower, session: nil, deleted: true)
+        XCTAssertEqual(SimulatorCommand.Teardown.marking([lowerOutcome], stopped: [lower], reaped: result.reaped).first?.reapedProcesses, [helper])
+        let force = ForceTeardownResult(udid: lower, processes: [], leaseReleased: false, capacityRecordsCleared: 0)
+        let forced = SimulatorCommand.Teardown.addingReaped(result.reaped, to: [force]).first
+        XCTAssertEqual(forced?.reapedProcesses, [helper])
+        XCTAssertEqual(forced?.reclaimed, true)
+    }
+
     /// `adding(reaped:)` skips a helper it already lists (same pid and
     /// command), keeps one whose pid was reused by another command.
     func testAddingReapedDeduplicatesByPidAndCommand() {
