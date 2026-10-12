@@ -1,0 +1,1 @@
+adb devices; avdmanager list avd -c; cat $HOME/.grantiva/android/started.json $HOME/.grantiva/android/created-avds.json 2>&1; ls -la /tmp/grantiva-sessions; ls $GRANTIVA_RUNNER_HOME; xcrun simctl list devices booted

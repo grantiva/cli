@@ -1,0 +1,70 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/12-env-precedence-cli.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 12-env-precedence-cli (12-env-precedence-cli.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (11.4s, slow)
+    ✓ tapOn: text="Deep Links" (2.2s)
+    ✗ assertVisible: text="from-cli" (17.4s)
+      ╰─ Element not visible: text='from-cli' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "from step", "Deep Links")
+✗ 12-env-precedence-cli 31.8s
+
+  [1/1] 12-env-precedence-cli (.maestro/coverage/12-env-precedence-cli.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (11.4s, slow)
+    ✓ tapOn: text="Deep Links" (2.2s)
+    ✗ assertVisible: text="from-cli" (17.4s)
+      ╰─ Element not visible: text='from-cli' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "from step", "Deep Links")
+✗ 12-env-precedence-cli 31.8s
+
+  2 steps passing (31.8s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  12-env-precedence-cli          ✗ FAIL       3      2      1      0      31.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      2      1      0      31.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/cf/12-env-precedence-cli/captures/failure-1791798364.png
+Error: Runner failed (exit 1): 12-env-precedence-cli: assertVisible: text="from-cli": Element not visible: text='from-cli' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "from step", "Deep Links")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
