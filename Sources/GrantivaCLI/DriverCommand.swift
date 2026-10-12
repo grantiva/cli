@@ -106,12 +106,16 @@ struct RunnerStartCommand: AsyncParsableCommand {
         Without --detach the command stays in the foreground, streams the runner's \
         output to stderr and holds the session until Ctrl-C (or `grantiva runner \
         stop` from another shell); it then stops the runner, removes the session \
-        files and releases the device. Interrupted, it exits 130. With --detach it \
-        returns once the driver is up and the runner keeps the session until \
-        `grantiva runner stop`.
+        files and releases the device. Interrupted, it exits 130; ended by \
+        `grantiva runner stop` or by a simulator or emulator teardown, it exits 0. \
+        With --detach it returns once the driver is up and the runner keeps the \
+        session until `grantiva runner stop`. .grantiva/session.json is written \
+        as soon as the runner is spawned, with "state": "starting", and marked \
+        "ready" once the driver answers.
 
         --json prints one document: {"status": "started" | "already_running", \
-        "pid": <number>, "port": <number>, "platform": "ios" | "android", plus \
+        "pid": <number>, "port": <number> (null for a session still starting), \
+        "platform": "ios" | "android", plus \
         "bundleId" and "udid" on iOS or "applicationId" and "serial" on Android, \
         and "log" with --detach}. "bundle_id" (and "udid" on Android) are kept \
         for compatibility and are deprecated.
