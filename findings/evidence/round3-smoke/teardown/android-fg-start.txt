@@ -1,0 +1,80 @@
+$ (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/demo/android) /Users/kyle/.grantiva-qa/bin/grantiva runner start --device emulator-5554   (foreground, backgrounded by this script)
+# start 18:53:01 18:53  up 4 days, 10:20, 5 users, load averages: 3.33 4.51 6.80
+Starting runner...
+  Application ID: com.kylebrowning.landmarks
+  Device: smoke4-android (emulator-5554)
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: reports/2026-10-11_18-53-01
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] session-flow (session-flow.yaml)
+────────────────────────────────────────────────────────────
+Runner started
+  UIAutomator2 port: 57973
+  PID:      34287
+  Session:  .grantiva/session.json
+
+Use 'grantiva runner dump-hierarchy' to inspect the view hierarchy.
+Press Ctrl-C (or run 'grantiva runner stop') to stop the session.
+    ✗ launchApp (12.9s)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 1: adb: device 'emulator-5554' not found
+)
+✗ session-flow 31.7s
+
+  [1/1] session-flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session/session-flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (12.9s)
+      ╰─ launchApp: all launch methods failed for 'com.kylebrowning.landmarks'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.kylebrowning.landmarks (cause: adb shell monkey -p com.kylebrowning.landmarks -c android.intent.category.LAUNCHER 1: exit status 1: adb: device 'emulator-5554' not found
+)
+    - waitForAnimationToEnd (skipped)
+✗ session-flow 31.7s
+
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  session-flow                   ✗ FAIL       2      0      1      1      31.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      0      1      1      31.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: reports/2026-10-11_18-53-01
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   reports/2026-10-11_18-53-01/report.json
+    JUnit:  reports/2026-10-11_18-53-01/junit-report.xml
+    Allure: reports/2026-10-11_18-53-01/allure-results
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=34287-1791770018880988000
+  /tmp/grantiva-sessions/34287-1791770018880988000.grantiva
+    Press Ctrl-C to release.
+
+  Releasing UIAutomator2 session...
+Runner stopped by teardown (pid 34287); the session has ended.
+# exit 0  end 18:58:13 18:58  up 4 days, 10:25, 5 users, load averages: 2.68 3.23 5.49

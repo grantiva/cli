@@ -1,0 +1,109 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --simulator DACD2CF4-C337-486F-98EB-02FB7A0AA705 --no-build --flow .maestro/02-favorite.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7
+# start 18:10:54 load averages: 9.04 17.04 17.51
+Resolved: scheme=Landmarks (UI Testing) simulator=DACD2CF4-C337-486F-98EB-02FB7A0AA705 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: DACD2CF4-C337-486F-98EB-02FB7A0AA705
+Simulator booted: smoke4-ios (DACD2CF4-C337-486F-98EB-02FB7A0AA705)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8417
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.7s)
+    ✓ assertVisible: text="Unfavorite" (680ms)
+    ✓ tapOn: text="Landmarks" (816ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (168ms)
+    ✓ takeScreenshot (159ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (665ms)
+    ✓ tapOn: text="Remove from favorites" (1.7s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (189ms)
+    ✓ takeScreenshot (69ms)
+✓ 02-favorite 17.0s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: smoke4-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ tapOn: text="Lake Tahoe" (1.9s)
+    ✓ tapOn: text="Favorite" (1.7s)
+    ✓ assertVisible: text="Unfavorite" (680ms)
+    ✓ tapOn: text="Landmarks" (816ms)
+    ✓ tapOn: text="Favorites" (2.0s)
+    ✓ assertVisible: text="Lake Tahoe" (168ms)
+    ✓ takeScreenshot (159ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (665ms)
+    ✓ tapOn: text="Remove from favorites" (1.7s)
+    ✓ assertNotVisible: text="Lake Tahoe" (2.4s)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (189ms)
+    ✓ takeScreenshot (69ms)
+✓ 02-favorite 17.0s
+
+  13 steps passing (17.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      17.0s  smoke4-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      17.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7/allure-results
+
+  Built by Grantiva
+
+
+  02-favorite
+    ✓ launchApp
+    ✓ tapOn: text="Lake Tahoe"
+    ✓ tapOn: text="Favorite"
+    ✓ assertVisible: text="Unfavorite"
+    ✓ tapOn: text="Landmarks"
+    ✓ tapOn: text="Favorites"
+    ✓ assertVisible: text="Lake Tahoe"
+    ✓ takeScreenshot
+    ✓ swipe: LEFT from text="Lake Tahoe"
+    ✓ tapOn: text="Remove from favorites"
+    ✓ assertNotVisible: text="Lake Tahoe"
+    ✓ assertVisible: text="Landmarks you favorite will appear here."
+    ✓ takeScreenshot
+    ▸ Screenshot: 02-favorite-cmd-007-Favorites With Item
+    ▸ Screenshot: 02-favorite-cmd-012-Favorites Empty
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/fav-7/captures/
+
+# exit 0
+# wall 21.76 s; end 18:11:16 load averages: 11.44 17.08 17.51

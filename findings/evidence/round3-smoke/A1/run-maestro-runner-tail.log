@@ -1,0 +1,40 @@
+18:05:17.621919 [INFO] Validated 1 flow(s)
+18:05:17.621934 [INFO] Single device execution mode
+18:05:17.621939 [INFO] Starting flow execution (parallel: false, devices: [])
+18:05:17.621943 [INFO] Creating driver for single device execution
+18:05:17.621946 [INFO] Connecting to Android device: emulator-5554
+18:05:18.855433 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+18:05:36.797132 [INFO] Starting UIAutomator2 server on device emulator-5554
+18:05:38.719312 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+18:05:38.734777 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+18:06:05.403267 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+18:06:05.532198 [INFO] Session created successfully: f9e586bd-2bad-4912-9b2a-7d8ac2f0d397
+18:06:07.270637 [INFO] Driver created: android on google sdk_gphone64_arm64
+18:06:07.278668 [INFO] === Starting flow: screens ===
+18:06:07.278690 [INFO] Flow file: screens
+18:06:07.278729 [INFO] Total steps: 22
+18:06:07.348512 [DEBUG] Executing step 0: launchApp
+18:06:26.791237 [WARN] [uiautomator2] launchApp com.kylebrowning.landmarks: no first frame logged within 10s; continuing
+18:06:26.884917 [DEBUG] Step 0 completed successfully (19536ms): launchApp
+18:06:26.886314 [DEBUG] Executing step 1: extendedWaitUntil: visible text=".+"
+18:06:30.122349 [DEBUG] crash check during a lookup in flight for 2.285s: crashed=false (took 1.284s)
+18:06:30.349049 [DEBUG] crash check during a lookup in flight for 2.511s: crashed=false (took 226ms)
+18:06:31.417015 [DEBUG] crash check during a lookup in flight for 3.579s: crashed=false (took 577ms)
+18:06:32.085751 [DEBUG] crash check during a lookup in flight for 4.248s: crashed=false (took 246ms)
+18:06:33.907816 [DEBUG] crash check during a lookup in flight for 1.188s: crashed=false (took 187ms)
+18:06:34.902334 [DEBUG] crash check during a lookup in flight for 2.182s: crashed=false (took 182ms)
+18:06:35.923513 [DEBUG] crash check during a lookup in flight for 3.203s: crashed=false (took 203ms)
+18:06:36.917421 [DEBUG] crash check during a lookup in flight for 4.197s: crashed=false (took 195ms)
+18:06:38.398536 [DEBUG] crash check during a lookup in flight for 5.678s: crashed=false (took 676ms)
+18:06:39.167743 [DEBUG] crash check during a lookup in flight for 6.448s: crashed=false (took 446ms)
+18:06:40.051127 [DEBUG] Step 1 completed successfully (13164ms): extendedWaitUntil: visible text=".+"
+18:06:40.053097 [DEBUG] Executing step 2: waitForAnimationToEnd
+18:06:44.441917 [ERROR] Step 2 failed (4388ms): waitForAnimationToEnd - Error: Failed to take screenshot: UIAutomator2 server on emulator-5554 stopped responding (socket missing); retried 2 times over 4.2s
+18:06:47.491169 [INFO] === Flow completed: screens (status: failed, duration: 40206ms, passed: 2, failed: 1, skipped: 19) ===
+18:06:48.620547 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+18:06:48.635660 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+18:06:48.635690 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+18:06:48.635914 [INFO] Generating reports...
+18:06:48.636875 [INFO] Shutting down devices started by maestro-runner...
+18:06:48.636889 [INFO] Shutting down all tracked emulators
+18:06:48.636901 [INFO] Shutting down all tracked simulators

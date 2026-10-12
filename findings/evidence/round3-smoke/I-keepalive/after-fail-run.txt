@@ -1,0 +1,70 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --simulator DACD2CF4-C337-486F-98EB-02FB7A0AA705 --no-build --flow .maestro/99-crash.yaml --keep-alive   (mode: stop after the flow)
+# start 18:24:32 18:24  up 4 days,  9:51, 5 users, load averages: 12.53 12.39 13.91
+Resolved: scheme=Landmarks (UI Testing) simulator=DACD2CF4-C337-486F-98EB-02FB7A0AA705 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: DACD2CF4-C337-486F-98EB-02FB7A0AA705
+Simulator booted: smoke4-ios (DACD2CF4-C337-486F-98EB-02FB7A0AA705)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8417
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="Landmarks" (146ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+✗ 99-crash 4.9s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: smoke4-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ assertVisible: text="Landmarks" (146ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+    - assertVisible: text="Featured" (skipped)
+    - assertVisible: text="This never appears" (skipped)
+✗ 99-crash 4.9s
+
+  1 steps passing (4.9s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      1      1      2       4.9s  smoke4-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      1      1      2       4.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8417 session=17065-1791768281995494000
+  /tmp/grantiva-sessions/17065-1791768281995494000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...
+# exit 130  end 18:24:45 18:24  up 4 days,  9:52, 5 users, load averages: 11.53 12.16 13.80

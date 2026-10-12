@@ -1,0 +1,119 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1
+# start 18:05:12 load averages: 42.76 29.14 20.06
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=5 flows=12
+Preparing runner...
+Runner ready
+Using emulator: smoke4-android (emulator-5554)
+Skipping build and install (--no-build)
+Capturing 5 screen(s), then running 12 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/screens
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (19.5s, slow)
+    ✓ extendedWaitUntil: visible text=".+" (13.2s, slow)
+    ✗ waitForAnimationToEnd (4.4s)
+      ╰─ Failed to take screenshot: UIAutomator2 server on emulator-5554 stopped responding (socket missing); retried 2 times over 4.2s
+✗ screens 40.2s
+
+  [1/1] screens (grantiva-android.yml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (19.5s, slow)
+    ✓ Wait for the app to draw (13.2s, slow)
+    ✗ waitForAnimationToEnd (4.4s)
+      ╰─ Failed to take screenshot: UIAutomator2 server on emulator-5554 stopped responding (socket missing); retried 2 times over 4.2s
+    - takeScreenshot (skipped)
+    - tapOn: text="Favorites" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Deep Links" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Landmarks" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - tapOn: text="Lakes" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Landmarks" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - tapOn: text="Golden Gate Bridge" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - assertVisible: text="Plan Visit" (skipped)
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 40.2s
+
+  2 steps passing (40.2s)
+  1 steps failing
+  19 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL      22      2      1     19      40.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      22      2      1     19      40.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/screens
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/screens/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/screens/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/screens/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/captures/failure-1791767210.png
+
+  Home
+    ✗ Launch app
+      Failed to take screenshot: UIAutomator2 server on emulator-5554 stopped responding (socket missing); retried 2 times over 4.2s
+
+  Favorites
+    ✗ Take screenshot
+      Not captured: the screens session stopped at screen "Home"
+
+  Deep Links
+    ✗ Take screenshot
+      Not captured: the screens session stopped at screen "Home"
+
+  Lakes
+    ✗ Take screenshot
+      Not captured: the screens session stopped at screen "Home"
+
+  Detail
+    ✗ Take screenshot
+      Not captured: the screens session stopped at screen "Home"
+
+  Screens: 5 total, 0 captured, 5 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/rA1/captures/
+
+Error: Runner failed (exit 1): Screen "Home" failed at waitForAnimationToEnd: Failed to take screenshot: UIAutomator2 server on emulator-5554 stopped responding (socket missing); retried 2 times over 4.2s
+# exit 1
+# wall 99.22 s; end 18:06:52 load averages: 24.44 27.34 20.37

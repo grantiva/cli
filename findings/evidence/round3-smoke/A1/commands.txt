@@ -1,0 +1,8 @@
+# round 3 smoke (runner .12): GRANTIVA=$HOME/.grantiva-qa/bin/grantiva 2.1.0 (main dc965716), runner 1.1.28-grantiva.12+android-drivers-2; GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner;
+# GRANTIVA_SESSION_ID=smoke4; GRANTIVA_API_KEY unset; Android prelude from the constraints. Devices: smoke4-ios = DACD2CF4-C337-486F-98EB-02FB7A0AA705 (iPhone 17, iOS 26.0); smoke4-android = emulator-5554 (API 35, default AVD)
+# demo: landmarks-demo 75acc87 ios/ and android/ copied to <scratch>/smoke4/demo (build dirs removed); <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+# each output file starts with the exact command and "# start <time> <load>", ends with "# exit <rc>" and "# wall <s>; end <time> <load>"
+# flowrun.sh <plat> <flow> <dir> <name> = (demo/<plat>) $GRANTIVA run --simulator <udid> | --device emulator-5554 --no-build --flow <flow> --report-dir <scratch>/smoke4/reports/<name>; copies maestro-runner.log, client.log, flow-000.json as <name>-*
+run.txt  (android/) $GRANTIVA run --device emulator-5554 --no-build --report-dir <scratch>/smoke4/rA1  (concurrent with the iOS stock run)
+run-maestro-runner-tail.log, run-client-tail.log, run-client-adb-offline.txt, failure-home.png, logcat-uia2.txt  from that failing run
+rerun-1.txt  same command alone (report dir rA1b)

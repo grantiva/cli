@@ -1,0 +1,62 @@
+# 18:35:44.3N 18:35  up 4 days, 10:03, 5 users, load averages: 6.87 9.27 11.66
+## sessions before
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 18:27 .
+drwxrwxrwt  278 root  wheel  8896 Oct 11 18:35 ..
+$ /Users/kyle/.grantiva-qa/bin/grantiva runner start --device emulator-5554 --detach --json
+## session.json at +0.31 s
+{"applicationId":"com.kylebrowning.landmarks","bundleId":"com.kylebrowning.landmarks","pid":26145,"platform":"android","serial":"emulator-5554","startedAt":813461744.31358,"state":"starting","udid":"emulator-5554"}
+## start stdout (exit 0, +6.87 s)
+{
+  "applicationId" : "com.kylebrowning.landmarks",
+  "bundle_id" : "com.kylebrowning.landmarks",
+  "log" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-runner-1791768944.log",
+  "pid" : 26145,
+  "platform" : "android",
+  "port" : 52552,
+  "serial" : "emulator-5554",
+  "status" : "started",
+  "udid" : "emulator-5554"
+}
+## start stderr
+## session.json after start returned
+{"applicationId":"com.kylebrowning.landmarks","bundleId":"com.kylebrowning.landmarks","pid":26145,"platform":"android","port":52552,"serial":"emulator-5554","startedAt":813461750.859792,"state":"ready","udid":"emulator-5554","wdaPort":52552}## sessions during
+total 8
+drwxr-xr-x@   3 kyle  wheel    96 Oct 11 18:35 .
+drwxrwxrwt  280 root  wheel  8960 Oct 11 18:35 ..
+-rw-r--r--@   1 kyle  wheel   353 Oct 11 18:35 26145.owner.json
+## processes naming emulator-5554 (during)
+26145     1       00:07 /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.12+android-drivers-2/grantiva-runner --platform android --device emulator-5554 --no-ansi --no-app-install test --keep-alive /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000g
+26220 26145       00:01 /Users/kyle/Library/Android/sdk/platform-tools/adb -s emulator-5554 shell ps -A -o UID,NAME
+$ /Users/kyle/.grantiva-qa/bin/grantiva runner stop --json
+{
+  "applicationId" : "com.kylebrowning.landmarks",
+  "bundle_id" : "com.kylebrowning.landmarks",
+  "killed" : false,
+  "pid" : 26145,
+  "platform" : "android",
+  "port" : 52552,
+  "reaped" : [
+
+  ],
+  "runnerPid" : 26145,
+  "serial" : "emulator-5554",
+  "status" : "stopped",
+  "udid" : "emulator-5554"
+}
+# stop exit 0
+## +0 s processes naming emulator-5554
+## grantiva-runner / uia2 processes
+## +60 s processes naming emulator-5554
+## grantiva-runner processes +60
+## sessions after
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 18:35 .
+drwxrwxrwt  278 root  wheel  8896 Oct 11 18:35 ..
+total 0
+drwxr-xr-x@  2 kyle  wheel   64 Oct 11 18:35 .
+drwxr-xr-x@ 16 kyle  wheel  512 Oct 11 18:05 ..
+## adb forwards
+
+## uia2 on device
+# end 18:36:54 18:36  up 4 days, 10:04, 5 users, load averages: 3.97 8.00 11.00

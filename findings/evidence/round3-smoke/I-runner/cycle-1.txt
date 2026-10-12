@@ -1,0 +1,61 @@
+# 18:15:22.3N 18:15  up 4 days,  9:42, 5 users, load averages: 10.55 14.09 16.09
+## sessions before
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 17:14 .
+drwxrwxrwt  278 root  wheel  8896 Oct 11 18:15 ..
+$ /Users/kyle/.grantiva-qa/bin/grantiva runner start --simulator DACD2CF4-C337-486F-98EB-02FB7A0AA705 --detach --json
+## session.json at +0.93 s
+{"bundleId":"com.kylebrowning.Landmarks","pid":12361,"platform":"ios","startedAt":813460523.02438,"state":"starting","udid":"DACD2CF4-C337-486F-98EB-02FB7A0AA705"}
+## start stdout (exit 0, +4.40 s)
+{
+  "bundleId" : "com.kylebrowning.Landmarks",
+  "bundle_id" : "com.kylebrowning.Landmarks",
+  "log" : "\/var\/folders\/jv\/76l6crmx6nl3hf150gzry_ym0000gn\/T\/grantiva-runner-1791767723.log",
+  "pid" : 12361,
+  "platform" : "ios",
+  "port" : 8417,
+  "status" : "started",
+  "udid" : "DACD2CF4-C337-486F-98EB-02FB7A0AA705"
+}
+## start stderr
+## session.json after start returned
+{"bundleId":"com.kylebrowning.Landmarks","pid":12361,"platform":"ios","port":8417,"startedAt":813460526.192335,"state":"ready","udid":"DACD2CF4-C337-486F-98EB-02FB7A0AA705","wdaPort":8417}## sessions during
+total 8
+drwxr-xr-x@   3 kyle  wheel    96 Oct 11 18:15 .
+drwxrwxrwt  278 root  wheel  8896 Oct 11 18:15 ..
+-rw-r--r--@   1 kyle  wheel   368 Oct 11 18:15 12361.owner.json
+## processes naming DACD2CF4-C337-486F-98EB-02FB7A0AA705 (during)
+12361     1       00:03 /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.12+android-drivers-2/grantiva-runner --platform ios --device DACD2CF4-C337-486F-98EB-02FB7A0AA705 --no-ansi --no-app-install test --wait-for-idle-timeout 0 --keep-alive 
+12426 12361       00:03 /Applications/Xcode-27.0.0.app/Contents/Developer/usr/bin/xcodebuild test-without-building -xctestrun /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.12+android-drivers-2/devices/DACD2CF4-C337-486F-98EB-02FB7A0AA705/c
+12432 94762       00:02 /Users/kyle/Library/Developer/CoreSimulator/Devices/DACD2CF4-C337-486F-98EB-02FB7A0AA705/data/Containers/Bundle/Application/D41F12E0-D503-4CB9-9CE4-B55CD7F3334A/WebDriverAgentRunner-Runner.app/WebDriverAgentRunner-Runner
+94762     1       12:25 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/DACD2CF4-C337-486F-98EB-02FB7A0AA705/data/var/run/launchd_bootstrap.plist
+$ /Users/kyle/.grantiva-qa/bin/grantiva runner stop --json
+{
+  "bundleId" : "com.kylebrowning.Landmarks",
+  "bundle_id" : "com.kylebrowning.Landmarks",
+  "killed" : false,
+  "pid" : 12361,
+  "platform" : "ios",
+  "port" : 8417,
+  "reaped" : [
+
+  ],
+  "runnerPid" : 12361,
+  "status" : "stopped",
+  "udid" : "DACD2CF4-C337-486F-98EB-02FB7A0AA705"
+}
+# stop exit 0
+## +0 s processes naming DACD2CF4-C337-486F-98EB-02FB7A0AA705
+94762     1       12:25 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/DACD2CF4-C337-486F-98EB-02FB7A0AA705/data/var/run/launchd_bootstrap.plist
+## grantiva-runner / uia2 processes
+## +60 s processes naming DACD2CF4-C337-486F-98EB-02FB7A0AA705
+94762     1       13:26 launchd_sim /Users/kyle/Library/Developer/CoreSimulator/Devices/DACD2CF4-C337-486F-98EB-02FB7A0AA705/data/var/run/launchd_bootstrap.plist
+## grantiva-runner processes +60
+## sessions after
+total 0
+drwxr-xr-x@   2 kyle  wheel    64 Oct 11 18:15 .
+drwxrwxrwt  278 root  wheel  8896 Oct 11 18:15 ..
+total 0
+drwxr-xr-x@  2 kyle  wheel   64 Oct 11 18:15 .
+drwxr-xr-x@ 11 kyle  wheel  352 Oct 11 18:15 ..
+# end 18:16:27 18:16  up 4 days,  9:43, 5 users, load averages: 5.02 11.73 15.05

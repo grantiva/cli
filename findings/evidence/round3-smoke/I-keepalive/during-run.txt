@@ -1,0 +1,67 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --simulator DACD2CF4-C337-486F-98EB-02FB7A0AA705 --no-build --flow .maestro/coverage/18-long-wait.yaml --keep-alive   (mode: stop during the flow)
+# start 18:17:18 18:17  up 4 days,  9:44, 5 users, load averages: 5.56 10.72 14.46
+Resolved: scheme=Landmarks (UI Testing) simulator=DACD2CF4-C337-486F-98EB-02FB7A0AA705 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: DACD2CF4-C337-486F-98EB-02FB7A0AA705
+Simulator booted: smoke4-ios (DACD2CF4-C337-486F-98EB-02FB7A0AA705)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/18-long-wait.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8417
+
+  [1/1] 18-long-wait (18-long-wait.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.1s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 49.3s
+
+  [1/1] 18-long-wait (.maestro/coverage/18-long-wait.yaml) - Device: smoke4-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ extendedWaitUntil: visible text="This never appears" (45.1s)
+      ╰─ Element 'This never appears' not visible within 45s (cause: context deadline exceeded)
+✗ 18-long-wait 49.3s
+
+  1 steps passing (49.3s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  18-long-wait                   ✗ FAIL       2      1      1      0      49.3s  smoke4-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      49.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8417 session=13923-1791767892453102000
+  /tmp/grantiva-sessions/13923-1791767892453102000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+
+  Releasing GrantivaAgent session...
+# exit 130  end 18:24:17 18:24  up 4 days,  9:51, 5 users, load averages: 13.74 12.60 14.01

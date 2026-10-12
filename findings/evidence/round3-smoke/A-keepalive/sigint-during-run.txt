@@ -1,0 +1,33 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/18-long-wait.yaml --keep-alive   (mode: stop during the flow)
+# start 18:43:24 18:43  up 4 days, 10:10, 5 users, load averages: 6.61 5.42 8.50
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke4-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/18-long-wait.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 18-long-wait (18-long-wait.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (10.9s, slow)
+
+[grantiva] received SIGINT — releasing emulator and reaping child processes
+# exit 130  end 18:43:54 18:43  up 4 days, 10:11, 5 users, load averages: 6.02 5.38 8.38

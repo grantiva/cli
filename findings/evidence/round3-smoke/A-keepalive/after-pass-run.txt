@@ -1,0 +1,92 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/01-browse.yaml --keep-alive   (mode: stop after the flow)
+# start 18:42:19 18:42  up 4 days, 10:09, 5 users, load averages: 2.38 4.75 8.54
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke4-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (13.2s, slow)
+    ✓ assertVisible: text="Landmarks" (1.0s)
+    ✓ assertVisible: text="Featured" (202ms)
+    ✓ takeScreenshot (835ms)
+    ✓ tapOn: text="Golden Gate Bridge" (1.9s)
+    ✓ assertVisible: text="San Francisco, CA" (1.1s)
+    ✓ assertVisible: text="Plan Visit" (254ms)
+    ✓ takeScreenshot (633ms)
+✓ 01-browse 19.2s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (13.2s, slow)
+    ✓ assertVisible: text="Landmarks" (1.0s)
+    ✓ assertVisible: text="Featured" (202ms)
+    ✓ takeScreenshot (835ms)
+    ✓ tapOn: text="Golden Gate Bridge" (1.9s)
+    ✓ assertVisible: text="San Francisco, CA" (1.1s)
+    ✓ assertVisible: text="Plan Visit" (254ms)
+    ✓ takeScreenshot (633ms)
+✓ 01-browse 19.2s
+
+  8 steps passing (19.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0      19.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      19.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=27537-1791769366159544000
+  /tmp/grantiva-sessions/27537-1791769366159544000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing emulator and reaping child processes
+
+  Releasing UIAutomator2 session...
+
+  01-browse
+    ✓ launchApp
+    ✓ assertVisible: text="Landmarks"
+    ✓ assertVisible: text="Featured"
+    ✓ takeScreenshot
+    ✓ tapOn: text="Golden Gate Bridge"
+    ✓ assertVisible: text="San Francisco, CA"
+    ✓ assertVisible: text="Plan Visit"
+    ✓ takeScreenshot
+    ▸ Screenshot: 01-browse-cmd-003-Home
+    ▸ Screenshot: 01-browse-cmd-007-Landmark Detail
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/android/
+
+# exit 130  end 18:42:51 18:42  up 4 days, 10:10, 5 users, load averages: 3.67 4.80 8.40

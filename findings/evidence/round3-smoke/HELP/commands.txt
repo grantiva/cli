@@ -1,0 +1,5 @@
+# Help corpus regenerated with the round-2 recipe (round2-smoke/round2-HELP/helpcorpus.sh, copied here).
+# binary: $GRANTIVA = ~/.grantiva-qa/bin/grantiva 2.1.0 @ main dc965716; run from an empty scratch dir
+rm -f findings/help/*.txt; helpcorpus.sh $GRANTIVA findings/help; ls findings/help | wc -l  -> 172
+regen.txt  git diff --stat findings/help
+help.diff  git diff findings/help

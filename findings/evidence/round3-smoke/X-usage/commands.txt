@@ -1,0 +1,8 @@
+# round 3 smoke (runner .12): GRANTIVA=$HOME/.grantiva-qa/bin/grantiva 2.1.0 (main dc965716), runner 1.1.28-grantiva.12+android-drivers-2; GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner;
+# GRANTIVA_SESSION_ID=smoke4; GRANTIVA_API_KEY unset; Android prelude from the constraints. Devices: smoke4-ios = DACD2CF4-C337-486F-98EB-02FB7A0AA705 (iPhone 17, iOS 26.0); smoke4-android = emulator-5554 (API 35, default AVD)
+# demo: landmarks-demo 75acc87 ios/ and android/ copied to <scratch>/smoke4/demo (build dirs removed); <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+# each output file starts with the exact command and "# start <time> <load>", ends with "# exit <rc>" and "# wall <s>; end <time> <load>"
+# flowrun.sh <plat> <flow> <dir> <name> = (demo/<plat>) $GRANTIVA run --simulator <udid> | --device emulator-5554 --no-build --flow <flow> --report-dir <scratch>/smoke4/reports/<name>; copies maestro-runner.log, client.log, flow-000.json as <name>-*
+(empty dir <scratch>/smoke4/empty-usage) run-device-emulator.txt, record-device-emulator.txt, record-device-emulator-duration.txt, runner-start-device-emulator.txt: <cmd> --device a --emulator b [--duration 3]
+record-duration-0.txt  record --duration 0 (the reference shape)
+record-ios-mp4.txt  (ios/) record --simulator <udid> --duration 3 --output a.mp4; record-android-mov.txt  (android/) record --device emulator-5554 --duration 3 --output a.mov

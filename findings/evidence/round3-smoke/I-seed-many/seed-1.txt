@@ -1,0 +1,90 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --simulator DACD2CF4-C337-486F-98EB-02FB7A0AA705 --no-build --flow .maestro/10-seed-many.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1
+# start 18:13:57 load averages: 13.87 15.41 16.71
+Resolved: scheme=Landmarks (UI Testing) simulator=DACD2CF4-C337-486F-98EB-02FB7A0AA705 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: DACD2CF4-C337-486F-98EB-02FB7A0AA705
+Simulator booted: smoke4-ios (DACD2CF4-C337-486F-98EB-02FB7A0AA705)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/10-seed-many.yaml
+
+  grantiva-runner 1.1.28-grantiva.12 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8417
+
+  [1/1] 10-seed-many (10-seed-many.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ scroll: DOWN (1.7s)
+    ✓ scroll: DOWN (3.6s)
+    ✓ scroll: DOWN (2.8s)
+    ✓ scroll: DOWN (3.2s)
+    ✓ assertVisible: text="Landmark 30" (601ms)
+    ✓ takeScreenshot (74ms)
+✓ 10-seed-many 16.6s
+
+  [1/1] 10-seed-many (.maestro/10-seed-many.yaml) - Device: smoke4-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ scroll: DOWN (1.7s)
+    ✓ scroll: DOWN (3.6s)
+    ✓ scroll: DOWN (2.8s)
+    ✓ scroll: DOWN (3.2s)
+    ✓ assertVisible: text="Landmark 30" (601ms)
+    ✓ takeScreenshot (74ms)
+✓ 10-seed-many 16.6s
+
+  7 steps passing (16.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  10-seed-many                   ✓ PASS       7      7      0      0      16.6s  smoke4-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       7      7      0      0      16.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1/allure-results
+
+  Built by Grantiva
+
+
+  10-seed-many
+    ✓ launchApp
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ assertVisible: text="Landmark 30"
+    ✓ takeScreenshot
+    ▸ Screenshot: 10-seed-many-cmd-006-Scrolled
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/seed-1/captures/
+
+# exit 0
+# wall 21.32 s; end 18:14:18 load averages: 12.43 14.92 16.50

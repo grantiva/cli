@@ -1,0 +1,336 @@
+diff --git a/findings/help/build_build.txt b/findings/help/build_build.txt
+index 93fe5490..65634a5e 100644
+--- a/findings/help/build_build.txt
++++ b/findings/help/build_build.txt
+@@ -1,6 +1,6 @@
+ OVERVIEW: Build the app for a simulator (xcodebuild) or emulator (Gradle).
+ 
+-USAGE: grantiva build build <options>
++USAGE: grantiva build build [--json] [--verbose] [--quiet] [--platform <platform>] [--derived-data-path <derived-data-path>] [--scheme <scheme>] [--simulator <simulator>] [--bundle-id <bundle-id>] [--module <module>] [--variant <variant>] [--application-id <application-id>] [--device <device>]
+ 
+ OPTIONS:
+   --json                  Output as JSON
+@@ -25,15 +25,8 @@ OPTIONS:
+   --application-id <application-id>
+                           Application ID (Android; read from the build or the
+                           APK when omitted)
+-  --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
+-  --allow-device-settings Apply demo mode and animation settings on a physical
+-                          device too (Android)
+-  --headless              Boot an emulator without a window (Android).
+-                          GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the
+-                          same; otherwise a booted emulator gets a window, even
+-                          when stdout is not a terminal.
++                          (Android); for a build, its ABI picks the split APK
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+diff --git a/findings/help/build_install.txt b/findings/help/build_install.txt
+index 3875b80d..1e9e59fa 100644
+--- a/findings/help/build_install.txt
++++ b/findings/help/build_install.txt
+@@ -33,7 +33,7 @@ OPTIONS:
+                           APK when omitted)
+   --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
++                          (Android); for a build, its ABI picks the split APK
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+   --headless              Boot an emulator without a window (Android).
+diff --git a/findings/help/ci_run.txt b/findings/help/ci_run.txt
+index 6df0ae23..10a08390 100644
+--- a/findings/help/ci_run.txt
++++ b/findings/help/ci_run.txt
+@@ -33,7 +33,7 @@ OPTIONS:
+                           APK when omitted)
+   --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
++                          (Android); for a build, its ABI picks the split APK
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+   --headless              Boot an emulator without a window (Android).
+diff --git a/findings/help/diff_capture.txt b/findings/help/diff_capture.txt
+index 26cf3e7a..bbf290b8 100644
+--- a/findings/help/diff_capture.txt
++++ b/findings/help/diff_capture.txt
+@@ -32,7 +32,7 @@ OPTIONS:
+                           APK when omitted)
+   --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
++                          (Android); for a build, its ABI picks the split APK
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+   --headless              Boot an emulator without a window (Android).
+diff --git a/findings/help/diff_compare.txt b/findings/help/diff_compare.txt
+index 9962e850..26541d6e 100644
+--- a/findings/help/diff_compare.txt
++++ b/findings/help/diff_compare.txt
+@@ -32,7 +32,7 @@ OPTIONS:
+                           APK when omitted)
+   --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
++                          (Android); for a build, its ABI picks the split APK
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+   --headless              Boot an emulator without a window (Android).
+diff --git a/findings/help/emulator_teardown.txt b/findings/help/emulator_teardown.txt
+index 3c102441..db43219d 100644
+--- a/findings/help/emulator_teardown.txt
++++ b/findings/help/emulator_teardown.txt
+@@ -3,7 +3,11 @@ the UIAutomator2 server and removes the serial's adb forwards first.
+ 
+ A runner session on a torn-down serial (`grantiva runner start` or `grantiva
+ run --keep-alive`) is stopped too, and its session files are removed; --json
+-reports it as runnerSessionStopped.
++reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell
++sync`) before the emulator is killed, so an app installed just before survives
++the next boot. Session files of a runner that had already died, and the temp
++directories of a killed run on the serial, are removed and listed
++(sessionFilesRemoved, temporaryDirectoriesRemoved).
+ 
+ USAGE: grantiva emulator teardown [--json] [--verbose] [--quiet] [--serial <serial>] [--all] [--force]
+ 
+diff --git a/findings/help/mcp.txt b/findings/help/mcp.txt
+index 22222d86..e06e8a2f 100644
+--- a/findings/help/mcp.txt
++++ b/findings/help/mcp.txt
+@@ -3,12 +3,12 @@ OVERVIEW: Start the Grantiva MCP server for AI agent integration.
+ The server starts without a runner session or a config file. Device tools
+ (grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot,
+ grantiva_a11y_*, grantiva_script) need a runner session and return an error
+-until one exists; they pick it up on the next call. The session is the
+-project's .grantiva/session.json (grantiva runner start), or a grantiva run
+---keep-alive or runner start session started from the same project directory
+-for the same platform. Sessions from other projects or the other platform are
+-never used. Simulator, emulator, build, context, and VRT tools work without a
+-session.
++until one exists (while one is starting, an error saying so and to retry in a
++few seconds); they pick it up on the next call. The session is the project's
++.grantiva/session.json (grantiva runner start), or a grantiva run --keep-alive
++or runner start session started from the same project directory for the same
++platform. Sessions from other projects or the other platform are never used.
++Simulator, emulator, build, context, and VRT tools work without a session.
+ 
+ USAGE: grantiva mcp [--project-dir <project-dir>] [--platform <platform>]
+ 
+diff --git a/findings/help/run.txt b/findings/help/run.txt
+index f3a0f632..8260f9fe 100644
+--- a/findings/help/run.txt
++++ b/findings/help/run.txt
+@@ -33,7 +33,7 @@ OPTIONS:
+                           APK when omitted)
+   --emulator <emulator>   AVD name to use, booting it if needed (Android)
+   --device <device>       adb serial of an attached emulator or physical device
+-                          (Android)
++                          (Android); for a build, its ABI picks the split APK
+   --allow-device-settings Apply demo mode and animation settings on a physical
+                           device too (Android)
+   --headless              Boot an emulator without a window (Android).
+diff --git a/findings/help/runner_install.txt b/findings/help/runner_install.txt
+index 8df550bc..ae462bb4 100644
+--- a/findings/help/runner_install.txt
++++ b/findings/help/runner_install.txt
+@@ -1,33 +1,17 @@
+-OVERVIEW: The Grantiva CLI for iOS and Android developers.
++OVERVIEW: Extract or update the embedded runner binary.
+ 
+-USAGE: grantiva <subcommand>
++A no-op when the installed runner is already this version: it prints "Runner
++already installed at <path>", and --json reports "extracted": false.
++
++USAGE: grantiva runner install [--json] [--verbose] [--quiet]
+ 
+ OPTIONS:
++  --json                  Output as JSON
++  --verbose               Print diagnostic detail (timestamps, labels,
++                          metadata) to stderr.
++  --quiet                 Silence progress diagnostics on stderr; warnings and
++                          errors still print. Program output on stdout is
++                          unaffected.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+-SUBCOMMANDS:
+-  build                   Build and optionally install the app to a simulator
+-                          or emulator.
+-  run                     Run Maestro flows against a simulator or emulator. No
+-                          visual regression — reports step pass/fail and
+-                          captures a screenshot on failure.
+-  record                  Record a simulator or emulator and extract PNG frames
+-                          at exact requested timestamps.
+-  simulator               Provision, inspect, and tear down managed simulators.
+-  emulator                Provision, inspect, and tear down Android emulators.
+-  hierarchy               Dump the UI hierarchy of a booted simulator or
+-                          emulator without relaunching the app.
+-  ci                      CI pipeline — capture, compare, and upload results.
+-  diff                    Visual regression testing — capture, compare, and
+-                          approve screenshots.
+-  auth                    Manage authentication with Grantiva.
+-  console                 Manage your Grantiva dashboard from the terminal.
+-  doctor                  Check environment and dependencies.
+-  runner                  Manage the embedded UI automation runner.
+-  init                    Generate grantiva.yml (iOS) or grantiva-android.yml
+-                          (Android) in the current directory.
+-  mcp                     Start the Grantiva MCP server for AI agent
+-                          integration.
+-
+-  See 'grantiva help <subcommand>' for detailed help.
+diff --git a/findings/help/runner_start.txt b/findings/help/runner_start.txt
+index 49f89b44..b71c5ff2 100644
+--- a/findings/help/runner_start.txt
++++ b/findings/help/runner_start.txt
+@@ -4,14 +4,16 @@ for interactive use.
+ Without --detach the command stays in the foreground, streams the runner's
+ output to stderr and holds the session until Ctrl-C (or `grantiva runner stop`
+ from another shell); it then stops the runner, removes the session files and
+-releases the device. Interrupted, it exits 130. With --detach it returns once
+-the driver is up and the runner keeps the session until `grantiva runner stop`.
++releases the device. Interrupted, it exits 130; ended by `grantiva runner stop`
++or by a simulator or emulator teardown, it exits 0. With --detach it returns
++once the driver is up and the runner keeps the session until `grantiva runner
++stop`.
+ 
+ --json prints one document: {"status": "started" | "already_running", "pid":
+-<number>, "port": <number>, "platform": "ios" | "android", plus "bundleId" and
+-"udid" on iOS or "applicationId" and "serial" on Android, and "log" with
+---detach}. "bundle_id" (and "udid" on Android) are kept for compatibility and
+-are deprecated.
++<number>, "port": <number> (null for a session still starting), "platform":
++"ios" | "android", plus "bundleId" and "udid" on iOS or "applicationId" and
++"serial" on Android, and "log" with --detach}. "bundle_id" (and "udid" on
++Android) are kept for compatibility and are deprecated.
+ 
+ USAGE: grantiva runner start [--json] [--verbose] [--quiet] [--platform <platform>] [--bundle-id <bundle-id>] [--simulator <simulator>] [--application-id <application-id>] [--emulator <emulator>] [--device <device>] [--headless] [--detach]
+ 
+diff --git a/findings/help/runner_stop.txt b/findings/help/runner_stop.txt
+index 8df550bc..21705bba 100644
+--- a/findings/help/runner_stop.txt
++++ b/findings/help/runner_stop.txt
+@@ -1,33 +1,28 @@
+-OVERVIEW: The Grantiva CLI for iOS and Android developers.
++OVERVIEW: Stop the running runner session.
+ 
+-USAGE: grantiva <subcommand>
++Stops the session `grantiva runner start` recorded in .grantiva/session.json:
++the runner gets SIGINT, then SIGTERM and SIGKILL if it does not exit, and its
++session files and device lease are removed. Helpers the runner started for the
++device that outlive it (on iOS, the `simctl diagnose` WebDriverAgent's
++xcodebuild starts when it is interrupted) are stopped too and listed (`reaped`
++in --json); on Android the runner's port forwards and UIAutomator2 server are
++cleared. Without one, it releases a `grantiva run --keep-alive` session started
++from this directory (every one, if there are several) the way Ctrl-C would, by
++sending that grantiva process SIGINT, and waits for it to exit. A run whose
++flows had already finished keeps the ready file it wrote (`passed` or
++`failed`): the ready file is written once, and the `stopped` result here is the
++record of the release. Sessions started from other directories are left alone.
++With no session at all it prints "No active session found." and exits 0.
++
++USAGE: grantiva runner stop [--json] [--verbose] [--quiet]
+ 
+ OPTIONS:
++  --json                  Output as JSON
++  --verbose               Print diagnostic detail (timestamps, labels,
++                          metadata) to stderr.
++  --quiet                 Silence progress diagnostics on stderr; warnings and
++                          errors still print. Program output on stdout is
++                          unaffected.
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+-SUBCOMMANDS:
+-  build                   Build and optionally install the app to a simulator
+-                          or emulator.
+-  run                     Run Maestro flows against a simulator or emulator. No
+-                          visual regression — reports step pass/fail and
+-                          captures a screenshot on failure.
+-  record                  Record a simulator or emulator and extract PNG frames
+-                          at exact requested timestamps.
+-  simulator               Provision, inspect, and tear down managed simulators.
+-  emulator                Provision, inspect, and tear down Android emulators.
+-  hierarchy               Dump the UI hierarchy of a booted simulator or
+-                          emulator without relaunching the app.
+-  ci                      CI pipeline — capture, compare, and upload results.
+-  diff                    Visual regression testing — capture, compare, and
+-                          approve screenshots.
+-  auth                    Manage authentication with Grantiva.
+-  console                 Manage your Grantiva dashboard from the terminal.
+-  doctor                  Check environment and dependencies.
+-  runner                  Manage the embedded UI automation runner.
+-  init                    Generate grantiva.yml (iOS) or grantiva-android.yml
+-                          (Android) in the current directory.
+-  mcp                     Start the Grantiva MCP server for AI agent
+-                          integration.
+-
+-  See 'grantiva help <subcommand>' for detailed help.
+diff --git a/findings/help/simulator_teardown.txt b/findings/help/simulator_teardown.txt
+index 8df550bc..86a36717 100644
+--- a/findings/help/simulator_teardown.txt
++++ b/findings/help/simulator_teardown.txt
+@@ -1,33 +1,34 @@
+-OVERVIEW: The Grantiva CLI for iOS and Android developers.
++OVERVIEW: End a managed session, or reclaim one simulator by UDID when no
++ledger entry exists.
+ 
+-USAGE: grantiva <subcommand>
++A runner session on a torn-down simulator (`grantiva runner start` or `grantiva
++run --keep-alive`) is stopped first and its session files are removed; --json
++reports it as runnerSessionStopped. Without --force, a process still holding a
++simulator the teardown deletes or shuts down that it did not start (a runner,
++WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed:
++a warning on stderr names its pid and command, --json lists it in
++leftoverProcesses, and the teardown goes on. --force reclaims such processes.
++
++USAGE: grantiva simulator teardown [--json] [--verbose] [--quiet] [--session-id <session-id>] [--udid <udid>] [--force]
+ 
+ OPTIONS:
++  --json                  Output as JSON
++  --verbose               Print diagnostic detail (timestamps, labels,
++                          metadata) to stderr.
++  --quiet                 Silence progress diagnostics on stderr; warnings and
++                          errors still print. Program output on stdout is
++                          unaffected.
++  --session-id <session-id>
++                          Ticket/session identifier to shut down and release.
++  --udid <udid>           Simulator UDID to reclaim. Use with --force when a
++                          run was killed and left processes owning the device.
++  --force                 Reclaim by live process inspection instead of the
++                          session ledger: kills the grantiva-runner,
++                          WebDriverAgent xcodebuild, and simctl diagnose
++                          processes holding the simulator, breaks the lease,
++                          and reconciles the session registry. Without it, such
++                          processes are only named (a stderr warning and
++                          leftoverProcesses in --json).
+   --version               Show the version.
+   -h, --help              Show help information.
+ 
+-SUBCOMMANDS:
+-  build                   Build and optionally install the app to a simulator
+-                          or emulator.
+-  run                     Run Maestro flows against a simulator or emulator. No
+-                          visual regression — reports step pass/fail and
+-                          captures a screenshot on failure.
+-  record                  Record a simulator or emulator and extract PNG frames
+-                          at exact requested timestamps.
+-  simulator               Provision, inspect, and tear down managed simulators.
+-  emulator                Provision, inspect, and tear down Android emulators.
+-  hierarchy               Dump the UI hierarchy of a booted simulator or
+-                          emulator without relaunching the app.
+-  ci                      CI pipeline — capture, compare, and upload results.
+-  diff                    Visual regression testing — capture, compare, and
+-                          approve screenshots.
+-  auth                    Manage authentication with Grantiva.
+-  console                 Manage your Grantiva dashboard from the terminal.
+-  doctor                  Check environment and dependencies.
+-  runner                  Manage the embedded UI automation runner.
+-  init                    Generate grantiva.yml (iOS) or grantiva-android.yml
+-                          (Android) in the current directory.
+-  mcp                     Start the Grantiva MCP server for AI agent
+-                          integration.
+-
+-  See 'grantiva help <subcommand>' for detailed help.

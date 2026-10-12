@@ -1,0 +1,61 @@
+18:08:23.809510 [INFO] === Test execution started ===
+18:08:23.809575 [INFO] Output directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke4/reports/crash-2
+18:08:23.809579 [INFO] Platform: ios
+18:08:23.809582 [INFO] Driver: wda
+18:08:23.809822 [INFO] Validated 1 flow(s)
+18:08:23.916024 [INFO] Single device execution mode
+18:08:23.916036 [INFO] Starting flow execution (parallel: false, devices: [])
+18:08:23.916042 [INFO] Creating driver for single device execution
+18:08:23.916046 [INFO] Using specified iOS device: DACD2CF4-C337-486F-98EB-02FB7A0AA705
+18:08:24.017372 [INFO] Device DACD2CF4-C337-486F-98EB-02FB7A0AA705 is a simulator
+18:08:24.017430 [INFO] Building WDA for device DACD2CF4-C337-486F-98EB-02FB7A0AA705 (team ID: )
+18:08:24.220666 [INFO] WDA build reused from cache
+18:08:24.220682 [INFO] Starting WDA on device DACD2CF4-C337-486F-98EB-02FB7A0AA705 (port: 8417)
+18:08:24.460787 [INFO] Starting GrantivaAgent (attempt 1/4)
+18:08:26.464607 [INFO] GrantivaAgent started
+18:08:26.464749 [INFO] WDA started successfully on port 8417
+18:08:26.815838 [DEBUG] WDA GET /window/size
+18:08:26.920246 [DEBUG] WDA GET /window/size completed (104ms, status: 200)
+18:08:26.920328 [INFO] Driver created: ios on smoke4-ios
+18:08:26.921864 [INFO] === Starting flow: 99-crash ===
+18:08:26.921870 [INFO] Flow file: .maestro/99-crash.yaml
+18:08:26.921873 [INFO] Total steps: 4
+18:08:26.921997 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+18:08:26.922531 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+18:08:26.922588 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+18:08:28.458445 [DEBUG] WDA POST /session completed (1535ms, status: 200)
+18:08:28.458701 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+18:08:28.460378 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings completed (1ms, status: 200)
+18:08:28.460781 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+18:08:28.461676 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings completed (0ms, status: 200)
+18:08:28.463012 [DEBUG] Executing step 0: launchApp
+18:08:28.909044 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+18:08:28.909109 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+18:08:28.909814 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/appium/settings completed (0ms, status: 200)
+18:08:28.909896 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+18:08:28.910335 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/terminate completed (0ms, status: 200)
+18:08:28.910363 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+18:08:30.425395 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/launch completed (1515ms, status: 200)
+18:08:30.425469 [DEBUG] Step 0 completed successfully (1962ms): launchApp
+18:08:30.426212 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+18:08:30.559074 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+18:08:30.559121 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/alert/text
+18:08:30.565004 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/alert/text completed (5ms, status: 400)
+18:08:30.565114 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks' OR value ==[c] 'Landmarks')"}
+18:08:30.568453 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/element completed (3ms, status: 400)
+18:08:30.568557 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/source
+18:08:30.570560 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/source completed (2ms, status: 400)
+18:08:30.570640 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+18:08:30.571095 [DEBUG] WDA POST /session/94F03314-5375-4084-80ED-7C50F5F8E144/wda/apps/state completed (0ms, status: 200)
+18:08:30.571111 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) during an element wait — treating it as crashed
+18:08:30.571145 [ERROR] Step 1 failed (144ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+18:08:30.571151 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/screenshot
+18:08:30.714420 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/screenshot completed (143ms, status: 200)
+18:08:30.727531 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/source
+18:08:30.729350 [DEBUG] WDA GET /session/94F03314-5375-4084-80ED-7C50F5F8E144/source completed (1ms, status: 400)
+18:08:30.733898 [INFO] === Flow completed: 99-crash (status: failed, duration: 3807ms, passed: 1, failed: 1, skipped: 2) ===
+18:08:30.805378 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+18:08:30.805565 [INFO] Generating reports...
+18:08:30.807415 [INFO] Shutting down devices started by maestro-runner...
+18:08:30.807439 [INFO] Shutting down all tracked emulators
+18:08:30.807451 [INFO] Shutting down all tracked simulators
