@@ -49,6 +49,10 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     /// expected to reclaim a busy device has no other way to tell them apart
     /// (the exit code is 0 either way, deliberately).
     public var reclaimed: Bool
+    /// Helpers the stopped runner left on the device that the teardown's
+    /// runner-session stop ended before this force pass (L63); same fields
+    /// as `processes`, `killed: true`.
+    public var reapedProcesses: [ReapedProcess] = []
 
     public init(
         udid: String,

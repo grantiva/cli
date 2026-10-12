@@ -166,7 +166,7 @@ final class EmulatorCommandTests: XCTestCase {
         let sessions = DeviceRunnerSessions(
             loadSession: { file },
             removeSession: { removed.append("session.json") },
-            stopSessions: { udid, runnerStart in
+            stopSessions: { udid, runnerStart, _ in
                 handed.append("\(udid) \(runnerStart?.pid ?? 0)")
                 return runnerStart?.udid == udid ? [.terminated(runnerPid: 27331, udid: udid, killed: false)] : []
             }
@@ -189,7 +189,7 @@ final class EmulatorCommandTests: XCTestCase {
         let sessions = DeviceRunnerSessions(
             loadSession: { file },
             removeSession: { events.append("remove") },
-            stopSessions: { udid, _ in events.append("stop"); return [.terminated(runnerPid: 27331, udid: udid, killed: false)] }
+            stopSessions: { udid, _, _ in events.append("stop"); return [.terminated(runnerPid: 27331, udid: udid, killed: false)] }
         )
         _ = await sessions.stop(udid: "emulator-5556")
         XCTAssertEqual(events.values, ["remove", "stop"])
@@ -200,7 +200,7 @@ final class EmulatorCommandTests: XCTestCase {
         let events = LockedList()
         var sessions = DeviceRunnerSessions(
             loadSession: { nil }, removeSession: { events.append("remove") },
-            stopSessions: { _, _ in events.append("stop"); return [] }
+            stopSessions: { _, _, _ in events.append("stop"); return [] }
         )
         sessions.markStops = { udid in events.append("mark \(udid)"); return [77] }
         _ = await sessions.stop(udid: "emulator-5556")
@@ -261,12 +261,12 @@ final class EmulatorCommandTests: XCTestCase {
     /// goes: a marked runner the stop did not reach is reported once it has
     /// exited, and not while it still runs.
     func testAMarkedRunnerThatEndsOnItsOwnIsReportedOnceItHasExited() async {
-        var sessions = DeviceRunnerSessions(loadSession: { nil }, removeSession: {}, stopSessions: { _, _ in [] })
+        var sessions = DeviceRunnerSessions(loadSession: { nil }, removeSession: {}, stopSessions: { _, _, _ in [] })
         sessions.markStops = { _ in [77] }
-        sessions.waitForExit = { _ in true }
+        sessions.waitForExit = { _, _ in true }
         let stopped = await sessions.stop(udid: "emulator-5556")
         XCTAssertEqual(stopped, [.terminated(runnerPid: 77, udid: "emulator-5556", killed: false)])
-        sessions.waitForExit = { _ in false }
+        sessions.waitForExit = { _, _ in false }
         let running = await sessions.stop(udid: "emulator-5556")
         XCTAssertEqual(running, [])
     }
@@ -303,7 +303,7 @@ final class EmulatorCommandTests: XCTestCase {
         // Home B's teardown: its runner home appears nowhere in the marking.
         let teardown = DeviceRunnerSessions(
             loadSession: { nil }, removeSession: {},
-            stopSessions: { _, _ in [] },
+            stopSessions: { _, _, _ in [] },
             markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
             sweepStops: { store.stopMarkers.sweep() }
         )
@@ -334,7 +334,7 @@ final class EmulatorCommandTests: XCTestCase {
         store.recordOwner(udid: "emulator-5558", runnerPid: keepAlive.processIdentifier, platform: .android, detached: false)
         for serial in ["emulator-5556", "emulator-5558"] {
             let teardown = DeviceRunnerSessions(
-                loadSession: { nil }, removeSession: {}, stopSessions: { _, _ in [] },
+                loadSession: { nil }, removeSession: {}, stopSessions: { _, _, _ in [] },
                 markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
                 sweepStops: { store.stopMarkers.sweep() }
             )
@@ -359,7 +359,7 @@ final class EmulatorCommandTests: XCTestCase {
         let events = LockedList()
         let teardown = DeviceRunnerSessions(
             loadSession: { nil }, removeSession: {},
-            stopSessions: { udid, _ in events.append("stop \(udid)"); return [] },
+            stopSessions: { udid, _, _ in events.append("stop \(udid)"); return [] },
             markStops: { udid in
                 DeviceRunnerSessions.markLive(
                     udid: udid, store: store, marker: RunnerStopMarker(directory: "\(blocker)/sub"), warn: warnings.append

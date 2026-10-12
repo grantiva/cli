@@ -100,7 +100,7 @@ struct SimulatorCommand: AsyncParsableCommand {
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "End a managed session, or reclaim one simulator by UDID when no ledger entry exists.",
-            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped. Without --force, a process still holding a simulator the teardown deletes or shuts down that it did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed: a warning on stderr names its pid and command, --json lists it in leftoverProcesses, and the teardown goes on. --force reclaims such processes."
+            discussion: "A runner session on a torn-down simulator (`grantiva runner start` or `grantiva run --keep-alive`) is stopped first and its session files are removed; --json reports it as runnerSessionStopped. The WebDriverAgent xcodebuild and simctl diagnose the stopped run left writing into the simulator's runner home are then ended (reapedProcesses in --json) before that home is removed. Without --force, a process still holding a simulator the teardown deletes or shuts down that it did not start (a runner, WebDriverAgent's xcodebuild, a simctl diagnose, a grantiva run) is not killed: a warning on stderr names its pid and command, --json lists it in leftoverProcesses, and the teardown goes on. --force reclaims such processes."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -146,7 +146,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             if !options.json { stopped.lines.forEach(Output.line) }
 
             if force {
-                try await runForce()
+                try await runForce(reaped: stopped.reaped)
                 return
             }
 
@@ -162,11 +162,11 @@ struct SimulatorCommand: AsyncParsableCommand {
 
             if let target {
                 let result = try await SimulatorManager.live.teardown(udid: target)
-                try report(outcomes: Self.marking(result, stopped: stopped.stopped, leftovers: leftovers), subject: target)
+                try report(outcomes: Self.marking(result, stopped: stopped.stopped, leftovers: leftovers, reaped: stopped.reaped), subject: target)
                 return
             }
             let outcomes = try await SimulatorManager.live.teardown(sessionId: session ?? "")
-            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped, leftovers: leftovers), subject: session ?? "")
+            try report(outcomes: Self.marking(outcomes, stopped: stopped.stopped, leftovers: leftovers, reaped: stopped.reaped), subject: session ?? "")
         }
 
         /// The devices a non-force teardown checks for leftover processes:
@@ -210,32 +210,42 @@ struct SimulatorCommand: AsyncParsableCommand {
         }
 
         /// Stops the runner sessions on each of `udids`; returns the devices
-        /// that had one and a line per stopped session.
+        /// that had one, a line per stopped session and per helper it ended,
+        /// and the helpers (`simctl diagnose`, …) ended per device (L63),
+        /// keyed by the uppercased UDID so a `--udid` in any case matches.
         static func stopRunnerSessions(
             udids: [String], stop: (String) async -> [RunnerSessionStopper.Outcome]
-        ) async -> (stopped: [String], lines: [String]) {
+        ) async -> (stopped: [String], lines: [String], reaped: [String: [ReapedProcess]]) {
             var stopped: [String] = []
             var lines: [String] = []
+            var reaped: [String: [ReapedProcess]] = [:]
             for udid in udids {
                 let outcomes = await stop(udid)
                 if !outcomes.isEmpty { stopped.append(udid) }
                 lines += outcomes.map(DeviceRunnerSessions.render)
+                let helpers = outcomes.flatMap(\.reaped)
+                lines += RunnerStopCommand.reapedLines(helpers, udid: udid)
+                if !helpers.isEmpty { reaped[udid.uppercased(), default: []] += helpers }
             }
-            return (stopped, lines)
+            return (stopped, lines, reaped)
         }
 
         static func marking(
-            _ outcomes: [SimulatorTeardownOutcome], stopped: [String], leftovers: [String: [ReapedProcess]] = [:]
+            _ outcomes: [SimulatorTeardownOutcome], stopped: [String], leftovers: [String: [ReapedProcess]] = [:],
+            reaped: [String: [ReapedProcess]] = [:]
         ) -> [SimulatorTeardownOutcome] {
             outcomes.map { outcome in
                 var outcome = outcome
                 outcome.runnerSessionStopped = stopped.contains(outcome.udid)
                 outcome.leftoverProcesses = leftovers[outcome.udid] ?? []
+                outcome.reapedProcesses = reaped[outcome.udid.uppercased()] ?? []
                 return outcome
             }
         }
 
-        private func runForce() async throws {
+        /// `reaped`: the helpers the runner-session stop already ended per
+        /// device, listed in each result's `reapedProcesses` (L63).
+        private func runForce(reaped: [String: [ReapedProcess]] = [:]) async throws {
             var udids: [String] = []
             if let target {
                 udids = [target]
@@ -254,10 +264,22 @@ struct SimulatorCommand: AsyncParsableCommand {
             for target in udids {
                 results.append(try await SimulatorReaper.forceTeardown(udid: target))
             }
+            results = Self.addingReaped(reaped, to: results)
 
             let output = try Self.forceOutput(results, json: options.json)
             output.lines.forEach(Output.line)
             if let error = output.error { throw error }
+        }
+
+        /// `results` with the helpers the runner-session stop ended on each
+        /// device; a device that had some counts as reclaimed.
+        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult]) -> [ForceTeardownResult] {
+            results.map { result in
+                var result = result
+                result.reapedProcesses = reaped[result.udid.uppercased()] ?? []
+                if !result.reapedProcesses.isEmpty { result.reclaimed = true }
+                return result
+            }
         }
 
         /// What `--force` prints for `results`, and the error it then exits

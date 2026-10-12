@@ -109,6 +109,13 @@ public struct RunnerHelperReaper: Sendable {
     /// How long a helper gets after SIGINT before SIGKILL.
     public var gracePeriod: TimeInterval
     public var pollInterval: Duration
+    /// When set, no wait outlasts it: a teardown's single deadline (L63).
+    /// `runner stop` leaves it nil and keeps its own bounds.
+    public var deadline: Date?
+    /// When true (a teardown, L63), the lineage reap SIGKILLs the stopped
+    /// run's `xcodebuild test-without-building` at once instead of SIGINT,
+    /// which would make it start a diagnose. `runner stop` leaves it false.
+    public var killsXcodebuildAtOnce = false
 
     public init(
         snapshot: @escaping @Sendable () async throws -> String,
@@ -177,6 +184,64 @@ public struct RunnerHelperReaper: Sendable {
         await reap(udid: udid, lineage: RunnerLineage(runnerPid: exitedRunnerPid), followLineage: false)
     }
 
+    /// After a teardown stopped the runners on `udid` (L63): ends the
+    /// WebDriverAgent `xcodebuild` and `simctl diagnose` still writing into
+    /// the device's runner home (`<runner home>/…/devices/<udid>`), so the
+    /// home the teardown then removes stays removed.
+    ///
+    /// An interrupted xcodebuild starts diagnose in a process group of its
+    /// own and exits, so neither the runner's group nor its lineage holds it
+    /// by the time the teardown looks; the device home it writes into names
+    /// it as the stopped run's. Ending an xcodebuild can start another
+    /// diagnose, so the table is read again after each round, up to `rounds`
+    /// times, and while `deadline` allows after the first.
+    ///
+    /// The runner is already stopped and its home is about to go, so the
+    /// run's `xcodebuild test-without-building` takes SIGKILL at once (SIGINT
+    /// is what makes it start a diagnose). A diagnose gets SIGINT, then
+    /// SIGKILL after `gracePeriod`; from the second round on everything
+    /// takes SIGKILL at once. A helper is killed, never left.
+    public func reapDeviceHome(udid: String, rounds: Int = 3) async -> [ReapedProcess] {
+        guard !udid.isEmpty else { return [] }
+        let me = getpid()
+        var reaped: [ReapedProcess] = []
+        for round in 0..<max(rounds, 1) {
+            if round > 0, let deadline, Date() >= deadline { break }
+            guard let table = try? await snapshot() else { break }
+            var targets = HostProcess.parse(table).compactMap { process -> ReapedProcess? in
+                guard process.pid > 1, process.pid != me,
+                      !reaped.contains(where: { $0.pid == process.pid && $0.command == process.command }),
+                      let kind = SimulatorReaper.kind(of: process.command, owning: udid),
+                      kind == .diagnose || kind == .webDriverAgent,
+                      writesIntoDeviceHome(process.command, udid: udid)
+                else { return nil }
+                return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
+            }
+            guard !targets.isEmpty else { break }
+            await terminate(&targets) { round > 0 || $0.kind == .webDriverAgent }
+            reaped += targets
+        }
+        return reaped.sorted { $0.pid < $1.pid }
+    }
+
+    /// True when a path in `command` lies in the runner home of `udid`
+    /// (`<runner base>/…/devices/<udid>`) under one of `runnerBases`.
+    func writesIntoDeviceHome(_ command: String, udid: String) -> Bool {
+        let needle = command.lowercased()
+        let device = "/devices/\(udid.lowercased())"
+        return runnerBases.contains { base in
+            guard !base.isEmpty else { return false }
+            let prefix = base.lowercased() + "/"
+            var rest = needle[...]
+            while let start = rest.range(of: prefix) {
+                let path = rest[start.upperBound...].prefix { $0 != " " }
+                if path.contains(device + "/") || path.hasSuffix(device) { return true }
+                rest = rest[start.upperBound...]
+            }
+            return false
+        }
+    }
+
     private func reap(udid: String, lineage: RunnerLineage, followLineage: Bool = true) async -> [ReapedProcess] {
         guard !udid.isEmpty, let table = try? await snapshot() else { return [] }
         var lineage = lineage
@@ -192,7 +257,7 @@ public struct RunnerHelperReaper: Sendable {
             else { return nil }
             return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
         }.sorted { $0.pid < $1.pid }
-        await terminate(&targets)
+        await terminate(&targets) { [killsXcodebuildAtOnce] in killsXcodebuildAtOnce && $0.kind == .webDriverAgent }
         return targets
     }
 
@@ -218,7 +283,10 @@ public struct RunnerHelperReaper: Sendable {
 
     /// SIGINT each target (and its group, when it leads one of its own),
     /// wait up to `gracePeriod`, SIGKILL the survivors, then wait for them.
-    private func terminate(_ targets: inout [ReapedProcess]) async {
+    /// Targets `killAtOnce` picks take SIGKILL without the SIGINT and grace.
+    private func terminate(
+        _ targets: inout [ReapedProcess], killAtOnce: (ReapedProcess) -> Bool = { _ in false }
+    ) async {
         guard !targets.isEmpty else { return }
         let ownGroup = getpgrp()
         func send(_ sig: Int32, _ target: ReapedProcess) {
@@ -227,18 +295,21 @@ public struct RunnerHelperReaper: Sendable {
                 signal(-target.processGroup, sig)
             }
         }
+        var graced = false
         for index in targets.indices {
-            send(SIGINT, targets[index])
+            let now = killAtOnce(targets[index])
+            graced = graced || !now
+            send(now ? SIGKILL : SIGINT, targets[index])
             targets[index].killed = true
         }
         let pending = targets
-        if await waitForExit(pending, timeout: gracePeriod) { return }
+        if await waitForExit(pending, timeout: graced ? gracePeriod : 2) { return }
         for target in pending where isAlive(target.pid) { send(SIGKILL, target) }
         _ = await waitForExit(pending, timeout: 2)
     }
 
     private func waitForExit(_ targets: [ReapedProcess], timeout: TimeInterval) async -> Bool {
-        let deadline = Date().addingTimeInterval(timeout)
+        let deadline = min(Date().addingTimeInterval(timeout), self.deadline ?? .distantFuture)
         while targets.contains(where: { isAlive($0.pid) }) {
             if Date() >= deadline { return false }
             try? await Task.sleep(for: pollInterval)

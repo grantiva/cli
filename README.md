@@ -640,9 +640,19 @@ A simulator held by a `grantiva runner start` session is released with
 (with or without `--force`) also stops a runner session it finds on a simulator
 it tears down, a `runner start` or a `run --keep-alive` one, before tearing the
 simulator down, removes that session's files, and reports it as
-`runnerSessionStopped` in `--json`. Without `--force`, a process still holding
-the simulator that teardown did not start (a runner, WebDriverAgent's
-xcodebuild, a `simctl diagnose`, a `grantiva run`) is not killed: teardown
+`runnerSessionStopped` in `--json`. On iOS it then ends the WebDriverAgent
+`xcodebuild` and the `simctl diagnose` that the stopped run left writing into the
+simulator's runner home (an interrupted xcodebuild starts diagnose in a process
+group of its own), before it removes that home, so the home stays removed: the
+xcodebuild takes SIGKILL at once, a diagnose SIGINT and then SIGKILL after 3 s.
+Stopping the sessions, waiting for their runners and this reap share one 30 s
+deadline, which a runner that ignores SIGTERM can overrun by at most one
+process-group grace (about 5 s). It lists them under `reapedProcesses` in `--json` (same fields as
+`leftoverProcesses`, `killed: true`; with `--force` too) and prints `Also stopped
+diagnose pid <pid>, which the runner left running for <udid>.` for each. Without
+`--force`, a process still holding the simulator, other than those of the run it
+stopped, that teardown did not start (a runner, WebDriverAgent's xcodebuild, a
+`simctl diagnose`, a `grantiva run`) is not killed: teardown
 names its pid and command in a warning on stderr and in `leftoverProcesses` in
 `--json`, and goes on; `--force` reclaims such processes. Each
 `leftoverProcesses` entry has `kind` (`runner`, `webDriverAgent`, `diagnose` or
