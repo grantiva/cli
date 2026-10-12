@@ -1,0 +1,99 @@
+[
+  {
+    "message" : "\/Applications\/Xcode-27.0.0.app\/Contents\/Developer",
+    "name" : "Xcode",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "Xcode 27.0",
+    "name" : "Xcode Version",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Fix the Xcode check above (xcode-select -p, or unset DEVELOPER_DIR), then run grantiva doctor again",
+    "message" : "Could not list simulators: 2026-10-12 13:14:06.411 simctl[9770:22128939] CoreSimulatorService connection became invalid.  Simulator services will no longer be available.\n2026-10-12 13:14:06.457 simctl[9770:22128939] Logging connecton invalid: <OS_xpc_error: <dictionary: 0x2008962b0> { count = 1, transaction: 0, voucher = 0x0, contents =\n\t\"XPCErrorDescription\" => <string: 0x2008963f0> { string cache = 0x0, length = 18, contents = \"Connection invalid\" }\n}>\n2026-10-12 13:14:06.458 simctl[9770:22128943] Error opening log file (\/Users\/kyle\/Library\/Logs\/CoreSimulator\/CoreSimulator.com.apple.CoreSimulator.simctl.log): Operation not permitted\n[-[SimServiceContext initWithDeveloperDir:connectionType:error:]:499] WARN  : Unable to discover any Simulator runtimes. Developer Directory is \/Applications\/Xcode-27.0.0.app\/Contents\/Developer.\n[-[SimDiskImageManager _onQueue_checkConnection:]:239] ERROR : simdiskimaged returned error (invalid), marking disconnected.\n[-[SimServiceContext initWithDeveloperDir:connectionType:error:]_block_invoke:556] ERROR : Could not get list of trusted mount directories: Error Domain=com.apple.CoreSimulator.SimError Code=410 \"The service used to manage runtime disk images (simdiskimaged) crashed or is not responding\" UserInfo={NSLocalizedDescription=The service used to manage runtime disk images (simdiskimaged) crashed or is not responding}\n[-[SimDiskImageManager _onQueue_checkConnection:]:239] ERROR : simdiskimaged returned error (invalid), marking disconnected.\n[-[SimDiskImageManager init]:175] ERROR : Could not kickstart simdiskimaged; SimDiskImageManager services will not be available: Error Domain=NSPOSIXErrorDomain Code=53 \"Software caused connection abort\" UserInfo={NSLocalizedDescription=Error returned in reply from CoreSimulatorService: Connection invalid}\n[-[SimServiceContext sendRequest:reply:error:]:1982] ERROR : Unable to deliver request ({\n    request = \"notification_subscription\";\n    \"set_path\" = \"\/Users\/kyle\/Library\/Developer\/CoreSimulator\/Devices\";\n}) because we are not connected to CoreSimulatorService.\n2026-10-12 13:14:06.458 simctl[9770:22128938] Error Domain=NSPOSIXErrorDomain Code=61 \"Connection refused\" UserInfo={NSLocalizedDescription=CoreSimulatorService connection became invalid.  Simulator services will no longer be available.}\nUnable to locate device set: Error Domain=NSPOSIXErrorDomain Code=61 \"Connection refused\" UserInfo={NSLocalizedFailureReason=Failed to subscribe to notifications from CoreSimulatorService., NSLocalizedDescription=Failed to initialize simulator device set., NSUnderlyingError=0x7bda97c840 {Error Domain=NSPOSIXErrorDomain Code=61 \"Connection refused\" UserInfo={NSLocalizedDescription=CoreSimulatorService connection became invalid.  Simulator services will no longer be available.}}}",
+    "name" : "Booted Simulator",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "message" : "\/Users\/kyle\/Library\/Android\/sdk",
+    "name" : "Android SDK",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "Android Debug Bridge version 1.0.41",
+    "name" : "adb",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "\/Users\/kyle\/Library\/Android\/sdk\/emulator\/emulator",
+    "name" : "Android Emulator",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "\/opt\/homebrew\/opt\/openjdk@21\/libexec\/openjdk.jdk\/Contents\/Home",
+    "name" : "JDK",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "message" : "Pixel_8_API_35, cov3-android",
+    "name" : "Android AVDs",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Grantiva boots the configured AVD on demand; or run: emulator -avd Pixel_8_API_35",
+    "message" : "No emulator running",
+    "name" : "Running Emulator",
+    "section" : "Advisory",
+    "status" : "warning"
+  },
+  {
+    "message" : "grantiva-runner 1.1.28-grantiva.13+android-drivers-2",
+    "name" : "Runner",
+    "section" : "Advisory",
+    "status" : "ok"
+  },
+  {
+    "fix" : "Run: grantiva init",
+    "message" : "Not found",
+    "name" : "grantiva.yml",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: grantiva init --platform android",
+    "message" : "Not found",
+    "name" : "grantiva-android.yml",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: git init",
+    "message" : "Not a git repository",
+    "name" : "Git Repository",
+    "section" : "Project",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Run: grantiva auth login",
+    "message" : "Not authenticated — remote baselines unavailable",
+    "name" : "Grantiva Auth",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  },
+  {
+    "fix" : "Install the GitHub App from your Grantiva dashboard settings",
+    "message" : "GitHub App not configured — Check Runs won't be posted",
+    "name" : "GitHub App",
+    "section" : "CI \/ Cloud",
+    "status" : "warning"
+  }
+]

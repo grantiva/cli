@@ -1,0 +1,15 @@
+# setup: screens A, B; captures A.png, B.png = 100x100 grey (inputs/mkpng2.py n=0); no baselines
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/D2-23
+$ $GRANTIVA diff compare
+# exit=1 elapsed=.050s -> no_baselines.out / no_baselines.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/D2-23
+$ $GRANTIVA diff compare --json
+# exit=1 elapsed=.050s -> no_baselines_json.out / no_baselines_json.err
+# baselines/A.png = copy of capture A (B has no baseline) before some_missing
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/D2-23
+$ $GRANTIVA diff compare
+# exit=1 elapsed=.053s -> some_missing.out / some_missing.err
+# baselines/B.png = grey; capture B re-written with its first 3 pixels pure red (mkpng2.py n=3) before perturbed
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/D2-23
+$ $GRANTIVA diff compare
+# exit=1 elapsed=.058s -> perturbed.out / perturbed.err

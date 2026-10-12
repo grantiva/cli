@@ -1,0 +1,43 @@
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:10:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:11:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:17:        XCTAssertEqual(held.count, file.data.count, "a one-entry stts is rewritten in place")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:23:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:24:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:26:        XCTAssertEqual(held.count, file.data.count + 8)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:28:        XCTAssertEqual(Array(held[Int(parsed.chunkOffset)..<Int(parsed.chunkOffset) + 4]), MP4Fixture.mdatPayload)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:40:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:41:        XCTAssertEqual(held.recordedSeconds, 0)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:42:        let parsed = MP4Fixture.Parsed(held.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:68:    // MARK: - K34: the last frame's start, the track end, and why nothing was held
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:77:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:78:        XCTAssertEqual(held.lastFrameSeconds, 0.0667, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:79:        XCTAssertEqual(held.recordedSeconds, 0.1, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:161:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:162:            return XCTFail("expected the last frame to be held")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:167:        let held = try Data(contentsOf: url)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:168:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:176:        let reread = try MP4LastFrameHold.timing(of: held).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:180:            return XCTFail("a held file is already the requested length")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:248:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 3))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:249:        XCTAssertEqual(held.lastFrameSeconds, 1_190.0 / 600, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:250:        let parsed = MP4Fixture.Parsed(held.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:261:        for position in [MP4Fixture.ExtraTrak.Position.after, .before] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:262:            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:269:                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:270:                    XCTFail("\(position) \(kind): expected the video track to be held"); continue
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:273:                let held = try Data(contentsOf: url)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:274:                XCTAssertEqual(MP4Fixture.Parsed(held).stts, [[1, 360_000]] as [[UInt32]], "\(position) \(kind)")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:275:                XCTAssertEqual(MP4Fixture.traks(in: held).filter { !$0.contains(Array("stts".utf8)) },
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:293:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:294:            return XCTFail("expected the last frame to be held")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:353:/// ftyp, moov(mvhd, trak(tkhd, edts(elst), mdia(mdhd, hdlr vide, minf(stbl(stts, stco))))), mdat.
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:363:    struct ExtraTrak {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:365:        enum Kind { case noMdia, mdiaWithoutHdlr }
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:375:        extraTrak: ExtraTrak? = nil, omitVideo: Bool = false,
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:384:        func extraTrakBox(_ kind: ExtraTrak.Kind) -> [UInt8] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:388:            case .mdiaWithoutHdlr:
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:389:                return box("trak", tkhd + box("mdia", full("mdhd", time(0) + time(0) + be(1_000) + time(1_234) + be(0))))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:397:            let hdlr = box("hdlr", [0, 0, 0, 0] + be(0) + Array("vide".utf8) + [UInt8](repeating: 0, count: 13))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:408:            let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:458:                case "moov", "trak", "edts", "mdia", "minf", "stbl": walk(b, p, o + size)
