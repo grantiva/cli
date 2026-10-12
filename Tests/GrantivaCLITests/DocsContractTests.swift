@@ -100,6 +100,37 @@ final class DocsContractTests: XCTestCase {
         }
     }
 
+    // MARK: - the runner's lineage is not named in prose
+
+    /// `body` with fenced code blocks and inline code spans removed, so
+    /// identifiers, paths and raw output are exempt.
+    static func prose(_ body: String) -> String {
+        body.replacing(/```[\s\S]*?```/, with: "").replacing(/`[^`\n]*`/, with: "")
+    }
+
+    /// Names of the project the runner derives from, found in `body`'s prose.
+    static func lineageNames(in body: String) -> [String] {
+        prose(body).matches(of: /(?i)devicelab|maestro-runner/).map { String($0.output) }
+    }
+
+    func testLineageNamesAreFoundOnlyInProse() {
+        XCTAssertEqual(Self.lineageNames(in: "The Go runner (grantiva-runner, forked from devicelab-dev/maestro-runner)."), ["devicelab", "maestro-runner"])
+        XCTAssertEqual(Self.lineageNames(in: "We drop DeviceLab."), ["DeviceLab"])
+        XCTAssertEqual(Self.lineageNames(in: "The log is `maestro-runner.log`.\n```\nls drivers/android/devicelab\n```\n"), [])
+        XCTAssertEqual(Self.lineageNames(in: "Run Maestro flows; set `MAESTRO_RUNNER_HOME`."), [], "the flow format and identifiers are exempt")
+    }
+
+    func testNoMarkdownNamesTheRunnersLineageInProse() throws {
+        var paths = ["README.md"]
+        let docs = FileManager.default.enumerator(atPath: Self.root.appendingPathComponent("docs").path)
+        while let item = docs?.nextObject() as? String {
+            if item.hasSuffix(".md") { paths.append("docs/\(item)") }
+        }
+        for path in paths {
+            XCTAssertEqual(Self.lineageNames(in: try text(path)), [], "\(path) names the runner's lineage in prose")
+        }
+    }
+
     // MARK: - K65: the prebuilt GrantivaAgent runtimes
 
     /// The runtimes the bundled runner tarball ships a prebuilt GrantivaAgent
