@@ -179,13 +179,12 @@ public struct GrantivaMCPServer: Sendable {
         if let keepAlive = sessions.first(where: { $0.projectDirectory == project && $0.platform == platform }) {
             // A runner of this project's is up but has not published its session.
             guard keepAlive.isPublished else { throw RunnerSessionInfo.startingError(platform: platform) }
-        }
-        if let keepAlive = sessions.first(where: { $0.projectDirectory == project && $0.platform == platform }),
-           let port = UInt16(exactly: keepAlive.port) {
-            let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
-            return RunnerSessionInfo(
-                pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
-            )
+            if let port = UInt16(exactly: keepAlive.port) {
+                let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
+                return RunnerSessionInfo(
+                    pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
+                )
+            }
         }
         let live = sessions.filter(\.isPublished)
         throw GrantivaError.noRunnerSession(

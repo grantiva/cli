@@ -56,6 +56,9 @@ public struct RunnerSessionStopper: Sendable {
     /// shutdown gives the runner 5 s before escalating.
     public var waitTimeout: TimeInterval
     public var pollInterval: Duration
+    /// A pid's kernel start time, nil when gone; compared with the start
+    /// time the owner file recorded before a runner is signalled.
+    public var processStartTime: @Sendable (Int32) -> Int64?
 
     public init(
         store: KeepAliveSessionStore,
@@ -70,7 +73,8 @@ public struct RunnerSessionStopper: Sendable {
         cleanupOrphans: @escaping @Sendable (String) async -> Void,
         helperReaper: RunnerHelperReaper = .inert,
         waitTimeout: TimeInterval = 30,
-        pollInterval: Duration = .milliseconds(100)
+        pollInterval: Duration = .milliseconds(100),
+        processStartTime: @escaping @Sendable (Int32) -> Int64? = RunnerStopMarker.processStartTime
     ) {
         self.store = store
         self.isProcessAlive = isProcessAlive
@@ -85,6 +89,7 @@ public struct RunnerSessionStopper: Sendable {
         self.helperReaper = helperReaper
         self.waitTimeout = waitTimeout
         self.pollInterval = pollInterval
+        self.processStartTime = processStartTime
     }
 
     public static func live(store: KeepAliveSessionStore = KeepAliveSessionStore()) -> RunnerSessionStopper {
@@ -142,16 +147,18 @@ public struct RunnerSessionStopper: Sendable {
             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(runnerPid: session.pid, udid: udid)
+        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime)
     }
 
     /// Terminates a runner nobody holds and cleans up after it. A pid that
-    /// is no longer a grantiva-runner is never signalled; its files are still
-    /// removed.
-    func terminate(runnerPid: Int32, udid: String) async -> Outcome {
+    /// is no longer a grantiva-runner, or whose start time is not the one the
+    /// owner file recorded (the pid was reused), is never signalled; its
+    /// files are still removed.
+    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil) async -> Outcome {
         var killed = false
         var reaped: [ReapedProcess] = []
-        if isProcessAlive(runnerPid), await isRunnerProcess(runnerPid) {
+        let sameProcess = recordedStartTime.map { processStartTime(runnerPid) == $0 } ?? true
+        if isProcessAlive(runnerPid), sameProcess, await isRunnerProcess(runnerPid) {
             (killed, reaped) = await helperReaper.stopping(runnerPid: runnerPid, udid: udid) { [self] in
                 let killed = terminateGroup(runnerPid) == .killed
                 _ = await waitForExit(runnerPid, timeout: 3)

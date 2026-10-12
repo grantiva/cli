@@ -212,6 +212,37 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertEqual(events.value, ["terminate 701", "files 701"])
     }
 
+    /// An orphan whose holder is dead is terminated only while its pid is
+    /// still the runner the owner file recorded: a recycled pid (another
+    /// start time) is never signalled, and the stale files still go.
+    func testAnOrphanWhosePidWasRecycledIsNeverSignalled() async throws {
+        let alive = Locked<Set<Int32>>([701])
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        try overwriteOwner(KeepAliveOwner(udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, runnerStartTime: 1_000))
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.store = store
+        stopper.processStartTime = { _ in 2_000 }
+
+        let recycled = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+        XCTAssertEqual(recycled, [.terminated(runnerPid: 701, udid: udid, killed: false)])
+        XCTAssertFalse(events.value.contains("terminate 701"), "\(events.value)")
+        XCTAssertTrue(events.value.contains("files 701"), "\(events.value)")
+
+        stopper.processStartTime = { _ in 1_000 }
+        _ = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+        XCTAssertTrue(events.value.contains("terminate 701"), "the recorded runner itself is stopped: \(events.value)")
+    }
+
+    /// `recordOwner` writes the runner's start time (additive key).
+    func testTheOwnerFileRecordsTheRunnersStartTime() throws {
+        let store = KeepAliveSessionStore(directory: directory.path)
+        let owner = try XCTUnwrap(store.recordOwner(udid: udid, runnerPid: getpid()))
+        XCTAssertEqual(owner.runnerStartTime, RunnerStopMarker.processStartTime(getpid()))
+        let json = try String(contentsOf: directory.appendingPathComponent("\(getpid()).owner.json"), encoding: .utf8)
+        XCTAssertTrue(json.contains("\"runnerStartTime\""), json)
+    }
+
     private func overwriteOwner(_ owner: KeepAliveOwner) throws {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601

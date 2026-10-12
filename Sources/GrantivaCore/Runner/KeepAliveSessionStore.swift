@@ -38,12 +38,15 @@ public struct KeepAliveSession: Equatable, Sendable {
     /// session has no session ID or port yet (`port` is 0), and `path` is
     /// its owner sidecar.
     public let isPublished: Bool
+    /// The runner's kernel start time when grantiva recorded it, so a stop
+    /// never signals another process that reused the pid.
+    public let runnerStartTime: Int64?
 
     public init(
         sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
         projectDirectory: String? = nil, platform: Platform? = nil,
         ownerPid: Int32? = nil, detached: Bool? = nil, appId: String? = nil,
-        command: String? = nil, isPublished: Bool = true
+        command: String? = nil, isPublished: Bool = true, runnerStartTime: Int64? = nil
     ) {
         self.sessionId = sessionId
         self.port = port
@@ -57,6 +60,7 @@ public struct KeepAliveSession: Equatable, Sendable {
         self.appId = appId
         self.command = command
         self.isPublished = isPublished
+        self.runnerStartTime = runnerStartTime
     }
 
     /// A session whose runner has not published its file yet, from its
@@ -66,7 +70,7 @@ public struct KeepAliveSession: Equatable, Sendable {
             sessionId: "", port: 0, pid: owner.runnerPid, udid: owner.udid, path: path,
             projectDirectory: owner.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
             platform: owner.platform, ownerPid: owner.grantivaPid, detached: owner.detached, appId: owner.appId,
-            command: owner.command, isPublished: false
+            command: owner.command, isPublished: false, runnerStartTime: owner.runnerStartTime
         )
     }
 
@@ -104,13 +108,17 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     /// `runner-start` for a `grantiva runner start` session, nil for
     /// `run --keep-alive` and sidecars written by earlier versions.
     public let command: String?
+    /// The runner's kernel start time (seconds since 1970), so a stop can
+    /// tell the runner from a process that reused its pid. Absent in
+    /// sidecars written by earlier versions.
+    public let runnerStartTime: Int64?
 
     public static let runnerStartCommand = "runner-start"
 
     public init(
         udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
         projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil,
-        command: String? = nil
+        command: String? = nil, runnerStartTime: Int64? = nil
     ) {
         self.udid = udid
         self.runnerPid = runnerPid
@@ -121,6 +129,7 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
         self.detached = detached
         self.appId = appId
         self.command = command
+        self.runnerStartTime = runnerStartTime
     }
 
     /// A foreground `runner start`: the grantiva process holding it reads a
@@ -196,7 +205,8 @@ public struct KeepAliveSessionStore: Sendable {
             platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios),
             detached: detached,
             appId: appID.flatMap { $0.isEmpty ? nil : $0 },
-            command: command
+            command: command,
+            runnerStartTime: RunnerStopMarker.processStartTime(runnerPid)
         )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -325,7 +335,7 @@ public struct KeepAliveSessionStore: Sendable {
                     projectDirectory: owner?.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
                     platform: owner?.platform,
                     ownerPid: owner?.grantivaPid, detached: owner?.detached, appId: owner?.appId,
-                    command: owner?.command
+                    command: owner?.command, runnerStartTime: owner?.runnerStartTime
                 )
                 return (session, Self.sortKey(fileName: name, path: path))
             }
