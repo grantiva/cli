@@ -1,0 +1,92 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --simulator FD651786-CFC7-48DF-82B8-F8FAE8ED1CD3 --no-build --flow .maestro/01-browse.yaml --keep-alive --ready-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/ready-ios-sigint-after-pass.json   (mode: stop after the flow)
+# start 00:30:22  0:30  up 4 days, 15:57, 5 users, load averages: 17.84 17.03 23.07
+Resolved: scheme=Landmarks (UI Testing) simulator=FD651786-CFC7-48DF-82B8-F8FAE8ED1CD3 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: FD651786-CFC7-48DF-82B8-F8FAE8ED1CD3
+Simulator booted: smoke5-ios (FD651786-CFC7-48DF-82B8-F8FAE8ED1CD3)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 9071
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Landmarks" (527ms)
+    ✓ assertVisible: text="Featured" (272ms)
+    ✓ takeScreenshot (78ms)
+    ✓ tapOn: text="Golden Gate Bridge" (879ms)
+    ✓ assertVisible: text="San Francisco, CA" (397ms)
+    ✓ assertVisible: text="Plan Visit" (323ms)
+    ✓ takeScreenshot (93ms)
+✓ 01-browse 6.0s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: smoke5-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✓ assertVisible: text="Landmarks" (527ms)
+    ✓ assertVisible: text="Featured" (272ms)
+    ✓ takeScreenshot (78ms)
+    ✓ tapOn: text="Golden Gate Bridge" (879ms)
+    ✓ assertVisible: text="San Francisco, CA" (397ms)
+    ✓ assertVisible: text="Plan Visit" (323ms)
+    ✓ takeScreenshot (93ms)
+✓ 01-browse 6.0s
+
+  8 steps passing (6.0s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       6.0s  smoke5-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       6.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=9071 session=19959-1791790233590108000
+  /tmp/grantiva-sessions/19959-1791790233590108000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing the keep-alive hold
+
+  Releasing GrantivaAgent session...
+
+  01-browse
+    ✓ launchApp
+    ✓ assertVisible: text="Landmarks"
+    ✓ assertVisible: text="Featured"
+    ✓ takeScreenshot
+    ✓ tapOn: text="Golden Gate Bridge"
+    ✓ assertVisible: text="San Francisco, CA"
+    ✓ assertVisible: text="Plan Visit"
+    ✓ takeScreenshot
+    ▸ Screenshot: 01-browse-cmd-003-Home
+    ▸ Screenshot: 01-browse-cmd-007-Landmark Detail
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: .grantiva/run-captures/
+
+# exit 0  end 00:30:37 (run ended .20 s after the stop was sent)  0:30  up 4 days, 15:58, 5 users, load averages: 14.72 16.39 22.73

@@ -1,0 +1,7 @@
+# round 3 re-smoke (runner .13): GRANTIVA=$HOME/.grantiva-qa/bin/grantiva 2.1.0 (CLI main 2f4d8381, installed 2026-10-12 00:26), runner 1.1.28-grantiva.13+android-drivers-2 (runner version --json → 1.1.28-grantiva.13); GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner;
+# GRANTIVA_SESSION_ID=smoke5; GRANTIVA_API_KEY unset; Android prelude from the constraints. Devices: smoke5-ios (iPhone 17, iOS 26.0; FD651786… for I-record/I-keepalive/TD run 1, re-created as 446D4576… and 3354BC21… for TD runs 2-3); smoke5-android = emulator-5554 (API 35, default emulator ensure AVD, hw.gpu.enabled=no, ro.hardware.egl=emulation)
+# demo: landmarks-demo 75acc87 ios/ and android/ copied to <scratch>/smoke5/demo; <scratch> = /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad
+# driver scripts in the evidence root (copies of the round-3 scripts with smoke5 paths; keepalive*.sh add --ready-file and the stop→exit time); env.sh.txt is the sourced environment
+# each rec'd output file starts with the exact command and '# start <time> <load>', ends with '# exit <rc>' and '# wall <s>; end <time> <load>'
+ensure.txt, build-install.txt: simulator ensure --name smoke5-ios --device-type "iPhone 17" --runtime "iOS 26.0"; (ios/) build install --simulator <udid> --no-launch
+ensure-2.txt, build-install-2.txt, build-install-3.txt: re-creations for the TD-ios reruns

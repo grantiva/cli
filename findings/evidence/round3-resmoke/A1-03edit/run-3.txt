@@ -1,0 +1,96 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/03-edit.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3
+# start 00:46:14 load averages: 11.67 13.44 18.73
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/03-edit.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-edit (03-edit.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (10.2s, slow)
+    ✓ tapOn: text="Deep Links" (2.9s)
+    ✓ tapOn: text="Edit Landmark" (2.1s)
+    ✓ assertVisible: text="Edit Landmark" (1.2s)
+    ✓ tapOn: text="Name" (848ms)
+    ✓ inputText: " Renamed" (18.6s, slow)
+    ✓ tapOn: text="Done" (3.0s)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (3.4s)
+    ✓ takeScreenshot (640ms)
+✓ 03-edit 42.8s
+
+  [1/1] 03-edit (.maestro/03-edit.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (10.2s, slow)
+    ✓ tapOn: text="Deep Links" (2.9s)
+    ✓ tapOn: text="Edit Landmark" (2.1s)
+    ✓ assertVisible: text="Edit Landmark" (1.2s)
+    ✓ tapOn: text="Name" (848ms)
+    ✓ inputText: " Renamed" (18.6s, slow)
+    ✓ tapOn: text="Done" (3.0s)
+    ✓ assertVisible: text="Golden Gate Bridge Renamed" (3.4s)
+    ✓ takeScreenshot (640ms)
+✓ 03-edit 42.8s
+
+  9 steps passing (42.8s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-edit                        ✓ PASS       9      9      0      0      42.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       9      9      0      0      42.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3/allure-results
+
+  Built by Grantiva
+
+
+  03-edit
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Edit Landmark"
+    ✓ assertVisible: text="Edit Landmark"
+    ✓ tapOn: text="Name"
+    ✓ inputText: " Renamed"
+    ✓ tapOn: text="Done"
+    ✓ assertVisible: text="Golden Gate Bridge Renamed"
+    ✓ takeScreenshot
+    ▸ Screenshot: 03-edit-cmd-008-Edited
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/run-3/captures/
+
+# exit 0
+# wall 51.43 s; end 00:47:05 load averages: 12.49 13.34 18.38

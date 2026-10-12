@@ -1,0 +1,105 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/03-gesture-lab-taps.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2
+# start 00:47:43 load averages: 11.01 12.89 17.99
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/03-gesture-lab-taps.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 03-gesture-lab-taps (03-gesture-lab-taps.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (10.8s, slow)
+    ✓ tapOn: text="Deep Links" (3.2s)
+    ✓ tapOn: text="Gesture Lab" (2.1s)
+    ✓ assertVisible: text="Taps: 0" (898ms)
+    ✓ tapOn: id="gesture-pad" (843ms)
+    ✓ assertVisible: text="Taps: 1" (835ms)
+    ✓ doubleTapOn: id="gesture-pad" (660ms)
+    ✓ assertVisible: text="Double taps: 1" (933ms)
+    ✓ assertVisible: text="Taps: 1" (201ms)
+    ✓ longPressOn: id="gesture-pad" (10.1s, slow)
+    ✓ assertVisible: text="Long presses: 1" (218ms)
+    ✓ takeScreenshot (636ms)
+✓ 03-gesture-lab-taps 31.4s
+
+  [1/1] 03-gesture-lab-taps (.maestro/coverage/03-gesture-lab-taps.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (10.8s, slow)
+    ✓ tapOn: text="Deep Links" (3.2s)
+    ✓ tapOn: text="Gesture Lab" (2.1s)
+    ✓ assertVisible: text="Taps: 0" (898ms)
+    ✓ tapOn: id="gesture-pad" (843ms)
+    ✓ assertVisible: text="Taps: 1" (835ms)
+    ✓ doubleTapOn: id="gesture-pad" (660ms)
+    ✓ assertVisible: text="Double taps: 1" (933ms)
+    ✓ assertVisible: text="Taps: 1" (201ms)
+    ✓ longPressOn: id="gesture-pad" (10.1s, slow)
+    ✓ assertVisible: text="Long presses: 1" (218ms)
+    ✓ takeScreenshot (636ms)
+✓ 03-gesture-lab-taps 31.4s
+
+  12 steps passing (31.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  03-gesture-lab-taps            ✓ PASS      12     12      0      0      31.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      12     12      0      0      31.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2/allure-results
+
+  Built by Grantiva
+
+
+  03-gesture-lab-taps
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Gesture Lab"
+    ✓ assertVisible: text="Taps: 0"
+    ✓ tapOn: id="gesture-pad"
+    ✓ assertVisible: text="Taps: 1"
+    ✓ doubleTapOn: id="gesture-pad"
+    ✓ assertVisible: text="Double taps: 1"
+    ✓ assertVisible: text="Taps: 1"
+    ✓ longPressOn: id="gesture-pad"
+    ✓ assertVisible: text="Long presses: 1"
+    ✓ takeScreenshot
+    ▸ Screenshot: 03-gesture-lab-taps-cmd-011-Gesture Taps
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/dt-2/captures/
+
+# exit 0
+# wall 40.33 s; end 00:48:23 load averages: 10.43 12.51 17.62

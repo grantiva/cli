@@ -1,0 +1,78 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/99-crash.yaml --keep-alive --ready-file /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/ready-android-after-fail.json   (mode: stop after the flow)
+# start 00:55:02  0:55  up 4 days, 16:22, 5 users, load averages: 7.19 9.23 14.11
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/99-crash.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (10.6s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+✗ 99-crash 16.0s
+
+  [1/1] 99-crash (.maestro/99-crash.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (10.6s)
+      ╰─ launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+    - assertVisible: text="Landmarks" (skipped)
+    - assertVisible: text="Featured" (skipped)
+    - assertVisible: text="This never appears" (skipped)
+✗ 99-crash 16.0s
+
+  1 steps failing
+  3 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      0      1      3      16.0s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      0      1      3      16.0s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=39771-1791791724815000000
+  /tmp/grantiva-sessions/39771-1791791724815000000.grantiva
+    Press Ctrl-C to release.
+
+[grantiva] received SIGINT — releasing the keep-alive hold
+
+  Releasing UIAutomator2 session...
+Failure screenshot: .grantiva/run-captures/android/failure-1791791730.png
+
+  99-crash
+    ✗ launchApp
+      launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+
+  Flows: 1 total, 0 passed, 1 failed
+  Screenshots: .grantiva/run-captures/android/
+
+Error: Runner failed (exit 1): 99-crash: launchApp: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+# exit 1  end 00:55:32 (run ended 4.41 s after the stop was sent)  0:55  up 4 days, 16:22, 5 users, load averages: 8.22 9.30 13.94

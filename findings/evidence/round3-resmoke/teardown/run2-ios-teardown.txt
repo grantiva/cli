@@ -1,0 +1,44 @@
+$ (cwd /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/empty-usage) /Users/kyle/.grantiva-qa/bin/grantiva simulator teardown --udid 446D4576-F7A9-444F-9768-5EAAEE267A1A --json
+# 00:33:09  0:33  up 4 days, 16 hrs, 5 users, load averages: 63.90 26.08 25.00
+Warning: 446D4576-F7A9-444F-9768-5EAAEE267A1A is still held by grantiva pid 24819, which this teardown did not start: /bin/zsh -c source /Users/kyle/.claude/shell-snapshots/snapshot-zsh-1791575581729-et3g5l.sh 2>/dev/null || true && setopt NO_EXTENDED_GLOB NO_BARE_GLOB_QUAL 2>/dev/null || true && { \builtin unalias -- 'unsetenv'; \builtin unset -f -- 'unsetenv'; } >/dev/null 2>&1 || true && eval 'S=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5; sed -i '"'"''"'"' '"'"'s/^export UDID=.*/export UDID=446D4576-F7A9-444F-9768-5EAAEE267A1A/'"'"' $S/env.sh; source $S/env.sh; cd $S/demo/ios; rec $E/I0/build-install-2.txt $GRANTIVA build install --simulator $UDID --no-launch >/dev/null; tail -2 $E/I0/build-install-2.txt\012for r in 2 3; do\012  $S/fg-teardown.sh ios > /dev/null 2>&1; echo "## processes naming $UDID +2s after start exit"; ps -axo pid,ppid,etime,command | grep -F $UDID | grep -v grep | cut -c1-200 >> $E/teardown/ios-after.txt\012  cd $E/teardown; for f in ios-*.txt; do mv $f run$r-$f; done; tail -3 run$r-ios-fg-start.txt; grep -E '"'"'"runnerSessionStopped"|"killed"|"kind"|"deleted"|^Warning'"'"' run$r-ios-teardown.txt; head -2 run$r-ios-teardown.txt | tail -1; cat run$r-ios-after.txt\012  [[ $r == 2 ]] && { cd $S/demo/ios; UDID=$($GRANTIVA simulator ensure --name smoke5-ios --device-type "iPhone 17" --runtime "iOS 26.0" 2>/dev/null | tail -1); echo "new UDID $UDID"; sed -i '"'"''"'"' "s/^export UDID=.*/export UDID=$UDID/" $S/env.sh; $GRANTIVA build install --simulator $UDID --no-launch > $E/I0/build-install-3.txt 2>&1; echo "ensure+install rc $?"; }\012done' < /dev/null && pwd -P >| /tmp/claude-e8d8-cwd. Stop it, or reclaim the simulator with `grantiva simulator teardown --udid 446D4576-F7A9-444F-9768-5EAAEE267A1A --force`.
+Warning: 446D4576-F7A9-444F-9768-5EAAEE267A1A is still held by diagnose pid 25192, which this teardown did not start: /Library/Developer/PrivateFrameworks/CoreSimulator.framework/Versions/A/Resources/bin/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=/Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/devices/446D4576-F7A9-444F-9768-5EAAEE267A1A/cache/wda-builds/sim-ios26.0-iphone-wda16.12.8-r1/devices/446D4576-F7A9-444F-9768-5EAAEE267A1A/run-25023-1791790385785539000/attempt-1.xcresult/Staging/1_Test/Diagnostics/simctl_diagnostics --no-archive --udid=446D4576-F7A9-444F-9768-5EAAEE267A1A. Stop it, or reclaim the simulator with `grantiva simulator teardown --udid 446D4576-F7A9-444F-9768-5EAAEE267A1A --force`.
+[
+  {
+    "deleted" : true,
+    "deviceHomeFailures" : [
+
+    ],
+    "deviceHomesRemoved" : [
+      "\/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.13+android-drivers-2\/devices\/446D4576-F7A9-444F-9768-5EAAEE267A1A"
+    ],
+    "leftoverProcesses" : [
+      {
+        "command" : "\/bin\/zsh -c source \/Users\/kyle\/.claude\/shell-snapshots\/snapshot-zsh-1791575581729-et3g5l.sh 2>\/dev\/null || true && setopt NO_EXTENDED_GLOB NO_BARE_GLOB_QUAL 2>\/dev\/null || true && { \\builtin unalias -- 'unsetenv'; \\builtin unset -f -- 'unsetenv'; } >\/dev\/null 2>&1 || true && eval 'S=\/private\/tmp\/claude-501\/-Users-kyle-Developer-grantiva-cli\/b9f2e919-f7a5-4b94-a1bc-202f523560f4\/scratchpad\/smoke5; sed -i '\"'\"''\"'\"' '\"'\"'s\/^export UDID=.*\/export UDID=446D4576-F7A9-444F-9768-5EAAEE267A1A\/'\"'\"' $S\/env.sh; source $S\/env.sh; cd $S\/demo\/ios; rec $E\/I0\/build-install-2.txt $GRANTIVA build install --simulator $UDID --no-launch >\/dev\/null; tail -2 $E\/I0\/build-install-2.txt\\012for r in 2 3; do\\012  $S\/fg-teardown.sh ios > \/dev\/null 2>&1; echo \"## processes naming $UDID +2s after start exit\"; ps -axo pid,ppid,etime,command | grep -F $UDID | grep -v grep | cut -c1-200 >> $E\/teardown\/ios-after.txt\\012  cd $E\/teardown; for f in ios-*.txt; do mv $f run$r-$f; done; tail -3 run$r-ios-fg-start.txt; grep -E '\"'\"'\"runnerSessionStopped\"|\"killed\"|\"kind\"|\"deleted\"|^Warning'\"'\"' run$r-ios-teardown.txt; head -2 run$r-ios-teardown.txt | tail -1; cat run$r-ios-after.txt\\012  [[ $r == 2 ]] && { cd $S\/demo\/ios; UDID=$($GRANTIVA simulator ensure --name smoke5-ios --device-type \"iPhone 17\" --runtime \"iOS 26.0\" 2>\/dev\/null | tail -1); echo \"new UDID $UDID\"; sed -i '\"'\"''\"'\"' \"s\/^export UDID=.*\/export UDID=$UDID\/\" $S\/env.sh; $GRANTIVA build install --simulator $UDID --no-launch > $E\/I0\/build-install-3.txt 2>&1; echo \"ensure+install rc $?\"; }\\012done' < \/dev\/null && pwd -P >| \/tmp\/claude-e8d8-cwd",
+        "killed" : false,
+        "kind" : "grantiva",
+        "pid" : 24819,
+        "processGroup" : 24819
+      },
+      {
+        "command" : "\/Library\/Developer\/PrivateFrameworks\/CoreSimulator.framework\/Versions\/A\/Resources\/bin\/simctl diagnose -l -b --timeout=600 --log-option=--last --log-option=2m --output=\/Users\/kyle\/.grantiva-qa\/runner\/versions\/1.1.28-grantiva.13+android-drivers-2\/devices\/446D4576-F7A9-444F-9768-5EAAEE267A1A\/cache\/wda-builds\/sim-ios26.0-iphone-wda16.12.8-r1\/devices\/446D4576-F7A9-444F-9768-5EAAEE267A1A\/run-25023-1791790385785539000\/attempt-1.xcresult\/Staging\/1_Test\/Diagnostics\/simctl_diagnostics --no-archive --udid=446D4576-F7A9-444F-9768-5EAAEE267A1A",
+        "killed" : false,
+        "kind" : "diagnose",
+        "pid" : 25192,
+        "processGroup" : 25192
+      }
+    ],
+    "runnerSessionStopped" : true,
+    "session" : {
+      "acquiredAt" : "2026-10-12T07:32:33Z",
+      "bootedByGrantiva" : true,
+      "ephemeral" : false,
+      "name" : "smoke5-ios",
+      "ownerPID" : 24229,
+      "sessionId" : "smoke5",
+      "state" : "active",
+      "udid" : "446D4576-F7A9-444F-9768-5EAAEE267A1A"
+    },
+    "udid" : "446D4576-F7A9-444F-9768-5EAAEE267A1A"
+  }
+]
+# exit 0

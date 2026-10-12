@@ -69,3 +69,120 @@ KA-stop-during, KA-after-hold, REC-ios). Rerun line: A1 rerun 1 pass (12/12 + 5/
   - `runner stop` does not find a keep-alive run until its hold is armed.
   - A stop or Ctrl-C after the hold exits 130 rather than the earned 0/1. The runner CHANGELOG says the runner itself exits with the earned status, so the 130 likely comes from the CLI's SIGINT handling.
 - **A1 first attempt.** adb lost the emulator for about a second at load 43 while both stock runs shared the host. The rerun alone passed.
+
+## Round 3 re-smoke (runner .13, CLI 2f4d8381)
+
+Run 2026-10-12 00:27-00:57. Binary: `~/.grantiva-qa/bin/grantiva` 2.1.0 (CLI main 2f4d8381, installed 00:26). It bundles runner 1.1.28-grantiva.13
+(`runner version --json` → `{"version": "1.1.28-grantiva.13"}`; installed `versions/1.1.28-grantiva.13+android-drivers-2` in `~/.grantiva-qa/runner`).
+Demo: landmarks-demo 75acc87, ios/ and android/ copied to scratch. Session `smoke5`. Devices:
+- simulator `smoke5-ios` (iPhone 17, iOS 26.0): FD651786… for I-record, I-keepalive and TD-ios run 1, then re-created as 446D4576… and 3354BC21… for the TD-ios reruns;
+- AVD `smoke5-android` (emulator-5554, default `emulator ensure` AVD: `hw.gpu.enabled=no`, `ro.hardware.egl=emulation`).
+
+The platforms ran serially: all iOS work first, then all Android work, never two builds at once. Each step's evidence carries its uptime/load.
+
+**Host load.** Load was 2.7 at the start. It rose to 30-58 around the simulator boot and the iOS build. It was 46-55 during I-record (no grantiva process of ours was busy; other host activity) and 26 → 12 during I-keepalive. During TD-ios runs 2-3 it rose to 59-95 (simulator re-creation and boot). Android: 23.6 → 10.5 during the stock set, then 7-13 for every later Android row.
+
+Evidence: `evidence/round3-resmoke/<check>/`. Each directory has a `commands.txt`. The driver scripts are copies of the round-3 scripts with smoke5 paths, kept in the evidence root. `keepalive*.sh` add `--ready-file` and the time from the stop to the run's exit; `android-batch.sh` has this run's reduced batch.
+
+**MCP-build.** Run only when `simctl list devices booted` shows no owner simulator. `iPhone 17 Pro` and `iPhone 18 Pro` were booted before, during and after this run, so the check is blocked again.
+
+| check | round-3 result | re-smoke result | evidence |
+|---|---|---|---|
+| A1 Android stock flows + screens (alone) | fail (adb offline at load 43; rerun alone passed) | **pass** | A1/run.txt |
+| A3 Android 99-crash ×3 (L57) | fail (launchApp passed after FATAL; failure 3.2-4.3 s after it) | **pass** | A3-crash/ |
+| A1-03edit 03-edit ×3, first `tapOn "Deep Links"` (L58) | fail (3.7-4.2 s, four 404 variants first) | **pass** | A1-03edit/ |
+| A-doubletap doubleTap ×5 (L59) | fail (1/5) | **pass** (5/5) | A-doubletap/ |
+| TD-ios foreground `runner start`, teardown from another cwd (L54) | fail | **fail** | teardown/run{1,2,3}-ios-*, ios-device-home-after.txt |
+| TD-android same (L54) | fail | **pass** | teardown/android-* |
+| KA-stop-during `runner stop` during a keep-alive flow (L55) | fail | **pass** (iOS and Android) | I-keepalive/during-*, A-keepalive/during-* |
+| KA-after-hold stop/Ctrl-C after the hold → earned status (L56) | fail | **pass** (8/8) | I-keepalive/{,sigint-}after-{pass,fail}-*, A-keepalive/ same |
+| REC-ios `record --duration 3` ×3 (L60) | fail (0.067 s file) | **pass** | I-record/ |
+| MCP-build `grantiva_build` without a simulator | blocked | **blocked** | MCP-build/blocked.txt |
+| L61 Android failure-capture time (measurement) | n/a (open) | 4.3-6.8 s (not worse than the brief) | A3-crash/L61-capture-times.txt |
+| L62 Android 02-favorite ×5 (measurement) | n/a (open) | 5/5 pass | L62-02favorite/ |
+
+Rerun lines:
+- **TD-ios runs 2 and 3.** These ran on freshly re-created simulators to test whether the `simctl diagnose` leftover from run 1 repeats. It repeats 3/3.
+
+Counts: 10 re-smoked checks, **8 pass, 1 fail (TD-ios), 1 blocked (MCP-build)**, plus 2 measurement rows (L61, L62).
+
+### Per-check notes
+
+- **A1 (pass).** Alone, load 23.6 → 10.5: `Screens: 5 total, 5 captured, 0 failed` and `Flows: 12 total, 12 passed, 0 failed`, exit 0, wall 7:31.
+- **A3 (pass).** All three runs report `error.type` `app_crash` with `LANDMARKS_CRASH_ON_LAUNCH`, exit 1. Times are from logcat `FATAL EXCEPTION` (device clock, which matches the host to the second) to the runner's step failure:
+
+  | run | FATAL EXCEPTION | step failure | FATAL → failure | wall | load |
+  |---|---|---|---|---|---|
+  | 1 | 00:43:25.645 | `✗ launchApp` at 00:43:26.530 | **0.89 s** | 29.2 s | 10.5 |
+  | 2 | 00:43:53.033 | `✗ launchApp` at 00:43:53.567 | **0.53 s** | 29.5 s | 10.0 |
+  | 3 | 00:44:23.650 | `✗ assertVisible "Landmarks"` (`app crashed after launch`) at 00:44:24.859 | **1.21 s** | 26.8 s | 10.5 |
+
+  In run 3 the app threw 76 ms after `launchApp` had passed (00:44:23.574), so the failure landed at the next step, which the acceptance allows. No step passed on the dead app. Wall time is informational.
+- **A1-03edit (pass).** The flow passed 3/3 (wall 47.9 / 52.0 / 51.4 s, load 11.5-11.7).
+  - First `tapOn "Deep Links"` after `launchApp`: **2.7 / 3.3 / 2.9 s** (informational).
+  - Runner overhead before the first request: 1 / 2 / 1 ms. Measured from `Executing step 1` in the runner log to the send time of the first `POST /elements` in the client log (completion minus duration). The acceptance is < 300 ms.
+  - The plain `text("Deep Links")` query now goes first, and no 404 variants come before it. The step makes 1 `POST /elements` (1.43-1.76 s on the device), then `GET …/attribute/clickable`, then `GET /source` (0.62-0.85 s, the clickable-parent lookup that the ledger ruling accepts), then the click.
+- **A-doubletap (pass).** 5/5 `✓ doubleTapOn id="gesture-pad"` → `✓ "Double taps: 1"`, with `Taps: 1` unchanged. The runner log shows `doubleTap: (540, 1295) on the device (cmd input motionevent), gap 80 ms planned, took 255-309ms`. Load 7.4-12.5.
+- **TD-ios (fail).** The L54 core behaviour now works 3/3:
+  - teardown from an empty dir gives `deleted: true` and `runnerSessionStopped: true`;
+  - the foreground start prints `Runner stopped by teardown (pid N); the session has ended.` and exits 0, 7 s after the teardown began, in each run;
+  - `/tmp/grantiva-sessions` is empty afterwards;
+  - no process names the UDID 2 s after the start exits.
+
+  Graded fail because the teardown still reports a leftover process 3/3:
+  - **The `simctl diagnose` leftover.** xcodebuild starts `simctl diagnose … --output=<runner home>/devices/<udid>/cache/wda-builds/…/attempt-1.xcresult/…/simctl_diagnostics --udid=<udid>` when its WDA test run is cut off. The teardown lists it in `leftoverProcesses` (`kind: diagnose`, `killed: false`). It also prints `Warning: <udid> is still held by diagnose pid N, which this teardown did not start: … Stop it, or reclaim the simulator with grantiva simulator teardown --udid <udid> --force.`
+  - **The orphan device home.** After run 3, the diagnose output re-created the device home that the teardown had just removed (`devices/3354BC21…/cache/wda-builds/…/simctl_diagnostics`, 9.1 MB, still there 40 s later; ios-device-home-after.txt). The smoke removed it. Runs 1-2 left no home by the time of the later check.
+  - This is the same orphan-skeleton symptom that round 3 saw, now caused by the diagnose child rather than the runner. The acceptance asks for no leftover processes, and a warning that tells the user to `--force` a clean teardown is doubtful, hence the fail.
+  - Harness artefact, not graded: run 2 also listed this smoke's own zsh wrapper as a `grantiva` leftover, because its argv contained the UDID.
+- **TD-android (pass).** Same check on Android, 1 run:
+  - teardown gives `killed: true` and `runnerSessionStopped: true`;
+  - the start printed `Runner stopped by teardown (pid 40698); the session has ended.` and exited 0, 5 s after the teardown began;
+  - the sessions dir is empty; no process names emulator-5554 and no grantiva-runner or qemu is left; `adb devices` and `adb forward --list` are empty.
+- **KA-stop-during (pass).** `runner stop` 8 s after the `launchApp` line of `coverage/18-long-wait.yaml`:
+
+  | platform | `runner stop` output | run exit | stop → exit | ready file |
+  |---|---|---|---|---|
+  | iOS | `Stopped keep-alive session (pid N, <udid>)`, exit 0 | 130, with `received SIGINT — releasing simulator…` | 0.47 s | `"status": "interrupted"` |
+  | Android | same | 130 | 2.09 s | `"status": "interrupted"` |
+
+  The sessions dir was empty after both.
+- **KA-after-hold (pass).** Every release after `Press Ctrl-C to release` exits with the earned status:
+
+  | platform | flow | `runner stop` | SIGINT |
+  |---|---|---|---|
+  | iOS | 01-browse (passed) | exit 0 | exit 0 |
+  | iOS | 99-crash (failed) | exit 1 | exit 1 |
+  | Android | 01-browse (passed) | exit 0 | exit 0 |
+  | Android | 99-crash (failed) | exit 1 | exit 1 |
+
+  - Every run prints the flow block and the `Flows:` line; the failures add the `Error: Runner failed (exit 1): …` line.
+  - Android prints `received SIGINT — releasing the keep-alive hold`.
+  - The ready file stays `passed` / `failed`.
+  - Stop → exit took 0.2-0.8 s on iOS and 1.9-4.7 s on Android.
+  - The sessions dir was empty after every case, and no grantiva-runner or xcodebuild process was left.
+- **REC-ios (pass).** ffprobe gives `duration=3.000000` for the video stream and the format, 3/3. `nb_frames` was 2 / 1 / 2: an idle screen yields few frames (frames past 3 s may remain in a file per the ruling; none did here).
+  - Runs 1-2 printed the idle-screen warning (`last frame is at 477ms / 0ms; it was held to the requested 3.0s. The simulator records a frame only when the screen changes…`). The wording names neither screenrecord nor a device disconnect.
+  - Run 3 printed no warning: its last frame is at 2842 ms, so it was not held for more than half the recording.
+  - The frame report carries `lastFrameMilliseconds` and `recordedMilliseconds` (run 1: 477 / 953). Frames map to 0 / 477 / 477 ms (run 1) and 0 / 0 / 2842 ms (run 3).
+  - Load 46-55.
+- **MCP-build (blocked).** Owner simulators were booted at 00:30:59 (MCP-build/blocked.txt) and in HOST/before.txt and HOST/after.txt.
+- **L61 (measurement).** Time from the step failure in the runner log to the failure artefacts (ms mtimes):
+
+  | run | to `cmd-*-after.png` | to the hierarchy XML | to the CLI's `captures/failure-*.png` (after the runner exits) |
+  |---|---|---|---|
+  | 1 | 5.30 s | 5.60 s | 10.5 s |
+  | 2 | 6.80 s | 7.10 s | 13.3 s |
+  | 3 | 4.28 s | 4.50 s | 9.1 s |
+
+  This is within the 5-10 s the brief describes, not worse, so it is not a fail row. It remains most of the 27-30 s crash-run wall time.
+- **L62 (measurement).** 02-favorite ×5 on the default AVD at load 8.6-9.9: 5/5 pass, with `✓ swipe LEFT from "Lake Tahoe"` (5.0-5.4 s), then `✓ tapOn "Remove from favorites"` (1.0-1.2 s), then `✓ assertNotVisible "Lake Tahoe"`. The intermittent failure did not reproduce on this (slow, software-rendered) AVD.
+
+### End state
+
+- AVD `smoke5-android` deleted (`avdmanager delete avd`); AVDs: `Pixel_8_API_35` only; `adb devices` empty.
+- `simctl list devices | grep -c smoke5` = 0; `simulator sessions --json` `[]`.
+- Booted simulators before and after: `iPhone 17 Pro` and `iPhone 18 Pro` only, identical, never touched.
+- `/tmp/grantiva-sessions` empty.
+- No grantiva-runner, xcodebuild, qemu or `simctl diagnose` process.
+- No runner device home left in `versions/1.1.28-grantiva.13…/devices/`: the orphan home from TD-ios run 3 was removed by the smoke.
+- Files: HOST/before.txt, HOST/after.txt, teardown/avd-delete-and-sessions.txt.

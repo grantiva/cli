@@ -1,0 +1,109 @@
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/02-favorite.yaml --report-dir /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3
+# start 00:51:32 load averages: 8.98 10.77 15.84
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: smoke5-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (10.6s, slow)
+    ✓ tapOn: text="Lake Tahoe" (3.8s)
+    ✓ tapOn: text="Favorite" (2.2s)
+    ✓ assertVisible: text="Unfavorite" (304ms)
+    ✓ tapOn: text="Landmarks" (724ms)
+    ✓ tapOn: text="Favorites" (1.8s)
+    ✓ assertVisible: text="Lake Tahoe" (992ms)
+    ✓ takeScreenshot (658ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (5.4s, slow)
+    ✓ tapOn: text="Remove from favorites" (1.0s)
+    ✓ assertNotVisible: text="Lake Tahoe" (871ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (80ms)
+    ✓ takeScreenshot (594ms)
+✓ 02-favorite 29.1s
+
+  [1/1] 02-favorite (.maestro/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (10.6s, slow)
+    ✓ tapOn: text="Lake Tahoe" (3.8s)
+    ✓ tapOn: text="Favorite" (2.2s)
+    ✓ assertVisible: text="Unfavorite" (304ms)
+    ✓ tapOn: text="Landmarks" (724ms)
+    ✓ tapOn: text="Favorites" (1.8s)
+    ✓ assertVisible: text="Lake Tahoe" (992ms)
+    ✓ takeScreenshot (658ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (5.4s, slow)
+    ✓ tapOn: text="Remove from favorites" (1.0s)
+    ✓ assertNotVisible: text="Lake Tahoe" (871ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (80ms)
+    ✓ takeScreenshot (594ms)
+✓ 02-favorite 29.1s
+
+  13 steps passing (29.1s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0      29.1s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0      29.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3/report.json
+    JUnit:  /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3/junit-report.xml
+    Allure: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3/allure-results
+
+  Built by Grantiva
+
+
+  02-favorite
+    ✓ launchApp
+    ✓ tapOn: text="Lake Tahoe"
+    ✓ tapOn: text="Favorite"
+    ✓ assertVisible: text="Unfavorite"
+    ✓ tapOn: text="Landmarks"
+    ✓ tapOn: text="Favorites"
+    ✓ assertVisible: text="Lake Tahoe"
+    ✓ takeScreenshot
+    ✓ swipe: LEFT from text="Lake Tahoe"
+    ✓ tapOn: text="Remove from favorites"
+    ✓ assertNotVisible: text="Lake Tahoe"
+    ✓ assertVisible: text="Landmarks you favorite will appear here."
+    ✓ takeScreenshot
+    ▸ Screenshot: 02-favorite-cmd-007-Favorites With Item
+    ▸ Screenshot: 02-favorite-cmd-012-Favorites Empty
+
+  Flows: 1 total, 1 passed, 0 failed
+  Screenshots: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/smoke5/reports/fav-3/captures/
+
+# exit 0
+# wall 37.61 s; end 00:52:09 load averages: 9.27 10.62 15.58
