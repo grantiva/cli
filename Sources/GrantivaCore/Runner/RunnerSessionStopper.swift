@@ -141,7 +141,12 @@ public struct RunnerSessionStopper: Sendable {
         let udid = session.udid ?? ""
         let waitTimeout = Self.capped(waitTimeout, by: deadline)
         var helperReaper = helperReaper
-        if let deadline { helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline) }
+        if let deadline {
+            // A teardown (L63): its deadline, and the run's xcodebuild takes
+            // SIGKILL at once.
+            helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline)
+            helperReaper.killsXcodebuildAtOnce = true
+        }
         // Every pid is checked before it is signalled: the owner must still
         // be a grantiva process and the runner's parent, and the runner must
         // still be a grantiva-runner (pids are reused).
@@ -182,7 +187,12 @@ public struct RunnerSessionStopper: Sendable {
     /// files are still removed.
     func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil, deadline: Date? = nil) async -> Outcome {
         var helperReaper = helperReaper
-        if let deadline { helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline) }
+        if let deadline {
+            // A teardown (L63): its deadline, and the run's xcodebuild takes
+            // SIGKILL at once.
+            helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline)
+            helperReaper.killsXcodebuildAtOnce = true
+        }
         let exitTimeout = Self.capped(3, by: deadline)
         var killed = false
         var reaped: [ReapedProcess] = []

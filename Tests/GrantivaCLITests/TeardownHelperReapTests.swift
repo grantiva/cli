@@ -139,6 +139,35 @@ final class TeardownHelperReapTests: XCTestCase {
         XCTAssertTrue(signals.value.contains("KILL 602"), "\(signals.value)")
     }
 
+    /// The stopper's lineage reap, in a teardown, SIGKILLs the stopped run's
+    /// xcodebuild at once; `runner stop` (the default) still sends SIGINT.
+    func testATeardownsLineageReapSIGKILLsTheRunsXcodebuild() async {
+        let runner = "100     1   100 \(base.path)/versions/1/grantiva-runner --platform ios --device \(udid) server"
+        let child = "101   100   100 \(xcodebuild)"
+        let orphan = "101     1   100 \(xcodebuild)"
+        for teardown in [true, false] {
+            let table = TeardownReapBox("\(runner)\n\(child)")
+            let alive = TeardownReapBox<Set<Int32>>([101])
+            let signals = TeardownReapBox<[String]>([])
+            var reaper = RunnerHelperReaper(
+                snapshot: { table.value },
+                signal: { pid, sig in
+                    signals.value.append("\(sig == SIGKILL ? "KILL" : sig == SIGINT ? "INT" : "\(sig)") \(pid)")
+                    alive.value.remove(abs(pid))
+                },
+                isAlive: { alive.value.contains($0) },
+                runnerBases: [base.path], gracePeriod: 0.05, pollInterval: .milliseconds(5)
+            )
+            reaper.killsXcodebuildAtOnce = teardown
+            let (_, reaped) = await reaper.stopping(runnerPid: 100, udid: udid) { () async -> Int in
+                table.value = orphan
+                return 0
+            }
+            XCTAssertEqual(reaped.map(\.pid), [101])
+            XCTAssertEqual(signals.value.first, teardown ? "KILL 101" : "INT 101", "teardown \(teardown)")
+        }
+    }
+
     /// A helper that ignores every signal (even SIGKILL, as far as the reaper
     /// can tell) does not hold the teardown past its single deadline: the
     /// sessions, the marked runners and the reap share it.

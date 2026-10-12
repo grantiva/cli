@@ -112,6 +112,10 @@ public struct RunnerHelperReaper: Sendable {
     /// When set, no wait outlasts it: a teardown's single deadline (L63).
     /// `runner stop` leaves it nil and keeps its own bounds.
     public var deadline: Date?
+    /// When true (a teardown, L63), the lineage reap SIGKILLs the stopped
+    /// run's `xcodebuild test-without-building` at once instead of SIGINT,
+    /// which would make it start a diagnose. `runner stop` leaves it false.
+    public var killsXcodebuildAtOnce = false
 
     public init(
         snapshot: @escaping @Sendable () async throws -> String,
@@ -253,7 +257,7 @@ public struct RunnerHelperReaper: Sendable {
             else { return nil }
             return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
         }.sorted { $0.pid < $1.pid }
-        await terminate(&targets)
+        await terminate(&targets) { [killsXcodebuildAtOnce] in killsXcodebuildAtOnce && $0.kind == .webDriverAgent }
         return targets
     }
 
