@@ -19,7 +19,9 @@ leftover=$(find "$home" -mindepth 1 2>/dev/null)
 if [ -n "$leftover" ]; then
     echo "error: swift test wrote into the empty runner home $home:" >&2
     printf '%s\n' "$leftover" | sed 's/^/  /' >&2
-    [ -n "${GITHUB_ACTIONS:-}" ] && echo "::error::swift test wrote into GRANTIVA_RUNNER_HOME; see the paths listed above"
+    if [ -n "${GITHUB_ACTIONS:-}" ]; then
+        echo "::error::swift test wrote into GRANTIVA_RUNNER_HOME; see the paths listed above"
+    fi
     exit 1
 fi
 if [ "$status" -ne 0 ]; then

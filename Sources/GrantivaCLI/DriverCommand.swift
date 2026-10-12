@@ -109,9 +109,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         files and releases the device. Interrupted, it exits 130; ended by \
         `grantiva runner stop` or by a simulator or emulator teardown, it exits 0. \
         With --detach it returns once the driver is up and the runner keeps the \
-        session until `grantiva runner stop`. .grantiva/session.json is written \
-        as soon as the runner is spawned, with "state": "starting", and marked \
-        "ready" once the driver answers.
+        session until `grantiva runner stop`.
 
         --json prints one document: {"status": "started" | "already_running", \
         "pid": <number>, "port": <number> (null for a session still starting), \
