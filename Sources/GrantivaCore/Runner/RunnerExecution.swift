@@ -250,7 +250,12 @@ enum RunnerExecution {
         SignalRelay.shared.disarmHold(group: child.processGroup)
         // SignalRelay marks itself terminating before it reaps the group, so a
         // runner killed by an interrupt is already visible as one here.
+        // After a release (L56) the runner normally exits 0 or 1, the verdict
+        // its flows earned; one that exits 130, or dies by a signal after the
+        // release's escalation, was interrupted.
         let interrupted = SignalRelay.shared.isTerminating
+            || (SignalRelay.shared.wasReleased(group: child.processGroup)
+                && SignalRelay.releaseWasInterrupted(status: status, signal: child.terminatingSignal))
         // The runner is gone; make sure nothing it started is still holding the
         // simulator (this also ends the watchdog). Harmless when the group is
         // already empty.

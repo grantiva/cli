@@ -315,6 +315,7 @@ struct RunCommand: AsyncParsableCommand {
             if Self.exitsThroughSignalRelay() {
                 await Self.awaitSignalRelayExit()
             }
+            if Self.isInterruptedRelease(error) { throw ExitCode(130) }
             throw error
         }
     }
@@ -325,6 +326,13 @@ struct RunCommand: AsyncParsableCommand {
     /// earned (1 for a failure), after printing its summary.
     static func exitsThroughSignalRelay(_ relay: SignalRelay = .shared) -> Bool {
         relay.isTerminating
+    }
+
+    /// A released hold whose runner then ended as an interrupt (exit 130 or
+    /// a signal, classified `interrupted`) exits 130, as an interrupt does.
+    static func isInterruptedRelease(_ error: Error, relay: SignalRelay = .shared) -> Bool {
+        guard relay.isReleasingHold, case .commandFailed(_, 130) = error as? GrantivaError else { return false }
+        return true
     }
 
     /// On Ctrl-C the runner dies first, so this thread unwinds with a runner

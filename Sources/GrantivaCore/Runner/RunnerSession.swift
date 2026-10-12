@@ -267,7 +267,8 @@ public enum RunnerSession {
                     failedStep: outcome.timedOut || outcome.interrupted ? nil : Self.screenFailureLine(failure, screen: screen),
                     timedOut: outcome.timedOut
                 ),
-                outcome.terminationStatus
+                // An interrupt is exit 130 however the runner ended (L56).
+                outcome.interrupted ? 130 : outcome.terminationStatus
             )
         }
 
@@ -624,7 +625,8 @@ public enum RunnerSession {
                     reason: reason, stderr: stderr, failure: outcome.interrupted ? nil : failure,
                     timedOut: outcome.timedOut
                 ),
-                outcome.terminationStatus
+                // An interrupt is exit 130 however the runner ended (L56).
+                outcome.interrupted ? 130 : outcome.terminationStatus
             )
         }
 

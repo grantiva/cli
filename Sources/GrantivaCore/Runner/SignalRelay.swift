@@ -39,6 +39,7 @@ public final class SignalRelay: @unchecked Sendable {
     /// Runner groups whose keep-alive hold is armed: their flows are over
     /// and the runner holds the device until it is released (L56).
     private var armedGroups: Set<pid_t> = []
+    private var releasedGroups: Set<pid_t> = []
     private var releasing = false
 
     private init() {}
@@ -155,6 +156,7 @@ public final class SignalRelay: @unchecked Sendable {
         terminating = false
         releasing = false
         armedGroups = []
+        releasedGroups = []
     }
 
     // MARK: - Keep-alive hold (L56)
@@ -181,6 +183,18 @@ public final class SignalRelay: @unchecked Sendable {
         lock.withLock { releasing }
     }
 
+    /// True when a signal released the hold of the runner in `pgid`.
+    public func wasReleased(group pgid: pid_t) -> Bool {
+        lock.withLock { releasedGroups.contains(pgid) }
+    }
+
+    /// How a runner whose hold was released ended: with the verdict its
+    /// flows earned (0 or 1), or, when it exited 130 or was killed by a
+    /// signal (the release's escalation), as an interrupt.
+    public static func releaseWasInterrupted(status: Int32, signal: Int32?) -> Bool {
+        status == 130 || signal != nil
+    }
+
     static func releaseAnnouncement(signalName: String) -> String {
         "\n[grantiva] received \(signalName) — releasing the keep-alive hold\n"
     }
@@ -201,6 +215,7 @@ public final class SignalRelay: @unchecked Sendable {
         let held = armedGroups.intersection(groups)
         if !terminating, !releasing, !held.isEmpty {
             releasing = true
+            releasedGroups.formUnion(held)
             lock.unlock()
             FileHandle.standardError.write(Data(Self.releaseAnnouncement(signalName: signalName).utf8))
             held.sorted().forEach(release)

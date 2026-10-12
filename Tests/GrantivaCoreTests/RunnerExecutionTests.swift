@@ -355,9 +355,9 @@ final class RunnerExecutionTests: XCTestCase {
     /// A stand-in for a keep-alive runner whose flows are over: it writes the
     /// report (`flowStatus`), publishes its session file and holds; SIGINT
     /// releases the hold and it exits `releaseStatus`, as the runner does.
-    private func holdingRunner(report: String, sessions: String, flowStatus: String, releaseStatus: Int) -> String {
+    private func holdingRunner(report: String, sessions: String, flowStatus: String, releaseStatus: Int?) -> String {
         """
-        trap 'exit \(releaseStatus)' INT
+        \(releaseStatus.map { "trap 'exit \($0)' INT" } ?? "trap '' INT")
         printf '{"status":"\(flowStatus)","flows":[{"name":"f","status":"\(flowStatus)"}]}' > \(report)
         mkdir -p \(sessions)
         printf '{"version":1,"sessionId":"abc","createdAt":"x","pid":%d,"port":8577,"outputDir":"/o"}' $$ > \(sessions)/$$-1791340478890825000.grantiva
@@ -369,10 +369,10 @@ final class RunnerExecutionTests: XCTestCase {
     /// file is written after arming); returns whether the relay would exit.
     private func signalOnceArmed(readyPath: String, release: @escaping @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Task<Bool, Never> {
         Task.detached {
-            for _ in 0..<200 where !FileManager.default.fileExists(atPath: readyPath) {
-                try? await Task.sleep(nanoseconds: 50_000_000)
+            // The hold is armed before the ready file is written.
+            for _ in 0..<400 where !FileManager.default.fileExists(atPath: readyPath) {
+                try? await Task.sleep(nanoseconds: 25_000_000)
             }
-            try? await Task.sleep(nanoseconds: 300_000_000)
             return SignalRelay.shared.simulateSignalForTesting(SIGINT, release: release)
         }
     }
@@ -422,6 +422,37 @@ final class RunnerExecutionTests: XCTestCase {
         XCTAssertFalse(wouldExit)
         XCTAssertFalse(outcome.interrupted)
         XCTAssertEqual(outcome.terminationStatus, 0)
+    }
+
+    /// A released runner that exits 130, or is killed by the release's
+    /// escalation, ended as an interrupt: `interrupted`, ready file as
+    /// written.
+    func testAReleasedRunnerThatExits130OrDiesByASignalIsInterrupted() async throws {
+        let cases: [(String, Int?)] = [("exit-130", 130), ("killed", nil)]
+        for (name, releaseStatus) in cases {
+            defer { SignalRelay.shared.resetTerminationForTesting() }
+            let lease = try SimulatorLease.acquire(udid: "SIM-\(name)", directory: leaseDirectory)
+            defer { lease.release() }
+            let store = KeepAliveSessionStore(directory: scratch.appendingPathComponent("sessions-\(name)").path)
+            let reportDir = scratch.appendingPathComponent("report-\(name)")
+            try FileManager.default.createDirectory(at: reportDir, withIntermediateDirectories: true)
+            let readyPath = scratch.appendingPathComponent("ready-\(name).json").path
+            // The runner that ignores SIGINT stands in for one the
+            // escalation has to kill.
+            let killGroup: @Sendable (pid_t) -> Void = { pgid in _ = kill(-pgid, SIGKILL) }
+            let release = releaseStatus == nil ? killGroup : SignalRelay.releaseGroup
+            let signal = signalOnceArmed(readyPath: readyPath, release: release)
+            let outcome = await RunnerExecution.run(request(
+                script: holdingRunner(report: reportDir.appendingPathComponent("report.json").path, sessions: store.directory,
+                                      flowStatus: "passed", releaseStatus: releaseStatus),
+                lease: lease, reportDir: reportDir.path, readyFile: ReadyFileSignal(path: readyPath),
+                keepAlive: true, sessions: store
+            ))
+            let wouldExit = await signal.value
+            XCTAssertFalse(wouldExit, name)
+            XCTAssertTrue(outcome.interrupted, name)
+            XCTAssertEqual(try ReadyFile.read(readyPath).status, "passed", "\(name): the ready file is written once")
+        }
     }
 
     /// Before the hold is armed (flows still running) a signal interrupts,
