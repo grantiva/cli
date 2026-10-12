@@ -1,0 +1,8 @@
+`diff.threshold` and `diff.perceptual_threshold` are two separate checks, and a screen passes only when **both** hold:
+
+- `threshold` is a 0-1 fraction of pixels that differ (`0.02` = 2 %; the messages print percent). `1.0` means any share of changed pixels is fine.
+- `perceptual_threshold` is the mean CIE76 color distance (delta E) over the differing pixels only, not over the whole image. It is 0 when the images are identical and about 2.3 is a just-noticeable difference. A handful of strongly changed pixels therefore fails a screen no matter how high `threshold` is.
+
+To loosen a flaky screen, raise both. Raising only `threshold` still fails the screen on `perceptual_threshold` (for example `pixel=7.97% perceptual=6.4` against a limit of 5).
+
+### Screens

@@ -1,0 +1,13 @@
+# setup: bin/grantiva = copy of ~/.grantiva-qa/bin/grantiva (same binary), beside the Homebrew 2.0.0 grantiva_GrantivaCore.bundle; rh = copy of CLI-141's rh (existing .13 install); fresh = new home
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-142
+$ ls bin bin/grantiva_GrantivaCore.bundle bin/grantiva_GrantivaCore.bundle/Contents/Resources 2>/dev/null; ./bin/grantiva --version
+# exit=0 elapsed=.350s -> setup.out / setup.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-142
+$ GRANTIVA_RUNNER_HOME=$PWD/rh ./bin/grantiva runner install
+# exit=0 elapsed=.024s -> install_existing.out / install_existing.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-142
+$ GRANTIVA_RUNNER_HOME=$PWD/fresh ./bin/grantiva runner install
+# exit=1 elapsed=.023s -> install_fresh.out / install_fresh.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-142
+$ find fresh -maxdepth 3
+# exit=0 elapsed=.011s -> fresh_layout.out / fresh_layout.err

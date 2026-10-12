@@ -1,0 +1,14 @@
+# README Configuration example (8f2cff67 README:112-127) saved verbatim (grantiva.readme-verbatim.yml); its 'simulator: iPhone 17 Pro' replaced by cov-missing (matrix: never iPhone 17 Pro) in grantiva.yml
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-154
+$ $GRANTIVA doctor
+# exit=1 elapsed=.204s -> doctor.out / doctor.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-154
+$ $GRANTIVA doctor --json
+# exit=1 elapsed=.183s -> doctor_json.out / doctor_json.err
+# first attempt (doctor.out/doctor_json.out) took one line too many (the closing code fence at README:127): parse error 16:1 is the fence, a fixture error. Fixed fixture: README:112-126; rerun as doctor_fixed / doctor_json_fixed
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-154
+$ $GRANTIVA doctor
+# exit=0 elapsed=.192s -> doctor_fixed.out / doctor_fixed.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-154
+$ $GRANTIVA doctor --json
+# exit=0 elapsed=.181s -> doctor_json_fixed.out / doctor_json_fixed.err

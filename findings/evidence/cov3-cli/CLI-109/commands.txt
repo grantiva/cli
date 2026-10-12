@@ -1,0 +1,7 @@
+# the README's preceding line 'udid=$(grantiva simulator ensure --name "iPhone 17 Pro")' is not run (Global Constraint: iPhone 17 Pro); udid is the fake UDID; stub flows/login.yaml (login.yaml.fixture)
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-109
+$ udid=00000000-0000-0000-0000-0000000000C1; grantiva() { "$GRANTIVA" "$@"; }; grantiva run --simulator "$udid" --flow flows/login.yaml --no-build
+# exit=1 elapsed=.253s -> run.out / run.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-109
+$ udid=00000000-0000-0000-0000-0000000000C1; grantiva() { "$GRANTIVA" "$@"; }; timeout 300 grantiva run --simulator "$udid" --flow flows/login.yaml
+# exit=1 elapsed=.171s -> run_as_written.out / run_as_written.err

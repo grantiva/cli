@@ -1,0 +1,7 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-157
+$ grantiva() { "$GRANTIVA" "$@"; }; grantiva doctor --json | jq '.[] | select(.status == "error")'; echo "jq_rc=$?"
+# exit=0 elapsed=.299s -> readme_filter.out / readme_filter.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-132
+$ grantiva() { "$GRANTIVA" "$@"; }; DEVELOPER_DIR=/nonexistent grantiva doctor --json | jq -c '.[] | select(.status == "error")'; echo "jq_rc=$?"
+# exit=0 elapsed=.040s -> readme_filter_failing.out / readme_filter_failing.err
+# readme_filter in an empty dir (rows/CLI-157); readme_filter_failing in rows/CLI-132 (iOS copy). README:488 at 8f2cff67 now uses select(.status == "error") (K62); the row's "fail" literal is the pre-K62 text

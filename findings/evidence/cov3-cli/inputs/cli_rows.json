@@ -1,0 +1,3842 @@
+[
+{
+"id": "CLI-001 (changed)",
+"cmd": "`grantiva --help`, `--version`",
+"inp": "none",
+"exp": "Exit 0; `--version` prints `2.1.0`; OVERVIEW \"The Grantiva CLI for iOS and Android developers.\"; lists build, run, record, simulator, emulator, hierarchy, ci, diff, auth, console, doctor, runner, init, mcp (help: grantiva.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 100,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-002",
+"cmd": "`grantiva help <subcommand>`",
+"inp": "`grantiva help run`, `grantiva help runner start`, `grantiva help console flags`",
+"exp": "Same text as `<subcommand> --help`, exit 0 (help: grantiva.txt \"See 'grantiva help <subcommand>'\")",
+"plat": "cli",
+"flow": "none",
+"line": 101,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-003 (changed)",
+"cmd": "every command and subcommand `--help`",
+"inp": "regenerate all 172 pages into a scratch dir",
+"exp": "Each exits 0 with OVERVIEW, USAGE, OPTIONS; byte-identical to `findings/help/*.txt` (help: all 172) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 102,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-004 (changed)",
+"cmd": "`run --help`",
+"inp": "none",
+"exp": "Flags exactly as help: run.txt; every flag README:76-99 and docs/android.md:54-55 name is present; no `--auto-accept-alerts`, `--no-auto-accept-alerts`, `--wait-for-idle-timeout`; `run --wait-for-idle-timeout 5` is a usage error, exit 64 (help: run.txt; README:76-99)",
+"plat": "cli",
+"flow": "none",
+"line": 103,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-005",
+"cmd": "`build build --help`, `build install --help`",
+"inp": "none",
+"exp": "`build install` adds `--app-file`, `--no-build`, `--no-launch`; `build build` has none; `build` alone is `build build` (\"build (default)\") (help: build.txt, build_build.txt, build_install.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 104,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-006",
+"cmd": "`diff capture/compare/approve --help`",
+"inp": "none",
+"exp": "`compare` adds `--capture` (\"runs full lifecycle\"); `approve` takes `[<screen-names> ...]` and `--platform` only (help: diff_*.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 105,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-007",
+"cmd": "`simulator <sub> --help`, `emulator <sub> --help`",
+"inp": "ensure, delete, sessions, teardown, cleanup",
+"exp": "Each exits 0; `simulator ensure` shows `--boot/--no-boot (default: --boot)`; `emulator teardown` shows `--serial`, `--all`, `--force`; `emulator delete` `--name`, `--force` (help: simulator_*.txt, emulator_*.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 106,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-008",
+"cmd": "`runner <sub> --help`, `hierarchy --help`, `record --help`",
+"inp": "install, version, start, stop, dump-hierarchy",
+"exp": "Each exits 0; `dump-hierarchy` shows `-p/--port`, `-f/--format` (tree, json, xml; default tree), `--udid`; `record` marks `--duration` required (help: runner_*.txt, hierarchy.txt, record.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 107,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-009",
+"cmd": "`console --help` tree",
+"inp": "all 17 groups",
+"exp": "Lists flags (alias `featureflags`), envs, analytics, devices, apps, claims, vrt, releases, feedback, support, webhooks, alerts, keys, team, audit, org, open; `console featureflags --help` equals `console flags --help` (help: console.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 108,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-010",
+"cmd": "any command",
+"inp": "`run --bogus`, `doctor --bogus`",
+"exp": "Usage error on stderr, exit 64, stdout empty (README:373-376)",
+"plat": "cli",
+"flow": "none",
+"line": 109,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-123",
+"cmd": "`runner start --help` vs README",
+"inp": "none",
+"exp": "Abstract names the Android driver too, as README:333 does (\"with WDA (UIAutomator2 on Android)\"); today help says \"with WDA\" only, which is N07 (help: runner_start.txt; README:333; plan N07)",
+"plat": "cli",
+"flow": "none",
+"line": 110,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-124",
+"cmd": "`mcp --help`",
+"inp": "none",
+"exp": "DISCUSSION says the server starts without a session or config; device tools listed need a session; `--project-dir`, `--platform` (help: mcp.txt; docs/mcp.md:14-22)",
+"plat": "cli",
+"flow": "none",
+"line": 111,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-125",
+"cmd": "`hierarchy --help`",
+"inp": "none",
+"exp": "Discussion describes `/tmp/grantiva-sessions`, newest session, `--udid` UDID or adb serial; `--timeout` default 60; `--format` xml or json, `--json` same as `--format json` (help: hierarchy.txt; docs/dump-hierarchy.md:36-39)",
+"plat": "cli",
+"flow": "none",
+"line": 112,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-011",
+"cmd": "`doctor --json`",
+"inp": "none",
+"exp": "stdout valid JSON array of checks with `status` (ok, warning or error); `doctor --json \\| jq '.[] \\| select(.status == \"error\")'` works and, with `DEVELOPER_DIR=/nonexistent`, selects the failing Xcode checks; no narration on stdout (README:439 at c65fc17; K62) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 118,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-012",
+"cmd": "`doctor --json --quiet`",
+"inp": "none",
+"exp": "stdout still valid JSON (README:391-393)",
+"plat": "cli",
+"flow": "none",
+"line": 119,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-013",
+"cmd": "`doctor --json --verbose`",
+"inp": "none",
+"exp": "stdout valid JSON; stderr gains timestamps, labels and every subprocess with its exit status (README:390)",
+"plat": "cli",
+"flow": "none",
+"line": 120,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-014",
+"cmd": "`doctor`",
+"inp": "`> out.txt`; `NO_COLOR=1` on a TTY (`script -q`)",
+"exp": "No ANSI escapes in redirected stdout; `NO_COLOR` suppresses colour (README:373-376)",
+"plat": "cli",
+"flow": "none",
+"line": 121,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-015",
+"cmd": "`simulator sessions --json`",
+"inp": "plain, `--quiet`, `--verbose`",
+"exp": "stdout valid JSON in all three; diagnostics only on stderr (README:373-376; help: simulator_sessions.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 122,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-016",
+"cmd": "`emulator sessions --json`",
+"inp": "plain, `--quiet`, `--verbose`",
+"exp": "stdout valid JSON in all three (help: emulator_sessions.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 123,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-017",
+"cmd": "`runner version`",
+"inp": "with and without `--json`",
+"exp": "Prints the embedded runner version; `--json` valid JSON (help: runner_version.txt; README:365-369)",
+"plat": "cli",
+"flow": "none",
+"line": 124,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-019 (changed)",
+"cmd": "leaf commands with `--json` and a forced failure",
+"inp": "`doctor --json` with `DEVELOPER_DIR=/nonexistent`; `simulator teardown --json`; `diff compare --json` with no captures; `run --json` in an empty dir",
+"exp": "`Error:` on stderr, exit non-zero; stdout empty except `run --json`, which prints `{\"allPassed\": false, \"screens\": [], \"error\": \"...\"}` (README:383-386), and `doctor --json`, which exits 1 with the full check array on stdout and nothing on stderr so README:380's jq pipeline works (corrected round 2)",
+"plat": "cli",
+"flow": "none",
+"line": 125,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-020",
+"cmd": "any command",
+"inp": "`--quiet`",
+"exp": "Narration silenced; `Warning:` and `Error:` still on stderr; stdout unchanged (README:391-393)",
+"plat": "cli",
+"flow": "none",
+"line": 126,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-021",
+"cmd": "any command",
+"inp": "`--verbose`",
+"exp": "Debug detail with timestamps and labels on stderr; stdout unchanged (README:390)",
+"plat": "cli",
+"flow": "none",
+"line": 127,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-126",
+"cmd": "`runner install`, `runner stop`",
+"inp": "`--json`",
+"exp": "`runner install --json` and `runner stop --json` print a JSON result (README:367-369)",
+"plat": "cli",
+"flow": "none",
+"line": 128,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-023",
+"cmd": "`doctor`, `init`",
+"inp": "dir with only an `.xcodeproj`",
+"exp": "Resolves to iOS (docs/android.md:15-16)",
+"plat": "cli",
+"flow": "none",
+"line": 134,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-024",
+"cmd": "`doctor`, `init`",
+"inp": "dir with only `settings.gradle.kts`",
+"exp": "Resolves to Android (docs/android.md:15-16)",
+"plat": "cli",
+"flow": "none",
+"line": 135,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-025 (changed)",
+"cmd": "`run`, `doctor`",
+"inp": "`.xcodeproj` + `settings.gradle.kts`, no config",
+"exp": "`run`: `Error: Invalid argument: Found both an Xcode project and Gradle settings. Pass --platform ios\\|android or set GRANTIVA_PLATFORM.`, exit 1; `doctor` reports `Platform  Found both an Xcode project and Gradle settings` under the Advisory heading and exits 0 (brief C12's allowed alternative: both platforms as advice; advisory checks never fail the exit code after K35) (src PlatformResolver.swift:53) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 136,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-026",
+"cmd": "`doctor`",
+"inp": "empty dir",
+"exp": "Both toolchains as advice; missing project advisory, does not fail the exit code (README:330)",
+"plat": "cli",
+"flow": "none",
+"line": 137,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-027",
+"cmd": "`run`, `diff capture`",
+"inp": "dir with only `.maestro/*.yaml`",
+"exp": "Flows auto-detected from `.maestro/` with no `grantiva.yml` (README:158)",
+"plat": "cli",
+"flow": "none",
+"line": 138,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-028",
+"cmd": "`run`, `diff capture`",
+"inp": "`grantiva.yml` absent, empty `.maestro/`",
+"exp": "Clear error, non-zero; with an empty `.maestro/` and no config both `run` and `diff capture` say `No flow files found in <dir>/.maestro` and the same wording (README:158 allows `.maestro/` without grantiva.yml; brief C18; wording rule K52) (corrected round 2)",
+"plat": "cli",
+"flow": "none",
+"line": 139,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-029",
+"cmd": "`diff capture`",
+"inp": "`grantiva.yml` in Maestro format (`appId:` + `---`)",
+"exp": "Parsed as Maestro: each `takeScreenshot` a screen, commands between its steps; fails only at device resolution (README:158-172)",
+"plat": "cli",
+"flow": "none",
+"line": 140,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-030 (changed)",
+"cmd": "`run`",
+"inp": "both config files, no flag",
+"exp": "`Error: Invalid argument: Both grantiva.yml and grantiva-android.yml exist. Pass --platform ios\\|android or set GRANTIVA_PLATFORM.` (docs/android.md:56-57; src PlatformResolver.swift:40)",
+"plat": "cli",
+"flow": "none",
+"line": 141,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-031",
+"cmd": "`run`, `doctor`",
+"inp": "both config files plus `--platform android`, then `GRANTIVA_PLATFORM=ios`",
+"exp": "Each selects the named platform's config (help: run.txt `--platform`; docs/android.md:56-57)",
+"plat": "cli",
+"flow": "none",
+"line": 142,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-032",
+"cmd": "`doctor`",
+"inp": "`--platform ios` with `GRANTIVA_PLATFORM=android`",
+"exp": "The flag wins (help: doctor.txt \"GRANTIVA_PLATFORM also sets it\")",
+"plat": "cli",
+"flow": "none",
+"line": 143,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-033 (changed)",
+"cmd": "`doctor`, `run`, `init`",
+"inp": "`GRANTIVA_PLATFORM=windows`",
+"exp": "`GRANTIVA_PLATFORM is \"windows\"; expected ios or android.`, non-zero, no file written by init (brief C12)",
+"plat": "cli",
+"flow": "none",
+"line": 144,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-034 (changed)",
+"cmd": "`run`",
+"inp": "`--platform android` where only `grantiva.yml` exists",
+"exp": "`--platform android was given but grantiva-android.yml does not exist here. Found grantiva.yml. Create grantiva-android.yml with grantiva init --platform android.` (brief C18; src Options.swift:170)",
+"plat": "cli",
+"flow": "none",
+"line": 145,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-035",
+"cmd": "`run`",
+"inp": "`--platform macos`",
+"exp": "Usage error listing ios, android; exit 64 (help: run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 146,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-127",
+"cmd": "`doctor`",
+"inp": "`GRANTIVA_PLATFORM=\" Android \"`; `GRANTIVA_PLATFORM=\"\"`",
+"exp": "Trimmed and lower-cased to android; empty treated as unset (help: doctor.txt; src PlatformResolver.swift:66)",
+"plat": "cli",
+"flow": "none",
+"line": 147,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-128",
+"cmd": "`mcp`",
+"inp": "`--platform windows`",
+"exp": "Usage error naming ios, android; exit 64; no JSON-RPC on stdout (help: mcp.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 148,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-036",
+"cmd": "`run`",
+"inp": "`grantiva.yml` with a YAML syntax error",
+"exp": "Error naming the file and the YAML line/column (brief C20)",
+"plat": "cli",
+"flow": "none",
+"line": 154,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-037",
+"cmd": "`run --platform android`",
+"inp": "`grantiva-android.yml` with a YAML syntax error",
+"exp": "Error names `grantiva-android.yml` and line/column (brief C20)",
+"plat": "cli",
+"flow": "none",
+"line": 155,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-038 (changed)",
+"cmd": "`run`",
+"inp": "empty or comments-only `grantiva.yml`",
+"exp": "`Error: No screens or flows configured in grantiva.yml`, exit 1, before any build; no `Invalid argument:` label (`RunCommand.nothingToRunMessage`, shared with the K52 missing-config sentence, is deliberately unlabelled; K52 wording supersedes brief C18). Without `--scheme` a multi-scheme project may report the scheme error first (K52 allows it) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 156,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-039 (changed)",
+"cmd": "`run`, `doctor`",
+"inp": "`grantiva.yml` with `schem: Landmarks` at line 1, `screen:` at line 4",
+"exp": "stderr `grantiva.yml:1: unknown key \"schem\" (did you mean \"scheme\"?)` and line 4 for `screen`, as warnings; doctor shows a Project warning (README:150; brief C19)",
+"plat": "cli",
+"flow": "none",
+"line": 157,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-040",
+"cmd": "`run`",
+"inp": "`grantiva.yml` containing `platform: android`",
+"exp": "Error that the file declares the other platform (docs/android.md:20)",
+"plat": "cli",
+"flow": "none",
+"line": 158,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-041 (changed)",
+"cmd": "`run`",
+"inp": "Android project + `--scheme X`",
+"exp": "`--scheme is an iOS option, but this is an Android project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).`, before any build (docs/android.md:55-56; src TargetOptions.swift:66)",
+"plat": "cli",
+"flow": "none",
+"line": 159,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-042 (changed)",
+"cmd": "`run`",
+"inp": "iOS project + `--module app`",
+"exp": "`--module is an Android option, but this is an iOS project (...)` (docs/android.md:55-56)",
+"plat": "cli",
+"flow": "none",
+"line": 160,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-043",
+"cmd": "`run`",
+"inp": "Android + `--logs-predicate x`; iOS + `--logs-tag x`",
+"exp": "Each rejected by name before any build (docs/android.md:95; help: run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 161,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-044 (changed)",
+"cmd": "`run`",
+"inp": "`flows: []`, no `screens`, `--report-dir out --ready-file out.ready`",
+"exp": "Fails before any boot with `No screens or flows configured in grantiva.yml`; no `out/report.json` claiming a pass; `out.ready` has `\"status\": \"failed\"` (README:85; brief C18)",
+"plat": "cli",
+"flow": "none",
+"line": 162,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-045 (changed)",
+"cmd": "`run`",
+"inp": "Android project, `--device emulator-5554 --emulator cov-android`",
+"exp": "`--device and --emulator are mutually exclusive; pass one.`, exit 1, before device work (src TargetOptions.swift:59)",
+"plat": "cli",
+"flow": "none",
+"line": 163,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-046 (changed)",
+"cmd": "`diff capture` (parse)",
+"inp": "`screens:` with `launch`, `tap`, `tap: {text: X, exact: true}`, `swipe` up/down/left/right/`UP`, `type`, `wait`, `assert_visible`, `assert_not_visible` (both forms), `run_flow`",
+"exp": "All parse (any case for swipe); failure, if any, is at device resolution, not parsing (README:132-146)",
+"plat": "cli",
+"flow": "none",
+"line": 164,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-047 (changed)",
+"cmd": "`diff capture`",
+"inp": "screen `Diag` with `- swipe: diagonal`",
+"exp": "Fails before boot: `grantiva.yml: screen \"Diag\": swipe direction \"diagonal\" is not one of up, down, left, right` (README:136; brief C15)",
+"plat": "cli",
+"flow": "none",
+"line": 165,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-048",
+"cmd": "`diff capture`",
+"inp": "`- run_flow: \"sub/flow.yaml\"` relative; a missing path",
+"exp": "Relative to the config's directory; missing file is an error naming the path (README:141)",
+"plat": "cli",
+"flow": "none",
+"line": 166,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-049",
+"cmd": "`diff capture`",
+"inp": "`run_flow` cycle A->B->A",
+"exp": "Error naming the cycle; no hang (README:141)",
+"plat": "cli",
+"flow": "none",
+"line": 167,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-050 (changed)",
+"cmd": "`run`",
+"inp": "`--env NOEQUALS`; `--env =v`; `--env 'A B=1'`; `--env 1A=x`",
+"exp": "`Invalid --env \"NOEQUALS\": expected KEY=VALUE.`; `... the key before `=` is empty.`; `... the key must not contain whitespace.`; `... the key must start with a letter or `_` ...`; before device work (help: run.txt `--env`; src FlowEnvironment.swift:83-101)",
+"plat": "cli",
+"flow": "none",
+"line": 168,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-051",
+"cmd": "`run`",
+"inp": "`--ready-file <existing directory>`",
+"exp": "Rejected at startup (README:85)",
+"plat": "cli",
+"flow": "none",
+"line": 169,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-052",
+"cmd": "`run`",
+"inp": "stale `x.ready` with `{\"status\":\"passed\"}`, no project",
+"exp": "Deleted at startup, rewritten `failed` (README:85)",
+"plat": "cli",
+"flow": "none",
+"line": 170,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-053",
+"cmd": "`run`",
+"inp": "`--ready-file x.ready`, no project",
+"exp": "File exists after exit with `\"status\":\"failed\"`; exit non-zero (README:85)",
+"plat": "cli",
+"flow": "none",
+"line": 171,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-054",
+"cmd": "`run`",
+"inp": "`--ready-file` in a `chmod 0500` directory",
+"exp": "Fails immediately, non-zero, before project work (README:85)",
+"plat": "cli",
+"flow": "none",
+"line": 172,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-055",
+"cmd": "`run`",
+"inp": "`--snapshot bogus`",
+"exp": "Usage error naming failure, trailing, full; exit 64 (help: run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 173,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-056",
+"cmd": "`run`",
+"inp": "`--timeout abc`, `--timeout -1`",
+"exp": "Usage error, exit 64 (help: run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 174,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-129",
+"cmd": "`run`",
+"inp": "`--timeout 5`; `--timeout 5 --ready-file r.ready`",
+"exp": "Exit 64, `--timeout must be at least 30 seconds.`; `r.ready` has `\"status\": \"failed\"` and an `error` field (README:85, 97)",
+"plat": "cli",
+"flow": "none",
+"line": 175,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-130",
+"cmd": "`run`",
+"inp": "`--timeout 5 --keep-alive`",
+"exp": "Still exit 64 with the same message (README:97 \"the 30 s minimum is still validated\")",
+"plat": "cli",
+"flow": "none",
+"line": 176,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-131",
+"cmd": "`run`",
+"inp": "`--logs-level warning`",
+"exp": "Usage error naming default, info, debug; exit 64 (help: run.txt; docs/android.md:95; brief A08)",
+"plat": "cli",
+"flow": "none",
+"line": 177,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-057",
+"cmd": "`run --platform android`",
+"inp": "`--application-id \"not valid\"`",
+"exp": "Rejected as an invalid application ID before device work (help: run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 178,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-058",
+"cmd": "`simulator teardown`",
+"inp": "`--udid \"\" --force`",
+"exp": "Rejected, non-zero (help: simulator_teardown.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 179,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-059",
+"cmd": "`simulator teardown`",
+"inp": "`--udid not-a-udid-at-all --force`; `--session-id \"\"`",
+"exp": "Both rejected (help: simulator_teardown.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 180,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-060 (changed)",
+"cmd": "`simulator teardown`",
+"inp": "`--session-id X --udid <valid UDID>`",
+"exp": "`--session-id and --udid are mutually exclusive; pass one.`, exit 64 (README:447)",
+"plat": "cli",
+"flow": "none",
+"line": 181,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-061",
+"cmd": "`diff capture` (parse)",
+"inp": "Maestro flow `- tapOn: \"Mount \\\"Denali\\\" \ud83c\udfd4\ufe0f\"`",
+"exp": "Parses; the staged flow carries the label byte for byte (README:172)",
+"plat": "cli",
+"flow": "none",
+"line": 182,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-062 (changed)",
+"cmd": "`simulator teardown`",
+"inp": "no `--session-id`, no `--udid`",
+"exp": "`Pass --session-id <id> or --udid <UDID>.`, exit 64 (help: simulator_teardown.txt; src SimulatorCommand.swift:118)",
+"plat": "cli",
+"flow": "none",
+"line": 183,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-132",
+"cmd": "`run`",
+"inp": "iOS project + `--device emulator-5554`",
+"exp": "Rejected by name as an Android option (docs/android.md:55-56)",
+"plat": "cli",
+"flow": "none",
+"line": 184,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-133",
+"cmd": "`run`",
+"inp": "`--flow missing.yaml`",
+"exp": "Error naming the missing path, non-zero, before device work (help: run.txt `--flow`)",
+"plat": "cli",
+"flow": "none",
+"line": 185,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-134",
+"cmd": "other-platform flags on every build-option command",
+"inp": "iOS project: `build build --variant x`, `ci run --device emulator-5554`, `runner start --application-id a.b`; Android project: `build install --bundle-id x`, `diff capture --scheme X`, `runner start --simulator X`",
+"exp": "Each rejected by name before any build or boot (docs/android.md:55-56)",
+"plat": "cli",
+"flow": "none",
+"line": 186,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-165",
+"cmd": "`build install`",
+"inp": "dir holding both `grantiva.yml` and `grantiva-android.yml`, no `--platform`",
+"exp": "`Error: Invalid argument: Both grantiva.yml and grantiva-android.yml exist. Pass --platform ios\\|android or set GRANTIVA_PLATFORM.`, exit 1, before any build (help: build_install.txt `--platform`; src PlatformResolver.swift:40)",
+"plat": "cli",
+"flow": "none",
+"line": 187,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-166",
+"cmd": "`ci run --json`",
+"inp": "iOS project, no credentials",
+"exp": "stderr `Error: Not authenticated. Run: grantiva auth login`; stdout empty; exit 1 (README:373-376; src GrantivaError.swift:42)",
+"plat": "cli",
+"flow": "none",
+"line": 188,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-167",
+"cmd": "`ci run --platform android`",
+"inp": "`--headless`; `--emulator cov-android`; `--module app --variant freeDebug`; `--derived-data-path x`",
+"exp": "Each refused with \"Android baselines are local only until the Grantiva backend supports platforms; use local baselines\" (or, for `--derived-data-path`, rejected by name as an iOS option), non-zero, before any Gradle build or emulator boot (`adb devices` unchanged); record which message `--derived-data-path` gets (docs/android.md:55-56, 71-73)",
+"plat": "cli",
+"flow": "none",
+"line": 189,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-168",
+"cmd": "`ci run`",
+"inp": "iOS project, no credentials: `--derived-data-path x`; `--scheme \"Landmarks (UI Testing)\" --simulator cov-ios-1`",
+"exp": "Flags accepted; each ends with the auth error of CLI-166; nothing built (README:258; help: ci_run.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 190,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-169",
+"cmd": "`run`",
+"inp": "iOS project + `--allow-device-settings`; + `--headless`",
+"exp": "Each rejected by name as an Android option before any build (docs/android.md:54-56)",
+"plat": "cli",
+"flow": "none",
+"line": 191,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-170",
+"cmd": "`<command> --version`",
+"inp": "every subcommand and leaf page in the corpus (all list `--version`), e.g. `run --version`, `simulator ensure --version`, `runner start --version`, `diff approve --version`, `console flags list --version`",
+"exp": "Prints `2.1.0`, exit 0, for every one; one row because the flag is inherited from the root command and behaves identically everywhere (help: every page lists `--version`)",
+"plat": "cli",
+"flow": "none",
+"line": 192,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-171",
+"cmd": "`mcp --quiet`, `mcp --verbose`",
+"inp": "none",
+"exp": "Usage error, exit 64: `mcp` has neither flag (help: mcp.txt lists only `--project-dir`, `--platform`)",
+"plat": "cli",
+"flow": "none",
+"line": 193,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-063 (changed)",
+"cmd": "`diff capture` (parse)",
+"inp": "Maestro `grantiva.yml`, one fixture per supported command: `tapOn`, `doubleTapOn`, `longPressOn`, `inputText`, `assertVisible`, `assertNotVisible`, `swipe` (`direction:`, `from:`, `start:`/`end:`, `duration:`), `scroll`, `scrollUntilVisible`, `runFlow`, `extendedWaitUntil` (`visible:`, `notVisible:`), `waitForAnimationToEnd`, `launchApp`, `stopApp`, `killApp`, `takeScreenshot`",
+"exp": "Each parses; failure only at device resolution (README:172)",
+"plat": "cli",
+"flow": "none",
+"line": 199,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-064 (changed)",
+"cmd": "`diff capture` (parse)",
+"inp": "`tapOn: {text: X}`, `tapOn: {id: X}`",
+"exp": "Text selector and id selector; the staged flow carries `id: X` (README:172; brief C08)",
+"plat": "cli",
+"flow": "none",
+"line": 200,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-065 (changed)",
+"cmd": "`diff capture` (parse)",
+"inp": "Maestro `grantiva.yml` with `- back` at line 5; also `setPermissions`, `evalScript`, `pressKey`, `openLink`",
+"exp": "Rejected before the run: `grantiva.yml:5: unsupported Maestro command 'back'` (file and line, no enum text) (README:172; brief C07)",
+"plat": "cli",
+"flow": "none",
+"line": 201,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-066",
+"cmd": "`diff capture` (parse)",
+"inp": "`- scroll`, `- scroll: {direction: up}`",
+"exp": "Mapped to a swipe in the opposite finger direction (README:172)",
+"plat": "cli",
+"flow": "none",
+"line": 202,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-067",
+"cmd": "`diff capture` (parse)",
+"inp": "two `takeScreenshot` points",
+"exp": "Two named screens (README:172)",
+"plat": "cli",
+"flow": "none",
+"line": 203,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-068",
+"cmd": "`diff capture` (parse)",
+"inp": "`runFlow: sub.yaml`, `runFlow: {file: sub.yaml}`",
+"exp": "Both include the sub-flow's steps (README:172)",
+"plat": "cli",
+"flow": "none",
+"line": 204,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-135",
+"cmd": "`diff capture` (parse)",
+"inp": "`swipe: {direction: UP}`, `extendedWaitUntil: {visible: X}`, bare `waitForAnimationToEnd`",
+"exp": "All three standard forms parse (brief C07)",
+"plat": "cli",
+"flow": "none",
+"line": 205,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-069",
+"cmd": "`init`",
+"inp": "Xcode-only dir (copy of landmarks-demo/ios without grantiva.yml)",
+"exp": "Writes `grantiva.yml` with the detected scheme; exit 0 (help: init.txt; README:35)",
+"plat": "cli",
+"flow": "none",
+"line": 211,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-070",
+"cmd": "`init`",
+"inp": "Gradle-only dir",
+"exp": "Writes `grantiva-android.yml` (docs/android.md:12)",
+"plat": "cli",
+"flow": "none",
+"line": 212,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-071 (changed)",
+"cmd": "`init`",
+"inp": "both Xcode and Gradle, no flag",
+"exp": "`Found both an Xcode project and Gradle settings. Pass --platform ios\\|android or set GRANTIVA_PLATFORM.`, no file (docs/android.md:16; src InitCommand.swift:81)",
+"plat": "cli",
+"flow": "none",
+"line": 213,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-072 (changed)",
+"cmd": "`init`",
+"inp": "empty dir",
+"exp": "Writes `grantiva.yml` and warns on stderr `No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme.`; simulator default is an installed iPhone type or warned as a placeholder (brief C24)",
+"plat": "cli",
+"flow": "none",
+"line": 214,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-073",
+"cmd": "`init`",
+"inp": "`--scheme Landmarks --bundle-id com.kylebrowning.Landmarks`",
+"exp": "Config has exactly those values (help: init.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 215,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-074",
+"cmd": "`init --platform android`",
+"inp": "`--application-id com.kylebrowning.landmarks`",
+"exp": "Writes `grantiva-android.yml` with `application_id` (docs/android.md:12)",
+"plat": "cli",
+"flow": "none",
+"line": 216,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-075",
+"cmd": "`init`",
+"inp": "twice in one dir",
+"exp": "Second refuses, file unchanged, message on stderr (help: init.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 217,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-076 (changed)",
+"cmd": "`init`",
+"inp": "`--platform android --scheme X`; `--platform ios --application-id a.b`",
+"exp": "Each fails naming the flag; no file written (brief C12)",
+"plat": "cli",
+"flow": "none",
+"line": 218,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-077",
+"cmd": "`init`",
+"inp": "`--json`",
+"exp": "Usage error, exit 64 (help: init.txt has no `--json`)",
+"plat": "cli",
+"flow": "none",
+"line": 219,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-136",
+"cmd": "`init`",
+"inp": "`--scheme X` in an empty dir",
+"exp": "No placeholder warning for the scheme (brief C24)",
+"plat": "cli",
+"flow": "none",
+"line": 220,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-078",
+"cmd": "`doctor --platform ios`",
+"inp": "healthy host",
+"exp": "Exit 0 when every required check passes (README:330)",
+"plat": "cli",
+"flow": "none",
+"line": 226,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-079",
+"cmd": "`doctor --platform android`",
+"inp": "toolchain per docs/android-environment.md",
+"exp": "Checks Android SDK, adb, emulator, JDK, AVDs (docs/android.md:13)",
+"plat": "cli",
+"flow": "none",
+"line": 227,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-080",
+"cmd": "`doctor --platform android`",
+"inp": "`ANDROID_HOME` unset",
+"exp": "Falls back to `ANDROID_SDK_ROOT`, then `~/Library/Android/sdk` (docs/android-environment.md:15-16)",
+"plat": "cli",
+"flow": "none",
+"line": 228,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-081",
+"cmd": "`doctor`",
+"inp": "`DEVELOPER_DIR=/nonexistent`",
+"exp": "Xcode check fails with a fix line; exit non-zero in text and `--json` (README:330)",
+"plat": "cli",
+"flow": "none",
+"line": 229,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-082 (changed)",
+"cmd": "`doctor --platform android`",
+"inp": "`ANDROID_HOME=/nonexistent` with the default SDK present; then `ANDROID_SDK_ROOT=/nonexistent`",
+"exp": "SDK check is a warning naming the variable: `... (ANDROID_HOME=/nonexistent has no platform-tools/adb; unset or fix it)`; same for `ANDROID_SDK_ROOT` (brief C23)",
+"plat": "cli",
+"flow": "none",
+"line": 230,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-083",
+"cmd": "`doctor`",
+"inp": "no config, not authenticated, no booted simulator Round 3 re-run rule: run only while `xcrun simctl list devices booted` lists no simulator at all; an owner simulator booted \u2192 `blocked owner simulator booted` again (never shut it down); only campaign simulators booted \u2192 handed to the iOS slice, which runs it after its teardown.",
+"exp": "Optional checks advisory; exit code unaffected (README:330)",
+"plat": "cli",
+"flow": "none",
+"line": 231,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-137",
+"cmd": "`doctor`",
+"inp": "malformed `grantiva-android.yml` (error at 5:3)",
+"exp": "`\u2717 grantiva-android.yml could not be parsed: 5:3: ...` with a fix line (brief C20)",
+"plat": "cli",
+"flow": "none",
+"line": 232,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-138",
+"cmd": "`doctor`",
+"inp": "run from `android/` subdirectory of a git work tree",
+"exp": "`\u2713 Git Repository Detected` (brief A12)",
+"plat": "cli",
+"flow": "none",
+"line": 233,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-084",
+"cmd": "`runner install`",
+"inp": "twice",
+"exp": "Both exit 0; idempotent (README:38)",
+"plat": "cli",
+"flow": "none",
+"line": 239,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-085 (changed)",
+"cmd": "`runner version`",
+"inp": "none",
+"exp": "Prints `grantiva-runner 1.1.28-grantiva.11` (the runner bundled with c65fc17, #199; the literal follows the bundled runner); exit 0 (help: runner_version.txt) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 240,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-086 (changed)",
+"cmd": "`runner stop`",
+"inp": "no session",
+"exp": "`runner stop 2>/dev/null` prints nothing; message on stderr; `--json` prints `{\"status\":\"not_running\"}` (brief C13)",
+"plat": "cli",
+"flow": "none",
+"line": 241,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-087 (changed)",
+"cmd": "`runner dump-hierarchy`",
+"inp": "no session",
+"exp": "`Error: No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`, or pass --port.`, exit 1, stdout empty (both commands in backticks, no `Invalid argument:` label: K46; docs/dump-hierarchy.md:57; src DriverCommand.swift:736) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 242,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-088",
+"cmd": "`hierarchy`",
+"inp": "no keep-alive session",
+"exp": "Fails with a clear message, non-zero, stdout empty (help: hierarchy.txt; docs/dump-hierarchy.md:25)",
+"plat": "cli",
+"flow": "none",
+"line": 243,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-139",
+"cmd": "`hierarchy`",
+"inp": "`--timeout 0`; `--json --format xml`; `--format yaml`",
+"exp": "`--timeout must be greater than zero` (64); `--json and --format xml conflict; pass one.` (64); usage error naming xml, json (docs/dump-hierarchy.md:37-39; src HierarchyCommand.swift:58,62)",
+"plat": "cli",
+"flow": "none",
+"line": 244,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-140",
+"cmd": "`runner dump-hierarchy`",
+"inp": "`--json --format tree`; `--format bogus`",
+"exp": "`--json and --format tree conflict; pass one.` (64); usage error naming tree, json, xml (docs/dump-hierarchy.md:51; src DriverCommand.swift:718)",
+"plat": "cli",
+"flow": "none",
+"line": 245,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-141",
+"cmd": "`runner install`",
+"inp": "relative `GRANTIVA_RUNNER_HOME=rh` from a scratch dir",
+"exp": "Installs under `<scratch>/rh/versions/<stamp>/` (README:186 \"A relative path is resolved against the current directory\")",
+"plat": "cli",
+"flow": "none",
+"line": 246,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-142",
+"cmd": "`runner install`",
+"inp": "copy of the binary beside a resource bundle from another release (blocked if none is available)",
+"exp": "Fails naming both versions and the bundle; existing install untouched (README:186)",
+"plat": "cli",
+"flow": "none",
+"line": 247,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-091",
+"cmd": "`ci run`",
+"inp": "iOS project, no credentials",
+"exp": "`Error: Not authenticated. Run: grantiva auth login`, non-zero, stdout empty (README:47; src GrantivaError.swift)",
+"plat": "cli",
+"flow": "none",
+"line": 253,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-108",
+"cmd": "`ci run --platform android`",
+"inp": "Android project",
+"exp": "Refuses with \"Android baselines are local only until the Grantiva backend supports platforms; use local baselines\" (docs/android.md:71-73)",
+"plat": "cli",
+"flow": "none",
+"line": 254,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-101 (changed)",
+"cmd": "`record --platform android`",
+"inp": "`--duration 200`",
+"exp": "`Android recordings are capped at 180 seconds per file (screenrecord --time-limit); --duration 200.0 is too long.` before recording (docs/android.md:118)",
+"plat": "cli",
+"flow": "none",
+"line": 255,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-102 (changed)",
+"cmd": "`record`",
+"inp": "`--duration 2 --frames-at a,b`",
+"exp": "Exit 64 in under a second: `--frames-at must contain non-negative integer milliseconds, e.g. 0,150,300; got a,b`; no video (brief C14)",
+"plat": "cli",
+"flow": "none",
+"line": 256,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-103",
+"cmd": "`record`",
+"inp": "no `--duration`",
+"exp": "Usage error, exit 64 (help: record.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 257,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-143",
+"cmd": "`record`",
+"inp": "`--duration 0`",
+"exp": "`Error: --duration must be greater than zero` with the usage line, exit 64 (usage error: K41 moved range checks into validation; B2-K41 expects the same for `--duration -1`) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 258,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-144",
+"cmd": "`record`",
+"inp": "iOS project `--output a.mp4`; Android project `--output a.mov`; extensionless `--output a`",
+"exp": "Exit 64: `--output must end in .mov on iOS (simctl records QuickTime); got a.mp4. Try a.mov.` and the `.mp4` / Android counterpart, before recording (help: record.txt `--output`; brief C14)",
+"plat": "cli",
+"flow": "none",
+"line": 259,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-145",
+"cmd": "`record`",
+"inp": "iOS project `--emulator X`, `--device X`; Android project `--simulator X`, `--device a --emulator b`",
+"exp": "Four rejections, exit 1: the three other-platform messages in the shared long form (`--emulator is an Android option, but this is an iOS project (resolved from --platform, GRANTIVA_PLATFORM, the config file, or the directory).` and the `--device` / `--simulator` equivalents; K43) and `--device and --emulator are mutually exclusive; pass one.` (help: record.txt). Product note: exit-1 vs exit-64 inconsistency for `--device`/`--emulator` is filed as M19 (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 260,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-146",
+"cmd": "`record`",
+"inp": "iOS project without `simulator:` and no `--simulator`",
+"exp": "`No simulator named. Pass --simulator or set simulator in grantiva.yml.` (help: record.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 261,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-104 (changed)",
+"cmd": "`emulator teardown`",
+"inp": "neither `--serial` nor `--all`",
+"exp": "`Pass --serial <serial> or --all.`, exit 64 (help: emulator_teardown.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 262,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-147",
+"cmd": "`emulator teardown`",
+"inp": "`--serial emulator-5554 --all`; `--serial <a simulator UDID>`",
+"exp": "`--serial and --all are mutually exclusive; pass one.` (64); `--serial <udid> is a simulator UDID, not an emulator serial. Use `grantiva simulator teardown` for simulators.` (src EmulatorCommand.swift:146,154)",
+"plat": "cli",
+"flow": "none",
+"line": 263,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-148",
+"cmd": "`emulator ensure`",
+"inp": "no `--name`, no config",
+"exp": "`No AVD named. Pass --name or set emulator in grantiva-android.yml.` (help: emulator_ensure.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 264,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-149",
+"cmd": "`emulator delete`, `simulator delete`",
+"inp": "no `--name`",
+"exp": "Usage error, exit 64 (help: emulator_delete.txt, simulator_delete.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 265,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-105",
+"cmd": "`simulator ensure`",
+"inp": "no `--name`",
+"exp": "Usage error, exit 64 (help: simulator_ensure.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 266,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-106 (changed)",
+"cmd": "`diff approve`, `diff compare`",
+"inp": "no captures",
+"exp": "`No captures found in <dir>. Run: grantiva diff capture`, non-zero (help: diff_approve.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 267,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-150",
+"cmd": "`diff approve`",
+"inp": "a fake `.grantiva/captures/Home.png`; `diff approve NoSuchScreen`",
+"exp": "`No capture found for \"NoSuchScreen\"`, non-zero; Home untouched (help: diff_approve.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 268,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-151",
+"cmd": "`diff capture`",
+"inp": "config without `screens:`",
+"exp": "`No screens configured in grantiva.yml` (brief R04 criterion 3; src DiffCommand.swift:663)",
+"plat": "cli",
+"flow": "none",
+"line": 269,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-107 (changed)",
+"cmd": "`build build --platform android`",
+"inp": "`--derived-data-path x`",
+"exp": "`--derived-data-path is an iOS option, but this is an Android project (...)` (docs/android.md:55-56)",
+"plat": "cli",
+"flow": "none",
+"line": 270,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-097 (changed)",
+"cmd": "`mcp`",
+"inp": "`--project-dir <empty dir>`",
+"exp": "Server starts, answers `initialize` and `tools/list` (22 tools); stdout carries only JSON-RPC (docs/mcp.md:9, 14)",
+"plat": "cli",
+"flow": "none",
+"line": 276,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-098",
+"cmd": "`mcp`",
+"inp": "`--project-dir /nonexistent`",
+"exp": "Error that the directory does not exist; non-zero (help: mcp.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 277,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-099 (changed)",
+"cmd": "`mcp`",
+"inp": "config present, no session",
+"exp": "Starts; session tools return isError naming `grantiva runner start` and `grantiva run --keep-alive` (docs/mcp.md:14-17)",
+"plat": "cli",
+"flow": "none",
+"line": 278,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-100",
+"cmd": "`mcp`",
+"inp": "both config files, no `--platform`; then `--platform ios`",
+"exp": "Without the flag: an error (startup or per tool) asking for `--platform`; with it, iOS (docs/mcp.md:5-6)",
+"plat": "cli",
+"flow": "none",
+"line": 279,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-152",
+"cmd": "install examples",
+"inp": "README:14, README:20-23",
+"exp": "Not run: Global Constraints forbid installing or building another grantiva; row records `n/a` with that reason (README:14-23)",
+"plat": "cli",
+"flow": "none",
+"line": 285,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-153",
+"cmd": "Quick Start, device-free lines",
+"inp": "`grantiva doctor`, `grantiva init` (Xcode copy), `grantiva runner install`, `grantiva ci run` as written Round 3 re-run rule (after L08/L09): in a scratch Xcode copy under the plan's default-device guard; never run a device command with the `simulator:` line `init` wrote.",
+"exp": "Each runs as written; `ci run` ends with the auth error of CLI-091; `auth login` (README:44) is out of scope, `n/a` (README:32-47) (round 3 ruling: L08/L09 \u2014 `init` warns when a simulator of the default name exists that Grantiva did not create; `ci run` may stop at the L08 ownership refusal instead of the auth error; nothing boots)",
+"plat": "cli",
+"flow": "none",
+"line": 286,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-154",
+"cmd": "README config example",
+"inp": "README:105-121 saved as `grantiva.yml` in an Xcode copy; `doctor`",
+"exp": "Loads with no unknown-key warning and no parse error (README:105-121, 150)",
+"plat": "cli",
+"flow": "none",
+"line": 287,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-155",
+"cmd": "README Maestro-format example",
+"inp": "README:160-170 saved as `grantiva.yml`; `diff capture --no-build`",
+"exp": "Parses into screens `Login` and `Welcome`; fails only at device resolution (README:158-172)",
+"plat": "cli",
+"flow": "none",
+"line": 288,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-156",
+"cmd": "README pre-built examples",
+"inp": "README:217, 220, 223, 300 (`ci run --app-file ...`, `--no-build`)",
+"exp": "Parse as written; each ends with the auth error (no credentials) (README:211-226)",
+"plat": "cli",
+"flow": "none",
+"line": 289,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-157",
+"cmd": "README stdout examples, device-free half",
+"inp": "README:380 `grantiva doctor --json \\| jq '.[] \\| select(.status == \"fail\")'`",
+"exp": "jq exits 0 (README:378-381)",
+"plat": "cli",
+"flow": "none",
+"line": 290,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-158",
+"cmd": "dashboard examples",
+"inp": "README:356-357 `console --help`, `console flags --help`",
+"exp": "Exit 0; README:360-362 need credentials, `n/a` out of scope (README:354-363)",
+"plat": "cli",
+"flow": "none",
+"line": 291,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-159",
+"cmd": "docs/android.md setup",
+"inp": "docs/android.md:12-13 `init --platform android`, `doctor` in a Gradle copy",
+"exp": "Writes `grantiva-android.yml`; doctor runs Android checks (docs/android.md:12-13)",
+"plat": "cli",
+"flow": "none",
+"line": 292,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-160",
+"cmd": "docs/android-environment.md",
+"inp": ":5 `scripts/android-env.sh`; :11-13 exports",
+"exp": "Script not run (host already provisioned; `n/a`); the three exports are the slices' shell preamble and work as written (docs/android-environment.md:5-13)",
+"plat": "cli",
+"flow": "none",
+"line": 293,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-109 (changed)",
+"cmd": "README run example",
+"inp": "README:414-415",
+"exp": "`grantiva run --simulator \"$udid\" --flow flows/login.yaml` parses (no usage error) (brief D03)",
+"plat": "cli",
+"flow": "none",
+"line": 299,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-110 (changed)",
+"cmd": "runner `--json`",
+"inp": "README:365-369 vs help: runner_*.txt",
+"exp": "Sources agree: every runner lifecycle help page lists `--json` (brief D01)",
+"plat": "cli",
+"flow": "none",
+"line": 300,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-111 (changed)",
+"cmd": "README Commands list",
+"inp": "README:305-338 vs help corpus",
+"exp": "Every line matches its help abstract (incl. 311, 312, 314, 337 flagged in obs) and every leaf except console subgroups is listed (brief D02; obs README-vs-help)",
+"plat": "cli",
+"flow": "none",
+"line": 301,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-112 (changed)",
+"cmd": "Maestro unsupported commands",
+"inp": "README:172 vs CLI-065 behaviour",
+"exp": "README's rejection wording matches the actual error (README:172; brief C07)",
+"plat": "cli",
+"flow": "none",
+"line": 302,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-113 (changed)",
+"cmd": "`simulator cleanup` wording",
+"inp": "README:321 vs help: simulator_cleanup.txt vs SIMULATOR-LIFECYCLE.md",
+"exp": "Agree (brief D02)",
+"plat": "cli",
+"flow": "none",
+"line": 303,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-114 (changed)",
+"cmd": "`simulator delete`/`sessions` abstracts",
+"inp": "help: simulator.txt vs README:318-319",
+"exp": "Agree; both non-empty (brief D02)",
+"plat": "cli",
+"flow": "none",
+"line": 304,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-117 (changed)",
+"cmd": "Android `ci run`",
+"inp": "docs/android-environment.md:20-24 vs docs/android.md:71-73",
+"exp": "Agree: refused, use local diff commands (brief D06)",
+"plat": "cli",
+"flow": "none",
+"line": 305,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-118 (changed)",
+"cmd": "emulator selection",
+"inp": "docs/android.md:33-38",
+"exp": "One order: configured AVD (running, else booted); else one running, one booting, the only AVD; else error listing AVDs (brief D07)",
+"plat": "cli",
+"flow": "none",
+"line": 306,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-119 (changed)",
+"cmd": "iOS-only wording",
+"inp": "help overviews of grantiva, run, build build, record, hierarchy; README:3",
+"exp": "Name both platforms; `--no-build` says \"device\" (brief D04)",
+"plat": "cli",
+"flow": "none",
+"line": 307,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-120 (changed)",
+"cmd": "`hierarchy --json`",
+"inp": "help: hierarchy.txt vs docs/dump-hierarchy.md:38 vs README:367",
+"exp": "Agree: `--json` = `--format json` (brief D01)",
+"plat": "cli",
+"flow": "none",
+"line": 308,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-121 (changed)",
+"cmd": "`--ready-file` parent dirs",
+"inp": "README:87 vs help: run.txt",
+"exp": "Both say missing parent directories are created (brief D08)",
+"plat": "cli",
+"flow": "none",
+"line": 309,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-122 (changed)",
+"cmd": "MCP tool list",
+"inp": "docs/mcp.md:9, 47-90 vs `tools/list`",
+"exp": "22 names, identical sets; `grantiva_test` iOS only, emulator tools Android only (brief D09)",
+"plat": "cli",
+"flow": "none",
+"line": 310,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-161",
+"cmd": "per-device runner home path",
+"inp": "README:92 vs on-disk layout",
+"exp": "README:98 at c65fc17 names `<runner home>/versions/<stamp>/devices/<udid>` and explains `<stamp>` (runner version plus driver tag, e.g. `1.1.28-grantiva.11+android-drivers-2`), matching the disk (K63) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 311,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-162",
+"cmd": "`--timeout`/`--continue-on-failure` for screens",
+"inp": "README:95-99",
+"exp": "No contradiction; `grep -n \"fixed 300 s timeout\" README.md` is empty (brief R03)",
+"plat": "cli",
+"flow": "none",
+"line": 312,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-163",
+"cmd": "diff threshold docs",
+"inp": "README:123-128",
+"exp": "States both checks must pass, `threshold` 0-1 fraction, `perceptual_threshold` mean CIE76 over differing pixels, raise both (brief I19)",
+"plat": "cli",
+"flow": "none",
+"line": 313,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "CLI-164",
+"cmd": "MCP session docs",
+"inp": "docs/mcp.md:14-35 vs help: mcp.txt vs docs/android.md:148-162",
+"exp": "Agree on which tools need a session, the startup isError, config errors and session discovery (brief C11, R05)",
+"plat": "cli",
+"flow": "none",
+"line": 314,
+"sec": "CLI slice (device-free)"
+},
+{
+"id": "MCP-003",
+"cmd": "`grantiva_screenshot`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 839,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-004",
+"cmd": "`grantiva_screenshot`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 840,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-007",
+"cmd": "`grantiva_tap`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 843,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-008",
+"cmd": "`grantiva_tap`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 844,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-011",
+"cmd": "`grantiva_swipe`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 847,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-012",
+"cmd": "`grantiva_swipe`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 848,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-015",
+"cmd": "`grantiva_type`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 851,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-016",
+"cmd": "`grantiva_type`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 852,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-019",
+"cmd": "`grantiva_a11y_tree`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 855,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-020",
+"cmd": "`grantiva_a11y_tree`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 856,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-023",
+"cmd": "`grantiva_a11y_check`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 859,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-024",
+"cmd": "`grantiva_a11y_check`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 860,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-027",
+"cmd": "`grantiva_script`",
+"inp": "no session, config present; `--platform ios` and `--platform android`",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 863,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-028",
+"cmd": "`grantiva_script`",
+"inp": "no session, no config (empty dir)",
+"exp": "isError (never a JSON-RPC error) naming `grantiva runner start` and `grantiva run --keep-alive`: `No active runner session at <dir>/.grantiva/session.json. Start one with 'grantiva runner start' or `grantiva run --keep-alive` in <dir>.`; server keeps answering (docs/mcp.md:14-17, 21-22; src MCPServer.swift:188)",
+"plat": "both",
+"flow": "none",
+"line": 864,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-033",
+"cmd": "`grantiva_build`",
+"inp": "{} in an empty dir, `--platform ios` and `--platform android`",
+"exp": "isError naming the file and where it was looked for: `grantiva.yml not found at <dir>/grantiva.yml. Create one with grantiva init.` (Android: `grantiva-android.yml ... grantiva init --platform android`) (docs/mcp.md:24-26; brief R04)",
+"plat": "both",
+"flow": "none",
+"line": 869,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-038",
+"cmd": "`grantiva_run`",
+"inp": "{} in an empty dir, `--platform ios` and `--platform android`",
+"exp": "isError naming the file and where it was looked for: `grantiva.yml not found at <dir>/grantiva.yml. Create one with grantiva init.` (Android: `grantiva-android.yml ... grantiva init --platform android`) (docs/mcp.md:24-26; brief R04)",
+"plat": "both",
+"flow": "none",
+"line": 874,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-041",
+"cmd": "`grantiva_test`",
+"inp": "{} in an empty dir",
+"exp": "isError naming the file and where it was looked for: `grantiva.yml not found at <dir>/grantiva.yml. Create one with grantiva init.` (Android: `grantiva-android.yml ... grantiva init --platform android`) (docs/mcp.md:24-26; brief R04)",
+"plat": "cli",
+"flow": "none",
+"line": 877,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-046",
+"cmd": "`grantiva_context`",
+"inp": "{} in an empty dir",
+"exp": "A `result` without `isError`, whose text says no config file was found in that directory (naming `grantiva.yml` / `grantiva-android.yml`) and that there is no runner session (docs/mcp.md:14-15, 64; brief R04 criterion 2)",
+"plat": "both",
+"flow": "none",
+"line": 882,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-067",
+"cmd": "`grantiva_vrt_capture`",
+"inp": "{} in an empty dir; then a config without screens",
+"exp": "isError naming the file and where it was looked for: `grantiva.yml not found at <dir>/grantiva.yml. Create one with grantiva init.` (Android: `grantiva-android.yml ... grantiva init --platform android`) (docs/mcp.md:24-26; brief R04); without screens: `No screens configured in grantiva.yml`",
+"plat": "both",
+"flow": "none",
+"line": 903,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-072",
+"cmd": "`grantiva_vrt_compare`",
+"inp": "empty dir, no captures",
+"exp": "isError naming the missing config or captures, never a JSON-RPC error (docs/mcp.md:89; docs/mcp.md:21-22)",
+"plat": "both",
+"flow": "none",
+"line": 908,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-075",
+"cmd": "`grantiva_vrt_approve`",
+"inp": "empty dir, no captures",
+"exp": "isError naming the missing config or captures, never a JSON-RPC error (docs/mcp.md:90; docs/mcp.md:21-22)",
+"plat": "both",
+"flow": "none",
+"line": 911,
+"sec": "MCP rows"
+},
+{
+"id": "MCP-077",
+"cmd": "`tools/call (error shape)`",
+"inp": "unknown tool name; `grantiva_sim_ensure {}`; `grantiva_type {}`; `grantiva_swipe {}`; `grantiva_script {}`; `grantiva_emulator_ensure {}`",
+"exp": "Each returns `result` with `isError: true`; never a JSON-RPC `error`; the server answers the next request. Without a session the session tools (`grantiva_type`, `grantiva_swipe`, `grantiva_script`) return the no-session text first; the missing-argument naming (`text`, `direction`, `steps`) is checked by the live-session rows IOS-1xx/AND-xxx; `name` and the unknown tool are named here (docs/mcp.md:21-22; 2.0.1 IOS-115) (corrected round 2)",
+"plat": "both",
+"flow": "none",
+"line": 913,
+"sec": "MCP rows"
+},
+{
+"id": "B-A01.2",
+"cmd": "brief A01 criterion 2",
+"inp": "per brief A01 Repro",
+"exp": "On Android, `--env` is delivered as string intent extras: either FlowEnvironment writes `arguments:` (merging with any existing `arguments:` map) when the platform is Android, or the bundled runner maps `environment` to extras. Pick one and say which in CHANGELOG and docs/android.md. (brief A01)",
+"plat": "cli",
+"flow": "none (docs check (CHANGELOG.md was removed in #179; release notes, README or docs/ carry the note); docs/android.md:59-66)",
+"line": 931,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A01.4",
+"cmd": "brief A01 criterion 4",
+"inp": "per brief A01 Repro",
+"exp": "GrantivaCoreTests/FlowEnvironmentTests: an Android-platform injection into bare, scalar and mapping `launchApp` forms yields `arguments:` entries (values with `=` and spaces quoted); FlowGeneratorTests: same for the screens flow. (brief A01)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 933,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A02.3",
+"cmd": "brief A02 criterion 3",
+"inp": "per brief A02 Repro",
+"exp": "Runner test: parsing `swipe: {direction: LEFT, from: X}` yields a non-empty selector; a driver test with a fake page source asserts the swipe start point is inside X's bounds. GrantivaCoreTests: if the CLI pre-validates flows, a MaestroFlowParser test that `from:` is kept, not discarded. (brief A02)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 936,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A03.3",
+"cmd": "brief A03 criterion 3",
+"inp": "per brief A03 Repro",
+"exp": "GrantivaCLITests/TargetOptionsTests: `resolveAndroid` with config `application_id` A and APK ID B yields B (or throws a mismatch error); a RunCommandTests case covers the built-variant path. (brief A03)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 939,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A04.2",
+"cmd": "brief A04 criterion 2",
+"inp": "per brief A04 Repro",
+"exp": "FlowGenerator emits a settle step (`waitForAnimationToEnd` with a bounded timeout, or the runner's wait-for-idle) after every `tap`/`swipe`/`type` and before each `takeScreenshot`; or the capture waits until two consecutive hierarchy dumps match. Note any added latency in CHANGELOG. (brief A04)",
+"plat": "cli",
+"flow": "none (README:148-150; docs check (CHANGELOG.md was removed in #179; release notes, README or docs/ carry the note))",
+"line": 941,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A04.3",
+"cmd": "brief A04 criterion 3",
+"inp": "per brief A04 Repro",
+"exp": "GrantivaCoreTests/FlowGeneratorTests: a screen with `path: [tap: \"X\"]` generates a settle step between `tapOn` and `takeScreenshot`. (brief A04)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 942,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A05.3",
+"cmd": "brief A05 criterion 3",
+"inp": "per brief A05 Repro",
+"exp": "GrantivaCLITests/RecordCommandTests: a fixture mp4 with one frame at 0 and requested duration 2 s returns a frame for 1000 ms instead of throwing; a test that `requestedMilliseconds` beyond the requested duration still throws. (brief A05)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 945,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A06.3",
+"cmd": "brief A06 criterion 3",
+"inp": "per brief A06 Repro",
+"exp": "GrantivaCoreTests/ReadyFileTests and RunnerExecutionTests: a simulated SIGINT during a running flow yields `interrupted`; RunnerSessionCleanupTests: an ephemeral report dir is not written to the ready file. (brief A06)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 948,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A07.2",
+"cmd": "brief A07 criterion 2",
+"inp": "per brief A07 Repro",
+"exp": "LogStreamer registers its own `SignalRelay.onTermination` cleanup on `start` (removed on `stop`), or its process is tracked as a group. (brief A07)",
+"plat": "cli",
+"flow": "none (source check: src LogStreamer)",
+"line": 950,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A07.3",
+"cmd": "brief A07 criterion 3",
+"inp": "per brief A07 Repro",
+"exp": "GrantivaCoreTests/LogStreamerTests (or SignalRelayTests): starting a streamer on a long-running dummy executable and firing the termination cleanups leaves the child dead. (brief A07)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 951,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A08.2",
+"cmd": "brief A08 criterion 2",
+"inp": "per brief A08 Repro",
+"exp": "`--logs-level` becomes a validated enum shared by iOS and Android, with an explicit Android mapping table (default -> `*:I` or `*:W`, info -> `*:I`, debug -> `*:D`) documented in docs/android.md. (brief A08)",
+"plat": "cli",
+"flow": "none (help: run.txt; docs/android.md:87-95)",
+"line": 953,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A08.4",
+"cmd": "brief A08 criterion 4",
+"inp": "per brief A08 Repro",
+"exp": "GrantivaCoreTests/AndroidPlatformTests: `logStream(level:)` for nil/default/info/debug yields the mapped `-s *:X` arguments and never `logcat -c`; GrantivaCLITests/RunCommandTests: `--logs-level warning` fails validation. (brief A08)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 955,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A09.3",
+"cmd": "brief A09 criterion 3",
+"inp": "per brief A09 Repro",
+"exp": "GrantivaCoreTests/GradleBuildRunnerTests: parsing a captured Gradle failure log yields the What-went-wrong text in `errors`. (brief A09)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 958,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A10.3",
+"cmd": "brief A10 criterion 3",
+"inp": "per brief A10 Repro",
+"exp": "`.commandFailed` gains a message-only form (or the suffix is only added for real subprocess names). (brief A10)",
+"plat": "cli",
+"flow": "none (source check: src GrantivaError.swift)",
+"line": 961,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A10.4",
+"cmd": "brief A10 criterion 4",
+"inp": "per brief A10 Repro",
+"exp": "Tests: SimulatorLeaseTests asserts the Android message names `grantiva emulator`; InstallCommandTests asserts the Android JSON keys; TableFormatterTests asserts no `Scheme:` for a failed Android build. (brief A10)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 962,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A11.3",
+"cmd": "brief A11 criterion 3",
+"inp": "per brief A11 Repro",
+"exp": "A genuinely unlabelled clickable Button (no text anywhere in its focus group) is still flagged. (brief A11)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign): UIToolsTests ImageButton case)",
+"line": 965,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A11.4",
+"cmd": "brief A11 criterion 4",
+"inp": "per brief A11 Repro",
+"exp": "GrantivaMCPTests (new UIToolsTests): the Deep Links XML fragment above yields no `missing_label`; a clickable `android.widget.ImageButton` with empty `content-desc` and no descendants yields one. (brief A11)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 966,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A12.1",
+"cmd": "brief A12 criterion 1",
+"inp": "per brief A12 Repro",
+"exp": "Re-running the repro: `\u2713 Git Repository  Detected` (optionally showing the top-level path). (brief A12)",
+"plat": "cli",
+"flow": "none (doctor from android/ of a git work tree)",
+"line": 967,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A12.2",
+"cmd": "brief A12 criterion 2",
+"inp": "per brief A12 Repro",
+"exp": "The check walks up from the cwd for a `.git` entry (directory or file) or runs `git rev-parse --is-inside-work-tree`. (brief A12)",
+"plat": "cli",
+"flow": "none (doctor in a worktree, where `.git` is a file)",
+"line": 968,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A12.3",
+"cmd": "brief A12 criterion 3",
+"inp": "per brief A12 Repro",
+"exp": "GrantivaCoreTests/DoctorTests: a temp dir `root/.git/` with cwd `root/android` passes; a dir with no ancestor `.git` still warns. (brief A12)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 969,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-A13.3",
+"cmd": "brief A13 criterion 3",
+"inp": "per brief A13 Repro",
+"exp": "GrantivaCoreTests: GrantivaConfig decoding of the mapping form, and a FlowGeneratorTests case emitting `exact: true`. (brief A13)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 972,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C01.1",
+"cmd": "brief C01 criterion 1",
+"inp": "per brief C01 Repro",
+"exp": "Re-running the repro exits non-zero with a `GrantivaError` naming the missing resource bundle, no SIGTRAP, and leaves `~/.grantiva/runner` exactly as it was. (brief C01)",
+"plat": "cli",
+"flow": "none (binary copied to a scratch dir without its bundle; scratch GRANTIVA_RUNNER_HOME)",
+"line": 973,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C01.3",
+"cmd": "brief C01 criterion 3",
+"inp": "per brief C01 Repro",
+"exp": "GrantivaCoreTests/RunnerManagerTests: a test with a fake `extract` and a seeded `locks/lease` file asserts the lock survives `installIfNeeded`, and a test with a throwing `extract` asserts the previous install is intact. (brief C01)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 975,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C01.4",
+"cmd": "brief C01 criterion 4",
+"inp": "per brief C01 Repro",
+"exp": "Resolve resources with `Bundle(url:)`/a lookup that returns nil instead of `Bundle.module`, so a missing bundle throws. (brief C01)",
+"plat": "cli",
+"flow": "none (covered by B-C01.1)",
+"line": 976,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C02.4",
+"cmd": "brief C02 criterion 4",
+"inp": "per brief C02 Repro",
+"exp": "GrantivaCoreTests/EmulatorManagerTests: a fake adb answering `boot_completed=1` for a serial while the spawned pid is dead asserts `boot` throws and `started.json` has no record; a teardown test asserts a dead-pid record is not killed. (brief C02)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 980,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C03.3",
+"cmd": "brief C03 criterion 3",
+"inp": "per brief C03 Repro",
+"exp": "GrantivaMCPTests/MCPServerTests: `loadActiveSession` with a fake store holding a session for another project directory (and one for another platform) asserts it is not returned. (brief C03)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 983,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C03.4",
+"cmd": "brief C03 criterion 4",
+"inp": "per brief C03 Repro",
+"exp": "docs/android.md \u00a7Runner sessions and the MCP server states which sessions the server attaches to. (brief C03)",
+"plat": "cli",
+"flow": "none (docs/android.md:156-162)",
+"line": 984,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C04.3",
+"cmd": "brief C04 criterion 3",
+"inp": "per brief C04 Repro",
+"exp": "GrantivaCLITests/RunCommandTests: with an injected screens runner, assert the closure receives `reportDir`, `timeoutSeconds` and `failFast` from the flags. (brief C04)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 987,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C04.4",
+"cmd": "brief C04 criterion 4",
+"inp": "per brief C04 Repro",
+"exp": "GrantivaCoreTests/RunnerSessionCleanupTests: assert a supplied report dir is not deleted after `run(screens:)`. (brief C04)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 988,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C05.1",
+"cmd": "brief C05 criterion 1",
+"inp": "per brief C05 Repro",
+"exp": "Re-running the repro calls the server's own binary (`Bundle.main.executablePath` / `CommandLine.arguments[0]` resolved to an absolute path), and the stub is never invoked. (brief C05)",
+"plat": "cli",
+"flow": "none (a `grantiva` stub first on PATH; MCP vrt tools in a config dir)",
+"line": 989,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C05.2",
+"cmd": "brief C05 criterion 2",
+"inp": "per brief C05 Repro",
+"exp": "Prefer spawning the executable with an argument array instead of a shell string. (brief C05)",
+"plat": "cli",
+"flow": "none (source check: src VRTTools.swift)",
+"line": 990,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C05.3",
+"cmd": "brief C05 criterion 3",
+"inp": "per brief C05 Repro",
+"exp": "GrantivaMCPTests/VRTToolsTests: assert `captureCommand`/`compareCommand`/`approveCommand` start with the running executable's absolute path (quoted), not the bare word `grantiva`. (brief C05)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 991,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C06.3",
+"cmd": "brief C06 criterion 3",
+"inp": "per brief C06 Repro",
+"exp": "GrantivaMCPTests/ContextToolTests: with a fake sim manager returning two booted devices and a session on the second, assert the output's `[Simulator]` udid is the session's. (brief C06)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 994,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C07.2",
+"cmd": "brief C07 criterion 2",
+"inp": "per brief C07 Repro",
+"exp": "Decide one behavior for unsupported commands (skip with a stderr warning naming command and line, or reject) and make README.md:149 say exactly that; also list `doubleTapOn`, `longPressOn`, `scrollUntilVisible`, `launchApp`, `stopApp`, `killApp`, which the parser accepts. (brief C07)",
+"plat": "cli",
+"flow": "none (README:172)",
+"line": 996,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C07.3",
+"cmd": "brief C07 criterion 3",
+"inp": "per brief C07 Repro",
+"exp": "Errors read `grantiva.yml:4: unsupported Maestro command 'back'` (file name, no enum text). (brief C07)",
+"plat": "cli",
+"flow": "none",
+"line": 997,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C07.4",
+"cmd": "brief C07 criterion 4",
+"inp": "per brief C07 Repro",
+"exp": "GrantivaCoreTests: a MaestroFlowParser test per form (`swipe: {direction: UP}` \u2192 swipe up, `extendedWaitUntil: {visible: \"X\"}` \u2192 assertVisible X, bare `waitForAnimationToEnd` \u2192 wait step) and one asserting the error message format. (brief C07)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 998,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C08.3",
+"cmd": "brief C08 criterion 3",
+"inp": "per brief C08 Repro",
+"exp": "GrantivaCoreTests: a MaestroFlowParser test asserts `tapOn: {id: X}` yields an id selector, and a FlowGeneratorTests case asserts it is emitted as `id:`. (brief C08)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1001,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C09.3",
+"cmd": "brief C09 criterion 3",
+"inp": "per brief C09 Repro",
+"exp": "GrantivaCoreTests/FlowGeneratorTests: assert `wait: 3` generates the sleep construct with 3000 ms, not `waitForAnimationToEnd`. (brief C09)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1004,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C10.3",
+"cmd": "brief C10 criterion 3",
+"inp": "per brief C10 Repro",
+"exp": "A runner-side test (or a GrantivaCoreTests case on the flow normaliser) asserts bare `scroll` gets direction DOWN and `setPermissions` gets the header appId. (brief C10)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1007,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C11.1",
+"cmd": "brief C11 criterion 1",
+"inp": "per brief C11 Repro",
+"exp": "Re-running the repro, both servers answer `initialize` and list all tools. (brief C11)",
+"plat": "cli",
+"flow": "none",
+"line": 1008,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C11.4",
+"cmd": "brief C11 criterion 4",
+"inp": "per brief C11 Repro",
+"exp": "GrantivaMCPTests/MCPServerTests: start the server with no session over an in-memory transport and assert `tools/list` succeeds and `grantiva_tap` returns `isError`. (brief C11)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1011,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C11.5",
+"cmd": "brief C11 criterion 5",
+"inp": "per brief C11 Repro",
+"exp": "Update help: mcp and docs/android.md \u00a7Runner sessions to say the session is needed only for device tools. (brief C11)",
+"plat": "cli",
+"flow": "none (help: mcp.txt; docs/android.md:148-154)",
+"line": 1012,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C12.1",
+"cmd": "brief C12 criterion 1",
+"inp": "per brief C12 Repro",
+"exp": "Re-running the repro: `doctor` in both/ exits non-zero with \"Found both ... Pass --platform ios\\|android or set GRANTIVA_PLATFORM.\" (or reports the second platform as advice, not Required); both `windows` cases fail with the `run` message; both `init` flag cases fail naming the flag, and write no file. (brief C12)",
+"plat": "cli",
+"flow": "none",
+"line": 1013,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C12.2",
+"cmd": "brief C12 criterion 2",
+"inp": "per brief C12 Repro",
+"exp": "GrantivaCLITests/DoctorSelectionTests: invalid env throws; both detected without flag throws (or required=false). (brief C12)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1014,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C12.3",
+"cmd": "brief C12 criterion 3",
+"inp": "per brief C12 Repro",
+"exp": "GrantivaCLITests/InitAndroidTests: `--scheme` with `--platform android` and `--application-id` with iOS throw. (brief C12)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1015,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C13.2",
+"cmd": "brief C13 criterion 2",
+"inp": "per brief C13 Repro",
+"exp": "Set the recorder's `standardOutput` to the same log file (or `/dev/null`). (brief C13)",
+"plat": "cli",
+"flow": "none (source check: src IOSPlatform)",
+"line": 1017,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C13.3",
+"cmd": "brief C13 criterion 3",
+"inp": "per brief C13 Repro",
+"exp": "GrantivaCLITests/OutputStreamContractTests: assert `runner stop` with no session writes nothing to stdout. (brief C13)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1018,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C13.4",
+"cmd": "brief C13 criterion 4",
+"inp": "per brief C13 Repro",
+"exp": "GrantivaCoreTests/IOSPlatformTests: assert the recordVideo process has a non-inherited `standardOutput`. (brief C13)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1019,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C14.1",
+"cmd": "brief C14 criterion 1",
+"inp": "per brief C14 Repro",
+"exp": "Re-running the repro: the first command fails in under a second with exit 64 and no video written; the second either succeeds (pass the file type to AVFoundation, or record to a temp `.mov` and move it) or fails before recording with \"--output must end in .mov or .mp4\". (brief C14)",
+"plat": "cli",
+"flow": "none",
+"line": 1020,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C14.2",
+"cmd": "brief C14 criterion 2",
+"inp": "per brief C14 Repro",
+"exp": "Move `--frames-at` parsing into `validate()`. (brief C14)",
+"plat": "cli",
+"flow": "none (covered by CLI-102 timing)",
+"line": 1021,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C14.3",
+"cmd": "brief C14 criterion 3",
+"inp": "per brief C14 Repro",
+"exp": "GrantivaCLITests/RecordCommandTests: `--frames-at a,b` fails parsing with a ValidationError and the injected device's `recordVideo` is never called; an extensionless `--output` is accepted or rejected before `recordVideo`. (brief C14)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1022,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C14.5",
+"cmd": "brief C14 criterion 5",
+"inp": "per brief C14 Repro",
+"exp": "Update help: record `--output` to state the accepted extensions. (brief C14)",
+"plat": "cli",
+"flow": "none (help: record.txt)",
+"line": 1024,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C15.1",
+"cmd": "brief C15 criterion 1",
+"inp": "per brief C15 Repro",
+"exp": "Re-running the repro fails before booting with an error naming the file, the screen and the value, e.g. `grantiva.yml: screen \"Diag\": swipe direction \"diagonal\" is not one of up, down, left, right`. (brief C15)",
+"plat": "cli",
+"flow": "none",
+"line": 1025,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C15.3",
+"cmd": "brief C15 criterion 3",
+"inp": "per brief C15 Repro",
+"exp": "GrantivaCoreTests: a GrantivaConfig decoding test asserts `swipe: diagonal` throws and `swipe: Up` decodes. (brief C15)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1027,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C16.1",
+"cmd": "brief C16 criterion 1",
+"inp": "per brief C16 Repro",
+"exp": "Webhook event names are validated by the server, not locally: `create`/`update` with `not.an.event` reach the server (no local ValidationError listing events), and `console webhooks events` is not a subcommand; `testUnknownWebhookEventsAreLeftToTheServer` exists in Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift (00-expectation-corrections.md; brief C16 Correction: criteria 1 and 3 withdrawn) (corrected round 2)",
+"plat": "cli",
+"flow": "none (regression found server-side validation instead; record which holds)",
+"line": 1028,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C16.2",
+"cmd": "brief C16 criterion 2",
+"inp": "per brief C16 Repro",
+"exp": "The valid list comes from one place (a static list kept in sync with the backend, or the API if it exposes one). (brief C16)",
+"plat": "cli",
+"flow": "none (source check)",
+"line": 1029,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C16.3",
+"cmd": "brief C16 criterion 3",
+"inp": "per brief C16 Repro",
+"exp": "`console webhooks events` is intentionally not a subcommand and event names are left to the server: Tests/GrantivaCLITests/ConsoleOrgAdminCommandTests.swift has `testWebhookEventsIsNotASubcommand` and `testUnknownWebhookEventsAreLeftToTheServer` (00-expectation-corrections.md; brief C16 Correction: criteria 1 and 3 withdrawn) (corrected round 2)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1030,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C16.4",
+"cmd": "brief C16 criterion 4",
+"inp": "per brief C16 Repro",
+"exp": "If `events` is not added, remove it from CHANGELOG.md:76 instead. (brief C16)",
+"plat": "cli",
+"flow": "none (help: console_webhooks.txt; CHANGELOG.md removed)",
+"line": 1031,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C17.2",
+"cmd": "brief C17 criterion 2",
+"inp": "per brief C17 Repro",
+"exp": "GrantivaMCPTests/ScriptToolsTests: `steps: [{\"bogus\":1}, 5]` yields `isError == true`; a valid script still yields no `isError`. (brief C17)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1033,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C18.1",
+"cmd": "brief C18 criterion 1",
+"inp": "per brief C18 Repro",
+"exp": "Re-running the repro: Android with no config says `grantiva-android.yml not found at <path>. Create one with grantiva init --platform android.`; iOS says `grantiva.yml not found at <path>. Create one with grantiva init.` (shared `GrantivaConfig.missingFileMessage`, K52 wording supersedes brief C18's `No grantiva-android.yml here. ...`; intent: file, location, init command); a file with nothing in it says `No screens or flows configured in <resolved file name>`; exit 1 (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 1034,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C18.2",
+"cmd": "brief C18 criterion 2",
+"inp": "per brief C18 Repro",
+"exp": "GrantivaCLITests/RunCommandTests: no-config Android and empty-config cases assert the respective messages. (brief C18)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1035,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C19.1",
+"cmd": "brief C19 criterion 1",
+"inp": "per brief C19 Repro",
+"exp": "Re-running the repro prints, on stderr, `grantiva.yml:1: unknown key \"schem\" (did you mean \"scheme\"?)` and `grantiva.yml:4: unknown key \"screen\" (did you mean \"screens\"?)` before the existing error. Warning (not error) keeps old configs working; `doctor` reports the same as a Project warning. (brief C19)",
+"plat": "cli",
+"flow": "none",
+"line": 1036,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C19.2",
+"cmd": "brief C19 criterion 2",
+"inp": "per brief C19 Repro",
+"exp": "Maestro-format files are not affected. (brief C19)",
+"plat": "cli",
+"flow": "none (CLI-155 fixture: no unknown-key warning)",
+"line": 1037,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C19.3",
+"cmd": "brief C19 criterion 3",
+"inp": "per brief C19 Repro",
+"exp": "GrantivaCoreTests/GrantivaConfigPlatformTests: loading the fixture yields two unknown-key diagnostics with line numbers. (brief C19)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1038,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C20.1",
+"cmd": "brief C20 criterion 1",
+"inp": "per brief C20 Repro",
+"exp": "Re-running the repro, doctor shows `\u2717 grantiva-android.yml  could not be parsed: 5:3: ...` with status error (a Project check, so whether it fails the exit code follows the existing section rules) and fix text pointing at the file. (brief C20)",
+"plat": "cli",
+"flow": "none",
+"line": 1039,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C20.2",
+"cmd": "brief C20 criterion 2",
+"inp": "per brief C20 Repro",
+"exp": "`checkConfig` loads the file through the same `GrantivaConfig.load` path `run` uses. (brief C20)",
+"plat": "cli",
+"flow": "none (same message from `run` and `doctor`)",
+"line": 1040,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C20.3",
+"cmd": "brief C20 criterion 3",
+"inp": "per brief C20 Repro",
+"exp": "GrantivaCoreTests/DoctorTests: a malformed file in a temp dir yields a non-ok status containing \"5:3\". (brief C20)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1041,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C21.3",
+"cmd": "brief C21 criterion 3",
+"inp": "per brief C21 Repro",
+"exp": "GrantivaCoreTests: a test parses every \"Run: grantiva \u2026\" string in GrantivaError and asserts the subcommand path exists in the CLI command tree (or a fixed allowlist). (brief C21)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1044,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C22.3",
+"cmd": "brief C22 criterion 3",
+"inp": "per brief C22 Repro",
+"exp": "GrantivaCoreTests/JSONOutputTests: encoding a struct with `Date(timeIntervalSince1970: 0)` yields `\"1970-01-01T00:00:00Z\"`. (brief C22)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1047,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C23.1",
+"cmd": "brief C23 criterion 1",
+"inp": "per brief C23 Repro",
+"exp": "Re-running the repro shows the SDK check as a warning: `/Users/kyle/Library/Android/sdk (ANDROID_HOME=/nonexistent has no platform-tools/adb; unset or fix it)`. Same for a stale `ANDROID_SDK_ROOT`. (brief C23)",
+"plat": "cli",
+"flow": "none",
+"line": 1048,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C23.2",
+"cmd": "brief C23 criterion 2",
+"inp": "per brief C23 Repro",
+"exp": "GrantivaCoreTests/AndroidSDKTests or DoctorTests: environment `ANDROID_HOME=/nonexistent` plus a valid home SDK yields status `.warning` with a message naming `ANDROID_HOME`. (brief C23)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1049,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C24.1",
+"cmd": "brief C24 criterion 1",
+"inp": "per brief C24 Repro",
+"exp": "Re-running the repro prints on stderr, e.g., `No Xcode project found; scheme \"MyApp\" is a placeholder. Edit grantiva.yml or pass --scheme.` (or refuses without `--scheme`, if that is the chosen behavior). (brief C24)",
+"plat": "cli",
+"flow": "none",
+"line": 1050,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C24.2",
+"cmd": "brief C24 criterion 2",
+"inp": "per brief C24 Repro",
+"exp": "The simulator default is a device type installed on the host (newest iPhone from `simctl list devicetypes`), or is marked as a placeholder. (brief C24)",
+"plat": "cli",
+"flow": "none",
+"line": 1051,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C24.3",
+"cmd": "brief C24 criterion 3",
+"inp": "per brief C24 Repro",
+"exp": "GrantivaCLITests: an init test in an empty temp dir asserts the placeholder warning, and one with `--scheme X` asserts none. (brief C24)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1052,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C25.1",
+"cmd": "brief C25 criterion 1",
+"inp": "per brief C25 Repro",
+"exp": "Re-running the repro prints `Not logged in; no credentials at ~/.grantiva/auth.json.` and exits 0; `--json` emits `{\"success\": true, \"message\": \"No stored credentials\"}` (or a `removed: false` field). (brief C25)",
+"plat": "cli",
+"flow": "none (scratch HOME so the owner's auth.json is untouched)",
+"line": 1053,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C25.2",
+"cmd": "brief C25 criterion 2",
+"inp": "per brief C25 Repro",
+"exp": "`AuthStore.delete` reports whether a file was removed. (brief C25)",
+"plat": "cli",
+"flow": "none (source check)",
+"line": 1054,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C25.3",
+"cmd": "brief C25 criterion 3",
+"inp": "per brief C25 Repro",
+"exp": "GrantivaCLITests/AuthCommandTests: with a fake store reporting no file, assert the not-logged-in message. (brief C25)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1055,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C26.1",
+"cmd": "brief C26 criterion 1",
+"inp": "per brief C26 Repro",
+"exp": "README \u00a7Agent-Native Features describes `--snapshot failure\\|trailing\\|full`, `--continue-on-failure` (fail-fast is the default), and `--timeout` (default 600, minimum 30, ignored under `--keep-alive`). (brief C26)",
+"plat": "cli",
+"flow": "none (README:95-97)",
+"line": 1056,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C26.2",
+"cmd": "brief C26 criterion 2",
+"inp": "per brief C26 Repro",
+"exp": "`run --help` for `--timeout` says \"Minimum 30.\" (brief C26)",
+"plat": "cli",
+"flow": "none (help: run.txt)",
+"line": 1057,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-C26.3",
+"cmd": "brief C26 criterion 3",
+"inp": "per brief C26 Repro",
+"exp": "Note that until C04 is fixed, these flags apply only to `flows:`/`--flow`; say so, or drop the note once C04 lands. (brief C26)",
+"plat": "cli",
+"flow": "none (README:99; brief R03)",
+"line": 1058,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D01.2",
+"cmd": "brief D01 criterion 2",
+"inp": "per brief D01 Repro",
+"exp": "README.md:309-312 states that runner lifecycle commands support `--json`; docs/dump-hierarchy.md lists `--json`. (brief D01)",
+"plat": "cli",
+"flow": "none (README:365-369; docs/dump-hierarchy.md:38, 51)",
+"line": 1060,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D01.3",
+"cmd": "brief D01 criterion 3",
+"inp": "per brief D01 Repro",
+"exp": "GrantivaCLITests/HierarchyCommandTests and DumpHierarchyCommandTests: parsing `--json` alone resolves to JSON output. (brief D01)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1061,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D02.1",
+"cmd": "brief D02 criterion 1",
+"inp": "per brief D02 Repro",
+"exp": "README \u00a7Commands lists `emulator ensure\\|delete\\|sessions\\|teardown`, `console` (pointing at `grantiva console --help`), and `runner dump-hierarchy`; `run`/`record`/`build` lines say \"simulator or emulator\". (brief D02)",
+"plat": "cli",
+"flow": "none (README:305-338)",
+"line": 1062,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D02.2",
+"cmd": "brief D02 criterion 2",
+"inp": "per brief D02 Repro",
+"exp": "`simulator cleanup` wording matches help. (brief D02)",
+"plat": "cli",
+"flow": "none (README:321; help: simulator_cleanup.txt)",
+"line": 1063,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D02.3",
+"cmd": "brief D02 criterion 3",
+"inp": "per brief D02 Repro",
+"exp": "`Delete` and `Sessions` get abstracts \"Explicitly delete a named simulator.\" and \"List Grantiva-managed simulator capacity slots.\"; GrantivaCLITests/SimulatorCommandTests asserts every simulator subcommand has a non-empty abstract. (brief D02)",
+"plat": "cli",
+"flow": "none (help: simulator.txt; source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1064,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D03.1",
+"cmd": "brief D03 criterion 1",
+"inp": "per brief D03 Repro",
+"exp": "README shows a command that runs as written, e.g. `grantiva run --simulator \"$udid\" --flow flows/login.yaml`. (brief D03)",
+"plat": "cli",
+"flow": "none (README:415)",
+"line": 1065,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D03.2",
+"cmd": "brief D03 criterion 2",
+"inp": "per brief D03 Repro",
+"exp": "The fixed snippet is copied into a scratch iOS project and parses (no usage error). (brief D03)",
+"plat": "cli",
+"flow": "none",
+"line": 1066,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D04.1",
+"cmd": "brief D04 criterion 1",
+"inp": "per brief D04 Repro",
+"exp": "Overviews read e.g. \"The Grantiva CLI for iOS and Android developers.\", \"Run Maestro flows against a simulator or emulator.\", \"Build the app for a simulator (xcodebuild) or emulator (Gradle).\", and `--no-build` says \"device\". (brief D04)",
+"plat": "cli",
+"flow": "none (help corpus)",
+"line": 1067,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D04.2",
+"cmd": "brief D04 criterion 2",
+"inp": "per brief D04 Repro",
+"exp": "README.md:3 tagline updated to match. (brief D04)",
+"plat": "cli",
+"flow": "none (README:3)",
+"line": 1068,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D04.3",
+"cmd": "brief D04 criterion 3",
+"inp": "per brief D04 Repro",
+"exp": "GrantivaCLITests: a test asserts no command abstract contains \"simulator\" without \"emulator\" for commands whose platform options include Android (or a fixed list check). (brief D04)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1069,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D05.1",
+"cmd": "brief D05 criterion 1",
+"inp": "per brief D05 Repro",
+"exp": "Either bump the version for builds containing the Unreleased work (e.g. 2.1.0-dev on main) or move the entries under the release that ships them; `grantiva --version` and the CHANGELOG heading agree. (brief D05)",
+"plat": "cli",
+"flow": "none (CHANGELOG.md removed in #179; check no file claims another version than 2.1.0)",
+"line": 1070,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D05.2",
+"cmd": "brief D05 criterion 2",
+"inp": "per brief D05 Repro",
+"exp": "Release checklist (or the release workflow) checks that `## Unreleased` is empty when a tag is cut. (brief D05)",
+"plat": "cli",
+"flow": "none (n/a if CHANGELOG.md is gone; record what the release workflow does)",
+"line": 1071,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D06.1",
+"cmd": "brief D06 criterion 1",
+"inp": "per brief D06 Repro",
+"exp": "docs/android-environment.md \u00a7CI says `ci run` refuses Android today, points to local `diff capture\\|compare\\|approve`, and keeps the self-hosted-Mac note for when it is supported. (brief D06)",
+"plat": "cli",
+"flow": "none (docs/android-environment.md:18-28)",
+"line": 1072,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D07.1",
+"cmd": "brief D07 criterion 1",
+"inp": "per brief D07 Repro",
+"exp": "docs/android.md \u00a7Devices drops \"Only running emulators are considered by default\" and states the order: configured AVD (running, else booted); otherwise one running emulator, one booting emulator, or the only AVD (booted); otherwise an error listing AVDs. (brief D07)",
+"plat": "cli",
+"flow": "none (docs/android.md:31-38)",
+"line": 1073,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D07.2",
+"cmd": "brief D07 criterion 2",
+"inp": "per brief D07 Repro",
+"exp": "The doc comment at EmulatorManager.swift:136 is reworded the same way. (brief D07)",
+"plat": "cli",
+"flow": "none (source check)",
+"line": 1074,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D08.1",
+"cmd": "brief D08 criterion 1",
+"inp": "per brief D08 Repro",
+"exp": "README \u00a7Agent-Native Features and the `--ready-file` help say \"Missing parent directories are created.\" (or, if creation is unwanted, the code stops creating them and the docs say the directory must exist). (brief D08)",
+"plat": "cli",
+"flow": "none (README:87; help: run.txt)",
+"line": 1075,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D08.2",
+"cmd": "brief D08 criterion 2",
+"inp": "per brief D08 Repro",
+"exp": "GrantivaCoreTests/ReadyFileTests already covers creation; add an assertion if the behavior changes. (brief D08)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1076,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D09.1",
+"cmd": "brief D09 criterion 1",
+"inp": "per brief D09 Repro",
+"exp": "A doc (README \u00a7MCP or docs/mcp.md) lists all 22 tools with one line each, notes `grantiva_test` is iOS-only and `grantiva_emulator_*` Android-only, and states which need a runner session (see C11). (brief D09)",
+"plat": "cli",
+"flow": "none (docs/mcp.md:43-90)",
+"line": 1077,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-D09.2",
+"cmd": "brief D09 criterion 2",
+"inp": "per brief D09 Repro",
+"exp": "GrantivaMCPTests/ToolRegistrationTests: a test asserts the documented list equals the registered tool names, so the doc cannot drift. (brief D09)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1078,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I01.3",
+"cmd": "brief I01 criterion 3",
+"inp": "per brief I01 Repro",
+"exp": "Test: a GrantivaCoreTests case asserting that runner arguments/environment for two different UDIDs yield distinct WDA derived-data paths (or that the launch lock is taken), plus a runner-side regression test. (brief I01)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1081,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I02.4",
+"cmd": "brief I02 criterion 4",
+"inp": "per brief I02 Repro",
+"exp": "GrantivaCLITests/DiffCommandTests: with a fake platform reporting two booted devices and config `simulator: B`, the `--no-build` path boots/uses B, not the first. (brief I02)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1085,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I03.3",
+"cmd": "brief I03 criterion 3",
+"inp": "per brief I03 Repro",
+"exp": "GrantivaCoreTests/RunnerSessionTests: a fake runner exiting 1 leaves no pre-existing capture that compare would accept. (brief I03)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1088,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I04.3",
+"cmd": "brief I04 criterion 3",
+"inp": "per brief I04 Repro",
+"exp": "The runner accepts system alerts by default and the CLI passes no alert policy (CLI PR #183 removed the opt-out flag): no alert-policy argument in the runner invocation in Sources/ at 5eab55d; the runner-side alert test is the runner's `pkg/driver/wda/alerts_test.go` (00-expectation-corrections.md; brief I04 Correction: criterion 3 withdrawn) (corrected round 2)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1091,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I05.3",
+"cmd": "brief I05 criterion 3",
+"inp": "per brief I05 Repro",
+"exp": "GrantivaCoreTests/WDAClientTests: with a stub server, assert the find request uses a label-based strategy and escapes `\"` in the label. (brief I05)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1094,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I06.3",
+"cmd": "brief I06 criterion 3",
+"inp": "per brief I06 Repro",
+"exp": "GrantivaCoreTests/WDAClientTests: a stub server records the path and asserts `/wda/keys`; a non-200 error message names the HTTP status instead of \" exited with code 1\". (brief I06)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1097,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I07.3",
+"cmd": "brief I07 criterion 3",
+"inp": "per brief I07 Repro",
+"exp": "GrantivaCoreTests/LogStreamerTests: `defaultLogPredicate(forBundleID:executable:)` includes the executable clause, and the simctl banner lines are filtered out of the stream. (brief I07)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1100,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I08.3",
+"cmd": "brief I08 criterion 3",
+"inp": "per brief I08 Repro",
+"exp": "GrantivaCoreTests/SimulatorCapacityTests: `prune` drops an active `simulator:<udid>` record with a dead pid; a SimulatorManager test with a fake shell asserts no `simctl shutdown` for a device that was already booted. (brief I08)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1103,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I09.3",
+"cmd": "brief I09 criterion 3",
+"inp": "per brief I09 Repro",
+"exp": "GrantivaCoreTests/SimulatorReaperTests: with an injected capacity store holding an active `qa-ios` record, force teardown keeps it; with a fake session dir, the killed runner's `.grantiva` and `.owner.json` files are removed. (brief I09)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1106,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I10.3",
+"cmd": "brief I10 criterion 3",
+"inp": "per brief I10 Repro",
+"exp": "GrantivaCoreTests/SimulatorManagerTests: with a fake catalog and an existing \"qa-x\" device, bare ensure returns its UDID and its own runtime/type; a bare ensure of an unknown model-less name throws the inference error. (brief I10)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1109,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I11.3",
+"cmd": "brief I11 criterion 3",
+"inp": "per brief I11 Repro",
+"exp": "GrantivaCoreTests/RunnerSessionTests (or a RunnerReportRewriter unit): given a fixture report.json and junit file with staged paths and a map, the rewritten files contain only the user paths and stay valid JSON/XML. (brief I11)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1112,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I12.2",
+"cmd": "brief I12 criterion 2",
+"inp": "per brief I12 Repro",
+"exp": "Setup failures under `--json` (no device, bad flag after validation) also print `{\"allPassed\": false, \"error\": \"...\"}`. (brief I12)",
+"plat": "cli",
+"flow": "none",
+"line": 1114,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I12.3",
+"cmd": "brief I12 criterion 3",
+"inp": "per brief I12 Repro",
+"exp": "GrantivaCLITests/RunCommandTests: with a fake runner exiting 1 and a fixture report.json, stdout is valid JSON with `allPassed == false` and the failed step. (brief I12)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1115,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I13.3",
+"cmd": "brief I13 criterion 3",
+"inp": "per brief I13 Repro",
+"exp": "GrantivaCoreTests/ProjectDetectorTests (or ProjectResolverTests): `xcodebuild -list` JSON with two schemes and no configured scheme yields the error (or warning); with one scheme it resolves to it. (brief I13)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1118,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I14.2",
+"cmd": "brief I14 criterion 2",
+"inp": "per brief I14 Repro",
+"exp": "Prefer reserving capacity before `simctl create`, or wrap the boot in a do/catch that deletes a device with `created == true`. (brief I14)",
+"plat": "cli",
+"flow": "none (source check: src SimulatorManager.swift / SimulatorCommand.swift ensure path deletes a device it created when the capacity wait fails, or reserves capacity before `simctl create`)",
+"line": 1120,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I14.3",
+"cmd": "brief I14 criterion 3",
+"inp": "per brief I14 Repro",
+"exp": "GrantivaCoreTests/SimulatorManagerTests: with a fake shell and a capacity store that times out, `ensure` issues `simctl delete <udid>` for a device it created and not for a reused one. (brief I14)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1121,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I15.3",
+"cmd": "brief I15 criterion 3",
+"inp": "per brief I15 Repro",
+"exp": "Tests: HierarchyCommandTests maps a URLError.timedOut to the one-line message; RunCommandTests with a fake `get_app_container` failure asserts the not-installed error and that the runner is never launched. (brief I15)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1124,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I16.3",
+"cmd": "brief I16 criterion 3",
+"inp": "per brief I16 Repro",
+"exp": "GrantivaCoreTests/ScreenArtifactTests: `fileName(for: \"Deep Links\") == \"Deep Links.png\"`, `\"a/b\"` still yields one component, round-trip holds for both forms, and a legacy `Deep%20Links.png` baseline is still found. (brief I16)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1127,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I17.3",
+"cmd": "brief I17 criterion 3",
+"inp": "per brief I17 Repro",
+"exp": "GrantivaMCPTests/BuildToolsTests: a fake runner returning `TestResult(success: false, output: \"...error: Scheme X is not currently configured for the test action...\")` yields text containing that error and `isError: true`. (brief I17)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1130,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I18.3",
+"cmd": "brief I18 criterion 3",
+"inp": "per brief I18 Repro",
+"exp": "Test: a runner-side test with two same-named flows, or a GrantivaCoreTests case asserting staging yields unique flow names for `a/same.yaml` and `b/same.yaml`. (brief I18)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1133,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I19.1",
+"cmd": "brief I19 criterion 1",
+"inp": "per brief I19 Repro",
+"exp": "README \u00a7Configuration (and `grantiva init`'s template comment, if any) states: both checks must pass; `threshold` is a 0-1 fraction of differing pixels; `perceptual_threshold` is the mean CIE76 \u0394E over differing pixels only (0 when identical; ~2.3 just noticeable), with a sentence on loosening a screen by raising both. (brief I19)",
+"plat": "cli",
+"flow": "none (README:123-128)",
+"line": 1134,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I19.2",
+"cmd": "brief I19 criterion 2",
+"inp": "per brief I19 Repro",
+"exp": "If the averaging is changed instead (e.g. over all pixels), note it in CHANGELOG and update ImageDifferTests. (brief I19)",
+"plat": "cli",
+"flow": "none (source check; n/a if unchanged)",
+"line": 1135,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-I19.3",
+"cmd": "brief I19 criterion 3",
+"inp": "per brief I19 Repro",
+"exp": "Doc-only change needs no unit test; if code changes, add ImageDifferTests for a 1-pixel strong change vs. thresholds. (brief I19)",
+"plat": "cli",
+"flow": "none (n/a if doc-only)",
+"line": 1136,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R01.5",
+"cmd": "brief R01 criterion 5",
+"inp": "per brief R01 Repro",
+"exp": "Runner test: `inputText` with no selector into a focused field that already holds `abc` leaves `abc<typed>` (a fake server whose set-value replaces must not pass the test); a typed value that silently replaced non-hint existing text is reported, not marked `\u2713`. (brief R01)",
+"plat": "cli",
+"flow": "none (source check in the grantiva/runner repo at ae48e34)",
+"line": 1141,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R01.6",
+"cmd": "brief R01 criterion 6",
+"inp": "per brief R01 Repro",
+"exp": "The bundled runner version is bumped in this repo and the release notes say what changed. (brief R01)",
+"plat": "cli",
+"flow": "none (`runner version`; commit 51c597a message)",
+"line": 1142,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R02.5",
+"cmd": "brief R02 criterion 5",
+"inp": "per brief R02 Repro",
+"exp": "Runner tests: an element swipe LEFT from an element centred at x=155 on a 1080 px screen travels at least the distance a coordinate swipe of `60%`\u2192`5%` covers (or another documented minimum); parsing `900, 520` does not yield 9.0 / 5.2. (brief R02)",
+"plat": "cli",
+"flow": "none (source check in the grantiva/runner repo at ae48e34)",
+"line": 1147,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R03.1",
+"cmd": "brief R03 criterion 1",
+"inp": "per brief R03 Repro",
+"exp": "`grep -n \"fixed 300 s timeout\" README.md` finds nothing, and README:99's paragraph is removed or rewritten to agree with README:101. (brief R03)",
+"plat": "cli",
+"flow": "none (README:95-99)",
+"line": 1149,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R03.3",
+"cmd": "brief R03 criterion 3",
+"inp": "per brief R03 Repro",
+"exp": "README:95-97 and `run --help` keep their current `--snapshot`, `--continue-on-failure` and `--timeout` text. (brief R03)",
+"plat": "cli",
+"flow": "none (README:95-97; help: run.txt)",
+"line": 1151,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R04.1",
+"cmd": "brief R04 criterion 1",
+"inp": "per brief R04 Repro",
+"exp": "Re-running the repro in an empty directory: `grantiva_build` and `grantiva_vrt_capture` return `isError: true` with text naming the missing file, for example `No grantiva.yml or grantiva-android.yml in /tmp/r04-empty. Create one with grantiva init.` (the CLI's C18 wording is fine). (brief R04)",
+"plat": "cli",
+"flow": "none",
+"line": 1152,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R04.2",
+"cmd": "brief R04 criterion 2",
+"inp": "per brief R04 Repro",
+"exp": "The same holds for every other tool that reads the config; `grantiva_sim_*`, `grantiva_emulator_*` and `grantiva_context` keep working as now. (brief R04)",
+"plat": "cli",
+"flow": "none (`grantiva_run`, `grantiva_test`; `grantiva_sim_list`, `grantiva_emulator_list`, `grantiva_context`)",
+"line": 1153,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R04.3",
+"cmd": "brief R04 criterion 3",
+"inp": "per brief R04 Repro",
+"exp": "With a config that exists but has no `screens:`, `grantiva_vrt_capture` keeps saying `No screens configured in grantiva.yml`. (brief R04)",
+"plat": "cli",
+"flow": "none",
+"line": 1154,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R04.4",
+"cmd": "brief R04 criterion 4",
+"inp": "per brief R04 Repro",
+"exp": "GrantivaMCPTests: with no config file, `grantiva_build` returns isError whose text contains `grantiva.yml` and says it was not found. (brief R04)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1155,
+"sec": "Brief rows (B)"
+},
+{
+"id": "B-R05.4",
+"cmd": "brief R05 criterion 4",
+"inp": "per brief R05 Repro",
+"exp": "GrantivaMCPTests: with a session file present and a WDA stub whose `/status` has no `sessionId`, a session tool returns isError whose text mentions the session starting; no error is thrown out of `ToolRegistry.call`. (brief R05)",
+"plat": "cli",
+"flow": "none (source check: test present under Tests/ at 51c597a (grep; no swift build in the campaign))",
+"line": 1159,
+"sec": "Brief rows (B)"
+},
+{
+"id": "N-07",
+"cmd": "`runner start --help`",
+"inp": "none",
+"exp": "Abstract names UIAutomator2 on Android, matching README:333 (plan N07; help: runner_start.txt)",
+"plat": "cli",
+"flow": "none",
+"line": 1173,
+"sec": "Carried findings (N)"
+},
+{
+"id": "B2-K35",
+"cmd": "brief K35: `doctor` prints advisory toolchain checks under the \"Required\" heading",
+"inp": "`env -u JAVA_HOME DEVELOPER_DIR=/nonexistent grantiva doctor` (text and `--json`) in a both-platform dir, an empty dir, and with `--platform ios`",
+"exp": "Re-running the repro: with `required == false`, the toolchain checks print under an advisory heading (for example a new `Toolchain (optional)` section, or \"Optional\") and not under \"Required\"; `--json` gives them that section value. \u2022 `Booted Simulator` is not under \"Required\" in any mode (it is never an error). \u2022 A detected single-platform project (`--platform ios` or an Xcode-only dir) still lists failing Xcode checks under \"Required\" with `\u2717`, exit 1 (CLI-081 unchanged). \u2022 The summary counts and exit codes are unchanged. \u2022 GrantivaCoreTests/DoctorTests: `runAllChecks(platforms: [.ios, .android], required: false)` returns no check with `section == .required` and `status != .ok`; GrantivaCLITests/DoctorSelectionTests covers the both-detected case. (brief K35 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1276,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K37.1",
+"cmd": "brief K37: The default simulator name differs by command, and init's default can take over a user's own simulator",
+"inp": "`grantiva init` in a scratch iOS copy (no grantiva.yml), `doctor` advice, MCP `tools/list` schema defaults, `grep -rn '\"iPhone 1[0-9]' Sources/` at 5eab55d",
+"exp": "One function in GrantivaCore returns the default simulator name; ProjectResolver, DriverCommand, BuildTools, SimTools (and their schema text), InitCommand and DoctorRunner all use it. grep for `\"iPhone 1[0-9]` in Sources/ finds only that function and help examples. \u2022 `init` writes a Grantiva-specific name (for example `Grantiva <newest iPhone type>`) that `simulator ensure`/`run` creates on first use, or, if it writes a stock name, warns when a simulator of that name already exists and was not created by Grantiva (provenance ledger), naming it. \u2022 GrantivaCLITests/InitIOSTests: `iosTemplate` writes the shared default; GrantivaMCPTests/ToolSchemaTests: schema defaults equal the shared default; GrantivaCoreTests/ProjectResolutionTests: no simulator flag/config resolves to it. (criteria 1, 2, 4 of 4; brief K37 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1278,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K38",
+"cmd": "brief K38: `init` picks a scheme silently from the project name when the project has several shared schemes",
+"inp": "scratch iOS copy with two schemes and no grantiva.yml/.maestro: `grantiva init`; `grantiva run` (fails before device work)",
+"exp": "Re-running the repro: init either writes no scheme guess and warns `Several schemes found: Landmarks, Landmarks (UI Testing). Set scheme in grantiva.yml or pass --scheme.` (exit 0, file written with a placeholder comment), or writes the first and warns naming the others; `grantiva init --scheme \"Landmarks (UI Testing)\"` writes that scheme silently. \u2022 With exactly one shared scheme, init writes it with no warning. \u2022 init uses the same scheme detection as ProjectResolver (one shared function), so `init` then `run` never disagree. \u2022 GrantivaCLITests/InitIOSTests: `iosTemplate` (or the new detection seam) with two detected schemes produces the warning; with one, none. (brief K38 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1280,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K39",
+"cmd": "brief K39: A ready file for a run that failed during setup names a report directory that was never created and omits the error",
+"inp": "scratch dir with an empty config: `run --report-dir out --ready-file out.ready`; `run --timeout 5 --ready-file out2.ready`; a boot failure with `--report-dir`",
+"exp": "Re-running the repro: `out.ready` is `{\"status\": \"failed\", \"flows\": [], \"error\": \"No screens or flows configured in grantiva.yml\", \"finishedAt\": ...}`, with no `reportDir` because `out/` does not exist; the error text equals the `--json` document's `error` for the same run. \u2022 A setup failure after the report directory exists (for example a boot failure with `--report-dir`) keeps `reportDir`. \u2022 Every ready file written by the setup-failure path has `error`. \u2022 GrantivaCLITests/RunCommandTests: a run with no screens or flows and `--report-dir out --ready-file f` writes `error` and no `reportDir`; GrantivaCoreTests/ReadyFileTests: round-trip with `error` set and `reportDir` nil. (brief K39 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1281,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K40",
+"cmd": "brief K40: `run --snapshot bogus` does not list the valid values",
+"inp": "`run --snapshot bogus`; `hierarchy --format bogus`; compare with `run --platform bogus`",
+"exp": "`grantiva run --snapshot bogus`: exit 64 and the error line names `failure`, `trailing`, `full` (ArgumentParser's `Please provide one of 'failure', 'trailing' or 'full'.` or equivalent). \u2022 Every `ExpressibleByArgument` enum in Sources/GrantivaCLI is `CaseIterable` (grep check), so `hierarchy --format bogus` also lists `xml`, `json`. \u2022 GrantivaCLITests/RunCommandTests: parsing `--snapshot bogus` throws an error whose message contains all three values; GrantivaCLITests/HierarchyCommandTests the same for `--format`. (brief K40 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1282,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K41",
+"cmd": "brief K41: `run --timeout -1` reports a missing value instead of an invalid one",
+"inp": "`run --timeout -1`, `run --timeout=-1`, `--ready-file`, `hierarchy --timeout -1`",
+"exp": "`grantiva run --timeout -1`: exit 64 with `--timeout must be at least 30 seconds.` (same as `--timeout=-1` and `--timeout 5`), and `--ready-file` given with it is written with `\"status\": \"failed\"` and that `error`. \u2022 `grantiva hierarchy --timeout -1` and `grantiva record --duration -1`: exit 64 with their own range message. \u2022 GrantivaCLITests/RunCommandTests: `RunCommand.parse([\"--timeout\", \"-1\"])` (or `parseAsRoot`) yields the range error, not \"Missing value\". (brief K41 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1283,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K42",
+"cmd": "brief K42: `simulator teardown` usage errors carry the \"Invalid argument:\" runtime-error prefix",
+"inp": "`simulator teardown --udid \"\" --force`, `--udid not-a-udid-at-all --force`, `--session-id \"\"`, `--udid <x> --session-id x`",
+"exp": "The three repro commands print `Error: --udid is empty. ...`, `Error: --udid not-a-udid-at-all is not a simulator UDID. ...`, `Error: --session-id is empty. ...` with exit 64 and the usage line; no `Invalid argument:`. \u2022 `hierarchy --udid \"\"` and `runner dump-hierarchy --udid \"\"` give the same shape (exit 64, no prefix), or are listed as intended exceptions. \u2022 GrantivaCLITests/SimulatorCommandTests: `Teardown.parse([\"--udid\", \"\", \"--force\"])` throws a `ValidationError` whose message starts with `--udid is empty`. (brief K42 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1284,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K43",
+"cmd": "brief K43: Other-platform flag rejections are worded differently by `runner start` and `record`",
+"inp": "platform-mismatched flags: `build build --variant x`, `runner start --application-id a.b`, `record --emulator x`, `diff capture --scheme X`, ... (brief K43 Repro)",
+"exp": "`grep -rn \"option, but this is an\" Sources/GrantivaCLI` finds only `otherPlatformFlagError`; DriverCommand and RecordCommand call it. \u2022 The repro's six commands all print the long form, exit 1, before any boot. \u2022 GrantivaCLITests/PlatformOptionTests (or RunnerLifecycleCommandTests / RecordCommandTests): `runner start --application-id` on iOS and `record --simulator` on Android throw the `otherPlatformFlagError` text. (brief K43 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1285,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K45",
+"cmd": "brief K45: `runner install` says \"Extracting runner...\" when the install is already current and nothing is extracted",
+"inp": "`runner install` twice into a scratch `GRANTIVA_RUNNER_HOME`",
+"exp": "Re-running the repro: the first install prints `Extracting runner...` (or `Installing runner ...`); the second prints no \"Extracting\" line, and its result says the runner was already installed (text: `Runner already installed at ...`; `--json`: `\"status\": \"current\"` or an `\"extracted\": false` field, documented in the help or README). \u2022 `run`, `diff capture` and `runner start` (\"Preparing runner...\" narration) stay as they are, or use the same signal. \u2022 GrantivaCoreTests/RunnerManagerTests: `installIfNeeded` reports installed vs already-current (return value or callback); GrantivaCLITests (RunnerLifecycleCommandTests or InstallCommandTests): the second install's narration has no \"Extracting\". (brief K45 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1287,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K46",
+"cmd": "brief K46: The \"No active runner session\" message mixes quote styles and is labelled \"Invalid argument\"",
+"inp": "no session: `runner dump-hierarchy`, `hierarchy`, MCP session tools",
+"exp": "One shared message builder in GrantivaCore produces the no-session text for `runner dump-hierarchy`, `hierarchy` and the MCP session tools; both commands appear as `` `grantiva runner start` `` and `` `grantiva run --keep-alive` ``. \u2022 The error is not `invalidArgument` (for example a `GrantivaError.notFound`/dedicated case), so the CLI prints `Error: No active runner session. ...` (exit 1) and the MCP isError text has no `Invalid argument:`. \u2022 docs/dump-hierarchy.md:57 and docs/mcp.md quote the new text if they quote it. \u2022 GrantivaCLITests/DumpHierarchyCommandTests and GrantivaMCPTests/SessionLifecycleTests assert the exact text (no single quotes, no \"Invalid argument\"). (brief K46 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1288,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K47",
+"cmd": "brief K47: `runner dump-hierarchy --format bogus` is not rejected as a usage error",
+"inp": "`runner dump-hierarchy --format bogus`, `--json --format tree`, `--format XML` (no session)",
+"exp": "`grantiva runner dump-hierarchy --format bogus`: exit 64, usage error naming `tree`, `json`, `xml`, with or without a session; no session lookup happens. \u2022 `--format XML`/`Tree` still work (case-insensitive), or the help says lowercase only. \u2022 Prefer a `CaseIterable` `ExpressibleByArgument` enum (see K40) so ArgumentParser lists the choices. \u2022 GrantivaCLITests/DumpHierarchyCommandTests: `DumpHierarchyCommand.parse([\"--format\", \"bogus\"])` throws a validation error naming the three values. (brief K47 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1289,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K48",
+"cmd": "brief K48: A resource bundle from another release fails `runner install` with a generic message and leaves an empty install directory",
+"inp": "binary beside a bundle from another release, scratch `GRANTIVA_RUNNER_HOME`: `runner install`; then with an existing install",
+"exp": "Re-running the repro (fresh home): exit 1 with a message naming the bundle path and saying it is from another release: either both versions (when the runner tarball is present and reports a version) or which expected file is missing (`android-drivers.tar.gz`) plus \"Reinstall grantiva so the binary and its bundle match\". Never the bare `Runner binary not found` text. \u2022 After the failure `fresh/versions/` contains no directory for the stamp (the lock file may stay). \u2022 An existing current install keeps working with a mismatched bundle (exit 0, untouched); README:186 is reworded to say the check runs when an install is needed, or `runner install` warns when the bundle beside the binary does not match. \u2022 GrantivaCoreTests/RunnerManagerTests: `extractEmbedded` with a bundle missing `android-drivers.tar.gz` throws an error whose text names the bundle path; `installIfNeeded` whose `extract` throws leaves no `baseDir`. (brief K48 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1290,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K49",
+"cmd": "brief K49: `diff approve <unknown screen>` prints a garbled \"No captures found in No capture found for ...\" message",
+"inp": "`diff approve NoSuchScreen` in a configured scratch project; MCP `grantiva_vrt_approve {screens: [\"NoSuchScreen\"]}`",
+"exp": "Re-running the repro: `Error: No capture found for \"NoSuchScreen\" in .grantiva/captures. Run: grantiva diff capture` (or the matrix text `No capture found for \"NoSuchScreen\"`), exit 1, Home.png unchanged, no baseline written. \u2022 The MCP approve isError shows the same sentence once, under its `Approve failed:` prefix (prefix shape per K59). \u2022 GrantivaCLITests/DiffCommandTests: approving an unknown screen throws an error whose description is the expected sentence and contains \"No captures found in\" zero times. (brief K49 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1291,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K50",
+"cmd": "brief K50: `console releases update --version` cannot print the CLI version: the command's own `--version <version>` option shadows it",
+"inp": "`console releases update --help`; `console releases update --version`; `... NOTE-ID --release-version 2.2.0` (auth error expected, not a parse error)",
+"exp": "The option is renamed (for example `--release-version` or `--app-version`, keeping a deprecated hidden alias only if ArgumentParser allows it without the clash); `grantiva console releases update --version` prints `2.1.0`, exit 0. \u2022 The help page lists one `--version` (the inherited flag) and the renamed option; README/docs mentioning `releases update --version` are updated. \u2022 GrantivaCLITests/ConsoleVRTReleasesCommandTests: parsing `update NOTE --release-version 2.2.0` sets the new version; a test over every subcommand's help (or `ConsoleReleasesCommand.UpdateCommand.helpMessage()`) asserts `--version` appears once. (brief K50 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1292,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K51",
+"cmd": "brief K51: A failing `diff compare` (and the MCP compare tool) leaves an empty `.grantiva/captures/diffs` directory",
+"inp": "`diff compare --platform ios\\|android` and `diff approve --platform ios` in an empty scratch dir; `find .grantiva`",
+"exp": "Re-running the repro: every command exits 1 with its message and `find .grantiva` prints nothing (no `.grantiva`). \u2022 With captures present, `diff compare` still creates `diffs/` and writes diff images as today. \u2022 GrantivaCLITests/DiffCommandTests: `diff compare` in a temp directory with no captures throws `noCaptures` and the directory has no `.grantiva` afterwards. (brief K51 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1293,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K52",
+"cmd": "brief K52: \"No grantiva.yml\" is worded differently by `run` and `diff capture`, and `run` reports a scheme error first",
+"inp": "`run`/`diff capture` (with and without `--no-build`) with no config, per brief K52 Repro",
+"exp": "With no config and no `.maestro/`, `run` (with and without `--no-build`) and `diff capture` print the same sentence, from `GrantivaConfig.missingFileMessage` (path and init command, `--platform android` on Android), with the same prefix (no `Invalid argument:` on one only); exit 1; no boot. \u2022 The missing-config check runs before scheme resolution in `run`; a project that has a config but several schemes still gets the scheme error. \u2022 An empty `.maestro/` still gives `No flow files found in <dir>/.maestro` for both commands. \u2022 GrantivaCLITests/RunCommandTests: run in a temp Xcode project with two schemes and no config throws the missing-config message; DiffCommandTests: capture gives the identical string. (brief K52 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1294,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K58",
+"cmd": "brief K58: `grantiva_context` presents a config synthesized from `.maestro/` as if a grantiva.yml existed",
+"inp": "scratch android/ copy: `grantiva mcp --platform ios` `grantiva_context`; scratch iOS dir with only `.maestro/`",
+"exp": "Re-running the repro: `[Config]` says `source: .maestro/ (no grantiva.yml)` (or reports no grantiva.yml), and the iOS `bundle_id` is not taken from flows of a directory whose only config is `grantiva-android.yml`; either skip the `.maestro/` fallback when the directory resolves to Android-only (PlatformResolver detects only Gradle), or label the value as read from the flows' `appId:`. \u2022 An iOS project with only `.maestro/` keeps working (README:158) and its context names the source. \u2022 GrantivaMCPTests/ContextToolTests: a `.maestro/`-derived config renders a source line; GrantivaCoreTests/ GrantivaConfigPlatformTests: the chosen rule for an Android-only directory with `--platform ios`. (brief K58 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1300,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K59",
+"cmd": "brief K59: The three MCP VRT tools wrap failures in three different shapes",
+"inp": "empty scratch dir: MCP `grantiva_vrt_capture`, `grantiva_vrt_compare`, `grantiva_vrt_approve`",
+"exp": "Re-running the repro: the three texts share one form, for example `Error: <message>` with no second prefix, or `<Tool> failed: <message>` on one line with the CLI's leading `Error: ` stripped; `Error:` appears at most once. \u2022 Compare's diff-verdict JSON result (not an error) is unchanged. \u2022 One helper builds the VRT failure result; capture-through-session, capture-without-config and the CLI-backed paths use it. \u2022 GrantivaMCPTests/VRTToolsTests: a failing capture, compare and approve (fake `shell` failure with `Error: x`) produce texts with the same prefix and exactly one `Error:`. (brief K59 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1301,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K60",
+"cmd": "brief K60: The MCP VRT tools still run the CLI through a shell command string rather than an argument array",
+"inp": "MCP VRT tools with shell metacharacters in arguments (brief K60 Repro); `ls` for the marker file",
+"exp": "The three tools spawn `VRTTools.executable` with an argument array (a `Process`/ChildProcess helper that captures stdout and stderr and maps a non-zero exit to `GrantivaError.commandFailed(stderr, code)` as `shell` does today); no `/bin/sh` is involved. \u2022 Re-running the behavioural check: no `pwned` files; approve fails naming the screens. \u2022 GrantivaMCPTests/VRTToolsTests: the command builders return `[String]` argv whose first element is the absolute executable and whose screen arguments are passed verbatim (`\"Home; touch x\"` is one element, unquoted); the existing tests asserting quoted strings are replaced. (brief K60 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1302,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K61",
+"cmd": "brief K61: Help text for commands and options that serve both platforms describes only the iOS driver or iOS app files",
+"inp": "`runner start --help`, `runner --help`, `runner dump-hierarchy --help`, `hierarchy --help`, `run/build install/diff capture/ci run --help` (`--app-file`); README:333 comparison. A `GrantivaAgent` hit that names the Android counterpart in the same sentence satisfies the criteria (smoke round2-HELP-K61)",
+"exp": "`runner start --help` OVERVIEW and `runner --help` read `Start the runner with WDA (UIAutomator2 on Android) and keep it alive for interactive use.`, matching README:333 exactly. \u2022 `dump-hierarchy --port`: `Driver port: WDA on iOS, the forwarded UIAutomator2 port on Android (auto-detected from the active session if omitted)` or equivalent naming both. \u2022 `hierarchy --timeout`: names both (`GrantivaAgent's (iOS) or UIAutomator2's (Android) page-source response`). \u2022 `--app-file`: `Path to a pre-built app: .app bundle or .ipa archive (iOS), .apk (Android). Skips the build step.` \u2022 The help corpus is regenerated (findings/help) and CLI-111's README comparison passes. \u2022 GrantivaCLITests (a help test, e.g. in RunnerLifecycleCommandTests and InstallCommandTests): the four help strings contain both platform names; a test (or the existing README-vs-help check, if one exists) keeps README:333 and the abstract equal. (brief K61 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1303,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K62",
+"cmd": "brief K62: README's `doctor --json` jq filter selects `status == \"fail\"`, a value doctor never emits",
+"inp": "`DEVELOPER_DIR=/nonexistent grantiva doctor --json \\| jq` with the README filter",
+"exp": "README:380 and Output.swift:11 use `select(.status == \"error\")`; the README states the three status values and that only `error` changes the exit code. \u2022 No other file in README.md, docs/ or Sources/ uses `status == \"fail\"` for doctor (grep). \u2022 GrantivaCoreTests/DoctorTests (or JSONOutputTests): the encoded statuses are exactly `ok`, `warning`, `error`, so a rename breaks a test and prompts a README update. (brief K62 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1304,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K63",
+"cmd": "brief K63: README names the per-device runner home `versions/<runner version>/`; on disk it is `versions/<stamp>/`",
+"inp": "README runner-home paragraph vs `runner version` and `ls $GRANTIVA_RUNNER_HOME/versions`",
+"exp": "README:92 reads `<runner home>/versions/<stamp>/devices/<udid>` and explains `<stamp>` once (the runner version plus the bundled driver tag, e.g. `1.1.28-grantiva.9+android-drivers-2`), consistent with README:186. \u2022 `grep -n \"runner version>/\" README.md docs/*.md` finds nothing. (brief K63 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1305,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K64",
+"cmd": "brief K64: SIMULATOR-LIFECYCLE.md at the repo root is an internal incident note with stale versions",
+"inp": "README/docs simulator lifecycle text vs `grantiva --version` and help",
+"exp": "SIMULATOR-LIFECYCLE.md is removed, or reduced to user-facing documentation of the simulator lifecycle (ensure, provenance ledger, teardown, cleanup) with no version claims, dates, branch names, internal project names or open action items, and linked from README. \u2022 `grep -rn \"1\\.6\\.[0-9]\" --include=*.md .` outside docs/superpowers finds nothing that claims a current version. \u2022 If kept, every command it mentions exists with the flags it shows (no `cleanup` dry run unless one is added). (brief K64 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1306,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K65",
+"cmd": "brief K65: docs/dump-hierarchy.md lists prebuilt GrantivaAgent runtimes 26.2, 26.4, 27.0; the bundled tarball also ships 26.0",
+"inp": "`runner install` into a scratch `GRANTIVA_RUNNER_HOME`; `ls cache/wda-builds`; docs/dump-hierarchy.md runtime list",
+"exp": "docs/dump-hierarchy.md:55 lists 26.0, 26.2, 26.4 and 27.0 (iPhone), or points at a single source of truth (for example `ls <runner home>/cache/wda-builds`) instead of a list that drifts. \u2022 Any other doc or help text listing prebuilt runtimes (grep `26.2`) matches. (brief K65 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1307,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K66",
+"cmd": "brief K66: README's \"From source\" install copies only the binary, which then cannot extract the runner",
+"inp": "README from-source steps into a scratch dir: binary alone, then binary + bundle; `runner install`",
+"exp": "README \"From source\" copies both: `cp -R .build/release/grantiva .build/release/grantiva_GrantivaCore.bundle /usr/local/bin/` (or installs into a prefix directory and links the binary), and says why the bundle must sit beside the binary. \u2022 Following the new steps exactly, `grantiva runner install` exits 0. (brief K66 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1308,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K96",
+"cmd": "brief K96: MCP `grantiva_sim_list` has no availability column and prints runtimes as identifier fragments (`iOS-26-0`)",
+"inp": "MCP `grantiva_sim_list {filter: booted}` and `{filter: all}`; `grantiva_context` runtime spelling (read-only)",
+"exp": "Re-running the repro: the header is `Name \\| UDID \\| State \\| Runtime \\| Available` (or docs/mcp.md:70 and the tool description drop \"availability\" and say only available simulators are listed; pick one and make both agree). \u2022 Runtimes print as `iOS 26.0` / `iOS 27.0`; `grantiva_context` uses the same spelling (coordinate with C56). \u2022 `State` shows simctl's state (`Booted`, `Shutdown`, `Booting`, \u2026), not a two-way fold. \u2022 Either only iOS simulators are listed, or the description says all platforms are. \u2022 GrantivaMCPTests (new SimToolsTests or ArgumentValidationTests): with an injected device list including an iOS device with runtime `iOS-26-0` and a watchOS device, `list` renders `iOS 26.0` and follows the chosen platform and availability rules. (brief K96 Acceptance criteria; Platforms: ios)",
+"plat": "cli",
+"flow": "none",
+"line": 1342,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K100.1",
+"cmd": "brief K100: MCP `resources/read grantiva://hierarchy` with no usable session answers a JSON-RPC `-32603 Internal error` instead of stating the condition",
+"inp": "no session: MCP `resources/read` `grantiva://hierarchy`, `grantiva://screenshot`, an unknown URI",
+"exp": "With no session, `resources/read` for `grantiva://hierarchy` and `grantiva://screenshot` never answers `-32603`. It answers either a documented error code (not `-32603`, not `-32602`) whose message starts with the no-session text without `Internal error:`/`Invalid argument:` prefixes, or a `result` whose contents state that no session is active. \u2022 An unknown URI keeps its current typed error. \u2022 docs/mcp.md lists both resources and states what a read returns when there is no session. \u2022 Unit test in `GrantivaMCPTests` (MCPServerTests.swift or ToolErrorContractTests.swift): `testResourceReadWithoutASessionIsNotAnInternalError`: build the registry with a connection whose resolver throws the no-session error, call the resource path the server handler uses, and assert the chosen code/contents. If the fix lives in the handler closure, factor the closure into a testable static function first. (criteria 1, 3, 4, 5 of 5; brief K100 Acceptance criteria; Platforms: both)",
+"plat": "cli",
+"flow": "none",
+"line": 1346,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K101",
+"cmd": "brief K101: The MCP server answers a malformed notification with a `-32700 Parse error` carrying an invented UUID `id`",
+"inp": "`grantiva mcp` over stdio: a notification carrying an error, a non-JSON line, responses (`result`/`error` messages) per brief K101 Repro",
+"exp": "An id-less message that is not a valid notification produces no output on stdout (or, if a reply is kept, it is `-32600` with `\"id\": null`). \u2022 A line that is not JSON gets `-32700` with `\"id\": null`. \u2022 A malformed message that does carry an `id` (e.g. `{\"id\":7,\"method\":\"tools/list\"}` without `\"jsonrpc\"`) gets `-32600` echoing `\"id\": 7`. \u2022 Valid traffic is unchanged: initialize, tools/list and tools/call still work after any of the above. \u2022 Test in `GrantivaMCPTests` (new `MCPTransportTests.swift`): drive the server through an in-memory transport (or the wrapper above) with the four input lines from the repro and assert the exact replies, including that no reply carries an `id` the client did not send. (brief K101 Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1348,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "B2-K107-b",
+"cmd": "brief K107-b: Unit tests create `FAKE-\u2026` and `TEST-REPORT-\u2026` lease lock files in the real runner home",
+"inp": "locate the test-isolation change in `Tests/` at 5eab55d; `ls $GRANTIVA_RUNNER_HOME/locks` before/after reading only (no `swift test` in a slice)",
+"exp": "`RunnerSession.runFlowFiles` (and the single-flow capture entry) accept a lease directory, or a runner home, defaulting to the current behaviour; every test passes a temp one. \u2022 Running the full `swift test` with `GRANTIVA_RUNNER_HOME` pointed at an empty directory leaves that directory empty (or nonexistent) afterwards. \u2022 Add a guard test in `GrantivaCoreTests` (e.g. `TestHygieneTests.testSuiteDoesNotWriteIntoTheRunnerHome`), or a CI step that runs the suite with `GRANTIVA_RUNNER_HOME` set to a fresh dir and fails if anything appears in it. (brief K107-b Acceptance criteria; Platforms: n/a)",
+"plat": "cli",
+"flow": "none",
+"line": 1355,
+"sec": "Round 2 brief rows (B2)"
+},
+{
+"id": "N2-02",
+"cmd": "`runner --json`, `runner version`",
+"inp": "`grantiva runner --json`; `grantiva runner status`; `grantiva runner version`; `grantiva runner version --json`",
+"exp": "`runner --json` is a usage error (`Error: Unknown option '--json'`, exit 64) and `runner status` is not a subcommand: help: runner.txt lists only install, version, start, stop, dump-hierarchy and no `--json` on the group. `runner version` prints `grantiva-runner 1.1.28-grantiva.11` and `runner version --json` prints `{\"version\": \"1.1.28-grantiva.11\"}` (help: runner_version.txt; README:356). Record whether any documented command prints the installed stamp (`1.1.28-grantiva.11+android-drivers-2`, README \"Concurrent runs\" `<stamp>`); doctor's Runner check and `runner install` print the installed stamp today, so this is recorded, not a fail (plan N2-02) (corrected round 3)",
+"plat": "cli",
+"flow": "none",
+"line": 1374,
+"sec": "Round 2 carried findings (N2)"
+},
+{
+"id": "N2-04",
+"cmd": "`diff approve --json`, `diff compare --json` (`ignored`)",
+"inp": "scratch project with screens A and B configured; PNG captures A, B and a stray `failure-123.png` in `.grantiva/captures/`; then the same without the stray; then only the stray",
+"exp": "With the stray: `diff approve` approves A and B only and lists the stray under `ignored`; `diff compare` compares A and B only, same `ignored`; text output prints a note naming it. Without strays `ignored` is omitted. Only strays: the error names the configured screens that have no capture. Exit codes per README (compare exits 1 when a screen has no baseline) (plan N2-04; README diff section \"any other file in `.grantiva/captures/` ... is listed in a note (and under `ignored` in `--json`)\"; docs/mcp.md vrt_compare/vrt_approve)",
+"plat": "cli",
+"flow": "none",
+"line": 1376,
+"sec": "Round 2 carried findings (N2)"
+},
+{
+"id": "N2-10",
+"cmd": "`DefaultSimulator.name`",
+"inp": "`grantiva init` in a scratch iOS copy without grantiva.yml; `DEVELOPER_DIR=/nonexistent grantiva doctor`; MCP `tools/list`; `grep -rn '\"iPhone 1[0-9]' Sources/` and the default-name function at 5eab55d; `xcrun simctl list devicetypes runtimes`",
+"exp": "`init` writes the newest iPhone type an installed iOS runtime can run, and warns when a simulator of that name exists that Grantiva did not create (on this host `iPhone 17 Pro` exists: the warning must name it); doctor advice and every MCP schema `simulator` description use the same name or the static text \"newest installed iPhone type\"; the grep finds only the shared function and help examples; the xcrun lookup carries a 5 s timeout in source (plan N2-10; README config section and \"When neither a flag nor `simulator:` names one\" paragraph; brief K37)",
+"plat": "cli",
+"flow": "none",
+"line": 1382,
+"sec": "Round 2 carried findings (N2)"
+},
+{
+"id": "N2-19",
+"cmd": "MCP `Invalid argument:` texts",
+"inp": "device-free tools with bad arguments: `grantiva_sim_boot {name: \"no-such-sim\"}`, `grantiva_sim_delete {name: \"no-such-sim\"}`, `grantiva_sim_ensure {}`, `grantiva_emulator_boot {name: \"no-such-avd\"}`, `grantiva_emulator_delete {name: \"no-such-avd\"}`, `grantiva_emulator_ensure {}`, unknown tool, session tools without a session",
+"exp": "Record the full text per tool. Argument failures read `Error: Invalid argument: <message>` (e.g. `Error: Invalid argument: Simulator not found: \"no-such-sim\"`); no-session texts carry no `Invalid argument:` label; no text has two `Error:` prefixes; every answer is an `isError` result (plan N2-19; docs/mcp.md error paragraph; brief K46 follow-up)",
+"plat": "cli",
+"flow": "none",
+"line": 1391,
+"sec": "Round 2 carried findings (N2)"
+},
+{
+"id": "N2-20",
+"cmd": "deferred fix-wave minors",
+"inp": "`holdTrack` with a recording carrying a malformed extra track: read Sources/ and Tests/ at 5eab55d (no `swift test`); SIGHUP under nohup is N2-18",
+"exp": "Either a test pins that a malformed non-video track is skipped (the hold still applies to the video track), or the current behaviour (the whole hold fails) is recorded and filed as a round-3 brief; grade `fail` when the latter (plan N2-20; fix-wave ledger Task 8 minor)",
+"plat": "cli",
+"flow": "none",
+"line": 1392,
+"sec": "Round 2 carried findings (N2)"
+},
+{
+"id": "D2-01",
+"cmd": "README from-source install",
+"inp": "copy only `grantiva` (no bundle) to a scratch dir; `GRANTIVA_RUNNER_HOME=<scratch>/rh <scratch>/grantiva runner install`; then copy both with `cp -R` and repeat",
+"exp": "Alone: fails with `The grantiva_GrantivaCore.bundle resource bundle was not found next to the grantiva executable`, non-zero; with the bundle beside it: installs (README:22-29)",
+"plat": "cli",
+"flow": "none",
+"line": 1413,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-03",
+"cmd": "`init` default simulator warning",
+"inp": "`grantiva init` in a scratch iOS copy (no grantiva.yml) on this host",
+"exp": "The `simulator:` line is optional (written with the comment or the newest type); when a simulator of that name exists that Grantiva did not create, init warns naming it (README:112 and the \"When neither a flag nor `simulator:` names one\" paragraph). Do not run a device command with that default here when it resolves to `iPhone 17 Pro` (Global Constraint)",
+"plat": "cli",
+"flow": "none",
+"line": 1415,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-15",
+"cmd": "`runner install` no-op",
+"inp": "`runner install` twice and `runner install --json` into a scratch `GRANTIVA_RUNNER_HOME`",
+"exp": "Second run prints `Runner already installed at <path>`; `--json` reports `\"extracted\": false` (help: runner_install.txt; README runner install paragraph; brief K45)",
+"plat": "cli",
+"flow": "none",
+"line": 1427,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-16",
+"cmd": "`doctor --json` status values",
+"inp": "`DEVELOPER_DIR=/nonexistent grantiva doctor --json \\| jq -c '[.[].status] \\| unique'`; the README filter `select(.status == \"error\")`; exit codes with only warnings",
+"exp": "Statuses are `ok`, `warning`, `error` only; the README filter selects the failing checks; only `error` makes doctor exit non-zero (README \"stdout is the result\" section; brief K62)",
+"plat": "cli",
+"flow": "none",
+"line": 1428,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-17",
+"cmd": "legacy alias list vs source",
+"inp": "README alias list; `LegacyJSONKeys.renamed` and `platformTwins` in Sources/ at 5eab55d",
+"exp": "The README list equals `LegacyJSONKeys.renamed` pair for pair (16 pairs) and names the commands that write each; `platformTwins` maps `bundle_id` to `applicationId` on Android as README says (README camelCase paragraph; plan N2-07)",
+"plat": "cli",
+"flow": "none",
+"line": 1429,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-23",
+"cmd": "`diff compare` verdict lines",
+"inp": "scratch project, synthetic PNGs: no baselines; some baselines missing; one perturbed capture; `ci run` comparison where it runs locally",
+"exp": "No baselines: `? No baselines: <n> new screens. Run: grantiva diff approve`, exit 1, `--json` `\"passed\": false`; some missing: `? Visual diff incomplete: \u2026`, exit 1; a failure line reads like `Failed: perceptual=63.6 exceeds perceptual_threshold 5.0 (pixel=0.03%, threshold 2.00%)`; `ci run` keeps `new_screen` without failing (README diff section; briefs K89, K108)",
+"plat": "cli",
+"flow": "none",
+"line": 1435,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-27",
+"cmd": "help `--headless` text",
+"inp": "`--help` of build build, build install, ci run, diff capture, diff compare, run, emulator ensure",
+"exp": "Each `--headless` entry says `GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise a booted emulator gets a window, even when stdout is not a terminal` (emulator ensure: \"the emulator gets a window\") (help pages changed in 7593fab; docs/android.md)",
+"plat": "cli",
+"flow": "none",
+"line": 1439,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-32",
+"cmd": "prebuilt agents list",
+"inp": "`runner install` into a scratch `GRANTIVA_RUNNER_HOME`; `ls cache/wda-builds`",
+"exp": "Prebuilt agents for iOS 26.0, 26.2, 26.4 and 27.0, as docs/dump-hierarchy.md says (docs/dump-hierarchy.md runner start paragraph; brief K65)",
+"plat": "cli",
+"flow": "none",
+"line": 1444,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-33",
+"cmd": "no-session message and `--format` validation",
+"inp": "no session: `runner dump-hierarchy`, `hierarchy`, MCP session tool; `runner dump-hierarchy --format bogus`",
+"exp": "Exit 1 with ``Error: No active runner session. Start one with `grantiva runner start` or `grantiva run --keep-alive`, or pass --port.``; `hierarchy` omits \", or pass --port\"; MCP names the project's `.grantiva/session.json` and directory; `--format bogus` is a usage error (exit 64) before any lookup (docs/dump-hierarchy.md; briefs K46, K47)",
+"plat": "cli",
+"flow": "none",
+"line": 1445,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-34",
+"cmd": "MCP error contract",
+"inp": "device-free MCP: unknown tool, failing VRT command, missing config, `grantiva_sim_boot` no-such-sim; an unknown method; a `notifications/cancelled` for an in-flight `grantiva_build` in a dir without a buildable project",
+"exp": "Every tool failure is an `isError` result whose text starts `Error: `; JSON-RPC errors only for the unknown method/malformed request; the cancelled call is cancelled (no late result) (docs/mcp.md error paragraph; brief K53)",
+"plat": "cli",
+"flow": "none",
+"line": 1446,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-40",
+"cmd": "MCP `grantiva_sim_list`",
+"inp": "`{filter: \"all\"}`, `{filter: \"booted\"}`, `{filter: \"shutdown\"}` (read only)",
+"exp": "`Name \\| UDID \\| State \\| Runtime \\| Available` table, iOS simulators only, simctl states, runtime as `iOS 26.0`, `no` for a missing runtime (docs/mcp.md sim_list row; brief K96)",
+"plat": "cli",
+"flow": "none",
+"line": 1452,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-42",
+"cmd": "MCP `grantiva_vrt_compare`/`approve` filter",
+"inp": "scratch project with configured screens, a stray capture, missing baselines",
+"exp": "Only configured screens compared/approved; strays under `ignored`; a screen without a baseline gives `\"passed\": false` and `status` `new_screen` as a normal (non-isError) result; only strays: the error names the configured screens with no capture (docs/mcp.md vrt rows; plan N2-04)",
+"plat": "cli",
+"flow": "none",
+"line": 1454,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-43",
+"cmd": "MCP resources without a session",
+"inp": "no session: `resources/read` `grantiva://hierarchy`, `grantiva://screenshot`; unknown URI",
+"exp": "No session: JSON-RPC error `-32002` with the session tools' no-session text; unknown URI `-32600`; never `-32603` (docs/mcp.md Resources; brief K100)",
+"plat": "cli",
+"flow": "none",
+"line": 1455,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-46",
+"cmd": "MCP malformed input",
+"inp": "stdio: a non-JSON line; `{\"id\": 7, \"method\": \"x\"}` (no jsonrpc); a malformed message without id; a response message; `[]`; a batch with one valid, one malformed object and one number; then a valid `tools/list`",
+"exp": "Non-JSON \u2192 `-32700`, `\"id\": null`; invalid with id \u2192 `-32600` echoing 7; no-id malformed and responses \u2192 no answer; `[]` \u2192 `-32600`, `\"id\": null`; batch: valid member answered, malformed ones answered together in one array (number \u2192 `\"id\": null`); the following `tools/list` answered (docs/mcp.md Malformed input; brief K101)",
+"plat": "cli",
+"flow": "none",
+"line": 1458,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-47",
+"cmd": "help pages changed in 7593fab",
+"inp": "`--help` of run, hierarchy, runner, runner start, runner stop, runner install, runner dump-hierarchy, emulator, emulator ensure, emulator teardown, simulator teardown, build build, build install, ci run, diff capture, diff compare, console releases update",
+"exp": "Each page matches `findings/help/<page>.txt` (round-2 corpus): `--keep-alive` names both drivers; `--snapshot` lists `(values: failure, trailing, full; default: failure)`; `hierarchy --format` lists `(values: xml, json)`; `dump-hierarchy --format` \"any case\" with values; runner_start foreground/`--json` text; runner_stop release text; runner_install no-op text; teardown `runnerSessionStopped` sentences; `console releases update --release-version` (help corpus diff in 7593fab) (corrected round 3: corpus regenerated at c65fc17)",
+"plat": "cli",
+"flow": "none",
+"line": 1459,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "D2-48",
+"cmd": "`console releases update --release-version`",
+"inp": "`grantiva console releases update --version`; `... NOTE-ID --release-version 2.2.0` (no API key)",
+"exp": "`--version` prints the CLI version (no shadowing); `--release-version` parses and fails only on auth (not a parse error) (help: console_releases_update.txt; brief K50)",
+"plat": "cli",
+"flow": "none",
+"line": 1460,
+"sec": "Docs and help diff rows (D2)"
+},
+{
+"id": "B3-L09",
+"cmd": "brief L09: Android `init` default AVD provenance warning",
+"inp": "Android env; scratch copy of `android/` with `grantiva-android.yml` removed; `grantiva init` (exit code, stderr); `avdmanager list avd -c` and the created-AVDs ledger (read only) to confirm `Pixel_8_API_35` exists and is not recorded; compare with the iOS warning of CLI-069",
+"exp": "`init` writes `emulator: Pixel_8_API_35` and prints one `Warning:` line naming the AVD, saying runs from this directory will boot and drive it, and suggesting a name of your own (`Grantiva_Pixel_8_API_35`, `grantiva emulator ensure --name Grantiva_Pixel_8_API_35`); exit 0. \u2022 The iOS and Android warnings share one sentence shape (`<A> <noun> named <name> already exists and was not created by Grantiva; runs from this directory will boot and drive it.`). \u2022 No warning when the AVD is absent or recorded: checked in InitAndroidTests (source check; the absent case cannot be produced without deleting the owner's AVD) (brief L09; docs/android.md init paragraph)",
+"plat": "android",
+"flow": "none",
+"line": 1481,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L14.1",
+"cmd": "brief L14: cancelled MCP request gets no response (device-free)",
+"inp": "the brief's repro (iOS copy with `simulator: cov-missing`; `initialize`, `grantiva_build` id 10, `notifications/cancelled` for 10, `tools/list` id 11); the same with the cancel sent 200 ms later; a cancel for an unknown id 99 followed by `tools/list`",
+"exp": "Responses for ids 1 and 11 only; no line with `\"id\":10`, whether the cancel arrives at once or 200 ms later. \u2022 A cancel for an unknown or finished id changes nothing and the next request is answered. \u2022 MCPTransportTests cases (1)-(3) exist (source check) (brief L14; docs/mcp.md error paragraph)",
+"plat": "cli",
+"flow": "none",
+"line": 1486,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L15.1",
+"cmd": "brief L15: MCP error prefix and label (device-free)",
+"inp": "stdio, no session: `grantiva_sim_ensure {}`, `grantiva_emulator_ensure {}`, `grantiva_bogus_tool {}`, `grantiva_script {}`, `grantiva_swipe {}`, `grantiva_type {}`, and an empty-arguments call of every tool in `tools/list`",
+"exp": "`grantiva_sim_ensure {}` and `grantiva_emulator_ensure {}` read exactly `Error: Invalid argument: 'name' is required.`; the unknown tool reads exactly `Error: Unknown tool: grantiva_bogus_tool` (round 3 ruling L15), an `isError` result, not a JSON-RPC error; the session tools without a session give the no-session text first, with no `Invalid argument:` label. \u2022 Every `isError` text of every tool starts with `Error: ` exactly once. \u2022 ToolErrorContractTests asserts the full texts (source check) (brief L15; docs/mcp.md error paragraph)",
+"plat": "cli",
+"flow": "none",
+"line": 1488,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L16",
+"cmd": "brief L16: `diff approve` names every missing screen and saves nothing",
+"inp": "scratch iOS copy with only `.grantiva/captures/Home.png` (1x1 PNG): `diff approve Missing1 Missing2 Missing3`; `diff approve Home Missing1` with `ls .grantiva/baselines/` before/after; `diff approve Missing1`; MCP `grantiva_vrt_approve {screens: [\"Missing1\",\"Missing2\",\"Missing3\"]}`",
+"exp": "Three missing: exit non-zero with one error naming all three (e.g. `No captures found for \"Missing1\", \"Missing2\", \"Missing3\" in .grantiva/captures. Run: grantiva diff capture`). \u2022 `Home Missing1`: exit non-zero naming Missing1, and `.grantiva/baselines/` unchanged (no `Home.png` created or replaced). \u2022 One missing screen keeps K49's sentence. \u2022 `grantiva_vrt_approve` returns the same text as an `isError` result (brief L16; README diff approve paragraph)",
+"plat": "cli",
+"flow": "none",
+"line": 1490,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L17",
+"cmd": "brief L17: `grantiva_context` names the directory it searched",
+"inp": "`grantiva mcp --project-dir <scratch>/empty` (started from an iOS copy that has a grantiva.yml): `grantiva_context {}`; again with `--platform ios`; again started from `<scratch>/empty` without `--project-dir`",
+"exp": "`[Config]` reads `grantiva.yml not found at /private/tmp/\u2026/empty/grantiva.yml. Create one with grantiva init.` (realpath spelling), naming both `grantiva.yml` and `grantiva-android.yml` when the platform was auto-detected and only `grantiva.yml` with `--platform ios`; \"current directory\" appears only without `--project-dir`. \u2022 `[Simulator]` reads `No runner session and no simulator in grantiva.yml.` and lists booted simulators only as a hint (brief L17; docs/mcp.md grantiva_context)",
+"plat": "cli",
+"flow": "none",
+"line": 1491,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L25",
+"cmd": "brief L25: MP4 hold with a malformed extra track",
+"inp": "source check (no device repro exists): `Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift` and `Sources/GrantivaCore/Record/MP4LastFrameHold.swift` at the round-3 main",
+"exp": "Tests exist for (1) video + mdia-less track, (2) mdia-less track + video, (3) video + track whose mdia has no hdlr, each asserting a held outcome whose video `stts` ends at the target and an unchanged other `trak`; the no-video-track and unreadable-video cases keep their messages (brief L25)",
+"plat": "cli",
+"flow": "none",
+"line": 1499,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L26-a",
+"cmd": "brief L26-a: `record --output` extension error has the usage shape",
+"inp": "iOS copy: `record --duration 2 --output a.mp4`; Android copy: `record --duration 2 --output a.mov`; reference `record --duration 0`; no device reached",
+"exp": "Exit 64; the first line is the `Error: <message>` line with no `Invalid argument:`; then the same `Usage: grantiva record \u2026` and `See 'grantiva record --help'` lines as `--duration 0` (round 3 ruling L26-a: platform resolved first, then validated) (brief L26-a)",
+"plat": "cli",
+"flow": "none",
+"line": 1500,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L26-b",
+"cmd": "brief L26-b: `--device` with `--emulator` is a usage error",
+"inp": "Android copy and an empty dir: `record --duration 2`, `run`, `diff capture`, `build install`, `runner start`, each with `--device a --emulator b`",
+"exp": "Each exits 64 and prints `Error: --device and --emulator are mutually exclusive; pass one.` followed by the command's `Usage:` and `See \u2026 --help` lines; no `Invalid argument:`; the empty dir gives the same (the check runs before any config load or device resolution) (brief L26-b)",
+"plat": "cli",
+"flow": "none",
+"line": 1501,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L27",
+"cmd": "brief L27: one spelling of the runner install path",
+"inp": "`cd /private/tmp/<scratch>/l27`: `GRANTIVA_RUNNER_HOME=rh runner install` twice and `--json`; then `GRANTIVA_RUNNER_HOME=$PWD/rh`; `doctor`'s Runner check and `runner version --json` with that home; the CLI-142 bundle warning (copied binary without bundle, as B3-L28) with the relative home",
+"exp": "Every printed path (text and `--json`) is the realpath `/private/tmp/\u2026/rh/\u2026` form, on the run that extracts and on later runs, for relative and absolute homes, in doctor and `runner version --json` where they print it, and in the bundle warning. The default-home half is not run (Global Constraint: never write under `~/.grantiva/runner`); RunnerManager tests cover it (source check) (brief L27)",
+"plat": "cli",
+"flow": "none",
+"line": 1502,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L28",
+"cmd": "brief L28: missing bundle warned on a current install",
+"inp": "scratch home with a current install made by `~/.grantiva-qa/bin/grantiva runner install`; the binary copied alone to `<scratch>/bin/grantiva`; `<scratch>/bin/grantiva runner install` (exit, stderr) and `--json` (stdout/stderr split); then a fresh scratch home with the copy",
+"exp": "Exit 0 and one `Warning:` line on stderr: `The grantiva_GrantivaCore.bundle resource bundle was not found next to the grantiva executable. The installed runner (<dir>) was left as it is, but a fresh install (a new runner home or another grantiva version) would fail. Reinstall grantiva, or keep the bundle beside the binary when copying it.`; `--json` is one document on stdout with the warning on stderr; the fresh-home install fails (exit 1) naming the bundle. \u2022 RunnerManagerTests `bundleMismatchWarning(bundle: nil, \u2026)` exists (source check) (brief L28; ruling L28; README GRANTIVA_RUNNER_HOME row)",
+"plat": "cli",
+"flow": "none",
+"line": 1503,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L29",
+"cmd": "brief L29: `build build --help` has no device-boot flags",
+"inp": "`build build --help`; `--help` of `build install`, `run`, `ci run`, `diff capture`, `diff compare`, `emulator ensure`; `build build --headless` and `--emulator X` in an Android copy (no device needed: `build build` never boots); docs/android.md; `findings/help/build_build.txt`",
+"exp": "`build build --help` lists none of `--headless`, `--emulator`, `--allow-device-settings`; the six other pages still list `--headless`. \u2022 `build build --headless`/`--emulator X` are still accepted (hidden) and change nothing, as docs/android.md says. \u2022 `--device` on `build build` keeps its ABI role. \u2022 The regenerated corpus page matches (brief L29; docs/android.md build paragraph)",
+"plat": "cli",
+"flow": "none",
+"line": 1504,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L30",
+"cmd": "brief L30: no internal plan doc in the shipped docs",
+"inp": "at the round-3 main (read only): `ls docs/plans`; the brief's version scan over `README.md docs/*.md docs/plans/*.md` (if any); `DocsContractTests` source",
+"exp": "`docs/plans/` is gone (the note lives under `docs/superpowers/`) or included in the shipped set; the version scan prints no version other than 2.1.0 and the bundled runner stamp outside `docs/superpowers/`; `DocsContractTests` covers `docs/plans` (or asserts it does not exist) and no shipped Markdown names the runner's lineage in prose (brief L30; ruling L30)",
+"plat": "cli",
+"flow": "none",
+"line": 1505,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L31",
+"cmd": "brief L31: fresh-home test run in CI",
+"inp": "at the round-3 main (read only): `.github/workflows/ci.yml`, `scripts/test-fresh-home.sh`, `Tests/` guard tests; `gh run list --branch main --workflow ci --limit 1` and the step log (read only)",
+"exp": "CI runs the suite with `GRANTIVA_RUNNER_HOME` at a fresh `mktemp -d` and fails, listing the paths, if anything exists under it afterwards; that step passed on main's last run; `testTheDefaultLockDirectoryWasNotCreatedByTests` still runs (brief L31; ruling L31)",
+"plat": "cli",
+"flow": "none",
+"line": 1506,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L42-b",
+"cmd": "brief L42-b: config decoding errors are plain",
+"inp": "iOS copy with `simulator: cov-missing` and Android copy with `emulator: cov-missing` (fake names, nothing can boot): a screens step `tap: {}` and one `wait: soon`; `run --no-build` and `diff capture --no-build` (stderr, exit)",
+"exp": "The error reads `Error: <file>:<line>: <path in config terms> \u2026` with what the key accepts (e.g. `grantiva-android.yml:7`, `tap`), one `Error:` prefix, no `Invalid argument:`; no `DecodingError`, `CodingKeys` or `Debug description`; unknown-key warnings for the failing step are folded into the message (brief L42-b; README config error paragraph)",
+"plat": "cli",
+"flow": "none",
+"line": 1520,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "B3-L53",
+"cmd": "brief L53 (open, round 4): runner empty `--device`",
+"inp": "the runner binary from the bundle (`grantiva_GrantivaCore.bundle` runner dir, or `~/.grantiva-qa/runner/versions/*/`) run directly: `grantiva-runner --platform ios --device \"\" test <flow>` with no `--team-id`; also `--udid \"\"` and `--serial \"\"`; then the CLI side: `grantiva runner start --udid \"\"` and `--serial \"\"` with `--verbose` (arguments forwarded); no device is touched",
+"exp": "Open for round 4: current behaviour expected. The empty `--device` is taken as a physical-device identifier and the run fails later with the real-device `--team-id` signing error, not an empty-flag usage error; record the exit code and text of each flag, and whether the CLI forwards an empty value. Pass when the runner still behaves as the brief's Actual says; a rejection of the empty value earlier than the signing check is also recorded (better than documented, note it) (brief L53, open: current behaviour expected)",
+"plat": "ios",
+"flow": "none",
+"line": 1532,
+"sec": "Round 3 brief rows (B3)"
+},
+{
+"id": "N3-08",
+"cmd": "single usage-error shape",
+"inp": "`record --output a.mp4` (iOS copy), `record --output a.mov` (Android copy), `record --duration 0`, `record --device a --emulator b`, `emulator teardown --serial emulator-9999 --all` (reference; refused before any action); stderr line by line",
+"exp": "All exit 64 with the same shape: an `Error: <message>` line (no `Invalid argument:`), then `Usage: grantiva <command> \u2026` and `See 'grantiva <command> --help' for more information.` (README Errors paragraph; briefs L26-a, L26-b, K42)",
+"plat": "cli",
+"flow": "none",
+"line": 1561,
+"sec": "Round 3 new behaviours (N3)"
+},
+{
+"id": "N3-11",
+"cmd": "missing-bundle warning on runner commands",
+"inp": "the binary copied alone to a scratch bin (as B3-L28), QA-home clone in scratch with a current install: `runner install`, `runner version`, `runner start --simulator cov-missing` (fails at the device), `hierarchy` (no session); count the warning lines per command",
+"exp": "Every command that uses the runner prints the missing-bundle warning once (never twice in one process); `runner install` always does; record which of the others do; no command fails because of it while the current install exists (README GRANTIVA_RUNNER_HOME row; ruling L28)",
+"plat": "cli",
+"flow": "none",
+"line": 1564,
+"sec": "Round 3 new behaviours (N3)"
+},
+{
+"id": "N3-15",
+"cmd": "doctor's default-simulator note",
+"inp": "`grantiva doctor` and `doctor --json` on this host (read only)",
+"exp": "Where a simulator of the default name exists that Grantiva did not create, doctor says it is not used as the default (`(\"<default>\" (<udid>) was not created by Grantiva, so it is not used as the default)`); exit code unaffected (README doctor paragraph; brief L08)",
+"plat": "cli",
+"flow": "none",
+"line": 1568,
+"sec": "Round 3 new behaviours (N3)"
+},
+{
+"id": "N3-16",
+"cmd": "help and docs for the round-3 additions",
+"inp": "`findings/help/` (regenerated in fix-wave Task 9) vs `git diff c65fc17..<round-3 main> -- README.md docs/`; `grep -n` for `GRANTIVA_DRIVER_START_TIMEOUT`, `starting`, `stop.json`, `Emulator reused`, `Variants of`, `trimmed=` in README/docs",
+"exp": "Each round-3 addition is documented once where docs/mcp.md, README and docs/android.md say (env table, session.json paragraph, foreground stop paragraph, Default simulator, emulator boot row, variant line, record section); help pages match the corpus; no shipped doc names the runner's lineage (\"Maestro\" as the flow-format name is allowed) (fix-wave Task 7; ledger ruling on \"Maestro\")",
+"plat": "cli",
+"flow": "none",
+"line": 1569,
+"sec": "Round 3 new behaviours (N3)"
+}
+]

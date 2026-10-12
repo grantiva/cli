@@ -1,0 +1,9 @@
+22:USAGE: grantiva hierarchy [--json] [--verbose] [--quiet] [--udid <udid>] [--timeout <timeout>] [--format <format>]
+23-
+--
+36:  --format <format>       Output format: xml (default) or json. --json is the
+37-                          same as --format json. (values: xml, json)
+38:| `--json` | Same as `--format json`. Combining it with `--format xml` is a usage error. |
+51:`runner dump-hierarchy` takes `--format tree|json|xml` (default `tree`); `--json` is the same as `--format json`.
+59:Without `--detach`, `runner start` stays in the foreground, streams the runner's output to stderr, and holds the session until Ctrl-C (exit 130) or `grantiva runner stop` from another shell (exit 0, `Runner stopped (pid N); the session has ended.`); either way it stops the runner, removes `.grantiva/session.json` and the session files, and releases the device. `runner stop` also releases every `grantiva run --keep-alive` session started from the current directory, by sending that grantiva process SIGINT as Ctrl-C would. A run whose flows had already finished keeps the ready file it wrote (`passed` or `failed`; the ready file is written once), and `runner stop --json`'s `stopped` result is the record of the release. `grantiva simulator teardown` and `grantiva emulator teardown` stop any runner session on the device they tear down; a foreground `runner start` ended that way exits 0 too, with `Runner stopped by teardown (pid N); the session has ended.`
+411:as `--format json`), and the runner lifecycle commands (`runner start`, `stop`,

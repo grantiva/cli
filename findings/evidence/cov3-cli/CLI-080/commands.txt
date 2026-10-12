@@ -1,0 +1,10 @@
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-078
+$ env -u ANDROID_HOME ANDROID_SDK_ROOT=$HOME/Library/Android/sdk $GRANTIVA doctor --platform android
+# exit=0 elapsed=.073s -> sdkroot.out / sdkroot.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-078
+$ env -u ANDROID_HOME -u ANDROID_SDK_ROOT $GRANTIVA doctor --platform android
+# exit=0 elapsed=.070s -> default.out / default.err
+# cwd: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/CLI-078
+$ env -u ANDROID_HOME ANDROID_SDK_ROOT=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-cli/rows/fake-sdk $GRANTIVA doctor --platform android
+# exit=0 elapsed=.074s -> sdkroot_preferred_over_default.out / sdkroot_preferred_over_default.err
+# cwd rows/CLI-078; fake-sdk is an empty dir rows/fake-sdk

@@ -1,0 +1,14 @@
+--continue-on-failure
+--env
+--flow
+--force
+--keep-alive
+--logs
+--logs-level
+--logs-predicate
+--logs-tag
+--ready-file
+--report-dir
+--snapshot
+--timeout
+--udid
