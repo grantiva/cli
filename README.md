@@ -640,7 +640,14 @@ A simulator held by a `grantiva runner start` session is released with
 (with or without `--force`) also stops a runner session it finds on a simulator
 it tears down, a `runner start` or a `run --keep-alive` one, before tearing the
 simulator down, removes that session's files, and reports it as
-`runnerSessionStopped` in `--json`. Without `--force`, a process still holding
+`runnerSessionStopped` in `--json`. On iOS it then ends the WebDriverAgent
+`xcodebuild` and the `simctl diagnose` that the stopped run left writing into the
+simulator's runner home (an interrupted xcodebuild starts diagnose in a process
+group of its own) with `runner stop`'s bound (SIGINT, a 3 s grace, then SIGKILL),
+before it removes that home, so the home stays removed. It lists them under
+`reapedProcesses` in `--json` (same fields as `leftoverProcesses`, `killed: true`)
+and prints `Also stopped diagnose pid <pid>, which the runner left running for
+<udid>.` for each. Without `--force`, a process still holding
 the simulator that teardown did not start (a runner, WebDriverAgent's
 xcodebuild, a `simctl diagnose`, a `grantiva run`) is not killed: teardown
 names its pid and command in a warning on stderr and in `leftoverProcesses` in
