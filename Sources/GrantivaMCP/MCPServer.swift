@@ -173,20 +173,20 @@ public struct GrantivaMCPServer: Sendable {
             return session
         }
         let project = KeepAliveOwner.canonicalDirectory(projectDirectory.path)
-        let live = keepAliveSessions.liveSessions()
-        if let keepAlive = live.first(where: { $0.projectDirectory == project && $0.platform == platform }),
-           let port = UInt16(exactly: keepAlive.port) {
-            let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
-            return RunnerSessionInfo(
-                pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
-            )
+        // The one lookup `runner stop`, teardown and `hierarchy` use (L52):
+        // published sessions first, then runners still starting.
+        let sessions = keepAliveSessions.sessions()
+        if let keepAlive = sessions.first(where: { $0.projectDirectory == project && $0.platform == platform }) {
+            // A runner of this project's is up but has not published its session.
+            guard keepAlive.isPublished else { throw RunnerSessionInfo.startingError(platform: platform) }
+            if let port = UInt16(exactly: keepAlive.port) {
+                let udid = keepAlive.udid.flatMap { try? DeviceID.validate($0) } ?? ""
+                return RunnerSessionInfo(
+                    pid: keepAlive.pid, wdaPort: port, bundleId: keepAlive.appId ?? "", udid: udid, startedAt: Date()
+                )
+            }
         }
-        // A runner of this project's is up but has not published its session.
-        if keepAliveSessions.startingSessions().contains(where: {
-            $0.projectDirectory.map(KeepAliveOwner.canonicalDirectory) == project && $0.platform == platform
-        }) {
-            throw RunnerSessionInfo.startingError(platform: platform)
-        }
+        let live = sessions.filter(\.isPublished)
         throw GrantivaError.noRunnerSession(
             sessionFile: sessionURL.path, directory: projectDirectory.path, ignored: live.count
         )

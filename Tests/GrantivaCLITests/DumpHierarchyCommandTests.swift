@@ -34,6 +34,16 @@ final class DumpHierarchyCommandTests: XCTestCase {
         XCTAssertEqual(target.port, 8430)
     }
 
+    /// L52: a keep-alive run still in its flows is "starting, retry".
+    func testAKeepAliveRunThatHasNotPublishedIsStarting() {
+        let keepAlive = KeepAliveSession(
+            sessionId: "", port: 0, pid: 1, udid: simulator, path: "/tmp/1.owner.json", platform: .ios, isPublished: false
+        )
+        XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: nil, keepAlive: keepAlive)) { error in
+            XCTAssertEqual(error.localizedDescription, RunnerSessionInfo.startingError(platform: .ios).localizedDescription)
+        }
+    }
+
     func testNothingFoundNamesBothWaysToStartASession() {
         XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: nil, keepAlive: nil)) { error in
             XCTAssertTrue("\(error)".contains("grantiva runner start"), "\(error)")

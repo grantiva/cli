@@ -36,6 +36,11 @@ public final class SignalRelay: @unchecked Sendable {
     private var nextID: UInt64 = 1
     private var terminating = false
     private var noun = "simulator"
+    /// Runner groups whose keep-alive hold is armed: their flows are over
+    /// and the runner holds the device until it is released (L56).
+    private var armedGroups: Set<pid_t> = []
+    private var releasedGroups: Set<pid_t> = []
+    private var releasing = false
 
     private init() {}
 
@@ -149,6 +154,86 @@ public final class SignalRelay: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         terminating = false
+        releasing = false
+        armedGroups = []
+        releasedGroups = []
+    }
+
+    // MARK: - Keep-alive hold (L56)
+
+    /// Marks the keep-alive hold of the runner in `pgid` armed: every flow
+    /// has finished and the runner has published its session, so the run's
+    /// verdict is settled. `RunnerExecution`'s readiness watcher calls this.
+    /// The first SIGINT or SIGTERM after that is a release, not an
+    /// interrupt: it is forwarded to the runner, nothing else runs, and the
+    /// run ends through its normal path with the status the runner returns
+    /// (0 for passed flows, 1 for a failure). A second signal while the
+    /// release is under way interrupts as before (exit 130).
+    public func armHold(group pgid: pid_t) {
+        lock.withLock { _ = armedGroups.insert(pgid) }
+    }
+
+    /// The runner in `pgid` has exited (or was never armed).
+    public func disarmHold(group pgid: pid_t) {
+        lock.withLock { _ = armedGroups.remove(pgid) }
+    }
+
+    /// True once a signal has released an armed hold.
+    public var isReleasingHold: Bool {
+        lock.withLock { releasing }
+    }
+
+    /// True when a signal released the hold of the runner in `pgid`.
+    public func wasReleased(group pgid: pid_t) -> Bool {
+        lock.withLock { releasedGroups.contains(pgid) }
+    }
+
+    /// How a runner whose hold was released ended: with the verdict its
+    /// flows earned (0 or 1), or as an interrupt when it exited 130 or was
+    /// killed by SIGINT, SIGTERM or SIGKILL (the release and its
+    /// escalation). A crash (SIGSEGV, SIGABRT, SIGPIPE, …) during the
+    /// release is a failure, and so is a `--timeout` kill (`timedOut`).
+    public static func releaseWasInterrupted(status: Int32, signal: Int32?, timedOut: Bool = false) -> Bool {
+        guard !timedOut else { return false }
+        if let signal { return [SIGINT, SIGTERM, SIGKILL].contains(signal) }
+        return status == 130
+    }
+
+    static func releaseAnnouncement(signalName: String) -> String {
+        "\n[grantiva] received \(signalName) — releasing the keep-alive hold\n"
+    }
+
+    /// How a released runner is asked to end: SIGINT to its group, which the
+    /// runner reads as "release the hold", escalating only if it does not
+    /// exit in time. Off the signal queue, so a second signal is handled.
+    public static let releaseGroup: @Sendable (pid_t) -> Void = { pgid in
+        DispatchQueue.global(qos: .userInitiated).async { _ = ChildProcess.terminateGroup(pgid, gracePeriod: 15) }
+    }
+
+    /// What a signal does: release an armed hold (returns false: the
+    /// process goes on), or run the interrupt sequence (returns true: the
+    /// caller exits `128 + signal`).
+    func respond(to signalNumber: Int32, release: @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Bool {
+        let signalName = signalNumber == SIGINT ? "SIGINT" : "SIGTERM"
+        lock.lock()
+        let held = armedGroups.intersection(groups)
+        if !terminating, !releasing, !held.isEmpty {
+            releasing = true
+            releasedGroups.formUnion(held)
+            lock.unlock()
+            FileHandle.standardError.write(Data(Self.releaseAnnouncement(signalName: signalName).utf8))
+            held.sorted().forEach(release)
+            return false
+        }
+        lock.unlock()
+        terminate(announcing: signalName)
+        return true
+    }
+
+    /// Test seam: delivers `signalNumber` as the handler would, without
+    /// exiting. Returns whether the handler would have exited.
+    public func simulateSignalForTesting(_ signalNumber: Int32, release: @Sendable (pid_t) -> Void = SignalRelay.releaseGroup) -> Bool {
+        respond(to: signalNumber, release: release)
     }
 
     private func handle(_ signalNumber: Int32) {
@@ -156,8 +241,9 @@ public final class SignalRelay: @unchecked Sendable {
         // a different signal gets here (SIGTERM after SIGINT): a repeat of the
         // same signal on its DispatchSourceSignal is held until this handler
         // returns. RunCommand's 30 s cap on waiting for the relay is the real
-        // guarantee against a hung cleanup.
-        terminate(announcing: signalNumber == SIGINT ? "SIGINT" : "SIGTERM")
+        // guarantee against a hung cleanup. A release of an armed hold
+        // returns at once, so a second Ctrl-C during it interrupts.
+        guard respond(to: signalNumber) else { return }
         exit(128 + signalNumber)
     }
 

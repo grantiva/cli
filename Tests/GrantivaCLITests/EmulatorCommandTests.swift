@@ -229,6 +229,48 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertEqual(refused.values, ["mark emulator-5598", "unmark [78]"])
     }
 
+    /// L54: a foreground `runner start` marked before the kill may be gone
+    /// (its runner died with the emulator, or it read the marker and ended)
+    /// before `stopRunners` looks; the teardown still stopped it.
+    func testAMarkedRunnerGoneBeforeTheStopCountsAsStopped() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let outcomes = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            markStops: { _ in [77] },
+            waitForExit: { _ in true }
+        )
+        XCTAssertEqual(outcomes.first?.runnerSessionStopped, true)
+        // A marked runner still alive after the bounded wait is not claimed.
+        let alive = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            markStops: { _ in [77] },
+            waitForExit: { _ in false }
+        )
+        XCTAssertEqual(alive.first?.runnerSessionStopped, false)
+        let unmarked = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true, stopRunners: { _ in [] }, markStops: { _ in [] },
+            waitForExit: { _ in true }
+        )
+        XCTAssertEqual(unmarked.first?.runnerSessionStopped, false)
+    }
+
+    /// L54: the same on a simulator, where the stop runs before the device
+    /// goes: a marked runner the stop did not reach is reported once it has
+    /// exited, and not while it still runs.
+    func testAMarkedRunnerThatEndsOnItsOwnIsReportedOnceItHasExited() async {
+        var sessions = DeviceRunnerSessions(loadSession: { nil }, removeSession: {}, stopSessions: { _, _ in [] })
+        sessions.markStops = { _ in [77] }
+        sessions.waitForExit = { _ in true }
+        let stopped = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(stopped, [.terminated(runnerPid: 77, udid: "emulator-5556", killed: false)])
+        sessions.waitForExit = { _ in false }
+        let running = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(running, [])
+    }
+
     // MARK: - L36 fix round 3: stop markers beside the owner files
 
     private func sleeper() throws -> Process {

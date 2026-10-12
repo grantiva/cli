@@ -122,30 +122,37 @@ struct RecordCommand: AsyncParsableCommand {
     }
 
     /// The last frame on screen for more than half of the recording is worth
-    /// a word: the screen may simply have been idle, but a disconnected
-    /// device looks the same. Measured from when the last frame appears, so
-    /// it holds whether Grantiva stretched that frame or the recorder already
-    /// gave it a long sample.
+    /// a word: the screen may simply have been idle, but on Android a
+    /// disconnected device looks the same. Measured from when the last frame
+    /// appears, so it holds whether Grantiva stretched that frame or the
+    /// recorder already gave it a long sample.
     /// `stretchedByRecorder` is the `.unchanged` case: Grantiva rewrote
-    /// nothing because screenrecord already gave the last frame a sample
+    /// nothing because the recorder already gave the last frame a sample
     /// that reaches the track's end, so the note gives that length instead.
+    /// Both recorders (screenrecord, simctl) write a frame only when the
+    /// screen changes; the iOS wording names neither tool nor a device that
+    /// could disconnect (L60).
     static func heldRecordingNote(
-        timing: MP4LastFrameHold.Timing, requestedSeconds: Double, stretchedByRecorder: Bool = false
+        timing: MP4LastFrameHold.Timing, requestedSeconds: Double, stretchedByRecorder: Bool = false,
+        platform: Platform = .android
     ) -> String? {
         guard requestedSeconds - timing.lastFrameSeconds > requestedSeconds / 2 else { return nil }
         let lastFrameMs = milliseconds(timing.lastFrameSeconds)
+        let recorder = platform == .ios ? "the simulator recording" : "screenrecord"
         let how = stretchedByRecorder
-            ? "screenrecord already kept it on screen to the end of the \(milliseconds(timing.recordedSeconds))ms track (requested \(requestedSeconds)s). "
+            ? "\(recorder) already kept it on screen to the end of the \(milliseconds(timing.recordedSeconds))ms track (requested \(requestedSeconds)s). "
             : "it was held to the requested \(requestedSeconds)s. "
-        return "The recording's last frame is at \(lastFrameMs)ms; " + how
-            + "screenrecord writes frames only when the screen changes, so this is expected for an idle screen; "
-            + "if the screen was changing, check that the device stayed connected."
+        let why = platform == .ios
+            ? "The simulator records a frame only when the screen changes, so this is expected for an idle screen."
+            : "screenrecord writes frames only when the screen changes, so this is expected for an idle screen; "
+                + "if the screen was changing, check that the device stayed connected."
+        return "The recording's last frame is at \(lastFrameMs)ms; " + how + why
     }
 
     /// The note (when it applies) and the `--verbose` statistics line that
     /// explains it, or its absence.
     static func holdDiagnostics(
-        _ outcome: MP4LastFrameHold.Outcome, requestedSeconds: Double
+        _ outcome: MP4LastFrameHold.Outcome, requestedSeconds: Double, platform: Platform = .android
     ) -> (note: String?, statistics: String) {
         let timing: MP4LastFrameHold.Timing
         switch outcome {
@@ -156,7 +163,9 @@ struct RecordCommand: AsyncParsableCommand {
             return (nil, "Held frame: not held; the recording could not be read (\(reason))")
         }
         let stretchedByRecorder = if case .unchanged = outcome { true } else { false }
-        let note = heldRecordingNote(timing: timing, requestedSeconds: requestedSeconds, stretchedByRecorder: stretchedByRecorder)
+        let note = heldRecordingNote(
+            timing: timing, requestedSeconds: requestedSeconds, stretchedByRecorder: stretchedByRecorder, platform: platform
+        )
         let requestedMs = milliseconds(requestedSeconds)
         let lastFrameMs = milliseconds(timing.lastFrameSeconds)
         let endMs = milliseconds(timing.recordedSeconds)
@@ -225,17 +234,19 @@ struct RecordCommand: AsyncParsableCommand {
         guard FileManager.default.fileExists(atPath: outputPath) else {
             throw GrantivaError.commandFailed("Grantiva recording produced no video at \(outputPath)", 1)
         }
-        var heldTiming: MP4LastFrameHold.Timing?
-        if platform == .android {
-            // screenrecord writes a frame only when the screen changes, so a
-            // static screen ends at its last change: hold that frame to --duration.
-            let outcome = try MP4LastFrameHold.holdFile(atPath: outputPath, toSeconds: duration)
-            heldTiming = outcome.timing
-            let diagnostics = Self.holdDiagnostics(outcome, requestedSeconds: duration)
-            GrantivaLog.logger.debug("\(diagnostics.statistics)")
-            if let note = diagnostics.note {
-                GrantivaLog.logger.warning("\(note)")
-            }
+        // screenrecord and simctl both write a frame only when the screen
+        // changes, so a static screen ends at its last change: hold that
+        // frame to --duration. A recording that ran past it is trimmed; on
+        // iOS, whose recorder stops a little after the request with frames
+        // up to then, through the movie's edit list (L60).
+        let outcome = try MP4LastFrameHold.holdFile(
+            atPath: outputPath, toSeconds: duration, dropFramesPastEnd: platform == .ios
+        )
+        let heldTiming = outcome.timing
+        let diagnostics = Self.holdDiagnostics(outcome, requestedSeconds: duration, platform: platform)
+        GrantivaLog.logger.debug("\(diagnostics.statistics)")
+        if let note = diagnostics.note {
+            GrantivaLog.logger.warning("\(note)")
         }
 
         let requested = requestedFrames
@@ -334,9 +345,9 @@ struct RecordReport: Codable {
     let serial: String?
     let video: String
     let requestedDurationSeconds: Double
-    /// Android only: when the last recorded frame appears (the screen's last
-    /// change) and where the track ended before the hold, so a caller can
-    /// see why the held-frame note did or did not print.
+    /// When the last recorded frame appears (the screen's last change) and
+    /// where the track ended before the hold, so a caller can see why the
+    /// held-frame note did or did not print. Both platforms (L60).
     let lastFrameMilliseconds: Int?
     let recordedMilliseconds: Int?
     let frames: [RecordFrame]

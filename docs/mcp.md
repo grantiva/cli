@@ -48,9 +48,11 @@ is starting from the moment `grantiva runner start` (with or without `--detach`)
   (`UIAutomator2` in place of `WDA` on Android) while there is no driver port to ask yet:
   `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
   spawns the runner (rewritten with `"state": "ready"` and the port once the driver answers), and a
-  `run --keep-alive` runner is starting until it publishes its keep-alive session. The MCP tools and
-  resources and `grantiva runner dump-hierarchy` print this one for a starting `session.json`; only the
-  MCP server also reports a `run --keep-alive` runner that has not published yet.
+  `run --keep-alive` runner (or a `runner start` runner, whose session flow runs first) is starting
+  until it publishes its keep-alive session, which it does once its flows have finished. The MCP tools
+  and resources, `grantiva runner dump-hierarchy` and `grantiva hierarchy` all print this one, for a
+  starting `session.json` and for a runner that has not published yet: they share one session
+  lookup with `runner stop` and both teardowns, which find such a runner too.
 - `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
   on iOS once the port is known but WebDriverAgent has not opened its session, for example in the
   seconds after `runner start --detach` returns. The MCP tools and resources print it; `grantiva runner

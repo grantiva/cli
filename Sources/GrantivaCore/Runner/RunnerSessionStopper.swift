@@ -56,6 +56,9 @@ public struct RunnerSessionStopper: Sendable {
     /// shutdown gives the runner 5 s before escalating.
     public var waitTimeout: TimeInterval
     public var pollInterval: Duration
+    /// A pid's kernel start time, nil when gone; compared with the start
+    /// time the owner file recorded before a runner is signalled.
+    public var processStartTime: @Sendable (Int32) -> Int64?
 
     public init(
         store: KeepAliveSessionStore,
@@ -70,7 +73,8 @@ public struct RunnerSessionStopper: Sendable {
         cleanupOrphans: @escaping @Sendable (String) async -> Void,
         helperReaper: RunnerHelperReaper = .inert,
         waitTimeout: TimeInterval = 30,
-        pollInterval: Duration = .milliseconds(100)
+        pollInterval: Duration = .milliseconds(100),
+        processStartTime: @escaping @Sendable (Int32) -> Int64? = RunnerStopMarker.processStartTime
     ) {
         self.store = store
         self.isProcessAlive = isProcessAlive
@@ -85,6 +89,7 @@ public struct RunnerSessionStopper: Sendable {
         self.helperReaper = helperReaper
         self.waitTimeout = waitTimeout
         self.pollInterval = pollInterval
+        self.processStartTime = processStartTime
     }
 
     public static func live(store: KeepAliveSessionStore = KeepAliveSessionStore()) -> RunnerSessionStopper {
@@ -107,7 +112,14 @@ public struct RunnerSessionStopper: Sendable {
     }
 
     /// Stops `session`. Throws when a grantiva process holding it does not
-    /// exit within `waitTimeout` of SIGINT.
+    /// exit within `waitTimeout` of being asked to.
+    ///
+    /// A `run --keep-alive` holder gets SIGINT, as Ctrl-C would send it. A
+    /// foreground `runner start` holder is not signalled: its runner's group
+    /// is stopped, as `runner stop` stops it, and the holder, seeing the
+    /// teardown's marker or its removed session file when the runner exits,
+    /// ends in order with exit 0 (L36, L54). Either way this waits for the
+    /// holder to exit, so nothing of the session is left when it returns.
     public func stop(_ session: KeepAliveSession) async throws -> Outcome {
         let udid = session.udid ?? ""
         // Every pid is checked before it is signalled: the owner must still
@@ -116,29 +128,37 @@ public struct RunnerSessionStopper: Sendable {
         if let owner = session.ownerPid, owner > 1, owner != getpid(), session.detached != true,
            isProcessAlive(owner), parentPid(session.pid) == owner,
            await isRunnerProcess(session.pid), await isGrantivaProcess(owner) {
+            let foregroundStart = session.isForegroundRunnerStart
             let (exited, reaped) = await helperReaper.stopping(runnerPid: session.pid, udid: udid) { [self] in
-                interrupt(owner)
+                if foregroundStart {
+                    _ = terminateGroup(session.pid)
+                } else {
+                    interrupt(owner)
+                }
                 return await waitForExit(owner, timeout: waitTimeout)
             }
             guard exited else {
+                let how = foregroundStart ? "its runner was stopped" : "SIGINT"
                 throw GrantivaError.unavailable(
-                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of SIGINT. "
+                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of \(how). "
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }
             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(runnerPid: session.pid, udid: udid)
+        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime)
     }
 
     /// Terminates a runner nobody holds and cleans up after it. A pid that
-    /// is no longer a grantiva-runner is never signalled; its files are still
-    /// removed.
-    func terminate(runnerPid: Int32, udid: String) async -> Outcome {
+    /// is no longer a grantiva-runner, or whose start time is not the one the
+    /// owner file recorded (the pid was reused), is never signalled; its
+    /// files are still removed.
+    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil) async -> Outcome {
         var killed = false
         var reaped: [ReapedProcess] = []
-        if isProcessAlive(runnerPid), await isRunnerProcess(runnerPid) {
+        let sameProcess = recordedStartTime.map { processStartTime(runnerPid) == $0 } ?? true
+        if isProcessAlive(runnerPid), sameProcess, await isRunnerProcess(runnerPid) {
             (killed, reaped) = await helperReaper.stopping(runnerPid: runnerPid, udid: udid) { [self] in
                 let killed = terminateGroup(runnerPid) == .killed
                 _ = await waitForExit(runnerPid, timeout: 3)
@@ -153,12 +173,14 @@ public struct RunnerSessionStopper: Sendable {
         return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: reaped)
     }
 
-    /// Every session on `udid`, orphans included, plus the `runner start`
-    /// session file's runner when it names `udid` and is not among them.
-    /// Failures to stop one are reported on stderr and do not stop the rest.
+    /// Every session on `udid`, orphans included and whether or not its
+    /// runner has published its session file yet (L54), plus the `runner
+    /// start` session file's runner when it names `udid` and is not among
+    /// them. Failures to stop one are reported on stderr and do not stop the
+    /// rest.
     public func stopSessions(udid: String, runnerStartSession: RunnerSessionInfo?) async -> [Outcome] {
         var outcomes: [Outcome] = []
-        let sessions = store.liveSessions(includingOrphans: true)
+        let sessions = store.sessions(includingOrphans: true)
             .filter { $0.udid?.caseInsensitiveCompare(udid) == .orderedSame }
         for session in sessions {
             do {
@@ -169,6 +191,8 @@ public struct RunnerSessionStopper: Sendable {
         }
         if let file = runnerStartSession, file.udid.caseInsensitiveCompare(udid) == .orderedSame,
            !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
+            // session.json records no start time to check; the runner is
+            // matched by process name only.
             outcomes.append(await terminate(runnerPid: file.pid, udid: udid))
         }
         return outcomes

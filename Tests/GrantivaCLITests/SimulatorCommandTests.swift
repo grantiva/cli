@@ -374,4 +374,61 @@ final class SimulatorCommandTests: XCTestCase {
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(outcome)) as? [String: Any])
         XCTAssertEqual(object["runnerSessionStopped"] as? Bool, true)
     }
+
+    /// L54: a foreground `runner start` torn down while its session flow
+    /// still runs has only its owner sidecar (no `.grantiva` file, no
+    /// session.json in the teardown's directory). The teardown stops it and
+    /// reports runnerSessionStopped.
+    func testTeardownWithOnlyAnOwnerFileReportsRunnerSessionStopped() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let owner = KeepAliveOwner(
+            udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, command: KeepAliveOwner.runnerStartCommand
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        try encoder.encode(owner).write(to: directory.appendingPathComponent("701.owner.json"))
+        let alive = TeardownLocked<Set<Int32>>([700, 701])
+        let events = TeardownLocked<[String]>([])
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        let stopper = RunnerSessionStopper(
+            store: store,
+            isProcessAlive: { alive.value.contains($0) },
+            parentPid: { $0 == 701 ? 700 : nil },
+            isRunnerProcess: { $0 == 701 },
+            isGrantivaProcess: { $0 == 700 },
+            interrupt: { events.append("interrupt \($0)") },
+            terminateGroup: { pid in
+                events.append("terminate \(pid)")
+                alive.mutate { $0.subtract([700, 701]) }
+                return .interrupted
+            },
+            removeSessionFiles: { events.append("files \($0)") },
+            releaseLease: { _ in },
+            cleanupOrphans: { _ in },
+            waitTimeout: 2,
+            pollInterval: .milliseconds(10)
+        )
+        let sessions = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: {},
+            stopSessions: { udid, file in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
+        )
+        let (stopped, lines) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
+        XCTAssertEqual(stopped, [udid])
+        XCTAssertEqual(lines, ["Stopped runner session (pid 701) for \(udid)."])
+        XCTAssertEqual(events.value, ["terminate 701", "files 701"])
+        let outcome = SimulatorTeardownOutcome(udid: udid, session: nil, deleted: true)
+        XCTAssertEqual(SimulatorCommand.Teardown.marking([outcome], stopped: stopped).first?.runnerSessionStopped, true)
+    }
+}
+
+private final class TeardownLocked<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var storage: Value
+    init(_ value: Value) { storage = value }
+    var value: Value { lock.withLock { storage } }
+    func mutate(_ body: (inout Value) -> Void) { lock.withLock { body(&storage) } }
+    func append<Element>(_ element: Element) where Value == [Element] { mutate { $0.append(element) } }
 }

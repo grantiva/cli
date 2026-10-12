@@ -142,7 +142,8 @@ struct EmulatorCommand: AsyncParsableCommand {
             removeDeadSessions: (@Sendable (String) -> [String])? = nil,
             markStops: (@Sendable (String) -> [Int32])? = nil,
             unmarkStops: (@Sendable ([Int32]) -> Void)? = nil,
-            sweepStops: (@Sendable () -> Void)? = nil
+            sweepStops: (@Sendable () -> Void)? = nil,
+            waitForExit: @escaping @Sendable (Int32) async -> Bool = { await DeviceRunnerSessions.waitForExit($0) }
         ) async throws -> [EmulatorTeardownOutcome] {
             // However the teardown ends, markers nobody will read go.
             defer { sweepStops?() }
@@ -180,9 +181,19 @@ struct EmulatorCommand: AsyncParsableCommand {
             _ = try? await emulators.pruneCreatedAVDs()
             // After the kill, so a refused teardown touches nothing; the
             // runner's own adb cleanup has nothing left to do by then.
+            // A runner marked above counts as stopped by this teardown even
+            // when it was gone before `stopRunners` got to it (it died with
+            // its emulator, or its `runner start` read the marker, L54), but
+            // only once it has exited (bounded wait), as on a simulator.
             if let stopRunners {
                 for index in outcomes.indices {
-                    outcomes[index].runnerSessionStopped = !(await stopRunners(outcomes[index].serial)).isEmpty
+                    let serial = outcomes[index].serial
+                    let stopped = await stopRunners(serial)
+                    var markedGone = false
+                    for pid in marked[serial] ?? [] where !stopped.contains(where: { $0.runnerPid == pid }) {
+                        if await waitForExit(pid) { markedGone = true }
+                    }
+                    outcomes[index].runnerSessionStopped = !stopped.isEmpty || markedGone
                 }
             }
             // A runner that died on its own left its session file (L12).

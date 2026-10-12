@@ -149,6 +149,112 @@ final class MP4LastFrameHoldTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: url), file.data)
     }
 
+    // MARK: - L60: simctl's .mov (time scale 600, an edit past the samples)
+
+    /// An idle simulator: one sample of 40/600 s, while the movie, the track
+    /// and its edit say 3.045 s. AVFoundation read 3.045 s and ffmpeg 0.067 s;
+    /// after the hold every box says 3.000 s.
+    func testASimctlOneSampleMovieIsHeldToExactlyTheRequestedLength() throws {
+        let file = MP4Fixture(stts: [(1, 40)], mdhdDuration: 40, movieDuration: 1_827, mediaScale: 600, movieScale: 600)
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+            return XCTFail("expected the last frame to be held")
+        }
+        XCTAssertEqual(timing.frameCount, 1)
+        XCTAssertEqual(timing.lastFrameSeconds, 0)
+        XCTAssertEqual(timing.recordedSeconds, 40.0 / 600, accuracy: 0.0001)
+        let held = try Data(contentsOf: url)
+        let parsed = MP4Fixture.Parsed(held)
+        XCTAssertEqual(parsed.stts, [[1, 1_800]] as [[UInt32]])
+        XCTAssertEqual(parsed.mdhdDuration, 1_800)
+        XCTAssertEqual(parsed.tkhdDuration, 1_800, "shortened from the 3.045 s wall-clock length")
+        XCTAssertEqual(parsed.elstDuration, 1_800)
+        XCTAssertEqual(parsed.mvhdDuration, 1_800)
+        XCTAssertEqual(parsed.mdatPayload, MP4Fixture.mdatPayload)
+        // Read back through the same parser: 3.000 s, the frame still at 0.
+        let reread = try MP4LastFrameHold.timing(of: held).get()
+        XCTAssertEqual(reread.recordedSeconds, 3)
+        XCTAssertEqual(reread.lastFrameSeconds, 0)
+        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+            return XCTFail("a held file is already the requested length")
+        }
+    }
+
+    /// A changing screen recorded to 3.045 s at about 60 frames a second,
+    /// with B-frames: the last frame starts past 3 s, so the edit list ends
+    /// the movie at 3.000 s and the samples stay as recorded.
+    func testASimctlMovieThatRanPastTheRequestIsTrimmedWithItsEditList() throws {
+        let file = MP4Fixture(
+            stts: [(182, 10), (1, 7)], mdhdDuration: 1_827, movieDuration: 1_827, mediaScale: 600, movieScale: 600,
+            ctts: [(1, 0), (1, 20), (1, -10), (180, 0)]
+        )
+        let url = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: url) }
+        guard case .trimmed(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3, dropFramesPastEnd: true) else {
+            return XCTFail("expected the overrun to be trimmed")
+        }
+        XCTAssertEqual(timing.lastFrameSeconds, 1_820.0 / 600, accuracy: 0.0001)
+        let parsed = MP4Fixture.Parsed(try Data(contentsOf: url))
+        XCTAssertEqual(parsed.stts, [[182, 10], [1, 7]] as [[UInt32]], "no sample is rewritten")
+        XCTAssertEqual(parsed.tkhdDuration, 1_800)
+        XCTAssertEqual(parsed.elstDuration, 1_800)
+        XCTAssertEqual(parsed.mvhdDuration, 1_800)
+
+        // Without dropFramesPastEnd (Android, K111) the frame is kept.
+        let kept = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: kept) }
+        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 3) else {
+            return XCTFail("expected the file to be left as it is")
+        }
+    }
+
+    /// B-frames whose last decoded sample (30) is not the last shown (38):
+    /// shortening that sample to end at 35 would cut the frame shown at 38.
+    /// Without an edit-list cut the file is left as recorded; with one
+    /// (iOS) the edit ends the movie and no sample is rewritten.
+    func testALastDecodedSampleThatIsNotTheLastShownIsNotShortened() throws {
+        let file = MP4Fixture(
+            stts: [(4, 10)], mdhdDuration: 40, movieDuration: 40, mediaScale: 600, movieScale: 600,
+            ctts: [(1, 0), (1, 28), (2, -10)]
+        )
+        XCTAssertEqual(try MP4LastFrameHold.timing(of: file.data).get().lastFrameSeconds, 38.0 / 600, accuracy: 0.0001)
+        let kept = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: kept) }
+        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 35.0 / 600) else {
+            return XCTFail("expected the file to be left as it is")
+        }
+        XCTAssertEqual(try Data(contentsOf: kept), file.data)
+
+        let cut = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: cut) }
+        guard case .trimmed = try MP4LastFrameHold.holdFile(atPath: cut.path, toSeconds: 35.0 / 600, dropFramesPastEnd: true) else {
+            return XCTFail("expected the edit list to cut the movie")
+        }
+        let parsed = MP4Fixture.Parsed(try Data(contentsOf: cut))
+        XCTAssertEqual(parsed.stts, [[4, 10]] as [[UInt32]])
+        XCTAssertEqual(parsed.elstDuration, 35)
+        XCTAssertEqual(parsed.tkhdDuration, 35)
+        XCTAssertEqual(parsed.mvhdDuration, 35)
+    }
+
+    /// A screen that stopped changing at 2 s with B-frames: the hold moves
+    /// the composition end (cslg) with the media end.
+    func testAHeldMovieWithBFramesMovesItsCompositionEnd() throws {
+        let file = MP4Fixture(
+            stts: [(120, 10)], mdhdDuration: 1_200, movieDuration: 1_210, mediaScale: 600, movieScale: 600,
+            ctts: [(1, 0), (1, 20), (1, -10), (117, 0)]
+        )
+        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 3))
+        XCTAssertEqual(held.lastFrameSeconds, 1_190.0 / 600, accuracy: 0.0001)
+        let parsed = MP4Fixture.Parsed(held.data)
+        XCTAssertEqual(parsed.stts, [[119, 10], [1, 610]] as [[UInt32]])
+        XCTAssertEqual(parsed.cslgEnd, 1_800)
+        XCTAssertEqual(parsed.mdhdDuration, 1_800)
+        XCTAssertEqual(parsed.tkhdDuration, 1_800)
+        XCTAssertEqual(parsed.mvhdDuration, 1_800)
+    }
+
     // MARK: - L25: a malformed extra track does not stop the hold
 
     func testAnExtraTrackWithoutMdiaIsSkippedInEitherOrder() throws {
@@ -266,7 +372,8 @@ private struct MP4Fixture {
 
     init(
         stts: [(UInt32, UInt32)], mdhdDuration: UInt32, movieDuration: UInt32, version1: Bool = false, truncating: String? = nil,
-        extraTrak: ExtraTrak? = nil, omitVideo: Bool = false
+        extraTrak: ExtraTrak? = nil, omitVideo: Bool = false,
+        mediaScale: UInt32 = 90_000, movieScale: UInt32 = 1_000, ctts: [(UInt32, Int32)]? = nil
     ) {
         func box(_ type: String, _ body: [UInt8]) -> [UInt8] {
             let body = type == truncating ? Array(body.prefix(version1 ? 24 : 16)) : body
@@ -283,14 +390,21 @@ private struct MP4Fixture {
             }
         }
         func moov(chunkOffset: UInt32) -> [UInt8] {
-            let mvhd = full("mvhd", time(0) + time(0) + be(1_000) + time(movieDuration) + [UInt8](repeating: 0, count: 80))
+            let mvhd = full("mvhd", time(0) + time(0) + be(movieScale) + time(movieDuration) + [UInt8](repeating: 0, count: 80))
             let tkhd = full("tkhd", time(0) + time(0) + be(1) + be(0) + time(movieDuration) + [UInt8](repeating: 0, count: 60))
             let elst = full("elst", be(1) + time(movieDuration) + time(0) + be(0x0001_0000))
-            let mdhd = full("mdhd", time(0) + time(0) + be(90_000) + time(mdhdDuration) + be(0))
+            let mdhd = full("mdhd", time(0) + time(0) + be(mediaScale) + time(mdhdDuration) + be(0))
             let hdlr = box("hdlr", [0, 0, 0, 0] + be(0) + Array("vide".utf8) + [UInt8](repeating: 0, count: 13))
             let sttsBox = box("stts", [0, 0, 0, 0] + be(UInt32(stts.count)) + stts.flatMap { be($0.0) + be($0.1) })
             let stco = box("stco", [0, 0, 0, 0] + be(1) + be(chunkOffset))
-            let stbl = box("stbl", sttsBox + stco)
+            // B-frames, as simctl writes them for a changing screen: signed
+            // offsets in a version 0 ctts, and a version 0 cslg whose last
+            // field is the composition end.
+            let cttsBoxes = ctts.map { entries in
+                box("ctts", [0, 0, 0, 0] + be(UInt32(entries.count)) + entries.flatMap { be($0.0) + be(UInt32(bitPattern: $0.1)) })
+                    + box("cslg", [0, 0, 0, 0] + be(0) + be(0) + be(0) + be(0) + be(mdhdDuration))
+            } ?? []
+            let stbl = box("stbl", sttsBox + cttsBoxes + stco)
             let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
             let extra = extraTrak.map { extraTrakBox($0.kind) } ?? []
             return box("moov", mvhd + (extraTrak?.position == .before ? extra + trak : trak + extra))
@@ -328,6 +442,7 @@ private struct MP4Fixture {
         var chunkOffset: UInt32 = 0
         var version: UInt8 = 0
         var mdatPayload: [UInt8] = []
+        var cslgEnd: UInt32?
 
         init(_ data: Data) {
             let bytes = [UInt8](data)
@@ -349,6 +464,7 @@ private struct MP4Fixture {
                 case "stco": chunkOffset = read(b, p + 8)
                 case "stts": stts = (0..<Int(read(b, p + 4))).map { [read(b, p + 8 + $0 * 8), read(b, p + 12 + $0 * 8)] }
                 case "mdat": mdatPayload = Array(b[p..<(o + size)])
+                case "cslg": cslgEnd = read(b, p + 20)
                 default: break
                 }
                 o += size

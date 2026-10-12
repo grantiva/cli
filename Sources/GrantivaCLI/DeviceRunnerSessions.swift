@@ -14,6 +14,8 @@ struct DeviceRunnerSessions: Sendable {
     var markStops: @Sendable (_ udid: String) -> [Int32] = { _ in [] }
     /// Removes markers whose runner and holder are gone. Inert unless set.
     var sweepStops: @Sendable () -> Void = {}
+    /// Waits (bounded) for a marked runner to exit; true once it has.
+    var waitForExit: @Sendable (_ runnerPid: Int32) async -> Bool = { _ in false }
 
     static let live = DeviceRunnerSessions(
         loadSession: { try? RunnerSessionInfo.load() },
@@ -22,8 +24,19 @@ struct DeviceRunnerSessions: Sendable {
             await RunnerSessionStopper.live().stopSessions(udid: udid, runnerStartSession: runnerStart)
         },
         markStops: { udid in markLive(udid: udid) },
-        sweepStops: { RunnerStopMarker().sweep() }
+        sweepStops: { RunnerStopMarker().sweep() },
+        waitForExit: { pid in await waitForExit(pid) }
     )
+
+    /// Up to `timeout` for `pid` to be gone.
+    static func waitForExit(_ pid: Int32, timeout: TimeInterval = 10) async -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while KeepAliveSessionStore.processIsAlive(pid) {
+            if Date() >= deadline { return false }
+            try? await Task.sleep(for: .milliseconds(100))
+        }
+        return true
+    }
 
     /// Marks the foreground `runner start` runners recorded for `udid`
     /// beside their owner files in the shared session directory, whatever
@@ -52,13 +65,20 @@ struct DeviceRunnerSessions: Sendable {
     /// order), and the session file in this directory is removed, as
     /// `runner stop` does (L36). Afterwards, markers nobody will read are
     /// swept.
+    ///
+    /// A marked foreground `runner start` also stops its runner itself when
+    /// it reads the marker (L54), so the stop may find it already ending;
+    /// once its runner has exited it counts as stopped by this teardown.
     func stop(udid: String) async -> [RunnerSessionStopper.Outcome] {
-        _ = markStops(udid)
+        let marked = markStops(udid)
         let file = loadSession()
         if let file, file.udid.caseInsensitiveCompare(udid) == .orderedSame {
             removeSession()
         }
-        let outcomes = await stopSessions(udid, file)
+        var outcomes = await stopSessions(udid, file)
+        for pid in marked where !outcomes.contains(where: { $0.runnerPid == pid }) {
+            if await waitForExit(pid) { outcomes.append(.terminated(runnerPid: pid, udid: udid, killed: false)) }
+        }
         sweepStops()
         return outcomes
     }

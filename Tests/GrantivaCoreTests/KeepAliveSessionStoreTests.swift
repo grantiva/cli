@@ -316,4 +316,51 @@ final class KeepAliveSessionStoreTests: XCTestCase {
         XCTAssertEqual(store(live: [400]).startingSessions(), [])
         XCTAssertEqual(store(live: [400, 77]).startingSessions().map(\.runnerPid), [400])
     }
+
+    // MARK: - L52/L54/L55: one lookup for published and starting sessions
+
+    func testTheSharedLookupReturnsOwnerOnlySessionsAfterPublishedOnes() throws {
+        try writeRunnerSession(pid: 500, nanos: 1, port: 8100, sessionId: "published")
+        try write(KeepAliveOwner(udid: "emulator-5554", runnerPid: 500, grantivaPid: 50, projectDirectory: "/private/tmp/p",
+                                 platform: .android, detached: false))
+        try write(KeepAliveOwner(udid: "emulator-5556", runnerPid: 501, grantivaPid: 51, projectDirectory: "/private/tmp/p",
+                                 platform: .android, detached: false, appId: "com.example", command: KeepAliveOwner.runnerStartCommand))
+
+        let sessions = store(live: [500, 50, 501, 51]).sessions()
+        XCTAssertEqual(sessions.map(\.pid), [500, 501])
+        XCTAssertEqual(sessions.map(\.isPublished), [true, false])
+        let starting = sessions[1]
+        XCTAssertEqual(starting.udid, "emulator-5556")
+        XCTAssertEqual(starting.ownerPid, 51)
+        XCTAssertEqual(starting.port, 0)
+        XCTAssertEqual(starting.projectDirectory, "/private/tmp/p")
+        XCTAssertEqual(starting.appId, "com.example")
+        XCTAssertTrue(starting.isForegroundRunnerStart)
+        XCTAssertFalse(sessions[0].isForegroundRunnerStart)
+    }
+
+    /// An owner whose holder is dead is an orphan: skipped by default,
+    /// included for `runner stop` and teardown. A dead runner is never a
+    /// session.
+    func testTheSharedLookupSkipsDeadHoldersUnlessOrphansAreIncluded() throws {
+        try write(KeepAliveOwner(udid: "emulator-5554", runnerPid: 600, grantivaPid: 60, detached: false))
+        try write(KeepAliveOwner(udid: "emulator-5556", runnerPid: 601, grantivaPid: 61, detached: false))
+        let store = store(live: [600, 61])
+        XCTAssertEqual(store.sessions().map(\.pid), [])
+        XCTAssertEqual(store.sessions(includingOrphans: true).map(\.pid), [600])
+    }
+
+    /// L52: `hierarchy` names a run still in its flows as starting.
+    func testLocatingASessionThatHasNotPublishedSaysItIsStarting() throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        try write(KeepAliveOwner(udid: udid, runnerPid: 700, grantivaPid: 70, platform: .ios, detached: false))
+        let store = store(live: [700, 70])
+        XCTAssertThrowsError(try store.locate(udid: udid)) { error in
+            XCTAssertEqual(error.localizedDescription, RunnerSessionInfo.startingError(platform: .ios).localizedDescription)
+        }
+        XCTAssertThrowsError(try store.locate()) { error in
+            XCTAssertTrue(error.localizedDescription.contains("is starting"), error.localizedDescription)
+        }
+        XCTAssertEqual(try store.locateIncludingStarting(udid: udid).isPublished, false)
+    }
 }

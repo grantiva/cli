@@ -665,6 +665,31 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(usage.values, [])
     }
 
+    /// L56: how `run` ends once a signal released an armed hold. The
+    /// release itself (no exit, the runner's own 0 or 1, `interrupted` for a
+    /// 130 or a signal death) is proved through the relay in
+    /// RunnerExecutionTests; the summary on the failure path by
+    /// testSuiteFailurePrintsTheTextResultOfWhatRan. Here: a released run's
+    /// failure exits 1 through the normal path, an interrupted release exits
+    /// 130, and an interrupt during the flows exits through the relay.
+    func testAReleasedHoldEndsWithTheEarnedStatusNotTheRelaysExit() {
+        defer { SignalRelay.shared.resetTerminationForTesting() }
+        SignalRelay.shared.track(group: 434_343, deviceNoun: "simulator")
+        defer { SignalRelay.shared.untrack(group: 434_343) }
+        SignalRelay.shared.armHold(group: 434_343)
+        XCTAssertFalse(SignalRelay.shared.simulateSignalForTesting(SIGINT, release: { _ in }))
+        XCTAssertTrue(SignalRelay.shared.wasReleased(group: 434_343))
+        XCTAssertFalse(RunCommand.exitsThroughSignalRelay())
+        XCTAssertFalse(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner failed (exit 1)", 1)))
+        XCTAssertTrue(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner interrupted", 130)))
+
+        SignalRelay.shared.resetTerminationForTesting()
+        SignalRelay.shared.untrack(group: 434_343)
+        XCTAssertFalse(RunCommand.isInterruptedRelease(GrantivaError.commandFailed("Runner interrupted", 130)))
+        SignalRelay.shared.simulateTerminationForTesting()
+        XCTAssertTrue(RunCommand.exitsThroughSignalRelay())
+    }
+
     func testFlowRunTakesBundleIdFromFlowHeaderWhenNoneIsGiven() throws {
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).yaml").path
         try "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n".write(toFile: path, atomically: true, encoding: .utf8)
