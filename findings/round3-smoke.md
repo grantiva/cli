@@ -186,3 +186,53 @@ Counts: 10 re-smoked checks, **8 pass, 1 fail (TD-ios), 1 blocked (MCP-build)**,
 - No grantiva-runner, xcodebuild, qemu or `simctl diagnose` process.
 - No runner device home left in `versions/1.1.28-grantiva.13…/devices/`: the orphan home from TD-ios run 3 was removed by the smoke.
 - Files: HOST/before.txt, HOST/after.txt, teardown/avd-delete-and-sessions.txt.
+
+## Round 3 confirmation (CLI 8f2cff67, runner .13): TD-ios ×5
+
+Run 2026-10-12 02:09-02:14. Binary: `~/.grantiva-qa/bin/grantiva` 2.1.0 (CLI main 8f2cff67, installed 02:07). Runner: `runner version --json` → `{"version": "1.1.28-grantiva.13"}` (`versions/1.1.28-grantiva.13+android-drivers-2` in `~/.grantiva-qa/runner`).
+Session `smoke6`; `GRANTIVA_API_KEY` unset. Demo: landmarks-demo 75acc87 `ios/` (git archive) in scratch, dir A.
+Device: `smoke6-ios` (iPhone 17, iOS 26.0), created fresh for each run by `simulator ensure`. The teardown of each run deleted it.
+
+Each run:
+1. `build install --no-launch` in A.
+2. Foreground `runner start --simulator <udid>` in A.
+3. As soon as `Runner started` printed, `simulator teardown --udid <udid> --json` from the empty dir B.
+4. Checks 10 s after the teardown returned.
+
+The sessions-dir poll now runs its full 10 s and writes directly, so its file is never empty (fixes the re-smoke harness flaw).
+
+Evidence: `evidence/round3-confirm/TD-ios/run-N/`, each with a `commands.txt`. The driver is `td-run.sh`.
+
+| run | udid | start exit / final line | teardown wall | `runnerSessionStopped` | `leftoverProcesses` | `reapedProcesses` (kind, killed) | Warning | device home +10 s | sessions dir +10 s | argv names UDID +10 s | load (teardown → +10 s) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | F9660E85… | 0 / `Runner stopped by teardown (pid 13514); the session has ended.` | 4.42 s | true | `[]` | webDriverAgent, true | none | absent | empty | none | 108.7 → 85.4 |
+| 2 | 4CF2A00E… | 0 / same (pid 16871) | 4.68 s | true | `[]` | webDriverAgent, true | none | absent | empty | none | 105.4 → 82.7 |
+| 3 | 3E48DA18… | 0 / same (pid 19354) | 4.27 s | true | `[]` | webDriverAgent, true | none | absent | empty | none | 104.3 → 129.7 |
+| 4 | 84970CC3… | 0 / same (pid 22112) | 4.34 s | true | `[]` | webDriverAgent, true | none | absent | empty | none | 127.4 → 100.1 |
+| 5 | DC0D8D9C… | 0 / same (pid 24881) | 4.70 s | true | `[]` | webDriverAgent, true | none | absent | empty | none | 131.1 → 103.3 |
+
+Result: **pass, 5/5** against the L63 acceptance:
+- `leftoverProcesses: []` and no Warning on stderr;
+- device home absent 10 s later;
+- sessions dir empty;
+- start exit 0 with "Runner stopped by teardown".
+
+### Notes
+
+- **Teardown JSON.** Every teardown gave `deleted: true`, one entry in `deviceHomesRemoved` and empty `deviceHomeFailures`. The JSON has no top-level `killed` key. `killed: true` is per entry in `reapedProcesses`. Each run reaped exactly one process: WebDriverAgent's `xcodebuild test-without-building` (`kind: webDriverAgent`).
+- **No `simctl diagnose` was observed.** It did not appear in any run's reaped list, leftover list or `ps` 10 s later. These 5 runs therefore did not exercise the diagnose-reap path itself. What they do show is the user-visible end state L63 asks for, under the same mid-run foreground start.
+- **Start exit timing.** The start exited 15-17 ms after the teardown returned, about 4.3-4.7 s after the teardown began.
+- **Sessions-dir poll.** Each run shows `<pid>.owner.json` and then empty within 0.3-0.5 s of the teardown starting. Run 5 also caught `<pid>.stop.json` for one 0.1 s sample.
+- **Host load.** Load was 2.3 before run 1. It was 82-152 through the runs: the 1-minute average rose with each simulator create and boot, plus other host activity. The confirmation passed at this load.
+- **Harness.** The copy's `grantiva.yml` names `simulator: smoke6-ios`. Every command passed `--simulator` / `--udid` explicitly.
+- **MCP-build: blocked.** `iPhone 17 Pro` and `iPhone 18 Pro` were booted at the start (02:08), in every run, and at the end, so the no-simulator `grantiva_build` check was not run. They were never touched. Evidence: `evidence/round3-confirm/MCP-build/blocked.txt`.
+
+### End state
+
+`evidence/round3-confirm/TD-ios/end/final-teardown.txt`:
+- `simulator teardown --udid DC0D8D9C… --force` → "No processes were holding DC0D8D9C…", exit 0. The simulator had already been deleted by run 5.
+- `simctl list devices | grep -c smoke6` = 0.
+- Booted: `iPhone 17 Pro` and `iPhone 18 Pro` only, the same as before.
+- `/tmp/grantiva-sessions` empty; `simulator sessions --json` `[]`.
+- No device home under `versions/1.1.28-grantiva.13…/devices/`.
+- No grantiva-runner, xcodebuild or `simctl diagnose` process.

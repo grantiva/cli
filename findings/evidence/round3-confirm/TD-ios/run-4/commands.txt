@@ -1,0 +1,15 @@
+# Round 3 confirmation TD-ios run 4 (2026-10-12): td-run.sh 4 (copy in ../td-run.sh; env in ../env.sh.txt)
+# GRANTIVA=$HOME/.grantiva-qa/bin/grantiva 2.1.0 (CLI main 8f2cff67, installed 02:07); GRANTIVA_RUNNER_HOME=$HOME/.grantiva-qa/runner (runner 1.1.28-grantiva.13); GRANTIVA_SESSION_ID=smoke6; GRANTIVA_API_KEY unset
+# A = <scratch>/smoke6/demo/ios (git archive landmarks-demo 75acc87 ios/; grantiva.yml simulator: smoke6-ios), B = <scratch>/smoke6/empty-B (empty)
+# fresh simulator for this run: 84970CC3-5398-4926-B27B-9BA8B766A38D
+(A) $GRANTIVA simulator ensure --name smoke6-ios --device-type "iPhone 17" --runtime "iOS 26.0"        -> ensure.txt, udid.txt
+(A) $GRANTIVA build install --simulator 84970CC3-5398-4926-B27B-9BA8B766A38D --no-launch                                                -> build-install.txt
+    booted list, sessions dir, device homes                                                            -> before.txt
+(A) $GRANTIVA runner start --simulator 84970CC3-5398-4926-B27B-9BA8B766A38D   (foreground process, backgrounded by the script)          -> fg-start.txt
+    wait for the 'Runner started' line                                                                 -> ready.txt
+    .grantiva/session.json + sessions dir                                                              -> before-teardown.txt
+    /tmp/grantiva-sessions polled every 0.1 s for a full 10 s, written directly, consecutive duplicates collapsed -> sessions-dir-poll.txt
+(B) $GRANTIVA simulator teardown --udid 84970CC3-5398-4926-B27B-9BA8B766A38D --json   (wall timed)                                      -> teardown.txt (stderr + stdout + exit + wall), teardown.json, teardown.stderr
+    wait for the start to exit (exit code appended to fg-start.txt)
+    10 s after the teardown returned: uptime, device home, /tmp/grantiva-sessions, ps argv naming the UDID, simctl -> after-10s.txt
+    parsed teardown fields + start final line                                                          -> summary.txt
