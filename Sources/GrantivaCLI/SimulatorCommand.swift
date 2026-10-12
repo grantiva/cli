@@ -146,7 +146,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             if !options.json { stopped.lines.forEach(Output.line) }
 
             if force {
-                try await runForce()
+                try await runForce(reaped: stopped.reaped)
                 return
             }
 
@@ -242,7 +242,9 @@ struct SimulatorCommand: AsyncParsableCommand {
             }
         }
 
-        private func runForce() async throws {
+        /// `reaped`: the helpers the runner-session stop already ended per
+        /// device, listed in each result's `reapedProcesses` (L63).
+        private func runForce(reaped: [String: [ReapedProcess]] = [:]) async throws {
             var udids: [String] = []
             if let target {
                 udids = [target]
@@ -261,10 +263,22 @@ struct SimulatorCommand: AsyncParsableCommand {
             for target in udids {
                 results.append(try await SimulatorReaper.forceTeardown(udid: target))
             }
+            results = Self.addingReaped(reaped, to: results)
 
             let output = try Self.forceOutput(results, json: options.json)
             output.lines.forEach(Output.line)
             if let error = output.error { throw error }
+        }
+
+        /// `results` with the helpers the runner-session stop ended on each
+        /// device; a device that had some counts as reclaimed.
+        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult]) -> [ForceTeardownResult] {
+            results.map { result in
+                var result = result
+                result.reapedProcesses = reaped[result.udid] ?? []
+                if !result.reapedProcesses.isEmpty { result.reclaimed = true }
+                return result
+            }
         }
 
         /// What `--force` prints for `results`, and the error it then exits

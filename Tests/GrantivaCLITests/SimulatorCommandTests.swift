@@ -413,7 +413,7 @@ final class SimulatorCommandTests: XCTestCase {
         )
         let sessions = DeviceRunnerSessions(
             loadSession: { nil }, removeSession: {},
-            stopSessions: { udid, file in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
+            stopSessions: { udid, file, _ in await stopper.stopSessions(udid: udid, runnerStartSession: file) }
         )
         let (stopped, lines, _) = await SimulatorCommand.Teardown.stopRunnerSessions(udids: [udid]) { await sessions.stop(udid: $0) }
         XCTAssertEqual(stopped, [udid])

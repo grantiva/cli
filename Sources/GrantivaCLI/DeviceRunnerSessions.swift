@@ -8,28 +8,38 @@ import GrantivaCore
 struct DeviceRunnerSessions: Sendable {
     var loadSession: @Sendable () -> RunnerSessionInfo?
     var removeSession: @Sendable () -> Void
-    var stopSessions: @Sendable (_ udid: String, _ runnerStart: RunnerSessionInfo?) async -> [RunnerSessionStopper.Outcome]
+    /// Stops the recorded sessions; no wait outlasts `deadline`.
+    var stopSessions: @Sendable (_ udid: String, _ runnerStart: RunnerSessionInfo?, _ deadline: Date) async -> [RunnerSessionStopper.Outcome]
     /// Writes a stop marker for every runner grantiva recorded on the device
     /// (`RunnerStopMarker`); returns the pids marked. Inert unless set.
     var markStops: @Sendable (_ udid: String) -> [Int32] = { _ in [] }
     /// Removes markers whose runner and holder are gone. Inert unless set.
     var sweepStops: @Sendable () -> Void = {}
-    /// Waits (bounded) for a marked runner to exit; true once it has.
-    var waitForExit: @Sendable (_ runnerPid: Int32) async -> Bool = { _ in false }
+    /// Waits (bounded, never past `deadline`) for a marked runner to exit;
+    /// true once it has.
+    var waitForExit: @Sendable (_ runnerPid: Int32, _ deadline: Date) async -> Bool = { _, _ in false }
     /// Ends the WebDriverAgent helpers still writing into a simulator's
-    /// runner home once its runners are stopped (L63). Inert unless set.
-    var reapHelpers: @Sendable (_ udid: String) async -> [ReapedProcess] = { _ in [] }
+    /// runner home once its runners are stopped (L63), by `deadline`. Inert
+    /// unless set.
+    var reapHelpers: @Sendable (_ udid: String, _ deadline: Date) async -> [ReapedProcess] = { _, _ in [] }
+    /// The whole stop of one device (sessions, marked runners, helper reap)
+    /// shares one deadline this far from its start (L63).
+    var budget: TimeInterval = 30
 
     static let live = DeviceRunnerSessions(
         loadSession: { try? RunnerSessionInfo.load() },
         removeSession: { RunnerSessionInfo.remove() },
-        stopSessions: { udid, runnerStart in
-            await RunnerSessionStopper.live().stopSessions(udid: udid, runnerStartSession: runnerStart)
+        stopSessions: { udid, runnerStart, deadline in
+            await RunnerSessionStopper.live().stopSessions(udid: udid, runnerStartSession: runnerStart, deadline: deadline)
         },
         markStops: { udid in markLive(udid: udid) },
         sweepStops: { RunnerStopMarker().sweep() },
-        waitForExit: { pid in await waitForExit(pid) },
-        reapHelpers: { udid in await RunnerHelperReaper.live().reapDeviceHome(udid: udid) }
+        waitForExit: { pid, deadline in await waitForExit(pid, timeout: RunnerSessionStopper.capped(10, by: deadline)) },
+        reapHelpers: { udid, deadline in
+            var reaper = RunnerHelperReaper.live()
+            reaper.deadline = deadline
+            return await reaper.reapDeviceHome(udid: udid)
+        }
     )
 
     /// Up to `timeout` for `pid` to be gone.
@@ -75,23 +85,25 @@ struct DeviceRunnerSessions: Sendable {
     /// once its runner has exited it counts as stopped by this teardown.
     /// On a simulator where a runner was stopped, the WebDriverAgent helpers
     /// left writing into its runner home are then ended and added to the
-    /// last outcome's `reaped` (L63).
+    /// last outcome's `reaped` (L63). All of it shares one deadline,
+    /// `budget` from now.
     func stop(udid: String) async -> [RunnerSessionStopper.Outcome] {
+        let deadline = Date().addingTimeInterval(budget)
         let marked = markStops(udid)
         let file = loadSession()
         if let file, file.udid.caseInsensitiveCompare(udid) == .orderedSame {
             removeSession()
         }
-        var outcomes = await stopSessions(udid, file)
+        var outcomes = await stopSessions(udid, file, deadline)
         for pid in marked where !outcomes.contains(where: { $0.runnerPid == pid }) {
-            if await waitForExit(pid) { outcomes.append(.terminated(runnerPid: pid, udid: udid, killed: false)) }
+            if await waitForExit(pid, deadline) { outcomes.append(.terminated(runnerPid: pid, udid: udid, killed: false)) }
         }
         // An interrupted WebDriverAgent run leaves `simctl diagnose` writing
         // into the device home, outside the runner's group and lineage
         // (L63): end it here, so the teardown that removes the home next
         // does not see it come back.
         if let last = outcomes.indices.last, !DeviceID.isAndroidSerial(udid) {
-            let reaped = await reapHelpers(udid)
+            let reaped = await reapHelpers(udid, deadline)
             if !reaped.isEmpty { outcomes[last] = outcomes[last].adding(reaped: reaped) }
         }
         sweepStops()
