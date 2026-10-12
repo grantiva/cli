@@ -12,12 +12,15 @@ final class DocsContractTests: XCTestCase {
         try String(contentsOf: Self.root.appendingPathComponent(path), encoding: .utf8)
     }
 
-    /// README.md, docs/*.md (not the plans under docs/superpowers or
-    /// docs/plans) and every Swift source.
+    /// README.md, every markdown file under docs/ (subdirectories such as
+    /// docs/plans included, L30) except the internal notes under
+    /// docs/superpowers, and every Swift source.
     private func shippedFiles() throws -> [String] {
         var paths = ["README.md"]
-        let docs = try FileManager.default.contentsOfDirectory(atPath: Self.root.appendingPathComponent("docs").path)
-        paths += docs.filter { $0.hasSuffix(".md") }.map { "docs/\($0)" }
+        let docs = FileManager.default.enumerator(atPath: Self.root.appendingPathComponent("docs").path)
+        while let item = docs?.nextObject() as? String {
+            if item.hasSuffix(".md"), !item.hasPrefix("superpowers/") { paths.append("docs/\(item)") }
+        }
         let sources = Self.root.appendingPathComponent("Sources")
         let enumerator = FileManager.default.enumerator(atPath: sources.path)
         while let item = enumerator?.nextObject() as? String {
@@ -51,13 +54,13 @@ final class DocsContractTests: XCTestCase {
 
     // MARK: - K64: no internal incident note in the repository root
 
-    /// Every `x.y.z` version in `body` other than the current CLI version,
-    /// skipping runner versions (`1.1.28-grantiva.N`), which are not CLI
-    /// version claims.
+    /// Every `x.y.z` or `vx.y.z` version in `body` other than the current
+    /// CLI version, skipping runner versions (`1.1.28-grantiva.N`), which are
+    /// not CLI version claims.
     static func versionClaims(in body: String, current: String = grantivaVersion) -> [String] {
-        body.ranges(of: /\b[0-9]+\.[0-9]+\.[0-9]+\b/)
-            .filter { !body[$0.upperBound...].hasPrefix("-grantiva") }
-            .map { String(body[$0]) }
+        body.matches(of: /(?:\bv|\b)([0-9]+\.[0-9]+\.[0-9]+)\b/)
+            .filter { !body[$0.range.upperBound...].hasPrefix("-grantiva") }
+            .map { String($0.output.1) }
             .filter { $0 != current }
     }
 
@@ -66,6 +69,26 @@ final class DocsContractTests: XCTestCase {
         XCTAssertEqual(Self.versionClaims(in: body), ["1.6.5"])
         XCTAssertEqual(Self.versionClaims(in: "Runner 1.1.28-grantiva.10 only."), [])
         XCTAssertEqual(Self.versionClaims(in: "written by \(grantivaVersion)"), [], "the current version is not stale")
+        XCTAssertEqual(Self.versionClaims(in: "# v2.0.0 plan, then v2.0.0-rc1."), ["2.0.0", "2.0.0"], "a v prefix is still a version claim")
+    }
+
+    func testShippedDocsIncludeEveryDocsSubdirectoryButSuperpowers() throws {
+        let docs = try shippedFiles().filter { $0.hasPrefix("docs/") }
+        XCTAssertTrue(docs.contains("docs/mcp.md"))
+        XCTAssertFalse(docs.contains { $0.hasPrefix("docs/superpowers/") }, "docs/superpowers holds internal notes")
+        let subdirectories = try FileManager.default.contentsOfDirectory(atPath: Self.root.appendingPathComponent("docs").path)
+            .filter { name in
+                var isDirectory: ObjCBool = false
+                return FileManager.default.fileExists(atPath: Self.root.appendingPathComponent("docs/\(name)").path, isDirectory: &isDirectory)
+                    && isDirectory.boolValue && name != "superpowers"
+            }
+        for name in subdirectories {
+            let markdown = FileManager.default.enumerator(atPath: Self.root.appendingPathComponent("docs/\(name)").path)?
+                .compactMap { $0 as? String }.filter { $0.hasSuffix(".md") } ?? []
+            for file in markdown {
+                XCTAssertTrue(docs.contains("docs/\(name)/\(file)"), "docs/\(name)/\(file) is shipped and must be scanned")
+            }
+        }
     }
 
     func testNoShippedMarkdownClaimsAnOldVersionOrCarriesAnIncidentNote() throws {
@@ -74,6 +97,37 @@ final class DocsContractTests: XCTestCase {
             + (try shippedFiles().filter { $0.hasPrefix("docs/") })
         for path in markdown {
             XCTAssertEqual(Self.versionClaims(in: try text(path)), [], "\(path) names a grantiva version other than \(grantivaVersion)")
+        }
+    }
+
+    // MARK: - the runner's lineage is not named in prose
+
+    /// `body` with fenced code blocks and inline code spans removed, so
+    /// identifiers, paths and raw output are exempt.
+    static func prose(_ body: String) -> String {
+        body.replacing(/```[\s\S]*?```/, with: "").replacing(/`[^`\n]*`/, with: "")
+    }
+
+    /// Names of the project the runner derives from, found in `body`'s prose.
+    static func lineageNames(in body: String) -> [String] {
+        prose(body).matches(of: /(?i)devicelab|maestro-runner/).map { String($0.output) }
+    }
+
+    func testLineageNamesAreFoundOnlyInProse() {
+        XCTAssertEqual(Self.lineageNames(in: "The Go runner (grantiva-runner, forked from devicelab-dev/maestro-runner)."), ["devicelab", "maestro-runner"])
+        XCTAssertEqual(Self.lineageNames(in: "We drop DeviceLab."), ["DeviceLab"])
+        XCTAssertEqual(Self.lineageNames(in: "The log is `maestro-runner.log`.\n```\nls drivers/android/devicelab\n```\n"), [])
+        XCTAssertEqual(Self.lineageNames(in: "Run Maestro flows; set `MAESTRO_RUNNER_HOME`."), [], "the flow format and identifiers are exempt")
+    }
+
+    func testNoMarkdownNamesTheRunnersLineageInProse() throws {
+        var paths = ["README.md"]
+        let docs = FileManager.default.enumerator(atPath: Self.root.appendingPathComponent("docs").path)
+        while let item = docs?.nextObject() as? String {
+            if item.hasSuffix(".md") { paths.append("docs/\(item)") }
+        }
+        for path in paths {
+            XCTAssertEqual(Self.lineageNames(in: try text(path)), [], "\(path) names the runner's lineage in prose")
         }
     }
 

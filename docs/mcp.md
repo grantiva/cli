@@ -15,18 +15,7 @@ the registered tool names drift apart.
 and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
 until one exists they return an error (`isError`) naming `grantiva runner start` and
 `grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
-is replaced). While a session is starting, on either platform, they return an error (`isError`) saying
-so and to retry in a few seconds, never the "Start one with `grantiva runner start`" advice (following it
-would start a second runner on the device):
-`Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`, with
-`UIAutomator2` in place of `WDA` on Android. A session is starting from the moment `grantiva runner start`
-(with or without `--detach`) or `grantiva run --keep-alive` in this project spawns its runner until the
-driver answers: `runner start` writes `.grantiva/session.json` with `"state": "starting"` at once, and a
-`run --keep-alive` runner is starting until it publishes its keep-alive session. On iOS the same text
-covers the seconds after `runner start --detach` returns while WDA has no session yet. A call made once
-the driver is ready attaches as usual. `grantiva_screenshot` is the exception once `--detach` has returned
-and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it
-succeeds in that last window.
+is replaced).
 
 Every tool, with or without a session, reports every failure as an `isError` result whose text starts
 with `Error: ` exactly once, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a
@@ -47,6 +36,29 @@ after `Error: `, for example `Error: Invalid argument: Simulator not found: "no-
 or `Error: Invalid argument: 'name' is required.` A no-session text never carries the label (a session
 tool reports the missing session before it looks at its arguments). The resource reads below report the
 same conditions without that label.
+
+### A session that is starting
+
+While a session is starting, on either platform, the session tools return an error (`isError`) saying
+so and to retry in a few seconds, never the "Start one with `grantiva runner start`" advice (following it would start a second runner on the device). A session
+is starting from the moment `grantiva runner start` (with or without `--detach`) or `grantiva run
+--keep-alive` in this project spawns its runner until the driver answers. Two texts cover that window:
+
+- `Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`
+  (`UIAutomator2` in place of `WDA` on Android) while there is no driver port to ask yet:
+  `runner start` writes `.grantiva/session.json` with `"state": "starting"` and no port the moment it
+  spawns the runner (rewritten with `"state": "ready"` and the port once the driver answers), and a
+  `run --keep-alive` runner is starting until it publishes its keep-alive session. The MCP tools and
+  resources and `grantiva runner dump-hierarchy` print this one for a starting `session.json`; only the
+  MCP server also reports a `run --keep-alive` runner that has not published yet.
+- `Error: The runner session is starting (WDA on port <port> has no session yet). Retry in a few seconds.`
+  on iOS once the port is known but WebDriverAgent has not opened its session, for example in the
+  seconds after `runner start --detach` returns. The MCP tools and resources print it; `grantiva runner
+  dump-hierarchy` and `grantiva hierarchy` read the page source without a WDA session and do not.
+
+A call made once the driver is ready attaches as usual. `grantiva_screenshot` is the exception once
+`--detach` has returned and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it
+succeeds in that last window.
 
 ## Default simulator
 

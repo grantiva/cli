@@ -10,8 +10,9 @@ struct MCPCommand: AsyncParsableCommand {
         discussion: """
             The server starts without a runner session or a config file. Device tools \
             (grantiva_tap, grantiva_swipe, grantiva_type, grantiva_screenshot, grantiva_a11y_*, \
-            grantiva_script) need a runner session and return an error until one exists; they \
-            pick it up on the next call. The session is the project's .grantiva/session.json \
+            grantiva_script) need a runner session and return an error until one exists (while \
+            one is starting, an error saying so and to retry in a few seconds); they pick it up \
+            on the next call. The session is the project's .grantiva/session.json \
             (grantiva runner start), or a grantiva run --keep-alive or runner start session \
             started from the same project directory for the same platform. Sessions from other \
             projects or the other platform are never used. Simulator, emulator, build, context, \

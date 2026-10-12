@@ -6,7 +6,7 @@
 
 ## Why
 
-The Go runner (`grantiva-runner`, forked from `devicelab-dev/maestro-runner`) has served us well, but every grantiva-specific feature in v0.x → v1.x has gone through the same cycle:
+The Go runner (`grantiva-runner`) has served us well, but every grantiva-specific feature in v0.x → v1.x has gone through the same cycle:
 
 1. Patch Go source in `scripts/grantiva-runner.patch`.
 2. Rebuild runner binary (arm64 + amd64, ~25 MB each).
@@ -15,7 +15,7 @@ The Go runner (`grantiva-runner`, forked from `devicelab-dev/maestro-runner`) ha
 5. Commit ~45 MB of binary tarballs.
 6. Ship via Homebrew.
 
-This session alone went through that loop four times (v0.9.0 runner upgrade, v1.0.0 rebrand, v1.0.1 runner-version-mismatch fix, v1.1.0 keep-alive + hierarchy). Each round is 10–20 minutes of mechanical work and adds delta to a patch that has to be re-applied every time we rebase upstream.
+This session alone went through that loop four times (v0.9.0 runner upgrade, v1.0.0 rebrand, v1.0.1 runner-version-mismatch fix, v1.1.0 keep-alive + hierarchy). Each round is 10–20 minutes of mechanical work and adds delta to a patch that has to be re-applied every time the Go runner's base is updated.
 
 A Swift-native runner embedded directly in the `grantiva` binary removes:
 - The embedded 24 MB Go blob (and the Homebrew-formula hack to install a `libexec/grantiva_GrantivaCore.bundle` alongside it).
@@ -27,7 +27,7 @@ The strategic payoff is faster iteration on agent-facing features — hierarchy 
 
 ## Non-goals
 
-- **Feature parity with Maestro / upstream maestro-runner.** We drop Android (UIAutomator2, DeviceLab), Appium, Flutter VM Service, cloud providers (Sauce, BrowserStack, etc.), HTML/JUnit/Allure reports, and the update checker. Re-add any of these only on validated customer demand.
+- **Feature parity with Maestro or the Go runner.** We drop Android (UIAutomator2 and the Go runner's other device drivers), Appium, Flutter VM Service, cloud providers (Sauce, BrowserStack, etc.), HTML/JUnit/Allure reports, and the update checker. Re-add any of these only on validated customer demand.
 - **Supporting existing Maestro flow features we don't use.** If a Maestro YAML keyword isn't in any `grantiva-examples` flow and no customer has asked for it, it's out of scope.
 - **Linux support.** macOS only, because iOS simulators only run on macOS. If grantiva ever needs to run against remote device farms, that's a separate architecture.
 
@@ -51,12 +51,12 @@ The strategic payoff is faster iteration on agent-facing features — hierarchy 
 
 ### Won't have
 
-- Android drivers (UIAutomator2, DeviceLab, Appium).
+- Android drivers (UIAutomator2, the Go runner's other device drivers, Appium).
 - Cloud providers.
 - Flutter VM Service fallback.
 - HTML / JUnit / Allure reports.
 - Update checker.
-- The upstream `continuous` mode, tag filtering as currently implemented, capabilities files.
+- The Go runner's `continuous` mode, tag filtering as currently implemented, capabilities files.
 
 ## Architecture
 
@@ -78,7 +78,7 @@ grantiva (Swift CLI)
 
 No more `scripts/build-runner.sh`, no more `scripts/grantiva-runner.patch`, no more `Sources/GrantivaCore/Resources/grantiva-runner-*.tar.gz`. The only embedded resource becomes the WDA source tree (still needed because `xcodebuild` needs a project to build), which can live as a SPM resource.
 
-WDA source stays at `cli/Sources/GrantivaCore/Resources/WebDriverAgent/` pinned to the upstream Facebook fork version we currently ship. We apply minor xcconfig tweaks (display name rebrand from v1.0.0) directly to that checked-in copy — no patch file needed because there's no separate upstream runner to rebase against.
+WDA source stays at `cli/Sources/GrantivaCore/Resources/WebDriverAgent/` pinned to the upstream Facebook fork version we currently ship. We apply minor xcconfig tweaks (display name rebrand from v1.0.0) directly to that checked-in copy — no patch file needed because there's no separate runner codebase to rebase against.
 
 ## Migration strategy
 
@@ -114,10 +114,10 @@ WDA source stays at `cli/Sources/GrantivaCore/Resources/WebDriverAgent/` pinned 
 ## Risks & mitigations
 
 - **Flow semantics drift.** The Go runner has subtle retry / wait-for-idle heuristics we'd have to rediscover. *Mitigation:* Phase 2 parity gate against real flows, not theoretical specs. Diff actual behavior.
-- **xctestrun plist injection is fragile.** Format changes between Xcode versions broke upstream at least once. *Mitigation:* keep a test fixture per Xcode version; fail fast with a clear message on format mismatch.
+- **xctestrun plist injection is fragile.** Format changes between Xcode versions broke the Go runner at least once. *Mitigation:* keep a test fixture per Xcode version; fail fast with a clear message on format mismatch.
 - **WDA compatibility.** We pin a specific WDA fork today. Apple's Xcode updates sometimes break WDA. *Mitigation:* same as today — we already own this risk. Nothing new.
-- **Lose free upstream bug fixes.** The v1.0.9→v1.1.12 rebase bought us real fixes. *Mitigation:* track upstream's commit log; port specific bug fixes we need as Swift changes. Slower than rebase, but these are rare events and scoped to our actual usage.
-- **Code volume.** ~5000 LOC of runner logic to write. *Mitigation:* ship iOS-only, drop 70% of upstream's surface area, lean on existing Swift libraries (Yams, URLSession).
+- **Lose bug fixes from the Go runner's prior lineage.** The v1.0.9→v1.1.12 base update bought us real fixes. *Mitigation:* track that lineage's commit log; port specific bug fixes we need as Swift changes. Slower than a base update, but these are rare events and scoped to our actual usage.
+- **Code volume.** ~5000 LOC of runner logic to write. *Mitigation:* ship iOS-only, drop 70% of the Go runner's surface area, lean on existing Swift libraries (Yams, URLSession).
 
 ## Success criteria
 
@@ -130,5 +130,5 @@ WDA source stays at `cli/Sources/GrantivaCore/Resources/WebDriverAgent/` pinned 
 ## Open questions
 
 - **WDA source checkout vs downloaded at install time.** Today we bundle pre-built WDA in the tarball so users don't wait for the first xcodebuild. If the Swift runner only bundles WDA source (no pre-build), the first `grantiva run` on a new machine takes an extra 2–3 minutes while WDA compiles. Do we accept that, or do we ship a pre-built WDA bundle per-Xcode-version as an SPM resource?
-- **Flutter support.** We inherited it from upstream but I don't think any grantiva customer has ever used it. Confirm before dropping — or leave the door open by defining a driver-adapter interface even if we only ship the WDA adapter.
+- **Flutter support.** We inherited it with the Go runner but I don't think any grantiva customer has ever used it. Confirm before dropping — or leave the door open by defining a driver-adapter interface even if we only ship the WDA adapter.
 - **Parallel / multi-device execution.** Currently the Go runner has a `--parallel N` mode for running flows across N sims. Drop for v2.0 or port? Vote: drop unless a customer asks, since a wrapper script can achieve the same outcome.

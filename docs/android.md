@@ -41,6 +41,10 @@ matches against the resource ID or test tag.
 A `run --flow` with no config and no `--application-id` launches the app the flow's literal
 `appId:` header names.
 
+A `variant` or `module` Gradle does not know fails the build with Gradle's reason and a line
+listing what exists, read with one bounded Gradle call: `Variants of :app: freeDebug, freeRelease,
+paidDebug, paidRelease.` or `Modules: app.`
+
 ## Devices
 
 `emulator:` (or `--emulator`) names the AVD: it is used if running, booted otherwise.
@@ -195,8 +199,9 @@ list tools and provision a device first. Only the device tools (`grantiva_tap`,
 `grantiva_swipe`, `grantiva_type`, `grantiva_screenshot`, `grantiva_a11y_tree`,
 `grantiva_a11y_check`, `grantiva_script`) need a session: until one exists they return an
 error naming `grantiva runner start` and `grantiva run --keep-alive`, and they pick up a
-session on the next call once it starts. Tools that need a config file say which file is
-missing.
+session on the next call once it starts. While a session is starting they say so and to retry
+instead; [mcp.md](mcp.md#a-session-that-is-starting) gives the texts. Tools that need a config file
+say which file is missing.
 
 The server attaches to a live `grantiva runner start` session in the project's
 `.grantiva/session.json`, or else to a `grantiva run --keep-alive` (or `runner start`)

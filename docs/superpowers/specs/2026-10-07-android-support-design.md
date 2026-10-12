@@ -14,9 +14,9 @@ Android projects apart on its own when no config exists.
 
 - Full parity with iOS in the first release, including an `emulator` subcommand.
 - Android has its own config file, `grantiva-android.yml`, beside `grantiva.yml`.
-- The embedded Go runner (grantiva/runner, derived from devicelab-dev/maestro-runner)
+- The embedded Go runner (grantiva/runner)
   stays. Its UIAutomator2 path is reused. The Swift-native runner plan in
-  `docs/plans/v2-swift-native-runner.md` is shelved.
+  `docs/superpowers/plans/v2-swift-native-runner.md` is shelved.
 - Emulators are the default device. Physical devices are used only when named
   explicitly with `--device <serial>`.
 - Android CI runs on self-hosted Macs or developer machines. GitHub-hosted macOS runners
@@ -354,7 +354,7 @@ is recorded at the top of the plan.
 ## Out of scope
 
 - Linux CI runners and GitHub-hosted macOS runners for Android.
-- The DeviceLab and Appium drivers.
+- The Go runner's other device drivers (besides UIAutomator2) and Appium.
 - The backend change for platform-keyed baselines; separate plan.
 - Multiple emulators per AVD, and emulator capacity limits beyond one run per AVD.
 - Android attestation or SDK features; those live in grantiva/android-sdk.

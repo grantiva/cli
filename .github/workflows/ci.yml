@@ -37,5 +37,7 @@ jobs:
       - name: Build
         run: swift build
 
-      - name: Test
-        run: swift test
+      # Runs the whole suite with GRANTIVA_RUNNER_HOME at a fresh empty
+      # directory and fails, listing the paths, if any test wrote there.
+      - name: Test (fresh empty runner home)
+        run: scripts/test-fresh-home.sh
