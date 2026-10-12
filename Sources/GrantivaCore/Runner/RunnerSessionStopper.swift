@@ -107,7 +107,14 @@ public struct RunnerSessionStopper: Sendable {
     }
 
     /// Stops `session`. Throws when a grantiva process holding it does not
-    /// exit within `waitTimeout` of SIGINT.
+    /// exit within `waitTimeout` of being asked to.
+    ///
+    /// A `run --keep-alive` holder gets SIGINT, as Ctrl-C would send it. A
+    /// foreground `runner start` holder is not signalled: its runner's group
+    /// is stopped, as `runner stop` stops it, and the holder, seeing the
+    /// teardown's marker or its removed session file when the runner exits,
+    /// ends in order with exit 0 (L36, L54). Either way this waits for the
+    /// holder to exit, so nothing of the session is left when it returns.
     public func stop(_ session: KeepAliveSession) async throws -> Outcome {
         let udid = session.udid ?? ""
         // Every pid is checked before it is signalled: the owner must still
@@ -116,13 +123,19 @@ public struct RunnerSessionStopper: Sendable {
         if let owner = session.ownerPid, owner > 1, owner != getpid(), session.detached != true,
            isProcessAlive(owner), parentPid(session.pid) == owner,
            await isRunnerProcess(session.pid), await isGrantivaProcess(owner) {
+            let foregroundStart = session.isForegroundRunnerStart
             let (exited, reaped) = await helperReaper.stopping(runnerPid: session.pid, udid: udid) { [self] in
-                interrupt(owner)
+                if foregroundStart {
+                    _ = terminateGroup(session.pid)
+                } else {
+                    interrupt(owner)
+                }
                 return await waitForExit(owner, timeout: waitTimeout)
             }
             guard exited else {
+                let how = foregroundStart ? "its runner was stopped" : "SIGINT"
                 throw GrantivaError.unavailable(
-                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of SIGINT. "
+                    "The grantiva process holding the keep-alive session (pid \(owner), \(udid)) did not exit within \(Int(waitTimeout))s of \(how). "
                         + "Release it with kill -INT \(owner), or reclaim the device with `grantiva \(DeviceID.isAndroidSerial(udid) ? "emulator teardown --serial" : "simulator teardown --udid") \(udid) --force`."
                 )
             }
@@ -153,12 +166,14 @@ public struct RunnerSessionStopper: Sendable {
         return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: reaped)
     }
 
-    /// Every session on `udid`, orphans included, plus the `runner start`
-    /// session file's runner when it names `udid` and is not among them.
-    /// Failures to stop one are reported on stderr and do not stop the rest.
+    /// Every session on `udid`, orphans included and whether or not its
+    /// runner has published its session file yet (L54), plus the `runner
+    /// start` session file's runner when it names `udid` and is not among
+    /// them. Failures to stop one are reported on stderr and do not stop the
+    /// rest.
     public func stopSessions(udid: String, runnerStartSession: RunnerSessionInfo?) async -> [Outcome] {
         var outcomes: [Outcome] = []
-        let sessions = store.liveSessions(includingOrphans: true)
+        let sessions = store.sessions(includingOrphans: true)
             .filter { $0.udid?.caseInsensitiveCompare(udid) == .orderedSame }
         for session in sessions {
             do {

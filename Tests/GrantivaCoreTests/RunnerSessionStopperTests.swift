@@ -165,6 +165,59 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertTrue(elsewhere.isEmpty)
     }
 
+    // MARK: - L54: a session whose runner has not published its file yet
+
+    /// A `run --keep-alive` still in its flows: an owner sidecar with a live
+    /// runner and holder, no `.grantiva` file. Its holder is interrupted, as
+    /// for a published session; a sidecar for another device is left alone.
+    func testAnUnpublishedKeepAliveRunOnTheDeviceIsInterruptedAndAnotherDevicesIsNot() async throws {
+        let alive = Locked<Set<Int32>>([700, 701, 800, 801])
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        try overwriteOwner(KeepAliveOwner(udid: udid, runnerPid: 701, grantivaPid: 700, detached: false))
+        try overwriteOwner(KeepAliveOwner(
+            udid: "11111111-2222-3333-4444-555555555555", runnerPid: 801, grantivaPid: 800, detached: false
+        ))
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.store = store
+        stopper.parentPid = { [701: 700, 801: 800][$0] }
+        stopper.interrupt = { pid in events.append("interrupt \(pid)"); alive.mutate { $0.subtract([pid, pid + 1]) } }
+
+        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+        XCTAssertEqual(outcomes, [.released(grantivaPid: 700, runnerPid: 701, udid: udid)])
+        XCTAssertEqual(events.value, ["interrupt 700", "files 701"])
+    }
+
+    /// A foreground `runner start` whose session flow has not armed the hold:
+    /// found from its owner sidecar alone, and its runner's group is stopped
+    /// (the holder reads the teardown's marker and exits 0) rather than the
+    /// holder interrupted (which would exit 130).
+    func testAnUnpublishedForegroundRunnerStartHasItsRunnerStoppedNotItsHolderInterrupted() async throws {
+        let alive = Locked<Set<Int32>>([700, 701])
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { alive.value.contains($0) })
+        try overwriteOwner(KeepAliveOwner(
+            udid: udid, runnerPid: 701, grantivaPid: 700, detached: false, command: KeepAliveOwner.runnerStartCommand
+        ))
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.store = store
+        stopper.parentPid = { $0 == 701 ? 700 : nil }
+        // The holder exits once its runner has gone.
+        stopper.terminateGroup = { pid in
+            events.append("terminate \(pid)"); alive.mutate { $0.subtract([701, 700]) }; return .interrupted
+        }
+
+        let outcomes = await stopper.stopSessions(udid: udid, runnerStartSession: nil)
+        XCTAssertEqual(outcomes, [.released(grantivaPid: 700, runnerPid: 701, udid: udid)])
+        XCTAssertEqual(events.value, ["terminate 701", "files 701"])
+    }
+
+    private func overwriteOwner(_ owner: KeepAliveOwner) throws {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        try encoder.encode(owner).write(to: directory.appendingPathComponent("\(owner.runnerPid).owner.json"))
+    }
+
     private func writeRunnerFile(pid: Int32) throws {
         let json: [String: Any] = ["sessionId": "s\(pid)", "pid": pid, "port": 8100]
         try JSONSerialization.data(withJSONObject: json).write(to: directory.appendingPathComponent("\(pid)-1.grantiva"))

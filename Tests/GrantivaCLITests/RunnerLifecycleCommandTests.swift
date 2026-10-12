@@ -378,6 +378,45 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertEqual((json["sessions"] as? [[String: Any]])?.compactMap { $0["runnerPid"] as? Int }, [4267, 5267])
     }
 
+    /// L55: a `run --keep-alive` still in its flows has only its owner
+    /// sidecar; `runner stop` releases it through its holder instead of
+    /// saying "No active session found.", and --json gives `port: null`.
+    func testStopReleasesAKeepAliveRunStillInItsFlows() async throws {
+        let sessionsDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: sessionsDirectory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: sessionsDirectory) }
+        let project = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-project-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: project) }
+        let udid = makeSession().udid
+        let owner = KeepAliveOwner(
+            udid: udid, runnerPid: 4267, grantivaPid: 4163,
+            projectDirectory: KeepAliveOwner.canonicalDirectory(project.path), platform: .ios, detached: false, appId: "com.example"
+        )
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        try encoder.encode(owner).write(to: sessionsDirectory.appendingPathComponent("4267.owner.json"))
+        let store = KeepAliveSessionStore(directory: sessionsDirectory.path, isProcessAlive: { [4267, 4163].contains($0) })
+
+        let events = LockedValue<[String]>([])
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.currentDirectory = { project.path }
+        dependencies.keepAliveSessions = { RunnerStopDependencies.keepAliveSessions(in: store) }
+        dependencies.stopKeepAlive = { session in
+            events.append("stop \(session.pid) holder \(session.ownerPid ?? 0)")
+            return .released(grantivaPid: session.ownerPid ?? 0, runnerPid: session.pid, udid: session.udid ?? "")
+        }
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["stop 4267 holder 4163"])
+        XCTAssertEqual(RunnerStopCommand.render(result), "Stopped keep-alive session (pid 4163, \(udid))")
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["status"] as? String, "stopped")
+        XCTAssertTrue(json.keys.contains("port"))
+        XCTAssertTrue(json["port"] is NSNull, "\(json)")
+        XCTAssertEqual(json["runnerPid"] as? Int, 4267)
+    }
+
     func testStopLeavesAKeepAliveSessionFromAnotherDirectoryAlone() async throws {
         let events = LockedValue<[String]>([])
         let keepAlive = KeepAliveSession(

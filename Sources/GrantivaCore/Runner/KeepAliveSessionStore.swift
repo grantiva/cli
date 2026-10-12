@@ -29,11 +29,21 @@ public struct KeepAliveSession: Equatable, Sendable {
     public let detached: Bool?
     /// The app the session launched, when grantiva recorded it.
     public let appId: String?
+    /// `runner-start` for a `grantiva runner start` session, nil for
+    /// `run --keep-alive` (see `KeepAliveOwner.command`).
+    public let command: String?
+    /// False while the runner is up but has not published its own session
+    /// file (L52, L54, L55): a `run --keep-alive` still in its flows, or a
+    /// `runner start` whose session flow has not armed the hold. Such a
+    /// session has no session ID or port yet (`port` is 0), and `path` is
+    /// its owner sidecar.
+    public let isPublished: Bool
 
     public init(
         sessionId: String, port: Int, pid: Int32, udid: String?, path: String,
         projectDirectory: String? = nil, platform: Platform? = nil,
-        ownerPid: Int32? = nil, detached: Bool? = nil, appId: String? = nil
+        ownerPid: Int32? = nil, detached: Bool? = nil, appId: String? = nil,
+        command: String? = nil, isPublished: Bool = true
     ) {
         self.sessionId = sessionId
         self.port = port
@@ -45,6 +55,31 @@ public struct KeepAliveSession: Equatable, Sendable {
         self.ownerPid = ownerPid
         self.detached = detached
         self.appId = appId
+        self.command = command
+        self.isPublished = isPublished
+    }
+
+    /// A session whose runner has not published its file yet, from its
+    /// owner sidecar at `path`.
+    init(starting owner: KeepAliveOwner, path: String) {
+        self.init(
+            sessionId: "", port: 0, pid: owner.runnerPid, udid: owner.udid, path: path,
+            projectDirectory: owner.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
+            platform: owner.platform, ownerPid: owner.grantivaPid, detached: owner.detached, appId: owner.appId,
+            command: owner.command, isPublished: false
+        )
+    }
+
+    /// A foreground `runner start`: its holder reads a teardown's stop marker
+    /// when its runner exits (L36).
+    public var isForegroundRunnerStart: Bool {
+        command == KeepAliveOwner.runnerStartCommand && detached == false
+    }
+
+    /// The platform the session drives, inferred from the device ID's shape
+    /// when not recorded.
+    public var resolvedPlatform: Platform {
+        platform ?? (udid.map(DeviceID.isAndroidSerial) == true ? .android : .ios)
     }
 }
 
@@ -289,7 +324,8 @@ public struct KeepAliveSessionStore: Sendable {
                     // `/tmp` spelling of a `/private/tmp` directory.
                     projectDirectory: owner?.projectDirectory.map(KeepAliveOwner.canonicalDirectory),
                     platform: owner?.platform,
-                    ownerPid: owner?.grantivaPid, detached: owner?.detached, appId: owner?.appId
+                    ownerPid: owner?.grantivaPid, detached: owner?.detached, appId: owner?.appId,
+                    command: owner?.command
                 )
                 return (session, Self.sortKey(fileName: name, path: path))
             }
@@ -305,17 +341,36 @@ public struct KeepAliveSessionStore: Sendable {
     /// Sessions whose runner is up but has not published its session file
     /// yet (L38-a): an owner sidecar with a live runner and no
     /// `<pid>-*.grantiva`. A sidecar held by a grantiva process that is gone
-    /// is an orphan, not a start in progress.
-    public func startingSessions() -> [KeepAliveOwner] {
+    /// is an orphan, not a start in progress, and is left out unless
+    /// `includingOrphans` (for `runner stop` and teardown, which clean
+    /// orphans up).
+    public func startingSessions(includingOrphans: Bool = false) -> [KeepAliveOwner] {
+        startingOwners(includingOrphans: includingOrphans).map(\.owner)
+    }
+
+    private func startingOwners(includingOrphans: Bool) -> [(owner: KeepAliveOwner, path: String)] {
         guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directory) else { return [] }
         let published = Set(contents.compactMap(Self.runnerPid(fileName:)))
         return contents.sorted()
             .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
-            .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
-            .filter { owner in
+            .compactMap { name in Self.loadOwner(path: "\(directory)/\(name)").map { ($0, "\(directory)/\(name)") } }
+            .filter { owner, _ in
                 !published.contains(owner.runnerPid) && isProcessAlive(owner.runnerPid)
-                    && !(owner.detached == false && !isProcessAlive(owner.grantivaPid))
+                    && (includingOrphans || !(owner.detached == false && !isProcessAlive(owner.grantivaPid)))
             }
+    }
+
+    /// Every keep-alive session a grantiva command can reach: the published
+    /// ones (`liveSessions`, newest first), then the ones still starting
+    /// (`isPublished == false`). The one lookup `runner stop`, both device
+    /// teardowns, `hierarchy`, `runner dump-hierarchy` and the MCP server
+    /// share (L52, L54, L55), so a run still in its flows is found by all of
+    /// them: a session is a live owner sidecar whose runner is alive, with or
+    /// without the runner's published file, which adds the port and the
+    /// session ID.
+    public func sessions(includingOrphans: Bool = false) -> [KeepAliveSession] {
+        liveSessions(includingOrphans: includingOrphans)
+            + startingOwners(includingOrphans: includingOrphans).map { KeepAliveSession(starting: $0.owner, path: $0.path) }
     }
 
     /// The live foreground `runner start` sessions recorded for `udid`, whose
@@ -345,17 +400,27 @@ public struct KeepAliveSessionStore: Sendable {
     }
 
     /// The newest live session, or the live session for `udid` when given.
+    /// A matching session that has not published yet is "starting, retry"
+    /// (L52), as the MCP server says.
     public func locate(udid: String? = nil) throws -> KeepAliveSession {
-        let live = liveSessions()
-        guard !live.isEmpty else {
+        let session = try locateIncludingStarting(udid: udid)
+        guard session.isPublished else { throw RunnerSessionInfo.startingError(platform: session.resolvedPlatform) }
+        return session
+    }
+
+    /// As `locate`, but a session still starting is returned rather than
+    /// thrown, for callers that report it themselves.
+    public func locateIncludingStarting(udid: String? = nil) throws -> KeepAliveSession {
+        let all = sessions()
+        guard !all.isEmpty else {
             throw GrantivaError.noRunnerSession()
         }
-        guard let udid else { return live[0] }
+        guard let udid else { return all[0] }
 
-        if let match = live.first(where: { $0.udid == udid }) {
+        if let match = all.first(where: { $0.udid == udid }) {
             return match
         }
-        let available = live.map { $0.udid ?? "pid \($0.pid) (unknown udid)" }.joined(separator: ", ")
+        let available = all.map { $0.udid ?? "pid \($0.pid) (unknown udid)" }.joined(separator: ", ")
         throw GrantivaError.invalidArgument(
             "No keep-alive session for udid \(udid). Live sessions: \(available)"
         )

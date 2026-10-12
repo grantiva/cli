@@ -727,6 +727,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         }
 
         let stopRequested = StopBox()
+        // Second line of defence for L54: a teardown's marker never sits
+        // unread. The teardown stops the runner itself; should that not
+        // reach it, this stops it once a second while the session is held.
+        let markerWatch = Task.detached(priority: .utility) {
+            let marker = RunnerStopMarker()
+            while !Task.isCancelled, child.isRunning {
+                if marker.isMarked(runnerPid: runnerPid, runnerStartTime: runnerStartTime) {
+                    child.terminateGroup(gracePeriod: 5)
+                    return
+                }
+                try? await Task.sleep(for: .seconds(1))
+            }
+        }
+        defer { markerWatch.cancel() }
         let status = await Self.holdForeground(
             waitForExit: {
                 let status = await withCheckedContinuation { continuation in
@@ -1139,7 +1153,8 @@ struct RunnerStopDependencies: Sendable {
     var removeKeepAliveOwner: @Sendable (Int32) -> Void
     /// The runner's own `<pid>-<ts>.grantiva` (and sidecar), removed by pid.
     var removeRunnerSessionFiles: @Sendable (Int32) -> Void
-    /// Live keep-alive sessions, orphans included.
+    /// Live keep-alive sessions, orphans included, published or still in
+    /// their flows (`KeepAliveSessionStore.sessions`, L55).
     var keepAliveSessions: @Sendable () -> [KeepAliveSession]
     var stopKeepAlive: @Sendable (KeepAliveSession) async throws -> RunnerSessionStopper.Outcome
     var currentDirectory: @Sendable () -> String
@@ -1160,11 +1175,17 @@ struct RunnerStopDependencies: Sendable {
         },
         removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) },
         removeRunnerSessionFiles: { KeepAliveSessionStore().removeSessionFiles(runnerPid: $0) },
-        keepAliveSessions: { KeepAliveSessionStore().liveSessions(includingOrphans: true) },
+        keepAliveSessions: { RunnerStopDependencies.keepAliveSessions(in: KeepAliveSessionStore()) },
         stopKeepAlive: { try await RunnerSessionStopper.live().stop($0) },
         currentDirectory: { FileManager.default.currentDirectoryPath },
         helperReaper: .live()
     )
+
+    /// What `runner stop` may release: every session in `store`, orphans
+    /// included, whether or not its runner has published its file (L55).
+    static func keepAliveSessions(in store: KeepAliveSessionStore) -> [KeepAliveSession] {
+        store.sessions(includingOrphans: true)
+    }
 }
 
 // MARK: - Dump Hierarchy
@@ -1229,6 +1250,8 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             return Target(udid: runnerSession.udid, port: runnerSession.wdaPort)
         }
         if let keepAlive {
+            // A run still in its flows has not published a session (L52).
+            guard keepAlive.isPublished else { throw RunnerSessionInfo.startingError(platform: keepAlive.resolvedPlatform) }
             return Target(udid: keepAlive.udid ?? "", port: keepAlive.port > 0 ? UInt16(exactly: keepAlive.port) : nil)
         }
         throw GrantivaError.noRunnerSession(orPassPort: true)
@@ -1239,7 +1262,7 @@ struct DumpHierarchyCommand: AsyncParsableCommand {
             guard let session = try? RunnerSessionInfo.load(), session.isAlive else { return nil }
             return session
         }()
-        let keepAlive = try? KeepAliveSessionStore().locate(udid: udid)
+        let keepAlive = try? KeepAliveSessionStore().locateIncludingStarting(udid: udid)
         let target = try Self.resolveTarget(port: port, runnerSession: runnerSession, keepAlive: keepAlive)
         try await dump(target: target)
     }

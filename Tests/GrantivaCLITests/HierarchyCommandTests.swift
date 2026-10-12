@@ -44,6 +44,17 @@ final class HierarchyCommandTests: XCTestCase {
         }
     }
 
+    /// L52: a `run --keep-alive` still in its flows (owner sidecar, no
+    /// published file) is "starting, retry", as MCP says, not "no session".
+    func testARunStillInItsFlowsIsReportedAsStarting() throws {
+        let directory = try temporaryDirectory()
+        let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
+        store.recordOwner(udid: "emulator-5554", runnerPid: 100, platform: .android, detached: false)
+        XCTAssertThrowsError(try HierarchyCommand.parse(["--udid", "emulator-5554"]).locateSession(store: store)) { error in
+            XCTAssertEqual(error.localizedDescription, RunnerSessionInfo.startingError(platform: .android).localizedDescription)
+        }
+    }
+
     func testExplicitSerialLoadsItsSession() throws {
         let directory = try temporaryDirectory()
         let store = KeepAliveSessionStore(directory: directory.path, isProcessAlive: { _ in true })
