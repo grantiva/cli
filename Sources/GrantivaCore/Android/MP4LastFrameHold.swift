@@ -327,20 +327,26 @@ public enum MP4LastFrameHold {
 
         let change: TrackChange
         if current > mediaTarget {
-            // Shorten the last sample so the track ends at the target, never
-            // before the last frame starts.
             guard let last = entries.last, last.count > 0 else { return .success(.none) }
             let lastStart = current - UInt64(last.delta)
-            if lastStart < mediaTarget {
+            // With B-frames the last decoded sample need not be the last
+            // shown; the latest presentation time is what must not be cut.
+            let latestShown: UInt64? = stbl.child("ctts").map { ctts in
+                latestPresentation(stts: entries, ctts: ctts) ?? .max
+            }
+            if dropFramesPastEnd && hasEdit {
+                // The edit list alone ends the movie at the target; the
+                // samples past it stay in the file, unshown.
+            } else if lastStart < mediaTarget, (latestShown ?? lastStart) < mediaTarget {
+                // Shorten the last sample so the track ends at the target,
+                // never before the last frame starts.
                 entries.removeLast()
                 if last.count > 1 { entries.append((last.count - 1, last.delta)) }
                 entries.append((1, UInt32(mediaTarget - lastStart)))
                 endMedia(entries)
-            } else if !(dropFramesPastEnd && hasEdit) {
+            } else {
                 return .success(.none)
             }
-            // Otherwise the edit list alone ends the movie at the target; the
-            // samples past it stay in the file, unshown.
             change = .trimmed
         } else if current < mediaTarget {
             let last = entries.removeLast()

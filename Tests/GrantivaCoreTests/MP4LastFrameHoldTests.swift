@@ -209,6 +209,35 @@ final class MP4LastFrameHoldTests: XCTestCase {
         }
     }
 
+    /// B-frames whose last decoded sample (30) is not the last shown (38):
+    /// shortening that sample to end at 35 would cut the frame shown at 38.
+    /// Without an edit-list cut the file is left as recorded; with one
+    /// (iOS) the edit ends the movie and no sample is rewritten.
+    func testALastDecodedSampleThatIsNotTheLastShownIsNotShortened() throws {
+        let file = MP4Fixture(
+            stts: [(4, 10)], mdhdDuration: 40, movieDuration: 40, mediaScale: 600, movieScale: 600,
+            ctts: [(1, 0), (1, 28), (2, -10)]
+        )
+        XCTAssertEqual(try MP4LastFrameHold.timing(of: file.data).get().lastFrameSeconds, 38.0 / 600, accuracy: 0.0001)
+        let kept = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: kept) }
+        guard case .unchanged = try MP4LastFrameHold.holdFile(atPath: kept.path, toSeconds: 35.0 / 600) else {
+            return XCTFail("expected the file to be left as it is")
+        }
+        XCTAssertEqual(try Data(contentsOf: kept), file.data)
+
+        let cut = try temporaryFile(file.data)
+        defer { try? FileManager.default.removeItem(at: cut) }
+        guard case .trimmed = try MP4LastFrameHold.holdFile(atPath: cut.path, toSeconds: 35.0 / 600, dropFramesPastEnd: true) else {
+            return XCTFail("expected the edit list to cut the movie")
+        }
+        let parsed = MP4Fixture.Parsed(try Data(contentsOf: cut))
+        XCTAssertEqual(parsed.stts, [[4, 10]] as [[UInt32]])
+        XCTAssertEqual(parsed.elstDuration, 35)
+        XCTAssertEqual(parsed.tkhdDuration, 35)
+        XCTAssertEqual(parsed.mvhdDuration, 35)
+    }
+
     /// A screen that stopped changing at 2 s with B-frames: the hold moves
     /// the composition end (cslg) with the media end.
     func testAHeldMovieWithBFramesMovesItsCompositionEnd() throws {
