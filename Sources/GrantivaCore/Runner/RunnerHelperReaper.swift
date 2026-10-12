@@ -109,6 +109,9 @@ public struct RunnerHelperReaper: Sendable {
     /// How long a helper gets after SIGINT before SIGKILL.
     public var gracePeriod: TimeInterval
     public var pollInterval: Duration
+    /// When set, no wait outlasts it: a teardown's single deadline (L63).
+    /// `runner stop` leaves it nil and keeps its own bounds.
+    public var deadline: Date?
 
     public init(
         snapshot: @escaping @Sendable () async throws -> String,
@@ -187,13 +190,19 @@ public struct RunnerHelperReaper: Sendable {
     /// by the time the teardown looks; the device home it writes into names
     /// it as the stopped run's. Ending an xcodebuild can start another
     /// diagnose, so the table is read again after each round, up to `rounds`
-    /// times. Each round is `runner stop`'s bound: SIGINT, `gracePeriod`,
-    /// then SIGKILL; a helper that outlives it is killed, not left.
+    /// times, and while `deadline` allows after the first.
+    ///
+    /// The runner is already stopped and its home is about to go, so the
+    /// run's `xcodebuild test-without-building` takes SIGKILL at once (SIGINT
+    /// is what makes it start a diagnose). A diagnose gets SIGINT, then
+    /// SIGKILL after `gracePeriod`; from the second round on everything
+    /// takes SIGKILL at once. A helper is killed, never left.
     public func reapDeviceHome(udid: String, rounds: Int = 3) async -> [ReapedProcess] {
         guard !udid.isEmpty else { return [] }
         let me = getpid()
         var reaped: [ReapedProcess] = []
-        for _ in 0..<max(rounds, 1) {
+        for round in 0..<max(rounds, 1) {
+            if round > 0, let deadline, Date() >= deadline { break }
             guard let table = try? await snapshot() else { break }
             var targets = HostProcess.parse(table).compactMap { process -> ReapedProcess? in
                 guard process.pid > 1, process.pid != me,
@@ -205,7 +214,7 @@ public struct RunnerHelperReaper: Sendable {
                 return ReapedProcess(pid: process.pid, processGroup: process.pgid, kind: kind, command: process.command)
             }
             guard !targets.isEmpty else { break }
-            await terminate(&targets)
+            await terminate(&targets) { round > 0 || $0.kind == .webDriverAgent }
             reaped += targets
         }
         return reaped.sorted { $0.pid < $1.pid }
@@ -270,7 +279,10 @@ public struct RunnerHelperReaper: Sendable {
 
     /// SIGINT each target (and its group, when it leads one of its own),
     /// wait up to `gracePeriod`, SIGKILL the survivors, then wait for them.
-    private func terminate(_ targets: inout [ReapedProcess]) async {
+    /// Targets `killAtOnce` picks take SIGKILL without the SIGINT and grace.
+    private func terminate(
+        _ targets: inout [ReapedProcess], killAtOnce: (ReapedProcess) -> Bool = { _ in false }
+    ) async {
         guard !targets.isEmpty else { return }
         let ownGroup = getpgrp()
         func send(_ sig: Int32, _ target: ReapedProcess) {
@@ -279,18 +291,21 @@ public struct RunnerHelperReaper: Sendable {
                 signal(-target.processGroup, sig)
             }
         }
+        var graced = false
         for index in targets.indices {
-            send(SIGINT, targets[index])
+            let now = killAtOnce(targets[index])
+            graced = graced || !now
+            send(now ? SIGKILL : SIGINT, targets[index])
             targets[index].killed = true
         }
         let pending = targets
-        if await waitForExit(pending, timeout: gracePeriod) { return }
+        if await waitForExit(pending, timeout: graced ? gracePeriod : 2) { return }
         for target in pending where isAlive(target.pid) { send(SIGKILL, target) }
         _ = await waitForExit(pending, timeout: 2)
     }
 
     private func waitForExit(_ targets: [ReapedProcess], timeout: TimeInterval) async -> Bool {
-        let deadline = Date().addingTimeInterval(timeout)
+        let deadline = min(Date().addingTimeInterval(timeout), self.deadline ?? .distantFuture)
         while targets.contains(where: { isAlive($0.pid) }) {
             if Date() >= deadline { return false }
             try? await Task.sleep(for: pollInterval)

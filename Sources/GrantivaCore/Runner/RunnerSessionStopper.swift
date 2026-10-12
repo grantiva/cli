@@ -40,7 +40,9 @@ public struct RunnerSessionStopper: Sendable {
         /// This outcome with `more` helpers added to `reaped` (those it
         /// already lists are not repeated).
         public func adding(reaped more: [ReapedProcess]) -> Outcome {
-            let merged = reaped + more.filter { extra in !reaped.contains(where: { $0.pid == extra.pid }) }
+            let merged = reaped + more.filter { extra in
+                !reaped.contains(where: { $0.pid == extra.pid && $0.command == extra.command })
+            }
             switch self {
             case .released(let grantivaPid, let runnerPid, let udid, _):
                 return .released(grantivaPid: grantivaPid, runnerPid: runnerPid, udid: udid, reaped: merged)
@@ -132,8 +134,14 @@ public struct RunnerSessionStopper: Sendable {
     /// teardown's marker or its removed session file when the runner exits,
     /// ends in order with exit 0 (L36, L54). Either way this waits for the
     /// holder to exit, so nothing of the session is left when it returns.
-    public func stop(_ session: KeepAliveSession) async throws -> Outcome {
+    ///
+    /// `deadline` (a teardown's, L63) caps every wait here and in the helper
+    /// reap; nil keeps `waitTimeout` and the reaper's own bounds.
+    public func stop(_ session: KeepAliveSession, deadline: Date? = nil) async throws -> Outcome {
         let udid = session.udid ?? ""
+        let waitTimeout = Self.capped(waitTimeout, by: deadline)
+        var helperReaper = helperReaper
+        if let deadline { helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline) }
         // Every pid is checked before it is signalled: the owner must still
         // be a grantiva process and the runner's parent, and the runner must
         // still be a grantiva-runner (pids are reused).
@@ -159,21 +167,30 @@ public struct RunnerSessionStopper: Sendable {
             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
         }
-        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime)
+        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime, deadline: deadline)
+    }
+
+    /// `timeout`, or what is left before `deadline` when that is sooner.
+    public static func capped(_ timeout: TimeInterval, by deadline: Date?) -> TimeInterval {
+        guard let deadline else { return timeout }
+        return max(0, min(timeout, deadline.timeIntervalSinceNow))
     }
 
     /// Terminates a runner nobody holds and cleans up after it. A pid that
     /// is no longer a grantiva-runner, or whose start time is not the one the
     /// owner file recorded (the pid was reused), is never signalled; its
     /// files are still removed.
-    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil) async -> Outcome {
+    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil, deadline: Date? = nil) async -> Outcome {
+        var helperReaper = helperReaper
+        if let deadline { helperReaper.deadline = min(deadline, helperReaper.deadline ?? deadline) }
+        let exitTimeout = Self.capped(3, by: deadline)
         var killed = false
         var reaped: [ReapedProcess] = []
         let sameProcess = recordedStartTime.map { processStartTime(runnerPid) == $0 } ?? true
         if isProcessAlive(runnerPid), sameProcess, await isRunnerProcess(runnerPid) {
             (killed, reaped) = await helperReaper.stopping(runnerPid: runnerPid, udid: udid) { [self] in
                 let killed = terminateGroup(runnerPid) == .killed
-                _ = await waitForExit(runnerPid, timeout: 3)
+                _ = await waitForExit(runnerPid, timeout: exitTimeout)
                 return killed
             }
         } else if !udid.isEmpty {
@@ -190,13 +207,14 @@ public struct RunnerSessionStopper: Sendable {
     /// start` session file's runner when it names `udid` and is not among
     /// them. Failures to stop one are reported on stderr and do not stop the
     /// rest.
-    public func stopSessions(udid: String, runnerStartSession: RunnerSessionInfo?) async -> [Outcome] {
+    /// `deadline` caps every stop's waits (a teardown's single deadline, L63).
+    public func stopSessions(udid: String, runnerStartSession: RunnerSessionInfo?, deadline: Date? = nil) async -> [Outcome] {
         var outcomes: [Outcome] = []
         let sessions = store.sessions(includingOrphans: true)
             .filter { $0.udid?.caseInsensitiveCompare(udid) == .orderedSame }
         for session in sessions {
             do {
-                outcomes.append(try await stop(session))
+                outcomes.append(try await stop(session, deadline: deadline))
             } catch {
                 FileHandle.standardError.write(Data("Warning: \(error.localizedDescription)\n".utf8))
             }
@@ -205,7 +223,7 @@ public struct RunnerSessionStopper: Sendable {
            !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
             // session.json records no start time to check; the runner is
             // matched by process name only.
-            outcomes.append(await terminate(runnerPid: file.pid, udid: udid))
+            outcomes.append(await terminate(runnerPid: file.pid, udid: udid, deadline: deadline))
         }
         return outcomes
     }
