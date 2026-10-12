@@ -5,6 +5,8 @@ import GrantivaCore
 /// are numbers; the app and device keys follow the platform (`bundleId` +
 /// `udid` on iOS, `applicationId` + `serial` on Android). `bundle_id`, and
 /// `udid` on Android, are the 2.1 names, kept for one release (deprecated).
+/// A stop document has the same keys plus `runnerPid`, `killed` and
+/// `reaped` (and `alreadyExited`, `sessions` when they apply).
 struct RunnerLifecycleDocument: Encodable, Equatable {
     let status: String
     var pid: Int32?
@@ -21,6 +23,9 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
     var sessions: [RunnerLifecycleDocument]?
     /// Device helpers `runner stop` ended after the runner (L04).
     var reaped: [ReapedProcess]?
+    /// A `stopped` document writes `port` and the app ID as `null` when the
+    /// session did not record them, so it always carries start's keys (L13).
+    var nullWhenUnrecorded = false
 
     init(
         status: String, pid: Int32? = nil, port: UInt16? = nil, appID: String? = nil,
@@ -40,7 +45,11 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
         try container.encode(status, forKey: "status")
         try container.encodeIfPresent(pid, forKey: "pid")
         try container.encodeIfPresent(runnerPid, forKey: "runnerPid")
-        try container.encodeIfPresent(port, forKey: "port")
+        if let port {
+            try container.encode(port, forKey: "port")
+        } else if nullWhenUnrecorded {
+            try container.encodeNil(forKey: "port")
+        }
         try container.encodeIfPresent(platform?.rawValue, forKey: "platform")
         try container.encodeIfPresent(log, forKey: "log")
         try container.encodeIfPresent(killed, forKey: "killed")
@@ -48,7 +57,7 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
         try container.encodeIfPresent(sessions, forKey: "sessions")
         try container.encodeIfPresent(reaped, forKey: "reaped")
         let android = platform == .android
-        if let appID {
+        if appID != nil || nullWhenUnrecorded {
             if android {
                 // `applicationId` is Android's name; `bundle_id` stays beside
                 // it for one release (LegacyJSONKeys.platformTwins).

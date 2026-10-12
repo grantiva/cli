@@ -233,6 +233,42 @@ public struct ADB: Sendable {
         _ = try await execute(line(serial, "shell rm -f \(shellQuoted(remotePath))"))
     }
 
+    /// Where `sync` finds perl for its alarm.
+    public static let perlPath = "/usr/bin/perl"
+
+    /// Flushes the guest's page cache to its data partition. A wedged guest
+    /// can hang `adb shell sync`, so adb runs under a `timeoutSeconds` alarm
+    /// (perl's `alarm` survives the `exec`): the adb child is killed when it
+    /// fires rather than left running. Without an executable perl the flush
+    /// still runs, plainly (the caller's bounded wait is then the only
+    /// bound), and a warning says so once per process.
+    public func sync(
+        serial: String, timeoutSeconds: Int = 5,
+        perl: String = ADB.perlPath,
+        isExecutable: (String) -> Bool = { FileManager.default.isExecutableFile(atPath: $0) },
+        warn: (String) -> Void = ADB.warnOnce
+    ) async throws {
+        let command = line(serial, "shell \(shellQuoted("sync"))")
+        guard isExecutable(perl) else {
+            warn("\(perl) is not executable, so `adb shell sync` runs without its \(timeoutSeconds) s alarm; a hung flush is abandoned (not killed) when the teardown's wait ends.")
+            _ = try await execute(command)
+            return
+        }
+        _ = try await execute("\(shellQuoted(perl)) -e 'alarm shift; exec @ARGV' \(timeoutSeconds) " + command)
+    }
+
+    private static let warnedLock = NSLock()
+    nonisolated(unsafe) private static var warned = false
+
+    /// Logs `message` as a warning the first time only.
+    public static func warnOnce(_ message: String) {
+        let first = warnedLock.withLock {
+            defer { warned = true }
+            return !warned
+        }
+        if first { GrantivaLog.logger.warning("\(message)") }
+    }
+
     public func emuKill(serial: String) async throws {
         _ = try await execute(line(serial, "emu kill"))
     }

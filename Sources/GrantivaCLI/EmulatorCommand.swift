@@ -117,7 +117,7 @@ struct EmulatorCommand: AsyncParsableCommand {
     struct Teardown: AsyncParsableCommand {
         static let configuration = CommandConfiguration(
             abstract: "Kill emulators Grantiva started: one by serial, or all of them. Stops the UIAutomator2 server and removes the serial's adb forwards first.",
-            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped."
+            discussion: "A runner session on a torn-down serial (`grantiva runner start` or `grantiva run --keep-alive`) is stopped too, and its session files are removed; --json reports it as runnerSessionStopped. The guest's writes are flushed (`adb shell sync`) before the emulator is killed, so an app installed just before survives the next boot. Session files of a runner that had already died, and the temp directories of a killed run on the serial, are removed and listed (sessionFilesRemoved, temporaryDirectoriesRemoved)."
         )
         @OptionGroup var options: GlobalOptions
 
@@ -138,8 +138,28 @@ struct EmulatorCommand: AsyncParsableCommand {
         /// them, for callers that only want the emulator bookkeeping).
         static func teardown(
             _ emulators: EmulatorManager, serial: String?, force: Bool,
-            stopRunners: (@Sendable (String) async -> [RunnerSessionStopper.Outcome])? = nil
+            stopRunners: (@Sendable (String) async -> [RunnerSessionStopper.Outcome])? = nil,
+            removeDeadSessions: (@Sendable (String) -> [String])? = nil,
+            markStops: (@Sendable (String) -> [Int32])? = nil,
+            unmarkStops: (@Sendable ([Int32]) -> Void)? = nil,
+            sweepStops: (@Sendable () -> Void)? = nil
         ) async throws -> [EmulatorTeardownOutcome] {
+            // However the teardown ends, markers nobody will read go.
+            defer { sweepStops?() }
+            // Runners on the serials die with their emulator, before
+            // `stopRunners` gets to them: mark them first so a foreground
+            // `runner start` holding one ends in order (L36). A serial that
+            // is refused or not torn down gets its markers back.
+            var marked: [String: [Int32]] = [:]
+            if let markStops {
+                var serials: [String] = []
+                if let serial {
+                    serials = [serial]
+                } else {
+                    serials = (try? await emulators.sessions())?.map(\.serial) ?? []
+                }
+                for target in serials { marked[target] = markStops(target) }
+            }
             // The prune runs on a refusal too (`defer` cannot await).
             var outcomes: [EmulatorTeardownOutcome]
             do {
@@ -149,9 +169,14 @@ struct EmulatorCommand: AsyncParsableCommand {
                     try await emulators.teardownAll()
                 }
             } catch {
+                let all = marked.values.flatMap { $0 }
+                if !all.isEmpty { unmarkStops?(all) }
                 _ = try? await emulators.pruneCreatedAVDs()
                 throw error
             }
+            let tornDown = Set(outcomes.map(\.serial))
+            let untouched = marked.filter { !tornDown.contains($0.key) }.values.flatMap { $0 }
+            if !untouched.isEmpty { unmarkStops?(untouched) }
             _ = try? await emulators.pruneCreatedAVDs()
             // After the kill, so a refused teardown touches nothing; the
             // runner's own adb cleanup has nothing left to do by then.
@@ -160,7 +185,25 @@ struct EmulatorCommand: AsyncParsableCommand {
                     outcomes[index].runnerSessionStopped = !(await stopRunners(outcomes[index].serial)).isEmpty
                 }
             }
+            // A runner that died on its own left its session file (L12).
+            if let removeDeadSessions {
+                for index in outcomes.indices {
+                    outcomes[index].sessionFilesRemoved = removeDeadSessions(outcomes[index].serial)
+                }
+            }
             return outcomes
+        }
+
+        /// What the teardown cleaned up besides the emulator, one line each.
+        static func cleanupLines(_ outcome: EmulatorTeardownOutcome) -> [String] {
+            var lines: [String] = []
+            if !outcome.sessionFilesRemoved.isEmpty {
+                lines.append("Removed \(outcome.sessionFilesRemoved.count) stale keep-alive session file(s) of runners that are no longer running.")
+            }
+            for directory in outcome.temporaryDirectoriesRemoved {
+                lines.append("Removed the killed run's temp directory \(directory).")
+            }
+            return lines
         }
 
         static func render(_ outcome: EmulatorTeardownOutcome) -> String {
@@ -198,14 +241,18 @@ struct EmulatorCommand: AsyncParsableCommand {
                     let stopped = await DeviceRunnerSessions.live.stop(udid: serial)
                     if !json { stopped.map(DeviceRunnerSessions.render).forEach(Output.line) }
                     return stopped
-                }
+                },
+                removeDeadSessions: { KeepAliveSessionStore().removeSessions(udid: $0) },
+                markStops: { DeviceRunnerSessions.markLive(udid: $0) },
+                unmarkStops: { pids in pids.forEach { RunnerStopMarker().remove(runnerPid: $0) } },
+                sweepStops: { RunnerStopMarker().sweep() }
             )
             if options.json {
                 Output.line(try JSONOutput.string(outcomes))
             } else if outcomes.isEmpty {
                 Output.line("No emulators started by Grantiva are running.")
             } else {
-                outcomes.map(Self.render).forEach(Output.line)
+                outcomes.flatMap { [Self.render($0)] + Self.cleanupLines($0) }.forEach(Output.line)
             }
         }
     }

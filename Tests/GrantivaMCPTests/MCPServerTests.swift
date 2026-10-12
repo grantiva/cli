@@ -161,6 +161,67 @@ final class MCPServerTests: XCTestCase {
 
     /// Writes a runner session file for each pid (later pids are newer) and
     /// an owner sidecar for each entry in `owners`.
+    // MARK: - L38-a: a session that is still starting says so
+
+    /// A `runner start` (or `run --keep-alive`) whose runner is up but has
+    /// not published its session yet: only the owner sidecar exists.
+    private func startingStore(in directory: URL, runnerPid: Int32, alive: Bool, project: String, platform: Platform) throws -> KeepAliveSessionStore {
+        let sessions = directory.appendingPathComponent("sessions")
+        try FileManager.default.createDirectory(at: sessions, withIntermediateDirectories: true)
+        let store = KeepAliveSessionStore(directory: sessions.path, isProcessAlive: { alive && $0 == runnerPid })
+        store.recordOwner(udid: "emulator-5554", runnerPid: runnerPid, projectDirectory: project, platform: platform, detached: true)
+        return store
+    }
+
+    func testAStartingSessionWithOnlyItsSidecarSaysItIsStarting() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = try startingStore(in: directory, runnerPid: 4300, alive: true, project: directory.path, platform: .android)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)) { error in
+            guard case GrantivaError.unavailable(let message) = error else { return XCTFail("\(error)") }
+            XCTAssertEqual(message, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+        }
+    }
+
+    func testAStartingSidecarWhoseRunnerIsDeadIsNoSession() throws {
+        let directory = try makeProjectDirectory()
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let store = try startingStore(in: directory, runnerPid: 4300, alive: false, project: directory.path, platform: .android)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: store)) { error in
+            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+        }
+    }
+
+    func testAStartingSidecarOfAnotherProjectOrPlatformIsNoSession() throws {
+        let directory = try makeProjectDirectory()
+        let other = try makeProjectDirectory()
+        defer {
+            try? FileManager.default.removeItem(at: directory)
+            try? FileManager.default.removeItem(at: other)
+        }
+        let elsewhere = try startingStore(in: directory, runnerPid: 4300, alive: true, project: other.path, platform: .android)
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .android, keepAliveSessions: elsewhere)) { error in
+            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+        }
+        XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: .ios, keepAliveSessions: elsewhere)) { error in
+            XCTAssertTrue(String(describing: error).contains("No active runner session"), "\(error)")
+        }
+    }
+
+    func testASessionFileWrittenAtLaunchSaysItIsStartingOnBothPlatforms() throws {
+        for (platform, udid, driver) in [(Platform.ios, "921A0945-7157-4533-BA1F-21E8132D3E40", "WDA"), (.android, "emulator-5554", "UIAutomator2")] {
+            let directory = try makeProjectDirectory()
+            defer { try? FileManager.default.removeItem(at: directory) }
+            let starting = RunnerSessionInfo.starting(pid: getpid(), bundleId: "a.b", udid: udid, startedAt: Date(), platform: platform)
+            let sessionURL = directory.appendingPathComponent(RunnerSessionInfo.path)
+            try FileManager.default.createDirectory(at: sessionURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try starting.encoded().write(to: sessionURL)
+            XCTAssertThrowsError(try GrantivaMCPServer.loadActiveSession(projectDirectory: directory, platform: platform, keepAliveSessions: emptyKeepAliveStore())) { error in
+                XCTAssertEqual(error.localizedDescription, "The runner session is starting (\(driver) has no session yet). Retry in a few seconds.")
+            }
+        }
+    }
+
     private func keepAliveStore(
         in directory: URL,
         owners: [(pid: Int32, udid: String, project: String, platform: Platform)]

@@ -224,4 +224,32 @@ final class ADBTests: XCTestCase {
         let otherInstalled = try await ADB(path: adbPath, execute: other.execute).isInstalled(serial: "emulator-5554", applicationId: "com.example.app")
         XCTAssertFalse(otherInstalled)
     }
+
+    // MARK: - L46: the flush runs under an alarm, and without perl too
+
+    func testSyncRunsUnderAnAlarmWhenPerlIsThere() async throws {
+        let shell = ScriptedShell()
+        let warnings = WarningLog()
+        try await ADB(path: adbPath, execute: shell.execute)
+            .sync(serial: "emulator-5554", timeoutSeconds: 5, isExecutable: { _ in true }, warn: warnings.append)
+        XCTAssertEqual(shell.commands, ["'/usr/bin/perl' -e 'alarm shift; exec @ARGV' 5 '/sdk/platform-tools/adb' -s 'emulator-5554' shell 'sync'"])
+        XCTAssertEqual(warnings.lines, [])
+    }
+
+    func testAMissingPerlStillFlushesAndWarns() async throws {
+        let shell = ScriptedShell()
+        let warnings = WarningLog()
+        try await ADB(path: adbPath, execute: shell.execute)
+            .sync(serial: "emulator-5554", timeoutSeconds: 5, perl: "/nonexistent/perl", warn: warnings.append)
+        XCTAssertEqual(shell.commands, ["'/sdk/platform-tools/adb' -s 'emulator-5554' shell 'sync'"], "the flush is never skipped")
+        XCTAssertEqual(warnings.lines.count, 1)
+        XCTAssertTrue(warnings.lines[0].contains("/nonexistent/perl is not executable"), warnings.lines[0])
+    }
+}
+
+private final class WarningLog: @unchecked Sendable {
+    private let lock = NSLock()
+    private var stored: [String] = []
+    var lines: [String] { lock.withLock { stored } }
+    func append(_ line: String) { lock.withLock { stored.append(line) } }
 }

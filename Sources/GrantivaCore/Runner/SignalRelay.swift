@@ -40,10 +40,16 @@ public final class SignalRelay: @unchecked Sendable {
     private init() {}
 
     /// What the interrupt notice says is being released: `simulator` on iOS,
-    /// `emulator` on Android. Set by whoever starts the runner.
+    /// `emulator` on Android. Set by `track(group:deviceNoun:)`, so every
+    /// entry point that hands the relay a runner names its device (L37).
     public var deviceNoun: String {
         get { lock.withLock { noun } }
         set { lock.withLock { noun = newValue } }
+    }
+
+    /// The noun for `platform`'s device in the interrupt notice.
+    public static func deviceNoun(for platform: Platform) -> String {
+        platform == .android ? "emulator" : "simulator"
     }
 
     static func announcement(signalName: String, deviceNoun: String) -> String {
@@ -76,11 +82,13 @@ public final class SignalRelay: @unchecked Sendable {
         }
     }
 
-    /// Tracks a process group to be signalled when grantiva is interrupted.
-    public func track(group pgid: pid_t) {
+    /// Tracks a process group to be signalled when grantiva is interrupted;
+    /// `deviceNoun` is what the interrupt notice says is being released.
+    public func track(group pgid: pid_t, deviceNoun: String) {
         install()
         lock.lock()
         defer { lock.unlock() }
+        noun = deviceNoun
         if !groups.contains(pgid) { groups.append(pgid) }
     }
 

@@ -66,10 +66,16 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
     /// The app the session launched (bundle ID or application ID). Absent in
     /// sidecars written by earlier versions.
     public let appId: String?
+    /// `runner-start` for a `grantiva runner start` session, nil for
+    /// `run --keep-alive` and sidecars written by earlier versions.
+    public let command: String?
+
+    public static let runnerStartCommand = "runner-start"
 
     public init(
         udid: String, runnerPid: Int32, grantivaPid: Int32 = getpid(), createdAt: Date = Date(),
-        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil
+        projectDirectory: String? = nil, platform: Platform? = nil, detached: Bool? = nil, appId: String? = nil,
+        command: String? = nil
     ) {
         self.udid = udid
         self.runnerPid = runnerPid
@@ -79,6 +85,13 @@ public struct KeepAliveOwner: Codable, Equatable, Sendable {
         self.platform = platform
         self.detached = detached
         self.appId = appId
+        self.command = command
+    }
+
+    /// A foreground `runner start`: the grantiva process holding it reads a
+    /// teardown's stop marker when its runner exits (L36).
+    public var isForegroundRunnerStart: Bool {
+        command == Self.runnerStartCommand && detached == false
     }
 
     /// The canonical form both sides compare: absolute, standardized, with
@@ -139,14 +152,16 @@ public struct KeepAliveSessionStore: Sendable {
         projectDirectory: String = FileManager.default.currentDirectoryPath,
         platform: Platform? = nil,
         detached: Bool? = nil,
-        appID: String? = nil
+        appID: String? = nil,
+        command: String? = nil
     ) -> KeepAliveOwner? {
         let owner = KeepAliveOwner(
             udid: udid, runnerPid: runnerPid,
             projectDirectory: KeepAliveOwner.canonicalDirectory(projectDirectory),
             platform: platform ?? (DeviceID.isAndroidSerial(udid) ? .android : .ios),
             detached: detached,
-            appId: appID.flatMap { $0.isEmpty ? nil : $0 }
+            appId: appID.flatMap { $0.isEmpty ? nil : $0 },
+            command: command
         )
         do {
             try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
@@ -169,6 +184,12 @@ public struct KeepAliveSessionStore: Sendable {
 
     public func removeOwner(runnerPid: Int32) {
         try? FileManager.default.removeItem(atPath: ownerPath(runnerPid: runnerPid))
+        stopMarkers.removeUnlessHeld(runnerPid: runnerPid)
+    }
+
+    /// Teardown stop markers live beside the owner files and go with them.
+    public var stopMarkers: RunnerStopMarker {
+        RunnerStopMarker(directory: directory, isProcessAlive: isProcessAlive)
     }
 
     /// Deletes `runnerPid`'s sidecar and its own `<pid>-<timestamp>.grantiva`
@@ -188,6 +209,7 @@ public struct KeepAliveSessionStore: Sendable {
             let path = "\(directory)/\(name)"
             if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
         }
+        if stopMarkers.removeUnlessHeld(runnerPid: runnerPid) { removed.append(stopMarkers.path(runnerPid)) }
         return removed
     }
 
@@ -195,25 +217,37 @@ public struct KeepAliveSessionStore: Sendable {
     /// no longer running: their `<pid>.owner.json` sidecar and the runner's own
     /// `<pid>-<timestamp>.grantiva` file. `runnerPids` adds runners known to
     /// have held the device (for example ones just killed) whose sidecar is
-    /// missing. Live runners are left alone. Returns the removed paths.
+    /// missing. A runner file whose pid is dead and that has no sidecar at all
+    /// goes too (L12): the runner's file carries no device, so with its
+    /// sidecar gone it belongs to no live session. Live runners, and dead
+    /// ones whose sidecar names another device, are left alone. Returns the
+    /// removed paths.
     @discardableResult
     public func removeSessions(udid: String, runnerPids: [Int32] = []) -> [String] {
         let fm = FileManager.default
         guard let contents = try? fm.contentsOfDirectory(atPath: directory) else { return [] }
-        let owners = contents
+        let allOwners = contents
             .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
             .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
+        let owners = allOwners
             .filter { $0.udid.caseInsensitiveCompare(udid) == .orderedSame }
             .map(\.runnerPid)
-        let pids = Set(owners + runnerPids).filter { !isProcessAlive($0) }
+        let recorded = Set(allOwners.map(\.runnerPid))
+        let unclaimed = contents.compactMap(Self.runnerPid(fileName:)).filter { !recorded.contains($0) }
+        let pids = Set(owners + runnerPids + unclaimed).filter { !isProcessAlive($0) }
         var removed: [String] = []
         for name in contents.sorted() {
             let isOwner = pids.contains { name == "\($0).\(Self.ownerExtension)" }
-            let isRunner = name.hasSuffix(".\(Self.runnerExtension)") && pids.contains { name.hasPrefix("\($0)-") }
+            let isRunner = Self.runnerPid(fileName: name).map(pids.contains) == true
             guard isOwner || isRunner else { continue }
             let path = "\(directory)/\(name)"
             if (try? fm.removeItem(atPath: path)) != nil { removed.append(path) }
         }
+        let markers = stopMarkers
+        for pid in pids.sorted() where markers.removeUnlessHeld(runnerPid: pid) {
+            removed.append(markers.path(pid))
+        }
+        markers.sweep()
         return removed
     }
 
@@ -266,6 +300,43 @@ public struct KeepAliveSessionStore: Sendable {
                 return $0.0.path < $1.0.path
             }
             .map(\.0)
+    }
+
+    /// Sessions whose runner is up but has not published its session file
+    /// yet (L38-a): an owner sidecar with a live runner and no
+    /// `<pid>-*.grantiva`. A sidecar held by a grantiva process that is gone
+    /// is an orphan, not a start in progress.
+    public func startingSessions() -> [KeepAliveOwner] {
+        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directory) else { return [] }
+        let published = Set(contents.compactMap(Self.runnerPid(fileName:)))
+        return contents.sorted()
+            .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
+            .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
+            .filter { owner in
+                !published.contains(owner.runnerPid) && isProcessAlive(owner.runnerPid)
+                    && !(owner.detached == false && !isProcessAlive(owner.grantivaPid))
+            }
+    }
+
+    /// The live foreground `runner start` sessions recorded for `udid`, whose
+    /// holder is alive: the runners a teardown of that device marks before
+    /// stopping them (L36). Detached starts and `run --keep-alive` runs read
+    /// no marker, so they get none.
+    public func foregroundRunnerStarts(udid: String) -> [KeepAliveOwner] {
+        guard let contents = try? FileManager.default.contentsOfDirectory(atPath: directory) else { return [] }
+        return contents.sorted()
+            .filter { $0.hasSuffix(".\(Self.ownerExtension)") }
+            .compactMap { Self.loadOwner(path: "\(directory)/\($0)") }
+            .filter {
+                $0.udid.caseInsensitiveCompare(udid) == .orderedSame && $0.isForegroundRunnerStart
+                    && isProcessAlive($0.runnerPid) && isProcessAlive($0.grantivaPid)
+            }
+    }
+
+    /// The pid in a runner's `<pid>-<timestamp>.grantiva` file name.
+    static func runnerPid(fileName: String) -> Int32? {
+        guard fileName.hasSuffix(".\(runnerExtension)"), let dash = fileName.firstIndex(of: "-") else { return nil }
+        return Int32(fileName[..<dash])
     }
 
     /// The session held by `runnerPid`, if its file has appeared yet.

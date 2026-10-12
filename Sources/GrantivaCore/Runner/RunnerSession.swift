@@ -240,7 +240,7 @@ public enum RunnerSession {
             } else if outcome.timedOut {
                 reason = Self.screensTimeoutReason(seconds: timeoutSeconds, screen: screen)
             } else {
-                reason = "Runner failed (exit \(outcome.terminationStatus))"
+                reason = "Runner failed (\(RunnerExecution.exitDescription(outcome)))"
             }
             if outcome.timedOut || outcome.interrupted {
                 RunnerReportFinalizer.finalize(reportDir: reportDir, status: verdict, reason: reason)
@@ -579,7 +579,7 @@ public enum RunnerSession {
                 reason = "grantiva killed the runner after \(effectiveTimeout)s (--timeout <seconds> to raise the cap)."
                     + (RunnerNarration.isSilenced ? "" : " The runner's last output above shows how far it got.")
             } else {
-                reason = "Runner failed (exit \(outcome.terminationStatus))"
+                reason = "Runner failed (\(RunnerExecution.exitDescription(outcome)))"
             }
             let verdict = outcome.interrupted ? "interrupted" : "failed"
             if outcome.timedOut || outcome.interrupted {

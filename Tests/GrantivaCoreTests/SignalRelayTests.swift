@@ -18,8 +18,8 @@ final class SignalRelayTests: XCTestCase {
     }
 
     func testTrackedGroupsAreDeduplicated() {
-        SignalRelay.shared.track(group: 12345)
-        SignalRelay.shared.track(group: 12345)
+        SignalRelay.shared.track(group: 12345, deviceNoun: "simulator")
+        SignalRelay.shared.track(group: 12345, deviceNoun: "simulator")
         SignalRelay.shared.untrack(group: 12345)
         // Untracking once must clear the group; a stale entry would signal a
         // pid the OS may have reused.
@@ -43,5 +43,25 @@ final class SignalRelayTests: XCTestCase {
         usleep(100_000)
         kill(getpid(), SIGUSR1)
         wait(for: [observed], timeout: 5)
+    }
+
+    // MARK: - L37
+
+    func testTheAnnouncementNamesEachPlatformsDevice() {
+        XCTAssertEqual(
+            SignalRelay.announcement(signalName: "SIGINT", deviceNoun: SignalRelay.deviceNoun(for: .android)),
+            "\n[grantiva] received SIGINT — releasing emulator and reaping child processes\n"
+        )
+        XCTAssertEqual(SignalRelay.deviceNoun(for: .ios), "simulator")
+    }
+
+    func testTrackingAGroupSetsTheNoun() {
+        let saved = SignalRelay.shared.deviceNoun
+        defer {
+            SignalRelay.shared.untrack(group: 12346)
+            SignalRelay.shared.deviceNoun = saved
+        }
+        SignalRelay.shared.track(group: 12346, deviceNoun: "emulator")
+        XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
     }
 }

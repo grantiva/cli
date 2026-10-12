@@ -47,7 +47,8 @@ final class EmulatorCommandTests: XCTestCase {
         }
         let manager = EmulatorManager(
             sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
-            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1
+            execute: execute, provenance: ledger, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 1,
+            flushTimeout: 0.2, leaseDirectory: dir.appendingPathComponent("locks").path
         )
         return (ledger, manager, dir)
     }
@@ -178,6 +179,193 @@ final class EmulatorCommandTests: XCTestCase {
         XCTAssertTrue(other.isEmpty)
         XCTAssertEqual(removed.values, ["session.json"], "a session naming another serial is left alone")
         XCTAssertEqual(handed.values, ["emulator-5556 27331", "emulator-5554 27331"])
+    }
+
+    /// L36: teardown removes the session file before it signals the runner,
+    /// as `runner stop` does, so a foreground `runner start` ends in order.
+    func testTeardownRemovesTheSessionFileBeforeStoppingTheRunner() async {
+        let events = LockedList()
+        let file = RunnerSessionInfo(pid: 27331, wdaPort: 53095, bundleId: "b", udid: "emulator-5556", startedAt: Date(), platform: .android)
+        let sessions = DeviceRunnerSessions(
+            loadSession: { file },
+            removeSession: { events.append("remove") },
+            stopSessions: { udid, _ in events.append("stop"); return [.terminated(runnerPid: 27331, udid: udid, killed: false)] }
+        )
+        _ = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(events.values, ["remove", "stop"])
+    }
+
+    /// The stop markers are written before anything is signalled.
+    func testTeardownMarksTheDevicesRunnersBeforeStoppingThem() async {
+        let events = LockedList()
+        var sessions = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: { events.append("remove") },
+            stopSessions: { _, _ in events.append("stop"); return [] }
+        )
+        sessions.markStops = { udid in events.append("mark \(udid)"); return [77] }
+        _ = await sessions.stop(udid: "emulator-5556")
+        XCTAssertEqual(events.values, ["mark emulator-5556", "stop"])
+    }
+
+    /// The emulator is killed before its runners are stopped, so they are
+    /// marked first; a refused teardown takes its markers back.
+    func testEmulatorTeardownMarksBeforeTheKillAndUnmarksOnRefusal() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let events = LockedList()
+        _ = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            markStops: { events.append("mark \($0)"); return [77] },
+            unmarkStops: { events.append("unmark \($0)") }
+        )
+        XCTAssertEqual(events.values, ["mark emulator-5598"])
+
+        let refused = LockedList()
+        _ = try? await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: false,
+            markStops: { refused.append("mark \($0)"); return [78] },
+            unmarkStops: { refused.append("unmark \($0)") }
+        )
+        XCTAssertEqual(refused.values, ["mark emulator-5598", "unmark [78]"])
+    }
+
+    // MARK: - L36 fix round 3: stop markers beside the owner files
+
+    private func sleeper() throws -> Process {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        process.arguments = ["30"]
+        try process.run()
+        return process
+    }
+
+    private func stopMarkers(in directory: String) -> [String] {
+        ((try? FileManager.default.contentsOfDirectory(atPath: directory)) ?? []).filter { $0.hasSuffix(".stop.json") }
+    }
+
+    /// A foreground `runner start` under runner home A, torn down by a
+    /// grantiva using runner home B: the marker is found through the shared
+    /// session directory, not either home, and the start ends in order.
+    func testAForegroundStartUnderOneHomeTornDownFromAnotherEndsInOrder() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let runner = try sleeper()
+        defer { runner.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        // Home A's start records its runner (this test process holds it).
+        store.recordOwner(
+            udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+            command: KeepAliveOwner.runnerStartCommand
+        )
+        let startTime = RunnerStopMarker.processStartTime(runner.processIdentifier)
+        // Home B's teardown: its runner home appears nowhere in the marking.
+        let teardown = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: {},
+            stopSessions: { _, _ in [] },
+            markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+            sweepStops: { store.stopMarkers.sweep() }
+        )
+        _ = await teardown.stop(udid: "emulator-5556")
+        XCTAssertEqual(store.stopMarkers.directory, sessions)
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: runner.processIdentifier, session: nil,
+            marked: store.stopMarkers.isMarked(runnerPid: runner.processIdentifier, runnerStartTime: startTime)
+        )
+        XCTAssertEqual(request, .teardown)
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: runner.processIdentifier, stop: request),
+            "Runner stopped by teardown (pid \(runner.processIdentifier)); the session has ended."
+        )
+    }
+
+    /// Detached starts and `run --keep-alive` runs read no marker, so a
+    /// teardown of their devices leaves none behind.
+    func testNoMarkerRemainsAfterTearingDownADetachedAndAKeepAliveRunner() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let detached = try sleeper()
+        let keepAlive = try sleeper()
+        defer { detached.terminate(); keepAlive.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        store.recordOwner(udid: "emulator-5556", runnerPid: detached.processIdentifier, platform: .android, detached: true,
+                          command: KeepAliveOwner.runnerStartCommand)
+        store.recordOwner(udid: "emulator-5558", runnerPid: keepAlive.processIdentifier, platform: .android, detached: false)
+        for serial in ["emulator-5556", "emulator-5558"] {
+            let teardown = DeviceRunnerSessions(
+                loadSession: { nil }, removeSession: {}, stopSessions: { _, _ in [] },
+                markStops: { DeviceRunnerSessions.markLive(udid: $0, store: store) },
+                sweepStops: { store.stopMarkers.sweep() }
+            )
+            _ = await teardown.stop(udid: serial)
+        }
+        XCTAssertEqual(stopMarkers(in: sessions), [])
+    }
+
+    /// A marker that cannot be written is one warning naming the pid; the
+    /// runner is still stopped.
+    func testAMarkerThatCannotBeWrittenWarnsAndTheRunnerIsStillStopped() async throws {
+        let sessions = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-sessions-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: sessions) }
+        let runner = try sleeper()
+        defer { runner.terminate() }
+        let store = KeepAliveSessionStore(directory: sessions)
+        store.recordOwner(udid: "emulator-5556", runnerPid: runner.processIdentifier, platform: .android, detached: false,
+                          command: KeepAliveOwner.runnerStartCommand)
+        let blocker = "\(sessions)/blocker"
+        FileManager.default.createFile(atPath: blocker, contents: Data())
+        let warnings = LockedList()
+        let events = LockedList()
+        let teardown = DeviceRunnerSessions(
+            loadSession: { nil }, removeSession: {},
+            stopSessions: { udid, _ in events.append("stop \(udid)"); return [] },
+            markStops: { udid in
+                DeviceRunnerSessions.markLive(
+                    udid: udid, store: store, marker: RunnerStopMarker(directory: "\(blocker)/sub"), warn: warnings.append
+                )
+            }
+        )
+        _ = await teardown.stop(udid: "emulator-5556")
+        XCTAssertEqual(warnings.values.count, 1)
+        XCTAssertTrue(warnings.values.first?.contains("runner pid \(runner.processIdentifier)") == true, "\(warnings.values)")
+        XCTAssertEqual(events.values, ["stop emulator-5556"])
+    }
+
+    // MARK: - L12/L35: what a teardown cleaned up is listed
+
+    func testTeardownListsTheDeadRunnersSessionFilesAndTheTempDirectories() async throws {
+        let (_, manager, dir) = try ledgerAndManager()
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let swept = LockedList()
+        let outcomes = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            removeDeadSessions: { serial in
+                swept.append(serial)
+                return ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"]
+            }
+        )
+        XCTAssertEqual(swept.values, ["emulator-5598"])
+        XCTAssertEqual(outcomes.first?.sessionFilesRemoved, ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(JSONOutput.string(outcomes).utf8)) as? [[String: Any]])
+        XCTAssertEqual(json.first?["sessionFilesRemoved"] as? [String], ["/tmp/grantiva-sessions/12109-1791747326192132000.grantiva"])
+        XCTAssertEqual(json.first?["temporaryDirectoriesRemoved"] as? [String], [])
+    }
+
+    func testTeardownTextDoesNotAttributeStaleSessionFilesToTheSerial() {
+        var outcome = EmulatorTeardownOutcome(serial: "emulator-5556", avd: "A", killed: true, recorded: true)
+        outcome.sessionFilesRemoved = ["/tmp/grantiva-sessions/12109-1.grantiva"]
+        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+            "Removed 1 stale keep-alive session file(s) of runners that are no longer running.",
+        ])
+    }
+
+    func testTeardownTextNamesTheRemovedTempDirectories() {
+        var outcome = EmulatorTeardownOutcome(serial: "emulator-5556", avd: "A", killed: true, recorded: true)
+        outcome.temporaryDirectoriesRemoved = ["/var/folders/x/T/grantiva-96934240", "/var/folders/x/T/grantiva-report-E0C9"]
+        XCTAssertEqual(EmulatorCommand.Teardown.cleanupLines(outcome), [
+            "Removed the killed run's temp directory /var/folders/x/T/grantiva-96934240.",
+            "Removed the killed run's temp directory /var/folders/x/T/grantiva-report-E0C9.",
+        ])
     }
 
     // MARK: - K30 delete --json

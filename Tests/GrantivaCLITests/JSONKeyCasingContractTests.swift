@@ -105,8 +105,20 @@ final class JSONKeyCasingContractTests: XCTestCase {
                 deviceID: "emulator-5554", platform: .android, log: nil
             ))),
             ("runner stop", try JSONOutput.string(RunnerStopCommand.document(
-                .stopped(pid: 64253, udid: session.udid, killed: false)
+                .stopped(pid: 64253, udid: session.udid, killed: false, details: .init(port: 8235, appID: "com.kylebrowning.Landmarks"))
             ))),
+            ("runner stop (Android)", try JSONOutput.string(RunnerStopCommand.document(
+                .stopped(pid: 7067, udid: "emulator-5554", killed: false, details: .init(port: 57776, appID: "com.kylebrowning.landmarks"))
+            ))),
+            (".grantiva/session.json (iOS)", String(decoding: try RunnerSessionInfo(
+                pid: 64253, wdaPort: 8235, bundleId: "com.kylebrowning.Landmarks", udid: session.udid, startedAt: date, platform: .ios
+            ).encoded(), as: UTF8.self)),
+            (".grantiva/session.json (Android)", String(decoding: try RunnerSessionInfo(
+                pid: 7067, wdaPort: 57776, bundleId: "com.kylebrowning.landmarks", udid: "emulator-5554", startedAt: date, platform: .android
+            ).encoded(), as: UTF8.self)),
+            (".grantiva/session.json (starting)", String(decoding: try RunnerSessionInfo.starting(
+                pid: 7067, bundleId: "com.kylebrowning.landmarks", udid: "emulator-5554", startedAt: date, platform: .android
+            ).encoded(), as: UTF8.self)),
             ("runner stop (already exited)", try JSONOutput.string(RunnerStopCommand.document(
                 .exited(pid: 64253, udid: "emulator-5554")
             ))),
@@ -150,6 +162,44 @@ final class JSONKeyCasingContractTests: XCTestCase {
         for entry in LegacyJSONKeys.renamed {
             XCTAssertTrue(text.contains("`\(entry.snake)` → `\(entry.camel)`"), "README misses \(entry.snake)")
         }
+    }
+
+    /// L43: the session file names the app, device and port the way
+    /// `runner start --json` does on the same platform; 2.1.0's names stay
+    /// beside them (`LegacyJSONKeys.sessionFileTwins`), as README says.
+    func testTheSessionFileNamesTheAppLikeRunnerStart() throws {
+        for (platform, udid) in [(Platform.ios, "921A0945-7157-4533-BA1F-21E8132D3E40"), (.android, "emulator-5554")] {
+            let start = try object(JSONOutput.string(RunnerLifecycleDocument(
+                status: "started", pid: 1, port: 2, appID: "a.b", deviceID: udid, platform: platform, log: nil
+            )))
+            let file = try object(String(decoding: RunnerSessionInfo(
+                pid: 1, wdaPort: 2, bundleId: "a.b", udid: udid, startedAt: Date(), platform: platform
+            ).encoded(), as: UTF8.self))
+            let appKey = platform == .android ? "applicationId" : "bundleId"
+            XCTAssertEqual(start[appKey] as? String, "a.b")
+            XCTAssertEqual(file[appKey] as? String, "a.b", "\(platform)")
+            XCTAssertEqual(file["port"] as? Int, start["port"] as? Int)
+            for key in ["udid", "serial", "platform", "pid"] {
+                XCTAssertEqual(file[key] as? NSObject, start[key] as? NSObject, "\(platform) \(key)")
+            }
+            let legacy = Set(LegacyJSONKeys.sessionFileTwins.filter { platform == .android || !$0.androidOnly }.map(\.old))
+            let extra = Set(file.keys).subtracting(start.keys).subtracting(["startedAt", "state"])
+            XCTAssertEqual(extra, legacy, "\(platform)")
+        }
+    }
+
+    func testTheReadmeListsTheSessionFileTwins() throws {
+        let readme = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("README.md")
+        let text = try String(contentsOf: readme, encoding: .utf8)
+        for entry in LegacyJSONKeys.sessionFileTwins {
+            XCTAssertTrue(text.contains("`\(entry.old)` → `\(entry.new)`"), "README misses \(entry.old)")
+        }
+    }
+
+    private func object(_ json: String) throws -> [String: Any] {
+        try XCTUnwrap(JSONSerialization.jsonObject(with: Data(json.utf8)) as? [String: Any])
     }
 
     func testAStepWithoutAMeasuredDurationWritesNull() throws {

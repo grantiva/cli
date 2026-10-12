@@ -291,4 +291,113 @@ final class ChildProcessTests: XCTestCase {
         }
         XCTAssertEqual(lines, ["$ /bin/sleep 30", "stopped by SIGINT: /bin/sleep 30"])
     }
+
+    // MARK: - L11: an ignored SIGHUP (nohup) is handed on to the runner
+
+    /// Runs `body` with `signalNumber` set to `handler` in this process,
+    /// restoring the previous disposition afterwards.
+    private func withDisposition<T>(_ signalNumber: Int32, _ handler: sig_t?, _ body: () throws -> T) rethrows -> T {
+        var previous = sigaction()
+        sigaction(signalNumber, nil, &previous)
+        signal(signalNumber, handler)
+        defer { sigaction(signalNumber, &previous, nil) }
+        return try body()
+    }
+
+    /// How a child spawned now sees SIGHUP: perl reports `IGNORE` for a
+    /// signal ignored at exec, and nothing for one at its default. (macOS
+    /// `ps` has no ignored-signal column.)
+    private func hangUpDispositionInAChild() throws -> String {
+        let pipe = Pipe()
+        let child = try ChildProcess.spawn(
+            executable: "/usr/bin/perl", arguments: ["-e", "print $SIG{HUP} // 'DEFAULT'"],
+            stdout: pipe.fileHandleForWriting.fileDescriptor, stderr: pipe.fileHandleForWriting.fileDescriptor
+        )
+        try pipe.fileHandleForWriting.close()
+        let text = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        child.wait()
+        return text.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    func testAnIgnoredHangUpStaysIgnoredInTheChildAndItSurvivesSIGHUP() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try withDisposition(SIGHUP, SIG_IGN) {
+            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+        }
+        defer { child.terminateGroup(gracePeriod: 1); child.wait() }
+        XCTAssertEqual(try withDisposition(SIGHUP, SIG_IGN) { try hangUpDispositionInAChild() }, "IGNORE", "SIGHUP must stay ignored in the child")
+        usleep(200_000)
+        kill(child.pid, SIGHUP)
+        usleep(300_000)
+        XCTAssertTrue(child.isRunning, "a child of a nohup'd grantiva must survive a hang-up")
+    }
+
+    func testADefaultHangUpStillEndsTheChild() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try withDisposition(SIGHUP, SIG_DFL) {
+            try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+        }
+        defer { child.terminateGroup(gracePeriod: 1) }
+        XCTAssertEqual(try withDisposition(SIGHUP, SIG_DFL) { try hangUpDispositionInAChild() }, "DEFAULT")
+        usleep(200_000)
+        kill(child.pid, SIGHUP)
+        XCTAssertEqual(child.wait(), SIGHUP)
+    }
+
+    func testInterruptAndTerminateAreResetEvenWhenIgnoredHere() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        for signalNumber in [SIGINT, SIGTERM] {
+            let child = try withDisposition(signalNumber, SIG_IGN) {
+                try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+            }
+            usleep(200_000)
+            kill(child.pid, signalNumber)
+            XCTAssertEqual(child.wait(), signalNumber, "signal \(signalNumber) must be at its default in the child")
+        }
+    }
+
+    func testOnlySignalsNotIgnoredHereAreReset() {
+        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in false }), [SIGINT, SIGTERM, SIGHUP, SIGQUIT, SIGPIPE])
+        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { _ in true }), [SIGINT, SIGTERM])
+        XCTAssertEqual(ChildProcess.signalsToReset(isIgnored: { $0 == SIGHUP }), [SIGINT, SIGTERM, SIGQUIT, SIGPIPE])
+    }
+
+    // MARK: - L48: a child that has exited is seen without blocking
+
+    func testPollReportsAnExitWithoutBlockingAndWaitAgrees() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 4"], stdout: output, stderr: output)
+        let deadline = Date().addingTimeInterval(5)
+        var status: Int32?
+        while status == nil, Date() < deadline {
+            status = child.poll()
+            if status == nil { usleep(20_000) }
+        }
+        XCTAssertEqual(status, 4)
+        XCTAssertFalse(child.isRunning)
+        XCTAssertEqual(child.wait(), 4)
+        XCTAssertNil(child.terminatingSignal)
+
+        let sleeper = try ChildProcess.spawn(executable: "/bin/sleep", arguments: ["30"], stdout: output, stderr: output)
+        XCTAssertNil(sleeper.poll())
+        kill(sleeper.pid, SIGHUP)
+        XCTAssertEqual(sleeper.wait(), SIGHUP)
+        XCTAssertEqual(sleeper.terminatingSignal, SIGHUP)
+    }
+
+    /// Someone else reaped the child and nothing recorded its status: wait()
+    /// reports a failure, never 0.
+    func testWaitAfterAnUnrecordedReapIsAFailureNotZero() throws {
+        let output = try devNullOutput()
+        defer { Darwin.close(output) }
+        let child = try ChildProcess.spawn(executable: "/bin/sh", arguments: ["-c", "exit 0"], stdout: output, stderr: output)
+        var raw: Int32 = 0
+        XCTAssertEqual(waitpid(child.pid, &raw, 0), child.pid)
+        XCTAssertEqual(child.wait(), ChildProcess.unknownExitStatus)
+        XCTAssertNotEqual(ChildProcess.unknownExitStatus, 0)
+    }
 }

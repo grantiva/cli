@@ -15,10 +15,18 @@ the registered tool names drift apart.
 and provision a device first. Only the tools marked **yes** in the **Session** column need a session:
 until one exists they return an error (`isError`) naming `grantiva runner start` and
 `grantiva run --keep-alive`, and they attach to it on the next call once it starts (and re-attach if it
-is replaced). In the seconds after `grantiva runner start --detach` returns, while WDA has no session yet,
-they return an error (`isError`) saying the session is starting and to retry in a few seconds; a call
-made once WDA is ready attaches as usual. `grantiva_screenshot` is the exception when the session records
-its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it succeeds during that window.
+is replaced). While a session is starting, on either platform, they return an error (`isError`) saying
+so and to retry in a few seconds, never the "Start one with `grantiva runner start`" advice (following it
+would start a second runner on the device):
+`Error: The runner session is starting (WDA has no session yet). Retry in a few seconds.`, with
+`UIAutomator2` in place of `WDA` on Android. A session is starting from the moment `grantiva runner start`
+(with or without `--detach`) or `grantiva run --keep-alive` in this project spawns its runner until the
+driver answers: `runner start` writes `.grantiva/session.json` with `"state": "starting"` at once, and a
+`run --keep-alive` runner is starting until it publishes its keep-alive session. On iOS the same text
+covers the seconds after `runner start --detach` returns while WDA has no session yet. A call made once
+the driver is ready attaches as usual. `grantiva_screenshot` is the exception once `--detach` has returned
+and the session records its device: it takes the screenshot with `simctl` or `adb`, not WDA, so it
+succeeds in that last window.
 
 Every tool, with or without a session, reports every failure as an `isError` result whose text starts
 with `Error: ` exactly once, never as a JSON-RPC error: a missing simulator or AVD, a refused delete, a

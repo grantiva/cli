@@ -29,7 +29,7 @@ final class EmulatorManagerTests: XCTestCase {
 
     private func manager(
         _ shell: ScriptedShell, spawn: SpawnRecorder = SpawnRecorder(), headless: Bool = true, sdkRoot: String = "/sdk",
-        boundPorts: Set<Int> = [], portOwners: [Int32]? = nil
+        boundPorts: Set<Int> = [], portOwners: [Int32]? = nil, leaseDirectory: String? = nil
     ) -> EmulatorManager {
         EmulatorManager(
             sdk: AndroidSDK(root: sdkRoot),
@@ -43,7 +43,9 @@ final class EmulatorManagerTests: XCTestCase {
             environment: [:],
             killTimeout: 1,
             consolePortBound: { boundPorts.contains($0) },
-            consolePortOwners: { _ in portOwners }
+            consolePortOwners: { _ in portOwners },
+            flushTimeout: 0.2,
+            leaseDirectory: leaseDirectory ?? scratch.appendingPathComponent("locks").path
         )
     }
 
@@ -51,6 +53,8 @@ final class EmulatorManagerTests: XCTestCase {
     /// when the scripted shell sees `emu kill` for its serial.
     private final class EmulatorProcesses: @unchecked Sendable {
         private var processes: [String: Process] = [:]
+        /// Children already killed and reaped here; their pids may be reused.
+        private var reaped: Set<Int32> = []
         let shell: ScriptedShell
         init(_ shell: ScriptedShell) { self.shell = shell }
 
@@ -69,13 +73,24 @@ final class EmulatorManagerTests: XCTestCase {
         func execute(_ command: String) async throws -> String {
             for (serial, process) in processes
             where killOn.map(command.contains) ?? command.hasSuffix("'\(serial)' emu kill") {
-                process.terminate()
-                process.waitUntilExit()
+                // Not `waitUntilExit()`: it waits for a notification bound to
+                // the launching thread's run loop, which an `await` in the
+                // teardown can leave on another thread. `waitpid` returns
+                // once the child is gone (or at once if Foundation reaped it).
+                guard !reaped.contains(process.processIdentifier) else { continue }
+                kill(process.processIdentifier, SIGKILL)
+                var status: Int32 = 0
+                _ = waitpid(process.processIdentifier, &status, 0)
+                reaped.insert(process.processIdentifier)
             }
             return try await shell.execute(command)
         }
 
-        deinit { processes.values.forEach { if $0.isRunning { $0.terminate() } } }
+        deinit {
+            processes.values
+                .filter { !reaped.contains($0.processIdentifier) && $0.isRunning }
+                .forEach { $0.terminate() }
+        }
     }
 
     private func manager(_ emulators: EmulatorProcesses) -> EmulatorManager {
@@ -83,7 +98,8 @@ final class EmulatorManagerTests: XCTestCase {
             sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: emulators.execute),
             execute: emulators.execute, spawn: SpawnRecorder().spawn, provenance: AndroidProvenance(directory: scratch.path),
             headless: true, bootTimeout: 1, pollInterval: 0.01, environment: [:], killTimeout: 2,
-            consolePortBound: { _ in false }, consolePortOwners: { _ in nil }
+            consolePortBound: { _ in false }, consolePortOwners: { _ in nil },
+            flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
         )
     }
 
@@ -754,6 +770,7 @@ final class EmulatorManagerTests: XCTestCase {
             .success(""), .success(""),                              // force-stop x2
             .success(""),                                            // forward --list
             .success("List of devices attached\nemulator-5556 device"),
+            .success(""),                                            // sync
             .success(""),                                            // emu kill
             .success("List of devices attached"),                    // gone
         ])
@@ -764,6 +781,7 @@ final class EmulatorManagerTests: XCTestCase {
             "'/sdk/platform-tools/adb' -s 'emulator-5556' shell am force-stop 'io.appium.uiautomator2.server.test'",
             "'/sdk/platform-tools/adb' -s 'emulator-5556' forward --list",
             "'/sdk/platform-tools/adb' devices -l",
+            "'/usr/bin/perl' -e 'alarm shift; exec @ARGV' 1 '/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'",
             "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill",
             "'/sdk/platform-tools/adb' devices -l",
         ])
@@ -774,6 +792,7 @@ final class EmulatorManagerTests: XCTestCase {
         let shell = ScriptedShell([
             .success(""), .success(""), .success(""),                     // force-stop x2, forward --list
             .success("List of devices attached\nemulator-5554 device"),
+            .success(""),                                                 // sync
             .success(""),                                                 // emu kill
             .success("List of devices attached"),
         ])
@@ -858,10 +877,10 @@ final class EmulatorManagerTests: XCTestCase {
         let shell = ScriptedShell([
             // emulator-5554
             .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
-            .success(both), .success(""), .success(second),              // listed, emu kill, gone
+            .success(both), .success(""), .success(""), .success(second), // listed, sync, emu kill, gone
             // emulator-5556
             .success(""), .success(""), .success(""),
-            .success(second), .success(""), .success("List of devices attached"),
+            .success(second), .success(""), .success(""), .success("List of devices attached"),
         ])
         let emulators = EmulatorProcesses(shell)
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5554", avd: "A", pid: try emulators.start(serial: "emulator-5554")))
@@ -888,7 +907,7 @@ final class EmulatorManagerTests: XCTestCase {
             .success(both),
             // emulator-5556: ours, torn down
             .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
-            .success(both), .success(""), .success(afterKill),           // listed, emu kill, gone
+            .success(both), .success(""), .success(""), .success(afterKill), // listed, sync, emu kill, gone
         ])
         let emulators = EmulatorProcesses(shell)
         try ledger.register(StartedEmulatorRecord(serial: "emulator-5556", avd: "B", pid: try emulators.start(serial: "emulator-5556")))
@@ -1071,5 +1090,96 @@ final class EmulatorManagerTests: XCTestCase {
     func testToolMessageNormalisationStripsErrorPrefixesAndNullLines() {
         XCTAssertEqual(EmulatorManager.cleanedToolMessage("Error: Error: bad\nnull\n"), "bad")
         XCTAssertEqual(EmulatorManager.cleanedToolMessage("fine"), "fine")
+    }
+
+    // MARK: - L35: a killed run's temp dirs go with a force teardown
+
+    private func writeClaim(_ claim: SimulatorLeaseClaim, leases: String) throws {
+        try FileManager.default.createDirectory(atPath: leases, withIntermediateDirectories: true)
+        try JSONEncoder.leaseEncoder.encode(claim)
+            .write(to: URL(fileURLWithPath: SimulatorLease.leasePath(udid: claim.udid, directory: leases)))
+    }
+
+    private func makeTempDirectories() throws -> [String] {
+        let paths = ["grantiva-\(UUID().uuidString)", "grantiva-report-\(UUID().uuidString)"]
+            .map { scratch.appendingPathComponent($0).path }
+        for path in paths { try FileManager.default.createDirectory(atPath: "\(path)/0", withIntermediateDirectories: true) }
+        return paths
+    }
+
+    func testForceTeardownRemovesTheKilledRunsTempDirectories() async throws {
+        let leases = scratch.appendingPathComponent("leases").path
+        let temps = try makeTempDirectories()
+        var claim = SimulatorLeaseClaim(pid: try deadPID(), udid: "emulator-5554", startedAt: Date(), runnerPID: try deadPID(), keepAlive: true)
+        claim.temporaryDirectories = temps
+        try writeClaim(claim, leases: leases)
+        let shell = ScriptedShell()
+        shell.fallback = "List of devices attached"
+
+        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: "emulator-5554", force: true)
+
+        XCTAssertEqual(outcome.temporaryDirectoriesRemoved, temps)
+        for path in temps { XCTAssertFalse(FileManager.default.fileExists(atPath: path), path) }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "emulator-5554", directory: leases)),
+                       "the stale lease file goes with its claim")
+    }
+
+    func testForceTeardownKeepsTempDirectoriesOfALiveOwner() async throws {
+        let leases = scratch.appendingPathComponent("leases").path
+        let temps = try makeTempDirectories()
+        var claim = SimulatorLeaseClaim(pid: getpid(), udid: "emulator-5554", startedAt: Date())
+        claim.temporaryDirectories = temps
+        try writeClaim(claim, leases: leases)
+        let shell = ScriptedShell()
+        shell.fallback = "List of devices attached"
+
+        let outcome = try await manager(shell, leaseDirectory: leases).teardown(serial: "emulator-5554", force: true)
+
+        XCTAssertEqual(outcome.temporaryDirectoriesRemoved, [])
+        for path in temps { XCTAssertTrue(FileManager.default.fileExists(atPath: path), path) }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: SimulatorLease.leasePath(udid: "emulator-5554", directory: leases)))
+    }
+
+    // MARK: - L46: an app installed just before a teardown survives it
+
+    /// `emu kill` stops the guest without a shutdown, so whatever its page
+    /// cache holds is lost; the teardown flushes it first.
+    func testTeardownFlushesTheGuestBeforeKillingIt() async throws {
+        let shell = ScriptedShell([
+            .success(""), .success(""), .success(""),                    // force-stop x2, forward --list
+            .success("List of devices attached\nemulator-5556 device"),
+            .success(""), .success(""),                                  // sync, emu kill
+            .success("List of devices attached"),
+        ])
+        let outcome = try await manager(shell).teardown(serial: "emulator-5556", force: true)
+        XCTAssertTrue(outcome.killed)
+        let commands = shell.commands
+        let sync = try XCTUnwrap(commands.firstIndex(of: "'/usr/bin/perl' -e 'alarm shift; exec @ARGV' 1 '/sdk/platform-tools/adb' -s 'emulator-5556' shell 'sync'"), "\(commands)")
+        let kill = try XCTUnwrap(commands.firstIndex(of: "'/sdk/platform-tools/adb' -s 'emulator-5556' emu kill"), "\(commands)")
+        XCTAssertLessThan(sync, kill)
+    }
+
+    func testAHungFlushDoesNotHoldTheTeardown() async throws {
+        let calls = ScriptedShell()
+        let execute: @Sendable (String) async throws -> String = { command in
+            _ = try await calls.execute(command)
+            if command.hasSuffix("shell 'sync'") { try? await Task.sleep(for: .seconds(30)) }
+            if command.hasSuffix("devices -l") {
+                return calls.commands.contains { $0.hasSuffix("emu kill") } ? "List of devices attached" : "List of devices attached\nemulator-5556 device"
+            }
+            return ""
+        }
+        let manager = EmulatorManager(
+            sdk: AndroidSDK(root: "/sdk"), adb: ADB(path: "/sdk/platform-tools/adb", execute: execute),
+            execute: execute, provenance: AndroidProvenance(directory: scratch.path), bootTimeout: 1, pollInterval: 0.01,
+            environment: [:], killTimeout: 2, flushTimeout: 0.2, leaseDirectory: scratch.appendingPathComponent("locks").path
+        )
+        let started = Date()
+        let outcome = try await manager.teardown(serial: "emulator-5556", force: true)
+        XCTAssertTrue(outcome.killed)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 5)
+        // The adb child carries its own alarm, so a hung sync is killed, not left behind.
+        XCTAssertTrue(calls.commands.contains { $0.hasPrefix("'/usr/bin/perl' -e 'alarm shift; exec @ARGV' 1 ") && $0.hasSuffix("shell 'sync'") },
+                      "\(calls.commands)")
     }
 }
