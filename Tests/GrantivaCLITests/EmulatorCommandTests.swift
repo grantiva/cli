@@ -238,11 +238,21 @@ final class EmulatorCommandTests: XCTestCase {
         let outcomes = try await EmulatorCommand.Teardown.teardown(
             manager, serial: "emulator-5598", force: true,
             stopRunners: { _ in [] },
-            markStops: { _ in [77] }
+            markStops: { _ in [77] },
+            waitForExit: { _ in true }
         )
         XCTAssertEqual(outcomes.first?.runnerSessionStopped, true)
+        // A marked runner still alive after the bounded wait is not claimed.
+        let alive = try await EmulatorCommand.Teardown.teardown(
+            manager, serial: "emulator-5598", force: true,
+            stopRunners: { _ in [] },
+            markStops: { _ in [77] },
+            waitForExit: { _ in false }
+        )
+        XCTAssertEqual(alive.first?.runnerSessionStopped, false)
         let unmarked = try await EmulatorCommand.Teardown.teardown(
-            manager, serial: "emulator-5598", force: true, stopRunners: { _ in [] }, markStops: { _ in [] }
+            manager, serial: "emulator-5598", force: true, stopRunners: { _ in [] }, markStops: { _ in [] },
+            waitForExit: { _ in true }
         )
         XCTAssertEqual(unmarked.first?.runnerSessionStopped, false)
     }
