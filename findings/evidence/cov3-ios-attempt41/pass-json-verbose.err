@@ -1,0 +1,82 @@
+[debug] 2026-10-13T06:22:02Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: exit 0: xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T06:22:03Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T06:22:04Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T06:22:04Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D4154BD9-8D4F-4451-89D6-5BC164102768 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-AF677CC3-CE98-4699-84F1-F589B3846A01/0/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (582ms)
+    ✓ assertVisible: text="Featured" (291ms)
+    ✓ takeScreenshot (84ms)
+    ✓ tapOn: text="Golden Gate Bridge" (934ms)
+    ✓ assertVisible: text="San Francisco, CA" (418ms)
+    ✓ assertVisible: text="Plan Visit" (351ms)
+    ✓ takeScreenshot (108ms)
+✓ 01-browse 7.4s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ assertVisible: text="Landmarks" (582ms)
+    ✓ assertVisible: text="Featured" (291ms)
+    ✓ takeScreenshot (84ms)
+    ✓ tapOn: text="Golden Gate Bridge" (934ms)
+    ✓ assertVisible: text="San Francisco, CA" (418ms)
+    ✓ assertVisible: text="Plan Visit" (351ms)
+    ✓ takeScreenshot (108ms)
+✓ 01-browse 7.4s
+
+  8 steps passing (7.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       7.4s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       7.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-13T06:22:15Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-D4154BD9-8D4F-4451-89D6-5BC164102768 --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-AF677CC3-CE98-4699-84F1-F589B3846A01/0/01-browse.yaml
+[debug] 2026-10-13T06:22:15Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T06:22:15Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear

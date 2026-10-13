@@ -1,0 +1,32 @@
+{
+  "allPassed" : false,
+  "error" : "Runner failed (exit 1): 02-exact-negative: assertVisible: text=\"Golden Gate.*\", exact=true: Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"Golden Gate Bridge, San Francisco, CA\", \"Categories\")\nRun grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.",
+  "screens" : [
+    {
+      "kind" : "flow",
+      "name" : "02-exact-negative",
+      "passed" : false,
+      "screenshots" : [
+
+      ],
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "duration" : 1.986,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Golden Gate.*\"",
+          "duration" : 1.076,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertVisible: text=\"Golden Gate.*\", exact=true",
+          "duration" : 12.517,
+          "message" : "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"Golden Gate Bridge, San Francisco, CA\", \"Categories\")",
+          "status" : "failed"
+        }
+      ]
+    }
+  ]
+}
