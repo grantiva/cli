@@ -29,7 +29,7 @@ These corrections resolve matrix assumptions contradicted by accepted documentat
 
 | Corrected result ID(s) | Retained evidence | Post-correction disposition |
 |---|---|---|
-| CLI-003, D2-47, N3-16 | `cov3-cli/findings/evidence/cov3-cli/CLI-003/`, `D2-47/`, `N3-16/`; controller `findings/evidence/cov3-controller/help-corpus/summary.json` | **Rerun required:** regenerate all 172 exact-candidate pages, update only the accepted corpus delta, then prove a zero changed-file list. Do not mark pass from the draft. |
+| CLI-003, D2-47, N3-16 | `cov3-cli/findings/evidence/cov3-cli/CLI-003/`, `D2-47/`, `N3-16/`; controller `findings/evidence/cov3-controller/help-corpus/summary.json` | **Corrected pass:** the fresh Task 6 replay in `findings/evidence/cov3-controller/help-corpus-task6/summary.json` proves all 172 commands exit0, required headings, and zero canonical byte mismatches. |
 | CLI-045, CLI-145 | `cov3-cli/findings/evidence/cov3-cli/CLI-045/`, `CLI-145/` | Existing raw supports corrected mutual-exclusion exit 64; preserve CLI-145's three exit-1 platform legs. Eligible for corrected pass after merge review. |
 | D2-27 | `cov3-cli/findings/evidence/cov3-cli/D2-27/helps_r3.out` | Existing six-page inventory supports corrected pass; malformed first attempt remains excluded provenance. |
 | MCP-078 [ios], MCP-078 [android] | iOS attempt37 MCP responses; Android `MCP078-force-stop-rerun1/` | Mixed app-dependent errors and valid device/UI successes support corrected pass on both platforms. |
@@ -37,7 +37,7 @@ These corrections resolve matrix assumptions contradicted by accepted documentat
 | B3-L55.1 [ios], B3-L55.2 [android] | iOS `cov3-ios-attempt48b/`; Android `B3-L55-active-ready-rerun2/`; `Sources/GrantivaCore/Runner/RunnerExecution.swift` terminal publication path | Active owner/process/stream and terminal interruption evidence support corrected pass. |
 | X-013 [ios], X-013 [android] | iOS attempt62 lifecycle documents; Android `X013-X015-X017-android-rerun1/` | Shared fields/types agree and platform app/device names are separately required; corrected pass. |
 | IOS-016 | iOS attempt74 teardown/process/home/session artifacts; K68 source tests | Corrected orphan-helper criterion passes; no product brief is required. |
-| B2-K103 [ios], B2-K103 [android] | iOS `cov3-ios-analysis-n2-07/audit.json`; Android current JSON-key audit; `LegacyJSONKeys.swift`, `JSONKeyCasingContractTests.swift` | Only documented equal aliases occur; corrected pass on both platforms. |
+| B2-K103 [ios], B2-K103 [android] | iOS `cov3-ios-analysis-n2-07/audit.json`; Android `N2-07-legacy-json-alias-audit-current/`; `LegacyJSONKeys.swift`, `JSONKeyCasingContractTests.swift` | Only documented equal aliases occur; corrected pass on both platforms. |
 | IOS-153 | iOS attempt109b three successful modes and `ios109b-n12-ios153-review.md` | Stable decoded content agrees; dynamic timestamps/durations differ truthfully. Corrected pass. |
 | AND-137, AND-138 | Android `output-modes-exact-rerun3/`, `output-contracts-exact-rerun1/AND-137-quiet-fail/` | Stable decoded mode behavior supports corrected pass. |
 | B2-K19 [android] | Android output-mode directories above plus `B2-K25-ci-correction-rerun2/` | Supported local modes and documented Android CI refusal satisfy corrected Android criterion; corrected pass. |
@@ -46,15 +46,15 @@ These corrections resolve matrix assumptions contradicted by accepted documentat
 | B2-K25 [android] | Android `B2-K25-full-exact-rerun1/`, `B2-K25-ci-correction-rerun2/` | Supported local semantics and documented CI refusal support corrected Android pass. |
 | B2-K25 [ios] | iOS attempts65, 65b, 66, 66b; L71 | **Still product-failing:** absent-app skipped install queries the missing data container. Correction clarifies the compound but does not waive L71 or produce a pass. |
 | N3-06 [android] | Android `N3-06-ten-recordings-rerun1/`, ffprobe audit, `B3-K111-record-frames-rerun1/` | Ten final MP4s are exactly 3 seconds; corrected pass. |
-| B2-L03, B3-L51 | Android `B2-K07-N03-B2-L03-scroll-renderers-rerun1/` and `B3-L51-four-forms-rerun9/`; production client/report logs; `/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/UIAutomator2Client.swift` and `Sources/GrantivaCore/Runner/RunnerReportSteps.swift` | Instrumentation-only correction. Re-evaluate each row from direct in-flow hierarchy measurements plus terminal CLI semantic artifacts; do not infer a pass from this document alone. |
+| B2-L03, B3-L51 | Android `B2-L03-per-step-hierarchy-rerun10/` with `B2-K07-N03-B2-L03-scroll-renderers-rerun1/` join, and `B3-L51-four-forms-rerun12/`; `findings/android-b2l03-rerun10-final-review.md` and `findings/android-b3l51-rerun12-final-review.md`; production client/report logs; `/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Android/UIAutomator2Client.swift` and `Sources/GrantivaCore/Runner/RunnerReportSteps.swift` | Instrumentation-only correction. Both rows already have independently reviewed valid passes from the named final captures; no duplicate corrected rerun line is added. |
 
 ## Result IDs for corrected reruns
 
 The controller should add corrected rerun result lines for these exact existing IDs after merges, without replacing original lines:
 
-`CLI-003`, `D2-47`, `N3-16`, `CLI-045`, `CLI-145`, `D2-27`, `MCP-078 [ios]`, `MCP-078 [android]`, `IOS-058`, `B3-L55.1 [ios]`, `B3-L55.2 [android]`, `X-013 [ios]`, `X-013 [android]`, `IOS-016`, `B2-K103 [ios]`, `B2-K103 [android]`, `IOS-153`, `AND-137`, `AND-138`, `B2-K19 [ios]`, `B2-K19 [android]`, `AND-022`, `B2-K25 [ios]`, `B2-K25 [android]`, `N3-06 [android]`, `B2-L03`, and `B3-L51`.
+`CLI-003`, `D2-47`, `N3-16`, `CLI-045`, `CLI-145`, `D2-27`, `MCP-078 [ios]`, `MCP-078 [android]`, `IOS-058`, `B3-L55.1 [ios]`, `B3-L55.2 [android]`, `X-013 [ios]`, `X-013 [android]`, `IOS-016`, `B2-K103 [ios]`, `B2-K103 [android]`, `IOS-153`, `AND-137`, `AND-138`, `B2-K19 [ios]`, `B2-K19 [android]`, `AND-022`, `B2-K25 [ios]`, `B2-K25 [android]`, `N3-06 [android]`.
 
-Product failures owned by L64–L79 remain unchanged and require product fixes rather than expectation reruns.
+Product failures owned by L64–L80 remain unchanged and require product fixes rather than expectation reruns.
 
 ## Executed help-corpus verification
 

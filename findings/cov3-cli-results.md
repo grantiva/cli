@@ -435,3 +435,16 @@ behaviour is in the note.
 ## Counts
 
 384 unique matrix IDs in the CLI slice; using the latest verdict for rows with preserved reruns: pass 368, fail 7 (1 product contract failure, 6 pending matrix/corpus corrections), blocked 5, n/a 4. Step 3 v2 separately inventories 160 complete user-facing README/docs command examples against all 172 current help pages, with 0 unknown-flag and 0 malformed examples; each entry links exact-variant evidence or records an explicit syntax-only execution exclusion. Platform result lines are split for all matrix rows marked both. The ledger retains the original blocked observations beside later handoff/full-access rerun lines, so it contains 414 result lines while the unique-ID totals use the latest rerun verdict.
+
+## Task 6 corrected-criterion reviews
+
+Original observations above remain unchanged. These additive rerun lines re-evaluate retained raw evidence under the published corrections; they do not claim new device executions. The help-corpus trio additionally uses the fresh 172-command replay.
+
+| ID | result | evidence | note |
+|---|---|---|---|
+| CLI-003 rerun corrected round 4 | pass | findings/evidence/cov3-cli/CLI-003/regen.out, findings/evidence/cov3-controller/help-corpus-task6/summary.json | All 172 hash-pinned candidate help pages rerun: exit0, required headings, zero canonical byte mismatches. The original stale-corpus failure remains preserved. |
+| D2-47 rerun corrected round 4 | pass | findings/evidence/cov3-cli/D2-47/, findings/evidence/cov3-controller/help-corpus-task6/summary.json | All 172 hash-pinned candidate help pages rerun: exit0, required headings, zero canonical byte mismatches. The original stale-corpus failure remains preserved. |
+| N3-16 rerun corrected round 4 | pass | findings/evidence/cov3-cli/N3-16/, findings/evidence/cov3-controller/help-corpus-task6/summary.json | All 172 hash-pinned candidate help pages rerun: exit0, required headings, zero canonical byte mismatches. The original stale-corpus failure remains preserved. |
+| CLI-045 rerun corrected round 4 | pass | findings/evidence/cov3-cli/CLI-045/ | Corrected-criterion review under docs/superpowers/plans/2026-10-13-coverage-issues-round3/00-expectation-corrections-round3.md; retained raw supports the revised contract. Original verdict and evidence are preserved. |
+| CLI-145 rerun corrected round 4 | pass | findings/evidence/cov3-cli/CLI-145/ | Corrected-criterion review under docs/superpowers/plans/2026-10-13-coverage-issues-round3/00-expectation-corrections-round3.md; retained raw supports the revised contract. Original verdict and evidence are preserved. |
+| D2-27 rerun corrected round 4 | pass | findings/evidence/cov3-cli/D2-27/ | Corrected-criterion review under docs/superpowers/plans/2026-10-13-coverage-issues-round3/00-expectation-corrections-round3.md; retained raw supports the revised contract. Original verdict and evidence are preserved. |

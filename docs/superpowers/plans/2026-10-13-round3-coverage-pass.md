@@ -76,8 +76,8 @@ Round 2 left 7 real rows blocked (report §Blocked). Round 3 re-runs the ones th
 
 Run by the orchestrating session. Fix-wave Task 9 built the release binary from main dc965716, installed it with its bundle in `~/.grantiva-qa/bin/`, upgraded `~/.grantiva-qa/runner` to `1.1.28-grantiva.13+android-drivers-2`, ran the round-3 smoke (`findings/round3-smoke.md`) and regenerated `findings/help/`.
 
-- [ ] **Step 1:** Verify: `GRANTIVA_RUNNER_HOME=~/.grantiva-qa/runner ~/.grantiva-qa/bin/grantiva runner install | tail -2` (expect already installed, `1.1.28-grantiva.13`); `ls ~/.grantiva-qa/runner/cache/wda-builds | grep -c -- '-r1'` (expect 4; `-r2` if task-8-report says the caches were rebuilt); `~/.grantiva-qa/bin/grantiva --version` (2.1.0); `findings/round3-smoke.md` records the no-simulator MCP build as `isError` with nothing booted.
-- [ ] **Step 2:** `cd /Users/kyle/Developer/grantiva-cli && for s in cli ios android; do git worktree add -q .worktrees/cov3-$s -b cov3/$s coverage-campaign; mkdir -p .worktrees/cov3-$s/findings/evidence/cov3-$s; done`.
+- [x] **Step 1:** Verify: `GRANTIVA_RUNNER_HOME=~/.grantiva-qa/runner ~/.grantiva-qa/bin/grantiva runner install | tail -2` (expect already installed, `1.1.28-grantiva.13`); `ls ~/.grantiva-qa/runner/cache/wda-builds | grep -c -- '-r1'` (expect 4; `-r2` if task-8-report says the caches were rebuilt); `~/.grantiva-qa/bin/grantiva --version` (2.1.0); `findings/round3-smoke.md` records the no-simulator MCP build as `isError` with nothing booted.
+- [x] **Step 2:** `cd /Users/kyle/Developer/grantiva-cli && for s in cli ios android; do git worktree add -q .worktrees/cov3-$s -b cov3/$s coverage-campaign; mkdir -p .worktrees/cov3-$s/findings/evidence/cov3-$s; done`.
 
 ---
 
@@ -166,9 +166,9 @@ Agent, worktree `.worktrees/cov3-ios`, `GRANTIVA_SESSION_ID=cov3-ios`, simulator
 
 Agent, worktree `.worktrees/cov3-android`, `GRANTIVA_SESSION_ID=cov3-android`, AVD `cov3-android`.
 
-- [ ] **Step 1:** `adb devices` empty check (a device you did not create is left alone and noted); `emulator ensure --name cov3-android`; build+install the scratch Android app; stock set 12/12 + screens; `99-crash` fails fast with `app_crash` at `launchApp` or the first step after it (record time from `am_crash` to failure and the wall time).
-- [ ] **Step 2:** Every matrix row with slice `Android` and the Android half of every `iOS+Android` row (CLI rows handed to Android, MCP live-session rows, B/B2/B3 rows for Android briefs and R01/R02, N/N2/N3 rows, X rows); load-sensitive rows per the load rule; `emulator` capacity rows with `cov3-android-2` created and deleted inside the row.
-- [ ] **Step 3:** Teardown and `avdmanager delete avd -n cov3-android`; `adb devices` empty (apart from devices you did not create), no `cov3-` AVDs; commit "Android slice results for the round 3 coverage pass".
+- [x] **Step 1:** `adb devices` empty check (a device you did not create is left alone and noted); `emulator ensure --name cov3-android`; build+install the scratch Android app; stock set 12/12 + screens; `99-crash` fails fast with `app_crash` at `launchApp` or the first step after it (record time from `am_crash` to failure and the wall time).
+- [x] **Step 2:** Every matrix row with slice `Android` and the Android half of every `iOS+Android` row (CLI rows handed to Android, MCP live-session rows, B/B2/B3 rows for Android briefs and R01/R02, N/N2/N3 rows, X rows); load-sensitive rows per the load rule; `emulator` capacity rows with `cov3-android-2` created and deleted inside the row.
+- [x] **Step 3:** Teardown and `avdmanager delete avd -n cov3-android`; `adb devices` empty (apart from devices you did not create), no `cov3-` AVDs; commit "Android slice results for the round 3 coverage pass".
 
 ---
 
@@ -176,7 +176,7 @@ Agent, worktree `.worktrees/cov3-android`, `GRANTIVA_SESSION_ID=cov3-android`, A
 
 Run by the orchestrating session.
 
-- [ ] **Step 1:** `git merge --no-ff cov3/cli cov3/ios cov3/android` into `coverage-campaign`.
+- [x] **Step 1:** `git merge --no-ff cov3/cli cov3/ios cov3/android` into `coverage-campaign`.
 - [ ] **Step 2:** Every `fail` row becomes a brief `docs/superpowers/plans/2026-10-13-coverage-issues-round3/L<nn>-<slug>.md`, numbering from **L63** (L62 is the last round-3 brief; if the parked stop-marker item from the fix-wave ledger is confirmed, it takes the first free number), same sections and severity vocabulary as the L briefs; cite the matrix row, the brief it regresses or reopens, and the fix-wave PR. A fail on a `B3-L51` or `B3-L52` row reopens that brief for round 4 instead of a new one. `blocked` rows are listed in the report with the reason. Rows the slice marks `fail (matrix/brief error — triage)` go to `00-expectation-corrections-round3.md`; the matrix rows they correct gain `(corrected round 4)`.
 - [ ] **Step 3:** `docs/superpowers/plans/2026-10-13-round3-coverage-report.md`: binary and runner versions, matrix size and results per slice (pass / fail / blocked / n-a, `rerun` lines counted separately), Review Focus 1-5 verdicts, the per-brief verification table (every `B3` row's verdict, and every `B2` regression), the re-run outcome of the previously blocked rows, the brief list, host state after cleanup, and the exit-criterion statement: `ROUND 3: CLEAN` only if zero `fail` rows, otherwise `ROUND 3: <n> findings — round 4 fix wave required` with the brief IDs.
 - [ ] **Step 4:** Commit and push `coverage-campaign`; update `docs/superpowers/plans/2026-10-12-campaign-handoff.md` and `findings/ledgers/`. If CLEAN: the campaign's exit criterion is met; present the final summary to the owner (release stays their call). Otherwise write `docs/superpowers/plans/<date>-round4-fix-wave.md` from the new briefs plus L51/L52 (writing-plans) and execute it.
