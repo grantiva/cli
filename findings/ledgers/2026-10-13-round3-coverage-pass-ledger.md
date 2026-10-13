@@ -77,3 +77,11 @@ CLI reviewed evidence checkpoint: `6ad5a85b` on cov3/cli. Latest effective total
 - Android AND117 initially reported as product failure was a harness omission: original command lacked --env. Controller caught missing flag, worker removed unsupported failure; exact --env LANDMARKS_NOTE=from-cli rerun passed. No defect brief filed for that harness error.
 - Additional harness corrections preserve failed attempts separately: Android Profile navigation was nonexistent, iOS Gesture Pad capitalization was wrong, and an isolated scratch iOS session ID conflicted with legitimate cov3-ios device ownership. Corrected named-device retries do not remove original attempts.
 - N3-11 actual runner-use path now exercised with bundle-less exact binary, scratch runner-home clone, legitimate owning session and owned U1: start succeeds with one missing-bundle warning, stop succeeds. Worker adjudication/report integration pending.
+
+### Device verification continuation
+
+- iOS attempt11b meets B3-L14.2: cancellation at2.014s suppresses the response, xcodebuild is gone at cancellation+5.009s, and tools/list still responds. A reparented ibtoold remains; the criterion concerns xcodebuild and no helper was killed. Frozen executed harness and client preserve the cosmetic B3-L14.1 directory mismatch.
+- iOS attempt12 passes relative success/failure report paths and identical-input quiet/verbose checks (IOS070/071/152). Recording attempt13 is running on explicit campaign U1.
+- Independent heart fallback triage supports a product selector mismatch, not a stale fixture: runner identifier predicate finds heart; MCP label/name/placeholder lookup misses it. Draft L66 preserves full original row criteria; independent review pending.
+- Android exact environment group completed: quoted a=b c reaches app extras, seed-empty CLI/header variants pass, unsupported logs predicate and Android CI reject clearly. Worker adjudication pending. Corrected mixed-baseline runtime and MCP verdicts agree; B2-K89 remains fail because required README mixed-case exit-code documentation is absent.
+- Tasks3–5 remain in progress. No release-clean verdict or completed full pass is implied by these checkpoints.

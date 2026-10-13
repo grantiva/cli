@@ -107,3 +107,9 @@ CLI evidence/review fixes are committed on cov3/cli at `6ad5a85b`; interim indep
 New candidate briefs are L64 (Android launchApp can pass after FATAL) and L65 (missing script steps text differs from agreed contract). L65 is reproduced on both platforms. These are early triage drafts, not a completed round report. Additional iOS MCP label-fallback failures need triage after evidence review. A proposed Android environment-precedence failure was disproven: the first harness omitted --env, and the exact rerun passes.
 
 Current evidence integrity: quarantined historical iOS imports remain excluded; four pre-overwrite tracked outputs were archived exactly from9542e3d4 with hashes. Uncommitted intermediate overwritten outputs cannot be recovered. Reconstructed pre-import top-level inventory is explicitly non-contemporaneous; preserve that limitation in final reporting. Fresh controller attempts use isolated output directories.
+
+## Latest device and handoff checkpoint
+
+CLI handoffs now close seven prior blocked verdicts: CLI048/049/061/064/066, B3-L14.1, and N3-11. Latest CLI totals368pass/7fail/5blocked/4n-a; original blocked observations remain, and independent integration review is pending. Actual runner-start N3-11 evidence uses the exact bundleless QA binary with a scratch-home clone and the legitimate owning session on U1. This supersedes the older blocked status, without deleting its original inconclusive captures.
+
+L66 records the iOS accessibility identifier fallback defect. Independent triage and brief review support the classification: runner identifier query succeeds where MCP queries name and misses heart. Android B2-K89 runtime behavior passes but required README mixed-case exit-code documentation is absent; retain fail for Task6. Device result counts remain moving; consult their active tables. No clean/full-pass claim is justified yet.
