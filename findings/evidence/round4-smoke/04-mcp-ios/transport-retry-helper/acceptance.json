@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "platform": "ios",
+  "checks": [
+    {
+      "L65NoSessionPrecedence": true,
+      "text": "Error: No active runner session at /private/tmp/grantiva-round4-smoke-j35_m7hg/mcp-ios-no-session/.grantiva/session.json. Start one with `grantiva runner start` or `grantiva run --keep-alive` in /private/tmp/grantiva-round4-smoke-j35_m7hg/mcp-ios-no-session. 1 keep-alive session(s) started from another project directory or for another platform were ignored."
+    },
+    {
+      "L65ActiveExact": true,
+      "wrongTypeRetained": true,
+      "emptyRetained": true
+    },
+    {
+      "deterministicLargeHierarchySeed": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/inputs/ios-large-hierarchy-seed.json",
+      "preflightResponseBytes": [
+        219946,
+        219900
+      ]
+    },
+    {
+      "transportPairs": 10,
+      "largeResponses": 20,
+      "smallResponses": 10,
+      "notifications": 10,
+      "uniqueIDs": true
+    },
+    {
+      "L66RetryError": "Error: com.kylebrowning.Landmarks is not running. Relaunch it (grantiva_run, or restart the session with grantiva runner stop and grantiva runner start).",
+      "lookups": 2,
+      "minimumRetryDelaySeconds": 1
+    }
+  ]
+}

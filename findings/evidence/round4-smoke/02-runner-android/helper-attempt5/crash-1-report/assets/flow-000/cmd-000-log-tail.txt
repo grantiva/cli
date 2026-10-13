@@ -1,0 +1,47 @@
+--------- beginning of main
+10-13 10:09:32.983  6021  6021 I wning.landmarks: Late-enabling -Xcheck:jni
+10-13 10:09:32.991  6021  6021 I wning.landmarks: Using CollectorTypeCMC GC.
+10-13 10:09:32.997  6021  6021 D nativeloader: Load libframework-connectivity-tiramisu-jni.so using APEX ns com_android_tethering for caller /apex/com.android.tethering/javalib/framework-connectivity-t.jar: ok
+10-13 10:09:33.014  6021  6021 W ziparchive: Unable to open '/data/app/~~Z1etagzgs4gxQb-R5LtV4w==/com.kylebrowning.landmarks-xKH8QzRJM34ZnN6tjsmImQ==/base.dm': No such file or directory
+10-13 10:09:33.014  6021  6021 W ziparchive: Unable to open '/data/app/~~Z1etagzgs4gxQb-R5LtV4w==/com.kylebrowning.landmarks-xKH8QzRJM34ZnN6tjsmImQ==/base.dm': No such file or directory
+10-13 10:09:33.150  6021  6021 D nativeloader: Configuring clns-7 for other apk /data/app/~~Z1etagzgs4gxQb-R5LtV4w==/com.kylebrowning.landmarks-xKH8QzRJM34ZnN6tjsmImQ==/base.apk. target_sdk_version=35, uses_libraries=, library_path=/data/app/~~Z1etagzgs4gxQb-R5LtV4w==/com.kylebrowning.landmarks-xKH8QzRJM34ZnN6tjsmImQ==/lib/arm64:/data/app/~~Z1etagzgs4gxQb-R5LtV4w==/com.kylebrowning.landmarks-xKH8QzRJM34ZnN6tjsmImQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.kylebrowning.landmarks
+10-13 10:09:33.151  6021  6021 D CompatChangeReporter: Compat change id reported: 202956589; UID 10207; state: ENABLED
+10-13 10:09:33.155  6021  6021 V GraphicsEnvironment: Currently set values for:
+10-13 10:09:33.155  6021  6021 V GraphicsEnvironment:   angle_gl_driver_selection_pkgs=[]
+10-13 10:09:33.155  6021  6021 V GraphicsEnvironment:   angle_gl_driver_selection_values=[]
+10-13 10:09:33.155  6021  6021 V GraphicsEnvironment: Global.Settings values are invalid: number of packages: 0, number of values: 0
+10-13 10:09:33.156  6021  6021 V GraphicsEnvironment: Neither updatable production driver nor prerelease driver is supported.
+10-13 10:09:33.164  6021  6021 D CompatChangeReporter: Compat change id reported: 279646685; UID 10207; state: ENABLED
+10-13 10:09:33.191  6021  6021 I Landmarks: launch action=android.intent.action.MAIN data=null extras=[LANDMARKS_CRASH_ON_LAUNCH=1] env=[LANDMARKS_SEED=null, LANDMARKS_CRASH_ON_LAUNCH=null, LANDMARKS_NOTE=null]
+10-13 10:09:33.192  6021  6021 W wning.landmarks: Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+10-13 10:09:33.192  6021  6021 W wning.landmarks: Common causes for lock verification issues are non-optimized dex code
+10-13 10:09:33.192  6021  6021 W wning.landmarks: and incorrect proguard optimizations.
+10-13 10:09:33.192  6021  6021 W wning.landmarks: Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+10-13 10:09:33.192  6021  6021 W wning.landmarks: Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+10-13 10:09:33.193  6021  6021 W wning.landmarks: Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(boolean, kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+10-13 10:09:33.193  6021  6021 W wning.landmarks: Method void androidx.compose.runtime.snapshots.SnapshotStateList.update$default(androidx.compose.runtime.snapshots.SnapshotStateList, boolean, kotlin.jvm.functions.Function1, int, java.lang.Object) failed lock verification and will run slower.
+10-13 10:09:33.204  6021  6021 D CompatChangeReporter: Compat change id reported: 309578419; UID 10207; state: ENABLED
+10-13 10:09:33.218  6021  6021 W HWUI    : Unknown dataspace 0
+10-13 10:09:33.346  6021  6029 I wning.landmarks: Compiler allocated 5250KB to compile void android.view.ViewRootImpl.performTraversals()
+10-13 10:09:33.473  6021  6043 I EGL_emulation: Opening libGLESv1_CM_emulation.so
+10-13 10:09:33.473  6021  6043 I EGL_emulation: Opening libGLESv2_emulation.so
+10-13 10:09:33.476  6021  6043 W HWUI    : Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+10-13 10:09:33.477  6021  6043 W HWUI    : Failed to initialize 101010-2 format, error = EGL_SUCCESS
+10-13 10:09:33.485  6021  6043 I Gralloc4: mapper 4.x is not supported
+10-13 10:09:33.712  6021  6021 D AndroidRuntime: Shutting down VM
+--------- beginning of crash
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: FATAL EXCEPTION: main
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: Process: com.kylebrowning.landmarks, PID: 6021
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at com.kylebrowning.landmarks.LandmarksApp$Companion.scheduleCrashIfRequested$lambda$0(LandmarksApp.kt:15)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at com.kylebrowning.landmarks.LandmarksApp$Companion.$r8$lambda$ix4YNiGBvCpx2x1g2pgvnXpn7Gs(Unknown Source:0)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at com.kylebrowning.landmarks.LandmarksApp$Companion$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at android.os.Handler.handleCallback(Handler.java:959)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:100)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at android.os.Looper.loopOnce(Looper.java:232)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:317)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:8705)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:580)
+10-13 10:09:33.713  6021  6021 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:886)
+10-13 10:09:33.719  6021  6021 I Process : Sending signal. PID: 6021 SIG: 9

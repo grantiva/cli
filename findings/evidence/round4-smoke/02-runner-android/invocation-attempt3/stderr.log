@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/android_runner_smoke.py", line 44, in <module>
+    doc=runner_case('healthy',a.healthy_flow); assert doc['status']=='passed'; checks.append({'healthy':True})
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/android_runner_smoke.py", line 42, in runner_case
+    d,result=run(label,argv,expected,report); return json.loads((d/'raw-report/report.json').read_text())
+             ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/android_runner_smoke.py", line 31, in run
+    if p.returncode!=expected: raise AssertionError((label,p.returncode,expected))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('healthy', 1, 0)

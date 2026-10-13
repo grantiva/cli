@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "updateSeq": 11,
+  "status": "failed",
+  "startTime": "2026-10-13T10:05:56.443556-07:00",
+  "endTime": "2026-10-13T10:06:16.351379-07:00",
+  "lastUpdated": "2026-10-13T10:06:16.352645-07:00",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "app": {
+    "id": "com.kylebrowning.landmarks",
+    "version": "1.0",
+    "build": "1"
+  },
+  "maestroRunner": {
+    "version": "1.1.28-grantiva.14",
+    "driver": "uiautomator2"
+  },
+  "summary": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "running": 0,
+    "pending": 0
+  },
+  "flows": [
+    {
+      "index": 0,
+      "id": "flow-000",
+      "name": "crash",
+      "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/inputs/crash.yaml",
+      "device": {
+        "id": "emulator-5580",
+        "name": "google sdk_gphone64_arm64",
+        "platform": "android",
+        "osVersion": "35",
+        "isSimulator": true
+      },
+      "dataFile": "flows/flow-000.json",
+      "assetsDir": "assets/flow-000",
+      "status": "failed",
+      "updateSeq": 6,
+      "endTime": "2026-10-13T10:06:16.348478-07:00",
+      "duration": 19904,
+      "lastUpdated": "2026-10-13T10:06:16.350175-07:00",
+      "commands": {
+        "total": 4,
+        "passed": 3,
+        "failed": 1,
+        "skipped": 0,
+        "warned": 0,
+        "running": 0,
+        "pending": 0
+      },
+      "attempts": 0,
+      "error": "Element not visible: text='This never appears' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Sierra Nevada, CA\", \"Battery charging, 100 percent.\", \"Featured\")"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "id": "flow-000",
+  "name": "required-miss",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-3/inputs/required-miss.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T10:15:16.783216-07:00",
+  "endTime": "2026-10-13T10:15:35.409912-07:00",
+  "duration": 18626,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T10:15:16.788162-07:00",
+      "endTime": "2026-10-13T10:15:18.147162-07:00",
+      "duration": 1359,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element fix4-3\"",
+      "status": "failed",
+      "startTime": "2026-10-13T10:15:18.14839-07:00",
+      "endTime": "2026-10-13T10:15:35.26639-07:00",
+      "duration": 17118,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element fix4-3"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element fix4-3' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Phone signal full.\", \"Battery 100 percent.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-001-log-tail.txt"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 9238,
+    "p50": 1359,
+    "p95": 17118,
+    "max": 17118,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
