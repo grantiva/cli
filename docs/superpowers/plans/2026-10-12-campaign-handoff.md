@@ -74,3 +74,36 @@ One round = fix wave → repack → smoke → full coverage pass → triage. The
 
 ## Open items carried
 L05 (first lookup after launch slow on software-rendered AVD), L06 (page-source selectors crash-check only between attempts), L07 (far-side swipe opens the row 2/3 under load; demo flow cannot detect a missed swipe), K111 (screenrecord overrun), deferred minors: holdTrack fails on a malformed extra track; SIGHUP reset under nohup.
+
+
+## Resume checkpoint — 2026-10-12 host date
+
+The existing round-3 pass is being resumed, not restarted. The current matrix has **1,170 rows** (384 CLI, 319 iOS, 308 Android, 159 both); the earlier 1,157 count above predates the smoke addendum. QA binary SHA256 `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8` matches the `release-main` worktree build at `8f2cff67`; `runner version` and its versioned stamp verify `1.1.28-grantiva.13`. The root runner-home `version` file is legacy and does not identify the active version.
+
+- Tasks 0/1 remain complete; Task 2 needs no new committed demo flow.
+- Tasks 3/4/5 are in progress in the existing cov3 worktrees, with recovered raw evidence preserved. Current workers: `/root/cov3_cli`, `/root/cov3_ios`, `/root/cov3_android`.
+- Controller resume ledger committed as `47d26460`; use the live ledger and slice reports for newer progress.
+- CLI initially had 349/384 rows; iOS and Android had untracked raw evidence, now being recovered and completed. No slice is complete until coverage and independent review finish.
+- The current plan's constraints were recopied to its SDD workspace; the old copy still mentioned runner .12 and L52 as open.
+- New briefs start at **L64**, since L63 was fixed already. Unresolved carries are L51/L53/L61/L62; a pass against their documented current behavior does not close those defects.
+- CLI device handoffs include CLI-048/049/061/064/066 plus the guarded CLI-083/B-C21.1 and N3-15. Owner devices remain untouched.
+- Next: complete slices → independent reviews/fix rounds → merge → triage/report → next fix wave as needed. Do not repeat the completed bundle/rebuild/smoke steps from the stale chain above unless new fixes require them.
+
+
+### Resume integrity and approval notes
+
+The initial iOS recovery incorrectly imported the round-2 result table and missing raw files. The controller rejected its provisional 470-pass tally. Originals were not overwritten (`rsync --ignore-existing`); the import and invalid table are quarantined and excluded. The corrected active table and `findings/evidence/cov3-ios/PROVENANCE.md` govern current coverage. Checkpoint `9542e3d4` preserves the audit trail. Do not infer current passes from archived prior-round data.
+
+CLI review uses `/root/review_cov3_cli`; reports are in this plan's SDD workspace (`task-3-review.md`, `task-3-rereview-1.md`). The authoritative implementer report stays in `.worktrees/cov3-cli/task-3-report.md`; do not copy it just to standardize its location. First fix round addressed 11/14 findings; the second is resolving the remaining documentation inventory, platform-specific evidence and help wording. See ledger for subsequent status.
+
+The user objected to approval frequency and canceled specific CLI N3-11 elevated verification and report-copy requests. Do not repeat those operations through a different route. N3-11 remains blocked; report can be reviewed in place. Batch necessary reviewed commits later, avoid standalone copy/commit prompts, and retain working-tree evidence. Device tests continue within established ownership boundaries; individual sandbox failures are not product failures.
+
+## Full-access continuation checkpoint
+
+User enabled full access and explicitly requested continued execution without further approval prompts. Existing device workers retained their original sandbox; the controller now runs their inspected scripts with full access while workers prepare fixtures and adjudicate raw evidence. Owner-device restrictions remain unchanged.
+
+CLI evidence/review fixes are committed on cov3/cli at `6ad5a85b`; interim independent device and triage reviews are committed at `5a7a1b43`. Device slices remain incomplete and their latest work is uncommitted; consult live result files and the coverage-pass ledger, not stale counts above. Do not merge incomplete slices or declare a clean campaign.
+
+New candidate briefs are L64 (Android launchApp can pass after FATAL) and L65 (missing script steps text differs from agreed contract). L65 is reproduced on both platforms. These are early triage drafts, not a completed round report. Additional iOS MCP label-fallback failures need triage after evidence review. A proposed Android environment-precedence failure was disproven: the first harness omitted --env, and the exact rerun passes.
+
+Current evidence integrity: quarantined historical iOS imports remain excluded; four pre-overwrite tracked outputs were archived exactly from9542e3d4 with hashes. Uncommitted intermediate overwritten outputs cannot be recovered. Reconstructed pre-import top-level inventory is explicitly non-contemporaneous; preserve that limitation in final reporting. Fresh controller attempts use isolated output directories.

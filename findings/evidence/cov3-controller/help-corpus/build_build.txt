@@ -1,0 +1,32 @@
+OVERVIEW: Build the app for a simulator (xcodebuild) or emulator (Gradle).
+
+USAGE: grantiva build build [--json] [--verbose] [--quiet] [--platform <platform>] [--derived-data-path <derived-data-path>] [--scheme <scheme>] [--simulator <simulator>] [--bundle-id <bundle-id>] [--module <module>] [--variant <variant>] [--application-id <application-id>] [--device <device>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --platform <platform>   Target platform: ios or android. Defaults to
+                          whichever of grantiva.yml / grantiva-android.yml
+                          exists, else the project files in this directory.
+                          GRANTIVA_PLATFORM also sets it. (values: ios, android)
+  --derived-data-path <derived-data-path>
+                          Write Xcode build products and intermediates to this
+                          DerivedData directory.
+  --scheme <scheme>       Scheme to build (iOS)
+  --simulator <simulator> Simulator name or UDID (iOS)
+  --bundle-id <bundle-id> Bundle identifier (iOS)
+  --module <module>       Gradle module to assemble (Android; default app)
+  --variant <variant>     Gradle build variant, e.g. debug or freeDebug
+                          (Android; default debug)
+  --application-id <application-id>
+                          Application ID (Android; read from the build or the
+                          APK when omitted)
+  --device <device>       adb serial of an attached emulator or physical device
+                          (Android); for a build, its ABI picks the split APK
+  --version               Show the version.
+  -h, --help              Show help information.
+
