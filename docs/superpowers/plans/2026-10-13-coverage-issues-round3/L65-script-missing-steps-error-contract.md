@@ -3,7 +3,7 @@
 Severity: contract
 Component: mcp
 Platforms: ios and android, observed with live sessions
-Rows: B3-L15.2
+Rows: B3-L15.2 [ios], B3-L15.2 [android]
 Regresses: L15's exact missing-required-argument criterion from the round-3 fix wave.
 Candidate: CLI 8f2cff67, runner 1.1.28-grantiva.13.
 Status: evidence-backed triage during the incomplete round-3 coverage pass.
@@ -29,9 +29,9 @@ Start a session on the explicitly named campaign-owned simulator using the QA bi
 
 Live evidence currently lives on cov3/ios and cov3/android until the slices are merged.
 
-## Suspected cause
+## Supported cause
 
-The prefix/label correction retained a pre-existing message variant, and tests assert that retained variant instead of the approved exact text.
+Current source emits the extra-word variant, and current tests assert that variant instead of the binding exact text. The retained evidence does not establish when or why that wording was introduced.
 
 ## Acceptance criteria
 

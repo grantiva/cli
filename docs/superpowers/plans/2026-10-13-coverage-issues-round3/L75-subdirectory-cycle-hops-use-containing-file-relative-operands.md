@@ -2,7 +2,7 @@
 
 Severity: contract
 Component: CLI runner-output path rewriting
-Rows: B3-L20 [ios] (platform-independent source path)
+Rows: B3-L20 [ios], B3-L20 [android] (platform-independent source path)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29; runner fd9d8e8d1cb109eda6116f4221da10257b9838e3.
 Status: evidence-backed triage during the incomplete round-3 coverage pass.
 
@@ -29,6 +29,7 @@ Root-directory and screens-cycle controls render correctly. The defect is limite
 - `summary.json` and `all-files.sha256` preserve timings and the immutable artifact set.
 - Root/screens controls in the same directory show correct rendering.
 - Independent source/evidence review: `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/ios79-android-l10-n207-review.md`.
+- Android reproduction: `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L20-cycle-four-forms-rerun2/`; all four checks finish in under 1.1 seconds and the subdirectory form prints the same `../` hops.
 
 ## Cause
 

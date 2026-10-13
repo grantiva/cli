@@ -2,7 +2,7 @@
 
 Severity: contract
 Component: cli / build install
-Rows: D2-08 [ios] (with D2-07 status contract)
+Rows: D2-08 [ios], B2-K25 [ios] (with D2-07 status contract)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
 Status: evidence-backed triage during the incomplete round-3 coverage pass.
 
@@ -11,6 +11,8 @@ Status: evidence-backed triage during the incomplete round-3 coverage pass.
 `grantiva build install --no-build --no-launch` performs neither an install nor a launch and completes with the install-skipped result. D2-07 defines its JSON status as `skipped`; D2-08 requires the text `Done` line to say `(install skipped)`. The command must work whether the configured app is already installed or absent because `--no-launch` requests no operation on that app.
 
 D2-08's main app-file forms are separate: with `--app-file`, `--no-build` skips only the build and the supplied app is installed. The failing case here is the row's no-app-file install-skipped control.
+
+B2-K25 is compound. Its other app-file, run, diff, ordinary status, and permitted CI-authentication-boundary legs remain independently retained; this brief owns only the same absent-app skipped-install failure.
 
 ## Actual
 
@@ -38,4 +40,3 @@ The intended behavior is already represented by `completeInstall` and `completio
 - Preserve the current installed-app behavior, app-file installation behavior, and ordinary no-build-with-launch not-installed refusal.
 - Add a focused `InstallCommand` test whose injected iOS device reports the app absent and whose data-container lookup would fail if called; assert the skipped command never requires that lookup. Retain the existing status/message and JSON key tests.
 - Re-run the absent and installed controls and the D2-08 app-file build-install leg on an owned simulator.
-
