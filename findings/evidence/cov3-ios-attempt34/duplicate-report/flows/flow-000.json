@@ -1,0 +1,154 @@
+{
+  "id": "flow-000",
+  "name": "same",
+  "sourceFile": "b/same.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:06:07.725489-07:00",
+  "endTime": "2026-10-12T23:06:14.492015-07:00",
+  "duration": 6766,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:09.281736-07:00",
+      "endTime": "2026-10-12T23:06:11.327736-07:00",
+      "duration": 2046,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Lakes\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:11.328657-07:00",
+      "endTime": "2026-10-12T23:06:13.237657-07:00",
+      "duration": 1909,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lakes"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "8C000000-0000-0000-F857-010000000000",
+        "text": "Lakes",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 482,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Lake Tahoe\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:13.238292-07:00",
+      "endTime": "2026-10-12T23:06:13.634292-07:00",
+      "duration": 396,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake Tahoe"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "AB000000-0000-0000-F857-010000000000",
+        "text": "Lake Tahoe",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": -33,
+          "y": 745,
+          "width": 90,
+          "height": 22
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Mono Lake\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:13.634868-07:00",
+      "endTime": "2026-10-12T23:06:13.935868-07:00",
+      "duration": 301,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mono Lake"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "E4000000-0000-0000-F857-010000000000",
+        "text": "Mono Lake",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 88,
+          "y": 269,
+          "width": 87,
+          "height": 22
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:13.936379-07:00",
+      "endTime": "2026-10-12T23:06:14.428379-07:00",
+      "duration": 492,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T23:06:14.429655-07:00",
+      "endTime": "2026-10-12T23:06:14.491655-07:00",
+      "duration": 62,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-005-Lakes.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 867,
+    "p50": 396,
+    "p95": 2046,
+    "max": 2046,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

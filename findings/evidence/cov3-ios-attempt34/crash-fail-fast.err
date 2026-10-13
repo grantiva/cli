@@ -1,0 +1,82 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=563907E1-703D-4322-AE5F-FC3B06D03143 screens=0 flows=2
+Preparing runner...
+Runner ready
+Booting simulator: 563907E1-703D-4322-AE5F-FC3B06D03143
+Simulator booted: cov3-ios-26 (563907E1-703D-4322-AE5F-FC3B06D03143)
+Skipping build and install (--no-build)
+Running 2 flow(s) in one GrantivaAgent session: .maestro/99-crash.yaml, .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 2 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/2] 99-crash (99-crash.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✗ assertVisible: text="Landmarks" (179ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+✗ 99-crash 5.1s
+
+  [1/2] 99-crash (.maestro/99-crash.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✗ assertVisible: text="Landmarks" (179ms)
+      ╰─ Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+    - assertVisible: text="Featured" (skipped)
+    - assertVisible: text="This never appears" (skipped)
+✗ 99-crash 5.1s
+
+  [2/2] 01-browse (.maestro/01-browse.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    - launchApp (skipped)
+    - assertVisible: text="Landmarks" (skipped)
+    - assertVisible: text="Featured" (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: text="Golden Gate Bridge" (skipped)
+    - assertVisible: text="San Francisco, CA" (skipped)
+    - assertVisible: text="Plan Visit" (skipped)
+    - takeScreenshot (skipped)
+
+  1 steps passing (5.1s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  99-crash                       ✗ FAIL       4      1      1      2       5.1s  cov3-ios-26 (ios 26.0 Simul...
+  01-browse                      - SKIP       0      0      0      0        0ms  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/2       4      1      1      2       5.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt34/crash-fail-fast-report/captures/failure-1791871562.png
+Error: Runner failed (exit 1): 99-crash: assertVisible: text="Landmarks": Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
