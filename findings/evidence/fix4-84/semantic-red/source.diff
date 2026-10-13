@@ -1,0 +1,24 @@
+diff --git a/Tests/GrantivaCoreTests/AndroidPlatformTests.swift b/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
+index 7e6c4727..44caebb5 100644
+--- a/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
++++ b/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
+@@ -185,17 +185,15 @@ final class AndroidPlatformTests: XCTestCase {
+         }
+     }
+ 
+-    func testCleanupOrphansForceStopsUIA2AndRemovesOnlyThisSerialsForwards() async {
++    func testRoutineOrphanCleanupPreservesUnownedSameDeviceForwards() async {
+         let shell = ScriptedShell([
+             .success(""), .success(""),
+-            .success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790"),
++            .success("emulator-5554 tcp:61211 tcp:16791\nemulator-5556 tcp:61212 tcp:6790"),
+         ])
+         await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
+         XCTAssertEqual(shell.commands, [
+             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
+             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
+-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
+-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+         ])
+     }
+ 

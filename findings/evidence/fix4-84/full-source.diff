@@ -1,0 +1,540 @@
+diff --git a/Sources/GrantivaCLI/DriverCommand.swift b/Sources/GrantivaCLI/DriverCommand.swift
+index 6d4f3a63..b05033f9 100644
+--- a/Sources/GrantivaCLI/DriverCommand.swift
++++ b/Sources/GrantivaCLI/DriverCommand.swift
+@@ -418,7 +418,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
+ 
+     /// The local end of the forward to the runner's UIAutomator2 session. The
+     /// forward is left in place: it is the port the session records.
+-    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?, launchFailed: Bool) {
++    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
+         let device = launch.platformDevice
+         let serial = launch.device.udid
+         let wait = await Self.waitForUIAutomator2(
+@@ -428,7 +428,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
+             launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
+             runnerExit: { child.poll() }
+         )
+-        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
++        return (wait.attachment, wait.exitStatus, wait.launchFailed)
+     }
+ 
+     /// The UIAutomator2 session already on the device before the runner is
+@@ -441,6 +441,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
+         return attachment.sessionID
+     }
+ 
++    /// Transfers a successful Android readiness attachment to the foreground
++    /// session owner instead of reducing it to an unowned port.
++    static func retainForegroundAttachment(
++        _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
++    ) -> UInt16? {
++        owner.retain(attachment) ? UInt16(clamping: attachment.port) : nil
++    }
++
+     /// Hands the runner's group to the interrupt relay, naming the device
+     /// the notice says is released (L37).
+     static func trackRunner(group: pid_t, platform: Platform) {
+@@ -594,11 +602,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
+                     lastError: Self.lastErrorLine(in: text), logPath: logPath
+                 )
+             }
+-            guard let found = wait.port else {
++            guard let attachment = wait.attachment else {
+                 abandon()
+                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
+             }
+-            port = found
++            port = UInt16(clamping: attachment.port)
+         } else {
+             // Poll the log file for WDA's port or a failed build.
+             let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
+@@ -676,7 +684,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
+         @Sendable func requestedStop() -> StopRequest? {
+             Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
+         }
++        let foregroundAttachment = ForegroundDriverAttachment()
+         let cleanup = Once {
++            foregroundAttachment.release()
+             Self.removeSessionFile(of: runnerPid)
+             KeepAliveSessionStore().removeSessionFiles(runnerPid: runnerPid)
+             RunnerStopMarker().remove(runnerPid: runnerPid)
+@@ -699,14 +709,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
+         do {
+             try Self.recordStarting(launch, runnerPid: runnerPid)
+         } catch {
++            foregroundAttachment.finishAcquiring()
+             cleanup.run()
+             throw error
+         }
++        if launch.platform != .android { foregroundAttachment.finishAcquiring() }
+         let port: UInt16
+         if launch.platform == .android {
+             // The port comes from the forward, not the output.
+             output.endStartup()
+             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
++            let found = wait.attachment.flatMap {
++                Self.retainForegroundAttachment($0, in: foregroundAttachment)
++            }
++            if wait.attachment == nil { foregroundAttachment.finishAcquiring() }
+             if SignalRelay.shared.isTerminating || wait.launchFailed {
+                 child.terminateGroup(gracePeriod: 1)
+                 cleanup.run()
+@@ -728,7 +744,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
+                     lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
+                 )
+             }
+-            guard let found = wait.port else {
++            guard let found else {
+                 child.terminateGroup(gracePeriod: 1)
+                 cleanup.run()
+                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
+@@ -1144,7 +1160,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
+         // The runner's own teardown clears its forwards and the UIA2 server
+         // when it exits cleanly; after a kill they may still be there.
+         if DeviceID.isAndroidSerial(session.udid) {
+-            await dependencies.cleanupOrphans(session.udid)
++            await dependencies.cleanupOrphans(
++                session.udid, session.isReady ? Int(session.wdaPort) : nil
++            )
+         }
+ 
+         if !sessionRemoved { dependencies.removeSession() }
+@@ -1232,7 +1250,7 @@ struct RunnerStopDependencies: Sendable {
+     var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
+     var removeSession: @Sendable () -> Void
+     var releaseLease: @Sendable (String) -> Void
+-    var cleanupOrphans: @Sendable (String) async -> Void
++    var cleanupOrphans: @Sendable (String, Int?) async -> Void
+     /// `runner start` records a keep-alive owner sidecar for the runner pid
+     /// on both platforms; stop removes it with the session.
+     var removeKeepAliveOwner: @Sendable (Int32) -> Void
+@@ -1254,9 +1272,12 @@ struct RunnerStopDependencies: Sendable {
+         terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
+         removeSession: { RunnerSessionInfo.remove() },
+         releaseLease: { SimulatorLease.forceRelease(udid: $0) },
+-        cleanupOrphans: { serial in
++        cleanupOrphans: { serial, ownedForwardPort in
+             guard let platform = try? AndroidPlatform.live() else { return }
+             await platform.cleanupOrphans(deviceID: serial)
++            if let ownedForwardPort {
++                await platform.removeOwnedForward(deviceID: serial, localPort: ownedForwardPort)
++            }
+         },
+         removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) },
+         removeRunnerSessionFiles: { KeepAliveSessionStore().removeSessionFiles(runnerPid: $0) },
+diff --git a/Sources/GrantivaCLI/RunnerOutputForwarder.swift b/Sources/GrantivaCLI/RunnerOutputForwarder.swift
+index d24c0222..d4303ad9 100644
+--- a/Sources/GrantivaCLI/RunnerOutputForwarder.swift
++++ b/Sources/GrantivaCLI/RunnerOutputForwarder.swift
+@@ -29,6 +29,71 @@ final class Once: @unchecked Sendable {
+     }
+ }
+ 
++/// Owns the driver attachment discovered during foreground startup until the
++/// foreground session ends. SignalRelay cleanups are synchronous, so release
++/// waits briefly for the attachment's asynchronous platform cleanup.
++final class ForegroundDriverAttachment: @unchecked Sendable {
++    private let condition = NSCondition()
++    private var attachment: DriverAttachment?
++    private var acquiring = true
++    private var releaseRequested = false
++
++    /// Completes startup's ownership handoff. If cleanup already started,
++    /// reject and release the late attachment before waking that cleanup.
++    func retain(_ attachment: DriverAttachment, timeout: TimeInterval = 15) -> Bool {
++        condition.lock()
++        if !releaseRequested {
++            self.attachment = attachment
++            acquiring = false
++            condition.broadcast()
++            condition.unlock()
++            return true
++        }
++        condition.unlock()
++
++        detach(attachment, timeout: timeout)
++        condition.lock()
++        acquiring = false
++        condition.broadcast()
++        condition.unlock()
++        return false
++    }
++
++    /// Completes startup when no attachment was acquired, so an interrupt
++    /// waiting at the ownership boundary can finish.
++    func finishAcquiring() {
++        condition.lock()
++        acquiring = false
++        condition.broadcast()
++        condition.unlock()
++    }
++
++    func release(timeout: TimeInterval = 15, onRequested: @Sendable () -> Void = {}) {
++        let deadline = Date().addingTimeInterval(timeout)
++        condition.lock()
++        releaseRequested = true
++        condition.unlock()
++        onRequested()
++        condition.lock()
++        while acquiring, condition.wait(until: deadline) {}
++        let owned = attachment
++        attachment = nil
++        condition.unlock()
++        if let owned {
++            detach(owned, timeout: max(0, deadline.timeIntervalSinceNow))
++        }
++    }
++
++    private func detach(_ owned: DriverAttachment, timeout: TimeInterval) {
++        let done = DispatchSemaphore(value: 0)
++        Task.detached {
++            await owned.detach()
++            done.signal()
++        }
++        _ = done.wait(timeout: .now() + timeout)
++    }
++}
++
+ /// The foreground runner's output. Both streams go to the terminal through
+ /// `RunnerSession.narrate` (so `--json` and `--quiet` silence them), whole
+ /// lines at a time; stdout is also fed to the startup parser until
+diff --git a/Sources/GrantivaCore/Android/AndroidPlatform.swift b/Sources/GrantivaCore/Android/AndroidPlatform.swift
+index 595ad12e..e7a5aeef 100644
+--- a/Sources/GrantivaCore/Android/AndroidPlatform.swift
++++ b/Sources/GrantivaCore/Android/AndroidPlatform.swift
+@@ -275,7 +275,13 @@ public struct AndroidPlatform: DevicePlatform {
+         for package in ADB.uiAutomator2Packages {
+             _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
+         }
+-        _ = try? await adb.removeForwards(serial: deviceID)
++    }
++
++    /// Removes a forward whose local port was recorded by the session being
++    /// cleaned up. The caller, rather than device membership, proves ownership.
++    public func removeOwnedForward(deviceID: String, localPort: Int) async {
++        guard localPort > 0 else { return }
++        _ = try? await adb.removeForward(serial: deviceID, localPort: localPort)
+     }
+ 
+     // MARK: Driver and recording
+diff --git a/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift b/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift
+index e2458433..535a887d 100644
+--- a/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift
++++ b/Sources/GrantivaCore/Runner/RunnerSessionStopper.swift
+@@ -64,6 +64,7 @@ public struct RunnerSessionStopper: Sendable {
+     public var removeSessionFiles: @Sendable (Int32) -> Void
+     public var releaseLease: @Sendable (String) -> Void
+     public var cleanupOrphans: @Sendable (String) async -> Void
++    public var cleanupOwnedForward: @Sendable (String, Int) async -> Void
+     /// Ends the device helpers (`simctl diagnose`, …) a stopped runner left.
+     public var helperReaper: RunnerHelperReaper
+     /// How long a grantiva process gets to exit after SIGINT. Its own
+@@ -85,6 +86,7 @@ public struct RunnerSessionStopper: Sendable {
+         removeSessionFiles: @escaping @Sendable (Int32) -> Void,
+         releaseLease: @escaping @Sendable (String) -> Void,
+         cleanupOrphans: @escaping @Sendable (String) async -> Void,
++        cleanupOwnedForward: @escaping @Sendable (String, Int) async -> Void = { _, _ in },
+         helperReaper: RunnerHelperReaper = .inert,
+         waitTimeout: TimeInterval = 30,
+         pollInterval: Duration = .milliseconds(100),
+@@ -100,6 +102,7 @@ public struct RunnerSessionStopper: Sendable {
+         self.removeSessionFiles = removeSessionFiles
+         self.releaseLease = releaseLease
+         self.cleanupOrphans = cleanupOrphans
++        self.cleanupOwnedForward = cleanupOwnedForward
+         self.helperReaper = helperReaper
+         self.waitTimeout = waitTimeout
+         self.pollInterval = pollInterval
+@@ -121,6 +124,10 @@ public struct RunnerSessionStopper: Sendable {
+                 guard let platform = try? AndroidPlatform.live() else { return }
+                 await platform.cleanupOrphans(deviceID: serial)
+             },
++            cleanupOwnedForward: { serial, localPort in
++                guard let platform = try? AndroidPlatform.live() else { return }
++                await platform.removeOwnedForward(deviceID: serial, localPort: localPort)
++            },
+             helperReaper: .live()
+         )
+     }
+@@ -179,7 +186,10 @@ public struct RunnerSessionStopper: Sendable {
+             if !isProcessAlive(session.pid) { removeSessionFiles(session.pid) }
+             return .released(grantivaPid: owner, runnerPid: session.pid, udid: udid, reaped: reaped)
+         }
+-        return await terminate(runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime, deadline: deadline)
++        return await terminate(
++            runnerPid: session.pid, udid: udid, recordedStartTime: session.runnerStartTime,
++            ownedForwardPort: session.port > 0 ? session.port : nil, deadline: deadline
++        )
+     }
+ 
+     /// `timeout`, or what is left before `deadline` when that is sooner.
+@@ -192,7 +202,10 @@ public struct RunnerSessionStopper: Sendable {
+     /// is no longer a grantiva-runner, or whose start time is not the one the
+     /// owner file recorded (the pid was reused), is never signalled; its
+     /// files are still removed.
+-    func terminate(runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil, deadline: Date? = nil) async -> Outcome {
++    func terminate(
++        runnerPid: Int32, udid: String, recordedStartTime: Int64? = nil,
++        ownedForwardPort: Int? = nil, deadline: Date? = nil
++    ) async -> Outcome {
+         var helperReaper = helperReaper
+         if let deadline {
+             // A teardown (L63): its deadline, and the run's xcodebuild takes
+@@ -214,7 +227,12 @@ public struct RunnerSessionStopper: Sendable {
+             reaped = await helperReaper.sweep(exitedRunnerPid: runnerPid, udid: udid)
+         }
+         removeSessionFiles(runnerPid)
+-        if DeviceID.isAndroidSerial(udid) { await cleanupOrphans(udid) }
++        if DeviceID.isAndroidSerial(udid) {
++            await cleanupOrphans(udid)
++            if let ownedForwardPort, ownedForwardPort > 0 {
++                await cleanupOwnedForward(udid, ownedForwardPort)
++            }
++        }
+         if !udid.isEmpty { releaseLease(udid) }
+         return .terminated(runnerPid: runnerPid, udid: udid, killed: killed, reaped: reaped)
+     }
+@@ -240,7 +258,10 @@ public struct RunnerSessionStopper: Sendable {
+            !sessions.contains(where: { $0.pid == file.pid }), isProcessAlive(file.pid) {
+             // session.json records no start time to check; the runner is
+             // matched by process name only.
+-            outcomes.append(await terminate(runnerPid: file.pid, udid: udid, deadline: deadline))
++            outcomes.append(await terminate(
++                runnerPid: file.pid, udid: udid,
++                ownedForwardPort: file.isReady ? Int(file.wdaPort) : nil, deadline: deadline
++            ))
+         }
+         return outcomes
+     }
+diff --git a/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift b/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
+index 968f05e5..d61c1ee1 100644
+--- a/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
++++ b/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
+@@ -340,7 +340,36 @@ final class RunnerLifecycleCommandTests: XCTestCase {
+         let session = makeSession(udid: "emulator-5554")
+         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
+         _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+-        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans", "owner", "release"])
++        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans 8430", "owner", "release"])
++    }
++
++    func testStopOnAStartingAndroidSessionHasNoOwnedForwardToRemove() async throws {
++        let events = LockedValue<[String]>([])
++        let session = RunnerSessionInfo.starting(
++            pid: 1234, bundleId: "com.example", udid: "emulator-5554",
++            startedAt: Date(), platform: .android
++        )
++        let dependencies = dependencies(
++            session: session, events: events,
++            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554"
++        )
++
++        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
++
++        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans -", "owner", "release"])
++    }
++
++    func testStopOnIOSNeverRequestsAndroidOrphanCleanup() async throws {
++        let events = LockedValue<[String]>([])
++        let session = makeSession()
++        let dependencies = dependencies(
++            session: session, events: events,
++            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device \(session.udid)"
++        )
++
++        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
++
++        XCTAssertFalse(events.value.contains(where: { $0.hasPrefix("orphans") }), "\(events.value)")
+     }
+ 
+     func testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms() {
+@@ -690,6 +719,107 @@ final class RunnerLifecycleCommandTests: XCTestCase {
+         XCTAssertEqual(removed.value, [7])
+     }
+ 
++    func testForegroundHoldRetainsAndReleasesItsDriverAttachmentExactlyOnce() async throws {
++        for interrupted in [false, true] {
++            let releases = LockedValue(0)
++            let unrelatedReleases = LockedValue(0)
++            let attachment = DriverAttachment(
++                client: .failing, port: 61211, sessionID: "owned",
++                detach: { releases.set(releases.value + 1) }
++            )
++            _ = DriverAttachment(
++                client: .failing, port: 61212, sessionID: "unrelated",
++                detach: { unrelatedReleases.set(unrelatedReleases.value + 1) }
++            )
++            let owned = ForegroundDriverAttachment()
++            XCTAssertEqual(RunnerStartCommand.retainForegroundAttachment(attachment, in: owned), 61211)
++
++            let (exits, exit) = AsyncStream<Int32>.makeStream()
++            let handler = LockedValue<(@Sendable () -> Void)?>(nil)
++            let held = Task {
++                await RunnerStartCommand.holdForeground(
++                    waitForExit: { for await status in exits { return status }; return 0 },
++                    onInterrupt: { body in handler.set(body); return 7 },
++                    removeInterruptHandler: { _ in },
++                    cleanup: { owned.release() }
++                )
++            }
++
++            while handler.value == nil { await Task.yield() }
++            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
++            if interrupted { handler.value?() }
++            exit.yield(interrupted ? Int32(SIGINT) : 0)
++            _ = await held.value
++            XCTAssertEqual(releases.value, 1)
++            owned.release()
++            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
++            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
++        }
++    }
++
++    func testForegroundCleanupBeforeTransferRejectsAndFinishesLateAttachmentBeforeReturning() throws {
++        let owner = ForegroundDriverAttachment()
++        let releaseRequested = DispatchSemaphore(value: 0)
++        let detachStarted = DispatchSemaphore(value: 0)
++        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
++        let retainReturned = DispatchSemaphore(value: 0)
++        let releaseReturned = DispatchSemaphore(value: 0)
++        let accepted = LockedValue<Bool?>(nil)
++        let attachment = DriverAttachment(
++            client: .failing, port: 61211, sessionID: "late",
++            detach: {
++                detachStarted.signal()
++                for await _ in detachGate { break }
++            }
++        )
++
++        DispatchQueue.global().async {
++            owner.release(timeout: 2, onRequested: { releaseRequested.signal() })
++            releaseReturned.signal()
++        }
++        XCTAssertEqual(releaseRequested.wait(timeout: .now() + 1), .success)
++        DispatchQueue.global().async {
++            accepted.set(owner.retain(attachment, timeout: 2))
++            retainReturned.signal()
++        }
++        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
++        XCTAssertEqual(retainReturned.wait(timeout: .now() + 0.05), .timedOut)
++        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
++                       "the signal cleanup must wait for the rejected attachment's detach")
++
++        allowDetach.yield(())
++        allowDetach.finish()
++        XCTAssertEqual(retainReturned.wait(timeout: .now() + 1), .success)
++        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
++        XCTAssertEqual(accepted.value, false)
++    }
++
++    func testForegroundCleanupWaitsForOwnedAttachmentDetach() throws {
++        let owner = ForegroundDriverAttachment()
++        let detachStarted = DispatchSemaphore(value: 0)
++        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
++        let releaseReturned = DispatchSemaphore(value: 0)
++        let attachment = DriverAttachment(
++            client: .failing, port: 61211, sessionID: "owned",
++            detach: {
++                detachStarted.signal()
++                for await _ in detachGate { break }
++            }
++        )
++        XCTAssertTrue(owner.retain(attachment))
++
++        DispatchQueue.global().async {
++            owner.release(timeout: 2)
++            releaseReturned.signal()
++        }
++        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
++        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
++                       "the signal cleanup must not return while owned detach is running")
++        allowDetach.yield(())
++        allowDetach.finish()
++        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
++    }
++
+     func testForegroundStartHelpSaysItStaysAttached() {
+         let help = RunnerStartCommand.helpMessage(columns: 1000)
+         XCTAssertTrue(help.contains("Ctrl-C"), help)
+@@ -1030,7 +1160,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
+             terminateGroup: { _ in events.append("terminate"); return .interrupted },
+             removeSession: { events.append("remove") },
+             releaseLease: { _ in events.append("release") },
+-            cleanupOrphans: { _ in events.append("orphans") },
++            cleanupOrphans: { _, port in events.append("orphans \(port.map(String.init) ?? "-")") },
+             removeKeepAliveOwner: { _ in events.append("owner") },
+             removeRunnerSessionFiles: { events.append("files \($0)") },
+             keepAliveSessions: { [] },
+diff --git a/Tests/GrantivaCoreTests/AndroidPlatformTests.swift b/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
+index 7e6c4727..0ff65f8f 100644
+--- a/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
++++ b/Tests/GrantivaCoreTests/AndroidPlatformTests.swift
+@@ -185,16 +185,22 @@ final class AndroidPlatformTests: XCTestCase {
+         }
+     }
+ 
+-    func testCleanupOrphansForceStopsUIA2AndRemovesOnlyThisSerialsForwards() async {
++    func testRoutineOrphanCleanupPreservesUnownedSameDeviceForwards() async {
+         let shell = ScriptedShell([
+             .success(""), .success(""),
+-            .success("emulator-5554 tcp:61211 tcp:6790\nemulator-5556 tcp:61212 tcp:6790"),
++            .success("emulator-5554 tcp:61211 tcp:16791\nemulator-5556 tcp:61212 tcp:6790"),
+         ])
+         await platform(shell).cleanupOrphans(deviceID: "emulator-5554")
+         XCTAssertEqual(shell.commands, [
+             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server'",
+             "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'io.appium.uiautomator2.server.test'",
+-            "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --list",
++        ])
++    }
++
++    func testOrphanCleanupRemovesOnlyTheRecordedOwnedForward() async {
++        let shell = ScriptedShell([.success("")])
++        await platform(shell).removeOwnedForward(deviceID: "emulator-5554", localPort: 61211)
++        XCTAssertEqual(shell.commands, [
+             "'/sdk/platform-tools/adb' -s 'emulator-5554' forward --remove tcp:61211",
+         ])
+     }
+diff --git a/Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift b/Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift
+index f7d14d57..9b43f571 100644
+--- a/Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift
++++ b/Tests/GrantivaCoreTests/RunnerSessionStopperTests.swift
+@@ -94,6 +94,27 @@ final class RunnerSessionStopperTests: XCTestCase {
+         XCTAssertEqual(events.value, ["terminate 701", "files 701", "orphans emulator-5554", "lease emulator-5554"])
+     }
+ 
++    func testADetachedAndroidSessionCleansOnlyItsRecordedForward() async throws {
++        let alive = Locked<Set<Int32>>([701])
++        let events = Locked<[String]>([])
++        var stopper = makeStopper(alive: alive, events: events)
++        stopper.terminateGroup = { pid in
++            events.append("terminate \(pid)")
++            alive.mutate { $0.remove(pid) }
++            return .interrupted
++        }
++        let session = KeepAliveSession(
++            sessionId: "s", port: 61211, pid: 701, udid: "emulator-5554",
++            path: "/x", ownerPid: 9, detached: true
++        )
++
++        _ = try await stopper.stop(session)
++
++        XCTAssertEqual(events.value, [
++            "terminate 701", "files 701", "orphans emulator-5554", "forward emulator-5554 61211", "lease emulator-5554",
++        ])
++    }
++
+     /// L04: a detached session's runner group is stopped while its helpers
+     /// are watched; the device helper it left is reaped and reported.
+     func testATerminatedRunnersDeviceHelperIsReapedAndReported() async throws {
+@@ -284,7 +305,8 @@ final class RunnerSessionStopperTests: XCTestCase {
+             terminateGroup: { pid in events.append("terminate \(pid)"); alive.mutate { $0.remove(pid) }; return .interrupted },
+             removeSessionFiles: { events.append("files \($0)") },
+             releaseLease: { events.append("lease \($0)") },
+-            cleanupOrphans: { events.append("orphans \($0)") },
++            cleanupOrphans: { serial in events.append("orphans \(serial)") },
++            cleanupOwnedForward: { serial, port in events.append("forward \(serial) \(port)") },
+             waitTimeout: 2,
+             pollInterval: .milliseconds(10)
+         )
