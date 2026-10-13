@@ -1,0 +1,72 @@
+{
+  "id": "flow-000",
+  "name": "14b-runflow-inline",
+  "sourceFile": ".maestro/coverage/14b-runflow-inline.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:15:11.399706-07:00",
+  "endTime": "2026-10-12T23:15:14.372414-07:00",
+  "duration": 2972,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:11.406575-07:00",
+      "endTime": "2026-10-12T23:15:12.761575-07:00",
+      "duration": 1355,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "runFlow",
+      "yaml": "runFlow",
+      "status": "passed",
+      "startTime": "2026-10-12T23:15:12.762188-07:00",
+      "endTime": "2026-10-12T23:15:14.371188-07:00",
+      "duration": 1609,
+      "artifacts": {},
+      "subCommands": [
+        {
+          "id": "sub-0",
+          "index": 0,
+          "type": "tapOn",
+          "yaml": "tapOn: text=\"Favorites\"",
+          "status": "passed",
+          "startTime": "2026-10-12T23:15:12.762421-07:00",
+          "endTime": "2026-10-12T23:15:13.722212-07:00",
+          "duration": 959,
+          "artifacts": {}
+        },
+        {
+          "id": "sub-1",
+          "index": 1,
+          "type": "assertVisible",
+          "yaml": "assertVisible: text=\"Landmarks you favorite will appear here.\"",
+          "status": "passed",
+          "startTime": "2026-10-12T23:15:13.722227-07:00",
+          "endTime": "2026-10-12T23:15:14.371881-07:00",
+          "duration": 649,
+          "artifacts": {}
+        }
+      ]
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 987,
+    "p50": 959,
+    "p95": 1355,
+    "max": 1355,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

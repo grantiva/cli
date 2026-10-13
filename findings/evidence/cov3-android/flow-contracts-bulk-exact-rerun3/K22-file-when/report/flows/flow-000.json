@@ -1,0 +1,72 @@
+{
+  "id": "flow-000",
+  "name": "file-when",
+  "sourceFile": "file-when.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:18:04.528626-07:00",
+  "endTime": "2026-10-12T23:18:07.529504-07:00",
+  "duration": 3000,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:18:04.533077-07:00",
+      "endTime": "2026-10-12T23:18:05.984077-07:00",
+      "duration": 1451,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "runFlow",
+      "yaml": "runFlow: sub.yaml",
+      "status": "passed",
+      "startTime": "2026-10-12T23:18:05.985417-07:00",
+      "endTime": "2026-10-12T23:18:07.528417-07:00",
+      "duration": 1543,
+      "artifacts": {},
+      "subCommands": [
+        {
+          "id": "sub-0",
+          "index": 0,
+          "type": "tapOn",
+          "yaml": "tapOn: text=\"Deep Links\"",
+          "status": "passed",
+          "startTime": "2026-10-12T23:18:06.142855-07:00",
+          "endTime": "2026-10-12T23:18:06.899421-07:00",
+          "duration": 756,
+          "artifacts": {}
+        },
+        {
+          "id": "sub-1",
+          "index": 1,
+          "type": "assertVisible",
+          "yaml": "assertVisible: text=\"Caching Demo\"",
+          "status": "passed",
+          "startTime": "2026-10-12T23:18:06.899444-07:00",
+          "endTime": "2026-10-12T23:18:07.528937-07:00",
+          "duration": 629,
+          "artifacts": {}
+        }
+      ]
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 945,
+    "p50": 756,
+    "p95": 1451,
+    "max": 1451,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
