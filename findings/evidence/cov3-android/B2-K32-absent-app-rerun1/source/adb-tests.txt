@@ -1,0 +1,89 @@
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-163-        XCTAssertEqual(isInstalled, true)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-164-        let missing = IOSPlatform(execute: { _ in throw GrantivaError.commandFailed("No such file or directory", 2) })
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-165-        let isMissing = await missing.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-166-        XCTAssertEqual(isMissing, false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-167-        let shutDown = IOSPlatform(execute: { _ in
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-168-            throw GrantivaError.commandFailed("Unable to lookup in current state: Shutdown", 149)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-169-        })
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-170-        let isUnknown = await shutDown.isInstalled(appID: "com.example.app", deviceID: "ABC-123")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift:171:        XCTAssertNil(isUnknown, "an unrelated simctl failure must not read as not installed")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-172-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-173-}
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-174-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-175-private final class ScriptedExecutor: @unchecked Sendable {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-176-    private let lock = NSLock()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-177-    private var results: [Result<String, Error>]
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-178-    private var recorded: [String] = []
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/IOSPlatformTests.swift-179-    init(_ results: [Result<String, Error>]) { self.results = results }
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-34-        try await adb.forceStop(serial: serial, applicationId: "com.example.app")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-35-        try await adb.uninstall(serial: serial, applicationId: "com.example.app")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-36-        try await adb.screenshot(serial: serial, to: "/tmp/shot's.png")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-37-        try await adb.emuKill(serial: serial)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-38-        XCTAssertEqual(shell.commands, [
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-39-            "'/sdk/platform-tools/adb' devices -l",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-40-            "'/sdk/platform-tools/adb' -s 'emulator-5554' emu avd name",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-41-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell getprop 'ro.product.cpu.abi'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:42:            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell monkey -p 'com.example.app' -c android.intent.category.LAUNCHER --pct-syskeys 0 1 2>&1",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-43-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell am force-stop 'com.example.app'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-44-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell pm uninstall 'com.example.app'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-45-            "'/sdk/platform-tools/adb' -s 'emulator-5554' exec-out screencap -p > '/tmp/shot'\\''s.png'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-46-            "'/sdk/platform-tools/adb' -s 'emulator-5554' emu kill",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-47-        ])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-48-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-49-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-50-    func testAvdNameDropsTheOKLine() async throws {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-152-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell screenrecord --time-limit 5 '/sdcard/grantiva-record.mp4'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-153-            "'/sdk/platform-tools/adb' -s 'emulator-5554' pull '/sdcard/grantiva-record.mp4' '/tmp/out dir/rec.mp4'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-154-            "'/sdk/platform-tools/adb' -s 'emulator-5554' shell rm -f '/sdcard/grantiva-record.mp4'",
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-155-        ])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-156-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-157-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-158-    // MARK: - K32 launch failures
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-159-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:160:    /// What `adb shell monkey` prints for a package that is not installed
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-161-    /// (exit 252): the argument trace, then the abort line.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:162:    static let monkeyTrace = """
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-163-    args: [-p, com.example.app, -c, android.intent.category.LAUNCHER, --pct-syskeys, 0, 1]
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-164-     arg: "-p"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-165-     arg: "com.example.app"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-166-    data="com.example.app"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-167-    data="android.intent.category.LAUNCHER"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-168-    arg="--pct-syskeys" mCurArgData="null" mNextArg=5 argwas="--pct-syskeys" nextarg="0"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-169-    data="0"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-170-      bash arg: -p
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:171:    ** No activities found to run, monkey aborted.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-172-    """
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-173-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-174-    func testLaunchOfAPackageThatIsNotInstalledSaysSoWithoutTheMonkeyTrace() async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:175:        let shell = ScriptedShell([.failure(GrantivaError.commandFailed(Self.monkeyTrace, 252))])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-176-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-177-            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-178-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-179-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-180-            let message = error.localizedDescription
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-181-            XCTAssertTrue(message.hasPrefix(GrantivaError.notInstalledRoot(appID: "com.example.app", device: "emulator-5554")), message)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:182:            XCTAssertTrue(message.hasPrefix("com.example.app is not installed on emulator-5554"), message)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-183-            XCTAssertFalse(message.contains("arg="), message)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-184-            XCTAssertFalse(message.contains("data="), message)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-185-            XCTAssertFalse(message.contains("\n"), "one line: \(message)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-186-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-187-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-188-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:189:    /// monkey has exited 0 after aborting on some builds; the abort line still counts.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-190-    func testLaunchThatPrintsTheAbortLineWithExitZeroStillFails() async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:191:        let shell = ScriptedShell([.success(Self.monkeyTrace)])
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-192-        do {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-193-            try await ADB(path: adbPath, execute: shell.execute).launch(serial: "emulator-5554", applicationId: "com.example.app")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-194-            XCTFail("expected an error")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-195-        } catch {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift:196:            XCTAssertTrue(error.localizedDescription.contains("is not installed"), error.localizedDescription)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-197-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-198-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-199-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-200-    func testLaunchFailingForAnotherReasonShowsOnlyTheLastMeaningfulLine() async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-201-        let output = """
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-202-        args: [-p, com.example.app]
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-203-         arg: "-p"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ADBTests.swift-204-        data="com.example.app"

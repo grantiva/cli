@@ -1,0 +1,32 @@
+04:37:26.466159 [INFO] === Test execution started ===
+04:37:26.466229 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-B3-L02-L05-stock99-quiet-rerun2/runs/run-2/report
+04:37:26.466235 [INFO] Platform: android
+04:37:26.466239 [INFO] Driver: uiautomator2
+04:37:26.466527 [INFO] Validated 1 flow(s)
+04:37:26.466545 [INFO] Single device execution mode
+04:37:26.466550 [INFO] Starting flow execution (parallel: false, devices: [])
+04:37:26.466553 [INFO] Creating driver for single device execution
+04:37:26.466558 [INFO] Connecting to Android device: emulator-5554
+04:37:26.542966 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+04:37:26.563900 [INFO] Starting UIAutomator2 server on device emulator-5554
+04:37:26.970880 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+04:37:26.989520 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+04:37:27.552787 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+04:37:27.560529 [INFO] Session created successfully: 396619d7-5fea-414f-a79a-797aef09cffe
+04:37:27.606650 [INFO] Driver created: android on google sdk_gphone64_arm64
+04:37:27.608538 [INFO] === Starting flow: 99-crash ===
+04:37:27.608544 [INFO] Flow file: .maestro/99-crash.yaml
+04:37:27.608547 [INFO] Total steps: 4
+04:37:27.613006 [DEBUG] Executing step 0: launchApp
+04:37:27.734676 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+04:37:27.734706 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 22ms
+04:37:28.961645 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.182s after launch, pids [8694], drawn=true crashed=true (read 28ms)
+04:37:28.961727 [ERROR] Step 0 failed (1348ms): launchApp - Error: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+04:37:29.272453 [INFO] === Flow completed: 99-crash (status: failed, duration: 1662ms, passed: 0, failed: 1, skipped: 3) ===
+04:37:29.652101 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+04:37:29.664731 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+04:37:29.664773 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+04:37:29.665018 [INFO] Generating reports...
+04:37:29.665777 [INFO] Shutting down devices started by maestro-runner...
+04:37:29.665804 [INFO] Shutting down all tracked emulators
+04:37:29.665818 [INFO] Shutting down all tracked simulators

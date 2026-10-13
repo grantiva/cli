@@ -1,0 +1,56 @@
+
+        @Option(name: .long, help: "System image package for a new AVD, e.g. \"system-images;android-35;google_apis;arm64-v8a\". Defaults to system_image in grantiva-android.yml, then that value.")
+        var systemImage: String?
+
+        @Flag(inversion: .prefixedNo, help: "Boot the emulator and wait for it to be ready. On by default; --no-boot creates it without booting.")
+        var boot = true
+
+        @Flag(name: .long, help: "Boot without a window. GRANTIVA_EMULATOR_HEADLESS=1 or CI=true does the same; otherwise the emulator gets a window, even when stdout is not a terminal.")
+        var headless = false
+
+        static func resolveName(flag: String?, config: GrantivaConfig?) throws -> String {
+            guard let name = flag ?? config?.android?.emulator, !name.isEmpty else {
+                throw GrantivaError.invalidArgument("No AVD named. Pass --name or set emulator in grantiva-android.yml.")
+            }
+            return name
+        }
+
+        /// stdout is the identifier a script captures:
+        ///
+        ///     serial=$(grantiva emulator ensure --name Pixel_8_API_35)
+        ///
+        /// The prose goes to the log (stderr), as `simulator ensure` does.
+        static func render(_ result: EmulatorProvisionResult) -> (stdout: String, stderr: String) {
+            let verb = result.created ? "Created" : "Reused"
+            let serial = result.serial.map { " (\($0))" } ?? ""
+            return (stdout: result.serial ?? result.name, stderr: "\(verb) \(result.name)\(serial) — \(result.state)")
+        }
+
+        func run() async throws {
+            let config = try GrantivaConfig.loadIfPresent(platform: .android)
+            let avd = try Self.resolveName(flag: name, config: config)
+            let platform = try AndroidPlatform.live(options: .init(headless: headless))
+            let result = try await platform.emulators.ensure(avd: avd, systemImage: systemImage ?? config?.android?.systemImage, boot: boot)
+            if options.json {
+                Output.line(try JSONOutput.string(result))
+                return
+            }
+            let rendered = Self.render(result)
+            GrantivaLog.logger.info("\(rendered.stderr)")
+            Output.line(rendered.stdout)
+        }
+    }
+
+    struct Delete: AsyncParsableCommand {
+        static let configuration = CommandConfiguration(abstract: "Delete an AVD Grantiva created. Others need --force. A running AVD is never deleted.")
+        @OptionGroup var options: GlobalOptions
+
+        @Option(name: .long, help: "AVD name to delete.")
+        var name: String
+
+        @Flag(name: .long, help: "Delete an AVD Grantiva did not create.")
+        var force = false
+
+        static func renderJSON(name: String) throws -> String {
+            try JSONOutput.string(EmulatorDeleteResult(name: name, deleted: true))
+        }
