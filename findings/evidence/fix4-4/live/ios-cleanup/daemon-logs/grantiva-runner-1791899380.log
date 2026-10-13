@@ -1,0 +1,80 @@
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5580...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5580.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] session-flow (session-flow.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (320ms)
+      ╰─ launchApp: all launch methods failed for 'com.grantiva.fix44.absent'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.grantiva.fix44.absent (cause: adb shell monkey -p com.grantiva.fix44.absent -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.grantiva.fix44.absent, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.grantiva.fix44.absent"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.grantiva.fix44.absent"
+data="android.intent.category.LAUNCHER"
+)
+✗ session-flow 530ms
+
+  [1/1] session-flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/session-flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (320ms)
+      ╰─ launchApp: all launch methods failed for 'com.grantiva.fix44.absent'. The app may not be installed or has no launcher activity. Check with: adb shell pm list packages | grep com.grantiva.fix44.absent (cause: adb shell monkey -p com.grantiva.fix44.absent -c android.intent.category.LAUNCHER 1: exit status 252: args: [-p, com.grantiva.fix44.absent, -c, android.intent.category.LAUNCHER, 1]
+ arg: "-p"
+ arg: "com.grantiva.fix44.absent"
+ arg: "-c"
+ arg: "android.intent.category.LAUNCHER"
+ arg: "1"
+data="com.grantiva.fix44.absent"
+data="android.intent.category.LAUNCHER"
+)
+    - waitForAnimationToEnd (skipped)
+✗ session-flow 530ms
+
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  session-flow                   ✗ FAIL       2      0      1      1      530ms  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      0      1      1      530ms
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/report/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/report/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-669C3448-7DDA-46C4-9F4E-F22FABFFB065/report/allure-results
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=21396-1791899382387643000
+  /tmp/grantiva-sessions/21396-1791899382387643000.grantiva
+    Press Ctrl-C to release.
+
+  Releasing UIAutomator2 session...

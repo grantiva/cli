@@ -1,0 +1,50 @@
+[
+  {
+    "case": "interrupt-plain-repeat",
+    "exit": 130,
+    "owned": {
+      "marker": "grantiva-log-54DD8BE4-3174-45F9-AB73-6E13DF69A94A",
+      "wrapper": 35068,
+      "child": 35088,
+      "cli": 35004,
+      "device": "E768BFF7-C4E9-4E97-A30D-54F060C4D310"
+    },
+    "immediateInventories": 3,
+    "controlSurvived": true,
+    "terminalDiagnostics": []
+  },
+  {
+    "case": "interrupt-verbose-repeat",
+    "exit": 130,
+    "owned": {
+      "marker": "grantiva-log-28CB8B0B-8D38-4A7D-94AE-05E0D39E0893",
+      "wrapper": 35177,
+      "child": 35197,
+      "cli": 35113,
+      "device": "E768BFF7-C4E9-4E97-A30D-54F060C4D310"
+    },
+    "immediateInventories": 3,
+    "controlSurvived": true,
+    "terminalDiagnostics": [
+      "[debug] 2026-10-13T14:08:39Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn E768BFF7-C4E9-4E97-A30D-54F060C4D310 log stream --style compact --predicate '(process == \"Landmarks\") AND (\"grantiva-log-28CB8B0B-8D38-4A7D-94AE-05E0D39E0893\" == \"grantiva-log-28CB8B0B-8D38-4A7D-94AE-05E0D39E0893\")'"
+    ]
+  },
+  {
+    "case": "interrupt-wrapper-first",
+    "exit": 130,
+    "owned": {
+      "marker": "grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774",
+      "wrapper": 35281,
+      "child": 35301,
+      "cli": 35212,
+      "device": "E768BFF7-C4E9-4E97-A30D-54F060C4D310",
+      "childSurvivedWrapperExit": false,
+      "intervention": "exact marked child SIGSTOP; wrapper SIGKILL; observe child; CLI SIGINT"
+    },
+    "immediateInventories": 3,
+    "controlSurvived": true,
+    "terminalDiagnostics": [
+      "[debug] 2026-10-13T14:08:40Z com.grantiva.cli: stopped by SIGKILL: /usr/bin/xcrun simctl spawn E768BFF7-C4E9-4E97-A30D-54F060C4D310 log stream --style compact --predicate '(process == \"Landmarks\") AND (\"grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774\" == \"grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774\")'"
+    ]
+  }
+]

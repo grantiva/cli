@@ -1,0 +1,28 @@
+Resolved: scheme=(none) simulator=E768BFF7-C4E9-4E97-A30D-54F060C4D310 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: E768BFF7-C4E9-4E97-A30D-54F060C4D310
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: fix4-4-ios-26 (E768BFF7-C4E9-4E97-A30D-54F060C4D310)
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: $ xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: exit 0: xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T14:08:39Z com.grantiva.cli: $ xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: exit 0: xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: $ xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: exit 0: xcrun simctl getenv 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: $ xcrun simctl get_app_container 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'E768BFF7-C4E9-4E97-A30D-54F060C4D310' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: $ /usr/bin/xcrun simctl spawn E768BFF7-C4E9-4E97-A30D-54F060C4D310 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774" == "grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774")'
+Streaming simulator logs (predicate: process == "Landmarks")
+Running 1 flow(s) in one GrantivaAgent session: slow.yaml
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: $ xcrun simctl status_bar E768BFF7-C4E9-4E97-A30D-54F060C4D310 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: exit 0: xcrun simctl status_bar E768BFF7-C4E9-4E97-A30D-54F060C4D310 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: stopped by SIGKILL: /usr/bin/xcrun simctl spawn E768BFF7-C4E9-4E97-A30D-54F060C4D310 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774" == "grantiva-log-63218D8F-E503-46D6-AF3D-640E3A460774")'
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: $ xcrun simctl status_bar E768BFF7-C4E9-4E97-A30D-54F060C4D310 clear
+[debug] 2026-10-13T14:08:40Z com.grantiva.cli: exit 0: xcrun simctl status_bar E768BFF7-C4E9-4E97-A30D-54F060C4D310 clear

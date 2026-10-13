@@ -1,0 +1,23 @@
+from pathlib import Path
+import os,json,subprocess,time,signal,sys
+r=Path(__file__).parent;s=json.loads((r/'state-fix4.json').read_text());i=json.loads((r/'ios-state.json').read_text());d=r/'ios-teardown-attempt1';d.mkdir();b=s['binary'];u=i['udid'];project=Path(i['project']);session=project/'.grantiva/session.json';checks=[];p=None;look=None
+os.environ.pop('GRANTIVA_API_KEY',None);os.environ.update(GRANTIVA_RUNNER_HOME=s['runnerHome'],MAESTRO_RUNNER_HOME=s['runnerHome'],GRANTIVA_SESSION_ID='fix4-4')
+def cmd(label,args,expected=0):
+ t=time.monotonic();p=subprocess.run(args,cwd=project,capture_output=True,timeout=180);(d/(label+'.command.json')).write_text(json.dumps(args));(d/(label+'.out')).write_bytes(p.stdout);(d/(label+'.err')).write_bytes(p.stderr);(d/(label+'.result.json')).write_text(json.dumps({'exit':p.returncode,'duration':time.monotonic()-t}));assert p.returncode==expected,(label,p.returncode,p.stderr.decode());return p
+teardown=[b,'simulator','teardown','--udid',u]
+try:
+ # Harmless lookalike carries both the real executable path and exact owned UDID as data.
+ helper=project/'helper.py';helper.write_text('import time\ntime.sleep(900)\n');args=[sys.executable,str(helper),b,u];(d/'lookalike.command.json').write_text(json.dumps(args));look=subprocess.Popen(args,start_new_session=True);(d/'lookalike.pid').write_text(str(look.pid))
+ start=json.loads(cmd('live-start',[b,'runner','start','--simulator',u,'--bundle-id','com.kylebrowning.Landmarks','--detach','--json']).stdout);(d/'live-session.json').write_bytes(session.read_bytes());cmd('live-hierarchy',[b,'runner','dump-hierarchy','--udid',u,'--format','tree']);force=json.loads(cmd('live-force',teardown+['--force','--json']).stdout);entry=force[0] if isinstance(force,list) else force;assert entry['runnerSessionStopped'] is True and entry['reclaimed'] is True,entry;assert isinstance(entry['processes'],list) and isinstance(entry['reapedProcesses'],list);assert not session.exists();assert look.poll() is None
+ ps=cmd('live-after-processes',['/bin/ps','-ww','-axo','pid=,ppid=,pgid=,command=']).stdout.decode();assert not any(x.split()[0]==str(start['pid']) for x in ps.splitlines());left=[str(x) for x in Path('/tmp/grantiva-sessions').glob(str(start['pid'])+'*')];assert not left;checks.append({'L73 liveSession':entry,'runnerPID':start['pid'],'lookalikeSurvived':look.pid});print('live force passed',flush=True)
+ free=json.loads(cmd('free-force',teardown+['--force','--json']).stdout);e=free[0] if isinstance(free,list) else free;assert e['reclaimed'] is False and e['runnerSessionStopped'] is False and e['processes']==[] and e['reapedProcesses']==[],e;cmd('free-force-plain',teardown+['--force']);assert look.poll() is None;checks.append({'freeForce':e})
+ # Actual grantiva run owns a lease (not a detached runner-start lease).
+ ready=project/'teardown-ready.json';report=project/'preserved-report';args=[b,'run','--no-build','--simulator',u,'--flow','success.yaml','--keep-alive','--ready-file',str(ready),'--report-dir',str(report)];(d/'keepalive.command.json').write_text(json.dumps(args));p=subprocess.Popen(args,cwd=project,stdout=(d/'keepalive.out').open('wb'),stderr=(d/'keepalive.err').open('wb'),start_new_session=True);(d/'keepalive.pid').write_text(str(p.pid));deadline=time.monotonic()+240
+ while not ready.exists() and time.monotonic()<deadline:assert p.poll() is None;time.sleep(.1)
+ assert ready.exists() and json.loads(ready.read_text())['status']=='passed';(d/'keepalive-ready.json').write_bytes(ready.read_bytes());refusal=cmd('nonforce-refusal',teardown+['--json'],expected=1);assert str(p.pid) in refusal.stderr.decode() and p.poll() is None,refusal.stderr
+ force=json.loads(cmd('actual-grantiva-force',teardown+['--force','--json']).stdout);e=force[0] if isinstance(force,list) else force;assert any(x['pid']==p.pid and x['kind']=='grantiva' for x in e['processes']),e;code=p.wait(timeout=30);assert e['reclaimed'] and not e['runnerSessionStopped'];assert report.exists() and (report/'report.json').exists();assert look.poll() is None;checks.append({'L76 actualExecutable':e,'cliPID':p.pid,'exit':code,'nonforceRefused':True,'lookalikeSurvived':look.pid,'callerReportPreserved':str(report)});print('nonforce refusal, real CLI reaping and lookalike survival passed',flush=True)
+finally:
+ if p and p.poll() is None:os.kill(p.pid,signal.SIGINT);p.wait(timeout=30)
+ if session.exists():cmd('emergency-stop',[b,'runner','stop','--json'])
+ if look and look.poll() is None:look.terminate();look.wait(timeout=10)
+ cmd('final-processes',['/bin/ps','-ww','-axo','pid=,ppid=,pgid=,command=']);(d/'checks.json').write_text(json.dumps(checks,indent=2));print(json.dumps(checks,indent=2))
