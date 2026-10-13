@@ -1,0 +1,13 @@
+    private let reconnectTimeout: TimeInterval
+    private let absentGrace: TimeInterval
+    private let pollInterval: Duration
+
+    /// `reconnectTimeout` bounds the wait for a device that left adb during a
+    /// restore (a freshly booted emulator's adbd restarts once shortly after
+    /// boot); `absentGrace` is the shorter wait for a serial adb did not list
+    /// at all when the restore started; `pollInterval` is how often `adb
+    /// devices` is read meanwhile.
+    public init(
+        adb: ADB, stateDirectory: String = ".grantiva",
+        reconnectTimeout: TimeInterval = 30, absentGrace: TimeInterval = 5,
+        pollInterval: Duration = .milliseconds(500)
