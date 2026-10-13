@@ -454,12 +454,40 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K90-a [android] | pass | findings/evidence/cov3-android/wait-screens-complement-rerun2/ | With the complete frozen screens fixture, plain and JSON diff captures both exit 0. The live/summary text and decoded JSON action use `Wait 3s`, never `evalScript`; the sibling `Wait 1.5s` is equally preserved. The wrapper's strict `duration >= 3.000` proxy is excluded because this row tests narration. |
 
-| B3-L18 [android] | pass | findings/evidence/cov3-android/wait-screens-complement-rerun2/ | The complete screens fixture passes every screen. Live/summary text and JSON actions agree on `Wait 3s` and `Wait 1.5s`; exact selector actions carry `(exact)` while ordinary selectors do not, and no wait is described as `evalScript`. The earlier v1 missing-subflow fixture failures are excluded. |
-
 | B-C09.1 [android] | pass | findings/evidence/cov3-android/wait-screens-complement-rerun2/ | The exact `wait: 3` screen passes and plain output reports `Wait 3s (3.0s)`. Decoded JSON records 2.999 due to separate millisecond-truncated measurement, so the wrapper's numeric proxy fails; exact runner fd9d8e8 execution blocks on the requested 3000 ms timer before recording duration (inspected, not newly executed), satisfying the written step-timing criterion. |
 
 | B-C09.2 [android] | pass | findings/evidence/cov3-android/wait-screens-complement-rerun2/ | Runtime proves the native config wait executes as the labelled unconditional wait. Exact candidate FlowGenerator tests pin `wait:` to the runner wait construct while separately retaining Maestro `waitForAnimationToEnd` as settle-wait; exact runner source executes WaitStep with a fixed requested-duration timer (inspected, not newly executed). |
 
+| B-A08.1 [android] | pass | findings/evidence/cov3-android/B-A08-log-levels-rerun1/ | Implicit, default, and explicit info each launch one timestamp-bounded Android logcat stream with `*:I`; debug uses `*:D`. Every invocation uses `-T`, and none clears logcat. Exact candidate source assertions pin the same argument construction. |
+
+| B-A08.3 [android] | pass | findings/evidence/cov3-android/B-A08-log-levels-rerun1/ | Invalid `--log-level warning` exits 64 and names the valid choices; the four supported levels are retained in the same frozen batch. |
+
+| B-C11.2 [android] | pass | findings/evidence/cov3-android/B-C11.2-no-session-lazy-rerun1/ | Before a session, tap, swipe, type, screenshot, tree, check, and script each return MCP `isError` with `No active runner session` and the start remedy. The same MCP server then lazily attaches to a newly detached session and succeeds on its first bounded tree request. |
+
+| MCP-059 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | Name-only ensure creates the uniquely owned AVD and delete removes it from both a configured project and an empty directory; the retained assertions distinguish creation from later cleanup. |
+
+| MCP-060 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | Separately hand-made, uniquely named AVDs are refused without force and deleted with force in both configured and configless contexts. |
+
+| MCP-061 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | Deleting the running primary is refused with its serial and remediation, while missing-device boot errors cleanly; the primary remains attached and usable. |
+
+| MCP-062 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | All four uniquely owned disposable lifecycle names are absent after their guarded cleanup, and the before/after adb inventories are unchanged. |
+
+| D2-35 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | The exact MCP emulator lifecycle operations cover configured and configless ensure/delete, handmade refusal/force, running-device refusal, and missing boot with all 13 frozen assertions passing. |
+
+| X-018 | pass | findings/evidence/cov3-android/AND-063/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt64/ | Current Android and iOS second-run ownership refusals have the same structure: owner CLI PID and age, runner PID, keep-alive context, force-teardown remedy, and unique-device remedy. Only the expected platform nouns, identifiers, and ensure command differ. |
+
+| X-021 | pass | findings/evidence/cov3-android/MCP-type-exact/mcp/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt16c/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt25/ | Successful tap, swipe, type, and tree responses use the same JSON-RPC result envelope and one text content block on both platforms. Mutation tools return the same success-plus-updated-tree form, and decoded trees share recursive nodes with typed frame/state fields. |
+
+| D2-13 [android] | pass | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/json/, findings/evidence/cov3-android/AND-126-127-exact-rerun1/, findings/evidence/cov3-android/N2-05-B3L13-dead-runner-stop-json-rerun2/ | Decoded JSON covers `started`, `already_running`, `stopped`, and `not_running` with the documented numeric process/port fields and Android application/device aliases. Dead-runner stop uses `stopped` plus `alreadyExited: true`; no tested condition emits an undocumented `exited` status. |
+
+| B2-K53 [android] | pass | findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | Named missing-AVD boot, running-AVD delete, and hand-made AVD delete refusals all use a JSON-RPC `result` with one `Error:` text block and `isError: true`, never a top-level protocol error. Paired forced deletes succeed, while exact candidate tests cover the remaining named tools and cancellation exception. |
+
+| N2-05 [android] | pass | findings/evidence/cov3-android/N2-05-B3L13-two-device-multisession-rerun2/, findings/evidence/cov3-android/N2-05-B3L13-dead-runner-stop-json-rerun2/, findings/evidence/cov3-android/X013-X015-X017-android-rerun1/json/ | One stop request over two simultaneous row-owned keep-alive sessions returns exactly two shaped session entries with distinct serials/PIDs and complete nullable/boolean/list fields. Joined ordinary and killed-runner stops cover normal and `alreadyExited`; the secondary parent exit 130 is the expected result of stopping its active flow. |
+
+| B3-L13 [android] | pass | findings/evidence/cov3-android/N2-05-B3L13-two-device-multisession-rerun2/, findings/evidence/cov3-android/N2-05-B3L13-dead-runner-stop-json-rerun2/, findings/evidence/cov3-android/X013-X015-X017-android-rerun1/json/ | Start, ordinary stop, dead-runner/already-exited stop, no-session stop, and one two-device stop expose the documented status vocabulary and typed identity/process fields. The multi-session response contains exactly the two simultaneously active owned devices. |
+
+| X-007 | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K17-capture-json/, findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-065-diff/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt92/ | Matching current five-screen text and JSON captures on both platforms share the same decoded keys and screen-item shapes. Android adds the documented emulator object alongside simulator, and text substitutes Emulator for Simulator; the five ordered screens otherwise agree. |
+
 ## Counts
 
-339 of 467 slice rows recorded: 317 pass, 16 fail, 4 blocked, 2 n/a.
+353 of 467 slice rows recorded: 331 pass, 16 fail, 4 blocked, 2 n/a.
