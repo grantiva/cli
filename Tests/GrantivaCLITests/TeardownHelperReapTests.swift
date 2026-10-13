@@ -24,7 +24,7 @@ final class TeardownHelperReapTests: XCTestCase {
         try? FileManager.default.removeItem(at: base)
     }
 
-    private var home: String { "\(base.path)/versions/1.1.28-grantiva.13/devices/\(udid)" }
+    private var home: String { "\(base.path)/versions/1.1.28-grantiva.14/devices/\(udid)" }
 
     /// A stand-in for the diagnose xcodebuild starts when the runner's group
     /// is signalled: its command line is diagnose's (it names the device and
