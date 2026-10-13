@@ -20,9 +20,19 @@ for name in required:
 for name in ('optional-miss.yaml','required-miss.yaml'):
     if not (optional_inputs/name).is_file(): raise SystemExit(f'missing input {optional_inputs/name}')
 if os.environ.get('GRANTIVA_API_KEY'): raise SystemExit('GRANTIVA_API_KEY must be unset')
-root.mkdir(parents=True,exist_ok=False); env=os.environ.copy(); env.pop('GRANTIVA_API_KEY',None); env.update(GRANTIVA_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),MAESTRO_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),GRANTIVA_SESSION_ID='fix4-8')
+root.mkdir(parents=True,exist_ok=False)
 identity=validate_identity(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform='android',device=a.serial,android_avd=a.avd,apk=a.apk)
-(root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runner':str(pathlib.Path(a.runner).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'sourceRoot':str(pathlib.Path(a.source_root).resolve()),'project':str(pathlib.Path(a.project).resolve()),'serial':a.serial,'avd':a.avd,'apk':str(pathlib.Path(a.apk).resolve()),'apkSHA256':sha(a.apk),'apiKey':'unset'},indent=2)+'\n')
+# Direct runner invocations need the installed drivers; the CLI keeps the clone root.
+candidate_path=pathlib.Path(identity['candidateManifest']); candidate_bytes=candidate_path.read_bytes()
+if hashlib.sha256(candidate_bytes).hexdigest()!=identity['candidateManifestSHA256']: raise SystemExit('candidate manifest changed after validation')
+runner_record=json.loads(candidate_bytes)['runner']; installed=pathlib.Path(runner_record['installed']['path']).resolve()
+runner_home=pathlib.Path(a.runner_home).resolve(); installed_home=installed.parent
+if installed_home!=(runner_home/'versions'/identity['runnerInstallStamp']).resolve(): raise SystemExit('installed runner version directory mismatch')
+if not (sha(installed)==identity['installedRunnerSHA256']==identity['runnerSHA256']==sha(a.runner)): raise SystemExit('installed and packaged runner hash mismatch')
+if not (installed_home/'drivers/android').is_dir(): raise SystemExit('installed Android drivers missing')
+adb_parent=str(pathlib.Path(a.adb).resolve().parent)
+env=os.environ.copy(); env.pop('GRANTIVA_API_KEY',None); env.update(GRANTIVA_RUNNER_HOME=str(runner_home),MAESTRO_RUNNER_HOME=str(installed_home),GRANTIVA_SESSION_ID='fix4-8',PATH=adb_parent+os.pathsep+env.get('PATH',os.defpath))
+(root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runner':str(pathlib.Path(a.runner).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'sourceRoot':str(pathlib.Path(a.source_root).resolve()),'project':str(pathlib.Path(a.project).resolve()),'serial':a.serial,'avd':a.avd,'apk':str(pathlib.Path(a.apk).resolve()),'apkSHA256':sha(a.apk),'apiKey':'unset','maestroRunnerHome':str(installed_home),'adbParent':adb_parent},indent=2)+'\n')
 
 def run(label,argv,expected,report=None,timeout=180):
     d=root/label; d.mkdir(); started=time.time(); load_start=os.getloadavg(); (d/'command.json').write_text(json.dumps({'argv':list(map(str,argv)),'cwd':str(pathlib.Path(a.project).resolve()),'startedEpoch':started,'hostLoadStart':load_start},indent=2)+'\n')
@@ -48,7 +58,9 @@ crash_rows=[]
 for n in range(1,6):
     run(f'crash-{n}-log-clear',[a.adb,'-s',a.serial,'logcat','-b','all','-c'],0)
     clock_before=clock_sample(f'crash-{n}-clock-before.json')
-    doc=runner_case(f'crash-{n}',a.crash_flow,1); assert doc['status']=='failed'
+    # The stock header env reaches Android intent extras through the CLI.
+    report=root/f'crash-{n}-report'; argv=[a.binary,'run','--platform','android','--device',a.serial,'--no-build','--verbose','--flow',a.crash_flow,'--report-dir',report]
+    d,result=run(f'crash-{n}',argv,1,report); doc=json.loads((d/'raw-report/report.json').read_text()); assert doc['status']=='failed'
     clock_after=clock_sample(f'crash-{n}-clock-after.json')
     run(f'crash-{n}-logcat',[a.adb,'-s',a.serial,'logcat','-b','all','-d','-v','epoch'],0)
     log=(root/f'crash-{n}-logcat/stdout.raw').read_text(errors='replace'); lines=log.splitlines(); candidates=[]

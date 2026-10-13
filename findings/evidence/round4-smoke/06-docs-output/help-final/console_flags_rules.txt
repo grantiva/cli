@@ -1,0 +1,30 @@
+OVERVIEW: Manage a flag's targeting rules.
+
+Rules are evaluated in priority order; the first rule whose conditions all pass
+(and whose rollout bucket accepts the device) decides the flag's value.
+
+Conditions are given as repeated --when options in the form
+<attribute>:<operator>:<value>, or as a --conditions-json array. Operators: eq,
+neq, gt, gte, lt, lte, in, not_in, contains, starts_with. For in/not_in,
+comma-separate the values:
+
+  --when os_version:gte:18.0 --when country:in:US,CA
+
+Attributes: os_version, device_model, app_version, risk_score, locale, country,
+device_id, user_id, attestation_status, or custom.<key>.
+
+USAGE: grantiva console flags rules <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  list                    List a flag's targeting rules in priority order.
+  add                     Add a targeting rule to a flag (appended at lowest
+                          priority).
+  update                  Update a targeting rule.
+  delete                  Delete a targeting rule.
+  reorder                 Reorder a flag's rules.
+
+  See 'grantiva help console flags rules <subcommand>' for detailed help.

@@ -24,7 +24,10 @@ PROTECTED_UDIDS = {
     "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6",
 }
 PROTECTED_AVDS = {"Pixel_8_API_35"}
-NOTICE = "[grantiva] received SIGINT — releasing simulator and reaping child processes"
+INTERRUPT_NOTICES = {
+    "ios": "[grantiva] received SIGINT — releasing simulator and reaping child processes",
+    "android": "[grantiva] received SIGINT — releasing emulator and reaping child processes",
+}
 PHASES = (
     "startup-interrupt",
     "detach-ready",
@@ -342,7 +345,8 @@ class Smoke:
                 os.kill(proc.pid, signal.SIGINT)
                 code = self.finish(phase, label, proc, 90)
                 err = (self.output / phase / f"{label}.stderr").read_text()
-                if code != 130 or NOTICE not in err or "Timed out waiting" in err or self.session.exists():
+                notices = [line for line in err.splitlines() if line.startswith("[grantiva] received SIGINT")]
+                if code != 130 or notices != [INTERRUPT_NOTICES[platform]] or "Timed out waiting" in err or self.session.exists():
                     raise AssertionError(f"{platform} startup interrupt failed: exit={code}")
                 self.assert_pid_gone(runner_pid)
                 self.assert_session_cleanup(runner_pid)
@@ -413,7 +417,8 @@ class Smoke:
                 os.kill(proc.pid, signal.SIGINT)
                 code = self.finish(phase, label, proc, 45)
                 err = (self.output / phase / f"{label}.stderr").read_text()
-                if code != 130 or NOTICE not in err or "Timed out waiting" in err or self.session.exists():
+                notices = [line for line in err.splitlines() if line.startswith("[grantiva] received SIGINT")]
+                if code != 130 or notices != [INTERRUPT_NOTICES[platform]] or "Timed out waiting" in err or self.session.exists():
                     raise AssertionError(f"{label} failed")
                 self.assert_pid_gone(runner_pid)
                 self.assert_session_cleanup(runner_pid)
