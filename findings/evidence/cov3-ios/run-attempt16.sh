@@ -8,7 +8,7 @@ WT=/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios
 ROOT="$WT/findings/evidence/cov3-ios-attempt16"
 BASE=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios
 SOURCE="$BASE/ios"; SCRATCH="$BASE/attempt16-ios"; U1=563907E1-703D-4322-AE5F-FC3B06D03143
-CLIENT="$WT/findings/evidence/cov3-ios/attempt11-client.py"
+CLIENT="$WT/findings/evidence/cov3-ios/attempt16-client.py"
 if [[ -e "$ROOT" || -e "$SCRATCH" ]]; then print -u2 'refusing overwrite attempt16'; exit 73; fi
 mkdir -p "$ROOT"; cp "$0" "$ROOT/harness.sh"; cp "$CLIENT" "$ROOT/client.py"; rsync -a --exclude '.grantiva' "$SOURCE/" "$SCRATCH/"
 cat > "$ROOT/requests.json" <<JSON
@@ -23,7 +23,7 @@ cat > "$ROOT/requests.json" <<JSON
  {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap":"Landmarks"}]}}},
  {"_shell":"$GRANTIVA runner start --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach"},
  {"_shell":"xcrun simctl launch $U1 com.kylebrowning.Landmarks"},
- {"_shell":"for n in 1 2 3 4 5 6 7 8; do $GRANTIVA hierarchy --udid $U1 --format json > $ROOT/readiness-first.json 2> $ROOT/readiness-first.err && exit 0; sleep 1; done; exit 1"},
+ {"_shell":"for n in 1 2 3 4 5 6 7 8; do $GRANTIVA hierarchy --udid $U1 --format json > $ROOT/readiness-first-\$n.json 2> $ROOT/readiness-first-\$n.err && exit 0; sleep 1; done; exit 1"},
  {"method":"tools/call","params":{"name":"grantiva_a11y_tree","arguments":{}}},
  {"method":"tools/call","params":{"name":"grantiva_type","arguments":{"text":"x"}}},
  {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap":"Landmarks"},{"type":"x"}]}}},
@@ -42,7 +42,7 @@ cat > "$ROOT/requests.json" <<JSON
  {"_shell":"$GRANTIVA runner stop --json"},
  {"_shell":"$GRANTIVA runner start --json --bundle-id com.kylebrowning.Landmarks --simulator $U1 --detach"},
  {"_shell":"xcrun simctl launch $U1 com.kylebrowning.Landmarks"},
- {"_shell":"for n in 1 2 3 4 5 6 7 8; do $GRANTIVA hierarchy --udid $U1 --format json > $ROOT/readiness-second.json 2> $ROOT/readiness-second.err && exit 0; sleep 1; done; exit 1"},
+ {"_shell":"for n in 1 2 3 4 5 6 7 8; do $GRANTIVA hierarchy --udid $U1 --format json > $ROOT/readiness-second-\$n.json 2> $ROOT/readiness-second-\$n.err && exit 0; sleep 1; done; exit 1"},
  {"method":"tools/call","params":{"name":"grantiva_a11y_tree","arguments":{}}},
  {"_shell":"$GRANTIVA runner stop --json"},
  {"method":"tools/list","params":{}}

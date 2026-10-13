@@ -1,0 +1,113 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "screens",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:06:43.426068-07:00",
+  "endTime": "2026-10-12T22:07:36.249802-07:00",
+  "duration": 52823,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:06:46.060224-07:00",
+      "endTime": "2026-10-12T22:06:48.098224-07:00",
+      "duration": 2038,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:06:48.099105-07:00",
+      "endTime": "2026-10-12T22:06:50.025105-07:00",
+      "duration": 1926,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "1E000000-0000-0000-FC93-000000000000",
+        "text": "Deep Links",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 240,
+          "y": 795,
+          "width": 95,
+          "height": 54
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-12T22:06:50.026301-07:00",
+      "endTime": "2026-10-12T22:06:50.779301-07:00",
+      "duration": 753,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "evalScript",
+      "label": "Wait 45s",
+      "yaml": "evalScript",
+      "status": "passed",
+      "startTime": "2026-10-12T22:06:50.780769-07:00",
+      "endTime": "2026-10-12T22:07:35.780769-07:00",
+      "duration": 45000,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-12T22:07:35.781535-07:00",
+      "endTime": "2026-10-12T22:07:36.065535-07:00",
+      "duration": 284,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:07:36.066543-07:00",
+      "endTime": "2026-10-12T22:07:36.248543-07:00",
+      "duration": 182,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-005-Slow.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 8363,
+    "p50": 753,
+    "p95": 45000,
+    "max": 45000,
+    "slowestType": "evalScript"
+  },
+  "artifacts": {}
+}
