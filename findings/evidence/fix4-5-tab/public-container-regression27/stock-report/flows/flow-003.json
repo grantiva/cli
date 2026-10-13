@@ -1,0 +1,137 @@
+{
+  "id": "flow-003",
+  "name": "12-quote-label",
+  "sourceFile": ".maestro/12-quote-label.yaml",
+  "device": {
+    "id": "2E085C51-BD09-4EBF-BB89-75D0B2906139",
+    "name": "fix4-tab-27",
+    "platform": "ios",
+    "osVersion": "27.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T11:50:56.630963-07:00",
+  "endTime": "2026-10-13T11:51:03.185124-07:00",
+  "duration": 6554,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T11:50:56.632953-07:00",
+      "endTime": "2026-10-13T11:50:59.857953-07:00",
+      "duration": 3225,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mountains\"",
+      "status": "passed",
+      "startTime": "2026-10-13T11:50:59.8595-07:00",
+      "endTime": "2026-10-13T11:51:01.2065-07:00",
+      "duration": 1347,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mountains"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "8E000000-0000-0000-FD17-000000000000",
+        "text": "Mountains",
+        "class": "XCUIElementTypeButton",
+        "bounds": {
+          "x": 16,
+          "y": 430,
+          "width": 370,
+          "height": 53
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Mount \"Denali\"\"",
+      "status": "passed",
+      "startTime": "2026-10-13T11:51:01.208448-07:00",
+      "endTime": "2026-10-13T11:51:02.784448-07:00",
+      "duration": 1576,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Mount \"Denali\""
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "EE000000-0000-0000-FD17-000000000000",
+        "text": "Mount \"Denali\"",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 88,
+          "y": 433,
+          "width": 122,
+          "height": 22
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Alaska\"",
+      "status": "passed",
+      "startTime": "2026-10-13T11:51:02.785485-07:00",
+      "endTime": "2026-10-13T11:51:03.087485-07:00",
+      "duration": 302,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Alaska"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "08010000-0000-0000-FD17-000000000000",
+        "text": "Alaska",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 20,
+          "y": 331,
+          "width": 64,
+          "height": 19
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T11:51:03.088243-07:00",
+      "endTime": "2026-10-13T11:51:03.184243-07:00",
+      "duration": 96,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-003/cmd-004-Quoted Label.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 1309,
+    "p50": 1347,
+    "p95": 3225,
+    "max": 3225,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

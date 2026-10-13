@@ -87,3 +87,21 @@ This probe preserves the ruling: background saves are verified where observable,
 The helper should replace the immediate direct-plist assertion with the semantic restore proof above, while retaining eventual preference captures as provenance. The original `public-container-regression26` failure and cleanup records remain immutable.
 
 This was a read-only diagnosis of the failed attempt and relevant demo source. I did not run a probe, MCP, simctl, tests, or devices, and I made no source or helper edits.
+
+## Scoped observation-fix re-review — round 3
+
+- **Spec: NEEDS ONE CORRECTION.** The immediate plist assertion is correctly removed from acceptance. Favorites and Landmarks now each require the expected selection after activation, the same app PID before background, after activation, and after restore, and a semantic restore through the app's existing state-restoration control. Timed plist and simulator-domain defaults reads are explicitly diagnostic only. This implements the runtime diagnosis without weakening fresh-launch Landmarks behavior. One load-bearing selector mismatch remains: the Deep Links SwiftUI button's accessibility label combines its title and subtitle, so the literal control label is `Restore Navigation State, Restores previously saved state`, not `Restore Navigation State`. The current discovery predicate and `grantiva_tap` call can fail before the semantic proof. Use the exact combined button label for both discovery and tap, and retain that literal in the proof record.
+- **Quality: NEEDS ONE CORRECTION.** The bounded discovery loop and `grantiva_swipe` request use the correct tool and schema (`{"direction":"up"}`), retain each hierarchy/swipe result, and cannot scroll indefinitely. No other new breakage was identified. Correct the literal combined label before execution.
+
+The new semantic sequence itself is valid: after background/reactivation it checks the expected current selection, moves to Deep Links without another background transition, invokes restore, and requires the saved selection to return while the exact app PID remains unchanged. The second cycle overwrites the first saved state with Landmarks, so it independently distinguishes both values. It does not claim Favorites survives process restart.
+
+The current helper and fix-3 diff SHA-256 values match the dispatched identities: `25d1521abd8c9da673ee442c58ba12d99e5e0113e0ab6e044af344f2e257a24e` and `97d793bf5b843774b4cdc45a84848b0154e7fe312e7ccb3fc50cc9d9cb77eb98`.
+
+This was a read-only scoped review of the round-3 diff and the existing Deep Links source. I did not run the helper, MCP, simctl, tests, or devices.
+
+## Scoped literal correction re-review
+
+- **Spec: PASS.** The sole round-3 blocker is resolved. Bounded hierarchy discovery and `grantiva_tap` now use the exact combined accessibility label `Restore Navigation State, Restores previously saved state`, and the semantic save/restore proof records the same literal.
+- **Quality: PASS.** The diff adds one constant and replaces only the prior shortened discovery/tap/proof strings. The bounded swipe behavior, same-PID assertions, semantic Favorites/Landmarks restore checks, diagnostic-only preference polling, cleanup, and provenance remain unchanged. No new breakage was identified.
+
+The current helper SHA-256 is `dd565024fd53f69ca31887acc12d9b4b9d2549e5caf7a133b82ecc30c83aaa9e`, matching the dispatched identity. This was a read-only scoped literal review; I did not run the helper, MCP, simctl, tests, or devices.
