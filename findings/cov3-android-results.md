@@ -552,6 +552,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B-A10.1 [android] | pass | findings/evidence/cov3-android/B-A10.1-early-refusal-no-capture-rerun1/, findings/evidence/cov3-android/AND-063/ | The exact active keep-alive ownership conflict names the emulator, gives the force-teardown and unique-name remedies, and omits a generic child-process suffix. A full before/after SHA inventory proves the competitor writes no failure capture; the owner remains live and then stops cleanly. |
 
+| B3-L58 [android] | pass | findings/evidence/cov3-android/B3-L58-first-tap-parent-rerun1/ | Exact `03-edit` passes 3/3 and the focused parent-fallback scratch flow passes. In all four runs the plain Deep Links query is first and runner dispatch overhead before it is only 0.34–0.38 ms; the unique non-clickable Name match checks clickability, reads page source for its clickable parent, and the tap/type/postcondition lands. |
+
 ## Counts
 
-385 of 467 slice rows recorded: 362 pass, 17 fail, 4 blocked, 2 n/a.
+386 of 467 slice rows recorded: 363 pass, 17 fail, 4 blocked, 2 n/a.
