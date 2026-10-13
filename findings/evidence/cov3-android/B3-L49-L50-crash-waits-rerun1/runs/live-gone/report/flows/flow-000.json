@@ -1,0 +1,108 @@
+{
+  "id": "flow-000",
+  "name": "live-gone",
+  "sourceFile": ".maestro/live-gone.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:22:11.623288-07:00",
+  "endTime": "2026-10-13T02:22:14.537147-07:00",
+  "duration": 2913,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:11.628366-07:00",
+      "endTime": "2026-10-13T02:22:12.999366-07:00",
+      "duration": 1371,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:13.000468-07:00",
+      "endTime": "2026-10-13T02:22:13.081468-07:00",
+      "duration": 81,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0acb-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:13.082464-07:00",
+      "endTime": "2026-10-13T02:22:13.792464-07:00",
+      "duration": 710,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:22:13.793472-07:00",
+      "endTime": "2026-10-13T02:22:14.536472-07:00",
+      "duration": 743,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 726,
+    "p50": 710,
+    "p95": 1371,
+    "max": 1371,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

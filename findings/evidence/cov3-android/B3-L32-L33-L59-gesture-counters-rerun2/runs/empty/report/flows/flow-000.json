@@ -1,0 +1,109 @@
+{
+  "id": "flow-000",
+  "name": "empty",
+  "sourceFile": ".maestro/empty.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:19:27.458329-07:00",
+  "endTime": "2026-10-13T02:19:31.14526-07:00",
+  "duration": 3686,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:27.464465-07:00",
+      "endTime": "2026-10-13T02:19:28.907465-07:00",
+      "duration": 1443,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:28.908198-07:00",
+      "endTime": "2026-10-13T02:19:29.726198-07:00",
+      "duration": 818,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:29.727238-07:00",
+      "endTime": "2026-10-13T02:19:30.508238-07:00",
+      "duration": 781,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Gesture Lab",
+        "bounds": {
+          "x": 42,
+          "y": 475,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "doubleTapOn",
+      "yaml": "doubleTapOn: ",
+      "status": "failed",
+      "startTime": "2026-10-13T02:19:30.509439-07:00",
+      "endTime": "2026-10-13T02:19:30.551439-07:00",
+      "duration": 42,
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: no selector or point specified (cause: no selector or point specified)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 771,
+    "p50": 781,
+    "p95": 1443,
+    "max": 1443,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

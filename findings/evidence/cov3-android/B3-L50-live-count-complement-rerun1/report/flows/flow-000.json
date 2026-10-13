@@ -1,0 +1,54 @@
+{
+  "id": "flow-000",
+  "name": "live-count",
+  "sourceFile": ".maestro/live-count.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:24:26.984347-07:00",
+  "endTime": "2026-10-13T02:24:28.595845-07:00",
+  "duration": 1611,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:24:26.990656-07:00",
+      "endTime": "2026-10-13T02:24:28.419656-07:00",
+      "duration": 1429,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\" (count: 2)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:24:28.420615-07:00",
+      "endTime": "2026-10-13T02:24:28.594615-07:00",
+      "duration": 174,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 801,
+    "p50": 174,
+    "p95": 1429,
+    "max": 1429,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,172 @@
+{
+  "id": "flow-000",
+  "name": "relative",
+  "sourceFile": ".maestro/relative.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:18:57.097641-07:00",
+  "endTime": "2026-10-13T02:19:01.010729-07:00",
+  "duration": 3913,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:57.10446-07:00",
+      "endTime": "2026-10-13T02:18:58.53446-07:00",
+      "duration": 1430,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:58.534948-07:00",
+      "endTime": "2026-10-13T02:18:59.358948-07:00",
+      "duration": 824,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:18:59.35957-07:00",
+      "endTime": "2026-10-13T02:19:00.12557-07:00",
+      "duration": 766,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Gesture Lab",
+        "bounds": {
+          "x": 42,
+          "y": 475,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "doubleTapOn",
+      "yaml": "doubleTapOn: id=\"gesture-pad\", point=\"50%,50%\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:00.126108-07:00",
+      "endTime": "2026-10-13T02:19:00.929108-07:00",
+      "duration": 803,
+      "params": {
+        "selector": {
+          "type": "id",
+          "value": "gesture-pad"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-09bb-0000-00c800000004",
+        "bounds": {
+          "x": 0,
+          "y": 432,
+          "width": 1080,
+          "height": 1842
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Double taps: 1\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:00.929922-07:00",
+      "endTime": "2026-10-13T02:19:00.985922-07:00",
+      "duration": 56,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Double taps: 1"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-09bb-0000-00cb00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Taps: 0\"",
+      "status": "passed",
+      "startTime": "2026-10-13T02:19:00.986517-07:00",
+      "endTime": "2026-10-13T02:19:01.009517-07:00",
+      "duration": 23,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Taps: 0"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-09bb-0000-00ca00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 6,
+    "mean": 650,
+    "p50": 766,
+    "p95": 1430,
+    "max": 1430,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,69 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/intentional-stop.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] intentional-stop (intentional-stop.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ stopApp (30ms)
+    ✗ assertNotVisible: text="Landmarks" (5.0s)
+      ╰─ Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched "Landmarks" at (89,2253 167x42))
+✗ intentional-stop 6.6s
+
+  [1/1] intentional-stop (.maestro/intentional-stop.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ stopApp (30ms)
+    ✗ assertNotVisible: text="Landmarks" (5.0s)
+      ╰─ Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched "Landmarks" at (89,2253 167x42))
+✗ intentional-stop 6.6s
+
+  2 steps passing (6.6s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  intentional-stop               ✗ FAIL       3      2      1      0       6.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      2      1      0       6.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/intentional-stop/report/captures/failure-1791883329.png
+Error: Runner failed (exit 1): intentional-stop: assertNotVisible: text="Landmarks": Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched "Landmarks" at (89,2253 167x42))

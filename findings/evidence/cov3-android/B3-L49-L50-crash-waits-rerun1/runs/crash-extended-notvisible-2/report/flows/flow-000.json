@@ -1,0 +1,52 @@
+{
+  "id": "flow-000",
+  "name": "crash-extended-notvisible",
+  "sourceFile": ".maestro/crash-extended-notvisible.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T02:21:15.602653-07:00",
+  "endTime": "2026-10-13T02:21:17.190122-07:00",
+  "duration": 1587,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "failed",
+      "startTime": "2026-10-13T02:21:15.609394-07:00",
+      "endTime": "2026-10-13T02:21:16.719394-07:00",
+      "duration": 1110,
+      "error": {
+        "type": "app_crash",
+        "message": "launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-000-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-000-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: notVisible text=\"No Such\"",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 1,
+    "mean": 1110,
+    "p50": 1110,
+    "p95": 1110,
+    "max": 1110,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

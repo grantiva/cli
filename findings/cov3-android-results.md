@@ -500,6 +500,24 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | D2-12 [android] | pass | findings/evidence/cov3-android/D2-12/ | A past-duration `--frames-at 5000` request exits 64 before recording. Relative and absolute output variants preserve correspondingly relative or absolute video, report, and frame paths in both text and JSON. |
 
+| B3-L32 [android] | pass | findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/ | Stock Gesture Lab passes 10/10, exact double-first passes 5/5, and relative-selector variants pass 3/3 with one double-tap counter increment and no single-tap increment. Per-run client logs plus exact runner source/tests pin one pointer sequence and the inter-tap gap. |
+
+| B3-L33 [android] | pass | findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/ | Point-only double-tap and long-press pass 3/3 without element lookup, element-relative point double-tap passes 3/3, and the empty mapping fails clearly. The current hierarchy proves the chosen screen midpoint lies inside the Gesture pad. |
+
+| B3-L59 [android] | pass | findings/evidence/cov3-android/B3-L32-L33-L59-gesture-counters-rerun2/ | The required double-tap registers exactly one double tap and zero single taps in 5/5 dedicated runs. Retained client/runner logs and exact fd9d8e8 source/tests establish the Android 12+ `cmd input motionevent` path and 80 ms floor. |
+
+| B2-K79 [android] | pass | findings/evidence/cov3-android/B2-K79-K104-D230-realpath-kill-rerun3/, findings/evidence/cov3-android/B2-K104-realpath-ready-mcp-rerun1/ | Killing the exact owned keep-alive Grantiva parent causes its runner to exit, and hierarchy rejects the dead session within one second while runner dump and MCP also reject it. A detached-start control outlives its starter and remains usable through hierarchy, dump, and MCP before clean stop. |
+
+| B2-K104 [android] | pass | findings/evidence/cov3-android/B2-K79-K104-D230-realpath-kill-rerun3/, findings/evidence/cov3-android/B2-K104-realpath-ready-mcp-rerun1/ | A run started through `/tmp` records `/private/tmp` in its owner. MCP invoked from the private spelling with `--project-dir /tmp/...` finds both the starting keep-alive session and, in the focused control, a ready detached session and returns its live tree. |
+
+| D2-30 [android] | pass | findings/evidence/cov3-android/B2-K79-K104-D230-realpath-kill-rerun3/, findings/evidence/cov3-android/B2-K104-realpath-ready-mcp-rerun1/ | Owner sidecars retain canonical project path, platform, device, and correct detached flag. Parent-kill lifeline cleanup removes the non-detached runner/readability, while the detached control survives its starter and serves CLI/MCP readers until explicit stop. |
+
+| B3-L49 [android] | fail | findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/, /Users/kyle/Developer/grantiva-cli/.worktrees/regression/docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md | Nine crash/not-visible variants correctly fail at launch with `app_crash`; live-gone passes and live-stays times out as expected. The exact intentional-stop control fails: bare `stopApp` is reported passed, but Landmarks remains onscreen and the following absence check fails. L77 records the Android stop postcondition defect. |
+
+| B3-L50 [android] | pass | findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/, findings/evidence/cov3-android/B3-L50-live-count-complement-rerun1/ | Count and extended-visible crash variants each fail 3/3 at launch with `app_crash` and the RuntimeException cause. The corrected live control asserts the observed right count of two and passes; exact fd9d8e8 count/visible crash tests pin the held-request semantics. |
+
+| B3-L46 [android] | pass | findings/evidence/cov3-android/B3-L46-installed-retention-rerun2/ | In each of three cycles a fresh frozen APK install is followed by the required five-second wait, verbose teardown runs bounded `adb shell sync` successfully before kill, and JSON reports `killed: true`. Teardown takes 2.45–2.89 seconds; after every reboot the Landmarks package remains installed. The wrapper's list-vs-object and final `tr` errors are disclosed in the additive decoder. |
+
 ## Counts
 
-359 of 467 slice rows recorded: 337 pass, 16 fail, 4 blocked, 2 n/a.
+368 of 467 slice rows recorded: 345 pass, 17 fail, 4 blocked, 2 n/a.

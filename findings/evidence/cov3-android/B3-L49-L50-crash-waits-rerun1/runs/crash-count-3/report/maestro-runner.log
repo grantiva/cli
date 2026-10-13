@@ -1,0 +1,31 @@
+02:21:43.941912 [INFO] === Test execution started ===
+02:21:43.941978 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/runs/crash-count-3/report
+02:21:43.941983 [INFO] Platform: android
+02:21:43.941987 [INFO] Driver: uiautomator2
+02:21:43.942247 [INFO] Validated 1 flow(s)
+02:21:43.942263 [INFO] Single device execution mode
+02:21:43.942268 [INFO] Starting flow execution (parallel: false, devices: [])
+02:21:43.942272 [INFO] Creating driver for single device execution
+02:21:43.942276 [INFO] Connecting to Android device: emulator-5554
+02:21:44.021827 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+02:21:44.043083 [INFO] Starting UIAutomator2 server on device emulator-5554
+02:21:44.460040 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:21:44.481362 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:21:45.572459 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+02:21:45.581737 [INFO] Session created successfully: d4d70ed6-a6f4-45fb-ab44-68bdbd4e4314
+02:21:45.632809 [INFO] Driver created: android on google sdk_gphone64_arm64
+02:21:45.634318 [INFO] === Starting flow: crash-count ===
+02:21:45.634324 [INFO] Flow file: .maestro/crash-count.yaml
+02:21:45.634327 [INFO] Total steps: 2
+02:21:45.638704 [DEBUG] Executing step 0: launchApp
+02:21:45.768151 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+02:21:45.768202 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 24ms
+02:21:46.762035 [ERROR] Step 0 failed (1123ms): launchApp - Error: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+02:21:47.215946 [INFO] === Flow completed: crash-count (status: failed, duration: 1580ms, passed: 0, failed: 1, skipped: 1) ===
+02:21:47.613448 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:21:47.628069 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:21:47.628089 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+02:21:47.628289 [INFO] Generating reports...
+02:21:47.629071 [INFO] Shutting down devices started by maestro-runner...
+02:21:47.629093 [INFO] Shutting down all tracked emulators
+02:21:47.629103 [INFO] Shutting down all tracked simulators
