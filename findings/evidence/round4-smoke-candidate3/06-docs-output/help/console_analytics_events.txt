@@ -1,0 +1,24 @@
+OVERVIEW: Page through the attestation event log.
+
+USAGE: grantiva console analytics events [--json] [--verbose] [--quiet] [--page <page>] [--per <per>] [--from <from>] [--to <to>] [--device <device>] [--type <type>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --page <page>           Page number, starting at 1.
+  --per, --per-page <per> Events per page, 1–200. Default 50. (--per-page is
+                          retained as an alias.)
+  --from <from>           Only events at or after this ISO 8601 timestamp, e.g.
+                          2026-09-01T00:00:00Z.
+  --to <to>               Only events at or before this ISO 8601 timestamp.
+  --device <device>       Only events for this device ID.
+  --type <type>           Only this event type: challenge_generated,
+                          attestation_validated, attestation_failed,
+                          suspicious_activity, token_issued.
+  --version               Show the version.
+  -h, --help              Show help information.
+

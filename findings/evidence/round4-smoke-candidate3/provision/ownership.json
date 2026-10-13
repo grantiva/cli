@@ -1,0 +1,53 @@
+{
+  "schema": "grantiva.task8.ownership.v1",
+  "sessionId": "fix4-8-c3",
+  "devices": {
+    "ios": {
+      "platform": "ios",
+      "id": "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+      "name": "smoke4-c3-ios",
+      "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-0",
+      "owned": true,
+      "createdEpoch": 1791926123.425353,
+      "provision": {
+        "command": [
+          "xcrun",
+          "simctl",
+          "create",
+          "smoke4-c3-ios",
+          "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro",
+          "com.apple.CoreSimulator.SimRuntime.iOS-26-0"
+        ],
+        "exit": 0
+      },
+      "ownedPIDs": []
+    },
+    "android": {
+      "platform": "android",
+      "id": "emulator-5580",
+      "name": "smoke4-c3-android",
+      "avd": "smoke4-c3-android",
+      "runtime": "API 35",
+      "owned": true,
+      "createdEpoch": 1791926146.0038662,
+      "provision": {
+        "command": [
+          "/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager",
+          "create",
+          "avd",
+          "--name",
+          "smoke4-c3-android",
+          "--package",
+          "system-images;android-35;google_apis;arm64-v8a",
+          "--device",
+          "pixel_8"
+        ],
+        "exit": 0,
+        "javaHome": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+      },
+      "ownedPIDs": [
+        61153
+      ]
+    }
+  }
+}
