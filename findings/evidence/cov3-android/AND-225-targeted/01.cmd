@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/14-runflow.yaml --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-225-targeted/report; echo exit=$?

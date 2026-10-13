@@ -1,0 +1,77 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/cov3-targeted-review/and-209-edge-land.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] and-209-edge-land (and-209-edge-land.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.5s)
+    ✗ tapOn: text="Profile" (17.1s)
+      ╰─ Element not found: text='Profile' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet")
+✗ and-209-edge-land 18.8s
+
+  [1/1] and-209-edge-land (.maestro/coverage/cov3-targeted-review/and-209-edge-land.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.5s)
+    ✗ tapOn: text="Profile" (17.1s)
+      ╰─ Element not found: text='Profile' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet")
+    - tapOn: text="Gesture Lab" (skipped)
+    - tapOn: text="Gesture Taps" (skipped)
+    - tapOn: point="100%,100%" (skipped)
+    - assertVisible: text="Gesture Taps" (skipped)
+    - takeScreenshot (skipped)
+    - tapOn: point="0%,0%" (skipped)
+    - assertVisible: text="Gesture Taps" (skipped)
+    - takeScreenshot (skipped)
+✗ and-209-edge-land 18.8s
+
+  1 steps passing (18.8s)
+  1 steps failing
+  8 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  and-209-edge-land              ✗ FAIL      10      1      1      8      18.8s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1      10      1      1      8      18.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-209-targeted/report/captures/failure-1791865924.png
+Error: Runner failed (exit 1): and-209-edge-land: tapOn: text="Profile": Element not found: text='Profile' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

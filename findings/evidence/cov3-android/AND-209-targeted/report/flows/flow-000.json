@@ -1,0 +1,149 @@
+{
+  "id": "flow-000",
+  "name": "and-209-edge-land",
+  "sourceFile": ".maestro/coverage/cov3-targeted-review/and-209-edge-land.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T21:31:44.637462-07:00",
+  "endTime": "2026-10-12T21:32:03.448231-07:00",
+  "duration": 18810,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-12T21:31:44.643099-07:00",
+      "endTime": "2026-10-12T21:31:46.171099-07:00",
+      "duration": 1528,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Profile\"",
+      "status": "failed",
+      "startTime": "2026-10-12T21:31:46.172125-07:00",
+      "endTime": "2026-10-12T21:32:03.296125-07:00",
+      "duration": 17124,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Profile"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='Profile' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Lab\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Lab"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Gesture Taps\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Taps"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: point=\"100%,100%\"",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Gesture Taps\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Taps"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-007",
+      "index": 7,
+      "type": "tapOn",
+      "yaml": "tapOn: point=\"0%,0%\"",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-008",
+      "index": 8,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Gesture Taps\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Gesture Taps"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-009",
+      "index": 9,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 9326,
+    "p50": 1528,
+    "p95": 17124,
+    "max": 17124,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

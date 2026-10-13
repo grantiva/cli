@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --env 'LANDMARKS_NOTE=a=b c' --flow .maestro/coverage/22-show-note.yaml --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-035-exact/report; echo exit=$?; adb -s emulator-5554 logcat -d -s Landmarks:I | tail -30

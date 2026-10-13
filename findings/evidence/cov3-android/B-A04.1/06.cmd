@@ -1,0 +1,1 @@
+/Users/kyle/.grantiva-qa/bin/grantiva diff capture --device emulator-5554 --no-build --json; echo run=6 exit=$?; md5 -q .grantiva/captures/android/Home.png; md5 -q '.grantiva/captures/android/Deep Links.png'; stat -f 'home-bytes=%z' .grantiva/captures/android/Home.png

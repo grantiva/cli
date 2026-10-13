@@ -1,0 +1,4 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=6.63 6.99 8.36
+$ /Users/kyle/.grantiva-qa/bin/grantiva record --device emulator-5554 --duration 2 --json --verbose 2>&1 >/dev/null | grep -E '\$ |exit [0-9]|stopped by'; /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs --verbose 2>&1 | grep -E '\$ |exit [0-9]+:|stopped by' | cut -c1-200; /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs 2>&1 | grep -c '\$ '
+rc=1 elapsed=18.7s  (stdout 01.out, stderr 01.err)
+

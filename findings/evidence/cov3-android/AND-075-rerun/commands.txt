@@ -1,0 +1,16 @@
+# [01] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=8.69 9.45 9.55
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs; echo exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=1.8s  (stdout 01.out, stderr 01.err)
+
+# [02] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=4.97 5.18 4.68
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs; echo exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=10.0s  (stdout 02.out, stderr 02.err)
+
+# [03] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=6.45 5.66 4.92
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/08-caching.yaml --logs; echo exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=9.4s  (stdout 03.out, stderr 03.err)
+
+# [04] cwd=/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-android/android load=6.38 5.67 4.93
+$ nohup /Users/kyle/.grantiva-qa/bin/grantiva run --device emulator-5554 --no-build --flow .maestro/coverage/18-long-wait.yaml --logs > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-075-rerun/interrupt.out 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-075-rerun/interrupt.err & p=$!; sleep 5; kill -INT $p; wait $p; echo interrupt-exit=$?; sleep 1; ps -ax -o pid=,args= | grep '[a]db.*emulator-5554.*logcat' || echo no-logcat-process
+rc=0 elapsed=7.0s  (stdout 04.out, stderr 04.err)
+

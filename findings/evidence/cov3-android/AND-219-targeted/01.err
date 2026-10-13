@@ -1,0 +1,68 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/07-swipe-from-missing.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 07-swipe-from-missing (07-swipe-from-missing.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.6s)
+    ✗ swipe: LEFT from text="No Such Row" (17.1s)
+      ╰─ Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.")
+✗ 07-swipe-from-missing 18.9s
+
+  [1/1] 07-swipe-from-missing (.maestro/coverage/07-swipe-from-missing.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.6s)
+    ✗ swipe: LEFT from text="No Such Row" (17.1s)
+      ╰─ Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.")
+✗ 07-swipe-from-missing 18.9s
+
+  1 steps passing (18.9s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  07-swipe-from-missing          ✗ FAIL       2      1      1      0      18.9s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      18.9s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report/allure-results
+
+  Built by Grantiva
+
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-219-targeted/report/captures/failure-1791866124.png
+Error: Runner failed (exit 1): 07-swipe-from-missing: swipe: LEFT from text="No Such Row": Element not found for swipe: text='No Such Row' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Wifi signal full.,No internet", "Phone signal full.")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

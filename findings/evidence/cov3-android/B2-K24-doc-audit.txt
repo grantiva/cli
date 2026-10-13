@@ -1,0 +1,11 @@
+Round-3 source commit: 8f2cff67
+
+Commands:
+  rg -n 'Maestro|appId|grantiva-android.yml' docs/android.md README.md
+  sed -n '1,45p' docs/android.md
+
+README.md documents Maestro-format `grantiva.yml` at lines 152-174.
+docs/android.md names `grantiva-android.yml` and documents the native Android
+config, but does not state that the Maestro config form is supported as the
+B2-K24 acceptance criterion requires.
+

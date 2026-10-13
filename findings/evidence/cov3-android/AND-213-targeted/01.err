@@ -1,0 +1,78 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: .maestro/coverage/15-input-unicode.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-213-targeted/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 15-input-unicode (15-input-unicode.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (931ms)
+    ✓ tapOn: text="Edit Landmark" (810ms)
+    ✓ tapOn: text="Location" (796ms)
+    ✓ inputText: " · Ünïcødé ✓" (1.5s)
+    ✓ assertVisible: text="San Francisco, CA · Ünïcødé ✓" (965ms)
+    ✓ tapOn: text="Cancel" (788ms)
+    ✓ tapOn: text="Discard" (1.5s)
+    ✓ assertNotVisible: text="San Francisco, CA · Ünïcødé ✓" (717ms)
+    ✓ assertVisible: text="Golden Gate Bridge" (29ms)
+✓ 15-input-unicode 9.6s
+
+  [1/1] 15-input-unicode (.maestro/coverage/15-input-unicode.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ tapOn: text="Deep Links" (931ms)
+    ✓ tapOn: text="Edit Landmark" (810ms)
+    ✓ tapOn: text="Location" (796ms)
+    ✓ inputText: " · Ünïcødé ✓" (1.5s)
+    ✓ assertVisible: text="San Francisco, CA · Ünïcødé ✓" (965ms)
+    ✓ tapOn: text="Cancel" (788ms)
+    ✓ tapOn: text="Discard" (1.5s)
+    ✓ assertNotVisible: text="San Francisco, CA · Ünïcødé ✓" (717ms)
+    ✓ assertVisible: text="Golden Gate Bridge" (29ms)
+✓ 15-input-unicode 9.6s
+
+  10 steps passing (9.6s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  15-input-unicode               ✓ PASS      10     10      0      0       9.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      10     10      0      0       9.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-213-targeted/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-213-targeted/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-213-targeted/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-213-targeted/report/allure-results
+
+  Built by Grantiva
+
