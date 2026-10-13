@@ -1,0 +1,17 @@
+# iOS K97, D2-30, and retained-row joins review
+
+Read-only review on 2026-10-13 against the binding matrix and current round-3 artifacts. Candidate binary SHA is preserved in each attempt; candidate source is `8f2cff67`.
+
+## Full joins
+
+- **B2-K97 [ios]: pass.** Attempt41 is the exact stock `02-exact-negative` control: `fail-report/flows/flow-000.json` names `.maestro/coverage/02-exact-negative.yaml` and its exact-visible failure has type `assertion`. Attempt45 `crash-1-report/flows/flow-000.json` has type `app_crash`, the bundle ID and not-running/crash text, and exit 1. Attempt90 `json-report/flows/flow-000.json` supplies the separate `element_not_found` control. Attempt17's custom negative is irrelevant to this complete three-way join; attempt95 should remain retired.
+- **D2-30 [ios]: pass.** Attempt96b runs detached start from a `/private/tmp` project reached through `/tmp`; `owner.json` records the real `/private/tmp/cov3-ios-attempt96b`, platform iOS, and `detached:true`; CLI hierarchy, dump hierarchy, and MCP tree all attach, and the detached process survives its starter until explicit stop. Attempt91 supplies the keep-alive half with `detached:false`, the same realpath behavior through both spellings, then kills the row-owned Grantiva parent. The runner disappears within the bounded poll, sidecars are empty, CLI readers exit 1 with no-session, and MCP returns `isError`.
+- **MCP-036 [ios]: pass.** Attempt88 is an empty/configless project and calls `grantiva_run` with scheme plus the safety-required explicit owned simulator. `mcp/run.json` and `run-text.txt` both show build, install, and launch with the requested scheme, discovered bundle ID, simulator, and product path. The simulator selector does not supply config or bundle identity.
+- **IOS-052 / IOS-053: pass.** Attempt94 preserves two simultaneous same-project keep-alive sessions. `newest.json` without UDID selects U2’s newer Home state; `older-u1.json` with U1 selects its older detail state. Both commands exit 0, and distinct ready files/PIDs plus final stop document establish two live sessions rather than sequential reuse.
+- **IOS-054: pass.** Attempt91 kills the keep-alive owning Grantiva process, observes the runner exit and sidecars disappear, then both `hierarchy` and `runner dump-hierarchy` exit 1 with no-active-session errors; `mcp-after/tree.json` is an error result rather than stale tree output.
+
+## Not complete from the named retained joins
+
+- **IOS-089:** Attempt47’s second command is another `runner start`, not `run`; it returns the already-running notice but does not exercise the matrix command. Attempt64’s second run is owned by a keep-alive run, not a runner-start session. No exact current join found.
+- **N-13 / B-R05.2:** Attempt47 calls screenshot, tap, and a11y tree in the starting window, not all seven session tools. Attempt80c calls tap before ready and tap after ready across five cycles. Together they prove result/isError transport and lazy attachment for those tools, but cannot satisfy N-13’s explicit all-seven-tool startup loop or B-R05.2’s every-tool clause.
+- **B-R05.1 / B-R05.3:** The same artifacts do fully support the narrower clauses: attempt47/80c return startup-state `isError` results without JSON-RPC errors, and attempt80c’s same server subsequently returns the missing-label `Element not found` result after readiness. These rows can be joined independently of the incomplete all-seven requirement.
