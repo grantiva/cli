@@ -1,0 +1,54 @@
+{
+  "id": "flow-000",
+  "name": "wait-visible",
+  "sourceFile": "wait-visible.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:36:07.017749-07:00",
+  "endTime": "2026-10-12T23:36:10.81687-07:00",
+  "duration": 3799,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:36:08.586063-07:00",
+      "endTime": "2026-10-12T23:36:10.632063-07:00",
+      "duration": 2046,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-12T23:36:10.634233-07:00",
+      "endTime": "2026-10-12T23:36:10.646233-07:00",
+      "duration": 12,
+      "error": {
+        "type": "app_crash",
+        "message": "Element 'Landmarks' not visible: the app is not running (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1029,
+    "p50": 12,
+    "p95": 2046,
+    "max": 2046,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

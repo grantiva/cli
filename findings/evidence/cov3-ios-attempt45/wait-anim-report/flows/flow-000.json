@@ -1,0 +1,68 @@
+{
+  "id": "flow-000",
+  "name": "wait-anim",
+  "sourceFile": "wait-anim.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T23:36:35.34047-07:00",
+  "endTime": "2026-10-12T23:36:39.577464-07:00",
+  "duration": 4236,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T23:36:36.894566-07:00",
+      "endTime": "2026-10-12T23:36:38.886566-07:00",
+      "duration": 1992,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "failed",
+      "startTime": "2026-10-12T23:36:38.890854-07:00",
+      "endTime": "2026-10-12T23:36:39.419854-07:00",
+      "duration": 529,
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed: com.kylebrowning.Landmarks is not running"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1260,
+    "p50": 529,
+    "p95": 1992,
+    "max": 1992,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
