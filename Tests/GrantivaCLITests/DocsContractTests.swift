@@ -179,4 +179,24 @@ final class DocsContractTests: XCTestCase {
         XCTAssertFalse(readme.contains("`teardown --force`\nis only for a session whose runner was killed"))
         XCTAssertTrue(readme.contains("runnerSessionStopped"))
     }
+
+    func testPublicCompatibilityNotesCoverBaselineNamesDatesSelectorsAndLifecycleJSON() throws {
+        let readme = try text("README.md")
+        let mcpDocs = try text("docs/mcp.md")
+
+        XCTAssertTrue(readme.contains("legacy baseline"), "README must name legacy baseline compatibility")
+        XCTAssertTrue(readme.contains("percent-encoded"), "README must name the old filename form")
+        XCTAssertTrue(readme.contains("ambiguous `%`"), "README must explain why percent encoding changed")
+        XCTAssertTrue(readme.contains("migration on approval"), "README must say approval performs migration")
+
+        XCTAssertTrue(mcpDocs.contains("ISO 8601"))
+        for key in ["timestamp", "detectedAt", "startedAt", "acquiredAt", "createdAt", "finishedAt"] {
+            XCTAssertTrue(mcpDocs.contains("`\(key)`"), key)
+        }
+        XCTAssertTrue(mcpDocs.contains("1970-01-01T00:00:00Z"))
+        XCTAssertTrue(mcpDocs.contains("label → identifier → placeholder"))
+        for key in ["runnerSessionStopped", "leftoverProcesses", "reapedProcesses"] {
+            XCTAssertTrue(mcpDocs.contains(#""\#(key)""#), key)
+        }
+    }
 }

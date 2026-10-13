@@ -108,9 +108,16 @@ public struct DoctorRunner: Sendable {
         guard let device = devices.first(where: \.isBooted) else {
             return Self.noBootedSimulatorCheck(devices: devices, createdByGrantiva: simulators.createdUDIDs())
         }
+        var message = "\(device.name) — \(device.runtimeName)"
+        let createdByGrantiva = simulators.createdUDIDs()
+        if let userDefault = devices.first(where: {
+            $0.name == DefaultSimulator.name && !createdByGrantiva.contains($0.udid)
+        }) {
+            message += " (\"\(userDefault.name)\" (\(userDefault.udid)) was not created by Grantiva, so it is not used as the default)"
+        }
         return DoctorCheck(
             name: "Booted Simulator", status: .ok,
-            message: "\(device.name) — \(device.runtimeName)", fix: nil, section: .advisory
+            message: message, fix: nil, section: .advisory
         )
     }
 

@@ -176,6 +176,22 @@ sent to a client that did not subscribe.
 
 Concurrent requests may finish in any order. Each stdout line contains one complete JSON-RPC message, including responses larger than the pipe buffer; response and notification bytes never interleave.
 
+## JSON date compatibility
+
+Date-valued JSON fields use ISO 8601 UTC strings, such as
+`1970-01-01T00:00:00Z`. This is the representation scripts should consume;
+numeric Unix and Apple-reference timestamps are not output alternatives. The
+fields are `timestamp` on screen captures, `detectedAt` on detected projects,
+`startedAt` on runner sessions, simulator or emulator leases and provenance,
+`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
+and keep-alive ownership records, and `finishedAt` in ready files.
+
+The iOS tap fallback order is **label → identifier → placeholder**. Runner
+lifecycle and teardown JSON use the current camelCase keys, including
+`"runnerSessionStopped"`, `"leftoverProcesses"`, and `"reapedProcesses"`;
+each stopped-session object retains the app, device, runner PID, port, and
+cleanup result described in the README.
+
 ## Malformed input
 
 The server follows JSON-RPC 2.0 for input it cannot handle: a line that is not JSON is answered with
