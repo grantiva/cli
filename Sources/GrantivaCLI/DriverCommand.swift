@@ -1160,7 +1160,9 @@ struct RunnerStopCommand: AsyncParsableCommand {
         // The runner's own teardown clears its forwards and the UIA2 server
         // when it exits cleanly; after a kill they may still be there.
         if DeviceID.isAndroidSerial(session.udid) {
-            await dependencies.cleanupOrphans(session.udid)
+            await dependencies.cleanupOrphans(
+                session.udid, session.isReady ? Int(session.wdaPort) : nil
+            )
         }
 
         if !sessionRemoved { dependencies.removeSession() }
@@ -1248,7 +1250,7 @@ struct RunnerStopDependencies: Sendable {
     var terminateGroup: @Sendable (Int32) -> ChildProcess.GroupTermination
     var removeSession: @Sendable () -> Void
     var releaseLease: @Sendable (String) -> Void
-    var cleanupOrphans: @Sendable (String) async -> Void
+    var cleanupOrphans: @Sendable (String, Int?) async -> Void
     /// `runner start` records a keep-alive owner sidecar for the runner pid
     /// on both platforms; stop removes it with the session.
     var removeKeepAliveOwner: @Sendable (Int32) -> Void
@@ -1270,9 +1272,12 @@ struct RunnerStopDependencies: Sendable {
         terminateGroup: { ChildProcess.terminateGroup($0, gracePeriod: 5) },
         removeSession: { RunnerSessionInfo.remove() },
         releaseLease: { SimulatorLease.forceRelease(udid: $0) },
-        cleanupOrphans: { serial in
+        cleanupOrphans: { serial, ownedForwardPort in
             guard let platform = try? AndroidPlatform.live() else { return }
             await platform.cleanupOrphans(deviceID: serial)
+            if let ownedForwardPort {
+                await platform.removeOwnedForward(deviceID: serial, localPort: ownedForwardPort)
+            }
         },
         removeKeepAliveOwner: { KeepAliveSessionStore().removeOwner(runnerPid: $0) },
         removeRunnerSessionFiles: { KeepAliveSessionStore().removeSessionFiles(runnerPid: $0) },

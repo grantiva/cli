@@ -275,7 +275,13 @@ public struct AndroidPlatform: DevicePlatform {
         for package in ADB.uiAutomator2Packages {
             _ = try? await adb.forceStop(serial: deviceID, applicationId: package)
         }
-        _ = try? await adb.removeForwards(serial: deviceID)
+    }
+
+    /// Removes a forward whose local port was recorded by the session being
+    /// cleaned up. The caller, rather than device membership, proves ownership.
+    public func removeOwnedForward(deviceID: String, localPort: Int) async {
+        guard localPort > 0 else { return }
+        _ = try? await adb.removeForward(serial: deviceID, localPort: localPort)
     }
 
     // MARK: Driver and recording

@@ -94,6 +94,27 @@ final class RunnerSessionStopperTests: XCTestCase {
         XCTAssertEqual(events.value, ["terminate 701", "files 701", "orphans emulator-5554", "lease emulator-5554"])
     }
 
+    func testADetachedAndroidSessionCleansOnlyItsRecordedForward() async throws {
+        let alive = Locked<Set<Int32>>([701])
+        let events = Locked<[String]>([])
+        var stopper = makeStopper(alive: alive, events: events)
+        stopper.terminateGroup = { pid in
+            events.append("terminate \(pid)")
+            alive.mutate { $0.remove(pid) }
+            return .interrupted
+        }
+        let session = KeepAliveSession(
+            sessionId: "s", port: 61211, pid: 701, udid: "emulator-5554",
+            path: "/x", ownerPid: 9, detached: true
+        )
+
+        _ = try await stopper.stop(session)
+
+        XCTAssertEqual(events.value, [
+            "terminate 701", "files 701", "orphans emulator-5554", "forward emulator-5554 61211", "lease emulator-5554",
+        ])
+    }
+
     /// L04: a detached session's runner group is stopped while its helpers
     /// are watched; the device helper it left is reaped and reported.
     func testATerminatedRunnersDeviceHelperIsReapedAndReported() async throws {
@@ -284,7 +305,8 @@ final class RunnerSessionStopperTests: XCTestCase {
             terminateGroup: { pid in events.append("terminate \(pid)"); alive.mutate { $0.remove(pid) }; return .interrupted },
             removeSessionFiles: { events.append("files \($0)") },
             releaseLease: { events.append("lease \($0)") },
-            cleanupOrphans: { events.append("orphans \($0)") },
+            cleanupOrphans: { serial in events.append("orphans \(serial)") },
+            cleanupOwnedForward: { serial, port in events.append("forward \(serial) \(port)") },
             waitTimeout: 2,
             pollInterval: .milliseconds(10)
         )

@@ -340,7 +340,36 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         let session = makeSession(udid: "emulator-5554")
         let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554")
         _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
-        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans", "owner", "release"])
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans 8430", "owner", "release"])
+    }
+
+    func testStopOnAStartingAndroidSessionHasNoOwnedForwardToRemove() async throws {
+        let events = LockedValue<[String]>([])
+        let session = RunnerSessionInfo.starting(
+            pid: 1234, bundleId: "com.example", udid: "emulator-5554",
+            startedAt: Date(), platform: .android
+        )
+        let dependencies = dependencies(
+            session: session, events: events,
+            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device emulator-5554"
+        )
+
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "orphans -", "owner", "release"])
+    }
+
+    func testStopOnIOSNeverRequestsAndroidOrphanCleanup() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(
+            session: session, events: events,
+            snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device \(session.udid)"
+        )
+
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+
+        XCTAssertFalse(events.value.contains(where: { $0.hasPrefix("orphans") }), "\(events.value)")
     }
 
     func testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms() {
@@ -1131,7 +1160,7 @@ final class RunnerLifecycleCommandTests: XCTestCase {
             terminateGroup: { _ in events.append("terminate"); return .interrupted },
             removeSession: { events.append("remove") },
             releaseLease: { _ in events.append("release") },
-            cleanupOrphans: { _ in events.append("orphans") },
+            cleanupOrphans: { _, port in events.append("orphans \(port.map(String.init) ?? "-")") },
             removeKeepAliveOwner: { _ in events.append("owner") },
             removeRunnerSessionFiles: { events.append("files \($0)") },
             keepAliveSessions: { [] },
