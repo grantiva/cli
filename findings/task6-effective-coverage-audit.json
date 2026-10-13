@@ -1,0 +1,778 @@
+{
+  "matrix": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/docs/superpowers/plans/2026-10-13-round3-coverage-matrix.md",
+    "sha256": "1a52e8d7c597d925159cc3ff01343a4e80630afea4af80e258d4a770af501563",
+    "logical_rows": 1170,
+    "by_declared_platform": {
+      "cli": 361,
+      "ios": 320,
+      "android": 309,
+      "both": 180
+    },
+    "by_execution_slice": {
+      "CLI": 384,
+      "iOS": 319,
+      "Android": 308,
+      "iOS+Android": 159
+    },
+    "effective_by_slice": {
+      "cli": 384,
+      "ios": 478,
+      "android": 467
+    },
+    "effective_total": 1329
+  },
+  "derived_slices": {
+    "cli": {
+      "original": {
+        "recorded": 384,
+        "expected": 384,
+        "pass": 368,
+        "fail": 7,
+        "blocked": 5,
+        "n/a": 4,
+        "missing": [],
+        "excluded_result_lines": 8
+      },
+      "final": {
+        "recorded": 384,
+        "expected": 384,
+        "pass": 375,
+        "fail": 2,
+        "blocked": 3,
+        "n/a": 4,
+        "missing": [],
+        "excluded_result_lines": 0
+      },
+      "raw_result_lines": 422,
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/cov3-cli-results.md",
+      "sha256": "38d3e77059122055d1a4b24cf8f1cb3d057b6a8643b71971e64dd6c877ebc13c"
+    },
+    "ios": {
+      "original": {
+        "recorded": 478,
+        "expected": 478,
+        "pass": 447,
+        "fail": 21,
+        "blocked": 10,
+        "n/a": 0,
+        "missing": [],
+        "excluded_result_lines": 55
+      },
+      "final": {
+        "recorded": 478,
+        "expected": 478,
+        "pass": 454,
+        "fail": 13,
+        "blocked": 11,
+        "n/a": 0,
+        "missing": [],
+        "excluded_result_lines": 46
+      },
+      "raw_result_lines": 533,
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/cov3-ios-results.md",
+      "sha256": "85f8023622ab354077f62303c016d85e936e27106dcb8a84bf24e189edc2f653"
+    },
+    "android": {
+      "original": {
+        "recorded": 467,
+        "expected": 467,
+        "pass": 442,
+        "fail": 17,
+        "blocked": 6,
+        "n/a": 2,
+        "missing": [],
+        "excluded_result_lines": 12
+      },
+      "final": {
+        "recorded": 467,
+        "expected": 467,
+        "pass": 452,
+        "fail": 7,
+        "blocked": 6,
+        "n/a": 2,
+        "missing": [],
+        "excluded_result_lines": 2
+      },
+      "raw_result_lines": 479,
+      "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/cov3-android-results.md",
+      "sha256": "60a2d02b648e7406c163e46e3d31dfa9ac2c113d72eb3a3469c3ec0eb81c0d6e"
+    }
+  },
+  "original_footer_validation": {
+    "cli": {
+      "original_footer": {
+        "recorded": 384,
+        "expected": 384,
+        "pass": 368,
+        "fail": 7,
+        "blocked": 5,
+        "n/a": 4
+      },
+      "derived_original": {
+        "recorded": 384,
+        "expected": 384,
+        "pass": 368,
+        "fail": 7,
+        "blocked": 5,
+        "n/a": 4
+      },
+      "matches_original": true
+    },
+    "ios": {
+      "original_footer": {
+        "recorded": 478,
+        "expected": 478,
+        "pass": 447,
+        "fail": 21,
+        "blocked": 10,
+        "n/a": 0
+      },
+      "derived_original": {
+        "recorded": 478,
+        "expected": 478,
+        "pass": 447,
+        "fail": 21,
+        "blocked": 10,
+        "n/a": 0
+      },
+      "matches_original": true
+    },
+    "android": {
+      "original_footer": {
+        "recorded": 467,
+        "expected": 467,
+        "pass": 442,
+        "fail": 17,
+        "blocked": 6,
+        "n/a": 2
+      },
+      "derived_original": {
+        "recorded": 467,
+        "expected": 467,
+        "pass": 442,
+        "fail": 17,
+        "blocked": 6,
+        "n/a": 2
+      },
+      "matches_original": true
+    }
+  },
+  "original_effective_totals": {
+    "pass": 1257,
+    "fail": 45,
+    "blocked": 21,
+    "n/a": 6,
+    "total": 1329
+  },
+  "task6_review_map_validation": {
+    "path": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/task6-corrected-criterion-review-map.json",
+    "entries": 25,
+    "actual_task6_rows": 27,
+    "mapped_without_actual_row": [],
+    "actual_rows_without_mapping": [
+      "cli:B3-L29",
+      "cli:N3-15"
+    ]
+  },
+  "final_effective_totals": {
+    "pass": 1281,
+    "fail": 22,
+    "blocked": 20,
+    "n/a": 6,
+    "total": 1329
+  },
+  "side_findings": "excluded because their IDs are absent from the 1170-row matrix",
+  "remaining_fail_blocked": [
+    {
+      "platform": "cli",
+      "id": "B3-L53",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 427,
+          "label": "B3-L53",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-cli/B3-L53/",
+          "reason": "direct runner empty device/udid is accepted but ends at no-device discovery, neither the expected signing path nor explicit empty-value rejection; direct --serial and CLI --udid/--serial are genuine unknown-option observations. No device was touched"
+        }
+      ]
+    },
+    {
+      "platform": "cli",
+      "id": "CLI-025",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 46,
+          "label": "CLI-025",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-cli/CLI-025/",
+          "reason": "run conforms exactly. Doctor exits 0 and reports the expected warning/fix, but text places `Platform` under Project and JSON uses section `Project`, while the binding corrected criterion requires Advisory. Candidate `DoctorCommand.swift:51-59` explicitly assigns `.project`; L67 triage classifies this as a product section-assignment defect, not a matrix correction"
+        }
+      ]
+    },
+    {
+      "platform": "cli",
+      "id": "CLI-083",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 126,
+          "label": "CLI-083",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-cli/CLI-083/booted.out",
+          "reason": "re-run rule: not run by the CLI slice; at this time 'xcrun simctl list devices booted' lists the owner's iPhone 17 Pro and iPhone 18 Pro (plus campaign simulators), so under the rule it is 'blocked owner simulator booted' unless the iOS slice finds none booted after its teardown"
+        }
+      ]
+    },
+    {
+      "platform": "cli",
+      "id": "CLI-153",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 161,
+          "label": "CLI-153",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-cli/CLI-153/",
+          "reason": "before/after device lists prove this row booted nothing, and the device-free Quick Start lines produced their expected outputs; however round3-smoke explicitly says the prerequisite no-simulator MCP build was not run, so it cannot establish the required isError-and-no-boot guard. No owner/campaign device was touched"
+        }
+      ]
+    },
+    {
+      "platform": "cli",
+      "id": "N3-15",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 453,
+          "label": "N3-15 rerun task6 completion",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-controller/N3-15-after-final-cleanup/, findings/controller-N3-15-final-environment-review.md",
+          "reason": "Final read-only doctor text and JSON both exit 0 with owner iPhone 17 Pro, while the simultaneously present unowned default-named iPhone 18 Pro FE441\u2026 is omitted with no `not used as the default` note. Before/after booted inventories are byte-identical. Exact DoctorRunner source returns the first booted device before evaluating the ownership-note branch. The original blocked observation remains preserved above."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B-C21.1",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 359,
+          "label": "B-C21.1 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios-attempt32/booted-before.txt, findings/evidence/cov3-ios/campaign-shared-constraints.md",
+          "reason": "The mandatory no-simulator rerun guard is unsatisfied: current campaign evidence lists protected owner simulators `iPhone 17 Pro` and `iPhone 18 Pro` booted. The plan requires `blocked owner simulator booted` and forbids shutting them down."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B-C22.2",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 489,
+          "label": "B-C22.2 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt77/cleanup-command.out, findings/evidence/cov3-ios-attempt77/sessions-before.json, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Output/JSONOutput.swift, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/JSONOutputTests.swift, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/bc22-k103-ios76d-77-review.md",
+          "reason": "Runtime and exact-head source/tests encode date-valued JSON fields as ISO-8601, including current `acquiredAt` and cleanup `createdAt`. The literal public-change-note clause fails: exact-head README/docs/release-note searches contain no note that JSON dates changed to ISO-8601. This is a documentation-contract omission tracked for L74; no runtime defect is claimed."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B-I06.2",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 358,
+          "label": "B-I06.2 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/campaign-shared-constraints.md",
+          "reason": "The campaign plan explicitly keeps this row blocked because the runner\u2019s `/session/{id}/wda/keys` request path is not observable in this environment. Existing successful typing proves behavior but cannot distinguish the primary endpoint from its 404-only fallback, so no endpoint verdict is inferred."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B-I16.2",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 408,
+          "label": "B-I16.2 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt57/compare-legacy.out, findings/evidence/cov3-ios-attempt57/baselines-legacy-before.txt, findings/evidence/cov3-ios-attempt57/baselines-after-migrate.txt, findings/evidence/cov3-ios-attempt57/approve-migrate.out, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/README.md, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Diff/BaselineStore.swift, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/ScreenArtifactTests.swift",
+          "reason": "Runtime accepts `Deep%20Links.png` and named approval removes it in favor of canonical `Deep Links.png`, while exact source tests pin reversible percent encoding. The exact-head public documentation has no rename/migration note after CHANGELOG removal, so the row's explicit documentation clause fails."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K18",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 657,
+          "label": "B2-K18 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios-attempt127/diff-quiet.out, findings/evidence/cov3-ios-attempt127/diff-quiet.err, findings/evidence/cov3-ios-attempt127/ci-quiet.err, findings/evidence/cov3-ios-attempt127/ci-quiet.exit, findings/evidence/cov3-ios-attempt127/ci-json.err, findings/evidence/cov3-ios-attempt127/ci-json.exit, findings/evidence/cov3-ios-attempt43/diff-ephemeral.out, findings/evidence/cov3-ios-attempt68",
+          "reason": "Local run and diff ephemeral/preserved behaviors are retained, and a supported quiet diff capture succeeds without progress narration. Both supported CI invocations reach the real authentication boundary and exit 1 with `Not authenticated. Run: grantiva auth login`; no authorized API key is available to exercise the required authenticated CI preservation branch. The wrapper exit74 only assumed an error JSON document although the actual JSON-mode authentication failure is emitted on stderr."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K19",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 689,
+          "label": "B2-K19 [ios] rerun corrected round 4",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios-attempt127/diff-quiet.out, findings/evidence/cov3-ios-attempt127/diff-quiet.err, findings/evidence/cov3-ios-attempt127/ci-quiet.err, findings/evidence/cov3-ios-attempt127/ci-json.err, findings/evidence/cov3-ios-attempt109b/quiet.out, findings/evidence/cov3-ios-attempt109b/quiet.err, findings/evidence/cov3-ios-attempt109b/verbose.out, findings/evidence/cov3-ios-attempt109b/verbose.err, findings/evidence/cov3-ios-attempt68",
+          "reason": "Local quiet/JSON/verbose clauses satisfy the corrected contract; authenticated CI remains blocked by unavailable credentials. Original literal failure is preserved."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K25",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 690,
+          "label": "B2-K25 [ios] rerun corrected round 4",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt65/build-install.out, findings/evidence/cov3-ios-attempt65/run.out, findings/evidence/cov3-ios-attempt65/capture.out, findings/evidence/cov3-ios-attempt65/ci.err, findings/evidence/cov3-ios-attempt65/skipped.out, findings/evidence/cov3-ios-attempt65/skipped.err, findings/evidence/cov3-ios-attempt65/skipped.exit.txt, findings/evidence/cov3-ios-attempt65b/skipped.out, findings/evidence/cov3-ios-attempt65b/skipped.exit.txt, findings/evidence/cov3-ios-attempt66/install-launch.out, findings/evidence/cov3-ios-attempt66/install-no-launch.out, findings/evidence/cov3-ios-attempt66b/skipped.out, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/BuildCommand.swift, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/ios-b2-current-evidence-gap-audit.md",
+          "reason": "The correction does not waive the absent-app container lookup failure: L71 remains open and this row remains fail."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K36",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 390,
+          "label": "B2-K36 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios-attempt43/doctor-text.out, findings/evidence/cov3-ios-attempt43/doctor-json.out, findings/evidence/cov3-ios-attempt32/booted-before.txt, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/DoctorTests.swift",
+          "reason": "Broken-toolchain text/JSON and exact thrown/empty-list source tests are covered. The remaining working-toolchain/no-boot runtime leg cannot be created while protected owner simulators are booted; campaign rules forbid shutting them down, so this environment-dependent leg is blocked rather than inferred."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K37.2",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 11,
+          "label": "B2-K37.2 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/STEP1/",
+          "reason": "Default-device guard prohibited the no-simulator call."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B2-K78",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 85,
+          "label": "B2-K78 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt8/B2-K78/",
+          "reason": "`Favorites` label succeeds, but required MCP `heart` identifier fallback returns element-not-found. Later navigation can continue, but this acceptance criterion fails."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B3-L08.1",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 9,
+          "label": "B3-L08.1",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/STEP1/",
+          "reason": "Both protected owner simulators were already booted; guarded no-simulator MCP build was not sent."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B3-L08.2",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 10,
+          "label": "B3-L08.2",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/STEP1/",
+          "reason": "Both protected owner simulators were already booted; guarded default-path CLI calls were not sent."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B3-L15.2",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 41,
+          "label": "B3-L15.2 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios/B3-L15.2/mcp/transcript.txt",
+          "reason": "swipe/type match the exact required-argument shape, but script returns `Error: Invalid argument: 'steps' array is required.` instead of expected `'steps' is required.`"
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "B3-L20",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 497,
+          "label": "B3-L20 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt79/root-cycle.out, findings/evidence/cov3-ios-attempt79/screens-cycle-run.out, findings/evidence/cov3-ios-attempt79/screens-cycle-diff.out, findings/evidence/cov3-ios-attempt79/subdirectory-cycle.out, findings/evidence/cov3-ios-attempt79/summary.json, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/ios79-android-l10-n207-review.md",
+          "reason": "All four exact cycles are detected in 1.5\u20132.1 seconds. Root and both screens forms print the required chains, but the subdirectory chain incorrectly preserves containing-file-relative `../` operands instead of project-relative `flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml`. Exact source review identifies the later `subFlowPathMap` merge overwriting correct canonical display values; L75 tracks the product formatting defect."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "D2-08",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 444,
+          "label": "D2-08 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt65/build-install.out, findings/evidence/cov3-ios-attempt65/run.out, findings/evidence/cov3-ios-attempt65/capture.out, findings/evidence/cov3-ios-attempt65/ci.err, findings/evidence/cov3-ios-attempt65/skipped.err, findings/evidence/cov3-ios-attempt65/skipped.exit.txt, findings/evidence/cov3-ios-attempt65b/skipped.out, findings/evidence/cov3-ios-attempt65b/skipped.exit.txt, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/BuildCommand.swift",
+          "reason": "From an absent-app owned simulator, app-file build-install/run/capture install and succeed and CI returns the permitted no-key error. The exact no-app-file control prints skipping but then exits 1 NSPOSIX2 instead of its promised Done/install-skipped result; the same command passes only when the app is already installed (65b), exposing the absent-container defect."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "D2-20",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 480,
+          "label": "D2-20 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt73/free-json.out, findings/evidence/cov3-ios-attempt73/free-text.out, findings/evidence/cov3-ios-attempt73/nonforce.out, findings/evidence/cov3-ios-attempt73/after-nonforce.json, findings/evidence/cov3-ios-attempt73/session-before-teardown.json, findings/evidence/cov3-ios-attempt73/hierarchy.out, findings/evidence/cov3-ios-attempt73/live-teardown.out, findings/evidence/cov3-ios-attempt73/session-after.txt, findings/evidence/cov3-ios-attempt74/teardown.out, /Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sdd/2026-10-13-round3-coverage-pass/L73-force-teardown-live-runner-omits-stopped-session-result.md",
+          "reason": "Free force, killed-keepalive reclaim, and sessionless non-force home removal behave correctly. The live detached ready session also is actually stopped and cleared, but force JSON incorrectly reports `reclaimed:false`, omits `runnerSessionStopped`, and lists no removed session files/processes; this violates leg (d) and is tracked by L73."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "D2-36",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 86,
+          "label": "D2-36 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt8/D2-36/",
+          "reason": "The required label-order sequence fails on `heart`; MCP does not resolve the SF Symbol identifier after its label lookup. The attempt's separate Edit/Name precondition was also constructed incorrectly and is not graded."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "IOS-064",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 646,
+          "label": "IOS-064",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt119b/success-verbose-after-processes.txt, findings/evidence/cov3-ios-attempt119b/failure-verbose-after-processes.txt, findings/evidence/cov3-ios-attempt119b/sigint-after-processes.txt, findings/evidence/cov3-ios-attempt119b/sigint-after-2s-processes.txt, findings/evidence/cov3-ios-attempt119b/sigint.exit, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/ios119b-k33-ios064-review.md",
+          "reason": "Success and failure leave no matching log stream, but after Ctrl-C returns exit 130 the immediate inventory still contains live, reparented PID 17077 running the exact Landmarks log-stream predicate. It disappears within two seconds, but it is an orphan at command completion and violates the literal no-orphan contract."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "IOS-102",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 80,
+          "label": "IOS-102",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt7/IOS-102/",
+          "reason": "MCP label tap `Favorites` succeeds, but the required `heart` label/identifier fallback returns `Element not found: \"heart\"`; the later coordinate subcheck was not reached because the attempt's frame-label extraction also failed."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "N-08",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 360,
+          "label": "N-08 [ios]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/campaign-shared-constraints.md",
+          "reason": "The campaign plan explicitly keeps the developer-install-directory isolation check blocked by the unavailable root-level environment control. Current successful stock runs do not prove the required before/after directory observation with that directory absent from PATH."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "N2-15",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 457,
+          "label": "N2-15 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt70/plain.err, findings/evidence/cov3-ios-attempt70/quiet.err, findings/evidence/cov3-ios-attempt70/json.err, findings/evidence/cov3-ios-attempt70/summary.json, findings/evidence/cov3-ios-attempt70c/summary.json, findings/evidence/cov3-ios-attempt70c/plain.hierarchy.out, findings/evidence/cov3-ios-attempt70c/quiet.hierarchy.out, findings/evidence/cov3-ios-attempt70c/json.hierarchy.out, /Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift",
+          "reason": "All three ready-state controls accept hierarchy, print the correct notice, exit 130 and remove the session. During startup, however, all three exact foreground modes remove the session after SIGINT but falsely report `Timed out waiting for WDA to start` and exit 1 rather than the required 130; this violates the foreground SIGINT contract and is tracked by L72."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "N3-03",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 354,
+          "label": "N3-03 [ios]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-ios-attempt47/starting-observations.json, findings/evidence/cov3-ios-attempt47/second-json.out, findings/evidence/cov3-ios-attempt47/second-text.err",
+          "reason": "While the first runner is proven `starting`, both second starts detect the same PID and spawn no runner. Text correctly says `starting`, but JSON reports `already_running` while omitting the required `\"port\": null` key."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "N3-12",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 12,
+          "label": "N3-12",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/STEP1/",
+          "reason": "Protected owner simulators were already booted; guarded MCP calls were not sent."
+        }
+      ]
+    },
+    {
+      "platform": "ios",
+      "id": "N3-13",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 13,
+          "label": "N3-13",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-ios/STEP1/",
+          "reason": "Required empty booted list was unavailable; guarded MCP build was not sent."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "AND-002",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 8,
+          "label": "AND-002",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/AND-002/",
+          "reason": "Shared constraints state that installed alternatives exceed 1 GB; the row's rerun rule keeps it blocked unless the environment changes."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "AND-012",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 11,
+          "label": "AND-012",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/AND-012/",
+          "reason": "The row requires emulator teardown --all, which the binding process-safety rule forbids."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "AND-088",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 85,
+          "label": "AND-088",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/AND-088/",
+          "reason": "The round-3 rerun rule keeps this credentials-dependent row blocked because the environment has not changed."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "AND-110",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 687,
+          "label": "AND-110 [android]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/, findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/, findings/evidence/cov3-android/AND-018-external-run-rerun1/",
+          "reason": "Current exact evidence corroborates the documented ensure, sessions, targeted teardown, and delete examples and their ownership outcomes. The remaining literal `emulator teardown --all` example is prohibited by the campaign Global Constraint, so the compound row cannot be completed safely and that action was not executed."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "AND-127",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 170,
+          "label": "AND-127",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/AND-126-127-exact-rerun1/, findings/evidence/cov3-android/AND-127-exact-rerun1/, findings/evidence/cov3-android/AND-127-isolated-poll-rerun2/",
+          "reason": "Detached start reported ready before its generated `launchApp` flow had foregrounded the app: the immediate hierarchy was system UI. An isolated retry without concurrent runner work reproduced the timing window, then returned Landmarks on the next poll 1.183 seconds later."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B-C02.1",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 689,
+          "label": "B-C02.1 [android]",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/AND011-015-016-BC02.1-external-avd-rerun2/, findings/evidence/cov3-android/AND-018-external-run-rerun1/",
+          "reason": "A hand-started AVD is reused without adoption, runs through both target forms without entering the started ledger, and refuses targeted teardown without force while surviving; the exact forced targeted cleanup succeeds. The compound row's remaining `teardown --all` clause is prohibited by the campaign Global Constraint and was not executed."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B-C22.2",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 407,
+          "label": "B-C22.2",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/X013-X015-X017-android-rerun1/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/bc22-k103-ios76d-77-review.md",
+          "reason": "Current Android session JSON uses ISO-8601 timestamps and exact-head JSON encoding/tests pin ISO-8601 dates, but the mandatory public change note is absent from the allowed README/docs/release-note surfaces. This documentation-contract failure is tracked by accepted L74; no runtime change is needed."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B3-L15.2",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 136,
+          "label": "B3-L15.2 [android]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/MCP-live-readonly/mcp/script-missing.json, findings/evidence/cov3-android/MCP-live-readonly/mcp/swipe-missing.json, findings/evidence/cov3-android/MCP-live-readonly/mcp/type-missing.json",
+          "reason": "Live swipe and type errors match exactly, but script returned `'steps' array is required.` instead of the required exact `'steps' is required.`; all three were single-Error isError results. Shared defect L65."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B3-L20",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 419,
+          "label": "B3-L20",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/B3-L20-cycle-four-forms-rerun2/",
+          "reason": "All four cycle checks exit 1 in under 1.1 seconds and root/screens forms give clear circular dependency chains. The prescribed subdirectory form violates the literal project-relative-hop criterion, however: it reports `flows/a.yaml -> ../shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml` instead of normalizing every hop relative to the project directory. This matches the cross-platform L75 finding."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B3-L49",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 515,
+          "label": "B3-L49 [android]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/, /Users/kyle/Developer/grantiva-cli/.worktrees/regression/docs/superpowers/plans/2026-10-13-coverage-issues-round3/L77-android-stop-app-reports-success-with-app-still-running.md",
+          "reason": "Nine crash/not-visible variants correctly fail at launch with `app_crash`; live-gone passes and live-stays times out as expected. The exact intentional-stop control fails: bare `stopApp` is reported passed, but Landmarks remains onscreen and the following absence check fails. L77 records the Android stop postcondition defect."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "B3-L57",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 105,
+          "label": "B3-L57",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/B3-L57/",
+          "reason": "Runs 1 and 2 allowed launchApp to pass after FATAL and failed at the first assertion. A stale pre-crash process read is the current suspected cause from L64 triage, not proven by this runtime capture."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "N-08",
+      "verdict": "blocked",
+      "sources": [
+        {
+          "line": 112,
+          "label": "N-08",
+          "verdict": "blocked",
+          "evidence": "findings/evidence/cov3-android/N-08/",
+          "reason": "The round-3 rerun rule keeps the root-dependent row blocked because the environment has not changed."
+        }
+      ]
+    },
+    {
+      "platform": "android",
+      "id": "N3-03",
+      "verdict": "fail",
+      "sources": [
+        {
+          "line": 321,
+          "label": "N3-03 [android]",
+          "verdict": "fail",
+          "evidence": "findings/evidence/cov3-android/starting-session-contracts-rerun4/run/starting-observations.json, findings/evidence/cov3-android/starting-session-contracts-rerun4/run/second-json.out, findings/evidence/cov3-android/starting-session-contracts-rerun4/run/second-text.out",
+          "reason": "While the first runner was demonstrably `starting`, the second JSON and text starts both reused PID 40650 and spawned no second runner. Text correctly said `Runner already running (pid 40650, starting)`, but JSON omitted the required `\"port\": null` member. This is the already tracked L69 contract defect."
+        }
+      ]
+    }
+  ],
+  "ready": true,
+  "note": "Original excludes @27.0 repeats and Task 6 appended rows. Final excludes @27.0 repeats and includes actual Task 6 appended rows. Latest observation wins per ID/platform variant; variants collapse fail > blocked > pass > n/a."
+}

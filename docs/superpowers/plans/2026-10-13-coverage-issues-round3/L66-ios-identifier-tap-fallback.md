@@ -4,7 +4,7 @@ Severity: wrong-result
 Component: mcp / iOS WDA selector
 Rows: IOS-102, B2-K78, D2-36 [ios]
 Candidate: CLI 8f2cff67, runner 1.1.28-grantiva.13, demo 75acc87.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

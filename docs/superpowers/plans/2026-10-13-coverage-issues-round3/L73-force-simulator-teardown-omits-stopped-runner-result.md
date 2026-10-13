@@ -4,7 +4,7 @@ Severity: contract
 Component: CLI / simulator teardown JSON
 Rows: D2-20 [ios], leg (d)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

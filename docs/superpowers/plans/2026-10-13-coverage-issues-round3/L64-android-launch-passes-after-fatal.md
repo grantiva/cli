@@ -6,7 +6,7 @@ Platforms: android
 Rows: B3-L57
 Regresses: L57, addressed in runner #23; retain the revised acceptance criteria and withdrawn wall-time target.
 Candidate: CLI 8f2cff67, runner fd9d8e8 / 1.1.28-grantiva.13.
-Status: evidence-backed triage during the incomplete round-3 coverage pass; not a round-completion statement.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

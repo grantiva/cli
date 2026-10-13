@@ -1,0 +1,132 @@
+{
+  "cli": {
+    "CLI-048": {
+      "verdict": "blocked needs a device",
+      "note": "relative run_flow and a missing run_flow path both stop at 'Simulator not found' (fake UDID; diff capture and run): run_flow references are not resolved before device resolution, so relative resolution and the missing-path error are observable only with a device (iOS slice); as round 2"
+    },
+    "CLI-049": {
+      "verdict": "blocked needs a device",
+      "note": "a->b->a cycle: no hang (0.21 s), stops at 'Simulator not found' before any cycle check; the cycle error is observable only with a device (iOS slice); as round 2"
+    },
+    "CLI-061": {
+      "verdict": "blocked needs a device",
+      "note": "parse half holds (the quoted, emoji label parses: run resolves screens=1, both commands stop only at 'Simulator not found'); the staged flow is generated only after device resolution, so the byte-for-byte label is observable only with a device (iOS slice); as round 2"
+    },
+    "CLI-064": {
+      "verdict": "blocked needs a device",
+      "note": "both selector forms ({text:}, {id:}) parse (screens=1, fails only at 'Simulator not found'); the staged flow is written only after device resolution, so the emitted id: selector is observable only with a device (iOS slice); as round 2"
+    },
+    "CLI-066": {
+      "verdict": "blocked needs a device",
+      "note": "bare scroll and scroll {direction: up} parse (screens=1, fails only at 'Simulator not found'); the swipe they map to is emitted only into the staged flow after device resolution (iOS slice); as round 2"
+    },
+    "CLI-083": {
+      "verdict": "blocked (handed to iOS)",
+      "note": "re-run rule: not run by the CLI slice; at this time 'xcrun simctl list devices booted' lists the owner's iPhone 17 Pro and iPhone 18 Pro (plus campaign simulators), so under the rule it is 'blocked owner simulator booted' unless the iOS slice finds none booted after its teardown"
+    },
+    "CLI-153": {
+      "verdict": "blocked Global Constraint smoke prerequisite absent",
+      "note": "before/after device lists prove this row booted nothing, and the device-free Quick Start lines produced their expected outputs; however round3-smoke explicitly says the prerequisite no-simulator MCP build was not run, so it cannot establish the required isError-and-no-boot guard. No owner/campaign device was touched"
+    },
+    "B3-L14.1": {
+      "verdict": "blocked delayed live cancellation not exercised",
+      "note": "immediate cancellation is directly captured under D2-34 and unknown-id cancellation leaves the next request working; the attempted 200 ms call returned a sandbox simctl error before cancellation. Source tests cover the delayed case but cannot replace the required live observation"
+    },
+    "B3-L17": {
+      "verdict": "blocked incomplete cwd and simulator observations",
+      "note": "--project-dir auto mode names both config files and the searched realpath; --platform ios names only grantiva.yml. The harness passed --project-dir in all three calls, so the no-project-dir contrast was not exercised, and sandbox simctl failure replaced the required no-session simulator/hint text"
+    },
+    "B3-L29": {
+      "verdict": "blocked build semantics not fully observed",
+      "note": "help visibility and hidden-option parsing are proven: build build omits the three flags and accepts --headless/--emulator. Both calls stop at Gradle's sandbox lock; no unflagged comparison or --device ABI evidence establishes the remaining no-effect/ABI clauses. No device action occurred"
+    },
+    "B3-L53": {
+      "verdict": "blocked direct empty-value behavior environment-dependent",
+      "note": "direct runner empty device/udid is accepted but ends at no-device discovery, neither the expected signing path nor explicit empty-value rejection; direct --serial and CLI --udid/--serial are genuine unknown-option observations. No device was touched"
+    },
+    "N3-11": {
+      "verdict": "blocked unverified runner-use path",
+      "note": "bundle-less copy warns once for runner install; runner version and hierarchy emit none, but source shows those paths do not invoke runner installation. Initial start stopped at bundle-ID validation; the bundle-ID rerun stopped at sandbox CoreSimulator access before fake-device resolution. The deeper elevated rerun was user-aborted and not repeated, so warning behavior once start reaches RunnerManager remains unverified"
+    },
+    "N3-11 rerun": {
+      "verdict": "blocked unverified runner-use path",
+      "note": "full-access fake-device start reaches successful simctl listing but exits Simulator not found before RunnerManager; its zero missing-bundle-warning count therefore does not establish warning behavior on a command that actually uses the runner and is not evidence of a product failure"
+    },
+    "N3-15": {
+      "verdict": "blocked campaign simulator booted",
+      "note": "elevated read-only doctor sees cov3-ios-26 booted and reports it instead of evaluating the non-owned default-named simulator; shutting down another slice's device is forbidden. Source test for the ownership note exists under B3-L09/tests"
+    }
+  },
+  "ios": {
+    "B3-L08.1": {
+      "verdict": "blocked owner simulators booted",
+      "note": "Both protected owner simulators were already booted; guarded no-simulator MCP build was not sent."
+    },
+    "B3-L08.2": {
+      "verdict": "blocked owner simulators booted",
+      "note": "Both protected owner simulators were already booted; guarded default-path CLI calls were not sent."
+    },
+    "B2-K37.2 [ios]": {
+      "verdict": "blocked owner simulators booted",
+      "note": "Default-device guard prohibited the no-simulator call."
+    },
+    "N3-12": {
+      "verdict": "blocked owner simulators booted",
+      "note": "Protected owner simulators were already booted; guarded MCP calls were not sent."
+    },
+    "N3-13": {
+      "verdict": "blocked owner simulators booted",
+      "note": "Required empty booted list was unavailable; guarded MCP build was not sent."
+    },
+    "B-I06.2 [ios]": {
+      "verdict": "blocked",
+      "note": "The campaign plan explicitly keeps this row blocked because the runner\u2019s `/session/{id}/wda/keys` request path is not observable in this environment. Existing successful typing proves behavior but cannot distinguish the primary endpoint from its 404-only fallback, so no endpoint verdict is inferred."
+    },
+    "B-C21.1 [ios]": {
+      "verdict": "blocked",
+      "note": "The mandatory no-simulator rerun guard is unsatisfied: current campaign evidence lists protected owner simulators `iPhone 17 Pro` and `iPhone 18 Pro` booted. The plan requires `blocked owner simulator booted` and forbids shutting them down."
+    },
+    "N-08 [ios]": {
+      "verdict": "blocked",
+      "note": "The campaign plan explicitly keeps the developer-install-directory isolation check blocked by the unavailable root-level environment control. Current successful stock runs do not prove the required before/after directory observation with that directory absent from PATH."
+    },
+    "B2-K36 [ios]": {
+      "verdict": "blocked",
+      "note": "Broken-toolchain text/JSON and exact thrown/empty-list source tests are covered. The remaining working-toolchain/no-boot runtime leg cannot be created while protected owner simulators are booted; campaign rules forbid shutting them down, so this environment-dependent leg is blocked rather than inferred."
+    },
+    "B2-K18 [ios]": {
+      "verdict": "blocked",
+      "note": "Local run and diff ephemeral/preserved behaviors are retained, and a supported quiet diff capture succeeds without progress narration. Both supported CI invocations reach the real authentication boundary and exit 1 with `Not authenticated. Run: grantiva auth login`; no authorized API key is available to exercise the required authenticated CI preservation branch. The wrapper exit74 only assumed an error JSON document although the actual JSON-mode authentication failure is emitted on stderr."
+    },
+    "B2-K19 [ios] rerun corrected round 4": {
+      "verdict": "blocked credentials required",
+      "note": "Local quiet/JSON/verbose clauses satisfy the corrected contract; authenticated CI remains blocked by unavailable credentials. Original literal failure is preserved."
+    }
+  },
+  "android": {
+    "AND-002": {
+      "verdict": "blocked no suitable system image",
+      "note": "Shared constraints state that installed alternatives exceed 1 GB; the row's rerun rule keeps it blocked unless the environment changes."
+    },
+    "AND-012": {
+      "verdict": "blocked Global Constraint",
+      "note": "The row requires emulator teardown --all, which the binding process-safety rule forbids."
+    },
+    "AND-088": {
+      "verdict": "blocked credentials",
+      "note": "The round-3 rerun rule keeps this credentials-dependent row blocked because the environment has not changed."
+    },
+    "N-08": {
+      "verdict": "blocked root",
+      "note": "The round-3 rerun rule keeps the root-dependent row blocked because the environment has not changed."
+    },
+    "AND-110 [android]": {
+      "verdict": "blocked",
+      "note": "Current exact evidence corroborates the documented ensure, sessions, targeted teardown, and delete examples and their ownership outcomes. The remaining literal `emulator teardown --all` example is prohibited by the campaign Global Constraint, so the compound row cannot be completed safely and that action was not executed."
+    },
+    "B-C02.1 [android]": {
+      "verdict": "blocked",
+      "note": "A hand-started AVD is reused without adoption, runs through both target forms without entering the started ledger, and refuses targeted teardown without force while surviving; the exact forced targeted cleanup succeeds. The compound row's remaining `teardown --all` clause is prohibited by the campaign Global Constraint and was not executed."
+    }
+  }
+}

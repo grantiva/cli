@@ -6,7 +6,7 @@ Platforms: ios and android, observed with live sessions
 Rows: B3-L15.2 [ios], B3-L15.2 [android]
 Regresses: L15's exact missing-required-argument criterion from the round-3 fix wave.
 Candidate: CLI 8f2cff67, runner 1.1.28-grantiva.13.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

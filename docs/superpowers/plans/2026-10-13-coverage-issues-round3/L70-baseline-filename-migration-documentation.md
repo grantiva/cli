@@ -4,7 +4,7 @@ Severity: contract
 Component: public baseline and capture documentation
 Rows: B-I16.2 [ios]
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

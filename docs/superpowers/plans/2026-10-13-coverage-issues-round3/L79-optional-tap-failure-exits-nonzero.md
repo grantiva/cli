@@ -5,7 +5,7 @@ Component: runner command report / CLI result aggregation boundary
 Platforms: Android (reproduced); shared runner semantics
 Rows: AND3-OBS-01 (side finding; no matrix row invented)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29; runner fd9d8e8; QA binary SHA256 3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8.
-Status: independently confirmed during round-3 verification.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

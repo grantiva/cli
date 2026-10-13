@@ -4,7 +4,7 @@ Severity: contract
 Component: cli / runner lifecycle
 Rows: N2-15 [ios] (B3-L37 [ios] notice remains passing)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
-Status: evidence-backed triage during the incomplete round-3 coverage pass; steady-ready control passed.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

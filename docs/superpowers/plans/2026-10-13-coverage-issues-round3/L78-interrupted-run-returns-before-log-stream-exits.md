@@ -5,7 +5,7 @@ Component: cli / log lifecycle
 Platforms: iOS
 Rows: IOS-064
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29; QA binary SHA256 3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8.
-Status: independently confirmed during incomplete round-3 verification; cleanup lag is transient, not a persistent leak.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

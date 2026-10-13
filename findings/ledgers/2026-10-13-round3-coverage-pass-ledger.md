@@ -418,3 +418,15 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - L51 v3/v4 are invalid fixtures: v3 used millisecond waits as seconds, and v4 expected pre-hold CLI hierarchy attachment. No product failure is inferred. K106 v2 similarly compared a wrapper-shell PID with the actual CLI lease PID; the controller retained the exact process/lease proof and sent SIGINT only to that fixture's CLI before cleanup. Corrected versions use actual CLI identity.
 - Unique hint v3 passed with nonempty text distinct from hint/content-description. Three MCP/CLI visual comparisons passed; the original wrapper's obsolete per-screen passed-key assertion is replaced by additive decoding of the retained raw status fields. Coverage now459/467, with eight base rows remaining.
 Task 5: complete — Android slice `cov3-android-results.md` records all 467/467 base rows: 442 pass / 17 fail / 6 blocked / 2 n/a, plus evidence-backed side findings AND3-OBS-01/L79 and AND3-OBS-02/L80. Final targeted cleanup `FINAL-primary-delete-rerun4` exits 0 with all seven checks true: adb empty, no campaign AVDs/started/created/session records, primary `cov3-android` deleted, and unrelated `Pixel_8_API_35` retained. Raw evidence and independent row reviews remain preserved; no global destructive teardown was used.
+
+## Task 6 consolidation and triage
+
+All three coverage branches are merged. Original effective counts:1257pass/45fail/21blocked/6n-a across1329platform results from1170logicalmatrixrows. Twenty-five independently reviewed corrected-criterion lines preserve originals:23passes,onecredentialsblock,oneL71fail. B3-L29 is closed by exact-source/runtime join; N3-15 post-cleanupdoctor is a confirmedL81failure, not an obsolete campaign-device block. Finalcounts1281pass/22fail/20blocked/6n-a, plus3sidefindings, mapto18newbriefsL64–L81 and4retainedL51/L53/L61/L62.
+
+Androidfinalcleanupall7checkspass; ownerPixelAVDretained. iOScampaignUUIDsremovedandowner17/18Proremainbooted. Frozenproductsourceworktreesunchanged. 172helpcommandsreplayedhashpinnedall0/headings/zero mismatches.
+
+Ruling: review mid-flow Android measurement using exact-session direct UIA2 source plus final CLI app-semantic comparison with actual density conversion, excluding system UI; this is the same production hierarchy primitive and avoids impossible pre-hold CLI attachment. Cost if wrong: repeat two bounded measurement rows. Invalid late-baseline/nonexistent-selector attempts remain excluded.
+
+Ruling: preserve original verdicts and append corrected-criterion reviews only when exact raw/source evidence satisfies the published matrix correction. Product failures remain failures; credential-only clauses remain blocked. Cost if wrong: reopen the affected row rather than silently declaring clean.
+
+The round report states22openfindings; finalintegrationreview andcommit/pushpending. The22-brief Round4plan is prepared and undergoing scoped re-review; userauthorizationcoverscontinuousexecution.

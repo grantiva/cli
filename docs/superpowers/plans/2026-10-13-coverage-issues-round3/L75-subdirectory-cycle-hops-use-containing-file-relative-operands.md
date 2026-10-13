@@ -4,7 +4,7 @@ Severity: contract
 Component: CLI runner-output path rewriting
 Rows: B3-L20 [ios], B3-L20 [android] (platform-independent source path)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29; runner fd9d8e8d1cb109eda6116f4221da10257b9838e3.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 

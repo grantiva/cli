@@ -4,7 +4,7 @@ Severity: contract
 Component: cli / runner lifecycle
 Row: AND-127
 Candidate: CLI 8f2cff67, runner fd9d8e8 / 1.1.28-grantiva.13.
-Status: evidence-backed triage during the incomplete round-3 coverage pass.
+Status: confirmed by the completed round-3 coverage pass; open for the round-4 fix wave.
 
 ## Expected
 
