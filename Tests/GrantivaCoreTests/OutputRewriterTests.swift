@@ -58,4 +58,29 @@ final class OutputRewriterTests: XCTestCase {
         XCTAssertEqual(rewriter.consume("see " + partial), "see ")
         XCTAssertEqual(rewriter.flush(), partial)
     }
+    func testMixedCycleHopsAreCanonicalAcrossEveryChunkBoundary() {
+        let input = "  - ../shared/b.yaml: circular dependency detected: /stage/a.yaml -> /project/shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml\n"
+        let expected = "  - ../shared/b.yaml: circular dependency detected: flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml\n"
+        let map = ["/stage/a.yaml": "flows/a.yaml", "/project/flows/a.yaml": "flows/a.yaml", "/project/shared/b.yaml": "shared/b.yaml"]
+        for boundary in input.indices {
+            var rewriter = OutputRewriter(replacements: map)
+            let head = rewriter.consume(String(input[..<boundary]))
+            let tail = rewriter.consume(String(input[boundary...])) + rewriter.flush()
+            XCTAssertEqual(head + tail, expected, "boundary \(boundary)")
+        }
+        XCTAssertEqual(OutputRewriter(replacements: map).rewrite(input), expected)
+    }
+
+    func testCycleCanonicalizationPreservesUnknownAndOrdinaryOperands() {
+        let rewriter = OutputRewriter(replacements: ["/project/flows/a.yaml": "flows/a.yaml", "/project/a.yaml": "a.yaml"])
+        let ordinary = "runFlow: ../flows/a.yaml\n"
+        XCTAssertEqual(rewriter.rewrite(ordinary), ordinary)
+        let unknown = "circular dependency detected: flows/a.yaml -> ../other/missing.yaml"
+        XCTAssertEqual(rewriter.rewrite(unknown), unknown)
+        let escaping = "circular dependency detected: a.yaml -> ../flows/a.yaml"
+        XCTAssertEqual(rewriter.rewrite(escaping), escaping)
+        let absolute = "circular dependency detected: /elsewhere/a.yaml -> ../flows/a.yaml"
+        XCTAssertEqual(rewriter.rewrite(absolute), absolute)
+    }
+
 }

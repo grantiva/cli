@@ -529,9 +529,10 @@ final class RunnerSessionOutputTests: XCTestCase {
         for root in [project.path, project.resolvingSymlinksInPath().path] {
             let collected = Collected()
             RunnerNarration.sink = { collected.append($0) }
-            // The runner names the staged flow, then the paths it resolved itself.
+            // The bundled runner names the staged root, its absolute first reference,
+            // then the untouched relative operands of unstaged subflows.
             let runner = try fakeRunner(body: """
-            echo "  - b.yaml: circular dependency detected: $flow -> \(root)/shared/b.yaml -> \(root)/flows/a.yaml -> \(root)/shared/b.yaml" >&2
+            echo "  - ../shared/b.yaml: circular dependency detected: $flow -> \(root)/shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml" >&2
             exit 1
             """)
             let cwd = FileManager.default.currentDirectoryPath
