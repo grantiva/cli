@@ -5,8 +5,7 @@ Scope: the first 30 missing `B*`/`D*` IDs reported after attempt 50. Only curren
 ## Closed from retained current evidence
 
 - `B-I05.1`: attempt7 live Favorites label succeeds and `heart` label is not matched.
-- `B-I10.1`, `B-I10.2`: attempt42c exact create/reuse plus model-less creation rejection; candidate help/README pin name-first reuse.
-- `B-I11.2`: attempt27b timeout and attempt41 ordinary failure retain original relative source paths without staging paths.
+- `B-I10.2`: attempt42c model-less creation rejection plus candidate help/README pin name-first reuse. `B-I10.1` remains open because the retained reuse invocation was not bare name-only.
 - `B-I12.1`: attempt41 preserved-report failure JSON contains the exact flow/step/message/reportDir and exits 1.
 
 These verdicts are now in the active ledger.
@@ -31,7 +30,8 @@ Attempt51 covers `B-C10.2`, `B-C13.1`, `B-C14.4`, and `B-D01.1` with exact curre
 - `B-I07.1`, `B-I07.2`: exact default `--logs` app-volume/banner filtering and verbose executable predicate are absent.
 - `B-I08.1`, `B-I08.2`: no manual/prebooted non-counting device plus dead owner/sessionless pruning sequence.
 - `B-I09.1`, `B-I09.2`: no current live-other-device teardown keep/re-own sequence with stale sidecar/diagnose proof.
-- `B-I11.1`: eligible current seed-empty run lacks the complete retained report/JUnit path package demanded by the row.
+- `B-I11.1`: eligible current seed-empty run lacks the complete retained report/JUnit path package demanded by the row. Attempt52 is the exact retry.
+- `B-I11.2`: timeout and failure rewrites are retained, but a passing report-path rewrite is still missing.
 - `B-I13.1`, `B-I13.2`: attempt26 proves the multi-scheme error, but exact one-scheme silent detection and cache-then-restore sequence are absent.
 - `B-I15.1`: attempt29 supplies the 0.01-second hierarchy diagnostic; the separate not-installed no-build pre-run failure remains absent.
 
