@@ -2,7 +2,7 @@
 
 Severity: contract
 Component: cli / runner lifecycle JSON
-Row: N3-03 [ios]; shared encoder also serves Android (runtime half pending)
+Rows: N3-03 [ios], N3-03 [android]
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
 Status: evidence-backed triage during the incomplete round-3 coverage pass.
 Regression: round-3 L38-a starting-state contract and N3-03; the row originates in the round-3 fix wave (CLI #200–#203, with #205 lifecycle addendum).
@@ -22,6 +22,7 @@ The second JSON start identifies the existing runner with `status: already_runni
 - Exact candidate `/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:161` passes nil port for a session that is not ready.
 - At the same HEAD, `Sources/GrantivaCLI/RunnerLifecycleDocument.swift:48` encodes nil port only if `nullWhenUnrecorded` is true. The start path leaves its default false.
 - Independent source/evidence review: CLI slice `findings/n3-01-n3-03-source-triage.md`, commit b18ffb48. No product source was changed during coverage.
+- Android slice `findings/evidence/cov3-android/starting-session-contracts-rerun4/` reproduces the same omission with the exact first-detached form. Its frozen helper starts the first detached command asynchronously, observes `state: starting` at 100 ms, then captures second JSON/plain starts identifying the same runner PID. `run/second-json.out` again omits port; `run/second-text.out` has the starting wording. The same MCP process subsequently succeeds after readiness. Independent review: CLI `findings/ios53-android-startupv4-constraints-review.md`.
 
 ## Cause
 
