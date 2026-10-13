@@ -343,3 +343,17 @@ PackageSSH push completed successfully; PR214 created at53b34ea38a82426a8dfd150f
 Package PR214 CI38459262712 passed; exact reviewed head53b34 squashmerged22055ff981ae1ffd5aaae69190d7af180f239162. Clean fresh release, QA promotion, cloned-home upgrade and candidate2 freeze complete; independent freeze review APPROVED. Manifest6c0a8bd9, CLI33c62e61, runner9342b8a3, demo84af bound. Existing8069cacheentries and800packagedWDA verified. Docs initial150 capture retained: helper comma-alias parser skipped22console_flags pages, scoped helper fix/review before fresh attempt; no product regression or device provisioning yet.
 
 Candidate2 docs attempt2 PASS after independently approved comma-alias helper fix:172help pages, normal/ambiguous doctor textJSON, migrationterms,16tests0failfreshhomeempty. Original150page failure retained. Isolateddeviceprovisioning started;Task8 remaininglivephases pending.
+
+Candidate2 provision PASS: newios553C67C6-7C11-4976-85A0-148C9C8AC278 exactappinstalled; newAndroidsmoke4-android emulator5580 PID21620. Androidrunnerphase started. Finalcleanuphelper scopedPIDreuse correction independentlyAPPROVED SHA d4df8c93; not executed yet.
+
+Candidate2 Android firstphase stopped in helper focusfieldassertion afterhealthy/crash5/gesture4/favorite5/stopflow pass. Raw windows-subdump lacks mCurrentFocus. Additivefull-windowcapture shows exactsameSettingswindow focus, hierarchySettings/noLandmarks, pidof1. Independentdiagnosis pending; no phasePASS/regrade.
+
+Independentstop-focus diagnosis APPROVED: restrictedwindowdump omission ishelperfalse negative, fullwindow/hierarchy/PID proveL77postcondition. PreparingreviewedfullAndroidfreshoutputretry with immutablefixturecopies. Ruling: run non-force lifecycle serially while helper correction isprepared; no productfindingoroverlappingdeviceflows, allphasesremainmandatory. Costifwrong: rerun affectedstate-dependentphase withfreshinputs.
+
+Candidate2 lifecycle firstattempt stopped in logcleanup because helper omitted explicit--platformios in dualconfigproject; CLIcorrectlyrefusedambiguity. Beforestop bothplatform startupinterrupt/detachready/readyinterrupt andabsentapp checks passed. Secondarycapturethread tmpfilecopyrace retained. Scopedhelpercorrections delegated; no phasePASS. Jointpackagedforwardphase startedserially aftercleanupactions empty; allfullreruns remainmandatory.
+
+Candidate2 packagedjointforward phasePASS exit0:fourcases completedbothunrelatedcontrols survive andexactownedcleanup; independentreview dispatched. FullMCPiOSphase runningserially.
+
+Candidate2 MCPiOSfirstattempt passes L65andselector sequence through actualquotedMountDenalitap buthelperexpects literalbackslashes in decodedtext; stoppedassertion retained. Independentclassification requested; runnerstop exit0/sessiongone. MCPAndroid startedserially withsamefrozencandidate.
+
+Candidate2 packagedjointforward independentrawreview APPROVED. MCPAndroidfullphasePASS exit0 inclL65exacterrors and10mixedlargepairs; runnerstop0/sessionabsent. Android/lifecycle/MCPiOShelpercorrections thenfreshfullreruns stillrequired.

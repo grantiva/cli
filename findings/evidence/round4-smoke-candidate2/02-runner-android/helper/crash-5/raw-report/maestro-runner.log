@@ -1,0 +1,35 @@
+13:17:58.208362 [INFO] === Test execution started ===
+13:17:58.208438 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate2/02-runner-android/helper/crash-5-report
+13:17:58.208443 [INFO] Platform: android
+13:17:58.208447 [INFO] Driver: uiautomator2
+13:17:58.208724 [INFO] Validated 1 flow(s)
+13:17:58.208740 [INFO] Single device execution mode
+13:17:58.208744 [INFO] Starting flow execution (parallel: false, devices: [])
+13:17:58.208748 [INFO] Creating driver for single device execution
+13:17:58.208752 [INFO] Connecting to Android device: emulator-5580
+13:17:58.289553 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5580, Emulator: true
+13:17:58.310603 [INFO] Starting UIAutomator2 server on device emulator-5580
+13:17:58.720204 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5580.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5580.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5580.sock' not found
+13:17:59.793627 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+13:17:59.801400 [INFO] Session created successfully: 00aa1bb7-01ca-457e-b3ed-5c4504679b28
+13:17:59.849780 [INFO] Driver created: android on google sdk_gphone64_arm64
+13:17:59.851738 [INFO] === Starting flow: crash ===
+13:17:59.851744 [INFO] Flow file: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate2/inputs/crash.yaml
+13:17:59.851747 [INFO] Total steps: 4
+13:17:59.857019 [DEBUG] Executing step 0: launchApp
+13:18:00.000142 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+13:18:00.000181 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 26ms
+13:18:01.064185 [ERROR] Step 0 failed (1207ms): launchApp - Error: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+13:18:01.064256 [DEBUG] failure artifact screenshot started at 2026-10-13T13:18:01.064253-07:00
+13:18:01.064268 [DEBUG] failure artifact logTail started at 2026-10-13T13:18:01.064265-07:00
+13:18:01.064321 [DEBUG] failure artifact hierarchy started at 2026-10-13T13:18:01.064274-07:00
+13:18:01.083594 [DEBUG] failure artifact logTail finished at 2026-10-13T13:18:01.083579-07:00 (19.316375ms): <nil>
+13:18:01.377570 [DEBUG] failure artifact hierarchy finished at 2026-10-13T13:18:01.377569-07:00 (313.295083ms): <nil>
+13:18:01.568645 [DEBUG] failure artifact screenshot finished at 2026-10-13T13:18:01.568642-07:00 (504.388375ms): <nil>
+13:18:01.571596 [INFO] === Flow completed: crash (status: failed, duration: 1717ms, passed: 0, failed: 1, skipped: 3) ===
+13:18:01.966396 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5580.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5580.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5580.sock' not found
+13:18:01.966445 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+13:18:01.966644 [INFO] Generating reports...
+13:18:01.967729 [INFO] Shutting down devices started by maestro-runner...
+13:18:01.967748 [INFO] Shutting down all tracked emulators
+13:18:01.967760 [INFO] Shutting down all tracked simulators
