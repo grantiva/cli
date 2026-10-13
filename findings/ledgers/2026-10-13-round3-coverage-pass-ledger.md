@@ -342,3 +342,11 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - iOS98d supplies detached starting tool/resource responses;98e supplies keep-alive early and ready hierarchy/dump in one run. N13/K100.2/L52 pass; current exact audits have no duplicate rows or missing evidence.
 - iOS102 had an unterminated harness heredoc and executed no device commands. Corrected102b proves same-device run ownership refusal in1s, preserves live context, and stops normally. Its EXIT trap recreated the old owner sidecar after stop; exact project/PID and absent process were verified before archiving/removing only that test-created file.103 preflight caught it without device effects.103b is the corrected stop/other-directory batch.
 - AndroidL45 and additional report/ready joins reviewed; count372/467 (349pass/17fail/4blocked/2na). iOS428/478 (401pass/18fail/9blocked). Exact CLI and runner source worktrees remain clean. Full coverage and Task6 still incomplete.
+
+
+### Config pickup, capture, and Android cleanup continuation
+
+- iOS106c manual preboot and README sequences pass with exact device cleanup;107 three MCP/CLI five-screen cycles pass. Exact device-resolution source/runtime joins accepted.108b build/fixture examples pass, but MCP config-pickup setup contained a Maestro fallback config and was invalid for the empty-directory criterion;108c starts truly empty and proves new config pickup in the same server. No product issue inferred from108b.
+- Android five scrolling repeats pass with measured drag/top-up logs. L41 first attempt skipped before Gradle at load335; corrected fresh attempt ran below guard and passes invalid variant/module diagnostics. K15 first harness expected refusal but observed accepted runner-stop/emulator-kill behavior; full secondary text+JSON complement passes PID/session/lease cleanup and deletes its AVD, primary preserved.
+- Full stock Android ready-file run passes five screens and twelve flows in the documented order. Handed-off ownership refusal leaves exact live session/lease intact and stops normally.
+- Latest audited iOS446/478; Android378/467 before latest K15/D202 joins. Remaining verification and Task6 are incomplete; exact product source worktrees remain unchanged.
