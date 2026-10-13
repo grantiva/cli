@@ -1,0 +1,380 @@
+--- /dev/null
++++ b/task8-candidate3-harness/foreground_force.py
+@@ -0,0 +1,203 @@
++#!/usr/bin/env python3
++"""Isolated candidate-3 foreground final-force proof; controller owns invocation."""
++from __future__ import annotations
++
++import json
++import os
++from pathlib import Path
++import shutil
++import signal
++import subprocess
++import sys
++import time
++
++import lifecycle_smoke as base
++
++APPROVED_BASE_SHA = 'e5ece28eed78f72feb2e0ec7ef0e2da83bfc5b13dda56aeb788360ac907d13b8'
++PHASE = 'force-teardown'
++
++
++def require_live(proc):
++    if proc.poll() is not None:
++        raise AssertionError(f'foreground CLI {proc.pid} exited before force: {proc.returncode}')
++
++
++def validate_report(root, device, flow):
++    report = json.loads((root / 'report.json').read_text())
++    flows = report.get('flows', [])
++    if (report.get('status') != 'passed' or not report.get('endTime') or not flows
++            or report.get('device', {}).get('id') != device):
++        raise AssertionError({'incompleteOrUnboundReport': report})
++    for entry in flows:
++        if (entry.get('status') != 'passed' or not entry.get('endTime')
++                or entry.get('device', {}).get('id') != device
++                or Path(entry.get('sourceFile', '')).resolve() != flow.resolve()):
++            raise AssertionError({'incompleteOrUnboundFlow': entry})
++        data = (root / entry['dataFile']).resolve()
++        if not data.is_relative_to(root.resolve()):
++            raise AssertionError('report dataFile escapes retained report')
++        detail = json.loads(data.read_text())
++        commands = detail.get('commands', [])
++        if (detail.get('device', {}).get('id') != device or not detail.get('endTime')
++                or Path(detail.get('sourceFile', '')).resolve() != flow.resolve()
++                or not commands or any(c.get('status') != 'passed' or not c.get('endTime') for c in commands)):
++            raise AssertionError({'incompleteOrUnboundFlowData': detail})
++    return report
++
++
++class ForegroundForce(base.Smoke):
++    def command(self, phase, label, argv, expected=0, timeout=180, cwd=None):
++        """Keep timeout streams as well as normal command metadata."""
++        target = self.output / phase
++        target.mkdir(exist_ok=True)
++        started = time.time()
++        base.write_json(target / f'{label}.command.json', {'argv': argv, 'cwd': str(cwd or self.project), 'started': started, 'timeoutSeconds': timeout})
++        try:
++            result = subprocess.run(argv, cwd=cwd or self.project, capture_output=True, timeout=timeout)
++        except subprocess.TimeoutExpired as exc:
++            (target / f'{label}.stdout').write_bytes(exc.stdout or b'')
++            (target / f'{label}.stderr').write_bytes(exc.stderr or b'')
++            base.write_json(target / f'{label}.result.json', {'exit': None, 'timedOut': True, 'started': started, 'ended': time.time(), 'timeoutSeconds': timeout})
++            raise
++        (target / f'{label}.stdout').write_bytes(result.stdout)
++        (target / f'{label}.stderr').write_bytes(result.stderr)
++        base.write_json(target / f'{label}.result.json', {'exit': result.returncode, 'timedOut': False, 'started': started, 'ended': time.time()})
++        if expected is not None and result.returncode != expected:
++            raise AssertionError(f'{phase}/{label}: exit {result.returncode}, expected {expected}')
++        return result
++
++    def finish(self, phase, label, proc, timeout):
++        try:
++            return super().finish(phase, label, proc, timeout)
++        except subprocess.TimeoutExpired:
++            base.write_json(self.output / phase / f'{label}.result.json', {'exit': None, 'timedOut': True, 'pid': proc.pid, 'ended': time.time(), 'timeoutSeconds': timeout})
++            raise
++
++    def authenticate(self, proc, ready):
++        device = self.ns.ios_udid
++        if (ready.get('state') != 'ready' or ready.get('platform') != 'ios'
++                or ready.get('udid') != device or ready.get('bundleId') != self.ns.ios_bundle_id
++                or type(ready.get('pid')) is not int or ready['pid'] <= 0
++                or type(ready.get('port')) is not int or ready['port'] <= 0):
++            raise AssertionError({'invalidReadySession': ready})
++        require_live(proc)
++        pid = ready['pid']
++        argv = self.assert_pid_bound(pid, device)
++        parent = self.command(PHASE, 'runner-parent', ['/bin/ps', '-p', str(pid), '-o', 'ppid=']).stdout
++        if (int(parent.strip()) != proc.pid or Path(argv[0]).resolve() != self.installed_runner
++                or base.file_sha256(self.installed_runner) != self.installed_runner_sha256
++                or argv[argv.index('--device') + 1] != device):
++            raise AssertionError('runner executable, parent, or device identity mismatch')
++        self.register_runner(pid, 'ios', device, PHASE)
++        report = Path(argv[argv.index('--output') + 1]).resolve()
++        flow = Path(argv[-1]).resolve()
++        lease = self.home / 'locks' / f'{device}.lock'
++        claim = json.loads(lease.read_text())
++        if (claim.get('pid') != proc.pid or claim.get('runnerPID') != pid
++                or claim.get('udid') != device or claim.get('keepAlive') is not True):
++            raise AssertionError({'invalidForegroundLease': claim})
++        base.write_json(self.output / PHASE / 'authenticated-ready.json', {'ready': ready, 'argv': argv, 'cliPID': proc.pid, 'leasePath': str(lease), 'lease': claim, 'report': str(report), 'flow': str(flow)})
++        return pid, report, flow, lease
++
++    def force_teardown(self):
++        self.stop_stale('foreground-force')
++        proc = self.spawn(PHASE, 'foreground-start', self.start_args('ios'))
++        self.foreground_proc = proc
++        ready = self.wait_state(proc, 'ready', timeout=600)
++        pid, report, flow, lease = self.authenticate(proc, ready)
++        target = self.output / PHASE
++        require_live(proc)
++        # Foreground lifetime holds these files until teardown. Any copy error fails.
++        shutil.copytree(report, target / 'retained-report')
++        shutil.copy2(flow, target / 'generated-flow.yaml')
++        retained = validate_report(target / 'retained-report', self.ns.ios_udid, flow)
++        require_live(proc)
++        hierarchy = self.command(PHASE, 'live-hierarchy', [str(self.binary), 'runner', 'dump-hierarchy', '--udid', self.ns.ios_udid, '--format', 'tree'])
++        if b'Landmarks' not in hierarchy.stdout:
++            raise AssertionError('ready hierarchy lacks Landmarks')
++        if json.loads(self.session.read_text()) != ready:
++            raise AssertionError('ready session changed before force')
++        self.assert_pid_bound(pid, self.ns.ios_udid)
++        require_live(proc)
++        base.write_json(target / 'pre-force.json', {'cliAlive': True, 'cliPID': proc.pid, 'runnerPID': pid, 'ready': ready, 'reportPassed': True, 'reportSHA256': base.file_sha256(target / 'retained-report/report.json'), 'reportEndTime': retained['endTime'], 'hierarchyLandmarks': True, 'validatedAt': time.time()})
++        raw = self.command(PHASE, 'live-force', [str(self.binary), 'simulator', 'teardown', '--udid', self.ns.ios_udid, '--force', '--json'], timeout=240)
++        doc = json.loads(raw.stdout)
++        if isinstance(doc, list):
++            if len(doc) != 1:
++                raise AssertionError({'unexpectedForceTargets': doc})
++            doc = doc[0]
++        if (doc.get('udid') != self.ns.ios_udid or doc.get('runnerSessionStopped') is not True
++                or doc.get('reclaimed') is not True or not isinstance(doc.get('processes'), list)
++                or not isinstance(doc.get('reapedProcesses'), list)):
++            raise AssertionError({'invalidForceResult': doc})
++        code = self.finish(PHASE, 'foreground-start', proc, 45)
++        notice = f'Runner stopped by teardown (pid {pid}); the session has ended.'
++        streams = (target / 'foreground-start.stdout').read_text() + (target / 'foreground-start.stderr').read_text()
++        if code != 0 or notice not in streams:
++            raise AssertionError({'foregroundExit': code, 'expectedExit': 0, 'expectedNotice': notice})
++        self.assert_pid_gone(pid)
++        self.assert_pid_gone(proc.pid)
++        self.assert_session_cleanup(pid)
++        if lease.exists():
++            raise AssertionError(f'owned simulator lease remains: {lease}')
++        self.command(PHASE, 'processes-after', ['/bin/ps', '-ww', '-axo', 'pid=,ppid=,pgid=,command='])
++        check = {'phase': PHASE, 'runnerPID': pid, 'foregroundPID': proc.pid, 'foregroundExit': code, 'foregroundNotice': notice, 'result': doc, 'exactPIDSessionLeaseCleanup': True, 'resourcesReclaimed': True, 'physicalDeviceDeleted': False, 'finalCleanupRequired': True}
++        self.checks.append(check)
++        base.write_json(self.output / 'IOS-FORCE-RECLAIMED.json', {'ownedUDID': self.ns.ios_udid, **check})
++
++    def cleanup_owned(self):
++        # Signal only the exact Popen child we launched. Its normal SIGINT path
++        # owns runner/session/lease cleanup; never delete evidence or foreign state.
++        actions = []
++        proc = getattr(self, 'foreground_proc', None)
++        if proc is not None and proc.poll() is None:
++            try:
++                proc.send_signal(signal.SIGINT)
++                code = self.finish(PHASE, 'failure-cleanup-foreground', proc, 45)
++                actions.append({'action': 'owned-foreground-SIGINT', 'pid': proc.pid, 'exit': code})
++            except Exception as exc:
++                actions.append({'action': 'owned-foreground-SIGINT', 'pid': proc.pid, 'error': str(exc)})
++        for pid in self.active_runners:
++            try:
++                self.assert_pid_gone(pid)
++                self.assert_session_cleanup(pid)
++                actions.append({'runnerPID': pid, 'goneAndSessionClean': True})
++            except Exception as exc:
++                actions.append({'runnerPID': pid, 'cleanupUnconfirmed': str(exc)})
++        base.write_json(self.output / 'cleanup.json', {'bounded': True, 'actions': actions})
++
++
++def main():
++    ns = base.parser().parse_args()
++    errors = base.validate(ns)
++    if ns.phase != [PHASE] or not ns.allow_force_reclaim_owned_ios:
++        errors.append('foreground fixture requires --phase force-teardown --allow-force-reclaim-owned-ios')
++    if base.file_sha256(Path(base.__file__)) != APPROVED_BASE_SHA:
++        errors.append('approved lifecycle dependency hash changed')
++    if errors:
++        print(json.dumps({'valid': False, 'errors': errors}), file=sys.stderr)
++        return 2
++    if ns.validate_only:
++        print(json.dumps({'valid': True, 'phase': PHASE, 'foreground': True}))
++        return 0
++    smoke = None
++    try:
++        smoke = ForegroundForce(ns)
++        base.write_json(smoke.output / 'fixture-identity.json', {'fixtureSHA256': base.file_sha256(Path(__file__)), 'approvedLifecycleSHA256': APPROVED_BASE_SHA, 'timeoutsSeconds': {'ready': 600, 'force': 240, 'foregroundExit': 45}})
++        smoke.record_ownership()
++        smoke.force_teardown()
++        smoke.record_ownership('force-resources-reclaimed')
++        base.write_json(smoke.output / 'acceptance.json', {'status': 'passed', 'phases': [PHASE], 'checks': smoke.checks})
++        return 0
++    except Exception as exc:
++        output = smoke.output if smoke else ns.output.resolve()
++        output.mkdir(parents=True, exist_ok=True)
++        base.write_json(output / 'failure.json', {'status': 'failed', 'errorType': type(exc).__name__, 'error': str(exc), 'checks': smoke.checks if smoke else []})
++        if smoke:
++            smoke.cleanup_owned()
++            smoke.record_ownership('failed')
++        raise
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/task8-candidate3-foreground-force-fixtures.py
+@@ -0,0 +1,171 @@
++#!/usr/bin/env python3
++"""Device-free fixtures: no helper constructor or real subprocess operation."""
++import copy
++import json
++from pathlib import Path
++import subprocess
++import sys
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest.mock import patch
++
++sys.path.insert(0, str(Path(__file__).parent / 'task8-candidate3-harness'))
++import foreground_force as ff
++
++
++class Fixtures(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.root = Path(self.tmp.name)
++        self.smoke = ff.ForegroundForce.__new__(ff.ForegroundForce)
++        s = self.smoke
++        s.output = self.root / 'output'
++        (s.output / ff.PHASE).mkdir(parents=True)
++        s.project = self.root
++        s.binary = self.root / 'grantiva'
++        s.home = self.root / 'home'
++        s.session = self.root / 'session.json'
++        s.ns = SimpleNamespace(ios_udid='owned-device', ios_bundle_id='test.app')
++        s.checks = []
++        s.active_runners = {}
++        self.proc = SimpleNamespace(pid=101, returncode=None, poll=lambda: None)
++        self.ready = dict(state='ready', platform='ios', udid='owned-device', bundleId='test.app', pid=102, port=8274)
++        s.session.write_text(json.dumps(self.ready))
++        self.flow = self.root / 'flow.yaml'
++        self.flow.write_text('appId: test.app\n---\n- launchApp\n')
++        self.report = self.root / 'report'
++        (self.report / 'flows').mkdir(parents=True)
++        self.entry = dict(status='passed', endTime='done', device={'id': 'owned-device'}, sourceFile=str(self.flow), dataFile='flows/one.json')
++        self.doc = dict(status='passed', endTime='done', device={'id': 'owned-device'}, flows=[self.entry])
++        self.detail = dict(self.entry, commands=[dict(status='passed', endTime='done')])
++        self.write_reports()
++        self.lease = self.root / 'lease.lock'
++        self.force_doc = dict(udid='owned-device', reclaimed=True, runnerSessionStopped=True, processes=[], reapedProcesses=[])
++
++    def write_reports(self):
++        (self.report / 'report.json').write_text(json.dumps(self.doc))
++        (self.report / 'flows/one.json').write_text(json.dumps(self.detail))
++
++    def run_force(self, *, copy_error=False, hierarchy=b'Landmarks', exit_code=0, alive=True, notice=True):
++        events = []
++        def command(phase, label, argv, **kwargs):
++            events.append(label)
++            if label == 'live-force':
++                self.assertNotIn('--detach', self.start_argv)
++                self.assertTrue((self.smoke.output / phase / 'pre-force.json').exists())
++                self.assertEqual(argv, [str(self.smoke.binary), 'simulator', 'teardown', '--udid', 'owned-device', '--force', '--json'])
++                self.assertTrue((self.smoke.output / phase / 'retained-report/flows/one.json').exists())
++                return SimpleNamespace(stdout=json.dumps(self.force_doc).encode())
++            return SimpleNamespace(stdout=hierarchy)
++        def spawn(phase, label, argv):
++            self.start_argv = argv
++            path = self.smoke.output / phase
++            (path / f'{label}.stdout').write_text('')
++            (path / f'{label}.stderr').write_text('Runner stopped by teardown (pid 102); the session has ended.' if notice else 'Runner exited unexpectedly')
++            return self.proc
++        if not alive:
++            self.proc.poll = lambda: 1
++            self.proc.returncode = 1
++        patches = dict(spawn=spawn, authenticate=lambda *a: (102, self.report, self.flow, self.lease), wait_state=lambda *a, **k: self.ready,
++                       command=command, finish=lambda *a: exit_code, assert_pid_bound=lambda *a: [], assert_pid_gone=lambda p: events.append(f'gone-{p}'), assert_session_cleanup=lambda p: events.append('session-clean'))
++        with patch.multiple(self.smoke, **patches):
++            # A pre-existing session must still be rejected; mock only that preflight
++            # to model the session created by our fake spawn.
++            with patch.object(self.smoke, 'stop_stale'):
++                if copy_error:
++                    with patch.object(ff.shutil, 'copytree', side_effect=OSError('stable copy failed')):
++                        self.smoke.force_teardown()
++                else:
++                    self.smoke.force_teardown()
++        return events
++
++    def test_foreground_order_and_exact_force(self):
++        events = self.run_force()
++        self.assertLess(events.index('live-hierarchy'), events.index('live-force'))
++        self.assertIn('gone-101', events)
++        self.assertIn('gone-102', events)
++        result = json.loads((self.smoke.output / 'IOS-FORCE-RECLAIMED.json').read_text())
++        self.assertFalse(result['physicalDeviceDeleted'])
++        self.assertEqual(result['foregroundExit'], 0)
++
++    def test_incomplete_failed_missing_and_wrong_identity_reports(self):
++        for change in ('failed', 'incomplete', 'device', 'flow', 'detail', 'missing'):
++            with self.subTest(change=change):
++                original = copy.deepcopy((self.doc, self.detail))
++                if change == 'failed': self.doc['status'] = 'failed'
++                if change == 'incomplete': self.doc.pop('endTime')
++                if change == 'device': self.doc['device']['id'] = 'foreign'
++                if change == 'flow': self.doc['flows'][0]['sourceFile'] = '/foreign'
++                if change == 'detail': self.detail['commands'][0]['status'] = 'running'
++                self.write_reports()
++                if change == 'missing': (self.report / 'flows/one.json').unlink()
++                with self.assertRaises((AssertionError, FileNotFoundError)):
++                    ff.validate_report(self.report, 'owned-device', self.flow)
++                self.doc, self.detail = original
++        self.write_reports()
++
++    def test_copy_error_is_not_suppressed(self):
++        with self.assertRaisesRegex(OSError, 'stable copy failed'): self.run_force(copy_error=True)
++        self.assertFalse((self.smoke.output / ff.PHASE / 'pre-force.json').exists())
++
++    def test_cli_must_remain_alive_before_force(self):
++        with self.assertRaisesRegex(AssertionError, 'exited before force'): self.run_force(alive=False)
++
++    def test_hierarchy_must_contain_landmarks(self):
++        with self.assertRaisesRegex(AssertionError, 'lacks Landmarks'): self.run_force(hierarchy=b'Other')
++
++    def test_force_response_must_bind_device_and_fields(self):
++        self.force_doc['udid'] = 'foreign'
++        with self.assertRaisesRegex(AssertionError, 'invalidForceResult'): self.run_force()
++
++    def test_foreground_nonzero_is_failure(self):
++        with self.assertRaisesRegex(AssertionError, 'foregroundExit'): self.run_force(exit_code=130)
++
++    def test_foreground_notice_is_required(self):
++        with self.assertRaisesRegex(AssertionError, 'foregroundExit'): self.run_force(notice=False)
++
++    def test_force_arrays_and_stopped_flag_required(self):
++        self.force_doc['runnerSessionStopped'] = False
++        with self.assertRaisesRegex(AssertionError, 'invalidForceResult'): self.run_force()
++
++    def test_lease_remaining_is_failure(self):
++        self.lease.write_text('still-owned')
++        with self.assertRaisesRegex(AssertionError, 'lease remains'): self.run_force()
++
++    def test_authentication_rejects_foreign_session(self):
++        self.ready['udid'] = 'foreign'
++        with self.assertRaisesRegex(AssertionError, 'invalidReadySession'):
++            self.smoke.authenticate(self.proc, self.ready)
++
++    def test_authentication_parent_executable_and_lease(self):
++        s = self.smoke
++        s.installed_runner = (self.root / 'runner').resolve()
++        s.installed_runner.write_bytes(b'frozen')
++        s.installed_runner_sha256 = ff.base.file_sha256(s.installed_runner)
++        argv = [str(s.installed_runner), '--device', 'owned-device', '--output', str(self.report), str(self.flow)]
++        lease = s.home / 'locks/owned-device.lock'
++        lease.parent.mkdir(parents=True)
++        claim = dict(pid=101, runnerPID=102, udid='owned-device', keepAlive=True)
++        lease.write_text(json.dumps(claim))
++        with patch.object(s, 'assert_pid_bound', return_value=argv), patch.object(s, 'register_runner'), patch.object(s, 'command', return_value=SimpleNamespace(stdout=b'101')):
++            self.assertEqual(s.authenticate(self.proc, self.ready)[0], 102)
++            claim['runnerPID'] = 999
++            lease.write_text(json.dumps(claim))
++            with self.assertRaisesRegex(AssertionError, 'invalidForegroundLease'): s.authenticate(self.proc, self.ready)
++        with patch.object(s, 'assert_pid_bound', return_value=argv), patch.object(s, 'command', return_value=SimpleNamespace(stdout=b'999')):
++            with self.assertRaisesRegex(AssertionError, 'parent'): s.authenticate(self.proc, self.ready)
++
++    def test_command_timeout_retains_streams(self):
++        exc = subprocess.TimeoutExpired(['fake'], 1, output=b'partial out', stderr=b'partial err')
++        with patch.object(ff.subprocess, 'run', side_effect=exc):
++            with self.assertRaises(subprocess.TimeoutExpired): self.smoke.command(ff.PHASE, 'fake', ['fake'], timeout=1)
++        target = self.smoke.output / ff.PHASE
++        self.assertEqual((target / 'fake.stdout').read_bytes(), b'partial out')
++        self.assertEqual((target / 'fake.stderr').read_bytes(), b'partial err')
++        self.assertTrue(json.loads((target / 'fake.result.json').read_text())['timedOut'])
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)

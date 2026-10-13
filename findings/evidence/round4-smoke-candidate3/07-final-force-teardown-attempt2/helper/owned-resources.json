@@ -1,0 +1,131 @@
+{
+  "androidAVD": "smoke4-c3-android",
+  "androidSerial": "emulator-5580",
+  "bundle": "/Users/kyle/.grantiva-qa/bin/grantiva_GrantivaCore.bundle",
+  "candidateBinary": "/Users/kyle/.grantiva-qa/bin/grantiva",
+  "controllerOwnership": {
+    "devices": {
+      "android": {
+        "avd": "smoke4-c3-android",
+        "createdEpoch": 1791926146.0038662,
+        "id": "emulator-5580",
+        "name": "smoke4-c3-android",
+        "owned": true,
+        "ownedPIDs": [
+          61153
+        ],
+        "platform": "android",
+        "provision": {
+          "command": [
+            "/Users/kyle/Library/Android/sdk/cmdline-tools/latest/bin/avdmanager",
+            "create",
+            "avd",
+            "--name",
+            "smoke4-c3-android",
+            "--package",
+            "system-images;android-35;google_apis;arm64-v8a",
+            "--device",
+            "pixel_8"
+          ],
+          "exit": 0,
+          "javaHome": "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+        },
+        "runtime": "API 35"
+      },
+      "ios": {
+        "createdEpoch": 1791926123.425353,
+        "id": "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+        "name": "smoke4-c3-ios",
+        "owned": true,
+        "ownedPIDs": [],
+        "platform": "ios",
+        "provision": {
+          "command": [
+            "xcrun",
+            "simctl",
+            "create",
+            "smoke4-c3-ios",
+            "com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro",
+            "com.apple.CoreSimulator.SimRuntime.iOS-26-0"
+          ],
+          "exit": 0
+        },
+        "runtime": "com.apple.CoreSimulator.SimRuntime.iOS-26-0"
+      }
+    },
+    "schema": "grantiva.task8.ownership.v1",
+    "sessionId": "fix4-8-c3"
+  },
+  "iosUDID": "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+  "ownedPIDs": {
+    "79528": {
+      "argv": [
+        "/Users/kyle/.grantiva-qa/bin/grantiva",
+        "runner",
+        "start",
+        "--platform",
+        "ios",
+        "--simulator",
+        "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+        "--bundle-id",
+        "com.kylebrowning.Landmarks"
+      ],
+      "kind": "spawned-cli",
+      "label": "foreground-start",
+      "phase": "force-teardown"
+    },
+    "79556": {
+      "argv": [
+        "/private/tmp/grantiva-round4-candidate3-9lkulx9q/runner-home/versions/1.1.28-grantiva.15+android-drivers-2/grantiva-runner",
+        "--platform",
+        "ios",
+        "--device",
+        "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+        "--no-ansi",
+        "--no-app-install",
+        "test",
+        "--wait-for-idle-timeout",
+        "0",
+        "--keep-alive",
+        "--output",
+        "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-E79D10AE-4ACF-4B00-A75E-C560CA4137EE/report",
+        "--flatten",
+        "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-E79D10AE-4ACF-4B00-A75E-C560CA4137EE/session-flow.yaml"
+      ],
+      "device": "33BCE8AB-B7F2-4D47-B0B8-2CB1D8A1971E",
+      "kind": "grantiva-runner",
+      "phase": "force-teardown",
+      "platform": "ios"
+    }
+  },
+  "project": "/private/tmp/grantiva-round4-candidate3-9lkulx9q/lifecycle-project",
+  "protected": {
+    "androidAVD": [
+      "Pixel_8_API_35"
+    ],
+    "ios": [
+      "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C",
+      "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"
+    ]
+  },
+  "runner": "/private/tmp/grantiva-round4-candidate3-9lkulx9q/packaged-native/grantiva-runner",
+  "runnerHome": "/private/tmp/grantiva-round4-candidate3-9lkulx9q/runner-home",
+  "sessionId": "fix4-8-c3",
+  "source": "/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3",
+  "state": "force-resources-reclaimed",
+  "verifiedProvenance": {
+    "binarySHA256": "1b6a973b63a750691bcb76a710a97f346d331fe44ef60f6c50bef0f6d35e4731",
+    "bundleManifestSHA256": "b03433043f01599928e47b016e1dbd5b7efd3fbeddb47380db37b7711f31607d",
+    "candidateManifest": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate3/candidate.json",
+    "candidateManifestSHA256": "e9cfc7dce72ba8125b7c55df8d3dec355925003de24a4131c6510b9e67c51ebf",
+    "demoSourceSHA": "84af7581b75134b0e417b254e4317d565f7b73c6",
+    "installedRunnerSHA256": "9342b8a3d17b9063c399ecab6cd8681cefa3bce91a21de65473147b54ef9a37b",
+    "iosAppManifestSHA256": "b9619e1d41004db3edcd1537381f5b1285925071546a762ff6af06f8d14e2074",
+    "ownershipManifest": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate3/provision/ownership.json",
+    "ownershipManifestSHA256": "c870d5a2d02c112dca863a4cdfb4d5fe9810c789c21f0407e3af80d073a9b8e2",
+    "runnerInstallStamp": "1.1.28-grantiva.15+android-drivers-2",
+    "runnerSHA256": "9342b8a3d17b9063c399ecab6cd8681cefa3bce91a21de65473147b54ef9a37b",
+    "runnerSourceSHA": "ba9008f4b2cd2c7320a9c46e04faed612b0958a2",
+    "sourceHEAD": "6ba12ed37658228a3ce87cb64e1f5d88dda38e07"
+  }
+}
