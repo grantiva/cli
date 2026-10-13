@@ -1,0 +1,13 @@
+# Task 9 Android slice brief
+
+Start only after the controller supplies a green Task 8 zero-gate record, frozen candidate manifest, worktree/branch, the literal serial for Android API 35 AVD `cov4-android`, and an explicit reservation. Execute 522 Android results: every `Android` row and the Android half of every `iOS+Android` row. Never claim or grade the iOS half.
+
+The controller owns allocation and final cleanup. For lifecycle keys enumerated in `task9-execution-key-manifest.md`, a recorded row reservation delegates every exact targeted transition for that row; execute them without per-operation approval and return the target at the recorded end state. Outside such delegation, do not create, boot, shut down, clean, or delete. Never touch `Pixel_8_API_35` or any unallocated target; teardown-all, arbitrary `adb emu kill`, kill by pattern, and removal of unverified forwards/processes/sessions remain forbidden.
+
+Use the frozen candidate, runner home, demo SHA, `GRANTIVA_SESSION_ID=cov4-android`, the required Java/Android SDK environment, and no API key. Write `findings/cov4-android-results.md` and `findings/evidence/cov4-android/<ROW-ID>/`. Each shared result is `<ID> [android]` with independent evidence. Record one-minute host load for Android and the before/after inventory required by load-sensitive, forward, lifecycle, or cleanup rows.
+
+Evidence includes exact argv/environment/cwd/timestamps/exit, raw streams/reports/logcat/client/runner output, frozen hashes, allocated serial/AVD/runtime, process/session/forward ownership before any signal or cleanup, scratch-input hashes, targeted cleanup outcome, and clause-by-clause verdict. Preserve every first verdict; reruns use new lines/directories. Copy and rebind reviewed harness logic to new paths; stale outputs, manifests, serials, PIDs, sessions, and verdicts cannot satisfy a row.
+
+For `B4-L77.1`, `.2`, `.5`, and inherited `B3-L49`, foreground neutral Settings before the unchanged literal clearState → bare stopApp → assertNotVisible flow; retain exact target-package absence and returned Settings-focused hierarchy. This setup does not alter the flow or expected verdict. Keep `AND-002`, `AND-012`, `AND-088`, and `N-08` blocked unless the controller documents the required environment change. Use `pass`, `fail`, `blocked <reason>`, or `n/a <reason>`; disputed expectations fail for triage, and unmapped findings are failing `AND4-OBS-nn` lines. Do not edit product/source/tests/docs/demo, fix failures, perform owner cleanup, or make commits/PR operations.
+
+L85 adds no Android effective key. The Android obligation remains exactly 522 results, and no L85 iOS/CLI observation may be recorded as an Android verdict.

@@ -1,0 +1,1 @@
+Approved Task9 preparation, preserved byte-for-byte from the plan SDD after L85 delta review. Candidate fields remain UNKNOWN and result cells blank. This archive does not authorize execution or populate any coverage verdict. Controller freezes separate execution copies only after complete fresh Task8 zero gate.
