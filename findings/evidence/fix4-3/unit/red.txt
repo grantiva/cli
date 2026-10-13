@@ -1,0 +1,56 @@
+# github.com/devicelab-dev/maestro-runner/pkg/executor [github.com/devicelab-dev/maestro-runner/pkg/executor.test]
+pkg/executor/runner_test.go:215:83: undefined: report.StatusWarned
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/executor [build failed]
+ok  	github.com/devicelab-dev/maestro-runner/pkg/core	0.696s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/report	0.583s
+  ⏳ Downloading app: http://127.0.0.1:50083/build/app.apk
+  ⏳ Downloading app: http://127.0.0.1:50085/a.apk
+  ⏳ Downloading app: http://127.0.0.1:50085/b.apk
+  ⏳ Downloading app: http://127.0.0.1:50087/sim/MyApp.zip
+  ⏳ Downloading app: http://127.0.0.1:50089/x.apk?<redacted>
+  ⏳ Connecting to Appium server: http://127.0.0.1:50091
+  ⏳ Creating Appium session...
+  ✓ Appium session created (session: test-session)
+  ⏳ Connecting to Appium server: http://127.0.0.1:50093
+  ⏳ Creating Appium session...
+  ✓ Appium session created (session: test-session)
+  ⏳ Connecting to Appium server: http://127.0.0.1:50095
+  ⏳ Creating Appium session...
+  ✓ Appium session created (session: test-session)
+  ⚠ Warning: unrecognised --artifacts value "garbage"; using on-failure. Valid values: on-failure (or failure), always, never.
+
+  grantiva-runner 1.1.0 - by Grantiva
+  Fast, lightweight UI test runner
+
+Validation errors:
+  - flow.yaml: cannot access: stat flow.yaml: no such file or directory
+--- FAIL: TestTestCommandRejectsEmptyDeviceBeforeDiscovery (0.00s)
+    cli_test.go:248: value "": validation failed with 1 error(s)
+
+  grantiva-runner 1.1.0 - by Grantiva
+  Fast, lightweight UI test runner
+
+  ⏳ Connecting to device emulator-5554...
+
+  grantiva-runner 1.1.0 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Received interrupt, cleaning up...
+
+Received terminated, cleaning up...
+
+Received interrupt, cleaning up...
+
+1 flow(s) checked, 0 failed
+✗ /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestRunLintfails_when_any_flow_is_broken701731101/001/broken.yaml
+  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestRunLintfails_when_any_flow_is_broken701731101/001/broken.yaml: invalid steps: yaml: line 2: did not find expected key
+
+2 flow(s) checked, 1 failed
+  ✓ Previous run: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestRetryFailedSelection_CleanPreviousRun3181416062/001/report.json (0 failed)
+  ✓ Previous run: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestRetryFailedSelection_AllFailuresMissingIsAnError2959349371/001/report.json (1 failed)
+  ⚠ Previously failed flow is no longer in the selection: /flows/deleted.yaml
+  ✓ Previous run: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestNarrowToPreviousFailures602947226/001/2026-08-11_09-00-00/report.json (1 failed)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/cli	1.005s
+FAIL

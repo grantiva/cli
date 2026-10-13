@@ -1,0 +1,21 @@
+Environment for every CLI run:
+env -u GRANTIVA_API_KEY GRANTIVA_SESSION_ID=fix4-3 GRANTIVA_RUNNER_HOME=/private/tmp/grantiva-fix4-3-home.dfPucM MAESTRO_RUNNER_HOME=/private/tmp/grantiva-fix4-3-home.dfPucM
+
+CLI binary (initial scoped integration):
+/private/tmp/grantiva-fix4-3-cli/.build/debug/grantiva
+source: 03cee568869c45077c3015f97f8b75d19ea822c4
+
+Optional text repetitions 1..3:
+grantiva run --platform android --device emulator-5580 --no-build --flow findings/evidence/fix4-3/inputs/optional-miss.yaml --report-dir findings/evidence/fix4-3/live/optional-text-N-final/report --ready-file findings/evidence/fix4-3/live/optional-text-N-final/ready.json
+
+Optional JSON repetitions 1..3:
+grantiva run --json --platform android --device emulator-5580 --no-build --flow findings/evidence/fix4-3/inputs/optional-miss.yaml --report-dir findings/evidence/fix4-3/live/optional-json-N-final/report --ready-file findings/evidence/fix4-3/live/optional-json-N-final/ready.json
+
+Required text control:
+grantiva run --platform android --device emulator-5580 --no-build --flow findings/evidence/fix4-3/inputs/required-miss.yaml --report-dir findings/evidence/fix4-3/live/required-text/report --ready-file findings/evidence/fix4-3/live/required-text/ready.json
+
+Required JSON control:
+grantiva run --json --platform android --device emulator-5580 --no-build --flow findings/evidence/fix4-3/inputs/required-miss.yaml --report-dir findings/evidence/fix4-3/live/required-json/report --ready-file findings/evidence/fix4-3/live/required-json/ready.json
+
+Runner invocation emitted by the CLI (example; each stderr capture records its concrete staged flow path):
+/private/tmp/grantiva-fix4-3-home.dfPucM/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform android --device emulator-5580 --no-ansi --no-app-install test --output <report-dir> --flatten --artifacts failure --fail-fast <staged-flow.yaml>

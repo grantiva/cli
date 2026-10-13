@@ -1,0 +1,10 @@
+initial_compile_red_command: env -u GRANTIVA_API_KEY GRANTIVA_RUNNER_HOME=<fresh-empty-home> GRANTIVA_SESSION_ID=fix4-3-cli swift test --filter 'RunnerReportContractTests/testWarnedOptionalCommandIsRetainedWithItsError|RunCommandTests/testWarnedFlowRendersWarningAndRemainsPassedInTextAndJSON'
+initial_compile_red_exit: 1
+initial_compile_red_result: test did not compile because StepStatus had no member warned and no isPassing semantic. Retained as interface RED, not behavioral proof.
+
+behavioral_red_command: env -u GRANTIVA_API_KEY GRANTIVA_RUNNER_HOME=/tmp/grantiva-fix4-3-cli-collector-red-home.vqml8f GRANTIVA_SESSION_ID=fix4-3-cli swift test --filter RunnerReportContractTests.testProductionWarnedOptionalCommandIsNotDroppedByCollector
+behavioral_red_source: 63c9b45190e43bfb8aa239d0f9fcc75ec455dd72
+behavioral_red_before_home_count: 0
+behavioral_red_after_home_count: 0
+behavioral_red_exit: 1
+behavioral_red_assertions: production collector returned 2 steps instead of 3; actions were [launchApp, assertVisible] instead of [launchApp, warned tapOn, assertVisible]; warned command message was nil instead of the retained element_not_found message.

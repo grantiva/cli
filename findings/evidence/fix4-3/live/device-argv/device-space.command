@@ -1,0 +1,1 @@
+env -u GRANTIVA_API_KEY GRANTIVA_SESSION_ID=fix4-3 GRANTIVA_RUNNER_HOME=/private/tmp/grantiva-fix4-3-home.dfPucM MAESTRO_RUNNER_HOME=/private/tmp/grantiva-fix4-3-home.dfPucM /private/tmp/grantiva-fix4-3-home.dfPucM/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device \ \ \  test findings/evidence/fix4-3/inputs/optional-miss.yaml

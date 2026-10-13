@@ -1,0 +1,7 @@
+command: cli_fix_home=$(mktemp -d /tmp/grantiva-fix4-3-cli-full.XXXXXX); find "$cli_fix_home" -mindepth 1 | wc -l; env -u GRANTIVA_API_KEY GRANTIVA_RUNNER_HOME="$cli_fix_home" GRANTIVA_SESSION_ID=fix4-3-cli swift test; find "$cli_fix_home" -mindepth 1 | wc -l
+home: /tmp/grantiva-fix4-3-cli-full.PHQo0K
+before_count: 0
+after_count: 0
+exit: 0
+result: all Swift test targets passed; GrantivaCoreTests 968 tests / 0 failures, GrantivaAPITests 101 tests / 0 failures, CLI and MCP targets also passed with zero failures.
+

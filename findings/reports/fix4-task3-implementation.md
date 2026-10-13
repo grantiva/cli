@@ -6,6 +6,7 @@
 - Source commit: `567fd5f3b911cbb6a49cc7864aac3e64830784c7`
 - Branch: `fix4/optional-device`
 - Draft PR: https://github.com/grantiva/runner/pull/26
+- Runner CI: GitHub Actions run `38423696144`, Test/Lint/Build passed
 
 Optional top-level command failures are now persisted as report status `warned`, retain their structured error detail, count as successful for flow callbacks and aggregation, and allow later required steps to run. Required failures remain `failed`, stop later work, fail the flow, and produce a JUnit failure. Report command summaries expose a `warned` count, JUnit renders warned error detail in `system-out`, and Allure treats warned commands as passed.
 
@@ -39,4 +40,22 @@ Raw outputs are `findings/evidence/fix4-3/unit/green-final.txt` and `findings/ev
 
 ## Scoped integration status
 
-The task-scoped Android/CLI integration is pending. It will use only owned AVD `fix4-3-android` on serial `emulator-5580`, a task-owned APFS-cloned runner home, and current merged CLI `03cee568869c45077c3015f97f8b75d19ea822c4`. It will rebuild the demo from clean source commit `1552ae983a27528eff4c1f8145aa075698b47f71`, retain the new APK outside the disposable build worktree with hash/provenance, exercise three optional repetitions plus the required control, and clean only task-owned processes/device state. This is task-scoped integration evidence; Task 8 must repeat it against the final repacked candidate after Task 7.
+Source/spec review passed with no findings in `task-3-source-review.md`.
+
+The task-scoped Android/CLI integration used only owned AVD `fix4-3-android` on serial `emulator-5580`, a task-owned APFS-cloned runner home, and initially current merged CLI `03cee568869c45077c3015f97f8b75d19ea822c4`. The demo was rebuilt from clean source commit `1552ae983a27528eff4c1f8145aa075698b47f71`; the new APK is retained under `findings/evidence/fix4-3/artifacts/` with SHA-256 and source/build provenance for Task 8.
+
+Direct runner argument acceptance covered both the canonical flag and its existing public alias with empty and whitespace-only values: `--device ""`, `--device "   "`, `--udid ""`, and `--udid "   "` each exited 64 with `invalid argument: --device must not be empty` before discovery/signing. The `--serial x` control exited 1 with `flag provided but not defined: -serial`. Exact shell-escaped argv, stdout, stderr, and exit files are under `live/device-argv/`.
+
+After replacing the runner in the CLI's versioned task-home install directory, the first three text-mode and three JSON-mode optional repetitions proved the runner surfaces but exposed that merged CLI `03cee568` omitted the warned command from its own text/JSON step lists. Those omission captures remain unchanged under `live/optional-{text,json}-{1,2,3}-final/` and are consolidated in `live/acceptance-summary.txt`.
+
+The required text and JSON controls both exited 1. Their flow/report/ready surfaces are failed, the missing tap retains `element_not_found`, the following command is explicitly `skipped` in the decoded flow detail and command summary, and JUnit has one failure. Raw proof is under `live/required-{text,json}/`.
+
+An initial run at `live/optional-text-1/` accidentally exercised the cloned home's versioned bundled runner because replacing the legacy root-level binary did not replace Task 4's versioned install. It is excluded from acceptance. `live/installed-task-runner-path.txt` and `installed-task-runner-sha256-final.txt` prove the corrected versioned runner path and bytes used for all `-final` runs.
+
+The narrow CLI counterpart was independently source/spec/quality approved at `c1373f6c07bf97ec5cb7978d45c954902958c04a`. A joint replay used its reviewed binary SHA-256 `c87ae8a4c30d75daf6b7b724e1526b2d1a8f954da422fb18e5343e18358b9f73`, runner commit `567fd5f` and binary SHA-256 `001b34982362260f615c979fd65430db8ae53fc1815a39f736f2055137676610`, emulator PID `88465`, and owned CPU-load PID `2958`. Exact provenance and argv are under `live/joint-final/`.
+
+In the joint replay, three text runs each show the missing optional tap with `⚠`, retain the literal `element_not_found` detail, show the later assertion passed, summarize the flow as passed, and exit 0. Three JSON runs each expose the tap with status `warned` and the same detail, the later assertion passed, `allPassed:true`, and exit 0. All six runner reports agree on `passed:2, warned:1, failed:0`; ready files say passed/passed and JUnit says `failures="0"`. Required text and JSON controls both exit 1, show the missing tap failed with `element_not_found`, record the later assertion explicitly `skipped`, fail report/ready, and emit JUnit `failures="1"`. The consolidated proof is `live/joint-final/acceptance-summary.txt`.
+
+Cleanup stopped exact emulator PID `88465` and load PID `2958`, removed serial `emulator-5580` and its forwards, deleted only AVD `fix4-3-android`, removed the scoped runner home and the two task-created disposable worktrees, and left protected `Pixel_8_API_35` as the only AVD. `live/joint-final/cleanup-summary-final.txt` records every owned PID/path absent plus final serial/forward/AVD inventories. The fresh APK and source/hash provenance remain in controller evidence for Task 8.
+
+This is task-scoped integration evidence; Task 8 must repeat it against the final repacked candidate after Task 7.
