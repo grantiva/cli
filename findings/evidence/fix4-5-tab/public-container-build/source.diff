@@ -1,0 +1,100 @@
+diff --git a/ios/Landmarks/ContentView.swift b/ios/Landmarks/ContentView.swift
+index 60577ef..00205b8 100644
+--- a/ios/Landmarks/ContentView.swift
++++ b/ios/Landmarks/ContentView.swift
+@@ -6,36 +6,26 @@
+ import SwiftUI
+ 
+ struct ContentView: View {
+-    @Environment(\.landmarkService) private var landmarkService
+     @State private var navigator = Navigator()
+ 
+     var body: some View {
+         @Bindable var navigator = navigator
+ 
+-        TabView(selection: $navigator.selectedTab) {
++        PersistentTabContainer(selection: $navigator.selectedTab) {
+             NavigationStack(path: $navigator.landmarksPath) {
+                 LandmarkListView()
+                     .screenDestination(path: $navigator.landmarksPath)
+             }
+-            .tabItem { Label("Landmarks", systemImage: "map") }
+-            .tag(Navigator.Tab.landmarks)
+-            .background(FavoritesTabIdentifierInstaller())
+-
++        } favorites: {
+             NavigationStack(path: $navigator.favoritesPath) {
+                 FavoritesView()
+                     .screenDestination(path: $navigator.favoritesPath)
+             }
+-            .tabItem { Label("Favorites", systemImage: "heart") }
+-            .tag(Navigator.Tab.favorites)
+-            .background(FavoritesTabIdentifierInstaller())
+-
++        } deepLinks: {
+             NavigationStack(path: $navigator.deepLinksPath) {
+                 DeepLinksView()
+                     .screenDestination(path: $navigator.deepLinksPath)
+             }
+-            .tabItem { Label("Deep Links", systemImage: "link") }
+-            .tag(Navigator.Tab.deepLinks)
+-            .background(FavoritesTabIdentifierInstaller())
+         }
+         .environment(navigator)
+         .onOpenURL { url in
+diff --git a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+deleted file mode 100644
+index fb78cc3..0000000
+--- a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
++++ /dev/null
+@@ -1,50 +0,0 @@
+-//
+-//  FavoritesTabIdentifierInstaller.swift
+-//  Landmarks
+-//
+-
+-import SwiftUI
+-import UIKit
+-
+-/// Gives the persistent Favorites tab the identifier used by UI flows.
+-struct FavoritesTabIdentifierInstaller: UIViewControllerRepresentable {
+-    func makeUIViewController(context: Context) -> FavoritesTabIdentifierViewController {
+-        FavoritesTabIdentifierViewController()
+-    }
+-
+-    func updateUIViewController(_ viewController: FavoritesTabIdentifierViewController, context: Context) {
+-        viewController.installIdentifier()
+-    }
+-}
+-
+-final class FavoritesTabIdentifierViewController: UIViewController {
+-    override func didMove(toParent parent: UIViewController?) {
+-        super.didMove(toParent: parent)
+-        installIdentifierAfterAttachment()
+-    }
+-
+-    override func viewDidAppear(_ animated: Bool) {
+-        super.viewDidAppear(animated)
+-        installIdentifier()
+-    }
+-
+-    func installIdentifier() {
+-        guard let tabs = tabBarController?.tabs else { return }
+-
+-        let favoritesIndex = 1
+-        assert(tabs.count == 3, "The tab identifier hook expects the fixture's three tabs")
+-        guard tabs.indices.contains(favoritesIndex) else { return }
+-
+-        let favoritesTab = tabs[favoritesIndex]
+-        assert(favoritesTab.title == "Favorites", "The Favorites tab moved unexpectedly")
+-        guard favoritesTab.title == "Favorites" else { return }
+-
+-        favoritesTab.accessibilityIdentifier = "heart"
+-    }
+-
+-    private func installIdentifierAfterAttachment() {
+-        DispatchQueue.main.async { [weak self] in
+-            self?.installIdentifier()
+-        }
+-    }
+-}

@@ -1,0 +1,160 @@
+diff --git a/ios/Landmarks/ContentView.swift b/ios/Landmarks/ContentView.swift
+index 60577ef..7c972d7 100644
+--- a/ios/Landmarks/ContentView.swift
++++ b/ios/Landmarks/ContentView.swift
+@@ -13,29 +13,29 @@ struct ContentView: View {
+         @Bindable var navigator = navigator
+ 
+         TabView(selection: $navigator.selectedTab) {
+-            NavigationStack(path: $navigator.landmarksPath) {
+-                LandmarkListView()
+-                    .screenDestination(path: $navigator.landmarksPath)
++            Tab("Landmarks", systemImage: "map", value: Navigator.Tab.landmarks) {
++                NavigationStack(path: $navigator.landmarksPath) {
++                    LandmarkListView()
++                        .screenDestination(path: $navigator.landmarksPath)
++                }
++                .background(FavoritesTabIdentifierInstaller())
+             }
+-            .tabItem { Label("Landmarks", systemImage: "map") }
+-            .tag(Navigator.Tab.landmarks)
+-            .background(FavoritesTabIdentifierInstaller())
+ 
+-            NavigationStack(path: $navigator.favoritesPath) {
+-                FavoritesView()
+-                    .screenDestination(path: $navigator.favoritesPath)
++            Tab("Favorites", systemImage: "heart", value: Navigator.Tab.favorites) {
++                NavigationStack(path: $navigator.favoritesPath) {
++                    FavoritesView()
++                        .screenDestination(path: $navigator.favoritesPath)
++                }
++                .background(FavoritesTabIdentifierInstaller())
+             }
+-            .tabItem { Label("Favorites", systemImage: "heart") }
+-            .tag(Navigator.Tab.favorites)
+-            .background(FavoritesTabIdentifierInstaller())
+ 
+-            NavigationStack(path: $navigator.deepLinksPath) {
+-                DeepLinksView()
+-                    .screenDestination(path: $navigator.deepLinksPath)
++            Tab("Deep Links", systemImage: "link", value: Navigator.Tab.deepLinks) {
++                NavigationStack(path: $navigator.deepLinksPath) {
++                    DeepLinksView()
++                        .screenDestination(path: $navigator.deepLinksPath)
++                }
++                .background(FavoritesTabIdentifierInstaller())
+             }
+-            .tabItem { Label("Deep Links", systemImage: "link") }
+-            .tag(Navigator.Tab.deepLinks)
+-            .background(FavoritesTabIdentifierInstaller())
+         }
+         .environment(navigator)
+         .onOpenURL { url in
+diff --git a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+index fb78cc3..0429618 100644
+--- a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
++++ b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+@@ -13,38 +13,90 @@ struct FavoritesTabIdentifierInstaller: UIViewControllerRepresentable {
+     }
+ 
+     func updateUIViewController(_ viewController: FavoritesTabIdentifierViewController, context: Context) {
+-        viewController.installIdentifier()
++        viewController.probeAndInstall(trigger: "updateUIViewController")
+     }
+ }
+ 
+ final class FavoritesTabIdentifierViewController: UIViewController {
+     override func didMove(toParent parent: UIViewController?) {
+         super.didMove(toParent: parent)
+-        installIdentifierAfterAttachment()
++        log("didMove(toParent:) parent=\(typeName(parent))")
++        DispatchQueue.main.async { [weak self] in
++            self?.probeAndInstall(trigger: "didMove-next-main-loop")
++        }
+     }
+ 
+     override func viewDidAppear(_ animated: Bool) {
+         super.viewDidAppear(animated)
+-        installIdentifier()
++        probeAndInstall(trigger: "viewDidAppear")
+     }
+ 
+-    func installIdentifier() {
+-        guard let tabs = tabBarController?.tabs else { return }
++    func probeAndInstall(trigger: String) {
++        log("trigger=\(trigger) parent-chain=\(parentChain())")
++        logAncestorTabs()
++
++        guard let tabBarController else {
++            log("tab-bar-controller=nil")
++            return
++        }
++
++        let tabs = tabBarController.tabs
++        log("tab-count=\(tabs.count)")
++        for (index, tab) in tabs.enumerated() {
++            logTab(tab, index: index, phase: "before")
++        }
+ 
+         let favoritesIndex = 1
+-        assert(tabs.count == 3, "The tab identifier hook expects the fixture's three tabs")
+-        guard tabs.indices.contains(favoritesIndex) else { return }
++        guard tabs.count == 3,
++              tabs.indices.contains(favoritesIndex),
++              tabs[favoritesIndex].title == "Favorites" else {
++            log("fixture-shape-not-ready")
++            return
++        }
+ 
+         let favoritesTab = tabs[favoritesIndex]
+-        assert(favoritesTab.title == "Favorites", "The Favorites tab moved unexpectedly")
+-        guard favoritesTab.title == "Favorites" else { return }
+-
+         favoritesTab.accessibilityIdentifier = "heart"
++        logTab(favoritesTab, index: favoritesIndex, phase: "immediate-after-set")
++
++        DispatchQueue.main.async { [weak self, weak favoritesTab] in
++            guard let self, let favoritesTab else { return }
++            self.logTab(favoritesTab, index: favoritesIndex, phase: "next-main-loop-readback")
++        }
+     }
+ 
+-    private func installIdentifierAfterAttachment() {
+-        DispatchQueue.main.async { [weak self] in
+-            self?.installIdentifier()
++    private func logAncestorTabs() {
++        var current: UIViewController? = self
++        var index = 0
++        while let controller = current {
++            if let tab = controller.tab {
++                log("ancestor=\(index) type=\(typeName(controller)) tab-object=\(ObjectIdentifier(tab)) tab-title=\(tab.title) tab-identifier=\(tab.identifier) tab-accessibility-identifier=\(tab.accessibilityIdentifier ?? "nil")")
++            } else {
++                log("ancestor=\(index) type=\(typeName(controller)) tab=nil")
++            }
++            current = controller.parent
++            index += 1
+         }
+     }
++
++    private func parentChain() -> String {
++        var names: [String] = []
++        var current: UIViewController? = self
++        while let controller = current {
++            names.append(typeName(controller))
++            current = controller.parent
++        }
++        return names.joined(separator: " -> ")
++    }
++
++    private func logTab(_ tab: UITab, index: Int, phase: String) {
++        log("index=\(index) phase=\(phase) object=\(ObjectIdentifier(tab)) title=\(tab.title) identifier=\(tab.identifier) accessibility-identifier=\(tab.accessibilityIdentifier ?? "nil")")
++    }
++
++    private func typeName(_ controller: UIViewController?) -> String {
++        controller.map { String(describing: type(of: $0)) } ?? "nil"
++    }
++
++    private func log(_ message: String) {
++        NSLog("[GrantivaModernTabProbe] %@", message)
++    }
+ }

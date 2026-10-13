@@ -1,0 +1,179 @@
+diff --git a/ios/Landmarks/ContentView.swift b/ios/Landmarks/ContentView.swift
+index 60577ef..00205b8 100644
+--- a/ios/Landmarks/ContentView.swift
++++ b/ios/Landmarks/ContentView.swift
+@@ -6,36 +6,26 @@
+ import SwiftUI
+ 
+ struct ContentView: View {
+-    @Environment(\.landmarkService) private var landmarkService
+     @State private var navigator = Navigator()
+ 
+     var body: some View {
+         @Bindable var navigator = navigator
+ 
+-        TabView(selection: $navigator.selectedTab) {
++        PersistentTabContainer(selection: $navigator.selectedTab) {
+             NavigationStack(path: $navigator.landmarksPath) {
+                 LandmarkListView()
+                     .screenDestination(path: $navigator.landmarksPath)
+             }
+-            .tabItem { Label("Landmarks", systemImage: "map") }
+-            .tag(Navigator.Tab.landmarks)
+-            .background(FavoritesTabIdentifierInstaller())
+-
++        } favorites: {
+             NavigationStack(path: $navigator.favoritesPath) {
+                 FavoritesView()
+                     .screenDestination(path: $navigator.favoritesPath)
+             }
+-            .tabItem { Label("Favorites", systemImage: "heart") }
+-            .tag(Navigator.Tab.favorites)
+-            .background(FavoritesTabIdentifierInstaller())
+-
++        } deepLinks: {
+             NavigationStack(path: $navigator.deepLinksPath) {
+                 DeepLinksView()
+                     .screenDestination(path: $navigator.deepLinksPath)
+             }
+-            .tabItem { Label("Deep Links", systemImage: "link") }
+-            .tag(Navigator.Tab.deepLinks)
+-            .background(FavoritesTabIdentifierInstaller())
+         }
+         .environment(navigator)
+         .onOpenURL { url in
+diff --git a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+deleted file mode 100644
+index fb78cc3..0000000
+--- a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
++++ /dev/null
+@@ -1,50 +0,0 @@
+-//
+-//  FavoritesTabIdentifierInstaller.swift
+-//  Landmarks
+-//
+-
+-import SwiftUI
+-import UIKit
+-
+-/// Gives the persistent Favorites tab the identifier used by UI flows.
+-struct FavoritesTabIdentifierInstaller: UIViewControllerRepresentable {
+-    func makeUIViewController(context: Context) -> FavoritesTabIdentifierViewController {
+-        FavoritesTabIdentifierViewController()
+-    }
+-
+-    func updateUIViewController(_ viewController: FavoritesTabIdentifierViewController, context: Context) {
+-        viewController.installIdentifier()
+-    }
+-}
+-
+-final class FavoritesTabIdentifierViewController: UIViewController {
+-    override func didMove(toParent parent: UIViewController?) {
+-        super.didMove(toParent: parent)
+-        installIdentifierAfterAttachment()
+-    }
+-
+-    override func viewDidAppear(_ animated: Bool) {
+-        super.viewDidAppear(animated)
+-        installIdentifier()
+-    }
+-
+-    func installIdentifier() {
+-        guard let tabs = tabBarController?.tabs else { return }
+-
+-        let favoritesIndex = 1
+-        assert(tabs.count == 3, "The tab identifier hook expects the fixture's three tabs")
+-        guard tabs.indices.contains(favoritesIndex) else { return }
+-
+-        let favoritesTab = tabs[favoritesIndex]
+-        assert(favoritesTab.title == "Favorites", "The Favorites tab moved unexpectedly")
+-        guard favoritesTab.title == "Favorites" else { return }
+-
+-        favoritesTab.accessibilityIdentifier = "heart"
+-    }
+-
+-    private func installIdentifierAfterAttachment() {
+-        DispatchQueue.main.async { [weak self] in
+-            self?.installIdentifier()
+-        }
+-    }
+-}
+diff --git a/ios/Landmarks/PersistentTabContainer.swift b/ios/Landmarks/PersistentTabContainer.swift
+new file mode 100644
+index 0000000..9416d8a
+--- /dev/null
++++ b/ios/Landmarks/PersistentTabContainer.swift
+@@ -0,0 +1,73 @@
++import SwiftUI
++import UIKit
++
++/// Owns the public tab models so their accessibility identity exists before presentation.
++struct PersistentTabContainer<Landmarks: View, Favorites: View, DeepLinks: View>: UIViewControllerRepresentable {
++    @Binding var selection: Navigator.Tab
++    @ViewBuilder var landmarks: Landmarks
++    @ViewBuilder var favorites: Favorites
++    @ViewBuilder var deepLinks: DeepLinks
++
++    func makeCoordinator() -> Coordinator {
++        Coordinator(selection: $selection)
++    }
++
++    func makeUIViewController(context: Context) -> UITabBarController {
++        let coordinator = context.coordinator
++        let landmarksHost = UIHostingController(rootView: HostedTab(content: landmarks, environment: context.environment))
++        let favoritesHost = UIHostingController(rootView: HostedTab(content: favorites, environment: context.environment))
++        let deepLinksHost = UIHostingController(rootView: HostedTab(content: deepLinks, environment: context.environment))
++        coordinator.landmarks = landmarksHost
++        coordinator.favorites = favoritesHost
++        coordinator.deepLinks = deepLinksHost
++
++        let landmarksTab = UITab(title: "Landmarks", image: UIImage(systemName: "map"), identifier: Navigator.Tab.landmarks.rawValue) { _ in landmarksHost }
++        let favoritesTab = UITab(title: "Favorites", image: UIImage(systemName: "heart"), identifier: Navigator.Tab.favorites.rawValue) { _ in favoritesHost }
++        let deepLinksTab = UITab(title: "Deep Links", image: UIImage(systemName: "link"), identifier: Navigator.Tab.deepLinks.rawValue) { _ in deepLinksHost }
++        favoritesTab.accessibilityIdentifier = "heart"
++
++        let controller = UITabBarController(tabs: [landmarksTab, favoritesTab, deepLinksTab])
++        controller.delegate = coordinator
++        controller.selectedTab = controller.tabs.first { $0.identifier == selection.rawValue }
++        return controller
++    }
++
++    func updateUIViewController(_ controller: UITabBarController, context: Context) {
++        let coordinator = context.coordinator
++        coordinator.selection = $selection
++        // Update the environment and inputs without replacing hosts, tabs, or stack identity.
++        coordinator.landmarks?.rootView = HostedTab(content: landmarks, environment: context.environment)
++        coordinator.favorites?.rootView = HostedTab(content: favorites, environment: context.environment)
++        coordinator.deepLinks?.rootView = HostedTab(content: deepLinks, environment: context.environment)
++        if controller.selectedTab?.identifier != selection.rawValue {
++            controller.selectedTab = controller.tabs.first { $0.identifier == selection.rawValue }
++        }
++    }
++
++    final class Coordinator: NSObject, UITabBarControllerDelegate {
++        var selection: Binding<Navigator.Tab>
++        var landmarks: UIHostingController<HostedTab<Landmarks>>?
++        var favorites: UIHostingController<HostedTab<Favorites>>?
++        var deepLinks: UIHostingController<HostedTab<DeepLinks>>?
++
++        init(selection: Binding<Navigator.Tab>) {
++            self.selection = selection
++        }
++
++        func tabBarController(_ tabBarController: UITabBarController, didSelectTab selectedTab: UITab, previousTab: UITab?) {
++            if let tab = Navigator.Tab(rawValue: selectedTab.identifier), selection.wrappedValue != tab {
++                selection.wrappedValue = tab
++            }
++        }
++    }
++
++    /// Hosting controllers form a new SwiftUI root; explicitly carry the inherited environment.
++    struct HostedTab<Content: View>: View {
++        var content: Content
++        var environment: EnvironmentValues
++
++        var body: some View {
++            content.environment(\.self, environment)
++        }
++    }
++}
