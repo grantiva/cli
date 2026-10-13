@@ -1,0 +1,9 @@
+# Task 4 live correction, round 3
+
+Commit `fbaf0f250e22a0dc5eb18b3b55b27713115253bc`; parent `ed2e10e61014f8bbc3905986e63c7255de843461`. Review and remaining live controls pending; no push.
+
+Actual Android cycle evidence `live/android-controls-attempt1/cycle-private.*` exposed mixed raw runner paths: staged root, absolute first subflow, then relative operands from unstaged children. The original unit fixture wrongly modeled all hops as absolute. The test now models the exact mixed shape under both /tmp and /private/tmp. RED reproduced both failed canonical assertions plus every streaming split.
+
+OutputRewriter now normalizes only the exact circular-dependency diagnostic chain. Relative ./ or ../ hops resolve from the preceding canonical hop and are accepted only if the result is an existing reachable display target. Unknown paths and escapes above the project remain as written, as do ordinary runFlow operands. Streaming buffers only an unfinished cycle diagnostic, handles every character split of the real line, and keeps ordinary keep-alive output immediate. Existing absolute/root controls remain green. Controller explicitly authorized this extension beyond the initial merge-only fix based on live evidence.
+
+`live/unit-fix3/` retains RED, an unsuccessful first implementation check (NSString leaves relative .. uncollapsed), subsequent GREEN, and final GREEN after adding the project-escape guard. Final command `swift test --filter 'RunnerSessionOutputTests|OutputRewriterTests|FlowReferenceResolverTests'`: 46 tests, zero failures. Fresh scoped home remained empty, API key unset, git diff --check passed. Existing CLILogHandler deprecation and preexisting OutputRewriterTests var-never-mutated warning are recorded, not suppressed or treated as failures. Final-tree full suite/CI remains pending.

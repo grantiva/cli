@@ -1,0 +1,59 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 5]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[8 / 12] GrantivaAPI
+[10 / 14] GrantivaCore
+[15 / 19] GrantivaCore
+[19 / 21] GrantivaAPITests-product
+[22 / 23] GrantivaAPITests-product
+[24 / 24] GrantivaAPITests-product
+[25 / 29] GrantivaMCP
+[27 / 31] GrantivaCLI
+[28 / 32] GrantivaCLI
+[33 / 36] GrantivaCLITests-product
+[35 / 36] GrantivaCLITests-product
+[36 / 40] GrantivaCLITests-product
+[40 / 40] GrantivaCLITests-product
+[41 / 45] GrantivaCoreTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+21 | 
+22 |     func testAnEmptyRewriterPassesTextThrough() {
+23 |         var empty = OutputRewriter(replacements: [:])
+   |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+24 |         XCTAssertTrue(empty.isEmpty)
+25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[44 / 48] GrantivaCoreTests-product
+[49 / 51] GrantivaCoreTests-product
+[51 / 51] GrantivaCoreTests-product
+[52 / 54] GrantivaMCPTests-product
+[55 / 56] GrantivaMCPTests-product
+[57 / 57] GrantivaMCPTests-product
+[59 / 63] grantiva-product
+[62 / 63] grantiva-product
+Build complete! (7.47 sec)
