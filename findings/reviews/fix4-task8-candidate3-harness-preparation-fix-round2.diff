@@ -1,0 +1,110 @@
+--- last-reviewed/lifecycle_smoke.py
++++ fix-round2/lifecycle_smoke.py
+@@ -405,6 +405,11 @@
+                                 shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
+                                 state["flowWasPresent"] = True
+                         self.record_ownership()
++                        if isinstance(state.get("report"), Path) and isinstance(state.get("flow"), Path):
++                            state["authenticatedPID"] = pid
++                            authenticated = state["authenticated"]
++                            assert isinstance(authenticated, threading.Event)
++                            authenticated.set()
+                 except (ProcessLookupError, json.JSONDecodeError, KeyError):
+                     pass
+                 stop.wait(0.01)
+@@ -424,14 +429,34 @@
+                 raise AssertionError("authenticated generated flow was not retained")
+         except BaseException as exc:
+             state["error"] = exc
++            authenticated = state.get("authenticated")
++            if isinstance(authenticated, threading.Event):
++                authenticated.set()
+ 
+     def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str) -> tuple[dict[str, object], threading.Thread]:
+-        state: dict[str, object] = {"stop": threading.Event(), "report": None, "flow": None, "flowWasPresent": False, "error": None, "terminalReportCopied": False, "terminalFlowCopied": False}
++        state: dict[str, object] = {"stop": threading.Event(), "authenticated": threading.Event(), "authenticatedPID": None, "report": None, "flow": None, "flowWasPresent": False, "error": None, "terminalReportCopied": False, "terminalFlowCopied": False}
+         thread = threading.Thread(target=self.preserve_runner_report, args=(phase, label, proc, device, state), daemon=False)
+         thread.start()
+         return state, thread
+ 
+     @staticmethod
++    def wait_report_snapshot_authenticated(snapshot: tuple[dict[str, object], threading.Thread], expected_pid: int | None = None) -> int:
++        state, thread = snapshot
++        authenticated = state["authenticated"]
++        assert isinstance(authenticated, threading.Event)
++        if not authenticated.wait(timeout=15):
++            raise TimeoutError("runner report snapshot authentication timed out")
++        error = state.get("error")
++        if isinstance(error, BaseException):
++            raise error
++        pid = state.get("authenticatedPID")
++        if not isinstance(pid, int) or (expected_pid is not None and pid != expected_pid):
++            raise AssertionError({"snapshotAuthenticatedPID": pid, "expectedPID": expected_pid, "workerAlive": thread.is_alive()})
++        if not isinstance(state.get("report"), Path) or not isinstance(state.get("flow"), Path):
++            raise AssertionError("snapshot authentication omitted report or generated-flow path")
++        return pid
++
++    @staticmethod
+     def stop_report_snapshot(snapshot: tuple[dict[str, object], threading.Thread]) -> None:
+         state, thread = snapshot
+         stop = state["stop"]
+@@ -474,6 +499,7 @@
+                 runner_pid = int(doc["pid"])
+                 self.register_runner(runner_pid, platform, device, phase)
+                 write_json(self.output / phase / f"{label}.starting.json", doc)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
+                 os.kill(proc.pid, signal.SIGINT)
+                 code = self.finish(phase, label, proc, 90)
+                 err = (self.output / phase / f"{label}.stderr").read_text()
+@@ -501,6 +527,7 @@
+                 starting = self.wait_state(proc, "starting")
+                 runner_pid = int(starting["pid"])
+                 self.register_runner(runner_pid, platform, device, phase)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
+                 if starting.get("port") is not None:
+                     raise AssertionError("genuine starting state must have null port")
+                 second = json.loads(self.command(phase, f"{label}-second-json", args).stdout)
+@@ -547,6 +574,7 @@
+                 ready = self.wait_state(proc, "ready")
+                 runner_pid = int(ready["pid"])
+                 self.register_runner(runner_pid, platform, device, phase)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
+                 hierarchy = self.command(phase, f"{label}-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", device, "--format", "tree"])
+                 if "Landmarks" not in hierarchy.stdout.decode(errors="replace"):
+                     raise AssertionError(f"{platform} ready-state hierarchy lacks Landmarks")
+@@ -711,12 +739,15 @@
+         proc = self.spawn(phase, "live-start", self.start_args("ios", detach=True, json_mode=True))
+         snapshot = self.start_report_snapshot(phase, "live-start", proc, self.ns.ios_udid)
+         try:
++            authenticated_pid = self.wait_report_snapshot_authenticated(snapshot)
+             if self.finish(phase, "live-start", proc, 600) != 0:
+                 raise AssertionError("force-teardown runner start failed")
+         finally:
+             self.stop_report_snapshot(snapshot)
+         start = json.loads((self.output / phase / "live-start.stdout").read_text())
+         runner_pid = int(start["pid"])
++        if runner_pid != authenticated_pid:
++            raise AssertionError({"startedPID": runner_pid, "snapshotAuthenticatedPID": authenticated_pid})
+         self.register_runner(runner_pid, "ios", self.ns.ios_udid, phase)
+         self.command(phase, "live-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", self.ns.ios_udid, "--format", "tree"])
+         force_doc = json.loads(self.command(phase, "live-force", [str(self.binary), "simulator", "teardown", "--udid", self.ns.ios_udid, "--force", "--json"], timeout=240).stdout)
+--- last-reviewed/task8-candidate3-harness-preparation-report.md
++++ fix-round2/task8-candidate3-harness-preparation-report.md
+@@ -27,8 +27,10 @@
+ 
+ ## Lifecycle snapshot race correction
+ 
+-The copied lifecycle helper no longer launches untracked daemon report-snapshot threads. Each capture gets a private stop event, non-daemon thread, retained authenticated report/generated-flow paths, and an exception/result channel. Every startup-interrupt, detached-ready, ready-interrupt, and force-teardown caller stops and joins its exact thread with a bounded timeout. After the stop request, the worker copies from the retained report path even when the session is gone or the runner has exited. The stop operation re-raises worker copy/ownership failures and requires the terminal report copy before phase cleanup or acceptance can continue. When a generated flow was observed, its retained copy is also mandatory.
++The copied lifecycle helper no longer launches untracked daemon report-snapshot threads. Each capture gets a private stop event, an authentication event, a non-daemon thread, retained authenticated report/generated-flow paths, and an exception/result channel. The worker signals authentication only after binding the live exact PID/device argv, retaining both paths, and recording ownership. Every startup-interrupt, detached-ready, ready-interrupt, and force-teardown caller waits boundedly for that authentication (and verifies the observed PID when available) before interrupting or finishing the runner. This handshake does not wait for runner readiness or flow completion, so the startup-interrupt case retains its `starting` timing semantics. Worker errors and authentication timeouts fail synchronously.
+ 
++Every caller then stops and joins its exact thread with a bounded timeout. After the stop request, the worker copies from the retained report path even when the session is gone or the runner has exited. The stop operation re-raises worker copy/ownership failures and requires the terminal report copy before phase cleanup or acceptance can continue. When a generated flow was observed, its retained copy is also mandatory.
++
+ This does not weaken report evidence. `copy_report_snapshot` still tolerates only disappearing `.tmp` files from atomic writes; a missing retained report path, missing stable files, and all unrelated copy failures raise through the caller. Detached readiness still requires the retained report and passed status, and the helper cannot complete while a capture thread remains live.
+ 
+ ## Cleanup corrections
+@@ -48,4 +50,4 @@
+ 
+ The directory contains controller scripts, phase helpers, identity validation, example candidate/ownership/phase manifests, and lifecycle documentation copied from the final candidate-2 harness and rebound to candidate-3 paths/session/owned names. `manifest.example.json` references only this SDD helper directory and the candidate-3 evidence root.
+ 
+-Static Python compilation and JSON parsing were run only against these preparation files; no helper main, product test, build, or live command was executed. The complete new-file diff is `task8-candidate3-harness-preparation.diff`; the focused review-to-fix diff is `task8-candidate3-harness-preparation-fix.diff`.
++Static Python compilation and JSON parsing were run only against these preparation files; no helper main, product test, build, or live command was executed. The complete new-file diff is `task8-candidate3-harness-preparation.diff`; the first focused review-to-fix diff is `task8-candidate3-harness-preparation-fix.diff`, and the scoped handshake correction against that reviewed version is `task8-candidate3-harness-preparation-fix-round2.diff`.

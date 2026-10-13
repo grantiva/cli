@@ -1,0 +1,2130 @@
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/README.md b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/README.md
+new file mode 100644
+index 00000000..72e90207
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/README.md
+@@ -0,0 +1,35 @@
++# Candidate 3 Task 8 bounded smoke harness
++
++This separate preparation copy never imports candidate 2 phase acceptance as a grade and writes only to a fresh `round4-smoke-candidate3` evidence root. Candidate 3 requires a newly merged clean CLI HEAD and newly built/frozen release binary and bundle. The runner remains exactly `ba9008f4b2cd2c7320a9c46e04faed612b0958a2` / `1.1.28-grantiva.15`; the demo remains exactly `84af7581b75134b0e417b254e4317d565f7b73c6`. Every phase, including both MCP transports and cleanup, runs again.
++
++This directory is preparation only. `run_phase.py` validates a phase unless the controller deliberately adds `--execute`. The example manifest is intentionally non-runnable until every absolute path and newly owned smoke device is filled in after Task 7 merges.
++
++## Required sequence
++
++1. Copy `manifest.example.json` outside this directory as the execution manifest. Bind it to the merged CLI SHA, packaged runner SHA, exactly one release binary and bundle, a fresh APFS-cloned runner home, new `smoke4` device IDs, and a new evidence root.
++   Freeze `candidate.example.json` and `ownership.example.json` with real values. `candidate_identity.py` verifies both before any executable phase begins; placeholder or merely declared identities do not qualify.
++2. The Android runner and both MCP commands are already rebound to task-specific helpers in this directory. Supply every manifest parameter. Replace the remaining candidate-upgrade, docs/output, and cleanup placeholders after Task 7; lifecycle is prepared separately. Never call the retained fix4 scripts directly: they contain old UUIDs, serials, homes, PIDs, sessions, projects, and output paths.
++3. Run each phase first without `--execute`, then with it, in numeric order:
++
++   `env -u GRANTIVA_API_KEY ./run_phase.py --manifest /absolute/execution-manifest.json --phase 01-candidate-upgrade`
++
++   `env -u GRANTIVA_API_KEY ./run_phase.py --manifest /absolute/execution-manifest.json --phase 01-candidate-upgrade --execute`
++
++4. Review each phase evidence before continuing. A failure stops the phase. Reopen the owning task for any failed criterion; do not qualify the failure or proceed to Task 9.
++
++## Requirement to harness mapping
++
++| Phase | Binding criteria | Reviewed logic to rebind | Required assertion/evidence |
++|---|---|---|---|
++| `01-candidate-upgrade` | One final release candidate; source/binary/bundle/runner identity; fresh APFS clone upgrade; pre-existing plus iOS 26.0/26.2/26.4/27.0 WDA caches remain valid | Task 8 brief/controller notes; no retained live harness is sufficient | Before/after manifests and cache inventories, hashes/versions, exact build/copy/upgrade argv, raw streams, exit records |
++| `02-runner-android` | Healthy stock; crash 5/5 within accepted fatal bound; all four L51 forms; favorite removal 5/5; L77 literal `clearState`, bare `stopApp`, Landmarks absent; optional/required miss semantics; subdirectory cycle | Executable `android_runner_smoke.py`, rebound from `findings/evidence/fix4-1/run-device.py`, `fix4-2/run-l51-live.py`, and retained fix4-2/fix4-3 inputs | Per-run command/start/exit/stdout/stderr/raw report/provenance; exact repetition counts; final optional warning in text and JSON; report/ready/exit agreement; neutral Settings and package-state proof for L77; circular diagnostic |
++| `03-lifecycle` | Starting-state interrupts; ready control; detach immediate app readiness; force teardown JSON; absent install; log-child cleanup; circular flow controls | `fix4-4/live/android_lifecycle2.py`, `ios_lifecycle6.py`, `ios_startup6.py`, `cycle_controls5.py`; associated absent-install/log/teardown retained evidence logic | Explicit state/PID/device timing, exit 130 where specified, no false timeout, immediate hierarchy, `runnerSessionStopped:true`, session/lease/forward/log-PID absence, exact cycle diagnostic |
++| `04-mcp-ios` | L65 missing steps and no-session precedence; full L66 selector contract; 10 mixed >65,536-byte response pairs; small responses and notifications | Executable `mcp_smoke.py` and `mcp_client.py`, rebound from `fix4-5/mcp_client.py`, `final_selector_acceptance.py`, and `ios_final2_transport_acceptance.py` | JSONL requests, raw stdout/stderr, unique IDs, exactly 20 large replies, 10 small replies and 10 notifications, label/identifier/placeholder/script/quoted/back-button/coordinate assertions, and exact L65 strings/envelopes |
++| `05-mcp-android` | L65 on Android and the same 10-pair transport contract | Executable `mcp_smoke.py` and `mcp_client.py`, rebound from `fix4-5/mcp_client.py` and `android_acceptance.py` | Same transport evidence; exact L65 error and no-session precedence; empty/wrong-type semantics retained |
++| `06-docs-output` | Ambiguous doctor text/JSON; public migration notes; regenerate every help page from final candidate; corpus tests | Retained help-corpus script (locate after Task 7 merge) | Exact candidate argv, text/JSON/exit, generated help inventory and diff, migration-note inspection, test logs |
++| `07-final-force-teardown` | With both owned targets still live for constructor validation, exercise live owned iOS force teardown JSON, exact runner/session cleanup, and owned iOS removal | Executable isolated `lifecycle_smoke.py --phase force-teardown --allow-destroy-owned-ios` | `acceptance.json` status is `passed` and `IOS-DEVICE-RECREATE-REQUIRED.json` exists |
++| `08-final-cleanup` | Confirm iOS is already absent after force teardown, remove owned Android and residual sessions/locks/forwards/PIDs, and preserve protected inventory | Device-specific cleanup helper remains controller work; no global teardown | Ownership manifest, before/after protected inventory, targeted commands, PID identity before signal, iOS and Android absence checks |
++
++The controller must preserve literal inputs for L77 and must foreground Settings before that flow. The Android APK must be rehashed as `5891bf3753eade9ce28a391ec5d8d3d289d195af951e967b67bb1928e06d988a` and recorded with source `1552ae983a27528eff4c1f8145aa075698b47f71`. Protected targets are iPhone 17 Pro `B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C`, iPhone 18 Pro `FE441EE5-BBFC-4981-B68A-59C0DBCE26D6`, and AVD `Pixel_8_API_35`.
++
++Every rebound helper writes its own `acceptance.json` only after checking its criteria. The manifest checks `/passed` as real JSON content. The phase runner captures the top-level command, timestamps, exit, raw stdout/stderr, candidate provenance, and declared raw reports. Helpers record each nested command and copy transient runner reports before cleanup.
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/android_runner_smoke.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/android_runner_smoke.py
+new file mode 100644
+index 00000000..6ae3236f
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/android_runner_smoke.py
+@@ -0,0 +1,144 @@
++#!/usr/bin/env python3
++import argparse, datetime, hashlib, json, os, pathlib, re, shutil, subprocess, time, xml.etree.ElementTree as ET
++from candidate_identity import validate as validate_identity
++
++APK_SHA='5891bf3753eade9ce28a391ec5d8d3d289d195af951e967b67bb1928e06d988a'
++def sha(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
++def report_status(path):
++    doc=json.loads((path/'report.json').read_text()); return doc,doc.get('status')
++
++ap=argparse.ArgumentParser(); ap.add_argument('--candidate-manifest',required=True); ap.add_argument('--ownership-manifest',required=True); ap.add_argument('--binary',required=True); ap.add_argument('--bundle',required=True); ap.add_argument('--runner',required=True); ap.add_argument('--runner-home',required=True); ap.add_argument('--source-root',required=True); ap.add_argument('--project',required=True)
++ap.add_argument('--serial',required=True); ap.add_argument('--avd',required=True); ap.add_argument('--apk',required=True); ap.add_argument('--adb',required=True); ap.add_argument('--uia2-sampler',required=True); ap.add_argument('--movement-analyzer',required=True); ap.add_argument('--runner-inputs',required=True); ap.add_argument('--optional-inputs',required=True); ap.add_argument('--crash-flow',required=True); ap.add_argument('--healthy-flow',required=True); ap.add_argument('--cycle-project',required=True); ap.add_argument('--cycle-flow',required=True); ap.add_argument('--evidence',required=True)
++a=ap.parse_args(); root=pathlib.Path(a.evidence).resolve(); inputs=pathlib.Path(a.runner_inputs).resolve(); optional_inputs=pathlib.Path(a.optional_inputs).resolve()
++for p in (a.binary,a.runner,a.runner_home,a.source_root,a.project,a.apk,a.adb,a.uia2_sampler,a.movement_analyzer,inputs,optional_inputs,a.crash_flow,a.healthy_flow,a.cycle_project,pathlib.Path(a.cycle_project)/a.cycle_flow):
++    if not pathlib.Path(p).exists(): raise SystemExit(f'missing {p}')
++if a.avd!='smoke4-c3-android': raise SystemExit('expected newly owned smoke4-c3-android AVD')
++if sha(a.apk)!=APK_SHA: raise SystemExit('retained Task 3 APK hash mismatch')
++required=['l51-direction.yaml','l51-element.yaml','l51-coordinates.yaml','l51-engine-adb.yaml','02-favorite.yaml','stop-bare-clearstate.yaml']
++for name in required:
++    if not (inputs/name).is_file(): raise SystemExit(f'missing input {inputs/name}')
++for name in ('optional-miss.yaml','required-miss.yaml'):
++    if not (optional_inputs/name).is_file(): raise SystemExit(f'missing input {optional_inputs/name}')
++if os.environ.get('GRANTIVA_API_KEY'): raise SystemExit('GRANTIVA_API_KEY must be unset')
++root.mkdir(parents=True,exist_ok=False)
++identity=validate_identity(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform='android',device=a.serial,android_avd=a.avd,apk=a.apk)
++# Direct runner invocations need the installed drivers; the CLI keeps the clone root.
++candidate_path=pathlib.Path(identity['candidateManifest']); candidate_bytes=candidate_path.read_bytes()
++if hashlib.sha256(candidate_bytes).hexdigest()!=identity['candidateManifestSHA256']: raise SystemExit('candidate manifest changed after validation')
++runner_record=json.loads(candidate_bytes)['runner']; installed=pathlib.Path(runner_record['installed']['path']).resolve()
++runner_home=pathlib.Path(a.runner_home).resolve(); installed_home=installed.parent
++if installed_home!=(runner_home/'versions'/identity['runnerInstallStamp']).resolve(): raise SystemExit('installed runner version directory mismatch')
++if not (sha(installed)==identity['installedRunnerSHA256']==identity['runnerSHA256']==sha(a.runner)): raise SystemExit('installed and packaged runner hash mismatch')
++if not (installed_home/'drivers/android').is_dir(): raise SystemExit('installed Android drivers missing')
++adb_parent=str(pathlib.Path(a.adb).resolve().parent)
++env=os.environ.copy(); env.pop('GRANTIVA_API_KEY',None); env.update(GRANTIVA_RUNNER_HOME=str(runner_home),MAESTRO_RUNNER_HOME=str(installed_home),GRANTIVA_SESSION_ID='fix4-8-c3',PATH=adb_parent+os.pathsep+env.get('PATH',os.defpath))
++(root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runner':str(pathlib.Path(a.runner).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'sourceRoot':str(pathlib.Path(a.source_root).resolve()),'project':str(pathlib.Path(a.project).resolve()),'serial':a.serial,'avd':a.avd,'apk':str(pathlib.Path(a.apk).resolve()),'apkSHA256':sha(a.apk),'apiKey':'unset','maestroRunnerHome':str(installed_home),'adbParent':adb_parent},indent=2)+'\n')
++
++def run(label,argv,expected,report=None,timeout=180):
++    d=root/label; d.mkdir(); started=time.time(); load_start=os.getloadavg(); (d/'command.json').write_text(json.dumps({'argv':list(map(str,argv)),'cwd':str(pathlib.Path(a.project).resolve()),'startedEpoch':started,'hostLoadStart':load_start},indent=2)+'\n')
++    with (d/'stdout.raw').open('wb') as out,(d/'stderr.raw').open('wb') as err: p=subprocess.run(list(map(str,argv)),cwd=a.project,env=env,stdout=out,stderr=err,timeout=timeout)
++    result={'startedEpoch':started,'endedEpoch':time.time(),'hostLoadStart':load_start,'hostLoadEnd':os.getloadavg(),'exit':p.returncode,'expectedExit':expected}; (d/'result.json').write_text(json.dumps(result,indent=2)+'\n')
++    if p.returncode!=expected: raise AssertionError((label,p.returncode,expected))
++    if report:
++        src=pathlib.Path(report); shutil.copytree(src,d/'raw-report'); doc,status=report_status(src); result['reportStatus']=status; result['reportFlows']=doc.get('flows'); (d/'result.json').write_text(json.dumps(result,indent=2)+'\n')
++    return d,result
++
++run('00-identity',[a.adb,'-s',a.serial,'emu','avd','name'],0)
++identity=(root/'00-identity/stdout.raw').read_text().splitlines()[0]; assert identity==a.avd,(identity,a.avd)
++run('01-install',[a.adb,'-s',a.serial,'install','-r',a.apk],0)
++checks=[]
++def runner_case(label,flow,expected=0):
++    report=root/(label+'-report'); argv=[a.runner,'--platform','android','--device',a.serial,'--driver','uiautomator2','--verbose','--no-app-install','--artifacts','always','test','--output',report,'--flatten',flow]
++    d,result=run(label,argv,expected,report); return json.loads((d/'raw-report/report.json').read_text())
++
++doc=runner_case('healthy',a.healthy_flow); assert doc['status']=='passed'; checks.append({'healthy':True})
++def clock_sample(label):
++    before=time.time(); p=subprocess.run([a.adb,'-s',a.serial,'shell','date','+%s.%N'],capture_output=True,text=True,check=True,timeout=10); after=time.time(); device=float(p.stdout.strip()); record={'hostBefore':before,'deviceEpoch':device,'hostAfter':after,'rttSeconds':after-before,'offsetLower':device-after,'offsetUpper':device-before}; (root/label).write_text(json.dumps(record,indent=2)+'\n'); return record
++crash_rows=[]
++for n in range(1,6):
++    run(f'crash-{n}-log-clear',[a.adb,'-s',a.serial,'logcat','-b','all','-c'],0)
++    clock_before=clock_sample(f'crash-{n}-clock-before.json')
++    # The stock header env reaches Android intent extras through the CLI.
++    report=root/f'crash-{n}-report'; argv=[a.binary,'run','--platform','android','--device',a.serial,'--no-build','--verbose','--flow',a.crash_flow,'--report-dir',report]
++    d,result=run(f'crash-{n}',argv,1,report); doc=json.loads((d/'raw-report/report.json').read_text()); assert doc['status']=='failed'
++    clock_after=clock_sample(f'crash-{n}-clock-after.json')
++    run(f'crash-{n}-logcat',[a.adb,'-s',a.serial,'logcat','-b','all','-d','-v','epoch'],0)
++    log=(root/f'crash-{n}-logcat/stdout.raw').read_text(errors='replace'); lines=log.splitlines(); candidates=[]
++    for index,line in enumerate(lines):
++        if 'FATAL EXCEPTION' not in line: continue
++        block='\n'.join(lines[index:index+5]); process=re.search(r'Process: com\.kylebrowning\.landmarks, PID: (\d+)',block); epoch=re.match(r'\s*([0-9]+(?:\.[0-9]+)?)',line)
++        if process and epoch: candidates.append((float(epoch.group(1)),int(process.group(1)),block))
++    assert len(candidates)==1,candidates; fatal_epoch,pid,fatal_block=candidates[0]; assert re.search(rf'Start proc {pid}:com\.kylebrowning\.landmarks\b',log),('fatal PID lacks this-launch start',pid)
++    flow_detail=json.loads((root/f'crash-{n}/raw-report'/doc['flows'][0]['dataFile']).read_text()); commands=flow_detail.get('commands',[]); launch=commands[0]; assert launch['type']=='launchApp' and launch['status']=='failed' and launch['error']['type']=='app_crash'
++    decision_host=datetime.datetime.fromisoformat(launch['endTime']).timestamp(); offset_lower=min(clock_before['offsetLower'],clock_after['offsetLower']); offset_upper=max(clock_before['offsetUpper'],clock_after['offsetUpper']); delta_lower=decision_host+offset_lower-fatal_epoch; delta_upper=decision_host+offset_upper-fatal_epoch; assert 0<=delta_lower<=delta_upper<=2.0,(n,[delta_lower,delta_upper],fatal_block,launch)
++    assert not any(x.get('type','').startswith('launchApp') and x.get('status')=='passed' for x in commands)
++    crash_rows.append({'run':n,'pid':pid,'fatalDeviceEpoch':fatal_epoch,'decisionHostEpoch':decision_host,'offsetHull':[offset_lower,offset_upper],'fatalToDecisionIntervalSeconds':[delta_lower,delta_upper],'clockProbes':[clock_before,clock_after]})
++checks.append({'crashRuns':crash_rows,'allFailedWithMatchingLaunchPID':True,'fatalToDecisionAtMostSeconds':2.0,'noLaunchSuccess':True})
++def app_only(source,destination):
++    rows=[]
++    for node in ET.parse(source).getroot().iter():
++        if node.attrib.get('package')=='com.kylebrowning.landmarks': rows.append(dict(sorted(node.attrib.items())))
++    assert rows; destination.write_text(json.dumps(rows,indent=2)+'\n')
++def wait_log(path,needle,proc):
++    deadline=time.monotonic()+45
++    while time.monotonic()<deadline:
++        if path.exists() and needle in path.read_text(errors='replace'): return
++        if proc.poll() is not None: raise AssertionError(('gesture early exit',proc.returncode,needle))
++        time.sleep(.05)
++    raise TimeoutError(needle)
++l51=root/'l51-live'; l51.mkdir(); movement=[]
++for form in ('direction','element','coordinates','engine-adb'):
++    report=l51/f'l51-{form}-final'; stdout=l51/f'{form}.stdout.raw'; stderr=l51/f'{form}.stderr.raw'; flow=inputs/f'l51-{form}.yaml'; argv=[a.runner,'--platform','android','--device',a.serial,'--driver','uiautomator2','--verbose','--no-app-install','--artifacts','always','test','--output',report,'--flatten',flow]
++    gesture_started=time.time(); gesture_load=os.getloadavg(); (l51/f'{form}.command.json').write_text(json.dumps({'argv':list(map(str,argv)),'startedEpoch':gesture_started,'hostLoadStart':gesture_load},indent=2)+'\n')
++    with stdout.open('wb') as out,stderr.open('wb') as err:
++        proc=subprocess.Popen(list(map(str,argv)),cwd=a.project,env=env,stdout=out,stderr=err)
++        try:
++            wait_log(report/'maestro-runner.log','Step 2 completed successfully',proc); subprocess.run(['python3','-I',a.uia2_sampler,a.serial,report/'client.log',report/'source-before'],env={**env,'PATH':str(pathlib.Path(a.adb).parent)+':'+env['PATH']},check=True,timeout=40); app_only(report/'source-before/hierarchy.xml',report/'app-only-before.json')
++            wait_log(report/'maestro-runner.log','Step 6 completed successfully',proc); subprocess.run(['python3','-I',a.uia2_sampler,a.serial,report/'client.log',report/'source-after'],env={**env,'PATH':str(pathlib.Path(a.adb).parent)+':'+env['PATH']},check=True,timeout=40); app_only(report/'source-after/hierarchy.xml',report/'app-only-after.json'); code=proc.wait(timeout=45)
++        finally:
++            if proc.poll() is None: proc.terminate(); proc.wait(timeout=10)
++    (l51/f'{form}.result.json').write_text(json.dumps({'exit':code,'startedEpoch':gesture_started,'endedEpoch':time.time(),'hostLoadStart':gesture_load,'hostLoadEnd':os.getloadavg()},indent=2)+'\n'); assert code==0
++    log=(report/'maestro-runner.log').read_text(); client=(report/'client.log').read_text(errors='replace'); held='held drag' in log; actions='/actions' in client
++    if form=='engine-adb': assert 'engine: adb' in flow.read_text() and not held and not actions
++    else: assert held and actions
++analysis=subprocess.run(['python3','-I',a.movement_analyzer,l51],capture_output=True,text=True,check=True,timeout=20); (l51/'movement-analysis.json').write_text(analysis.stdout); movement=json.loads(analysis.stdout)
++for row in movement: assert row['moved'] and row['commonRows'] and row['medianYDelta'] is not None and row['medianYDelta']<0,row
++checks.append({'gestureForms':movement,'routing':{'liveHeldActions':['direction','element','coordinates'],'engineAdbLiveBehavior':{'moved':True,'w3cActionsAbsent':True,'externalAdbArgvObservedLive':False},'productionUnitProof':{'source':'pkg/executor/commands_test.go:3536-3560','boundByCandidateRunnerSourceAndUncachedFourPackageTest':True}}})
++for n in range(1,6):
++    doc=runner_case(f'favorite-{n}',inputs/'02-favorite.yaml'); assert doc['status']=='passed' and doc['flows'][0]['commands']['failed']==0
++checks.append({'favoriteRuns':5})
++run('settings-neutral',[a.adb,'-s',a.serial,'shell','am','start','-a','android.settings.SETTINGS'],0)
++doc=runner_case('stop-bare-clearstate',inputs/'stop-bare-clearstate.yaml'); assert doc['status']=='passed' and doc['flows'][0]['commands']['failed']==0
++run('stop-package-pid',[a.adb,'-s',a.serial,'shell','pidof','com.kylebrowning.landmarks'],1)
++run('stop-focused-window',[a.adb,'-s',a.serial,'shell','dumpsys','window'],0); focused=(root/'stop-focused-window/stdout.raw').read_text(errors='replace'); assert re.search(r'mCurrentFocus.*com\.android\.settings',focused)
++run('stop-settings-hierarchy',[a.adb,'-s',a.serial,'exec-out','uiautomator','dump','/dev/tty'],0); hierarchy=(root/'stop-settings-hierarchy/stdout.raw').read_text(errors='replace'); assert 'com.android.settings' in hierarchy and 'com.kylebrowning.landmarks' not in hierarchy
++detail=json.loads((root/'stop-bare-clearstate/raw-report'/doc['flows'][0]['dataFile']).read_text()); stop=next(x for x in detail['commands'] if x['type']=='stopApp'); assert stop['status']=='passed' and not stop.get('error')
++checks.append({'L77':{'literalClearState':True,'bareStop':True,'assertNotVisible':True,'targetPIDAbsent':True,'neutralSettingsFocused':True,'neutralSettingsHierarchy':True,'intentionalStopNonCrash':True}})
++
++def cli_case(label,flow,json_mode,expected,expected_status):
++    report=root/(label+'-report'); ready=root/(label+'-ready.json'); argv=[a.binary,'run']+(['--json'] if json_mode else [])+['--platform','android','--device',a.serial,'--no-build','--flow',flow,'--report-dir',report,'--ready-file',ready]
++    d,result=run(label,argv,expected,report,240); ready_doc=json.loads(ready.read_text()); assert ready_doc['status']==expected_status and ready_doc['flows'][0]['status']==expected_status
++    result['ready']=ready_doc; (d/'ready.json').write_bytes(ready.read_bytes()); return d,json.loads((d/'raw-report/report.json').read_text())
++surface=[]
++for mode in ('text','json'):
++  for repetition in range(1,4):
++    label=f'optional-{mode}-{repetition}'; d,doc=cli_case(label,optional_inputs/'optional-miss.yaml',mode=='json',0,'passed'); flow=doc['flows'][0]; assert doc['status']=='passed' and flow['commands']['warned']==1 and flow['commands']['failed']==0
++    detail=json.loads((d/'raw-report'/flow['dataFile']).read_text()); assert [x['status'] for x in detail['commands']]==['passed','warned','passed']; warned=detail['commands'][1]; assert warned['error']['type']=='element_not_found' and 'No Such Element fix4-3' in warned['error']['message']
++    junit=(d/'raw-report/junit-report.xml').read_text(); assert 'failures="0"' in junit and 'skipped="0"' in junit and 'warning: tapOn: Element not found' in junit
++    output=(d/'stdout.raw').read_text(errors='replace'); assert 'Element not found' in output and 'No Such Element fix4-3' in output
++    if mode=='json': assert json.loads(output)['allPassed'] is True
++    surface.append({'kind':'optional','mode':mode,'repetition':repetition,'joined':True})
++  d,doc=cli_case('required-'+mode,optional_inputs/'required-miss.yaml',mode=='json',1,'failed'); flow=doc['flows'][0]; assert doc['status']=='failed' and flow['commands']['failed']==1
++  detail=json.loads((d/'raw-report'/flow['dataFile']).read_text()); assert [x['status'] for x in detail['commands']]==['passed','failed','skipped']; failed=detail['commands'][1]; assert failed['error']['type']=='element_not_found'
++  junit=(d/'raw-report/junit-report.xml').read_text(); assert 'failures="1"' in junit and 'Element not found' in junit
++  output=(d/'stdout.raw').read_text(errors='replace'); assert 'Element not found' in output and 'No Such Element fix4-3' in output
++  if mode=='json': assert json.loads(output)['allPassed'] is False
++  surface.append({'kind':'required','mode':mode,'joined':True})
++checks.append({'optionalRequired':{'optionalTextRuns':3,'optionalJSONRuns':3,'requiredTextControl':1,'requiredJSONControl':1,'surfaceJoins':surface}})
++cycle_dir=root/'cycle'; cycle_dir.mkdir(); argv=[a.binary,'run','--platform','android','--device',a.serial,'--no-build','--flow',a.cycle_flow]; cycle_started=time.time(); cycle_load=os.getloadavg()
++(cycle_dir/'command.json').write_text(json.dumps({'argv':argv,'cwd':str(pathlib.Path(a.cycle_project).resolve()),'startedEpoch':cycle_started,'hostLoadStart':cycle_load},indent=2)+'\n')
++with (cycle_dir/'stdout.raw').open('wb') as out,(cycle_dir/'stderr.raw').open('wb') as err: cycle=subprocess.run(argv,cwd=a.cycle_project,env=env,stdout=out,stderr=err,timeout=30)
++cycle_text=(cycle_dir/'stdout.raw').read_text(errors='replace')+(cycle_dir/'stderr.raw').read_text(errors='replace'); (cycle_dir/'result.json').write_text(json.dumps({'exit':cycle.returncode,'startedEpoch':cycle_started,'endedEpoch':time.time(),'hostLoadStart':cycle_load,'hostLoadEnd':os.getloadavg()},indent=2)+'\n')
++assert cycle.returncode==1 and 'circular dependency detected:' in cycle_text and pathlib.Path(a.cycle_flow).name in cycle_text
++checks.append({'subdirectoryCycle':True})
++(root/'acceptance.json').write_text(json.dumps({'passed':True,'checks':checks},indent=2)+'\n')
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate.example.json b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate.example.json
+new file mode 100644
+index 00000000..f7b93123
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate.example.json
+@@ -0,0 +1 @@
++{"schema":"grantiva.task8.candidate.v1","cli":{"repoPath":"/ABSOLUTE/MERGED/CLI","mergedSHA":"40_HEX","binary":{"path":"/ABSOLUTE/grantiva","sha256":"64_HEX","version":"EXACT_STDOUT"},"bundle":{"path":"/ABSOLUTE/grantiva_GrantivaCore.bundle","files":[{"path":"RELATIVE_FILE","sha256":"64_HEX"}],"manifestSHA256":"SHA256_OF_CANONICAL_FILES_ARRAY"}},"runner":{"repoPath":"/ABSOLUTE/MERGED/RUNNER","sourceSHA":"40_HEX","runnerHome":"/ABSOLUTE/FRESH/APFS/runner-home","uncachedTestProof":{"start":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/start.json","sha256":"64_HEX"},"result":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/result.json","sha256":"64_HEX"},"stdout":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/stdout.log","sha256":"64_HEX"},"stderr":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/stderr.log","sha256":"64_HEX"},"grantivaHomeBefore":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/grantiva-home-before.txt","sha256":"64_HEX"},"grantivaHomeAfter":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/grantiva-home-after.txt","sha256":"64_HEX"},"maestroHomeBefore":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/maestro-home-before.txt","sha256":"64_HEX"},"maestroHomeAfter":{"path":"/ABSOLUTE/fix4-7/runner-build/go-test-uncached/maestro-home-after.txt","sha256":"64_HEX"}},"packaged":{"path":"/ABSOLUTE/grantiva-runner","sha256":"64_HEX","version":"EXACT_STDOUT"},"installed":{"path":"/ABSOLUTE/FRESH/APFS/runner-home/versions/VERSION/grantiva-runner","sha256":"64_HEX","version":"EXACT_STDOUT","installStamp":"RECORDED_UPGRADE_STAMP"}},"demo":{"sourceSHA":"1552ae983a27528eff4c1f8145aa075698b47f71","androidAPK":{"path":"/ABSOLUTE/landmarks-demo-1552ae98-debug.apk","sha256":"5891bf3753eade9ce28a391ec5d8d3d289d195af951e967b67bb1928e06d988a"},"iosApp":{"path":"/ABSOLUTE/Landmarks.app","files":[{"path":"RELATIVE_FILE","sha256":"64_HEX"}],"manifestSHA256":"SHA256_OF_CANONICAL_FILES_ARRAY"}}}
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_cleanup.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_cleanup.py
+new file mode 100644
+index 00000000..b0a9d8a8
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_cleanup.py
+@@ -0,0 +1,190 @@
++"""Delete only candidate-3 controller-owned devices and verify final isolation."""
++from pathlib import Path
++import argparse,hashlib,json,os,shlex,subprocess,time
++
++p=argparse.ArgumentParser();p.add_argument('--evidence-root',default='/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate3');p.add_argument('--output');a=p.parse_args()
++e=Path(a.evidence_root).resolve();state_path=e/'initial-state.json';candidate_path=e/'candidate.json';ownership_path=e/'provision/ownership.json';state=json.loads(state_path.read_text());candidate=json.loads(candidate_path.read_text());ownership=json.loads(ownership_path.read_text());scratch=Path(state['scratch']).resolve();home=Path(state['runnerHome']).resolve();o=Path(a.output).resolve() if a.output else e/'08-final-cleanup';o.mkdir(parents=True,exist_ok=False)
++sdk=Path.home()/'Library/Android/sdk';adb=sdk/'platform-tools/adb';emulator=sdk/'emulator/emulator';avdmanager=sdk/'cmdline-tools/latest/bin/avdmanager';env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home',ANDROID_HOME=str(sdk),ANDROID_SDK_ROOT=str(sdk),GRANTIVA_RUNNER_HOME=str(home),MAESTRO_RUNNER_HOME=str(home),GRANTIVA_SESSION_ID='fix4-8-c3')
++failures=[];actions=[]
++def save(name,value):(o/(name+'.json')).write_text(json.dumps(value,indent=2)+'\n')
++def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
++def fail(message):failures.append(message);save('failures',failures)
++def run(label,argv,timeout=180):
++ d=o/'commands';d.mkdir(exist_ok=True);argv=list(map(str,argv));m={'argv':argv,'cwd':str(scratch),'javaHome':env['JAVA_HOME'],'runnerHome':str(home),'apiEnvironmentUnset':True,'session':'fix4-8-c3','start':time.time()}
++ try:q=subprocess.run(argv,cwd=scratch,env=env,capture_output=True,timeout=timeout);m.update(exit=q.returncode,end=time.time());stdout=q.stdout;stderr=q.stderr
++ except Exception as ex:m.update(exit=None,end=time.time(),exception=repr(ex));stdout=b'';stderr=str(ex).encode()
++ (d/(label+'.stdout')).write_bytes(stdout);(d/(label+'.stderr')).write_bytes(stderr);save('commands/'+label,m);return m,stdout,stderr
++def require(value,message):
++ if not value:fail(message)
++ return bool(value)
++def normalized_simulators(doc,ids):
++ return {d['udid']:{k:v for k,v in d.items() if k not in ('dataPathSize','logPathSize')} for group in doc['devices'].values() for d in group if d['udid'] in ids}
++def simulator_matches(doc,record):
++ found=[(runtime,d) for runtime,group in doc['devices'].items() for d in group if d.get('udid')==record['id']]
++ return found if len(found)==1 and found[0][0]==record['runtime'] and found[0][1].get('name')==record['name'] else []
++def ps_rows(label):
++ m,stdout,_=run(label,['/bin/ps','-ww','-axo','pid=,ppid=,pgid=,command=']);rows=[]
++ if m['exit']!=0:fail(label+' failed');return rows
++ for line in stdout.decode(errors='replace').splitlines():
++  fields=line.strip().split(None,3)
++  if len(fields)!=4:continue
++  try:argv=shlex.split(fields[3])
++  except ValueError:continue
++  rows.append({'pid':int(fields[0]),'ppid':int(fields[1]),'pgid':int(fields[2]),'command':fields[3],'argv':argv})
++ save(label+'-parsed',rows);return rows
++def process_alive(pid,rows):return next((row for row in rows if row['pid']==pid),None)
++def exact_emulator_process(row):
++ if row is None:return False
++ argv=row['argv'];base=Path(argv[0]).name if argv else ''
++ def value(flag):
++  return argv[argv.index(flag)+1] if flag in argv and argv.index(flag)+1<len(argv) else None
++ return row['pid']==emulator_pid and (base=='emulator' or base.startswith('qemu-')) and value('-avd')==avd and value('-port')=='5580'
++
++assert state_path.is_file() and candidate_path.is_file() and ownership_path.is_file()
++assert candidate.get('schema')=='grantiva.task8.candidate.v1' and ownership.get('schema')=='grantiva.task8.ownership.v1' and ownership.get('sessionId')=='fix4-8-c3'
++assert Path(candidate['runner']['runnerHome']).resolve()==home and scratch==Path(state['scratch']).resolve()
++ios=ownership['devices']['ios'];android=ownership['devices']['android'];assert ios.get('owned') is True and android.get('owned') is True
++assert ios['platform']=='ios' and ios['name']=='smoke4-c3-ios' and ios['runtime']=='com.apple.CoreSimulator.SimRuntime.iOS-26-0' and ios.get('createdEpoch')
++assert android['platform']=='android' and android['id']=='emulator-5580' and android['name']==android['avd']=='smoke4-c3-android' and android['runtime']=='API 35' and android.get('createdEpoch')
++assert android['provision'].get('javaHome')==env['JAVA_HOME'] and len(android.get('ownedPIDs',[]))==1;emulator_pid=int(android['ownedPIDs'][0])
++assert ios['provision']['command']==['xcrun','simctl','create','smoke4-c3-ios','com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro',ios['runtime']] and ios['provision']['exit']==0
++expected_android_create=[str(avdmanager),'create','avd','--name','smoke4-c3-android','--package','system-images;android-35;google_apis;arm64-v8a','--device','pixel_8'];assert android['provision']['command']==expected_android_create and android['provision']['exit']==0
++udid=ios['id'];serial=android['id'];avd=android['avd'];protected_ids={'B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C','FE441EE5-BBFC-4981-B68A-59C0DBCE26D6'};assert udid not in protected_ids
++protected_before=json.loads((e/'provision/sims-before.stdout').read_text());protected_snapshot=normalized_simulators(protected_before,protected_ids);assert set(protected_snapshot)==protected_ids
++protected_android=json.loads((e/'provision/protected-android.json').read_text());protected_config=Path(protected_android['path']);assert protected_config==Path.home()/'.android/avd/Pixel_8_API_35.avd/config.ini'
++
++# Authenticate and collect only candidate-owned session state. Unknown files are evidence, never broad cleanup targets.
++project_sessions=[];claimed_pids=set()
++for path in sorted(scratch.rglob('.grantiva/session.json')):
++ raw=path.read_bytes()
++ try:doc=json.loads(raw)
++ except Exception:doc={}
++ identifiers={str(doc.get(k,'')) for k in ('udid','device','deviceId')};owned=bool(identifiers&{udid,serial}) or udid.encode() in raw or serial.encode() in raw
++ if not owned:fail('refused unknown project session '+str(path));continue
++ for key in ('pid','runnerPid','runnerPID'):
++  if isinstance(doc.get(key),int):claimed_pids.add(doc[key])
++ project_sessions.append({'path':str(path),'sha256':hashlib.sha256(raw).hexdigest(),'document':doc})
++save('project-sessions-before',project_sessions)
++global_owned=[]
++global_root=Path('/tmp/grantiva-sessions')
++if global_root.exists():
++ for path in sorted(global_root.iterdir()):
++  if not path.is_file():continue
++  raw=path.read_bytes();owned=any(marker in raw for marker in (udid.encode(),serial.encode(),str(scratch).encode())) or any(path.name.startswith(str(pid)) for pid in claimed_pids)
++  if owned:
++   try:doc=json.loads(raw)
++   except Exception:doc={}
++   for key in ('pid','runnerPid','runnerPID'):
++    if isinstance(doc.get(key),int):claimed_pids.add(doc[key])
++   global_owned.append({'path':str(path),'sha256':hashlib.sha256(raw).hexdigest(),'document':doc})
++save('global-sessions-before',global_owned)
++
++sim_identity_meta,sim_identity_raw,_=run('simulators-identity-before-cleanup',['xcrun','simctl','list','devices','--json']);sim_identity=json.loads(sim_identity_raw) if sim_identity_meta['exit']==0 else {'devices':{}};ios_live_owned=bool(simulator_matches(sim_identity,ios));require(ios_live_owned,'owned iOS simulator identity is absent or mismatched before process classification')
++rows=ps_rows('processes-before');known=[];unknown=[];installed=Path(candidate['runner']['installed']['path']).resolve();candidate_binary=Path(candidate['cli']['binary']['path']).resolve()
++for row in rows:
++ argv=row['argv'];joined=' '.join(argv);base=Path(argv[0]).name if argv else '';marked=any(x in joined for x in (udid,serial,avd,str(scratch))) or row['pid'] in claimed_pids
++ if not marked:continue
++ exact=False;kind=None
++ if exact_emulator_process(row):exact=True;kind='owned-emulator'
++ elif Path(argv[0]).resolve()==installed and (udid in argv or serial in argv or row['pid'] in claimed_pids):exact=True;kind='owned-runner'
++ elif base in ('xcodebuild','log','simctl') and (udid in joined or str(scratch) in joined or row['pid'] in claimed_pids):exact=True;kind='owned-wda-log'
++ elif ios_live_owned and base in ('launchd_sim','Landmarks') and udid in joined:exact=True;kind='owned-simulator-managed'
++ elif Path(argv[0]).resolve()==candidate_binary and row['pid'] in claimed_pids:exact=True;kind='owned-cli'
++ if exact:known.append(dict(row,kind=kind))
++ else:unknown.append(row)
++save('owned-processes-before',known);save('unknown-marker-processes-before',unknown)
++if unknown:fail('refused unknown processes carrying owned markers')
++
++# Stop exact runner/WDA/log/CLI processes first. The emulator is stopped only through its authenticated device/PID branch below.
++terminated_pids=[]
++for row in known:
++ if row['kind'] in ('owned-emulator','owned-simulator-managed'):continue
++ m,_,_=run('terminate-'+row['kind']+'-'+str(row['pid']),['/bin/kill','-TERM',str(row['pid'])]);actions.append({'kind':row['kind'],'pid':row['pid'],'exit':m['exit']})
++ if m['exit']!=0:fail('failed targeted process termination '+str(row['pid']))
++ else:terminated_pids.append(row['pid'])
++process_cleanup_safe=True
++for pid in terminated_pids:
++ for attempt in range(20):
++  check,_,_=run('wait-owned-process-'+str(pid)+'-'+str(attempt),['/bin/ps','-p',str(pid),'-o','stat='])
++  if check['exit']!=0:break
++  time.sleep(.25)
++ else:fail('targeted process remained after TERM '+str(pid));process_cleanup_safe=False
++
++# Remove only authenticated owned session and lease records; ordinary install/registry locks remain untouched.
++if process_cleanup_safe:
++ for index,item in enumerate(project_sessions+global_owned):
++  path=Path(item['path']);m,_,_=run('unlink-owned-session-'+str(index),['/usr/bin/unlink',path]);actions.append({'kind':'owned-session','path':str(path),'exit':m['exit']})
++  if m['exit']!=0:fail('failed owned session unlink '+str(path))
++for identifier in (udid,serial):
++ path=home/'locks'/(identifier+'.lock')
++ if path.exists():
++  raw=path.read_bytes();require(identifier.encode() in raw,'refused lease without matching device identity '+str(path))
++  if process_cleanup_safe and identifier.encode() in raw:
++   m,_,_=run('unlink-owned-lease-'+identifier,['/usr/bin/unlink',path]);actions.append({'kind':'owned-lease','path':str(path),'exit':m['exit']})
++   if m['exit']!=0:fail('failed owned lease unlink '+str(path))
++
++# Force-teardown JSON proves resource reclamation only; physical simulator deletion is authenticated and performed here.
++m,stdout,_=run('simulators-before',['xcrun','simctl','list','devices','--json']);sims=json.loads(stdout) if m['exit']==0 else {'devices':{}};ios_found=simulator_matches(sims,ios)
++if any(d.get('udid')==udid for group in sims.get('devices',{}).values() for d in group) and not ios_found:fail('refused iOS deletion: ownership name/runtime mismatch')
++elif ios_found:
++ shutdown,_,_=run('shutdown-owned-ios',['xcrun','simctl','shutdown',udid]);actions.append({'kind':'ios-shutdown','id':udid,'exit':shutdown['exit']})
++ delete,_,_=run('delete-owned-ios',['xcrun','simctl','delete',udid]);actions.append({'kind':'ios-delete','id':udid,'exit':delete['exit']})
++ if delete['exit']!=0:fail('owned iOS delete failed')
++
++# Authenticate serial, AVD, and the provision-recorded emulator PID before any Android action.
++m,stdout,_=run('android-devices-before',[adb,'devices','-l']);serial_live=m['exit']==0 and any(line.split() and line.split()[0]==serial for line in stdout.decode().splitlines()[1:])
++rows=ps_rows('android-process-identity');pid_row=process_alive(emulator_pid,rows);pid_ok=pid_row is None or exact_emulator_process(pid_row)
++avd_ok=True
++if serial_live:
++ identity,identity_out,_=run('owned-avd-identity',[adb,'-s',serial,'emu','avd','name']);avd_ok=identity['exit']==0 and identity_out.decode().splitlines() and identity_out.decode().splitlines()[0]==avd
++require(avd_ok,'refused Android cleanup: live serial AVD mismatch');require(pid_ok,'refused Android cleanup: owned PID command mismatch')
++if avd_ok and pid_ok:
++ forwards,forward_out,_=run('forwards-before',[adb,'forward','--list'])
++ if forwards['exit']==0:
++  for index,row in enumerate(x.split() for x in forward_out.decode().splitlines() if x.startswith(serial+' ')):
++   remove,_,_=run('remove-owned-forward-'+str(index),[adb,'-s',serial,'forward','--remove',row[1]]);actions.append({'kind':'owned-forward','value':row,'exit':remove['exit']})
++   if remove['exit']!=0:fail('failed exact forward removal '+row[1])
++ if serial_live:
++  stop,_,_=run('stop-owned-emulator',[adb,'-s',serial,'emu','kill']);actions.append({'kind':'android-stop','serial':serial,'exit':stop['exit']})
++  if stop['exit']!=0:fail('owned emulator stop failed')
++ elif pid_row and exact_emulator_process(pid_row):
++  stop,_,_=run('stop-owned-emulator-pid',['/bin/kill','-TERM',str(emulator_pid)]);actions.append({'kind':'android-stop-pid','pid':emulator_pid,'exit':stop['exit']})
++  if stop['exit']!=0:fail('owned emulator PID stop failed')
++ for attempt in range(60):
++  check,device_out,_=run('android-wait-absent-'+str(attempt),[adb,'devices'])
++  if check['exit']==0 and serial not in device_out.decode():break
++  time.sleep(.25)
++ avds,avd_out,_=run('avds-before-delete',[emulator,'-list-avds']);avd_root=Path.home()/'.android/avd';avd_dir=avd_root/(avd+'.avd');config=avd_dir/'config.ini';registration=avd_root/(avd+'.ini')
++ if avds['exit']==0 and avd in avd_out.decode().splitlines():
++  config_fields={k.strip():v.strip() for line in config.read_text(errors='replace').splitlines() if '=' in line for k,v in [line.split('=',1)]} if config.is_file() else {}
++  registration_fields={k.strip():v.strip() for line in registration.read_text(errors='replace').splitlines() if '=' in line for k,v in [line.split('=',1)]} if registration.is_file() else {}
++  registration_ok=(Path(registration_fields.get('path','')).resolve()==avd_dir.resolve()
++                   and registration_fields.get('path.rel')=='avd/'+avd+'.avd')
++  legacy_identity=config_fields.get('AvdId')==avd and config_fields.get('avd.ini.displayname')==avd
++  generated_identity=config_fields.get('avd.id')=='<build>' and config_fields.get('avd.name')=='<build>'
++  config_ok=registration_ok and (legacy_identity or generated_identity)
++  require(config_ok,'refused AVD deletion: exact config identity missing')
++  if config_ok:
++   delete,_,_=run('delete-owned-avd',[avdmanager,'delete','avd','--name',avd]);actions.append({'kind':'android-avd-delete','avd':avd,'exit':delete['exit']})
++   if delete['exit']!=0:fail('owned AVD delete failed')
++
++# Final verification is independent of overall smoke success.
++m,stdout,_=run('simulators-after',['xcrun','simctl','list','devices','--json']);safter=json.loads(stdout) if m['exit']==0 else {'devices':{}};require(m['exit']==0,'final simulator inventory failed');require(not any(d.get('udid')==udid for group in safter['devices'].values() for d in group),'owned iOS remains');protected_after=normalized_simulators(safter,protected_ids);require(protected_after==protected_snapshot,'protected simulator metadata changed')
++m,stdout,_=run('android-after',[adb,'devices','-l']);require(m['exit']==0 and serial not in stdout.decode(),'owned Android serial remains')
++m,stdout,_=run('avds-after',[emulator,'-list-avds']);require(m['exit']==0 and avd not in stdout.decode().splitlines() and 'Pixel_8_API_35' in stdout.decode().splitlines(),'owned AVD remains or protected AVD missing')
++m,stdout,_=run('forwards-after',[adb,'forward','--list']);require(m['exit']==0 and not any(x.startswith(serial+' ') for x in stdout.decode().splitlines()),'owned forwards remain')
++after_rows=ps_rows('processes-after');remaining=[]
++for row in after_rows:
++ joined=' '.join(row['argv'])
++ if any(x in joined for x in (udid,serial,avd,str(scratch))) or row['pid'] in claimed_pids or row['pid']==emulator_pid:remaining.append(row)
++require(not remaining,'owned or unknown marked processes remain');save('owned-processes-after',remaining)
++sessions_after=[str(path) for path in scratch.rglob('.grantiva/session.json')];shared_after=[]
++if global_root.exists():
++ for path in global_root.iterdir():
++  if path.is_file():
++   raw=path.read_bytes()
++   if any(marker in raw for marker in (udid.encode(),serial.encode(),str(scratch).encode())) or any(path.name.startswith(str(pid)) for pid in claimed_pids):shared_after.append(str(path))
++leases_after=[str(home/'locks'/(identifier+'.lock')) for identifier in (udid,serial) if (home/'locks'/(identifier+'.lock')).exists()];require(not sessions_after,'project sessions remain');require(not shared_after,'global sessions remain');require(not leases_after,'owned leases remain')
++protected_hash=sha(protected_config);require(protected_hash==protected_android['sha256'],'protected Pixel config changed')
++result={'passed':not failures,'candidateManifest':str(candidate_path),'ownershipManifest':str(ownership_path),'deletedIOS':udid,'deletedAndroid':avd,'serial':serial,'ownedPID':emulator_pid,'actions':actions,'failures':failures,'ownedProcessesRemaining':remaining,'projectSessions':sessions_after,'globalSessions':shared_after,'ownedLeases':leases_after,'ownedForwardsAbsent':not any(x.startswith(serial+' ') for x in stdout.decode().splitlines()),'protectedSimulatorsUnchanged':protected_after,'protectedAVDConfigSHA256':protected_hash,'forceTeardownPhysicalDeletionAssumed':False}
++save('acceptance',result);print(json.dumps(result,indent=2));raise SystemExit(0 if result['passed'] else 1)
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_docs.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_docs.py
+new file mode 100644
+index 00000000..27e0cb9a
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_docs.py
+@@ -0,0 +1,44 @@
++"""Controller docs/output smoke against the frozen candidate; no device mutations."""
++from pathlib import Path
++import argparse,hashlib,json,os,re,subprocess,time,shutil
++p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args()
++r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/round4-smoke-candidate3'
++c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());s=Path(state['scratch']);src=Path(c['cli']['repoPath']);b=Path(c['cli']['binary']['path']);o=Path(a.output).resolve();o.mkdir(parents=True,exist_ok=False)
++def save(path,data):path.write_text(json.dumps(data,indent=2)+'\n')
++assert hashlib.sha256(b.read_bytes()).hexdigest()==c['cli']['binary']['sha256']
++env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.pop('GRANTIVA_PLATFORM',None);env.update(GRANTIVA_RUNNER_HOME=state['runnerHome'],MAESTRO_RUNNER_HOME=state['runnerHome'],GRANTIVA_SESSION_ID='fix4-8-c3')
++def run(label,argv,cwd=s,extra=None):
++ d=o/label;d.mkdir(parents=True,exist_ok=False);v={**env,**(extra or {})};m={'argv':list(map(str,argv)),'cwd':str(cwd),'start':time.time(),'apiEnvironmentUnset':True,'runnerHome':v['GRANTIVA_RUNNER_HOME'],'session':'fix4-8-c3'};save(d/'start.json',m)
++ with (d/'stdout.log').open('wb') as so,(d/'stderr.log').open('wb') as se:p=subprocess.run(m['argv'],cwd=cwd,env=v,stdout=so,stderr=se,timeout=1200)
++ m.update(exit=p.returncode,end=time.time());save(d/'result.json',m);assert p.returncode==0,(label,p.returncode);return (d/'stdout.log').read_text()
++helpdir=o/'help';helpdir.mkdir();queue=[[]];seen=set();rows=[]
++while queue:
++ path=queue.pop(0);key='_'.join(path) or 'grantiva';assert key not in seen and len(path)<8;seen.add(key)
++ text=run('help-commands/'+key,[b,*path,'--help']);(helpdir/(key+'.txt')).write_text(text);rows.append({'path':path,'file':key+'.txt','sha256':hashlib.sha256(text.encode()).hexdigest()})
++ section=False
++ for line in text.splitlines():
++  if line=='SUBCOMMANDS:':section=True;continue
++  if section and line and not line.startswith(' '):section=False
++  if section:
++   match=re.match(r'^  ([a-z][a-z0-9-]*)(?:,|\s|$)',line)
++   if match:queue.append(path+[match.group(1)])
++assert len(rows)==172,len(rows);save(helpdir/'manifest.json',rows)
++for name in ['grantiva.txt','runner_start.txt','run.txt','doctor.txt']:assert (helpdir/name).is_file()
++terms={'README.md':['legacy baseline','percent-encoded','ambiguous `%`','migration on approval'],'docs/mcp.md':['ISO 8601','1970-01-01T00:00:00Z','label → identifier → placeholder','runnerSessionStopped','leftoverProcesses','reapedProcesses']}
++inspected=[]
++for name,needles in terms.items():
++ text=(src/name).read_text()
++ for needle in needles:
++  assert needle in text,(name,needle);inspected.append({'file':name,'term':needle,'lines':[i for i,line in enumerate(text.splitlines(),1) if needle in line]})
++save(o/'docs-inspection.json',{'sourceSHA':c['cli']['mergedSHA'],'publicCompatibilityTerms':inspected})
++normal_text=run('doctor-text',[b,'doctor']);normal_json=json.loads(run('doctor-json',[b,'doctor','--json']))
++amb=s/'doctor-ambiguous-project';assert (amb/'App.xcodeproj').is_dir() and (amb/'settings.gradle.kts').is_file() and not list(amb.glob('grantiva*'))
++amb_text=run('doctor-ambiguous-text',[b,'doctor'],amb);amb_json=json.loads(run('doctor-ambiguous-json',[b,'doctor','--json'],amb))
++platform=next(x for x in amb_json if x['name']=='Platform');assert platform['section']=='Advisory' and platform['status']=='warning' and 'Found both an Xcode project and Gradle settings' in platform['message'] and platform['message'] in amb_text
++booted=next(x for x in normal_json if x['name']=='Booted Simulator');assert booted['message'] in normal_text
++unit=s/'corpus-test-home';unit.mkdir();assert not list(unit.iterdir())
++test=run('corpus-tests',['swift','test','-c','release','--scratch-path',s/'swift-build-scratch','--filter','HelpCorpusTests|DocsContractTests'],src,{'GRANTIVA_RUNNER_HOME':str(unit),'MAESTRO_RUNNER_HOME':str(unit)})
++assert 'Executed 16 tests, with 0 failures' in test and not list(unit.iterdir())
++for row in rows:shutil.copy2(helpdir/row['file'],r/'findings/help'/row['file'])
++save(o/'acceptance.json',{'passed':True,'candidateManifestSHA256':hashlib.sha256((e/'candidate.json').read_bytes()).hexdigest(),'helpPages':len(rows),'corpusTests':16,'corpusFailures':0,'freshUnitHomeEmptyAfter':True,'doctorTextJSONOwnershipAgreement':True,'publicMigrationNotesInspected':True,'ambiguousPlatformAdvisory':platform,'ambiguousTextJSONExitZero':True})
++print('Docs/output smoke passed')
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_phase.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_phase.py
+new file mode 100644
+index 00000000..e79b618f
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_phase.py
+@@ -0,0 +1,40 @@
++"""Invoke one reviewed smoke helper with the frozen candidate's exact paths."""
++from pathlib import Path
++import argparse,hashlib,json,os,shutil,subprocess,time
++p=argparse.ArgumentParser();p.add_argument('phase',choices=['android','lifecycle','joint','mcp-ios','mcp-android','force']);p.add_argument('--output');a=p.parse_args()
++r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/round4-smoke-candidate3';h=r/'.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness';c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());own=json.loads((e/'provision/ownership.json').read_text());s=Path(state['scratch']);b=c['cli']['binary']['path'];bundle=c['cli']['bundle']['path'];runner=c['runner']['packaged']['path'];home=c['runner']['runnerHome'];source=c['cli']['repoPath'];ios=own['devices']['ios']['id'];android=own['devices']['android']['id'];avd=own['devices']['android']['avd'];adb='/Users/kyle/Library/Android/sdk/platform-tools/adb'
++env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(GRANTIVA_RUNNER_HOME=home,MAESTRO_RUNNER_HOME=home,GRANTIVA_SESSION_ID='fix4-8-c3',ANDROID_HOME='/Users/kyle/Library/Android/sdk',ANDROID_SDK_ROOT='/Users/kyle/Library/Android/sdk',JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home');env['PATH']=str(Path(adb).parent)+':'+env['PATH']
++identity=['--candidate-manifest',e/'candidate.json','--ownership-manifest',e/'provision/ownership.json','--source-root',source,'--binary',b,'--bundle',bundle,'--runner',runner,'--runner-home',home]
++names={'android':'02-runner-android','lifecycle':'03-lifecycle','joint':'03b-joint-forward','mcp-ios':'04-mcp-ios','mcp-android':'05-mcp-android','force':'07-final-force-teardown'};o=Path(a.output).resolve() if a.output else e/names[a.phase];o.mkdir(parents=True,exist_ok=False)
++def run(label,argv,cwd=r,timeout=1800):
++ d=o/label;d.mkdir(exist_ok=False);argv=list(map(str,argv));m={'argv':argv,'cwd':str(cwd),'runnerHome':home,'maestroRunnerHome':home,'session':'fix4-8-c3','apiEnvironmentUnset':True,'startEpoch':time.time(),'candidateManifestSHA256':hashlib.sha256((e/'candidate.json').read_bytes()).hexdigest()};(d/'start.json').write_text(json.dumps(m,indent=2)+'\n')
++ with (d/'stdout.log').open('wb') as so,(d/'stderr.log').open('wb') as se:q=subprocess.run(argv,cwd=cwd,env=env,stdout=so,stderr=se,timeout=timeout)
++ m.update(exit=q.returncode,endEpoch=time.time());(d/'result.json').write_text(json.dumps(m,indent=2)+'\n');assert q.returncode==0,(label,q.returncode);return (d/'stdout.log').read_text()
++if a.phase=='android':
++ helper=h/'android_runner_smoke.py';source_inputs=e/'inputs';fixture_root=o/'inputs';fixture_root.mkdir();fixture_manifest=json.loads((source_inputs/'fixture-manifest.json').read_text());copied=[]
++ for row in fixture_manifest:
++  source_fixture=Path(row['path']).resolve();assert source_fixture.is_relative_to(source_inputs.resolve()) and source_fixture.suffix.lower()!='.png';assert hashlib.sha256(source_fixture.read_bytes()).hexdigest()==row['sha256'];relative=source_fixture.relative_to(source_inputs.resolve());destination=fixture_root/relative;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source_fixture,destination);assert hashlib.sha256(destination.read_bytes()).hexdigest()==row['sha256'];copied.append({'source':str(source_fixture),'destination':str(destination),'sha256':row['sha256']})
++ (o/'fixture-copy.json').write_text(json.dumps(copied,indent=2)+'\n');assert len(copied)==len(fixture_manifest) and not list(fixture_root.rglob('*.png'))
++ argv=['python3',helper,*identity,'--project',s/'android-smoke-project','--serial',android,'--avd',avd,'--apk',c['demo']['androidAPK']['path'],'--adb',adb,'--uia2-sampler',r/'findings/evidence/fix4-2/uia2-source-snapshot-v2.py','--movement-analyzer',r/'findings/evidence/fix4-2/analyze-l51-movement.py','--runner-inputs',fixture_root/'runner-inputs','--optional-inputs',fixture_root/'optional-inputs','--crash-flow',fixture_root/'crash.yaml','--healthy-flow',fixture_root/'healthy-stock.yaml','--cycle-project',s/'cycle-project','--cycle-flow','subdirectory/a.yaml','--evidence',o/'helper']
++elif a.phase in ['lifecycle','force']:
++ helper=h/'lifecycle_smoke.py';args=identity.copy();args[args.index('--source-root')]='--source';argv=['python3',helper,*args,'--project',s/'lifecycle-project','--session-id','fix4-8-c3','--ios-udid',ios,'--android-serial',android,'--android-avd',avd,'--ios-app',c['demo']['iosApp']['path'],'--output',o/'helper']
++ if a.phase=='force':argv+=['--phase','force-teardown','--allow-force-reclaim-owned-ios']
++elif a.phase=='joint':
++ helper=h/'forward_joint_live.py';argv=['python3',helper,'--candidate',e/'candidate.json','--ownership',e/'provision/ownership.json','--source-root',source,'--binary',b,'--bundle',bundle,'--packaged-runner',runner,'--home',home,'--project',s/'ready-forward-project','--output',o/'helper']
++else:
++ platform=a.phase.removeprefix('mcp-');device=ios if platform=='ios' else android;project=s/(a.phase+'-project');helper=h/'mcp_smoke.py';argv=['python3',helper,*identity,'--platform',platform,'--device',device,'--project',project,'--no-session-project',s/(a.phase+'-no-session'),'--large-seed',e/'inputs'/(platform+'-large-hierarchy-seed.json'),'--evidence',o/'helper','--pairs','10']
++ if platform=='ios':argv+=['--ios-simctl','/usr/bin/xcrun','--ios-app-id','com.kylebrowning.Landmarks'];start=[b,'runner','start','--platform','ios','--simulator',device,'--bundle-id','com.kylebrowning.Landmarks','--detach','--json']
++ else:argv+=['--android-avd',avd];start=[b,'runner','start','--platform','android','--device',device,'--application-id','com.kylebrowning.landmarks','--detach','--json']
++ preflight=['python3',h/'candidate_identity.py',*identity,'--platform',platform,'--device',device]
++ if platform=='android':preflight+=['--android-avd',avd]
++ assert not (project/'.grantiva/session.json').exists()
++ try:
++  run('preflight',preflight);run('start',start,project,240);shutil.copy2(helper,o/'executed-helper.py');run('invocation',argv)
++ finally:
++  session=project/'.grantiva/session.json'
++  if session.exists():
++   doc=json.loads(session.read_text());assert doc.get('udid')==device and doc.get('platform')==platform
++   run('stop',[b,'runner','stop','--json'],project,120)
++  assert not session.exists()
++ print('Phase passed:',a.phase);raise SystemExit(0)
++shutil.copy2(helper,o/'executed-helper.py');run('invocation',argv);print('Phase passed:',a.phase)
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_provision.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_provision.py
+new file mode 100644
+index 00000000..4de0bc78
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_provision.py
+@@ -0,0 +1,29 @@
++"""Controller provisions only new smoke-owned devices after candidate freeze."""
++from pathlib import Path
++import hashlib,json,os,subprocess,time
++r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/round4-smoke-candidate3';c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());s=Path(state['scratch']);o=e/'provision';o.mkdir(exist_ok=False)
++sdk=Path.home()/'Library/Android/sdk';adb=sdk/'platform-tools/adb';emulator=sdk/'emulator/emulator';avdmanager=sdk/'cmdline-tools/latest/bin/avdmanager';env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home',ANDROID_HOME=str(sdk),ANDROID_SDK_ROOT=str(sdk),GRANTIVA_RUNNER_HOME=state['runnerHome'],MAESTRO_RUNNER_HOME=state['runnerHome'],GRANTIVA_SESSION_ID='fix4-8-c3')
++def save(name,data):(o/(name+'.json')).write_text(json.dumps(data,indent=2)+'\n')
++def run(label,argv,input=None,timeout=180):
++ m={'argv':list(map(str,argv)),'cwd':str(s),'start':time.time(),'apiEnvironmentUnset':True,'runnerHome':state['runnerHome'],'session':'fix4-8-c3'}
++ p=subprocess.run(m['argv'],cwd=s,env=env,capture_output=True,input=input,timeout=timeout);(o/(label+'.stdout')).write_bytes(p.stdout);(o/(label+'.stderr')).write_bytes(p.stderr);m.update(exit=p.returncode,end=time.time());save(label,m);assert p.returncode==0,(label,p.stderr.decode());return p.stdout.decode()
++assert hashlib.sha256(Path(c['cli']['binary']['path']).read_bytes()).hexdigest()==c['cli']['binary']['sha256']
++devices=json.loads(run('sims-before',['xcrun','simctl','list','devices','--json']));avds=run('avds-before',[emulator,'-list-avds']);android=run('android-before',[adb,'devices','-l']);run('forwards-before',[adb,'forward','--list'])
++assert 'smoke4-c3-android' not in avds.splitlines() and 'emulator-5580' not in android
++assert not any(x['name']=='smoke4-c3-ios' for group in devices['devices'].values() for x in group)
++protected=Path.home()/'.android/avd/Pixel_8_API_35.avd/config.ini';save('protected-android',{'path':str(protected),'sha256':hashlib.sha256(protected.read_bytes()).hexdigest()})
++own={'schema':'grantiva.task8.ownership.v1','sessionId':'fix4-8-c3','devices':{}}
++argv=['xcrun','simctl','create','smoke4-c3-ios','com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro','com.apple.CoreSimulator.SimRuntime.iOS-26-0'];t=time.time();udid=run('ios-create',argv).strip();own['devices']['ios']={'platform':'ios','id':udid,'name':'smoke4-c3-ios','runtime':argv[-1],'owned':True,'createdEpoch':t,'provision':{'command':argv,'exit':0},'ownedPIDs':[]};save('ownership',own)
++run('ios-boot',['xcrun','simctl','boot',udid]);run('ios-ready',['xcrun','simctl','bootstatus',udid,'-b'],timeout=240);run('ios-install',['xcrun','simctl','install',udid,c['demo']['iosApp']['path']])
++container=Path(run('ios-installed-container',['xcrun','simctl','get_app_container',udid,'com.kylebrowning.Landmarks','app']).strip());actual=[{'path':str(x.relative_to(container)),'sha256':hashlib.sha256(x.read_bytes()).hexdigest()} for x in sorted(container.rglob('*')) if x.is_file()];assert actual==c['demo']['iosApp']['files'];save('ios-installed-manifest',{'sourceSHA':c['demo']['sourceSHA'],'files':actual,'path':str(container)})
++argv=[str(avdmanager),'create','avd','--name','smoke4-c3-android','--package','system-images;android-35;google_apis;arm64-v8a','--device','pixel_8'];t=time.time();run('android-create',argv,b'no\n');own['devices']['android']={'platform':'android','id':'emulator-5580','name':'smoke4-c3-android','avd':'smoke4-c3-android','runtime':'API 35','owned':True,'createdEpoch':t,'provision':{'command':argv,'exit':0,'javaHome':env['JAVA_HOME']},'ownedPIDs':[]};save('ownership',own)
++argv=[str(emulator),'-avd','smoke4-c3-android','-port','5580','-no-window','-no-audio','-no-snapshot'];so=(o/'emulator.stdout').open('wb');se=(o/'emulator.stderr').open('wb');proc=subprocess.Popen(argv,env=env,stdout=so,stderr=se,start_new_session=True);own['devices']['android']['ownedPIDs']=[proc.pid];save('ownership',own);save('android-launch',{'argv':argv,'pid':proc.pid,'start':time.time()});so.close();se.close()
++run('android-wait',[adb,'-s','emulator-5580','wait-for-device'],timeout=180)
++for n in range(90):
++ assert proc.poll() is None,'owned emulator exited'
++ if run('android-boot-'+str(n),[adb,'-s','emulator-5580','shell','getprop','sys.boot_completed']).strip()=='1':break
++ time.sleep(1)
++else:raise TimeoutError('owned emulator boot')
++assert run('android-identity',[adb,'-s','emulator-5580','emu','avd','name']).splitlines()[0]=='smoke4-c3-android'
++for name in ['mcp-ios-project','lifecycle-project','ios-log-project']:(s/name/'grantiva.yml').write_text('bundle_id: com.kylebrowning.Landmarks\nsimulator: '+udid+'\n')
++save('acceptance',{'passed':True,'candidateManifestSHA256':hashlib.sha256((e/'candidate.json').read_bytes()).hexdigest(),'ownership':own});print(json.dumps(own,indent=2))
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_release.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_release.py
+new file mode 100644
+index 00000000..9615b2b3
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate3_release.py
+@@ -0,0 +1,93 @@
++"""Controller-only merged build, QA promotion, upgrade, and candidate freeze."""
++from pathlib import Path
++import argparse, hashlib, json, os, shutil, subprocess, time
++p=argparse.ArgumentParser();p.add_argument('--merged-sha',required=True);a=p.parse_args()
++r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression')
++e=r/'findings/evidence/round4-smoke-candidate3'; state=json.loads((e/'initial-state.json').read_text())
++s=Path(state['scratch']);src=Path(state['source']);home=Path(state['runnerHome']);out=e/'01-candidate'
++assert state['demoSHA']=='84af7581b75134b0e417b254e4317d565f7b73c6'
++EXPECTED_RUNNER_SHA='ba9008f4b2cd2c7320a9c46e04faed612b0958a2'
++assert state['runnerSHA']==EXPECTED_RUNNER_SHA
++def save(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
++def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
++def files(path):return [{'path':str(x.relative_to(path)),'sha256':sha(x)} for x in sorted(path.rglob('*')) if x.is_file()]
++def record(path):
++ f=files(path);return {'path':str(path),'files':f,'manifestSHA256':hashlib.sha256(json.dumps(f,sort_keys=True,separators=(',',':')).encode()).hexdigest()}
++def git(*args):return subprocess.check_output(['git','-C',str(src),*args],text=True).strip()
++def run(label,argv,cwd,runnerhome,timeout=1200):
++ d=out/label;d.mkdir(parents=True,exist_ok=False);env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(GRANTIVA_RUNNER_HOME=str(runnerhome),MAESTRO_RUNNER_HOME=str(runnerhome),GRANTIVA_SESSION_ID='fix4-8-c3')
++ m={'argv':list(map(str,argv)),'cwd':str(cwd),'runnerHome':str(runnerhome),'apiEnvironmentUnset':True,'session':'fix4-8-c3','startEpoch':time.time()};save(d/'start.json',m)
++ with (d/'stdout.log').open('wb') as so,(d/'stderr.log').open('wb') as se:q=subprocess.run(m['argv'],cwd=cwd,env=env,stdout=so,stderr=se,timeout=timeout)
++ m.update(exit=q.returncode,endEpoch=time.time());save(d/'result.json',m);assert q.returncode==0,(label,q.returncode);return (d/'stdout.log').read_text().strip()
++assert not (e/'candidate.json').exists()
++assert git('rev-parse','HEAD')==a.merged_sha and git('status','--porcelain')==''
++save(out/'cli-source-before.json',{'head':a.merged_sha,'status':'','repoPath':str(src)})
++buildhome=Path(state['buildHome']);assert not list(buildhome.iterdir())
++buildscratch=s/'swift-build-scratch';assert buildscratch!=buildhome;buildscratch.mkdir();assert not list(buildscratch.iterdir())
++run('release-build',['swift','build','-c','release','--scratch-path',buildscratch],src,buildhome)
++assert git('rev-parse','HEAD')==a.merged_sha and git('status','--porcelain')=='' and not list(buildhome.iterdir())
++products=Path(run('release-path',['swift','build','-c','release','--scratch-path',buildscratch,'--show-bin-path'],src,buildhome));assert products.is_relative_to(buildscratch)
++binary=products/'grantiva';bundle=products/'grantiva_GrantivaCore.bundle';assert binary.is_file() and bundle.is_dir()
++save(out/'cli-source-after.json',{'head':git('rev-parse','HEAD'),'status':git('status','--porcelain'),'binarySHA256':sha(binary),'bundle':record(bundle),'buildRunnerHomeAfter':[],'buildScratchPath':str(buildscratch),'buildScratchAfter':sorted(x.name for x in buildscratch.iterdir()),'productsPath':str(products)})
++qa=Path.home()/'.grantiva-qa/bin';old_manifest=r/'findings/evidence/round4-smoke-candidate2/candidate.json';old=json.loads(old_manifest.read_text());assert sha(qa/'grantiva')==old['cli']['binary']['sha256']
++assert record(qa/'grantiva_GrantivaCore.bundle')['files']==old['cli']['bundle']['files']
++backup=s/'previous-qa-candidate2';backup.mkdir();shutil.copy2(qa/'grantiva',backup/'grantiva');shutil.copytree(qa/'grantiva_GrantivaCore.bundle',backup/'grantiva_GrantivaCore.bundle');shutil.copy2(old_manifest,backup/'candidate.json')
++assert sha(backup/'grantiva')==old['cli']['binary']['sha256'] and record(backup/'grantiva_GrantivaCore.bundle')['files']==old['cli']['bundle']['files']
++shutil.copy2(binary,qa/'grantiva');shutil.rmtree(qa/'grantiva_GrantivaCore.bundle');shutil.copytree(bundle,qa/'grantiva_GrantivaCore.bundle')
++assert sha(binary)==sha(qa/'grantiva') and files(bundle)==files(qa/'grantiva_GrantivaCore.bundle')
++version=run('qa-version',[qa/'grantiva','--version'],s,home)
++save(out/'qa-promotion.json',{'source':str(products),'destination':str(qa),'previousCandidateBackup':str(backup),'sha256':sha(binary),'version':version,'sourceSHA':a.merged_sha})
++native=s/'packaged-native';native.mkdir();archive=qa/'grantiva_GrantivaCore.bundle/Contents/Resources/grantiva-runner-arm64.tar.gz'
++run('native-extract',['tar','-xzf',archive,'-C',native],s,home)
++runner=native/'grantiva-runner';assert runner.is_file();runner_version=run('packaged-version',[runner,'--version'],s,home)
++assert runner_version.splitlines()[0]=='grantiva-runner 1.1.28-grantiva.15'
++clone=json.loads((out/'upgrade/clone.json').read_text());source_before=json.loads((out/'upgrade/source-before.json').read_text());before=json.loads((out/'upgrade/clone-before-upgrade.json').read_text())
++assert home==s/'runner-home' and clone['argv']==['cp','-cR',str(Path.home()/'.grantiva/runner'),str(home)] and clone['exitCode']==0
++assert len(source_before)==len(before)==8593 and source_before==before
++for row in before:
++ target=home/row['path']
++ assert row['type'] in ('file','symlink')
++ if row['type']=='symlink':assert target.is_symlink() and os.readlink(target)==row['target']
++ else:assert target.is_file() and target.stat().st_size==row['bytes'] and sha(target)==row['sha256']
++run('upgrade/install',[qa/'grantiva','runner','install','--json'],s,home)
++installed=home/'versions/1.1.28-grantiva.15+android-drivers-2/grantiva-runner';assert sha(installed)==sha(runner)
++installed_version=run('installed-version',[installed,'--version'],s,home);assert installed_version==runner_version
++preserved=0
++for row in before:
++ if not row['path'].startswith('cache/'):continue
++ target=home/row['path']
++ if row['type']=='symlink':assert target.is_symlink() and os.readlink(target)==row['target']
++ else:assert target.is_file() and sha(target)==row['sha256']
++ preserved+=1
++approved=r/'findings/evidence/fix4-7/wda/manifests-final/wda-cache.sha256';assert sha(approved)=='48c95fede130e55ad3ec7cb018dfa487807a319dfe8274f5cf75ef6ca9390c5c'
++configs={}
++for line in approved.read_text().splitlines():
++ digest,rel=line.split('  ',1);rel=rel.removeprefix('./');assert sha(native/'cache/wda-builds'/rel)==digest
++ config=rel.split('/')[0];configs.setdefault(config,[]).append((rel,digest))
++assert len(configs)==4 and all(len(v)==200 for v in configs.values());checks=[]
++for config,entries in configs.items():
++ existing=any(x['path'].startswith('cache/wda-builds/'+config+'/') for x in before)
++ if not existing:
++  for rel,digest in entries:assert sha(home/'cache/wda-builds'/rel)==digest
++ tree=home/'cache/wda-builds'/config;assert list(tree.rglob('*.xctestrun')) and list(tree.rglob('*.app'))
++ checks.append({'config':config,'provenance':'preservedExisting' if existing else 'bundleAdded','files':len(entries),'complete':True,'bundleBytesMatch':not existing})
++save(out/'upgrade/acceptance.json',{'passed':True,'existingCacheEntriesPreserved':preserved,'configs':checks,'task7ManifestSHA256':sha(approved),'installedRunner':str(installed),'packagedRunner':str(runner),'runnerSHA256':sha(runner)})
++proofroot=r/'findings/evidence/fix4-7b/runner-build/go-test-uncached-metadata-complete';mapping={'start':'start.json','result':'result.json','argv':'argv.txt','head':'head.txt','unitRoot':'unit-root.txt','stdout':'stdout.log','stderr':'stderr.log','exit':'exit.txt','statusBefore':'status-before.txt','statusAfter':'status-after.txt','grantivaHomeBefore':'grantiva-home-before.txt','grantivaHomeAfter':'grantiva-home-after.txt','maestroHomeBefore':'maestro-home-before.txt','maestroHomeAfter':'maestro-home-after.txt'}
++proof={k:{'path':str(proofroot/v),'sha256':sha(proofroot/v)} for k,v in mapping.items()}
++runner_repo=Path('/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair')
++runner_head=subprocess.check_output(['git','-C',str(runner_repo),'rev-parse','HEAD'],text=True).strip();runner_status=subprocess.check_output(['git','-C',str(runner_repo),'status','--porcelain=v1'],text=True)
++assert runner_head==EXPECTED_RUNNER_SHA and runner_status==''
++proof_start=json.loads((proofroot/'start.json').read_text());proof_result=json.loads((proofroot/'result.json').read_text())
++assert proof_start['head']==proof_result['head']==EXPECTED_RUNNER_SHA and (proofroot/'head.txt').read_text().strip()==EXPECTED_RUNNER_SHA
++demo=Path('/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2');demo_head=subprocess.check_output(['git','-C',str(demo),'rev-parse','HEAD'],text=True).strip();demo_status=subprocess.check_output(['git','-C',str(demo),'status','--porcelain=v1'],text=True);assert demo_head==state['demoSHA'] and demo_status==''
++iosroot=e/'build-inputs/ios';androidroot=e/'build-inputs/android';ios=json.loads((iosroot/'artifact.json').read_text());android=json.loads((androidroot/'artifact.json').read_text());ios_start=json.loads((iosroot/'start.json').read_text());ios_result=json.loads((iosroot/'result.json').read_text());ios_qualification=json.loads((iosroot/'post-build-qualification.json').read_text());android_start=json.loads((androidroot/'start.json').read_text());android_result=json.loads((androidroot/'result.json').read_text())
++ios_record=record(Path(ios['path']));assert ios['sourceSHA']==android['sourceSHA']==state['demoSHA'];assert ios_record['files']==ios['files'] and ios_record['manifestSHA256']==ios['manifestSHA256'] and sha(Path(android['path']))==android['sha256']
++for start,result in ((ios_start,ios_result),(android_start,android_result)):
++ assert start['sourceSHA']==result['sourceSHA']==result['headAfter']==state['demoSHA'];assert start['repoPath']==result['repoPath']==str(demo);assert start['argv']==result['argv'] and start['cwd']==result['cwd'] and start['start']==result['start'];assert start['homeBefore']==result['homeBefore']==result['homeAfter']==[];assert start['apiEnvironmentUnset'] is result['apiEnvironmentUnset'] is True and start['session']==result['session']=='fix4-8-c3';assert result['exit']==0 and result['end']>=result['start']
++ios_derived=Path(ios['path']).parents[3];assert ios_start['argv']==['xcodebuild','clean','build','-project','ios/Landmarks.xcodeproj','-scheme','Landmarks (UI Testing)','-configuration','UITesting','-destination','generic/platform=iOS Simulator','-derivedDataPath',str(ios_derived),'CODE_SIGNING_ALLOWED=NO'] and ios_start['cwd']==str(demo)
++assert android_start['argv']==['./gradlew','clean','assembleFreeDebug','--no-daemon'] and android_start['cwd']==str(demo/'android') and Path(android['path']).resolve()==(demo/'android/app/build/outputs/apk/free/debug/app-free-debug.apk').resolve()
++assert ios_result['statusAfter']==ios_qualification['originalStatusAfter'];assert ios_qualification['head']==state['demoSHA'] and ios_qualification['statusAfterBothBuilds']=='' and ios_qualification['buildExit']==ios_result['exit']==0 and ios_qualification['artifactManifestSHA256']==ios['manifestSHA256'];assert '** BUILD SUCCEEDED **' in (iosroot/'stdout.log').read_text()
++assert android_result['statusAfter']=='' and 'BUILD SUCCESSFUL' in (androidroot/'stdout.log').read_text()
++demo_build_proof={'sourceHEAD':demo_head,'sourceStatus':demo_status,'ios':{name:{'path':str(iosroot/name),'sha256':sha(iosroot/name)} for name in ('start.json','result.json','artifact.json','post-build-qualification.json','stdout.log','stderr.log')},'android':{name:{'path':str(androidroot/name),'sha256':sha(androidroot/name)} for name in ('start.json','result.json','artifact.json','stdout.log','stderr.log')}};save(out/'demo-build-validation.json',demo_build_proof)
++candidate={'schema':'grantiva.task8.candidate.v1','cli':{'repoPath':str(src),'mergedSHA':a.merged_sha,'binary':{'path':str(qa/'grantiva'),'sha256':sha(qa/'grantiva'),'version':version},'bundle':record(qa/'grantiva_GrantivaCore.bundle')},'runner':{'repoPath':str(runner_repo),'sourceSHA':EXPECTED_RUNNER_SHA,'runnerHome':str(home),'uncachedTestProof':proof,'packaged':{'path':str(runner),'sha256':sha(runner),'version':runner_version},'installed':{'path':str(installed),'sha256':sha(installed),'version':installed_version,'installStamp':'1.1.28-grantiva.15+android-drivers-2'}},'demo':{'repoPath':str(demo),'sourceSHA':state['demoSHA'],'buildProof':demo_build_proof,'androidAPK':{'path':android['path'],'sha256':android['sha256']},'iosApp':record(Path(ios['path']))}}
++save(e/'candidate.json',candidate);print(json.dumps({'candidate':str(e/'candidate.json'),'sha256':sha(e/'candidate.json'),'cacheEntriesPreserved':preserved},indent=2))
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate_identity.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate_identity.py
+new file mode 100644
+index 00000000..7ba39213
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/candidate_identity.py
+@@ -0,0 +1,73 @@
++#!/usr/bin/env python3
++"""Validate one frozen Task 8 candidate and controller ownership manifest."""
++import argparse, hashlib, json, pathlib, re, subprocess
++
++EXPECTED_RUNNER_SHA='ba9008f4b2cd2c7320a9c46e04faed612b0958a2'
++
++def file_sha(path): return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
++def tree_sha(path):
++    root=pathlib.Path(path); h=hashlib.sha256()
++    for item in sorted(p for p in root.rglob('*') if p.is_file()):
++        h.update(str(item.relative_to(root)).encode()+b'\0'); h.update(bytes.fromhex(file_sha(item)))
++    return h.hexdigest()
++def manifest_sha(files): return hashlib.sha256(json.dumps(files,sort_keys=True,separators=(',',':')).encode()).hexdigest()
++def verify_files(root,record,label):
++    files=record.get('files'); require(isinstance(files,list) and files,label+' file manifest missing')
++    actual=[]
++    for item in sorted(p for p in pathlib.Path(root).rglob('*') if p.is_file()): actual.append({'path':str(item.relative_to(root)),'sha256':file_sha(item)})
++    require(actual==files,label+' file manifest mismatch'); require(manifest_sha(files)==record['manifestSHA256'],label+' manifest hash mismatch')
++def verify_runner_proof(rr):
++    require(rr.get('sourceSHA')==EXPECTED_RUNNER_SHA,'runner source SHA is not the frozen Task 8 runner')
++    repo=pathlib.Path(rr['repoPath']).resolve(); require(command(['git','-C',str(repo),'rev-parse','HEAD'])==EXPECTED_RUNNER_SHA,'runner source HEAD mismatch'); require(command(['git','-C',str(repo),'status','--porcelain=v1'])=='','runner source checkout is dirty')
++    proof=rr['uncachedTestProof']; docs={}
++    keys=('start','result','argv','head','unitRoot','stdout','stderr','exit','statusBefore','statusAfter','grantivaHomeBefore','grantivaHomeAfter','maestroHomeBefore','maestroHomeAfter')
++    expected_names={'start':'start.json','result':'result.json','argv':'argv.txt','head':'head.txt','unitRoot':'unit-root.txt','stdout':'stdout.log','stderr':'stderr.log','exit':'exit.txt','statusBefore':'status-before.txt','statusAfter':'status-after.txt','grantivaHomeBefore':'grantiva-home-before.txt','grantivaHomeAfter':'grantiva-home-after.txt','maestroHomeBefore':'maestro-home-before.txt','maestroHomeAfter':'maestro-home-after.txt'}
++    for key in keys:
++        entry=proof[key]; path=pathlib.Path(entry['path']).resolve(); require(file_sha(path)==entry['sha256'],f'runner proof {key} hash mismatch'); docs[key]=path
++    parents={path.parent for path in docs.values()}; require(len(parents)==1 and next(iter(parents)).name=='go-test-uncached-metadata-complete','runner proof is not the governing metadata-complete capture')
++    require(all(docs[key].name==name for key,name in expected_names.items()),'runner proof artifact name mismatch')
++    start=json.loads(docs['start'].read_text()); result=json.loads(docs['result'].read_text())
++    common=('startedAt','head','argvFile','session','apiKey','count','homeRoot')
++    require(all(start.get(key)==result.get(key) for key in common),'uncached runner start/result metadata mismatch')
++    require(start.get('head')==result.get('head')==EXPECTED_RUNNER_SHA and docs['head'].read_text().strip()==EXPECTED_RUNNER_SHA,'uncached runner proof source mismatch')
++    require(start.get('argvFile')=='argv.txt' and start.get('session')=='fix4-7b' and start.get('apiKey')=='unset' and start.get('count')==1,'uncached runner proof metadata mismatch')
++    require(result.get('exit')==0 and result.get('endedAt') and docs['exit'].read_text().strip()=='0','uncached runner test did not pass cleanly')
++    require(docs['unitRoot'].read_text().strip()==start.get('homeRoot'),'uncached runner proof home root mismatch')
++    expected_argv='env -u GRANTIVA_API_KEY GRANTIVA_SESSION_ID=fix4-7b GRANTIVA_RUNNER_HOME=<fresh>/grantiva-home MAESTRO_RUNNER_HOME=<fresh>/maestro-home GOCACHE=<fresh>/go-cache TMPDIR=<fresh>/tmp go test -count=1 . ./pkg/device/... ./pkg/executor/... ./pkg/report/... ./pkg/cli/... ./pkg/driver/uiautomator2/...'
++    require(docs['argv'].read_text().strip()==expected_argv,'uncached runner proof command mismatch')
++    empty=('stderr','statusBefore','statusAfter','grantivaHomeBefore','grantivaHomeAfter','maestroHomeBefore','maestroHomeAfter')
++    require(all(docs[key].read_bytes()==b'' for key in empty),'uncached runner source status, stderr, or homes not clean and empty')
++    lines=[line for line in docs['stdout'].read_text().splitlines() if line.strip()]
++    packages=['github.com/devicelab-dev/maestro-runner/pkg/device','github.com/devicelab-dev/maestro-runner/pkg/executor','github.com/devicelab-dev/maestro-runner/pkg/report','github.com/devicelab-dev/maestro-runner/pkg/cli','github.com/devicelab-dev/maestro-runner/pkg/driver/uiautomator2']
++    require(len(lines)==6 and lines[0].split('\t')==['?   ','github.com/devicelab-dev/maestro-runner','[no test files]'],'uncached runner root no-tests proof mismatch')
++    require(all(line.split('\t')[0]=='ok  ' and line.split('\t')[1]==pkg and len(line.split('\t'))==3 and re.fullmatch(r'(?:0|[1-9]\d*)(?:\.\d+)?s',line.split('\t')[2]) for line,pkg in zip(lines[1:],packages)),'uncached runner package proof mismatch')
++def verify_source(record,label):
++    repo=pathlib.Path(record['repoPath']).resolve()
++    require(command(['git','-C',str(repo),'rev-parse','HEAD'])==record['sourceSHA'],label+' source HEAD mismatch')
++def command(argv): return subprocess.run(argv,capture_output=True,text=True,check=True,timeout=20).stdout.strip()
++def require(value,message):
++    if not value: raise ValueError(message)
++
++def validate(candidate_manifest,ownership_manifest,*,source_root,binary,bundle,runner,runner_home,platform=None,device=None,android_avd=None,apk=None):
++    cm_path=pathlib.Path(candidate_manifest).resolve(); own_path=pathlib.Path(ownership_manifest).resolve(); cm=json.loads(cm_path.read_text()); own=json.loads(own_path.read_text())
++    require(cm.get('schema')=='grantiva.task8.candidate.v1','candidate schema')
++    require(own.get('schema')=='grantiva.task8.ownership.v1','ownership schema')
++    source=pathlib.Path(source_root).resolve(); binary=pathlib.Path(binary).resolve(); bundle=pathlib.Path(bundle).resolve(); runner=pathlib.Path(runner).resolve(); home=pathlib.Path(runner_home).resolve(); cli=cm['cli']; rr=cm['runner']
++    require(str(source)==str(pathlib.Path(cli['repoPath']).resolve()),'CLI repository path mismatch'); require(command(['git','-C',str(source),'rev-parse','HEAD'])==cli['mergedSHA'],'merged source HEAD mismatch')
++    require(str(binary)==str(pathlib.Path(cli['binary']['path']).resolve()) and file_sha(binary)==cli['binary']['sha256'],'candidate binary mismatch'); require(command([str(binary),'--version'])==cli['binary']['version'],'candidate version mismatch')
++    require(str(bundle)==str(pathlib.Path(cli['bundle']['path']).resolve()),'resource bundle path mismatch'); verify_files(bundle,cli['bundle'],'resource bundle')
++    verify_runner_proof(rr); packaged=rr['packaged']; require(str(runner)==str(pathlib.Path(packaged['path']).resolve()) and file_sha(runner)==packaged['sha256'],'packaged runner mismatch'); require(command([str(runner),'--version'])==packaged['version'],'packaged runner version mismatch')
++    installed=pathlib.Path(rr['installed']['path']).resolve(); require(installed.is_relative_to(home),'installed runner outside runner home'); require(rr['installed'].get('installStamp'),'installed runner stamp missing')
++    require(file_sha(installed)==rr['installed']['sha256'] and command([str(installed),'--version'])==rr['installed']['version'],'upgraded runner mismatch'); require(rr['runnerHome']==str(home),'runner home mismatch')
++    demo=cm['demo']; verify_source(demo,'demo')
++    if apk:
++        require(str(pathlib.Path(apk).resolve())==str(pathlib.Path(demo['androidAPK']['path']).resolve()) and file_sha(apk)==demo['androidAPK']['sha256'],'demo APK mismatch')
++    ios_app=demo['iosApp']; require(pathlib.Path(ios_app['path']).is_dir(),'iOS app missing'); verify_files(ios_app['path'],ios_app,'iOS app')
++    if platform and device:
++        require(own.get('sessionId')=='fix4-8-c3','ownership session mismatch'); entry=own['devices'][platform]; require(entry['platform']==platform and entry['id']==device and entry.get('owned') is True and entry.get('createdEpoch') and entry.get('provision'), 'device not controller-owned'); require(entry.get('name') and entry.get('runtime'),'device identity incomplete')
++        if platform=='android': require(entry['avd']==android_avd,'owned Android AVD mismatch')
++    return {'candidateManifest':str(cm_path),'candidateManifestSHA256':file_sha(cm_path),'ownershipManifest':str(own_path),'ownershipManifestSHA256':file_sha(own_path),'sourceHEAD':cli['mergedSHA'],'binarySHA256':cli['binary']['sha256'],'bundleManifestSHA256':cli['bundle']['manifestSHA256'],'runnerSourceSHA':rr['sourceSHA'],'runnerSHA256':packaged['sha256'],'installedRunnerSHA256':rr['installed']['sha256'],'runnerInstallStamp':rr['installed']['installStamp'],'demoSourceSHA':cm['demo']['sourceSHA'],'iosAppManifestSHA256':ios_app['manifestSHA256']}
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser(); p.add_argument('--candidate-manifest',required=True); p.add_argument('--ownership-manifest',required=True); p.add_argument('--source-root',required=True); p.add_argument('--binary',required=True); p.add_argument('--bundle',required=True); p.add_argument('--runner',required=True); p.add_argument('--runner-home',required=True); p.add_argument('--platform'); p.add_argument('--device'); p.add_argument('--android-avd'); p.add_argument('--apk'); a=p.parse_args()
++    print(json.dumps(validate(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform=a.platform,device=a.device,android_avd=a.android_avd,apk=a.apk),indent=2))
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/forward_joint_live.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/forward_joint_live.py
+new file mode 100644
+index 00000000..7016b4d3
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/forward_joint_live.py
+@@ -0,0 +1,127 @@
++from pathlib import Path
++import os,subprocess,time,json,hashlib,signal,shlex,argparse,re
++from candidate_identity import validate
++ap=argparse.ArgumentParser();ap.add_argument('--candidate',required=True);ap.add_argument('--ownership',required=True);ap.add_argument('--source-root',required=True);ap.add_argument('--binary',required=True);ap.add_argument('--bundle',required=True);ap.add_argument('--packaged-runner',required=True);ap.add_argument('--home',required=True);ap.add_argument('--project',required=True);ap.add_argument('--output',required=True);args=ap.parse_args()
++r=Path.cwd();candidate_path=Path(args.candidate).resolve();ownership_path=Path(args.ownership).resolve();candidate=json.loads(candidate_path.read_text());ownership=json.loads(ownership_path.read_text());android=ownership['devices']['android'];o=Path(args.output);o.mkdir(parents=True,exist_ok=False)
++project=Path(args.project).resolve();home=Path(args.home).resolve();binary=Path(args.binary).resolve();bundle=Path(args.bundle).resolve();packaged_runner=Path(args.packaged_runner).resolve();adb='/Users/kyle/Library/Android/sdk/platform-tools/adb';serial=android['id'];runner=Path(candidate['runner']['installed']['path']).resolve();session=project/'.grantiva/session.json';global_sessions=Path('/tmp/grantiva-sessions')
++expected_interrupt_notice='\n[grantiva] received SIGINT — releasing emulator and reaping child processes\n'
++env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(GRANTIVA_RUNNER_HOME=str(home),MAESTRO_RUNNER_HOME=str(runner.parent),GRANTIVA_SESSION_ID='fix4-8-c3',ANDROID_HOME='/Users/kyle/Library/Android/sdk',ANDROID_SDK_ROOT='/Users/kyle/Library/Android/sdk',JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home');env['PATH']='/Users/kyle/Library/Android/sdk/platform-tools:'+env['PATH']
++checks=[];procs=[];controls=[];ownedports=[]
++def save(n,x):(o/(n+'.json')).write_text(json.dumps(x,indent=2)+'\n')
++def run(n,a,expected=0):
++ a=list(map(str,a));t=time.time();p=subprocess.run(a,cwd=project,env=env,capture_output=True,timeout=180);(o/(n+'.stdout')).write_bytes(p.stdout);(o/(n+'.stderr')).write_bytes(p.stderr);save(n,{'argv':a,'cwd':str(project),'runnerHome':str(home),'maestroHome':str(runner.parent),'session':'fix4-8-c3','apiEnvironmentUnset':True,'start':t,'end':time.time(),'exit':p.returncode});assert expected is None or p.returncode==expected,(n,p.returncode,p.stderr.decode());return p
++
++def inventory(n,only_controls=False):
++ f=run(n,[adb,'forward','--list']).stdout.decode();rows=[x for x in f.splitlines() if x.startswith(serial+' ')]
++ assert all(x in rows for x in controls),(n,rows,controls)
++ if only_controls:assert set(rows)==set(controls),(n,rows,controls)
++ return rows
++
++def exact_runner_processes(n=None):
++ p=subprocess.run(['/bin/ps','-axo','pid=,ppid=,command='],capture_output=True,timeout=30)
++ assert p.returncode==0,p.stderr.decode()
++ rows=[]
++ for line in p.stdout.decode().splitlines():
++  fields=line.strip().split(None,2)
++  if len(fields)!=3:continue
++  try:parts=shlex.split(fields[2])
++  except ValueError:continue
++  if str(runner) in parts and serial in parts:rows.append({'pid':int(fields[0]),'ppid':int(fields[1]),'command':fields[2]})
++ if n:
++  (o/(n+'.ps')).write_bytes(p.stdout);save(n,{'exactExecutable':str(runner),'device':serial,'matches':rows})
++ return rows
++
++def session_inventory(n):
++ files=[]
++ if global_sessions.exists():
++  for path in sorted(global_sessions.iterdir()):
++   if not path.is_file():continue
++   raw=path.read_bytes();files.append({'name':path.name,'sha256':hashlib.sha256(raw).hexdigest(),'size':len(raw),'mentionsDevice':serial.encode() in raw})
++ state={'projectSessionExists':session.exists(),'globalDirectory':str(global_sessions),'globalFiles':files}
++ if session.exists():
++  raw=session.read_bytes();state['projectSessionSHA256']=hashlib.sha256(raw).hexdigest();state['projectSession']=json.loads(raw)
++ save(n,state);return state
++
++def ownership_snapshot(n):
++ return {'sessions':session_inventory(n+'-sessions'),'processes':exact_runner_processes(n+'-processes')}
++
++def run_owned_case(n,a,expected):
++ before=ownership_snapshot(n+'-before');assert not before['sessions']['projectSessionExists'];assert not [x for x in before['sessions']['globalFiles'] if x['mentionsDevice']],(n,before['sessions']['globalFiles']);assert not before['processes'],(n,before['processes'])
++ a=list(map(str,a));out_path=o/(n+'.stdout');err_path=o/(n+'.stderr');start=time.time();seen={}
++ with out_path.open('wb') as out,err_path.open('wb') as err:
++  p=subprocess.Popen(a,cwd=project,env=env,stdout=out,stderr=err,start_new_session=True);procs.append(p)
++  deadline=time.time()+180
++  while p.poll() is None:
++   assert time.time()<deadline,(n,'timeout',p.pid)
++   for row in exact_runner_processes():seen[row['pid']]=dict(row,observedAt=time.time())
++   time.sleep(.05)
++  code=p.returncode
++ save(n,{'argv':a,'cwd':str(project),'runnerHome':str(home),'maestroHome':str(runner.parent),'session':'fix4-8-c3','apiEnvironmentUnset':True,'start':start,'end':time.time(),'exit':code,'spawnedProcessPid':p.pid,'observedExactRunnerProcesses':list(seen.values())})
++ assert code==expected,(n,code,err_path.read_text(errors='replace'))
++ after=ownership_snapshot(n+'-after');before_names={x['name'] for x in before['sessions']['globalFiles']};after_names={x['name'] for x in after['sessions']['globalFiles']}
++ assert not after['sessions']['projectSessionExists'],n;assert not [x for x in after['sessions']['globalFiles'] if x['mentionsDevice']],(n,after['sessions']['globalFiles']);assert not (after_names-before_names),(n,'new global sessions',sorted(after_names-before_names));assert not after['processes'],(n,after['processes'])
++ known_pids=set(seen)|{p.pid}
++ for pid in known_pids:
++  assert not list(global_sessions.glob(str(pid)+'*')),(n,pid);q=run(n+'-pid-'+str(pid),['/bin/ps','-p',str(pid),'-o','stat='],None);assert q.returncode!=0 or 'Z' in q.stdout.decode()
++ absence(n,known_pids);return code,sorted(seen)
++
++def absence(n,pids=()):
++ for suffix in ['immediate','after1s']:
++  if suffix=='after1s':time.sleep(1)
++  state=ownership_snapshot(n+'-'+suffix)
++  assert not state['sessions']['projectSessionExists'],n
++  assert not [x for x in state['sessions']['globalFiles'] if x['mentionsDevice']],(n,state['sessions']['globalFiles'])
++  assert not state['processes'],(n,state['processes'])
++  for pid in pids:
++   assert not list(global_sessions.glob(str(pid)+'*'))
++   p=run(n+'-'+suffix+'-pid',['/bin/ps','-p',str(pid),'-o','stat='],None);assert p.returncode!=0 or 'Z' in p.stdout.decode()
++  inventory(n+'-'+suffix,True)
++
++assert project.is_dir() and candidate_path.is_file() and ownership_path.is_file()
++identity=validate(candidate_path,ownership_path,source_root=args.source_root,binary=binary,bundle=bundle,runner=packaged_runner,runner_home=home,platform='android',device=serial,android_avd=android['avd'])
++source_checkout=Path(args.source_root).resolve();source_head=run('source-head',['/usr/bin/git','-C',source_checkout,'rev-parse','HEAD']).stdout.decode().strip();assert source_head==candidate['cli']['mergedSHA'];source_status=run('source-status',['/usr/bin/git','-C',source_checkout,'status','--porcelain=v1']).stdout.decode();assert source_status==''
++cli_version=run('cli-version',[binary,'--version']).stdout.decode().strip();assert cli_version==candidate['cli']['binary']['version']
++runner_version_output=run('runner-native-version',[runner,'--version']).stdout.decode();assert runner_version_output.strip()==candidate['runner']['installed']['version'].strip(),runner_version_output
++assert run('avd-identity',[adb,'-s',serial,'emu','avd','name']).stdout.decode().splitlines()[0]==android['avd'];assert not session.exists()
++baseline_output=run('baseline',[adb,'forward','--list']).stdout.decode();baseline_rows=[x for x in baseline_output.splitlines() if x.startswith(serial+' ')];assert not baseline_rows,baseline_rows
++save('candidate',{'validatedIdentity':identity,'candidateManifest':str(candidate_path),'ownershipManifest':str(ownership_path),'cliSource':candidate['cli']['mergedSHA'],'binary':str(binary),'binarySHA256':hashlib.sha256(binary.read_bytes()).hexdigest(),'bundle':str(bundle),'bundleManifestSHA256':candidate['cli']['bundle']['manifestSHA256'],'cliVersion':cli_version,'sourceCheckoutValidation':{'path':str(source_checkout),'head':source_head,'porcelainStatus':source_status},'runnerSource':candidate['runner']['sourceSHA'],'packagedRunner':str(packaged_runner),'packagedRunnerSHA256':hashlib.sha256(packaged_runner.read_bytes()).hexdigest(),'installedRunner':str(runner),'installedRunnerSHA256':hashlib.sha256(runner.read_bytes()).hexdigest(),'runnerNativeVersionOutput':runner_version_output,'runnerInstallStamp':candidate['runner']['installed']['installStamp'],'ownership':ownership,'qualification':'Final packaged candidate 2 validated by candidate_identity.validate before joint forward cleanup cases.'})
++try:
++ run('control6790-create',[adb,'-s',serial,'forward','--no-rebind','tcp:6790','tcp:16790']);controls.append(f'{serial} tcp:6790 tcp:16790')
++ port=run('allocated-control-create',[adb,'-s',serial,'forward','tcp:0','tcp:16791']).stdout.decode().strip();assert port.isdigit();controls.append(f'{serial} tcp:{port} tcp:16791');inventory('controls-before',True)
++ for mode in ['interrupt','normal-stop']:
++  inventory(mode+'-before',True)
++  a=[str(binary),'runner','start','--platform','android','--device',serial,'--application-id','com.kylebrowning.landmarks'];out=(o/(mode+'.stdout')).open('wb');err=(o/(mode+'.stderr')).open('wb');p=subprocess.Popen(a,cwd=project,env=env,stdout=out,stderr=err,start_new_session=True);procs.append(p);save(mode+'-command',{'argv':a,'pid':p.pid,'cwd':str(project),'start':time.time()})
++  try:
++   ready=None
++   for _ in range(1200):
++    if session.exists():
++     try:q=json.loads(session.read_text())
++     except json.JSONDecodeError:q={}
++     if q.get('state')=='ready':ready=q;break
++    assert p.poll() is None,'foreground exited before ready';time.sleep(.1)
++   assert ready;save(mode+'-ready',ready);ownedports.append(ready['port']);pid=ready['pid'];assert ready['udid']==serial
++   argv=run(mode+'-runner-identity',['/bin/ps','-ww','-p',str(pid),'-o','command=']).stdout.decode();parts=shlex.split(argv);assert serial in parts and str(runner) in parts
++   f=inventory(mode+'-ready-forwards');assert f'{serial} tcp:{ready["port"]} tcp:6790' in f
++   run(mode+'-hierarchy',[binary,'runner','dump-hierarchy','--udid',serial,'--format','tree'])
++   if mode=='interrupt':os.kill(p.pid,signal.SIGINT)
++   else:run(mode+'-request',[binary,'runner','stop','--json'])
++   code=p.wait(timeout=45);save(mode+'-exit',{'exit':code,'end':time.time()});assert code==(130 if mode=='interrupt' else 0)
++  finally:out.close();err.close()
++  if mode=='interrupt':assert expected_interrupt_notice in (o/(mode+'.stderr')).read_text(errors='replace')
++  absence(mode,{pid});checks.append({'case':mode,'exit':code,'controlsPreserved':True,'ownedForwardsAndSessionAndPIDAbsent':True})
++ code,seen=run_owned_case('absent-app',[binary,'runner','start','--platform','android','--device',serial,'--application-id','com.grantiva.task8.absent','--detach','--json'],1);checks.append({'case':'absent-app','exit':code,'controlsPreserved':True,'ownedForwardsAndProjectGlobalSessionsAndRunnerPIDsAbsent':True,'observedRunnerPids':seen})
++ # Copy stock input into this attempt so screenshot outputs cannot overwrite historical evidence.
++ import shutil
++ inp=o/'inputs';shutil.copytree(r/'findings/evidence/round4-smoke/inputs',inp)
++ code,seen=run_owned_case('healthy',[runner,'--platform','android','--device',serial,'--no-ansi','--no-app-install','test','--output',o/'healthy-report','--flatten',inp/'healthy-stock.yaml'],0);checks.append({'case':'healthy-stock','exit':code,'controlsPreserved':True,'ownedForwardsAndProjectGlobalSessionsAndRunnerPIDsAbsent':True,'observedRunnerPids':seen})
++ save('acceptance',{'passed':True,'scope':'Final packaged candidate 2 joint forward cleanup','checks':checks});print(json.dumps({'passed':True,'checks':len(checks)}))
++finally:
++ for p in procs:
++  if p.poll() is None:os.kill(p.pid,signal.SIGINT);p.wait(timeout=45)
++ f=run('cleanup-before',[adb,'forward','--list']).stdout.decode();cleanup_before_rows=[x for x in f.splitlines() if x.startswith(serial+' ')]
++ if len(controls)==2:assert set(cleanup_before_rows)==set(controls),(cleanup_before_rows,controls)
++ for row in controls:
++  if row in f:run('cleanup-control-'+row.split()[1].replace(':','-'),[adb,'-s',serial,'forward','--remove',row.split()[1]])
++ for port in ownedports:
++  if f'{serial} tcp:{port} ' in f:run('cleanup-owned-'+str(port),[adb,'-s',serial,'forward','--remove','tcp:'+str(port)])
++ cleanup_after=run('cleanup-after',[adb,'forward','--list']).stdout.decode();cleanup_after_rows=[x for x in cleanup_after.splitlines() if x.startswith(serial+' ')];assert cleanup_after_rows==baseline_rows,(cleanup_after_rows,baseline_rows)
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle-README.md b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle-README.md
+new file mode 100644
+index 00000000..e14c3ce7
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle-README.md
+@@ -0,0 +1,35 @@
++# Task 8 lifecycle smoke
++
++`lifecycle_smoke.py` is the executable Task 8 phase-03 helper. It consumes the controller-created `grantiva.task8.candidate.v1` and `grantiva.task8.ownership.v1` manifests through the shared `candidate_identity.validate` function before its first device query. The validator binds the merged repository, candidate executable/hash/version, exact resource-bundle file manifest, runner source and packaged/installed identities, install stamp, clean-built iOS app manifest, literal `fix4-8-c3` session, and controller-created device records.
++
++Required arguments are:
++
++```text
++--candidate-manifest --ownership-manifest --binary --bundle --runner --source
++--project --runner-home --session-id fix4-8-c3 --ios-udid --ios-app
++--android-serial --android-avd --output
++```
++
++`--adb`, `--ios-bundle-id`, and `--android-application-id` are optional overrides. All filesystem bindings and the new evidence directory must be absolute.
++
++Before running lifecycle commands, the helper also proves that the owned iOS UDID resolves to the manifest's simulator name and runtime, and that the Android serial resolves live to the manifest's AVD name and SDK runtime. It rejects the protected owner devices.
++
++Run configuration-only validation by adding `--validate-only`. That mode parses and validates absolute input paths and destructive-phase isolation without querying devices, executing candidate artifacts, or claiming acceptance. Actual execution without `--phase` runs the five non-destructive Task 8 phases:
++
++- plain startup interruption and ready-state interruption on both platforms;
++- genuine `starting` null-port to same-PID `ready`, immediate Landmarks hierarchy, and exact stop on both platforms;
++- canonical absent-install refusal and exact frozen iOS app restoration, plus prompt Android missing-app failure;
++- successful, failed, and interrupted iOS log runs with exact marked-child absence, report state, and one truthful verbose terminal diagnostic per run;
++- the three retained circular-flow paths and exact diagnostics.
++
++The helper intentionally does not claim the wider Task 9 lifecycle family. Quiet/JSON startup repetitions, genuine WDA timeout, unprompted runner/WDA death, absent-install no-launch variants, free-force, non-force refusal, and other live-run reaping controls remain mandatory Task 9 work.
++
++Run force teardown alone, last, with a new evidence path:
++
++```text
++--phase force-teardown --allow-force-reclaim-owned-ios
++```
++
++It starts an actual detached session, checks the live hierarchy, requires JSON `runnerSessionStopped: true`, `reclaimed: true`, typed process arrays, and absence of the exact runner PID plus project/shared session state. After those assertions pass, it writes `IOS-FORCE-RECLAIMED.json`. Force teardown reclaims Grantiva-owned runtime resources; it does not assert that CoreSimulator shut down or deleted the simulator. The controller must explicitly shut down and delete the owned simulator during final cleanup, then prove its UDID is absent.
++
++Every nested command preserves argv, cwd, start, exit, stdout, and stderr. `owned-resources.json` records verified provenance and exact observed PIDs. If an assertion fails after a runner starts, bounded cleanup stops only a session whose PID was previously verified against the owned device, signals only that exact verified PID if needed, removes only forwards enumerated for the owned Android serial, and records all actions in `cleanup.json`. `acceptance.json` is written only after all selected assertions pass.
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py
+new file mode 100644
+index 00000000..fb21bd72
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py
+@@ -0,0 +1,855 @@
++#!/usr/bin/env python3
++"""Task 8 lifecycle smoke, rebound to one final candidate and owned devices."""
++
++from __future__ import annotations
++
++import argparse
++import errno
++import hashlib
++import json
++import os
++import re
++import shlex
++import shutil
++import signal
++import subprocess
++import sys
++import threading
++import time
++from pathlib import Path
++
++from candidate_identity import validate as validate_candidate_identity
++
++
++PROTECTED_UDIDS = {
++    "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C",
++    "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6",
++}
++PROTECTED_AVDS = {"Pixel_8_API_35"}
++INTERRUPT_NOTICES = {
++    "ios": "[grantiva] received SIGINT — releasing simulator and reaping child processes",
++    "android": "[grantiva] received SIGINT — releasing emulator and reaping child processes",
++}
++RUBY_YAML_DOCUMENTS = "content = File.read(ARGV[0]); docs = content.split(/^---[ \\t]*$\\n?/).map { |doc| YAML.safe_load(doc, [], [], false) }; puts JSON.generate(docs)"
++PHASES = (
++    "startup-interrupt",
++    "detach-ready",
++    "absent-app",
++    "log-cleanup",
++    "cycle-controls",
++    "force-teardown",
++)
++
++
++def write_json(path: Path, value: object) -> None:
++    path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
++
++
++def identity_token(value: object) -> str:
++    return re.sub(r"[^a-z0-9]", "", str(value).lower())
++
++
++def file_sha256(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def yaml_documents(path: Path) -> object:
++    result = subprocess.run(
++        ["/usr/bin/ruby", "-rjson", "-ryaml", "-e", RUBY_YAML_DOCUMENTS, str(path)],
++        capture_output=True, text=True, check=True, timeout=10,
++    )
++    return json.loads(result.stdout)
++
++
++def copy_report_snapshot(source: Path, target: Path) -> None:
++    def ignore_transient(_directory: str, names: list[str]) -> set[str]:
++        return {name for name in names if name.endswith(".tmp")}
++    try:
++        shutil.copytree(source, target, dirs_exist_ok=True, ignore=ignore_transient)
++    except FileNotFoundError as exc:
++        if exc.errno == errno.ENOENT and exc.filename and Path(exc.filename).suffix == ".tmp":
++            return
++        raise
++    except shutil.Error as exc:
++        errors = exc.args[0]
++        if all(len(entry) == 3 and Path(entry[0]).suffix == ".tmp" and ("[Errno 2]" in entry[2] or "No such file" in entry[2]) for entry in errors):
++            return
++        raise
++
++
++class Smoke:
++    def __init__(self, ns: argparse.Namespace) -> None:
++        self.ns = ns
++        self.binary = ns.binary.resolve()
++        self.source = ns.source.resolve()
++        self.project = ns.project.resolve()
++        self.home = ns.runner_home.resolve()
++        self.bundle = ns.bundle.resolve()
++        self.runner = ns.runner.resolve()
++        self.output = ns.output.resolve()
++        self.session = self.project / ".grantiva" / "session.json"
++        self.adb = Path(ns.adb).resolve()
++        self.checks: list[dict[str, object]] = []
++        self.owned_pids: dict[int, dict[str, object]] = {}
++        self.active_runners: dict[int, tuple[str, str]] = {}
++        self.ownership_lock = threading.Lock()
++        self.targets_verified = False
++        self.output.mkdir(parents=True, exist_ok=False)
++        os.environ.pop("GRANTIVA_API_KEY", None)
++        os.environ.update(
++            GRANTIVA_RUNNER_HOME=str(self.home),
++            MAESTRO_RUNNER_HOME=str(self.home),
++            GRANTIVA_SESSION_ID=ns.session_id,
++        )
++        ios_identity = validate_candidate_identity(
++            ns.candidate_manifest, ns.ownership_manifest,
++            source_root=self.source, binary=self.binary, bundle=self.bundle,
++            runner=self.runner, runner_home=self.home, platform="ios", device=ns.ios_udid,
++        )
++        android_identity = validate_candidate_identity(
++            ns.candidate_manifest, ns.ownership_manifest,
++            source_root=self.source, binary=self.binary, bundle=self.bundle,
++            runner=self.runner, runner_home=self.home, platform="android",
++            device=ns.android_serial, android_avd=ns.android_avd,
++        )
++        if ios_identity != android_identity:
++            raise AssertionError("platform identity validations disagree")
++        self.provenance = ios_identity
++        self.candidate_doc = json.loads(ns.candidate_manifest.read_text())
++        self.ownership_doc = json.loads(ns.ownership_manifest.read_text())
++        installed = self.candidate_doc["runner"]["installed"]
++        self.installed_runner = Path(installed["path"]).resolve()
++        self.installed_runner_sha256 = installed["sha256"]
++        if Path(self.candidate_doc["demo"]["iosApp"]["path"]).resolve() != ns.ios_app.resolve():
++            raise AssertionError("supplied iOS app is not the frozen clean-built app")
++        write_json(self.output / "verified-candidate-identity.json", self.provenance)
++        self.verify_live_targets()
++
++    def record_ownership(self, state: str = "active") -> None:
++        document = {
++            "state": state,
++            "candidateBinary": str(self.binary),
++            "source": str(self.source),
++            "bundle": str(self.bundle),
++            "runner": str(self.runner),
++            "project": str(self.project),
++            "runnerHome": str(self.home),
++            "sessionId": self.ns.session_id,
++            "iosUDID": self.ns.ios_udid,
++            "androidSerial": self.ns.android_serial,
++            "androidAVD": self.ns.android_avd,
++            "ownedPIDs": dict(self.owned_pids),
++            "verifiedProvenance": self.provenance,
++            "controllerOwnership": self.ownership_doc,
++            "protected": {
++                "ios": sorted(PROTECTED_UDIDS),
++                "androidAVD": sorted(PROTECTED_AVDS),
++            },
++        }
++        with self.ownership_lock:
++            write_json(self.output / "owned-resources.json", document)
++
++    def verify_live_targets(self) -> None:
++        phase = "identity"
++        sims = json.loads(self.command(phase, "ios-live-identity", ["/usr/bin/xcrun", "simctl", "list", "devices", "--json"]).stdout)
++        matches = [(runtime, d) for runtime, devices in sims.get("devices", {}).items() for d in devices if d.get("udid") == self.ns.ios_udid]
++        if len(matches) != 1 or matches[0][1].get("isAvailable") is not True:
++            raise AssertionError(f"owned iOS simulator is not uniquely live/available: {matches}")
++        ios_runtime, ios_live = matches[0]
++        ios_owned = self.ownership_doc["devices"]["ios"]
++        if ios_live.get("name") != ios_owned["name"] or identity_token(ios_owned["runtime"]) not in identity_token(ios_runtime):
++            raise AssertionError({"owned": ios_owned, "liveRuntime": ios_runtime, "liveDevice": ios_live})
++        avd = self.command(phase, "android-live-identity", [str(self.adb), "-s", self.ns.android_serial, "emu", "avd", "name"]).stdout.decode().strip().splitlines()
++        if not avd or avd[0].strip() != self.ns.android_avd:
++            raise AssertionError(f"serial {self.ns.android_serial} is not {self.ns.android_avd}: {avd}")
++        android_owned = self.ownership_doc["devices"]["android"]
++        sdk = self.command(phase, "android-live-runtime", [str(self.adb), "-s", self.ns.android_serial, "shell", "getprop", "ro.build.version.sdk"]).stdout.decode().strip()
++        if android_owned["name"] != avd[0].strip() or sdk not in str(android_owned["runtime"]):
++            raise AssertionError({"owned": android_owned, "liveAVD": avd[0].strip(), "liveSDK": sdk})
++        self.targets_verified = True
++        write_json(self.output / phase / "verified.json", {"iosRuntime": ios_runtime, "ios": ios_live, "androidSerial": self.ns.android_serial, "androidAVD": avd[0].strip(), "androidSDK": sdk})
++
++    def command(
++        self,
++        phase: str,
++        label: str,
++        argv: list[str],
++        expected: int | None = 0,
++        timeout: float = 180,
++        cwd: Path | None = None,
++    ) -> subprocess.CompletedProcess[bytes]:
++        target = self.output / phase
++        target.mkdir(exist_ok=True)
++        started = time.time()
++        write_json(target / f"{label}.command.json", {"argv": argv, "cwd": str(cwd or self.project), "started": started})
++        proc = subprocess.run(argv, cwd=cwd or self.project, capture_output=True, timeout=timeout)
++        (target / f"{label}.stdout").write_bytes(proc.stdout)
++        (target / f"{label}.stderr").write_bytes(proc.stderr)
++        write_json(target / f"{label}.result.json", {"exit": proc.returncode, "started": started, "ended": time.time()})
++        if expected is not None and proc.returncode != expected:
++            raise AssertionError(f"{phase}/{label}: exit {proc.returncode}, expected {expected}: {proc.stderr.decode(errors='replace')}")
++        return proc
++
++    def spawn(self, phase: str, label: str, argv: list[str]) -> subprocess.Popen[bytes]:
++        target = self.output / phase
++        target.mkdir(exist_ok=True)
++        write_json(target / f"{label}.command.json", {"argv": argv, "cwd": str(self.project), "started": time.time()})
++        out = (target / f"{label}.stdout").open("wb")
++        err = (target / f"{label}.stderr").open("wb")
++        proc = subprocess.Popen(argv, cwd=self.project, stdout=out, stderr=err, start_new_session=True)
++        self.owned_pids[proc.pid] = {"kind": "spawned-cli", "argv": argv, "phase": phase, "label": label}
++        self.record_ownership()
++        return proc
++
++    def finish(self, phase: str, label: str, proc: subprocess.Popen[bytes], timeout: float) -> int:
++        code = proc.wait(timeout=timeout)
++        write_json(self.output / phase / f"{label}.result.json", {"exit": code, "ended": time.time(), "pid": proc.pid})
++        return code
++
++    def ps_argv(self, pid: int) -> list[str]:
++        raw = subprocess.check_output(["/bin/ps", "-ww", "-p", str(pid), "-o", "command="], text=True).strip()
++        return shlex.split(raw)
++
++    def assert_pid_bound(self, pid: int, device: str) -> list[str]:
++        argv = self.ps_argv(pid)
++        if device not in argv:
++            raise AssertionError(f"PID {pid} is not bound to owned device {device}: {argv}")
++        return argv
++
++    def pid_is_running(self, pid: int) -> bool:
++        try:
++            state = subprocess.check_output(["/bin/ps", "-p", str(pid), "-o", "stat="], text=True).strip()
++        except subprocess.CalledProcessError:
++            return False
++        return bool(state) and "Z" not in state
++
++    def bound_argv_if_running(self, pid: int, device: str) -> list[str] | None:
++        if not self.pid_is_running(pid):
++            return None
++        try:
++            return self.assert_pid_bound(pid, device)
++        except (AssertionError, subprocess.CalledProcessError):
++            if not self.pid_is_running(pid):
++                return None
++            raise
++
++    def bind_log_runner(self, line: str, cli_pid: int, device: str, expected_report: Path, source_flow: Path) -> dict[str, object] | None:
++        columns = line.split(maxsplit=3)
++        if len(columns) != 4:
++            return None
++        pid, ppid, pgid = map(int, columns[:3])
++        if ppid != cli_pid or pgid not in (cli_pid, pid):
++            return None
++        argv = shlex.split(columns[3])
++        if not argv or "--output" not in argv or "--device" not in argv:
++            return None
++        output_index = argv.index("--output")
++        device_index = argv.index("--device")
++        if output_index + 1 >= len(argv) or device_index + 1 >= len(argv) or argv[device_index + 1] != device:
++            return None
++        executable = Path(argv[0]).resolve()
++        if executable != self.installed_runner or file_sha256(executable) != self.installed_runner_sha256:
++            return None
++        runner_report = Path(argv[output_index + 1]).resolve()
++        runner_flow = Path(argv[-1]).resolve()
++        if runner_report != expected_report.resolve() or not runner_report.exists() or not runner_flow.exists():
++            return None
++        if yaml_documents(runner_flow) != yaml_documents(source_flow) or "extendedWaitUntil" not in runner_flow.read_text():
++            return None
++        return {
++            "pid": pid, "ppid": ppid, "pgid": pgid, "cliPID": cli_pid,
++            "executable": str(executable), "executableSHA256": self.installed_runner_sha256,
++            "report": str(runner_report), "sourceFlow": str(source_flow.resolve()),
++            "flow": str(runner_flow), "sourceFlowSHA256": file_sha256(source_flow),
++            "flowSHA256": file_sha256(runner_flow), "flowSemanticallyEquivalent": True,
++        }
++
++    def register_runner(self, pid: int, platform: str, device: str, phase: str) -> list[str]:
++        argv = self.assert_pid_bound(pid, device)
++        self.active_runners[pid] = (platform, device)
++        self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
++        self.record_ownership()
++        return argv
++
++    def wait_state(self, proc: subprocess.Popen[bytes], state: str, timeout: float = 150) -> dict[str, object]:
++        deadline = time.monotonic() + timeout
++        while time.monotonic() < deadline:
++            if self.session.exists():
++                try:
++                    doc = json.loads(self.session.read_text())
++                except json.JSONDecodeError:
++                    continue
++                if doc.get("state") == state:
++                    return doc
++            if proc.poll() is not None:
++                raise AssertionError(f"CLI {proc.pid} exited before session reached {state}")
++            time.sleep(0.005)
++        raise TimeoutError(f"session did not reach {state}")
++
++    def assert_pid_gone(self, pid: int) -> None:
++        try:
++            os.kill(pid, 0)
++        except ProcessLookupError:
++            return
++        raise AssertionError(f"owned PID remains: {pid}")
++
++    def assert_session_cleanup(self, pid: int) -> None:
++        if self.session.exists():
++            raise AssertionError(f"project session remains for owned runner {pid}")
++        shared = [str(p) for p in Path("/tmp/grantiva-sessions").glob(f"{pid}*")]
++        if shared:
++            raise AssertionError(f"shared session state remains for owned runner {pid}: {shared}")
++
++    def cleanup_owned(self) -> None:
++        """Best-effort bounded cleanup of only previously verified owned resources."""
++        phase = "failure-cleanup"
++        actions: list[dict[str, object]] = []
++        if not self.targets_verified:
++            write_json(self.output / "cleanup.json", {"bounded": True, "skipped": "live identities were not verified", "actions": actions})
++            return
++        session_doc = None
++        if self.session.exists():
++            try:
++                session_doc = json.loads(self.session.read_text())
++            except json.JSONDecodeError as exc:
++                actions.append({"action": "project-session", "result": "invalid-json-refused", "error": str(exc)})
++        session_pid = int(session_doc["pid"]) if isinstance(session_doc, dict) and isinstance(session_doc.get("pid"), int) else None
++        if session_pid in self.active_runners:
++            platform, device = self.active_runners[session_pid]
++            try:
++                self.assert_pid_bound(session_pid, device)
++                stopped = self.command(phase, f"stop-{session_pid}", [str(self.binary), "runner", "stop", "--json"], expected=None, timeout=45)
++                actions.append({"action": "runner-stop", "pid": session_pid, "platform": platform, "exit": stopped.returncode})
++            except Exception as exc:
++                actions.append({"action": "runner-stop", "pid": session_pid, "result": "error", "error": str(exc)})
++        elif session_pid is not None:
++            actions.append({"action": "project-session", "pid": session_pid, "result": "unowned-refused"})
++        for pid, (platform, device) in self.active_runners.items():
++            try:
++                argv = self.assert_pid_bound(pid, device)
++            except (ProcessLookupError, subprocess.CalledProcessError):
++                continue
++            except Exception as exc:
++                actions.append({"action": "exact-runner-sigterm", "pid": pid, "result": "identity-refused", "error": str(exc)})
++                continue
++            try:
++                os.kill(pid, signal.SIGTERM)
++                deadline = time.monotonic() + 15
++                while time.monotonic() < deadline:
++                    try:
++                        os.kill(pid, 0)
++                    except ProcessLookupError:
++                        break
++                    time.sleep(0.05)
++                self.assert_pid_gone(pid)
++                actions.append({"action": "exact-runner-sigterm", "pid": pid, "platform": platform, "argv": argv, "result": "gone"})
++            except Exception as exc:
++                actions.append({"action": "exact-runner-sigterm", "pid": pid, "result": "error", "error": str(exc)})
++            for shared in Path("/tmp/grantiva-sessions").glob(f"{pid}*"):
++                try:
++                    if shared.is_file() or shared.is_symlink():
++                        shared.unlink()
++                    elif shared.is_dir():
++                        shutil.rmtree(shared)
++                    actions.append({"action": "remove-owned-shared-session", "pid": pid, "path": str(shared)})
++                except OSError as exc:
++                    actions.append({"action": "remove-owned-shared-session", "pid": pid, "path": str(shared), "error": str(exc)})
++        if self.session.exists():
++            try:
++                current = json.loads(self.session.read_text())
++                current_pid = current.get("pid")
++                if current_pid in self.active_runners:
++                    self.session.unlink()
++                    actions.append({"action": "remove-owned-project-session", "pid": current_pid, "path": str(self.session)})
++            except (OSError, json.JSONDecodeError) as exc:
++                actions.append({"action": "remove-owned-project-session", "result": "error", "error": str(exc)})
++        try:
++            forwards = self.command(phase, "android-forwards", [str(self.adb), "-s", self.ns.android_serial, "forward", "--list"], expected=None).stdout.decode().splitlines()
++            for line in forwards:
++                parts = line.split()
++                if len(parts) >= 2 and parts[0] == self.ns.android_serial:
++                    label = f"remove-forward-{identity_token(parts[1])}"
++                    removed = self.command(phase, label, [str(self.adb), "-s", self.ns.android_serial, "forward", "--remove", parts[1]], expected=None)
++                    actions.append({"action": "remove-owned-forward", "local": parts[1], "exit": removed.returncode})
++        except Exception as exc:
++            actions.append({"action": "android-forward-cleanup", "result": "error", "error": str(exc)})
++        write_json(self.output / "cleanup.json", {"bounded": True, "actions": actions})
++
++    def preserve_runner_report(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str, state: dict[str, object]) -> None:
++        target = self.output / phase / f"{label}-runner-report"
++        try:
++            stop = state["stop"]
++            assert isinstance(stop, threading.Event)
++            while not stop.is_set():
++                try:
++                    session_text = self.session.read_text()
++                except FileNotFoundError:
++                    stop.wait(0.01)
++                    continue
++                try:
++                    doc = json.loads(session_text)
++                    pid = int(doc["pid"])
++                    argv = self.bound_argv_if_running(pid, device)
++                    if argv is not None:
++                        platform = "ios" if device == self.ns.ios_udid else "android"
++                        self.active_runners[pid] = (platform, device)
++                        self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
++                        if "--output" in argv:
++                            report = Path(argv[argv.index("--output") + 1])
++                            flow = Path(argv[-1])
++                            state["report"] = report
++                            state["flow"] = flow
++                            if report.exists():
++                                copy_report_snapshot(report, target)
++                            if flow.exists():
++                                shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
++                                state["flowWasPresent"] = True
++                        self.record_ownership()
++                        if isinstance(state.get("report"), Path) and isinstance(state.get("flow"), Path):
++                            state["authenticatedPID"] = pid
++                            authenticated = state["authenticated"]
++                            assert isinstance(authenticated, threading.Event)
++                            authenticated.set()
++                except (ProcessLookupError, json.JSONDecodeError, KeyError):
++                    pass
++                stop.wait(0.01)
++
++            # Use the last paths authenticated from the live runner. Session
++            # teardown or process exit cannot suppress this terminal capture.
++            report = state.get("report")
++            if not isinstance(report, Path):
++                raise AssertionError("snapshot worker never authenticated a runner report path")
++            copy_report_snapshot(report, target)
++            state["terminalReportCopied"] = True
++            flow = state.get("flow")
++            if isinstance(flow, Path) and flow.exists():
++                shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
++                state["terminalFlowCopied"] = True
++            if state.get("flowWasPresent") and not (self.output / phase / f"{label}-generated-flow.yaml").is_file():
++                raise AssertionError("authenticated generated flow was not retained")
++        except BaseException as exc:
++            state["error"] = exc
++            authenticated = state.get("authenticated")
++            if isinstance(authenticated, threading.Event):
++                authenticated.set()
++
++    def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str) -> tuple[dict[str, object], threading.Thread]:
++        state: dict[str, object] = {"stop": threading.Event(), "authenticated": threading.Event(), "authenticatedPID": None, "report": None, "flow": None, "flowWasPresent": False, "error": None, "terminalReportCopied": False, "terminalFlowCopied": False}
++        thread = threading.Thread(target=self.preserve_runner_report, args=(phase, label, proc, device, state), daemon=False)
++        thread.start()
++        return state, thread
++
++    @staticmethod
++    def wait_report_snapshot_authenticated(snapshot: tuple[dict[str, object], threading.Thread], expected_pid: int | None = None) -> int:
++        state, thread = snapshot
++        authenticated = state["authenticated"]
++        assert isinstance(authenticated, threading.Event)
++        if not authenticated.wait(timeout=15):
++            raise TimeoutError("runner report snapshot authentication timed out")
++        error = state.get("error")
++        if isinstance(error, BaseException):
++            raise error
++        pid = state.get("authenticatedPID")
++        if not isinstance(pid, int) or (expected_pid is not None and pid != expected_pid):
++            raise AssertionError({"snapshotAuthenticatedPID": pid, "expectedPID": expected_pid, "workerAlive": thread.is_alive()})
++        if not isinstance(state.get("report"), Path) or not isinstance(state.get("flow"), Path):
++            raise AssertionError("snapshot authentication omitted report or generated-flow path")
++        return pid
++
++    @staticmethod
++    def stop_report_snapshot(snapshot: tuple[dict[str, object], threading.Thread]) -> None:
++        state, thread = snapshot
++        stop = state["stop"]
++        assert isinstance(stop, threading.Event)
++        stop.set()
++        thread.join(timeout=15)
++        if thread.is_alive():
++            raise TimeoutError("runner report snapshot thread did not stop")
++        error = state.get("error")
++        if isinstance(error, BaseException):
++            raise error
++        if not state.get("terminalReportCopied"):
++            raise AssertionError("runner report terminal snapshot was not captured")
++
++    def stop_stale(self, platform: str) -> None:
++        if self.session.exists():
++            raise AssertionError(f"refusing silently reused session before {platform}: {self.session}")
++
++    def start_args(self, platform: str, detach: bool = False, json_mode: bool = False) -> list[str]:
++        args = [str(self.binary), "runner", "start", "--platform", platform]
++        if platform == "ios":
++            args += ["--simulator", self.ns.ios_udid, "--bundle-id", self.ns.ios_bundle_id]
++        else:
++            args += ["--device", self.ns.android_serial, "--application-id", self.ns.android_application_id]
++        if detach:
++            args.append("--detach")
++        if json_mode:
++            args.append("--json")
++        return args
++
++    def startup_interrupt(self) -> None:
++        phase = "startup-interrupt"
++        for platform, device in (("ios", self.ns.ios_udid), ("android", self.ns.android_serial)):
++            self.stop_stale(platform)
++            label = platform
++            proc = self.spawn(phase, label, self.start_args(platform))
++            snapshot = self.start_report_snapshot(phase, label, proc, device)
++            try:
++                doc = self.wait_state(proc, "starting")
++                runner_pid = int(doc["pid"])
++                self.register_runner(runner_pid, platform, device, phase)
++                write_json(self.output / phase / f"{label}.starting.json", doc)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
++                os.kill(proc.pid, signal.SIGINT)
++                code = self.finish(phase, label, proc, 90)
++                err = (self.output / phase / f"{label}.stderr").read_text()
++                notices = [line for line in err.splitlines() if line.startswith("[grantiva] received SIGINT")]
++                if code != 130 or notices != [INTERRUPT_NOTICES[platform]] or "Timed out waiting" in err or self.session.exists():
++                    raise AssertionError(f"{platform} startup interrupt failed: exit={code}")
++                self.assert_pid_gone(runner_pid)
++                self.assert_session_cleanup(runner_pid)
++                self.checks.append({"phase": phase, "platform": platform, "exit": code, "runnerPID": runner_pid, "state": "starting"})
++            finally:
++                if proc.poll() is None:
++                    os.kill(proc.pid, signal.SIGINT)
++                    proc.wait(timeout=30)
++                self.stop_report_snapshot(snapshot)
++
++    def detach_ready(self) -> None:
++        phase = "detach-ready"
++        for platform, device in (("ios", self.ns.ios_udid), ("android", self.ns.android_serial)):
++            self.stop_stale(platform)
++            label = platform
++            args = self.start_args(platform, detach=True, json_mode=True)
++            proc = self.spawn(phase, label, args)
++            snapshot = self.start_report_snapshot(phase, label, proc, device)
++            try:
++                starting = self.wait_state(proc, "starting")
++                runner_pid = int(starting["pid"])
++                self.register_runner(runner_pid, platform, device, phase)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
++                if starting.get("port") is not None:
++                    raise AssertionError("genuine starting state must have null port")
++                second = json.loads(self.command(phase, f"{label}-second-json", args).stdout)
++                if second.get("status") != "already_running" or second.get("pid") != runner_pid or second.get("port") is not None:
++                    raise AssertionError(f"invalid already-running starting response: {second}")
++                plain = self.command(phase, f"{label}-second-plain", args[:-1]).stdout.decode()
++                if f"Runner already running (pid {runner_pid}, starting)" not in plain:
++                    raise AssertionError(plain)
++                if self.finish(phase, label, proc, 600) != 0:
++                    raise AssertionError(f"{platform} detach start failed")
++            finally:
++                self.stop_report_snapshot(snapshot)
++            ready = json.loads(self.session.read_text())
++            started = json.loads((self.output / phase / f"{label}.stdout").read_text())
++            if ready.get("state") != "ready" or ready.get("pid") != runner_pid or started.get("pid") != runner_pid or int(ready.get("port", 0)) <= 0:
++                raise AssertionError({"starting": starting, "ready": ready, "stdout": started})
++            hierarchy = self.command(phase, f"{label}-immediate-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", device, "--format", "tree"])
++            if "Landmarks" not in hierarchy.stdout.decode(errors="replace"):
++                raise AssertionError("immediate hierarchy lacks Landmarks")
++            report_file = self.output / phase / f"{label}-runner-report" / "report.json"
++            if not report_file.exists():
++                raise AssertionError("runner report snapshot absent")
++            report = json.loads(report_file.read_text())
++            statuses = [flow.get("status") for flow in report.get("flows", [])]
++            if "passed" not in statuses and report.get("status") != "passed":
++                raise AssertionError(report)
++            stop = json.loads(self.command(phase, f"{label}-stop", [str(self.binary), "runner", "stop", "--json"]).stdout)
++            if stop.get("status") != "stopped" or stop.get("pid") != runner_pid or self.session.exists():
++                raise AssertionError(stop)
++            self.assert_pid_gone(runner_pid)
++            self.assert_session_cleanup(runner_pid)
++            if platform == "android":
++                forwards = self.command(phase, "android-forwards-after", [str(self.adb), "-s", device, "forward", "--list"]).stdout.decode()
++                if device in forwards:
++                    raise AssertionError("owned Android forward remains")
++            self.checks.append({"phase": phase, "platform": platform, "starting": second, "ready": ready, "stop": stop, "immediateHierarchy": True})
++
++        # Ready-state foreground interrupt, independently on each platform.
++        for platform, device in (("ios", self.ns.ios_udid), ("android", self.ns.android_serial)):
++            label = f"{platform}-ready-interrupt"
++            proc = self.spawn(phase, label, self.start_args(platform))
++            snapshot = self.start_report_snapshot(phase, label, proc, device)
++            try:
++                ready = self.wait_state(proc, "ready")
++                runner_pid = int(ready["pid"])
++                self.register_runner(runner_pid, platform, device, phase)
++                self.wait_report_snapshot_authenticated(snapshot, runner_pid)
++                hierarchy = self.command(phase, f"{label}-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", device, "--format", "tree"])
++                if "Landmarks" not in hierarchy.stdout.decode(errors="replace"):
++                    raise AssertionError(f"{platform} ready-state hierarchy lacks Landmarks")
++                os.kill(proc.pid, signal.SIGINT)
++                code = self.finish(phase, label, proc, 45)
++                err = (self.output / phase / f"{label}.stderr").read_text()
++                notices = [line for line in err.splitlines() if line.startswith("[grantiva] received SIGINT")]
++                if code != 130 or notices != [INTERRUPT_NOTICES[platform]] or "Timed out waiting" in err or self.session.exists():
++                    raise AssertionError(f"{label} failed")
++                self.assert_pid_gone(runner_pid)
++                self.assert_session_cleanup(runner_pid)
++                self.checks.append({"phase": "ready-interrupt", "platform": platform, "exit": code, "runnerPID": runner_pid})
++            finally:
++                if proc.poll() is None:
++                    os.kill(proc.pid, signal.SIGINT)
++                    proc.wait(timeout=30)
++                self.stop_report_snapshot(snapshot)
++
++    def absent_app(self) -> None:
++        phase = "absent-app"
++        missing = "com.grantiva.task8.absent"
++        self.command(phase, "ios-uninstall", ["/usr/bin/xcrun", "simctl", "uninstall", self.ns.ios_udid, self.ns.ios_bundle_id], expected=None)
++        absent_before = self.command(phase, "ios-absent-before", ["/usr/bin/xcrun", "simctl", "get_app_container", self.ns.ios_udid, self.ns.ios_bundle_id, "app"], expected=None)
++        if absent_before.returncode == 0:
++            raise AssertionError("iOS app remains installed after targeted uninstall")
++        ios = [str(self.binary), "build", "install", "--platform", "ios", "--simulator", self.ns.ios_udid, "--bundle-id", self.ns.ios_bundle_id, "--no-build"]
++        refusal = self.command(phase, "ios-launch-refusal", ios, expected=1)
++        if "not installed" not in refusal.stderr.decode(errors="replace"):
++            raise AssertionError("iOS canonical absent-install error missing")
++        absent_after = self.command(phase, "ios-absent-after", ["/usr/bin/xcrun", "simctl", "get_app_container", self.ns.ios_udid, self.ns.ios_bundle_id, "app"], expected=None)
++        if absent_after.returncode == 0:
++            raise AssertionError("canonical refusal unexpectedly installed the iOS app")
++        restored = json.loads(self.command(phase, "ios-restore", ios + ["--app-file", str(self.ns.ios_app), "--no-launch", "--json"]).stdout)
++        if restored.get("status") != "installed" or Path(restored.get("appPath", "")).resolve() != self.ns.ios_app.resolve():
++            raise AssertionError(restored)
++        android = self.start_args("android", detach=True, json_mode=True)
++        android[android.index("--application-id") + 1] = missing
++        result = self.command(phase, "android-launch-refusal", android, expected=1, timeout=45)
++        if b"Timed out" in result.stderr or self.session.exists():
++            raise AssertionError("Android absent app timed out or created a session")
++        forwards = self.command(phase, "android-forwards-after", [str(self.adb), "-s", self.ns.android_serial, "forward", "--list"]).stdout.decode()
++        if self.ns.android_serial in forwards:
++            raise AssertionError("Android absent-app failure left an owned forward")
++        self.checks.append({"phase": phase, "iosCanonicalNotInstalled": True, "iosRestored": str(self.ns.ios_app), "androidPromptFailure": True})
++
++    def log_cleanup(self) -> None:
++        phase = "log-cleanup"
++        root = self.output / phase
++        root.mkdir(exist_ok=True)
++        flows = {
++            "success": f"appId: {self.ns.ios_bundle_id}\n---\n- launchApp\n- assertVisible: Landmarks\n",
++            "failed": f"appId: {self.ns.ios_bundle_id}\n---\n- launchApp\n- assertVisible: task8-deliberately-absent\n",
++            "interrupted": f"appId: {self.ns.ios_bundle_id}\n---\n- launchApp\n- extendedWaitUntil:\n    visible: task8-deliberately-absent\n    timeout: 300000\n",
++        }
++        for label, body in flows.items():
++            flow = root / f"{label}.yaml"
++            flow.write_text(body)
++            report = root / f"{label}-report"
++            ready = root / f"{label}-ready.json"
++            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid, "--flow", str(flow), "--report-dir", str(report), "--logs", "--logs-predicate", 'process == "Landmarks"', "--verbose"]
++            if label == "success":
++                argv += ["--keep-alive", "--ready-file", str(ready)]
++            proc = self.spawn(phase, label, argv)
++            marker = None
++            child_pid = None
++            try:
++                deadline = time.monotonic() + 180
++                while time.monotonic() < deadline:
++                    ps = subprocess.check_output(["/bin/ps", "-ww", "-axo", "pid=,ppid=,pgid=,command="], text=True)
++                    wrappers = [line for line in ps.splitlines() if f"simctl spawn {self.ns.ios_udid} log stream" in line and "grantiva-log-" in line]
++                    if wrappers:
++                        match = re.search(r"grantiva-log-[A-F0-9-]+", wrappers[0])
++                        if match:
++                            marker = match.group()
++                            children = [line for line in ps.splitlines() if marker in line and len(line.split(maxsplit=3)) == 4 and line.split(maxsplit=3)[3].startswith("log stream ")]
++                            if children:
++                                child_pid = int(children[0].split()[0])
++                                self.owned_pids[child_pid] = {"kind": "log-child", "marker": marker, "device": self.ns.ios_udid, "phase": phase, "case": label}
++                                break
++                    if proc.poll() is not None:
++                        raise AssertionError(f"{label} exited before owned log child was observed")
++                    time.sleep(0.025)
++                if not marker or child_pid is None:
++                    raise TimeoutError(f"owned iOS log child not observed for {label}")
++                self.record_ownership()
++                active_runner = None
++                if label == "success":
++                    deadline = time.monotonic() + 240
++                    while not ready.exists() and time.monotonic() < deadline:
++                        if proc.poll() is not None:
++                            raise AssertionError("success control exited before ready")
++                        time.sleep(0.05)
++                    ready_doc = json.loads(ready.read_text())
++                    if ready_doc.get("status") != "passed":
++                        raise AssertionError(ready_doc)
++                    os.kill(proc.pid, signal.SIGINT)
++                elif label == "interrupted":
++                    deadline = time.monotonic() + 180
++                    while time.monotonic() < deadline and active_runner is None:
++                        ps = subprocess.check_output(["/bin/ps", "-ww", "-axo", "pid=,ppid=,pgid=,command="], text=True)
++                        for line in ps.splitlines():
++                            active_runner = self.bind_log_runner(line, proc.pid, self.ns.ios_udid, report, flow)
++                            if active_runner is not None:
++                                break
++                        if proc.poll() is not None:
++                            raise AssertionError("interrupted control exited before its long-wait runner became active")
++                        if active_runner is None:
++                            time.sleep(0.025)
++                    if active_runner is None:
++                        raise TimeoutError("interrupted long-wait runner/report did not become active")
++                    os.kill(proc.pid, signal.SIGINT)
++                code = self.finish(phase, label, proc, 180)
++                expected = {"success": 0, "failed": 1, "interrupted": 130}[label]
++                if code != expected:
++                    raise AssertionError(f"{label} log cleanup exit {code}, expected {expected}")
++                for index in range(3):
++                    ps = self.command(phase, f"{label}-processes-after-{index}", ["/bin/ps", "-ww", "-axo", "pid=,ppid=,pgid=,command="]).stdout.decode()
++                    if marker in ps:
++                        raise AssertionError(f"{label} owned log child remains")
++                err = (root / f"{label}.stderr").read_text()
++                terminals = [line for line in err.splitlines() if f"simctl spawn {self.ns.ios_udid} log stream" in line and ("stopped by " in line or "exit " in line)]
++                if len(terminals) != 1 or "could not confirm log-stream cleanup" in err:
++                    raise AssertionError({"case": label, "terminalDiagnostics": terminals})
++                report_path = report / "report.json"
++                report_status = None
++                if report_path.exists():
++                    report_doc = json.loads(report_path.read_text())
++                    expected_status = {"success": "passed", "failed": "failed", "interrupted": "interrupted"}[label]
++                    if report_doc.get("status") != expected_status and not any(f.get("status") == expected_status for f in report_doc.get("flows", [])):
++                        raise AssertionError({"case": label, "report": report_doc})
++                    report_status = expected_status
++                elif label != "interrupted":
++                    raise AssertionError(f"{label} report is absent")
++                self.checks.append({"phase": phase, "case": label, "exit": code, "ownedMarker": marker, "ownedChildPID": child_pid, "absentSnapshots": 3, "terminalDiagnostic": terminals[0], "activeRunner": active_runner, "reportStatus": report_status})
++            finally:
++                if proc.poll() is None:
++                    os.kill(proc.pid, signal.SIGINT)
++                    proc.wait(timeout=30)
++
++    def cycle_controls(self) -> None:
++        phase = "cycle-controls"
++        root = self.output / phase / "project"
++        root.mkdir(parents=True, exist_ok=True)
++        (root / "a.yaml").write_text(f"appId: {self.ns.ios_bundle_id}\n---\n- runFlow: b.yaml\n")
++        (root / "b.yaml").write_text(f"appId: {self.ns.ios_bundle_id}\n---\n- runFlow: a.yaml\n")
++        base = f"bundle_id: {self.ns.ios_bundle_id}\nsimulator: {self.ns.ios_udid}\n"
++        cases = (("screens", None, "grantiva.yml -> a.yaml -> b.yaml -> a.yaml"), ("root", "a.yaml", "a.yaml -> b.yaml -> a.yaml -> b.yaml"), ("absolute", str(root / "a.yaml"), f"{root / 'a.yaml'} -> b.yaml -> a.yaml -> b.yaml"))
++        for label, flow_name, expected in cases:
++            (root / "grantiva.yml").write_text(base + ("screens:\n  - name: S\n    path:\n      - run_flow: a.yaml\n" if flow_name is None else ""))
++            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid] + (["--flow", flow_name] if flow_name else [])
++            started = time.monotonic()
++            result = self.command(phase, label, argv, expected=1, timeout=20, cwd=root)
++            elapsed = time.monotonic() - started
++            text = (result.stdout + result.stderr).decode(errors="replace")
++            if f"circular dependency detected: {expected}" not in text or elapsed >= 5:
++                raise AssertionError({"case": label, "elapsed": elapsed, "expected": expected})
++            self.checks.append({"phase": phase, "case": label, "exit": 1, "duration": elapsed, "diagnostic": expected})
++
++    def force_teardown(self) -> None:
++        phase = "force-teardown"
++        self.stop_stale("ios-force-teardown")
++        proc = self.spawn(phase, "live-start", self.start_args("ios", detach=True, json_mode=True))
++        snapshot = self.start_report_snapshot(phase, "live-start", proc, self.ns.ios_udid)
++        try:
++            authenticated_pid = self.wait_report_snapshot_authenticated(snapshot)
++            if self.finish(phase, "live-start", proc, 600) != 0:
++                raise AssertionError("force-teardown runner start failed")
++        finally:
++            self.stop_report_snapshot(snapshot)
++        start = json.loads((self.output / phase / "live-start.stdout").read_text())
++        runner_pid = int(start["pid"])
++        if runner_pid != authenticated_pid:
++            raise AssertionError({"startedPID": runner_pid, "snapshotAuthenticatedPID": authenticated_pid})
++        self.register_runner(runner_pid, "ios", self.ns.ios_udid, phase)
++        self.command(phase, "live-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", self.ns.ios_udid, "--format", "tree"])
++        force_doc = json.loads(self.command(phase, "live-force", [str(self.binary), "simulator", "teardown", "--udid", self.ns.ios_udid, "--force", "--json"], timeout=240).stdout)
++        entry = force_doc[0] if isinstance(force_doc, list) else force_doc
++        if (entry.get("runnerSessionStopped") is not True or entry.get("reclaimed") is not True
++                or not isinstance(entry.get("processes"), list) or not isinstance(entry.get("reapedProcesses"), list)):
++            raise AssertionError(entry)
++        self.assert_pid_gone(runner_pid)
++        self.assert_session_cleanup(runner_pid)
++        write_json(self.output / "IOS-FORCE-RECLAIMED.json", {
++            "ownedUDID": self.ns.ios_udid, "phase": phase, "resourcesReclaimed": True,
++            "physicalDeviceDeleted": False, "finalCleanupRequired": True,
++        })
++        self.checks.append({
++            "phase": phase, "runnerPID": runner_pid, "result": entry,
++            "resourcesReclaimed": True, "physicalDeviceDeleted": False,
++            "finalCleanupRequired": True,
++        })
++        self.record_ownership("force-resources-reclaimed")
++
++
++def parser() -> argparse.ArgumentParser:
++    p = argparse.ArgumentParser(description=__doc__)
++    p.add_argument("--binary", type=Path, required=True)
++    p.add_argument("--source", type=Path, required=True)
++    p.add_argument("--bundle", type=Path, required=True)
++    p.add_argument("--runner", type=Path, required=True)
++    p.add_argument("--candidate-manifest", type=Path, required=True)
++    p.add_argument("--ownership-manifest", type=Path, required=True)
++    p.add_argument("--project", type=Path, required=True)
++    p.add_argument("--runner-home", type=Path, required=True)
++    p.add_argument("--session-id", default="fix4-8-c3")
++    p.add_argument("--ios-udid", required=True)
++    p.add_argument("--android-serial", required=True)
++    p.add_argument("--android-avd", required=True)
++    p.add_argument("--output", type=Path, required=True)
++    p.add_argument("--adb", default=os.environ.get("ANDROID_HOME", str(Path.home() / "Library/Android/sdk")) + "/platform-tools/adb")
++    p.add_argument("--ios-bundle-id", default="com.kylebrowning.Landmarks")
++    p.add_argument("--ios-app", type=Path, required=True)
++    p.add_argument("--android-application-id", default="com.kylebrowning.landmarks")
++    p.add_argument("--phase", action="append", choices=PHASES)
++    p.add_argument("--allow-force-reclaim-owned-ios", action="store_true")
++    p.add_argument("--validate-only", action="store_true")
++    return p
++
++
++def validate(ns: argparse.Namespace) -> list[str]:
++    errors: list[str] = []
++    for name in ("binary", "source", "bundle", "runner", "candidate_manifest", "ownership_manifest", "project", "runner_home", "ios_app"):
++        path = getattr(ns, name)
++        if not path.is_absolute() or not path.exists():
++            errors.append(f"--{name.replace('_', '-')} must be an existing absolute path: {path}")
++    if ns.binary.exists() and not os.access(ns.binary, os.X_OK):
++        errors.append(f"--binary is not executable: {ns.binary}")
++    if not ns.output.is_absolute() or ns.output.exists():
++        errors.append(f"--output must be an absent absolute path: {ns.output}")
++    if ns.ios_udid in PROTECTED_UDIDS:
++        errors.append("protected iOS owner device cannot be a smoke target")
++    if ns.android_avd in PROTECTED_AVDS:
++        errors.append("protected Android owner AVD cannot be a smoke target")
++    if ns.session_id != "fix4-8-c3":
++        errors.append("Task 8 session must be literal fix4-8-c3")
++    phases = ns.phase or list(PHASES[:-1])
++    if "force-teardown" in phases and (len(phases) != 1 or not ns.allow_force_reclaim_owned_ios):
++        errors.append("force-teardown must run alone with --allow-force-reclaim-owned-ios")
++    if "force-teardown" not in phases and ns.allow_force_reclaim_owned_ios:
++        errors.append("--allow-force-reclaim-owned-ios is valid only with --phase force-teardown")
++    return errors
++
++
++def main() -> int:
++    ns = parser().parse_args()
++    errors = validate(ns)
++    if errors:
++        print(json.dumps({"valid": False, "errors": errors}, indent=2), file=sys.stderr)
++        return 2
++    phases = ns.phase or list(PHASES[:-1])
++    if ns.validate_only:
++        print(json.dumps({"valid": True, "phases": phases, "forceTeardownIsolated": True}, indent=2))
++        return 0
++    smoke: Smoke | None = None
++    status = "failed"
++    try:
++        smoke = Smoke(ns)
++        smoke.record_ownership()
++        for phase in phases:
++            getattr(smoke, phase.replace("-", "_"))()
++            write_json(smoke.output / "checks.partial.json", smoke.checks)
++        status = "passed"
++        write_json(smoke.output / "acceptance.json", {"status": status, "phases": phases, "checks": smoke.checks})
++        return 0
++    except Exception as exc:
++        failure_output = smoke.output if smoke is not None else ns.output.resolve()
++        failure_output.mkdir(parents=True, exist_ok=True)
++        write_json(failure_output / "failure.json", {"status": status, "errorType": type(exc).__name__, "error": str(exc), "checks": smoke.checks if smoke else []})
++        if smoke is not None:
++            smoke.cleanup_owned()
++        raise
++    finally:
++        if smoke is not None:
++            smoke.record_ownership("force-resources-reclaimed" if (smoke.output / "IOS-FORCE-RECLAIMED.json").exists() else status)
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/manifest.example.json b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/manifest.example.json
+new file mode 100644
+index 00000000..145a79f2
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/manifest.example.json
+@@ -0,0 +1,47 @@
++{
++  "configuration": {
++    "controller_root": "/ABSOLUTE/PATH/TO/MERGED/CLI",
++    "candidate_manifest": "/ABSOLUTE/PATH/TO/frozen-candidate.json",
++    "ownership_manifest": "/ABSOLUTE/PATH/TO/ownership.json",
++    "candidate_binary": "/ABSOLUTE/PATH/TO/ONE/RELEASE/grantiva",
++    "candidate_bundle": "/ABSOLUTE/PATH/TO/ONE/RELEASE/grantiva_GrantivaCore.bundle",
++    "runner_home": "/ABSOLUTE/PATH/TO/FRESH/APFS/runner-home",
++    "evidence_root": "/ABSOLUTE/PATH/TO/findings/evidence/round4-smoke-candidate3",
++    "session_id": "fix4-8-c3",
++    "ios_udid": "NEW_SMOKE4_IOS_UDID",
++    "android_serial": "NEW_SMOKE4_ANDROID_SERIAL",
++    "android_avd": "smoke4-c3-android",
++    "android_apk": "/ABSOLUTE/PATH/TO/landmarks-demo-1552ae98-debug.apk",
++    "runner_binary": "/ABSOLUTE/PATH/TO/FRESH/APFS/runner-home/grantiva-runner",
++    "adb": "/ABSOLUTE/PATH/TO/Android/sdk/platform-tools/adb",
++    "uia2_sampler": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/uia2-source-snapshot-v2.py",
++    "movement_analyzer": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/analyze-l51-movement.py",
++    "runner_inputs": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-2/inputs",
++    "optional_inputs": "/ABSOLUTE/PATH/TO/regression/findings/evidence/fix4-3/inputs",
++    "healthy_flow": "/ABSOLUTE/PATH/TO/healthy.yaml",
++    "crash_flow": "/ABSOLUTE/PATH/TO/99-crash.yaml",
++    "cycle_project": "/ABSOLUTE/PATH/TO/cycle-project",
++    "cycle_flow": "subdirectory/a.yaml",
++    "ios_project": "/ABSOLUTE/PATH/TO/IOS/PROJECT/WITH/ACTIVE/SESSION",
++    "android_project": "/ABSOLUTE/PATH/TO/ANDROID/PROJECT/WITH/ACTIVE/SESSION",
++    "android_smoke_project": "/ABSOLUTE/PATH/TO/TASK-OWNED/ANDROID/SMOKE/PROJECT",
++    "lifecycle_project": "/ABSOLUTE/PATH/TO/TASK-OWNED/LIFECYCLE/PROJECT",
++    "ios_app": "/ABSOLUTE/PATH/TO/CLEAN/BUILT/Landmarks.app",
++    "ios_no_session_project": "/ABSOLUTE/PATH/TO/EMPTY/IOS/PROJECT",
++    "android_no_session_project": "/ABSOLUTE/PATH/TO/EMPTY/ANDROID/PROJECT"
++    ,"ios_large_seed": "/ABSOLUTE/PATH/TO/ios-large-hierarchy-seed.json",
++    "android_large_seed": "/ABSOLUTE/PATH/TO/android-large-hierarchy-seed.json",
++    "xcrun": "/usr/bin/xcrun",
++    "ios_app_id": "com.kylebrowning.Landmarks"
++  },
++  "phases": [
++    {"id":"01-candidate-upgrade","criteria":["release candidate manifest","fresh APFS clone upgrade","iOS 26.0/26.2/26.4/27.0 caches"],"commands":[{"id":"candidate-upgrade","argv":["/PATH/TO/PARAMETERIZED/candidate_upgrade.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}"],"assertions":[{"type":"exists","path":"candidate-manifest.json"}],"raw_reports":["${runner_home}"]}]},
++    {"id":"02-runner-android","criteria":["healthy stock","crash5","L51 direction/element/coordinates/engine-adb","favorite5","L77 literal clearState/bare stop/not visible","optional and required misses","subdirectory cycle"],"commands":[{"id":"runner-android","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/android_runner_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--source-root","${controller_root}","--project","${android_smoke_project}","--serial","${android_serial}","--avd","${android_avd}","--apk","${android_apk}","--adb","${adb}","--uia2-sampler","${uia2_sampler}","--movement-analyzer","${movement_analyzer}","--runner-inputs","${runner_inputs}","--optional-inputs","${optional_inputs}","--healthy-flow","${healthy_flow}","--crash-flow","${crash_flow}","--cycle-project","${cycle_project}","--cycle-flow","${cycle_flow}","--evidence","${evidence_root}/02-runner-android/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/02-runner-android/helper/acceptance.json","pointer":"/passed","value":true}]}]},
++    {"id":"03-lifecycle","criteria":["plain startup and ready interruption on both platforms","detach immediate readiness","canonical absent install","success/failure/interruption log cleanup","cycle controls"],"commands":[{"id":"lifecycle","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py","--binary","${candidate_binary}","--source","${controller_root}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--project","${lifecycle_project}","--runner-home","${runner_home}","--session-id","fix4-8-c3","--ios-udid","${ios_udid}","--ios-app","${ios_app}","--android-serial","${android_serial}","--android-avd","${android_avd}","--adb","${adb}","--phase","startup-interrupt","--phase","detach-ready","--phase","absent-app","--phase","log-cleanup","--phase","cycle-controls","--output","${evidence_root}/03-lifecycle/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/03-lifecycle/helper/acceptance.json","pointer":"/status","value":"passed"}]}]},
++    {"id":"04-mcp-ios","criteria":["L65 exact and precedence iOS","full L66 selector family","10 large mixed pairs","small responses","notifications"],"commands":[{"id":"mcp-ios","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--source-root","${controller_root}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--platform","ios","--device","${ios_udid}","--project","${ios_project}","--no-session-project","${ios_no_session_project}","--large-seed","${ios_large_seed}","--ios-simctl","${xcrun}","--ios-app-id","${ios_app_id}","--evidence","${evidence_root}/04-mcp-ios/helper","--pairs","10"],"assertions":[{"type":"json_equals","path":"${evidence_root}/04-mcp-ios/helper/acceptance.json","pointer":"/passed","value":true}]}]},
++    {"id":"05-mcp-android","criteria":["L65 exact and precedence Android","10 large mixed pairs","small responses","notifications"],"commands":[{"id":"mcp-android","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_smoke.py","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--source-root","${controller_root}","--binary","${candidate_binary}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--runner-home","${runner_home}","--platform","android","--device","${android_serial}","--android-avd","${android_avd}","--project","${android_project}","--no-session-project","${android_no_session_project}","--large-seed","${android_large_seed}","--evidence","${evidence_root}/05-mcp-android/helper","--pairs","10"],"assertions":[{"type":"json_equals","path":"${evidence_root}/05-mcp-android/helper/acceptance.json","pointer":"/passed","value":true}]}]},
++    {"id":"06-docs-output","criteria":["ambiguous doctor text and JSON","migration notes","all help pages regenerated from candidate","corpus tests"],"commands":[{"id":"docs-output","argv":["/PATH/TO/PARAMETERIZED/docs_smoke.py","--binary","${candidate_binary}","--source","${controller_root}"],"assertions":[{"type":"exists","path":"acceptance.json"}]}]},
++    {"id":"07-final-force-teardown","criteria":["both owned targets live for constructor validation","live owned iOS force teardown JSON","runner, session, and Grantiva resource cleanup","resource-reclaimed marker","physical simulator retained for explicit final cleanup"],"commands":[{"id":"force-teardown","argv":["${controller_root}/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py","--binary","${candidate_binary}","--source","${controller_root}","--bundle","${candidate_bundle}","--runner","${runner_binary}","--candidate-manifest","${candidate_manifest}","--ownership-manifest","${ownership_manifest}","--project","${lifecycle_project}","--runner-home","${runner_home}","--session-id","fix4-8-c3","--ios-udid","${ios_udid}","--ios-app","${ios_app}","--android-serial","${android_serial}","--android-avd","${android_avd}","--adb","${adb}","--phase","force-teardown","--allow-force-reclaim-owned-ios","--output","${evidence_root}/07-final-force-teardown/helper"],"assertions":[{"type":"json_equals","path":"${evidence_root}/07-final-force-teardown/helper/acceptance.json","pointer":"/status","value":"passed"},{"type":"exists","path":"${evidence_root}/07-final-force-teardown/helper/IOS-FORCE-RECLAIMED.json"}]}]},
++    {"id":"08-final-cleanup","criteria":["explicit owned iOS shutdown/deletion and absence proof","manifest-owned Android/sessions/locks/forwards/PIDs absent","protected inventories unchanged"],"commands":[{"id":"owned-cleanup","argv":["/PATH/TO/PARAMETERIZED/cleanup_smoke.py","--manifest","${ownership_manifest}","--expect-ios-absent","${ios_udid}","--android","${android_serial}","--avd","${android_avd}"],"assertions":[{"type":"exists","path":"cleanup.json"}]}]}
++  ]
++}
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_client.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_client.py
+new file mode 100644
+index 00000000..e88a71d7
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_client.py
+@@ -0,0 +1,48 @@
++import json, pathlib, subprocess, threading, time
++
++class Client:
++    def __init__(self, binary, project, platform, evidence):
++        self.root=pathlib.Path(evidence); self.root.mkdir(parents=True,exist_ok=False)
++        self.raw=(self.root/'stdout.raw').open('wb'); self.err=(self.root/'stderr.raw').open('wb'); self.requests=(self.root/'requests.jsonl').open('w')
++        self.cv=threading.Condition(); self.messages=[]; self.invalid=[]; self.next_id=1
++        argv=[str(binary),'mcp','--project-dir',str(project),'--platform',platform]
++        (self.root/'command.json').write_text(json.dumps({'argv':argv,'startedEpoch':time.time()},indent=2)+'\n')
++        self.process=subprocess.Popen(argv,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.err)
++        (self.root/'pid.txt').write_text(str(self.process.pid)+'\n'); self.thread=threading.Thread(target=self._read,daemon=True); self.thread.start()
++        self.call('initialize',{'protocolVersion':'2025-03-26','capabilities':{},'clientInfo':{'name':'round4-task8','version':'1'}})
++        self.send('notifications/initialized',{},True)
++    def _read(self):
++        for line in self.process.stdout:
++            self.raw.write(line); self.raw.flush()
++            with self.cv:
++                try:self.messages.append((json.loads(line),len(line)))
++                except Exception as exc:self.invalid.append({'bytes':len(line),'error':str(exc)})
++                self.cv.notify_all()
++    def send(self,method,params,notification=False):
++        obj={'jsonrpc':'2.0','method':method,'params':params}
++        if not notification: obj['id']=self.next_id; self.next_id+=1
++        wire=json.dumps(obj); self.requests.write(wire+'\n'); self.requests.flush(); self.process.stdin.write((wire+'\n').encode()); self.process.stdin.flush(); return obj.get('id')
++    def wait(self,request_id,timeout=90):
++        deadline=time.monotonic()+timeout
++        with self.cv:
++            while True:
++                found=[m for m,n in self.messages if m.get('id')==request_id]
++                if found:
++                    if len(found)!=1: raise AssertionError(f'duplicate response {request_id}')
++                    return found[0]
++                if self.invalid: raise AssertionError(self.invalid)
++                left=deadline-time.monotonic()
++                if left<=0: raise TimeoutError(request_id)
++                self.cv.wait(min(left,1))
++    def call(self,method,params): return self.wait(self.send(method,params))
++    def tool(self,name,args): return self.call('tools/call',{'name':name,'arguments':args})
++    @staticmethod
++    def text(reply): return '\n'.join(x.get('text','') for x in reply.get('result',{}).get('content',[]))
++    def close(self):
++        self.process.stdin.close()
++        try:self.process.wait(timeout=10)
++        except subprocess.TimeoutExpired:self.process.terminate(); self.process.wait(timeout=10)
++        self.thread.join(timeout=3); self.raw.close(); self.err.close(); self.requests.close()
++        result={'exit':self.process.returncode,'endedEpoch':time.time(),'invalid':self.invalid,'messages':[{'id':m.get('id'),'method':m.get('method'),'bytes':n} for m,n in self.messages]}
++        (self.root/'result.json').write_text(json.dumps(result,indent=2)+'\n')
++        if self.invalid: raise AssertionError(self.invalid)
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_smoke.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_smoke.py
+new file mode 100644
+index 00000000..1f5bcaf9
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/mcp_smoke.py
+@@ -0,0 +1,104 @@
++#!/usr/bin/env python3
++import argparse, hashlib, http.server, json, os, pathlib, subprocess, threading, time, urllib.error, urllib.request
++from mcp_client import Client
++from candidate_identity import validate as validate_identity
++
++def digest(p): return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
++def good(reply): return not reply.get('error') and not reply.get('result',{}).get('isError')
++def walk(node):
++    yield node
++    for child in node.get('children',[]): yield from walk(child)
++
++ap=argparse.ArgumentParser(); ap.add_argument('--candidate-manifest',required=True); ap.add_argument('--ownership-manifest',required=True); ap.add_argument('--source-root',required=True); ap.add_argument('--binary',required=True); ap.add_argument('--bundle',required=True); ap.add_argument('--runner',required=True); ap.add_argument('--runner-home',required=True); ap.add_argument('--platform',choices=('ios','android'),required=True)
++ap.add_argument('--device',required=True); ap.add_argument('--android-avd'); ap.add_argument('--project',required=True); ap.add_argument('--no-session-project',required=True); ap.add_argument('--large-seed',required=True); ap.add_argument('--ios-simctl'); ap.add_argument('--ios-app-id'); ap.add_argument('--evidence',required=True); ap.add_argument('--pairs',type=int,default=10)
++a=ap.parse_args(); root=pathlib.Path(a.evidence).resolve(); root.mkdir(parents=True,exist_ok=False)
++for p in (a.binary,a.runner_home,a.project,a.no_session_project):
++    if not pathlib.Path(p).exists(): raise SystemExit(f'missing {p}')
++if a.pairs!=10: raise SystemExit('binding smoke requires exactly 10 pairs')
++if not pathlib.Path(a.large_seed).is_file(): raise SystemExit('large hierarchy seed missing')
++if a.platform=='ios' and (not a.ios_simctl or not a.ios_app_id): raise SystemExit('iOS retry requires simctl and app id')
++if os.environ.get('GRANTIVA_API_KEY'): raise SystemExit('GRANTIVA_API_KEY must be unset')
++if (pathlib.Path(a.no_session_project)/'.grantiva/session.json').exists(): raise SystemExit('no-session project contains a session')
++session=json.loads((pathlib.Path(a.project)/'.grantiva/session.json').read_text())
++if session.get('platform')!=a.platform or a.device not in (session.get('udid'),session.get('device'),session.get('deviceId')): raise SystemExit('active session does not match explicit platform/device')
++os.environ.update(GRANTIVA_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),MAESTRO_RUNNER_HOME=str(pathlib.Path(a.runner_home).resolve()),GRANTIVA_SESSION_ID='fix4-8-c3')
++identity=validate_identity(a.candidate_manifest,a.ownership_manifest,source_root=a.source_root,binary=a.binary,bundle=a.bundle,runner=a.runner,runner_home=a.runner_home,platform=a.platform,device=a.device,android_avd=a.android_avd)
++(root/'provenance.json').write_text(json.dumps({**identity,'binary':str(pathlib.Path(a.binary).resolve()),'runnerHome':str(pathlib.Path(a.runner_home).resolve()),'platform':a.platform,'device':a.device,'project':str(pathlib.Path(a.project).resolve()),'apiKey':'unset'},indent=2)+'\n')
++checks=[]
++no=Client(a.binary,a.no_session_project,a.platform,root/'no-session')
++try:
++    reply=no.tool('grantiva_script',{}); text=no.text(reply)
++    assert reply['result']['isError'] and "No active runner session" in text,(reply,text)
++    checks.append({'L65NoSessionPrecedence':True,'text':text})
++finally:no.close()
++c=Client(a.binary,a.project,a.platform,root/'active')
++try:
++    for attempt in range(30):
++        ready=c.tool('grantiva_a11y_tree',{})
++        if good(ready): break
++        time.sleep(1)
++    assert good(ready),ready
++    for arguments,expected in [({},"Error: Invalid argument: 'steps' is required."),({'steps':'tap'},"Error: Invalid argument: 'steps' array is required.")]:
++        reply=c.tool('grantiva_script',arguments); assert reply['result']['isError'] and c.text(reply)==expected,reply
++    empty=c.tool('grantiva_script',{'steps':[]}); assert good(empty) and 'Final hierarchy:' in c.text(empty)
++    checks.append({'L65ActiveExact':True,'wrongTypeRetained':True,'emptyRetained':True})
++    if a.platform=='ios':
++        missing=c.tool('grantiva_tap',{'label':'No Such Selector fix4-8-c3'}); assert missing['result'].get('isError') and 'Element not found' in c.text(missing)
++        sequence=[('grantiva_tap',{'label':'Favorites'},'Tapped on "Favorites"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_script',{'steps':[{'tap':'heart'}]},None),('grantiva_tap',{'label':'Deep Links'},'Tapped on "Deep Links"'),('grantiva_tap',{'label':'Edit Landmark'},'Tapped on "Edit Landmark"'),('grantiva_tap',{'label':'Name'},'Tapped on "Name" (matched by placeholder). Updated hierarchy:'),('grantiva_tap',{'label':'Cancel'},'Tapped on "Cancel"'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'Mountains'},'Tapped on "Mountains"'),('grantiva_tap',{'label':'Mount "Denali"'},'Tapped on "Mount "Denali""')]
++        selector=[]
++        for name,arguments,prefix in sequence:
++            reply=c.tool(name,arguments); assert good(reply),reply
++            if prefix: assert c.text(reply).startswith(prefix),(arguments,c.text(reply)[:240])
++            selector.append({'tool':name,'arguments':arguments,'text':c.text(reply)[:400]})
++        tree=json.loads(c.text(c.tool('grantiva_a11y_tree',{}))); nodes=list(walk(tree)); assert tree['type']=='XCUIElementTypeApplication' and tree.get('label')=='Landmarks'
++        assert any(n.get('type')=='XCUIElementTypeButton' and n.get('identifier')=='BackButton' and n.get('label')=='Mountains' for n in nodes)
++        assert any(n.get('type')=='XCUIElementTypeButton' and n.get('label')=='Landmarks' and n.get('identifier')!='BackButton' and n.get('value')=='1' for n in nodes)
++        mountains=c.tool('grantiva_tap',{'label':'Mountains'}); mountains_text=c.text(mountains); assert good(mountains) and mountains_text.startswith('Tapped on "Mountains"'),mountains
++        category=json.loads(mountains_text[mountains_text.index('{'):]); category_nodes=list(walk(category)); assert category['type']=='XCUIElementTypeApplication' and category.get('label')=='Landmarks'
++        assert any(n.get('type')=='XCUIElementTypeButton' and n.get('identifier')=='BackButton' and n.get('label')=='Landmarks' for n in category_nodes)
++        back=c.tool('grantiva_tap',{'label':'Landmarks'}); back_text=c.text(back); assert good(back) and back_text.startswith('Tapped on "Landmarks"'),back
++        root_list=json.loads(back_text[back_text.index('{'):]); assert root_list['type']=='XCUIElementTypeApplication' and root_list.get('label')=='Landmarks' and any(n.get('label')=='Golden Gate Bridge' for n in walk(root_list))
++        tree=json.loads(c.text(c.tool('grantiva_a11y_tree',{}))); favorite=next(n for n in walk(tree) if n.get('label')=='Favorites' and n.get('type')=='XCUIElementTypeButton'); frame=favorite['frame']; xy={'x':frame['x']+frame['width']/2,'y':frame['y']+frame['height']/2}
++        coordinate=c.tool('grantiva_tap',xy); assert good(coordinate) and c.text(coordinate).startswith('Tapped at (') and 'Favorites' in c.text(coordinate)
++        checks.append({'L66SelectorSuccessAndError':selector,'missingSelectorError':c.text(missing),'applicationRootExcluded':True,'quotedLabel':True,'backButtonWins':True,'coordinatePoints':xy})
++    seed=json.loads(pathlib.Path(a.large_seed).read_text()); assert isinstance(seed,list) and seed
++    for item in seed:
++        reply=c.tool(item['name'],item.get('arguments',{})); assert good(reply),(item,reply)
++    pre_resource=c.call('resources/read',{'uri':'grantiva://hierarchy'}); pre_tool=c.tool('grantiva_a11y_tree',{}); pre_sizes=[len((json.dumps(x,separators=(',',':'))+'\n').encode()) for x in (pre_resource,pre_tool)]; assert all(x>65536 for x in pre_sizes),pre_sizes
++    checks.append({'deterministicLargeHierarchySeed':str(pathlib.Path(a.large_seed).resolve()),'preflightResponseBytes':pre_sizes})
++    c.call('resources/subscribe',{'uri':'grantiva://hierarchy'}); large=[]; small=[]; triggers=[]
++    for pair in range(10):
++        ids=[c.send('resources/read',{'uri':'grantiva://hierarchy'}),c.send('tools/call',{'name':'grantiva_a11y_tree','arguments':{}})]; sid=c.send('tools/list',{}); tid=c.send('tools/call',{'name':'grantiva_script','arguments':{'steps':[{'wait':0.01}]}})
++        for request_id in ids+[sid,tid]: assert good(c.wait(request_id)),request_id
++        large.extend(ids); small.append(sid); triggers.append(tid)
++    deadline=time.monotonic()+5
++    while time.monotonic()<deadline and sum(m.get('method')=='notifications/resources/updated' for m,n in c.messages)<10: time.sleep(.1)
++    for request_id in large:
++        rows=[n for m,n in c.messages if m.get('id')==request_id]; assert len(rows)==1 and rows[0]>65536,(request_id,rows)
++    for request_id in small:
++        rows=[n for m,n in c.messages if m.get('id')==request_id]; assert len(rows)==1 and rows[0]<65536,(request_id,rows)
++    notes=[m for m,n in c.messages if m.get('method')=='notifications/resources/updated']; assert len(notes)==10,len(notes)
++    ids=[m['id'] for m,n in c.messages if 'id' in m]; assert len(ids)==len(set(ids))
++    checks.append({'transportPairs':10,'largeResponses':len(large),'smallResponses':len(small),'notifications':len(notes),'uniqueIDs':True})
++finally:c.close()
++if a.platform=='ios':
++    session_path=pathlib.Path(a.project)/'.grantiva/session.json'; original=session_path.read_bytes(); session_doc=json.loads(original); upstream=session_doc['wdaPort']; records=[]
++    class Proxy(http.server.BaseHTTPRequestHandler):
++        def log_message(self,*args): pass
++        def do_GET(self): self.forward()
++        def do_POST(self): self.forward()
++        def forward(self):
++            body=self.rfile.read(int(self.headers.get('Content-Length',0))); req=urllib.request.Request(f'http://127.0.0.1:{upstream}'+self.path,data=body or None,method=self.command,headers={'Content-Type':'application/json'}); started=time.monotonic()
++            try:
++                with urllib.request.urlopen(req,timeout=20) as result: status=result.status; response=result.read()
++            except urllib.error.HTTPError as error: status=error.code; response=error.read()
++            records.append({'method':self.command,'path':self.path,'status':status,'monotonic':started}); self.send_response(status); self.send_header('Content-Type','application/json'); self.send_header('Content-Length',str(len(response))); self.end_headers(); self.wfile.write(response)
++    proxy=http.server.ThreadingHTTPServer(('127.0.0.1',0),Proxy); thread=threading.Thread(target=proxy.serve_forever,daemon=True); thread.start(); retry=None
++    try:
++        session_doc['wdaPort']=proxy.server_port; session_doc['port']=proxy.server_port; session_path.write_text(json.dumps(session_doc)); retry=Client(a.binary,a.project,'ios',root/'retry'); subprocess.run([a.ios_simctl,'simctl','terminate',a.device,a.ios_app_id],check=True,capture_output=True,timeout=20); start=len(records); response=retry.tool('grantiva_tap',{'label':'Favorites'}); text=retry.text(response); assert response['result'].get('isError') and f'{a.ios_app_id} is not running' in text
++        finds=[x for x in records[start:] if x['path'].endswith('/elements')]; assert len(finds)==2 and all(x['status']==400 for x in finds) and finds[1]['monotonic']-finds[0]['monotonic']>=1,finds; checks.append({'L66RetryError':text,'lookups':2,'minimumRetryDelaySeconds':1})
++    finally:
++        session_path.write_bytes(original)
++        if retry: retry.close()
++        proxy.shutdown(); proxy.server_close(); thread.join(); (root/'retry-http.json').write_text(json.dumps(records,indent=2)+'\n')
++(root/'acceptance.json').write_text(json.dumps({'passed':True,'platform':a.platform,'checks':checks},indent=2)+'\n')
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/ownership.example.json b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/ownership.example.json
+new file mode 100644
+index 00000000..f7263861
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/ownership.example.json
+@@ -0,0 +1 @@
++{"schema":"grantiva.task8.ownership.v1","sessionId":"fix4-8-c3","devices":{"ios":{"platform":"ios","id":"NEW_SMOKE_UDID","name":"smoke4-c3-ios","runtime":"iOS 27.0","owned":true,"createdEpoch":0,"provision":{"command":["xcrun","simctl","create","..."],"exit":0},"ownedPIDs":[]},"android":{"platform":"android","id":"NEW_EMULATOR_SERIAL","name":"smoke4-c3-android","runtime":"API 35","avd":"smoke4-c3-android","owned":true,"createdEpoch":0,"provision":{"command":["avdmanager","create","avd","..."],"exit":0},"ownedPIDs":[]}}}
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/run_phase.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/run_phase.py
+new file mode 100644
+index 00000000..04cf7735
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/run_phase.py
+@@ -0,0 +1,103 @@
++#!/usr/bin/env python3
++"""Bounded Task 8 smoke phase executor. Preparation is inert unless --execute is passed."""
++import argparse, datetime, hashlib, json, os, pathlib, shutil, subprocess, sys, time
++from candidate_identity import validate as validate_identity
++
++PROTECTED = {
++    "B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C",
++    "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6",
++    "AVD:Pixel_8_API_35",
++}
++FORBIDDEN = ("pkill", "killall", "launchctl kill", "adb kill-server", "xcrun simctl shutdown all")
++
++def sha256(path):
++    h = hashlib.sha256()
++    with path.open("rb") as f:
++        for block in iter(lambda: f.read(1024 * 1024), b""): h.update(block)
++    return h.hexdigest()
++
++def fail(message): raise SystemExit(f"task-8 harness: {message}")
++
++def subst(value, values):
++    if isinstance(value, str):
++        for key, replacement in values.items(): value = value.replace("${" + key + "}", str(replacement))
++        if "${" in value: fail(f"unresolved parameter in {value!r}")
++    return value
++
++def validate(config, phase):
++    required = ("candidate_manifest", "ownership_manifest", "candidate_binary", "candidate_bundle", "runner_binary", "runner_home", "evidence_root",
++                "controller_root", "ios_udid", "android_serial", "android_avd")
++    missing = [k for k in required if not config.get(k)]
++    if missing: fail("missing configuration: " + ", ".join(missing))
++    for key in ("candidate_binary", "candidate_bundle", "runner_home"):
++        p = pathlib.Path(config[key]).resolve()
++        if not p.exists(): fail(f"{key} does not exist: {p}")
++        config[key] = str(p)
++    if pathlib.Path(config["candidate_binary"]).is_dir(): fail("candidate_binary must be a file")
++    if config["ios_udid"] in PROTECTED: fail("owned iOS target is a protected device")
++    if config["android_avd"] == "Pixel_8_API_35": fail("owned Android AVD is protected")
++    if not config["ios_udid"] or not config["android_serial"] or not config["android_avd"].startswith("smoke4-"):
++        fail("explicit smoke4 device ownership is required")
++    if os.environ.get("GRANTIVA_API_KEY"): fail("GRANTIVA_API_KEY must be unset")
++    commands = phase.get("commands", [])
++    if not commands: fail("phase has no commands")
++    for command in commands:
++        if not isinstance(command.get("argv"), list) or not command["argv"]: fail("every argv must be a nonempty array")
++        joined = " ".join(map(str, command["argv"]))
++        if any(word in joined for word in FORBIDDEN): fail(f"forbidden broad cleanup command: {joined}")
++        if any(token in joined for token in PROTECTED): fail(f"protected device referenced: {joined}")
++        if command.get("cleanup_pid_file") and not command.get("owned_pid_file"):
++            fail("cleanup_pid_file requires an owned_pid_file")
++    return config
++
++def assert_one(spec, directory, values):
++    spec={k:subst(v,values) if isinstance(v,str) else v for k,v in spec.items()}
++    path = directory / spec["path"]
++    if spec["type"] == "exists": ok = path.exists()
++    elif spec["type"] == "contains": ok = path.exists() and spec["value"] in path.read_text(errors="replace")
++    elif spec["type"] == "not_contains": ok = path.exists() and spec["value"] not in path.read_text(errors="replace")
++    elif spec["type"] == "json_equals":
++        value = json.loads(path.read_text())
++        for part in spec["pointer"].strip("/").split("/") if spec["pointer"] != "/" else []: value = value[int(part)] if isinstance(value, list) else value[part]
++        ok = value == spec["value"]
++    else: fail(f"unknown assertion type {spec['type']}")
++    return {**spec, "passed": bool(ok)}
++
++def main():
++    ap = argparse.ArgumentParser()
++    ap.add_argument("--manifest", required=True); ap.add_argument("--phase", required=True)
++    ap.add_argument("--execute", action="store_true", help="required to run commands; otherwise validate only")
++    args = ap.parse_args(); manifest_path = pathlib.Path(args.manifest).resolve()
++    doc = json.loads(manifest_path.read_text()); config = doc["configuration"]
++    try: phase = next(p for p in doc["phases"] if p["id"] == args.phase)
++    except StopIteration: fail(f"unknown phase {args.phase}")
++    validate(config, phase)
++    if not args.execute:
++        print(json.dumps({"status":"validated-only", "phase":args.phase, "commands":len(phase["commands"]), "criteria":phase["criteria"]}, indent=2)); return
++    identity=validate_identity(config['candidate_manifest'],config['ownership_manifest'],source_root=config['controller_root'],binary=config['candidate_binary'],bundle=config['candidate_bundle'],runner=config['runner_binary'],runner_home=config['runner_home'])
++    root = pathlib.Path(config["evidence_root"]).resolve(); out = root / args.phase
++    if out.exists(): fail(f"refusing to overwrite evidence: {out}")
++    out.mkdir(parents=True)
++    provenance = {"manifest":str(manifest_path), "manifestSHA256":sha256(manifest_path), **identity,
++      "candidateBinary":config["candidate_binary"], "candidateBinarySHA256":sha256(pathlib.Path(config["candidate_binary"])),
++      "candidateBundle":config["candidate_bundle"], "runnerHome":config["runner_home"], "iosUDID":config["ios_udid"],
++      "androidSerial":config["android_serial"], "androidAVD":config["android_avd"], "apiKey":"unset", "started":datetime.datetime.now(datetime.timezone.utc).isoformat()}
++    (out / "provenance.json").write_text(json.dumps(provenance, indent=2) + "\n")
++    env = os.environ.copy(); env.pop("GRANTIVA_API_KEY", None); env.update(GRANTIVA_RUNNER_HOME=config["runner_home"], MAESTRO_RUNNER_HOME=config["runner_home"], GRANTIVA_SESSION_ID=config["session_id"])
++    results=[]
++    for index, command in enumerate(phase["commands"], 1):
++        label=command["id"]; d=out/f"{index:02d}-{label}"; d.mkdir(); argv=[subst(x,config) for x in command["argv"]]
++        (d/"command.json").write_text(json.dumps({"argv":argv,"cwd":subst(command.get("cwd",config["controller_root"]),config),"environment":{k:env.get(k) for k in ("GRANTIVA_RUNNER_HOME","MAESTRO_RUNNER_HOME","GRANTIVA_SESSION_ID","GRANTIVA_API_KEY")}},indent=2)+"\n")
++        started=time.time()
++        with (d/"stdout.raw").open("wb") as stdout,(d/"stderr.raw").open("wb") as stderr:
++            proc=subprocess.run(argv,cwd=subst(command.get("cwd",config["controller_root"]),config),env=env,stdout=stdout,stderr=stderr,timeout=command.get("timeout",600))
++        assertions=[assert_one(x,d,config) for x in command.get("assertions",[])]
++        result={"id":label,"startedEpoch":started,"endedEpoch":time.time(),"exit":proc.returncode,"expectedExit":command.get("expected_exit",0),"assertions":assertions}
++        (d/"result.json").write_text(json.dumps(result,indent=2)+"\n")
++        for source in command.get("raw_reports",[]):
++            src=pathlib.Path(subst(source,config)); destination=d/"raw-report"/src.name; destination.parent.mkdir(exist_ok=True); shutil.copytree(src,destination) if src.is_dir() else shutil.copy2(src,destination)
++        results.append(result)
++        if proc.returncode != command.get("expected_exit",0) or not all(x["passed"] for x in assertions): fail(f"{label} failed; inspect {d}")
++    (out/"phase-result.json").write_text(json.dumps({"phase":args.phase,"criteria":phase["criteria"],"results":results},indent=2)+"\n")
++
++if __name__ == "__main__": main()
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness-preparation-report.md b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness-preparation-report.md
+new file mode 100644
+index 00000000..8de94f1b
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness-preparation-report.md
+@@ -0,0 +1,53 @@
++# Task 8 candidate 3 full-smoke harness preparation
++
++Prepared a separate candidate-3 controller/helper tree at `task8-candidate3-harness/`. Candidate 2's durable helpers and immutable evidence were not edited. No product edit, build, phase execution, device command, promotion, push, or reviewer dispatch occurred.
++
++## Candidate boundary
++
++Candidate 3 is valid only after the L85 CLI fix is merged into a clean CLI checkout and `candidate3_release.py` builds a fresh release binary/bundle from that exact merged HEAD, promotes that exact pair, performs the fresh-home bundled-runner upgrade, and freezes a new `grantiva.task8.candidate.v1` manifest. Candidate 2 hashes or phase grades cannot fill candidate-3 results.
++
++The unchanged dependencies remain independently bound and checked: runner source `ba9008f4b2cd2c7320a9c46e04faed612b0958a2`, native/install version `1.1.28-grantiva.15` with stamp `1.1.28-grantiva.15+android-drivers-2`, and demo source `84af7581b75134b0e417b254e4317d565f7b73c6`. Both release preparation and phase identity validation contain the literal runner SHA. They require the state/manifest SHA, clean runner checkout HEAD, and all source-bearing fields in the frozen uncached-test proof to equal that literal; the existing proof hashes, metadata, command, result, and empty-status checks remain mandatory. The release controller expects fresh demo build-input evidence under the candidate-3 evidence root and validates the actual iOS app/APK; it does not reuse a candidate-2 app grade.
++
++All Task 8 phases rerun into a new `findings/evidence/round4-smoke-candidate3` tree: candidate/upgrade, Android runner, lifecycle, joint forwarding, iOS MCP including corrected L85 and all transport pairs, Android MCP transport, docs/output, final force teardown, and physical cleanup. The full sequence remains gated: any failure fails candidate 3 and leaves Task 9 blocked.
++
++## Controller inputs
++
++Before any executable phase, the controller supplies and freezes:
++
++- A fresh scratch root with fresh build home, APFS-cloned runner home, phase projects, empty no-session projects, fixture copies, and candidate-3 evidence root.
++- The clean merged CLI checkout path and exact merged SHA. `candidate3_release.py --merged-sha <SHA>` rejects a different/dirty HEAD and freezes the freshly built release artifacts.
++- The frozen candidate-2 manifest at `findings/evidence/round4-smoke-candidate2/candidate.json` governs the current QA precondition. The release controller requires the current QA binary and bundle to match it exactly and backs up those artifacts with that same manifest before promotion; candidate-2 evidence stays read-only.
++- The unchanged runner source/proof paths, packaged archive identity, expected `.15` version/stamp, and WDA cache manifest.
++- The clean demo `84af` checkout and fresh candidate-3 iOS/Android build-input records and artifacts.
++- Protected simulator inventory for UUIDs `B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C` and `FE441EE5-BBFC-4981-B68A-59C0DBCE26D6`, plus protected `Pixel_8_API_35` config identity.
++- Fresh owned targets created by `candidate3_provision.py`: `smoke4-c3-ios` on the literal approved iOS 26 runtime and `smoke4-c3-android` at `emulator-5580`, with session `fix4-8-c3`. The ownership manifest records exact creation commands and the emulator PID.
++- Exact Android SDK/ADB/emulator/avdmanager and Java 21 paths, fixture/analyzer inputs, project paths, and platform app identifiers shown in `manifest.example.json`.
++
++`candidate3_phase.py` is the bounded serial dispatcher and copies the exact executed helper beside each phase. The helpers independently validate candidate and ownership manifests before operating. `candidate3_docs.py` and `candidate3_cleanup.py` are separate controller steps. Root owns promotion, live execution, and final adjudication.
++
++## Lifecycle snapshot race correction
++
++The copied lifecycle helper no longer launches untracked daemon report-snapshot threads. Each capture gets a private stop event, an authentication event, a non-daemon thread, retained authenticated report/generated-flow paths, and an exception/result channel. The worker signals authentication only after binding the live exact PID/device argv, retaining both paths, and recording ownership. Every startup-interrupt, detached-ready, ready-interrupt, and force-teardown caller waits boundedly for that authentication (and verifies the observed PID when available) before interrupting or finishing the runner. This handshake does not wait for runner readiness or flow completion, so the startup-interrupt case retains its `starting` timing semantics. Worker errors and authentication timeouts fail synchronously.
++
++Every caller then stops and joins its exact thread with a bounded timeout. After the stop request, the worker copies from the retained report path even when the session is gone or the runner has exited. The stop operation re-raises worker copy/ownership failures and requires the terminal report copy before phase cleanup or acceptance can continue. When a generated flow was observed, its retained copy is also mandatory.
++
++This does not weaken report evidence. `copy_report_snapshot` still tolerates only disappearing `.tmp` files from atomic writes; a missing retained report path, missing stable files, and all unrelated copy failures raise through the caller. Detached readiness still requires the retained report and passed status, and the helper cannot complete while a capture thread remains live.
++
++## Cleanup corrections
++
++Candidate-3 cleanup preserves the reviewed PID-reuse protection: immediately before an emulator fallback signal, the current PID row must still have the exact emulator/qemu executable, `-avd smoke4-c3-android`, and `-port 5580`. A missing row is harmless; a reused/mismatched row is refused and never signaled.
++
++The helper now inventories the exact simulator UUID/name/runtime before classifying processes. `launchd_sim` and the installed `Landmarks` executable are recognized as simulator-managed only when their argv carries that exact controller-owned UUID and the simulator identity matches the ownership manifest. They are never directly signaled; exact `simctl shutdown/delete <UUID>` removes them. Unknown marker-bearing processes remain failures, so this exception cannot absorb unrelated processes or weaken protected-target rules.
++
++AVD deletion accepts both Android tool formats while retaining exact ownership proof:
++
++- legacy `AvdId=<owned name>` plus `avd.ini.displayname=<owned name>`; or
++- generated `avd.id=<build>` plus `avd.name=<build>`.
++
++Either format also requires the owned registration file to bind `path` to the exact `smoke4-c3-android.avd` directory and `path.rel=avd/smoke4-c3-android.avd`, the ownership manifest's successful exact `avdmanager create` command, baseline absence, live AVD-name identity, and the authenticated current PID/serial rules. Protected simulators and `Pixel_8_API_35` remain mandatory and unchanged.
++
++## Prepared files and verification
++
++The directory contains controller scripts, phase helpers, identity validation, example candidate/ownership/phase manifests, and lifecycle documentation copied from the final candidate-2 harness and rebound to candidate-3 paths/session/owned names. `manifest.example.json` references only this SDD helper directory and the candidate-3 evidence root.
++
++Static Python compilation and JSON parsing were run only against these preparation files; no helper main, product test, build, or live command was executed. The complete new-file diff is `task8-candidate3-harness-preparation.diff`; the first focused review-to-fix diff is `task8-candidate3-harness-preparation-fix.diff`, and the scoped handshake correction against that reviewed version is `task8-candidate3-harness-preparation-fix-round2.diff`.

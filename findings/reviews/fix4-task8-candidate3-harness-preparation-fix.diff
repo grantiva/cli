@@ -1,0 +1,238 @@
+--- reviewed/candidate3_release.py
++++ fixed/candidate3_release.py
+@@ -6,6 +6,8 @@
+ e=r/'findings/evidence/round4-smoke-candidate3'; state=json.loads((e/'initial-state.json').read_text())
+ s=Path(state['scratch']);src=Path(state['source']);home=Path(state['runnerHome']);out=e/'01-candidate'
+ assert state['demoSHA']=='84af7581b75134b0e417b254e4317d565f7b73c6'
++EXPECTED_RUNNER_SHA='ba9008f4b2cd2c7320a9c46e04faed612b0958a2'
++assert state['runnerSHA']==EXPECTED_RUNNER_SHA
+ def save(path,value):path.write_text(json.dumps(value,indent=2)+'\n')
+ def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+ def files(path):return [{'path':str(x.relative_to(path)),'sha256':sha(x)} for x in sorted(path.rglob('*')) if x.is_file()]
+@@ -27,9 +29,9 @@
+ products=Path(run('release-path',['swift','build','-c','release','--scratch-path',buildscratch,'--show-bin-path'],src,buildhome));assert products.is_relative_to(buildscratch)
+ binary=products/'grantiva';bundle=products/'grantiva_GrantivaCore.bundle';assert binary.is_file() and bundle.is_dir()
+ save(out/'cli-source-after.json',{'head':git('rev-parse','HEAD'),'status':git('status','--porcelain'),'binarySHA256':sha(binary),'bundle':record(bundle),'buildRunnerHomeAfter':[],'buildScratchPath':str(buildscratch),'buildScratchAfter':sorted(x.name for x in buildscratch.iterdir()),'productsPath':str(products)})
+-qa=Path.home()/'.grantiva-qa/bin';old=json.loads((r/'findings/evidence/round4-smoke/candidate.json').read_text());assert sha(qa/'grantiva')==old['cli']['binary']['sha256']
++qa=Path.home()/'.grantiva-qa/bin';old_manifest=r/'findings/evidence/round4-smoke-candidate2/candidate.json';old=json.loads(old_manifest.read_text());assert sha(qa/'grantiva')==old['cli']['binary']['sha256']
+ assert record(qa/'grantiva_GrantivaCore.bundle')['files']==old['cli']['bundle']['files']
+-backup=s/'previous-qa-candidate1';backup.mkdir();shutil.copy2(qa/'grantiva',backup/'grantiva');shutil.copytree(qa/'grantiva_GrantivaCore.bundle',backup/'grantiva_GrantivaCore.bundle');shutil.copy2(r/'findings/evidence/round4-smoke/candidate.json',backup/'candidate.json')
++backup=s/'previous-qa-candidate2';backup.mkdir();shutil.copy2(qa/'grantiva',backup/'grantiva');shutil.copytree(qa/'grantiva_GrantivaCore.bundle',backup/'grantiva_GrantivaCore.bundle');shutil.copy2(old_manifest,backup/'candidate.json')
+ assert sha(backup/'grantiva')==old['cli']['binary']['sha256'] and record(backup/'grantiva_GrantivaCore.bundle')['files']==old['cli']['bundle']['files']
+ shutil.copy2(binary,qa/'grantiva');shutil.rmtree(qa/'grantiva_GrantivaCore.bundle');shutil.copytree(bundle,qa/'grantiva_GrantivaCore.bundle')
+ assert sha(binary)==sha(qa/'grantiva') and files(bundle)==files(qa/'grantiva_GrantivaCore.bundle')
+@@ -72,6 +74,11 @@
+ save(out/'upgrade/acceptance.json',{'passed':True,'existingCacheEntriesPreserved':preserved,'configs':checks,'task7ManifestSHA256':sha(approved),'installedRunner':str(installed),'packagedRunner':str(runner),'runnerSHA256':sha(runner)})
+ proofroot=r/'findings/evidence/fix4-7b/runner-build/go-test-uncached-metadata-complete';mapping={'start':'start.json','result':'result.json','argv':'argv.txt','head':'head.txt','unitRoot':'unit-root.txt','stdout':'stdout.log','stderr':'stderr.log','exit':'exit.txt','statusBefore':'status-before.txt','statusAfter':'status-after.txt','grantivaHomeBefore':'grantiva-home-before.txt','grantivaHomeAfter':'grantiva-home-after.txt','maestroHomeBefore':'maestro-home-before.txt','maestroHomeAfter':'maestro-home-after.txt'}
+ proof={k:{'path':str(proofroot/v),'sha256':sha(proofroot/v)} for k,v in mapping.items()}
++runner_repo=Path('/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair')
++runner_head=subprocess.check_output(['git','-C',str(runner_repo),'rev-parse','HEAD'],text=True).strip();runner_status=subprocess.check_output(['git','-C',str(runner_repo),'status','--porcelain=v1'],text=True)
++assert runner_head==EXPECTED_RUNNER_SHA and runner_status==''
++proof_start=json.loads((proofroot/'start.json').read_text());proof_result=json.loads((proofroot/'result.json').read_text())
++assert proof_start['head']==proof_result['head']==EXPECTED_RUNNER_SHA and (proofroot/'head.txt').read_text().strip()==EXPECTED_RUNNER_SHA
+ demo=Path('/Users/kyle/Developer/landmarks-demo/.worktrees/release-round4-candidate2');demo_head=subprocess.check_output(['git','-C',str(demo),'rev-parse','HEAD'],text=True).strip();demo_status=subprocess.check_output(['git','-C',str(demo),'status','--porcelain=v1'],text=True);assert demo_head==state['demoSHA'] and demo_status==''
+ iosroot=e/'build-inputs/ios';androidroot=e/'build-inputs/android';ios=json.loads((iosroot/'artifact.json').read_text());android=json.loads((androidroot/'artifact.json').read_text());ios_start=json.loads((iosroot/'start.json').read_text());ios_result=json.loads((iosroot/'result.json').read_text());ios_qualification=json.loads((iosroot/'post-build-qualification.json').read_text());android_start=json.loads((androidroot/'start.json').read_text());android_result=json.loads((androidroot/'result.json').read_text())
+ ios_record=record(Path(ios['path']));assert ios['sourceSHA']==android['sourceSHA']==state['demoSHA'];assert ios_record['files']==ios['files'] and ios_record['manifestSHA256']==ios['manifestSHA256'] and sha(Path(android['path']))==android['sha256']
+@@ -82,5 +89,5 @@
+ assert ios_result['statusAfter']==ios_qualification['originalStatusAfter'];assert ios_qualification['head']==state['demoSHA'] and ios_qualification['statusAfterBothBuilds']=='' and ios_qualification['buildExit']==ios_result['exit']==0 and ios_qualification['artifactManifestSHA256']==ios['manifestSHA256'];assert '** BUILD SUCCEEDED **' in (iosroot/'stdout.log').read_text()
+ assert android_result['statusAfter']=='' and 'BUILD SUCCESSFUL' in (androidroot/'stdout.log').read_text()
+ demo_build_proof={'sourceHEAD':demo_head,'sourceStatus':demo_status,'ios':{name:{'path':str(iosroot/name),'sha256':sha(iosroot/name)} for name in ('start.json','result.json','artifact.json','post-build-qualification.json','stdout.log','stderr.log')},'android':{name:{'path':str(androidroot/name),'sha256':sha(androidroot/name)} for name in ('start.json','result.json','artifact.json','stdout.log','stderr.log')}};save(out/'demo-build-validation.json',demo_build_proof)
+-candidate={'schema':'grantiva.task8.candidate.v1','cli':{'repoPath':str(src),'mergedSHA':a.merged_sha,'binary':{'path':str(qa/'grantiva'),'sha256':sha(qa/'grantiva'),'version':version},'bundle':record(qa/'grantiva_GrantivaCore.bundle')},'runner':{'repoPath':'/Users/kyle/Developer/maestro-runner/.worktrees/package-round4-repair','sourceSHA':state['runnerSHA'],'runnerHome':str(home),'uncachedTestProof':proof,'packaged':{'path':str(runner),'sha256':sha(runner),'version':runner_version},'installed':{'path':str(installed),'sha256':sha(installed),'version':installed_version,'installStamp':'1.1.28-grantiva.15+android-drivers-2'}},'demo':{'repoPath':str(demo),'sourceSHA':state['demoSHA'],'buildProof':demo_build_proof,'androidAPK':{'path':android['path'],'sha256':android['sha256']},'iosApp':record(Path(ios['path']))}}
++candidate={'schema':'grantiva.task8.candidate.v1','cli':{'repoPath':str(src),'mergedSHA':a.merged_sha,'binary':{'path':str(qa/'grantiva'),'sha256':sha(qa/'grantiva'),'version':version},'bundle':record(qa/'grantiva_GrantivaCore.bundle')},'runner':{'repoPath':str(runner_repo),'sourceSHA':EXPECTED_RUNNER_SHA,'runnerHome':str(home),'uncachedTestProof':proof,'packaged':{'path':str(runner),'sha256':sha(runner),'version':runner_version},'installed':{'path':str(installed),'sha256':sha(installed),'version':installed_version,'installStamp':'1.1.28-grantiva.15+android-drivers-2'}},'demo':{'repoPath':str(demo),'sourceSHA':state['demoSHA'],'buildProof':demo_build_proof,'androidAPK':{'path':android['path'],'sha256':android['sha256']},'iosApp':record(Path(ios['path']))}}
+ save(e/'candidate.json',candidate);print(json.dumps({'candidate':str(e/'candidate.json'),'sha256':sha(e/'candidate.json'),'cacheEntriesPreserved':preserved},indent=2))
+--- reviewed/candidate_identity.py
++++ fixed/candidate_identity.py
+@@ -2,6 +2,8 @@
+ """Validate one frozen Task 8 candidate and controller ownership manifest."""
+ import argparse, hashlib, json, pathlib, re, subprocess
+ 
++EXPECTED_RUNNER_SHA='ba9008f4b2cd2c7320a9c46e04faed612b0958a2'
++
+ def file_sha(path): return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+ def tree_sha(path):
+     root=pathlib.Path(path); h=hashlib.sha256()
+@@ -15,7 +17,8 @@
+     for item in sorted(p for p in pathlib.Path(root).rglob('*') if p.is_file()): actual.append({'path':str(item.relative_to(root)),'sha256':file_sha(item)})
+     require(actual==files,label+' file manifest mismatch'); require(manifest_sha(files)==record['manifestSHA256'],label+' manifest hash mismatch')
+ def verify_runner_proof(rr):
+-    repo=pathlib.Path(rr['repoPath']).resolve(); require(command(['git','-C',str(repo),'rev-parse','HEAD'])==rr['sourceSHA'],'runner source HEAD mismatch')
++    require(rr.get('sourceSHA')==EXPECTED_RUNNER_SHA,'runner source SHA is not the frozen Task 8 runner')
++    repo=pathlib.Path(rr['repoPath']).resolve(); require(command(['git','-C',str(repo),'rev-parse','HEAD'])==EXPECTED_RUNNER_SHA,'runner source HEAD mismatch'); require(command(['git','-C',str(repo),'status','--porcelain=v1'])=='','runner source checkout is dirty')
+     proof=rr['uncachedTestProof']; docs={}
+     keys=('start','result','argv','head','unitRoot','stdout','stderr','exit','statusBefore','statusAfter','grantivaHomeBefore','grantivaHomeAfter','maestroHomeBefore','maestroHomeAfter')
+     expected_names={'start':'start.json','result':'result.json','argv':'argv.txt','head':'head.txt','unitRoot':'unit-root.txt','stdout':'stdout.log','stderr':'stderr.log','exit':'exit.txt','statusBefore':'status-before.txt','statusAfter':'status-after.txt','grantivaHomeBefore':'grantiva-home-before.txt','grantivaHomeAfter':'grantiva-home-after.txt','maestroHomeBefore':'maestro-home-before.txt','maestroHomeAfter':'maestro-home-after.txt'}
+@@ -26,7 +29,7 @@
+     start=json.loads(docs['start'].read_text()); result=json.loads(docs['result'].read_text())
+     common=('startedAt','head','argvFile','session','apiKey','count','homeRoot')
+     require(all(start.get(key)==result.get(key) for key in common),'uncached runner start/result metadata mismatch')
+-    require(start.get('head')==rr['sourceSHA'] and docs['head'].read_text().strip()==rr['sourceSHA'],'uncached runner proof source mismatch')
++    require(start.get('head')==result.get('head')==EXPECTED_RUNNER_SHA and docs['head'].read_text().strip()==EXPECTED_RUNNER_SHA,'uncached runner proof source mismatch')
+     require(start.get('argvFile')=='argv.txt' and start.get('session')=='fix4-7b' and start.get('apiKey')=='unset' and start.get('count')==1,'uncached runner proof metadata mismatch')
+     require(result.get('exit')==0 and result.get('endedAt') and docs['exit'].read_text().strip()=='0','uncached runner test did not pass cleanly')
+     require(docs['unitRoot'].read_text().strip()==start.get('homeRoot'),'uncached runner proof home root mismatch')
+--- reviewed/lifecycle_smoke.py
++++ fixed/lifecycle_smoke.py
+@@ -375,63 +375,76 @@
+             actions.append({"action": "android-forward-cleanup", "result": "error", "error": str(exc)})
+         write_json(self.output / "cleanup.json", {"bounded": True, "actions": actions})
+ 
+-    def preserve_runner_report(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str, stop: threading.Event) -> None:
++    def preserve_runner_report(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str, state: dict[str, object]) -> None:
+         target = self.output / phase / f"{label}-runner-report"
+-        while not stop.is_set():
+-            try:
+-                session_text = self.session.read_text()
+-            except FileNotFoundError:
+-                time.sleep(0.01)
+-                continue
+-            try:
+-                doc = json.loads(session_text)
+-                pid = int(doc["pid"])
+-                argv = self.bound_argv_if_running(pid, device)
+-                if argv is None:
+-                    return
+-                platform = "ios" if device == self.ns.ios_udid else "android"
+-                self.active_runners[pid] = (platform, device)
+-                self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
+-                if "--output" in argv:
+-                    report = Path(argv[argv.index("--output") + 1])
+-                    if report.exists():
+-                        copy_report_snapshot(report, target)
+-                    flow = Path(argv[-1])
+-                    if flow.exists():
+-                        shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
+-                self.record_ownership()
+-            except (ProcessLookupError, json.JSONDecodeError, KeyError):
+-                pass
+-            time.sleep(0.01)
+-
+-        # One terminal capture after the caller has finished or interrupted the
+-        # CLI closes the race with the last atomic report write. Missing stable
+-        # files still fail through copy_report_snapshot; only disappearing .tmp
+-        # files retain the reviewed tolerance.
+-        try:
+-            doc = json.loads(self.session.read_text())
+-            pid = int(doc["pid"])
+-            argv = self.bound_argv_if_running(pid, device)
+-            if argv is not None and "--output" in argv:
+-                report = Path(argv[argv.index("--output") + 1])
+-                if report.exists():
+-                    copy_report_snapshot(report, target)
+-        except (FileNotFoundError, ProcessLookupError, json.JSONDecodeError, KeyError):
+-            pass
+-
+-    def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str) -> tuple[threading.Event, threading.Thread]:
+-        stop = threading.Event()
+-        thread = threading.Thread(target=self.preserve_runner_report, args=(phase, label, proc, device, stop), daemon=False)
++        try:
++            stop = state["stop"]
++            assert isinstance(stop, threading.Event)
++            while not stop.is_set():
++                try:
++                    session_text = self.session.read_text()
++                except FileNotFoundError:
++                    stop.wait(0.01)
++                    continue
++                try:
++                    doc = json.loads(session_text)
++                    pid = int(doc["pid"])
++                    argv = self.bound_argv_if_running(pid, device)
++                    if argv is not None:
++                        platform = "ios" if device == self.ns.ios_udid else "android"
++                        self.active_runners[pid] = (platform, device)
++                        self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
++                        if "--output" in argv:
++                            report = Path(argv[argv.index("--output") + 1])
++                            flow = Path(argv[-1])
++                            state["report"] = report
++                            state["flow"] = flow
++                            if report.exists():
++                                copy_report_snapshot(report, target)
++                            if flow.exists():
++                                shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
++                                state["flowWasPresent"] = True
++                        self.record_ownership()
++                except (ProcessLookupError, json.JSONDecodeError, KeyError):
++                    pass
++                stop.wait(0.01)
++
++            # Use the last paths authenticated from the live runner. Session
++            # teardown or process exit cannot suppress this terminal capture.
++            report = state.get("report")
++            if not isinstance(report, Path):
++                raise AssertionError("snapshot worker never authenticated a runner report path")
++            copy_report_snapshot(report, target)
++            state["terminalReportCopied"] = True
++            flow = state.get("flow")
++            if isinstance(flow, Path) and flow.exists():
++                shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
++                state["terminalFlowCopied"] = True
++            if state.get("flowWasPresent") and not (self.output / phase / f"{label}-generated-flow.yaml").is_file():
++                raise AssertionError("authenticated generated flow was not retained")
++        except BaseException as exc:
++            state["error"] = exc
++
++    def start_report_snapshot(self, phase: str, label: str, proc: subprocess.Popen[bytes], device: str) -> tuple[dict[str, object], threading.Thread]:
++        state: dict[str, object] = {"stop": threading.Event(), "report": None, "flow": None, "flowWasPresent": False, "error": None, "terminalReportCopied": False, "terminalFlowCopied": False}
++        thread = threading.Thread(target=self.preserve_runner_report, args=(phase, label, proc, device, state), daemon=False)
+         thread.start()
+-        return stop, thread
++        return state, thread
+ 
+     @staticmethod
+-    def stop_report_snapshot(snapshot: tuple[threading.Event, threading.Thread]) -> None:
+-        stop, thread = snapshot
++    def stop_report_snapshot(snapshot: tuple[dict[str, object], threading.Thread]) -> None:
++        state, thread = snapshot
++        stop = state["stop"]
++        assert isinstance(stop, threading.Event)
+         stop.set()
+         thread.join(timeout=15)
+         if thread.is_alive():
+             raise TimeoutError("runner report snapshot thread did not stop")
++        error = state.get("error")
++        if isinstance(error, BaseException):
++            raise error
++        if not state.get("terminalReportCopied"):
++            raise AssertionError("runner report terminal snapshot was not captured")
+ 
+     def stop_stale(self, platform: str) -> None:
+         if self.session.exists():
+--- reviewed/task8-candidate3-harness-preparation-report.md
++++ fixed/task8-candidate3-harness-preparation-report.md
+@@ -6,7 +6,7 @@
+ 
+ Candidate 3 is valid only after the L85 CLI fix is merged into a clean CLI checkout and `candidate3_release.py` builds a fresh release binary/bundle from that exact merged HEAD, promotes that exact pair, performs the fresh-home bundled-runner upgrade, and freezes a new `grantiva.task8.candidate.v1` manifest. Candidate 2 hashes or phase grades cannot fill candidate-3 results.
+ 
+-The unchanged dependencies remain independently bound and checked: runner source `ba9008f4b2cd2c7320a9c46e04faed612b0958a2`, native/install version `1.1.28-grantiva.15` with stamp `1.1.28-grantiva.15+android-drivers-2`, and demo source `84af7581b75134b0e417b254e4317d565f7b73c6`. The release controller expects fresh demo build-input evidence under the candidate-3 evidence root and validates the actual iOS app/APK; it does not reuse a candidate-2 app grade.
++The unchanged dependencies remain independently bound and checked: runner source `ba9008f4b2cd2c7320a9c46e04faed612b0958a2`, native/install version `1.1.28-grantiva.15` with stamp `1.1.28-grantiva.15+android-drivers-2`, and demo source `84af7581b75134b0e417b254e4317d565f7b73c6`. Both release preparation and phase identity validation contain the literal runner SHA. They require the state/manifest SHA, clean runner checkout HEAD, and all source-bearing fields in the frozen uncached-test proof to equal that literal; the existing proof hashes, metadata, command, result, and empty-status checks remain mandatory. The release controller expects fresh demo build-input evidence under the candidate-3 evidence root and validates the actual iOS app/APK; it does not reuse a candidate-2 app grade.
+ 
+ All Task 8 phases rerun into a new `findings/evidence/round4-smoke-candidate3` tree: candidate/upgrade, Android runner, lifecycle, joint forwarding, iOS MCP including corrected L85 and all transport pairs, Android MCP transport, docs/output, final force teardown, and physical cleanup. The full sequence remains gated: any failure fails candidate 3 and leaves Task 9 blocked.
+ 
+@@ -16,7 +16,7 @@
+ 
+ - A fresh scratch root with fresh build home, APFS-cloned runner home, phase projects, empty no-session projects, fixture copies, and candidate-3 evidence root.
+ - The clean merged CLI checkout path and exact merged SHA. `candidate3_release.py --merged-sha <SHA>` rejects a different/dirty HEAD and freezes the freshly built release artifacts.
+-- The current QA binary/bundle identity to back up before promotion, plus the controller-authorized QA destination.
++- The frozen candidate-2 manifest at `findings/evidence/round4-smoke-candidate2/candidate.json` governs the current QA precondition. The release controller requires the current QA binary and bundle to match it exactly and backs up those artifacts with that same manifest before promotion; candidate-2 evidence stays read-only.
+ - The unchanged runner source/proof paths, packaged archive identity, expected `.15` version/stamp, and WDA cache manifest.
+ - The clean demo `84af` checkout and fresh candidate-3 iOS/Android build-input records and artifacts.
+ - Protected simulator inventory for UUIDs `B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C` and `FE441EE5-BBFC-4981-B68A-59C0DBCE26D6`, plus protected `Pixel_8_API_35` config identity.
+@@ -27,9 +27,9 @@
+ 
+ ## Lifecycle snapshot race correction
+ 
+-The copied lifecycle helper no longer launches untracked daemon report-snapshot threads. Each capture gets a private stop event and non-daemon thread. Every startup-interrupt, detached-ready, ready-interrupt, and force-teardown caller stops and joins its exact thread with a bounded timeout. The worker performs one terminal capture after the stop request, closing the race with the runner's final atomic report write before the caller checks the retained report or exits.
++The copied lifecycle helper no longer launches untracked daemon report-snapshot threads. Each capture gets a private stop event, non-daemon thread, retained authenticated report/generated-flow paths, and an exception/result channel. Every startup-interrupt, detached-ready, ready-interrupt, and force-teardown caller stops and joins its exact thread with a bounded timeout. After the stop request, the worker copies from the retained report path even when the session is gone or the runner has exited. The stop operation re-raises worker copy/ownership failures and requires the terminal report copy before phase cleanup or acceptance can continue. When a generated flow was observed, its retained copy is also mandatory.
+ 
+-This does not weaken report evidence. `copy_report_snapshot` still tolerates only disappearing `.tmp` files from atomic writes; missing stable files and all unrelated copy failures still raise. Detached readiness still requires the retained report and passed status, and the helper cannot complete while a capture thread remains live.
++This does not weaken report evidence. `copy_report_snapshot` still tolerates only disappearing `.tmp` files from atomic writes; a missing retained report path, missing stable files, and all unrelated copy failures raise through the caller. Detached readiness still requires the retained report and passed status, and the helper cannot complete while a capture thread remains live.
+ 
+ ## Cleanup corrections
+ 
+@@ -48,4 +48,4 @@
+ 
+ The directory contains controller scripts, phase helpers, identity validation, example candidate/ownership/phase manifests, and lifecycle documentation copied from the final candidate-2 harness and rebound to candidate-3 paths/session/owned names. `manifest.example.json` references only this SDD helper directory and the candidate-3 evidence root.
+ 
+-Static Python compilation and JSON parsing were run only against these preparation files; no helper main, product test, build, or live command was executed. The complete new-file diff is `task8-candidate3-harness-preparation.diff` for independent review.
++Static Python compilation and JSON parsing were run only against these preparation files; no helper main, product test, build, or live command was executed. The complete new-file diff is `task8-candidate3-harness-preparation.diff`; the focused review-to-fix diff is `task8-candidate3-harness-preparation-fix.diff`.
