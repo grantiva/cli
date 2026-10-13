@@ -1,0 +1,61 @@
+21:53:44.409595 [INFO] === Test execution started ===
+21:53:44.409655 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt15/IOS-039/report
+21:53:44.409660 [INFO] Platform: ios
+21:53:44.409664 [INFO] Driver: wda
+21:53:44.410034 [INFO] Validated 1 flow(s)
+21:53:44.530563 [INFO] Single device execution mode
+21:53:44.530584 [INFO] Starting flow execution (parallel: false, devices: [])
+21:53:44.530592 [INFO] Creating driver for single device execution
+21:53:44.530597 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+21:53:44.650157 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+21:53:44.650212 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+21:53:44.887022 [INFO] WDA build reused from cache
+21:53:44.887039 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+21:53:45.159524 [INFO] Starting GrantivaAgent (attempt 1/4)
+21:53:47.162590 [INFO] GrantivaAgent started
+21:53:47.162659 [INFO] WDA started successfully on port 8511
+21:53:47.709127 [DEBUG] WDA GET /window/size
+21:53:47.777635 [DEBUG] WDA GET /window/size completed (68ms, status: 200)
+21:53:47.777728 [INFO] Driver created: ios on cov3-ios-26
+21:53:47.779564 [INFO] === Starting flow: 01-browse ===
+21:53:47.779571 [INFO] Flow file: .maestro/01-browse.yaml
+21:53:47.779575 [INFO] Total steps: 8
+21:53:47.779695 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+21:53:47.780370 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+21:53:47.780438 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+21:53:50.401388 [DEBUG] WDA POST /session completed (2620ms, status: 200)
+21:53:50.401448 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+21:53:50.403001 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings completed (1ms, status: 200)
+21:53:50.403064 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+21:53:50.404246 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings completed (1ms, status: 200)
+21:53:50.404807 [DEBUG] Executing step 0: launchApp
+21:53:50.823191 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[LANDMARKS_CRASH_ON_LAUNCH:1]
+21:53:50.823259 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+21:53:50.823959 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/appium/settings completed (0ms, status: 200)
+21:53:50.824028 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+21:53:50.824430 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/terminate completed (0ms, status: 200)
+21:53:50.824452 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks","environment":{"LANDMARKS_CRASH_ON_LAUNCH":"1"}}
+21:53:52.361206 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/launch completed (1536ms, status: 200)
+21:53:52.361287 [DEBUG] Step 0 completed successfully (1956ms): launchApp
+21:53:52.361736 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+21:53:52.496266 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+21:53:52.496285 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/alert/text
+21:53:52.503013 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/alert/text completed (6ms, status: 400)
+21:53:52.503174 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks' OR value ==[c] 'Landmarks')"}
+21:53:52.505397 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/element completed (2ms, status: 400)
+21:53:52.505496 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/source
+21:53:52.507173 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/source completed (1ms, status: 400)
+21:53:52.507241 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+21:53:52.507660 [DEBUG] WDA POST /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/wda/apps/state completed (0ms, status: 200)
+21:53:52.507683 [INFO] [wda] com.kylebrowning.Landmarks is not running (app state 1) during an element wait — treating it as crashed
+21:53:52.508273 [ERROR] Step 1 failed (146ms): assertVisible: text="Landmarks" - Error: Element not visible: text='Landmarks' (cause: app crashed: com.kylebrowning.Landmarks is not running: WDA error: The application under test with bundle id 'com.kylebrowning.Landmarks' is not running, possibly crashed)
+21:53:52.508283 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/screenshot
+21:53:52.654495 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/screenshot completed (146ms, status: 200)
+21:53:52.667307 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/source
+21:53:52.669208 [DEBUG] WDA GET /session/43F9BF2C-0A51-451D-ADE6-55921AB1DD08/source completed (1ms, status: 400)
+21:53:52.674123 [INFO] === Flow completed: 01-browse (status: failed, duration: 4890ms, passed: 1, failed: 1, skipped: 6) ===
+21:53:52.756712 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+21:53:52.756899 [INFO] Generating reports...
+21:53:52.759209 [INFO] Shutting down devices started by maestro-runner...
+21:53:52.759228 [INFO] Shutting down all tracked emulators
+21:53:52.759234 [INFO] Shutting down all tracked simulators

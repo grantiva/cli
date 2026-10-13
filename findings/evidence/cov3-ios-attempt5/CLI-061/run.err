@@ -1,0 +1,96 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=563907E1-703D-4322-AE5F-FC3B06D03143 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 563907E1-703D-4322-AE5F-FC3B06D03143
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:11Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: cov3-ios-26 (563907E1-703D-4322-AE5F-FC3B06D03143)
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: $ xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl get_app_container '563907E1-703D-4322-AE5F-FC3B06D03143' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/attempt5/flows/quote-emoji.yaml
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T04:28:12Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T04:28:13Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-86BC0C4C-272F-408A-9FCA-5C64BEEE9439/0/quote-emoji.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] quote-emoji (quote-emoji.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ tapOn: text="Mount "Denali" 🏔️" (13.4s)
+      ╰─ Element not found: text='Mount "Denali" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount "Denali" 🏔️' OR value ==[c] 'Mount "Denali" 🏔️')'; page source: no elements match selector; closest on-screen texts: "Mountains", "mountain.2", "Deep Links")
+✗ quote-emoji 18.7s
+
+  [1/1] quote-emoji (/private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/attempt5/flows/quote-emoji.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✗ tapOn: text="Mount "Denali" 🏔️" (13.4s)
+      ╰─ Element not found: text='Mount "Denali" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount "Denali" 🏔️' OR value ==[c] 'Mount "Denali" 🏔️')'; page source: no elements match selector; closest on-screen texts: "Mountains", "mountain.2", "Deep Links")
+    - takeScreenshot (skipped)
+✗ quote-emoji 18.7s
+
+  1 steps passing (18.7s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  quote-emoji                    ✗ FAIL       3      1      1      1      18.7s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      1      1      1      18.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-13T04:28:35Z com.grantiva.cli: exit 1: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-86BC0C4C-272F-408A-9FCA-5C64BEEE9439/0/quote-emoji.yaml
+[debug] 2026-10-13T04:28:35Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T04:28:35Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T04:28:35Z com.grantiva.cli: $ xcrun simctl io '563907E1-703D-4322-AE5F-FC3B06D03143' screenshot '/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/captures/failure-1791865715.png'
+[debug] 2026-10-13T04:28:35Z com.grantiva.cli: exit 0: xcrun simctl io '563907E1-703D-4322-AE5F-FC3B06D03143' screenshot '/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/captures/failure-1791865715.png'
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt5/CLI-061/report/captures/failure-1791865715.png
+Error: Runner failed (exit 1): quote-emoji: tapOn: text="Mount "Denali" 🏔️": Element not found: text='Mount "Denali" 🏔️' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'Mount "Denali" 🏔️' OR value ==[c] 'Mount "Denali" 🏔️')'; page source: no elements match selector; closest on-screen texts: "Mountains", "mountain.2", "Deep Links")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

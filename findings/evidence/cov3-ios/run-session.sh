@@ -19,6 +19,8 @@ capture() {
 }
 capture B3-L43 start "$APP" "$GRANTIVA" runner start --detach --simulator "$U1" --bundle-id com.kylebrowning.Landmarks --json
 capture B3-L43 session "$APP" jq -S . .grantiva/session.json
+capture B3-L15.2 missing-args "$APP" python3 -I /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/mcp/client.py "$ROOT/B3-L15.2/requests.json" "$ROOT/B3-L15.2/mcp" "$APP" -- "$GRANTIVA" mcp --project-dir "$APP" --platform ios
 capture N3-07 hierarchy "$APP" "$GRANTIVA" hierarchy --udid "$U1" --format json
 capture N3-07 dump "$APP" "$GRANTIVA" runner dump-hierarchy --udid "$U1" --format json
 capture B3-L13 stop "$APP" "$GRANTIVA" runner stop --json
+capture MCP-031 build "$APP" python3 -I /private/tmp/claude-501/-Users-kyle-Developer-grantiva-cli/b9f2e919-f7a5-4b94-a1bc-202f523560f4/scratchpad/cov3-ios/mcp/client.py "$ROOT/MCP-031/requests.json" "$ROOT/MCP-031/mcp" "$APP" -- "$GRANTIVA" mcp --project-dir "$APP" --platform ios
