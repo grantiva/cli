@@ -53,11 +53,11 @@ X-022 requires live-session and no-session MCP capture to have the `diff capture
 
 This join supports X-022 [ios] and X-022 [android]. MCP-064 remains partial because X-022 does not add its Android-selector-family requirement.
 
-### B2-K55 [android]: runtime input gap
+### B2-K55 [android]: runtime input gap closed by detached rerun
 
 The batch strongly proves the shape defect is fixed for a row-owned Android **keep-alive run** session: CLI, no-session MCP, and live-session MCP all expose `directory`, `duration`, `emulator`, `screens`, and `simulator`, and `emulator` equals `simulator`. The retained exact-head `SessionLifecycleTests.swift` semantic test also asserts the shared session capture shape for Android and absence of `emulator` on iOS.
 
-However, B2-K55's prescribed runtime input is `runner start --detach` followed by MCP capture. The batch used `run --keep-alive`; it did not execute detached start. These modes may reach the same session capture implementation, but source equivalence does not replace the explicitly named runtime variant. The current B2-K55 [android] pass should therefore be withheld or qualified partial until a retained current-round detached-session capture supplies the missing leg. The iOS clause is a semantic source guard within this Android row, not a separately gradeable platform half.
+The later retained `B2-K55-detached-vrt-equivalence-rerun1` closes the prescribed runtime variant. Its exact Android `runner start --detach --json` exits 0 with numeric PID/port, MCP capture returns keys `directory`, `duration`, `emulator`, `screens`, `simulator`, and the decoded `emulator` and `simulator` objects are equal. It captures the same five ordered screens and relative Android paths as the prior CLI/no-session/keep-alive controls, then stops the exact runner cleanly. Joined with the exact-head shared-shape semantic test, B2-K55 [android] is now fully supported. The iOS clause is a semantic source guard within this Android row, not a separately gradeable platform half.
 
 For any later VRT equivalence review, compare decoded MCP `result.content[0].text` with the CLI JSON as follows:
 
