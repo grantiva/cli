@@ -367,3 +367,12 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - Manually started test-owned Android AVD is refused by unforced teardown/delete, then removed by force. Running primary AVD delete is refused even with force; primary remains available. All nine decoded controls pass and created secondary is removed.
 - iOS118 frozen-corpus pixel-only, perceptual-only and combined threshold failures name the corresponding exceeded limits in text/JSON. Android late-change recording observes last frame3510ms, track end3527ms, final video4.0s and correctly suppresses warning; wrapper1 only expects hyphenated wording instead of actual `note=not printed`.
 - Latest iOS audit460/478; Android391/467 before pending review additions. Full slices and Task6 remain incomplete; verification has not modified product sources.
+
+
+### Timing, process cleanup, and precedence continuation
+
+- Both-platform pipelined MCP requests pass independent review. iOS direct child polling captures simctl/xcodebuild; Android's fast child escapes polling but valid named-device context plus the exact source/null-stdin semantic test establishes the path. No request is lost.
+- Android K09 ten-run geometry and L62 five-run removal pass independent review. External AVD ownership, stale-record pruning, late-change recording, and active-versus-earned keepalive stops pass parent review with exact prior failed-flow evidence. Original wrapper-only decoding errors remain preserved.
+- iOS119 was excluded before device work because of a wrong session ID.119b valid logging controls pass K33 but confirm IOS064 FAIL: a live simulator log child briefly remains after SIGINT return130 and is absent two seconds later. Independent review rejects weakening the no-orphan contract; focused transient-cleanup brief L78 filed. Next unused brief L79.
+- iOS120b keeps run/failure screenshots outside visual captures, compares exactly five screens and preserves a legacy artifact-named baseline byte-for-byte.121b raw capture0 plus all five report files proves all eight action/settle duration sums and statuses exactly; wrapper KeyError was only an assumed top-level passed field. Both rows independently reviewed pass.
+- iOS122 four discriminating application-ID precedence controls pass; prior variable/detection tail completes IOS126. Current audited iOS466/478 (437pass/20fail/9blocked); Android404/467 (381pass/17fail/4blocked/2na). CLI384 effective unchanged. No product source changes; full campaign and Task6 remain incomplete.
