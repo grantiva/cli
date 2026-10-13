@@ -26,6 +26,6 @@ The first non-force lifecycle attempt stopped because the log-flow helper omitte
 
 Packaged joint-forward smoke passed all four cases with invocation exit 0, both unrelated controls preserved, and exact owned forward/process/session cleanup. Independent raw review is pending. Full iOS MCP smoke is now running.
 
-The first iOS MCP attempt passed L65 and the selector sequence including selected/unselected literal heart and Name placeholder, then stopped on an expected-prefix assertion after the quoted Mount Denali tap itself succeeded. The helper appears to expect literal escape backslashes in already-decoded text; independent classification is pending. Runner stop exited 0. Full Android MCP smoke is running serially.
+The first iOS MCP attempt passed L65 and the selector sequence including selected/unselected literal heart and Name placeholder, then stopped on an expected-prefix assertion after the quoted Mount Denali tap itself succeeded. The helper appears to expect literal escape backslashes in already-decoded text; independent diagnosis confirms helper over-escaping, with no product defect. Runner stop exited 0. Full Android MCP smoke is running serially.
 
 Independent packaged joint-forward review is APPROVED. Full Android MCP phase passed, including L65 and ten mixed large-response pairs; final runner stop exited 0 and its session is absent.
