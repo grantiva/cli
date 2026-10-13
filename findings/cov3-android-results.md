@@ -345,6 +345,14 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | X-017 | pass | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/doctor/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt62/ | Native explicit-platform doctor runs on both platforms produce the same text sections and JSON array object shape (`name`, `status`, `message`, optional `fix`), with platform-specific required and advisory check names and values. |
 | X-024 | pass | findings/evidence/cov3-android/B2-K33-X024-verbose-processes-rerun2/run-plain/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt62/ | Exact flow 08 with `--logs` on both platforms prefixes app log lines with `[log]` on stderr and interleaves them during runner execution in the same form; platform log payloads differ as expected. |
 
+
+| B2-K57 [android] | pass | findings/evidence/cov3-android/B2-K57-D245-notifications-rerun3/, findings/evidence/cov3-android/B2-K57-D245-notifications-rerun2/ | The subscribed v3 transcript contains exactly two hierarchy updates: one for the successful tap and one for a script whose coordinate tap succeeded before its missing-label second step failed. Failed and rejected calls emitted none, as did the successful tap after unsubscribe; v2 separately proves no notification before subscription. Exact-head notification tests assert the same semantic boundaries (inspected, not newly executed). |
+| D2-45 [android] | pass | findings/evidence/cov3-android/B2-K57-D245-notifications-rerun3/, findings/evidence/cov3-android/B2-K57-D245-notifications-rerun2/ | The live Android subscription sequence emitted hierarchy notifications only after the successful subscribed tap and partly-run script. It emitted none for failed or invalid calls, before subscription, or after unsubscribe even when the coordinate tap succeeded. |
+
+| D2-25 | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K23-header/, findings/evidence/cov3-android/B2-K23a-completion-rerun2/ | From a directory without either Grantiva config, `run --flow` accepted the flow header’s literal `appId: com.kylebrowning.landmarks` without an `--application-id`, launched that app on the explicit owned Android serial, and passed. |
+
+| B2-K56 [android] | pass | findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/ | In a live keep-alive session, MCP context reported `application_id: com.kylebrowning.landmarks`, the owned serial and PID, and `driver_port: (forwarded on attach)`, with no empty value. Exact-head ContextToolTests retained alongside the run cover keep-alive app-ID round-trip and legacy missing values rendering `(unknown)` (inspected, not newly executed). |
+
 ## Counts
 
-282 of 467 slice rows recorded: 264 pass, 12 fail, 4 blocked, 2 n/a.
+286 of 467 slice rows recorded: 268 pass, 12 fail, 4 blocked, 2 n/a.
