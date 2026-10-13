@@ -162,19 +162,21 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | AND-046 | pass | findings/evidence/cov3-android/AND-046-049-exact-rerun1/continue/ | With crash flow first and `--continue-on-failure`, the crash failed, the following browse flow still passed 8/8, the report recorded one failed plus one passed flow, and the command exited 1. |
 | AND-049 | pass | findings/evidence/cov3-android/AND-046-049-exact-rerun1/timeout/ | The 30-second cap returned after 31.5 seconds wall time with exit 1; ready and report were terminal failed with no running flow, and the kill sentence had no stray trailing colon. |
 
-| AND-124 | pass | findings/evidence/cov3-android/B2-K111/ | Five static four-second recordings each emitted the held-frame diagnostic and warning that the 0ms frame was held to the requested 4.0 seconds. |
-
 | AND-126 | pass | findings/evidence/cov3-android/AND-126-127-exact-rerun1/ | `runner start --device emulator-5554 --headless --detach --json` returned started, the repeat returned already_running, and stop returned stopped; all were valid JSON, flags were accepted, and cleanup removed session/forwards. |
 | B2-K16 [android] | pass | findings/evidence/cov3-android/AND-126-127-exact-rerun1/ | Android started, already_running, and stopped documents consistently used numeric pid/port plus applicationId and serial; compatibility bundle_id/udid keys match the documented deprecation, and exact-head CLI tests cover the shapes. |
 
 | AND-125 | pass | findings/evidence/cov3-android/AND-125-exact-rerun1/ | The documented five-second record example exited 0 and preserved one nonempty MP4 plus exactly three PNG frames for 0, 1000, and 3000ms. |
 
-| AND-127 | fail | findings/evidence/cov3-android/AND-126-127-exact-rerun1/, findings/evidence/cov3-android/AND-127-exact-rerun1/ | Detached start wrote its log/session, tools/list returned 22, stop cleaned the owned forward, but dump-hierarchy returned only system UI rather than Landmarks in two attempts; the second attempt explicitly ran and verified the app immediately before detached start. |
+| AND-127 | fail | findings/evidence/cov3-android/AND-126-127-exact-rerun1/, findings/evidence/cov3-android/AND-127-exact-rerun1/, findings/evidence/cov3-android/AND-127-isolated-poll-rerun2/ | Detached start reported ready before its generated `launchApp` flow had foregrounded the app: the immediate hierarchy was system UI. An isolated retry without concurrent runner work reproduced the timing window, then returned Landmarks on the next poll 1.183 seconds later. |
 
 | AND-105 | pass | findings/evidence/cov3-android/AND-105-exact-rerun1/ | In a project containing both iOS and Android configs, explicit `mcp --platform android` started cleanly; context selected grantiva-android.yml, Android module/variant/application ID, cov3-android/emulator-5554, and the Android SDK. |
 
 | AND-103 | pass | findings/evidence/cov3-android/AND-103-exact-rerun1/ | In a confirmed live Android session, MCP VRT capture wrote five configured screens under captures/android, approve promoted them under baselines/android, and compare passed all five with Android paths; unrelated captures were listed as ignored. |
 
+| AND-118 | pass | findings/evidence/cov3-android/AND-118-exact-rerun1/ | With neither emulator config nor a device flag, narration used explicit `device=(none)`, then selected `cov3-android (emulator-5554)`; no empty device serial appeared and the flow passed. |
+
+| AND-119 | pass | findings/evidence/cov3-android/AND-119-exact-rerun1/ | With continue-on-failure, the configured screen session failed at `No Such Element` but the following browse flow still ran and passed; the command retained exit 1. The slow screen was killed at its named `Slow` step after 34.2 seconds wall time under the 30-second cap, with a terminal failed report. |
+
 ## Counts
 
-157 of 467 slice rows recorded: 147 pass, 4 fail, 4 blocked, 2 n/a.
+158 of 467 slice rows recorded: 148 pass, 4 fail, 4 blocked, 2 n/a.

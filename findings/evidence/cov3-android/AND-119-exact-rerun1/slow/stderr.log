@@ -1,0 +1,34 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=1 flows=0
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Capturing 1 screen(s)...
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-119-exact-rerun1/slow/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ extendedWaitUntil: visible text=".+" (159ms)
+    ✓ tapOn: text="Deep Links" (706ms)
+    ✓ waitForAnimationToEnd (726ms)
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/AND-119-exact-rerun1/slow/report/captures/failure-1791869474.png
+Error: grantiva killed the screens session after 30s (--timeout <seconds> to raise the cap). It was at screen "Slow".

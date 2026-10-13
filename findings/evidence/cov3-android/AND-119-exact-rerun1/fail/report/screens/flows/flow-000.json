@@ -1,0 +1,123 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "screens",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:30:13.902395-07:00",
+  "endTime": "2026-10-12T22:30:33.313677-07:00",
+  "duration": 19411,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:30:13.909082-07:00",
+      "endTime": "2026-10-12T22:30:15.316082-07:00",
+      "duration": 1407,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "label": "Wait for the app to draw",
+      "yaml": "extendedWaitUntil: visible text=\".+\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:30:15.317253-07:00",
+      "endTime": "2026-10-12T22:30:15.550253-07:00",
+      "duration": 233,
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 425,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-12T22:30:15.551072-07:00",
+      "endTime": "2026-10-12T22:30:15.909072-07:00",
+      "duration": 358,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:30:15.90999-07:00",
+      "endTime": "2026-10-12T22:30:16.03899-07:00",
+      "duration": 129,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-Home.png"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-12T22:30:16.039565-07:00",
+      "endTime": "2026-10-12T22:30:33.159565-07:00",
+      "duration": 17120,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Battery 100 percent.\", \"Half Dome\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-004-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 3849,
+    "p50": 358,
+    "p95": 17120,
+    "max": 17120,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
