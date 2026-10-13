@@ -674,6 +674,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | AND3-OBS-01 | fail | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/ | An optional missing tap has fast first lookups and runner overall `PASS`, but the command-level failed entry is reconstructed by the CLI as one failed step, producing a failed summary and exit 1. This reporting defect is tracked by regression brief L79; it does not change the passing lookup-timing rows or the 467-row base count. |
 
+| AND3-OBS-02 | fail | findings/evidence/cov3-android/B3-L38-a-detached-timeline-rerun3/run/mcp.stdout.raw, /Users/kyle/Developer/grantiva-cli/.worktrees/regression/docs/superpowers/plans/2026-10-13-coverage-issues-round3/L80-mcp-concurrent-large-responses-interleave-on-stdout.md | Concurrent ready hierarchy resource/tool responses interleave on MCP stdout: ID 5 begins, ID 4 is inserted at byte 65,536, then ID 5 resumes on the next physical line. Both lines are invalid JSON and both requests time out. L80 tracks the shared stdio response-serialization defect; B3-L38-a remains separately gradeable with its sequential complement. |
+
 | AND-017 [android] | pass | findings/evidence/cov3-android/AND-017-boot-timeout-rerun1/ | A fresh row-owned AVD boot with `GRANTIVA_EMULATOR_BOOT_TIMEOUT_SECONDS=5` exits 1 after 5.367 seconds with the exact serial, five-second timeout, environment-variable remedy, and log path. Its qemu process and started/created records remain after timeout; targeted cleanup removes the AVD while preserving the primary. |
 
 | N-03 [android] | pass | findings/evidence/cov3-android/B2-K07-N03-default-complement-rerun2/, findings/evidence/cov3-android/B2-K07-N03-B2-L03-scroll-renderers-rerun1/ | Five fresh-secondary default runs and three warm-primary runs of exact 10-seed-many all exit zero and land with Landmark 28 as the final visible row, with spread zero. The two valid full-snapshot software controls also pass and land at 28; aborted Bash-3 placeholder directories are excluded. |
@@ -712,6 +714,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | N2-16 [android] | pass | findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/, findings/evidence/cov3-android/B2-K06-N06-three-fresh-captures-rerun2/, findings/android-n216-rerun4-review.md | Three fresh first captures pass on distinct emulator processes. In the exact mid-flow teardown leg, restoration takes the documented absent-device branch and emits one five-second warning; an isolated exact-QEMU-death control measures that branch at 5.452 seconds. Source/tests preserve the separate 30-second listed-offline behavior. The 70-second process-exit proxy is excluded because it includes later runner retries and artifact generation. |
 
+| B3-L38-a [android] | pass | findings/evidence/cov3-android/B3-L38-a-detached-timeline-rerun2/, findings/evidence/cov3-android/B3-L38-a-detached-timeline-rerun4/, findings/evidence/cov3-android/starting-session-contracts-rerun4/, findings/evidence/cov3-android/B2-K79-K104-D230-realpath-kill-rerun3/, findings/android-b3l38a-rerun2-review.md | Detached startup is sampled every ~100 ms from absent through portless starting to same-PID ready. On one MCP server, starting resource/tool/dump return the exact Android retry contract, then sequential ready resource/tool and immediate dump attach successfully. Foreground and dead-sidecar joins close their clauses; concurrent rerun3 is excluded and preserved separately as L80/AND3-OBS-02. |
+
 ## Counts
 
-464 of 467 slice rows recorded: 439 pass, 17 fail, 6 blocked, 2 n/a.
+465 of 467 slice rows recorded: 440 pass, 17 fail, 6 blocked, 2 n/a.
