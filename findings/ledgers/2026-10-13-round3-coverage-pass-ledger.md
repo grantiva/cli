@@ -183,3 +183,17 @@ Checkpoint: iOS8761206b through valid27b; Android64f54f21 phaseb/083 completed r
 - Android K25 paired app-file checks install correctly for build install, run, and diff capture. The initial CI invocation used unsupported --flow and is excluded; the corrected config-driven invocation stops at Android baseline support validation before installation. Literal compound fail retained pending independent applicability triage. No product brief assigned from that restriction yet.
 - Android027 override identity and065 capture settings completed, graded pass. Completed raw checkpoint edc2b9e0;215/467 rows recorded (200 pass,9 fail,4 blocked,2 n/a). iOS35 VRT batch completed, awaiting grading.
 - Existing agents continue preparing and grading coverage; CLI agent independently reviews latest evidence. Full coverage and Task6 remain incomplete.
+
+
+Ruling: IOS072 attempt34 repeated a documented singular --flow override and did not exercise the configured two-flow criterion. Preserve its raw evidence as a harness-input limitation; it is not a product defect. Fresh attempt36 configures both paths without --flow and passes both, with separate a/same.yaml and b/same.yaml report sourceFile values. Cost if wrong: revisit repeated-option validation separately, without claiming basename collision.
+
+Ruling: B2-K25 Android CI clause conflicts with explicit CLI108/167, AND089, B-D06.1 and Android design/docs requiring refusal before device work. Keep the literal compound fail until Task6 expectation reconciliation; no remote CI implementation is implied by this regression test. Supported paired build-install/run/diff semantics pass. Cost if wrong: revisit platform scope as a separate product decision. Independent review: cov3-cli/findings/IOS072-K25-requirement-triage.md, checkpoint8173a80c.
+
+Review gaps: B-I02.2 lacks conflicting flag/config and sole-booted fallback; IOS040 lacked retained bundle-ID proof; AND067/145 initial settings checks used slow flow instead of exact browse. Provisional grades removed while targeted evidence is gathered. iOS35 six VRT command rows pass; raw retained.
+
+
+### Concurrent devices and cross-platform joins
+
+- Android dual-device runtime completed both flows successfully, checked newest/default and explicit-device hierarchy, preserved another owned device's orphan forward across primary cleanup, and deleted its temporary secondary. Exact browse settings re-run closes AND067/145; raw checkpoint8e5c8c27. AND057 remains incomplete because unchanged persistent session forwarding proves reuse/no leak, not creation/removal of a command-scoped forward.
+- Independent cross review supports X006/008/009/012/016/023. X011 needs the specified Landmarks-list state rather than detail; X014 needs a new booted Android serial case rather than only no-boot name. Initial optimistic comparison map corrected, checkpoint7aaed348. X005 lacks current iOS build-build JSON.
+- iOS evidence/grades through35/36 checkpointc0a4ab84. iOS37/38 completed awaiting grading; Android K44 preflight completed and broader flow/report batch running. Remaining rows still substantial; no overall pass claimed.
