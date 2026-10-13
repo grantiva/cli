@@ -1,0 +1,101 @@
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:10:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:11:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:17:        XCTAssertEqual(held.count, file.data.count, "a one-entry stts is rewritten in place")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:23:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2)?.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:24:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:26:        XCTAssertEqual(held.count, file.data.count + 8)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:28:        XCTAssertEqual(Array(held[Int(parsed.chunkOffset)..<Int(parsed.chunkOffset) + 4]), MP4Fixture.mdatPayload)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:40:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:41:        XCTAssertEqual(held.recordedSeconds, 0)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:42:        let parsed = MP4Fixture.Parsed(held.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:68:    // MARK: - K34: the last frame's start, the track end, and why nothing was held
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:77:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 2))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:78:        XCTAssertEqual(held.lastFrameSeconds, 0.0667, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:79:        XCTAssertEqual(held.recordedSeconds, 0.1, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:161:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 3) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:162:            return XCTFail("expected the last frame to be held")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:167:        let held = try Data(contentsOf: url)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:168:        let parsed = MP4Fixture.Parsed(held)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:176:        let reread = try MP4LastFrameHold.timing(of: held).get()
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:180:            return XCTFail("a held file is already the requested length")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:248:        let held = try XCTUnwrap(MP4LastFrameHold.hold(file.data, toSeconds: 3))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:249:        XCTAssertEqual(held.lastFrameSeconds, 1_190.0 / 600, accuracy: 0.0001)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:250:        let parsed = MP4Fixture.Parsed(held.data)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:261:        for position in [MP4Fixture.ExtraTrak.Position.after, .before] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:262:            for kind in [MP4Fixture.ExtraTrak.Kind.noMdia, .mdiaWithoutHdlr] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:269:                guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 4) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:270:                    XCTFail("\(position) \(kind): expected the video track to be held"); continue
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:273:                let held = try Data(contentsOf: url)
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:274:                XCTAssertEqual(MP4Fixture.Parsed(held).stts, [[1, 360_000]] as [[UInt32]], "\(position) \(kind)")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:275:                XCTAssertEqual(MP4Fixture.traks(in: held).filter { !$0.contains(Array("stts".utf8)) },
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:281:    func testAFileWithOnlyAnMdiaLessTrackHasNoVideoTrack() {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:293:        guard case .held(let timing) = try MP4LastFrameHold.holdFile(atPath: url.path, toSeconds: 2) else {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:294:            return XCTFail("expected the last frame to be held")
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:353:/// ftyp, moov(mvhd, trak(tkhd, edts(elst), mdia(mdhd, hdlr vide, minf(stbl(stts, stco))))), mdat.
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:363:    struct ExtraTrak {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:365:        enum Kind { case noMdia, mdiaWithoutHdlr }
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:375:        extraTrak: ExtraTrak? = nil, omitVideo: Bool = false,
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:384:        func extraTrakBox(_ kind: ExtraTrak.Kind) -> [UInt8] {
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:388:            case .mdiaWithoutHdlr:
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:389:                return box("trak", tkhd + box("mdia", full("mdhd", time(0) + time(0) + be(1_000) + time(1_234) + be(0))))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:397:            let hdlr = box("hdlr", [0, 0, 0, 0] + be(0) + Array("vide".utf8) + [UInt8](repeating: 0, count: 13))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:408:            let trak = omitVideo ? [] : box("trak", tkhd + box("edts", elst) + box("mdia", mdhd + hdlr + box("minf", stbl)))
+Tests/GrantivaCoreTests/MP4LastFrameHoldTests.swift:458:                case "moov", "trak", "edts", "mdia", "minf", "stbl": walk(b, p, o + size)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:56:    public struct Unreadable: Error, Sendable, Equatable {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:63:        /// The last frame was held to the requested length.
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:64:        case held(Timing)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:84:            case .held(let timing), .trimmed(let timing), .unchanged(let timing): return timing
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:96:    /// Rewrites the file in place when its last frame must be held, and says
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:113:        case .success(.held(let held)):
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:114:            try held.data.write(to: url, options: .atomic)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:115:            return held.trimmed ? .trimmed(held.timing) : .held(held.timing)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:121:    public static func timing(of data: Data) -> Result<Timing, Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:129:              case .success(.held(let held)) = process(data, toSeconds: seconds, dropFramesPastEnd: dropFramesPastEnd)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:131:        return held
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:135:        case held(Held)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:141:    private static func process(_ data: Data, toSeconds seconds: Double, dropFramesPastEnd: Bool) -> Result<Processed, Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:155:        guard var mvhd = moov.child("mvhd") else { return .failure(Unreadable("the moov has no mvhd box")) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:157:            return .failure(Unreadable("the mvhd box is too short or has a zero timescale"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:161:        var heldAny = false
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:166:            case .success(.held): heldAny = true
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:171:        guard heldAny || trimmedAny else { return .success(.unchanged(timing)) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:172:        // The movie ends with its longest track: the held or trimmed video
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:185:                return .failure(Unreadable("a stco/co64 chunk offset leaves its range when the moov grows"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:194:        return .success(.held(Held(data: Data(output), timing: timing, trimmed: trimmedAny && !heldAny)))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:197:    private static func parseMovie(_ bytes: [UInt8]) -> Result<(top: [Box], moovIndex: Int), Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:199:            return .failure(Unreadable("the file's box sizes are malformed"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:202:            return .failure(Unreadable("the file has no moov box (not an MP4, or not finalized)"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:207:    private static func videoTiming(of moov: Box) -> Result<Timing, Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:218:        return best.map { .success($0) } ?? .failure(Unreadable(reason))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:221:    private static let notVideo = Unreadable("not a video track")
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:223:    private static func trackTiming(_ trak: Box) -> Result<Timing, Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:224:        // A track without mdia/hdlr is not provably video: skipped, as the
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:226:        guard let mdia = trak.child("mdia"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:227:              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .failure(notVideo) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:228:        guard let mdhd = mdia.child("mdhd"), let scale = mdhd.timescale(), scale > 0, mdhd.duration() != nil else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:229:            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:231:        guard let stts = mdia.child("minf")?.child("stbl")?.child("stts"), let entries = stts.sttsEntries(), !entries.isEmpty else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:232:            return .failure(Unreadable("the video track has no readable stts box"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:238:            guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:247:        if let ctts = mdia.child("minf")?.child("stbl")?.child("ctts"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:283:    private enum TrackChange { case none, held, trimmed }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:287:    /// is not provably video (no mdia or hdlr, L25), already exactly long
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:294:    ) -> Result<TrackChange, Unreadable> {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:295:        guard var mdia = trak.child("mdia"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:296:              mdia.child("hdlr").map({ $0.handlerType() == "vide" }) == true else { return .success(.none) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:297:        guard var mdhd = mdia.child("mdhd"), let mediaScale = mdhd.timescale(), mediaScale > 0, mdhd.duration() != nil else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:298:            return .failure(Unreadable("the video track's mdhd box is missing or too short"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:301:            return .failure(Unreadable("the video track's tkhd box is missing or too short"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:303:        guard var minf = mdia.child("minf"), var stbl = minf.child("stbl"), var stts = stbl.child("stts"),
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:305:        else { return .failure(Unreadable("the video track has no readable stts box")) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:310:            guard !overflow else { return .failure(Unreadable("the video track's stts durations overflow")) }
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:323:            minf.replaceChild(stbl); mdia.replaceChild(minf)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:324:            mdhd.setDuration(mediaTarget); mdia.replaceChild(mdhd)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:325:            trak.replaceChild(mdia)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:353:            let heldDelta = UInt64(last.delta) + (mediaTarget - current)
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:354:            guard heldDelta <= UInt64(UInt32.max) else {
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:355:                return .failure(Unreadable("the held stts sample delta does not fit in 32 bits"))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:358:            entries.append((1, UInt32(heldDelta)))
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:360:            change = .held
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:363:            change = previous > movieTarget ? .trimmed : .held
+Sources/GrantivaCore/Android/MP4LastFrameHold.swift:385:    private static let containers: Set<String> = ["moov", "trak", "mdia", "minf", "stbl", "edts"]
