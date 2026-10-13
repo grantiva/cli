@@ -16,10 +16,10 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 | Owned provisioning | PASS | Independent APPROVED |
 | iOS MCP selectors and transport | PASS | Independent APPROVED |
 | Android runner | PASS | Independent APPROVED |
-| Lifecycle | Two helper failures preserved; approved round-5 helper running fresh attempt3 | Pending |
+| Lifecycle | PASS, fresh attempt3; two prior helper failures preserved | Independent APPROVED |
 | Joint forwarding ownership | PASS | Independent APPROVED |
 | Android MCP | PASS | Independent APPROVED |
-| Final force teardown | Not run | Pending |
+| Final force teardown | Helper copy race before force command; foreground fixture preparation | Pending |
 | Physical cleanup/protected inventory | Not run | Pending |
 
 No prior candidate grade populates this table. Candidate1 and candidate2 remain failed. L85 source-live first iOS26 Cancel hierarchy timeout remains unreproduced and recorded in `findings/evidence/fix4-85`; full iOS26 source retry and iOS27 passed, but candidate3 must complete the whole frozen smoke sequence. Any recurrence is triaged rather than retried until green.
