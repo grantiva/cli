@@ -1,0 +1,32 @@
+03:59:50.817420 [INFO] === Test execution started ===
+03:59:50.817484 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/N2-13-crash-wait-complements-rerun1/runs/animation/report
+03:59:50.817489 [INFO] Platform: android
+03:59:50.817493 [INFO] Driver: uiautomator2
+03:59:50.817773 [INFO] Validated 1 flow(s)
+03:59:50.817791 [INFO] Single device execution mode
+03:59:50.817796 [INFO] Starting flow execution (parallel: false, devices: [])
+03:59:50.817802 [INFO] Creating driver for single device execution
+03:59:50.817807 [INFO] Connecting to Android device: emulator-5554
+03:59:50.892244 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+03:59:50.911879 [INFO] Starting UIAutomator2 server on device emulator-5554
+03:59:51.329419 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:59:51.342795 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:59:52.436813 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+03:59:52.443979 [INFO] Session created successfully: 3014d48b-9d0e-40c9-bbdb-8506898873c3
+03:59:52.493239 [INFO] Driver created: android on google sdk_gphone64_arm64
+03:59:52.495810 [INFO] === Starting flow: crash-animation ===
+03:59:52.495815 [INFO] Flow file: .maestro/crash-animation.yaml
+03:59:52.495819 [INFO] Total steps: 2
+03:59:52.501711 [DEBUG] Executing step 0: launchApp
+03:59:52.622262 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+03:59:52.622303 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 21ms
+03:59:53.882967 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.197s after launch, pids [28681], drawn=true crashed=true (read 46ms)
+03:59:53.883041 [ERROR] Step 0 failed (1381ms): launchApp - Error: launchApp: 'com.kylebrowning.landmarks' crashed on launch: java.lang.RuntimeException: LANDMARKS_CRASH_ON_LAUNCH (cause: app crashed on launch)
+03:59:54.140575 [INFO] === Flow completed: crash-animation (status: failed, duration: 1643ms, passed: 0, failed: 1, skipped: 1) ===
+03:59:54.557925 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+03:59:54.571783 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+03:59:54.571819 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+03:59:54.572144 [INFO] Generating reports...
+03:59:54.572958 [INFO] Shutting down devices started by maestro-runner...
+03:59:54.572978 [INFO] Shutting down all tracked emulators
+03:59:54.572997 [INFO] Shutting down all tracked simulators
