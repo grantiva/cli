@@ -54,9 +54,20 @@ final class DoctorSelectionTests: XCTestCase {
         XCTAssertFalse(selection.required, "an ambiguous root is diagnosed, not failed")
         let advice = try XCTUnwrap(selection.advice)
         XCTAssertEqual(advice.status, .warning)
+        XCTAssertEqual(advice.section, .advisory)
         XCTAssertEqual(advice.message, "Found both an Xcode project and Gradle settings")
         XCTAssertEqual(advice.fix, "Pass --platform ios|android or set GRANTIVA_PLATFORM.")
         XCTAssertFalse(DoctorRunner.hasFailures([advice]))
+        let text = DoctorFormatter(color: false).format([advice])
+        XCTAssertTrue(text.contains("  Advisory\n"), text)
+        XCTAssertFalse(text.contains("  Project\n"), text)
+        let json = try JSONOutput.compactString([advice])
+        XCTAssertTrue(json.contains(#""section":"Advisory""#), json)
+        XCTAssertTrue(json.contains("Pass --platform ios|android or set GRANTIVA_PLATFORM."), json)
+
+        XCTAssertThrowsError(try PlatformResolver(directory: dir, environment: [:]).resolve(flag: nil)) { error in
+            XCTAssertTrue(error.localizedDescription.contains("Found both an Xcode project and Gradle settings"), "\(error)")
+        }
         XCTAssertNil(try DoctorCommand.platformSelection(flag: .ios, directory: dir, environment: [:]).advice)
         XCTAssertEqual(try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: ["GRANTIVA_PLATFORM": "android"]).platforms, [.android])
     }

@@ -493,6 +493,11 @@ a `warning` (an advisory check such as no booted simulator) never does.
 
 Every `--json` document, and the `--ready-file` file, uses camelCase keys.
 
+Date-valued JSON fields use ISO 8601 UTC strings (for example,
+`1970-01-01T00:00:00Z`). Scripts should parse this representation rather than
+numeric Unix or Apple-reference timestamps. The complete public date-field
+inventory is documented in [MCP and JSON compatibility](docs/mcp.md#json-date-compatibility).
+
 Some documents used snake_case keys before. For one deprecation period they
 write each of those values twice, under the camelCase key and under the old
 snake_case key beside it; read the camelCase key, as the snake_case one will be
@@ -728,7 +733,16 @@ and also when a screen has no baseline: with no baselines at all it prints `? No
 grantiva diff approve`, and when only some are missing `? Visual diff incomplete: …`; `--json` has `"passed": false`
 in both cases. (`ci run` keeps reporting a new screen as `new_screen` without failing the run.)
 
-Local baselines are stored in `.grantiva/baselines/`. Connect to [Grantiva](https://grantiva.io) to store baselines remotely and enable CI across machines.
+Local baselines are stored in `.grantiva/baselines/`. Capture, baseline, and
+diff filenames now keep ordinary characters such as spaces literal and encode
+only path-unsafe characters. Grantiva still performs legacy baseline lookup
+for the older percent-encoded filename (for example, `Deep%20Links.png` for
+`Deep Links`) and performs migration on approval to `Deep Links.png`; working
+legacy baselines do not need to be renamed by hand. Encoding literal `%` as
+`%25` also removes the ambiguous `%` filenames that the legacy scheme could
+produce.
+
+Connect to [Grantiva](https://grantiva.io) to store baselines remotely and enable CI across machines.
 
 ## License
 

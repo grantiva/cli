@@ -54,7 +54,7 @@ struct DoctorCommand: AsyncParsableCommand {
                 name: "Platform", status: .warning,
                 message: "Found both an Xcode project and Gradle settings",
                 fix: "Pass --platform ios|android or set \(PlatformResolver.environmentKey).",
-                section: .project
+                section: .advisory
             )
             return (detected, false, advice)
         }
