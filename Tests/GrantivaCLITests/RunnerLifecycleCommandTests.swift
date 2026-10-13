@@ -48,6 +48,34 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(polls.value, 3, "driver attachment alone is not app readiness")
     }
 
+    func testConcurrentCleanupCallWaitsUntilSessionRemovalFinishes() {
+        let started = DispatchSemaphore(value: 0)
+        let release = DispatchSemaphore(value: 0)
+        let firstReturned = DispatchSemaphore(value: 0)
+        let secondEntered = DispatchSemaphore(value: 0)
+        let secondReturned = DispatchSemaphore(value: 0)
+        let removed = LockedValue(false)
+        let cleanup = Once {
+            started.signal()
+            _ = release.wait(timeout: .now() + 2)
+            removed.set(true)
+        }
+        DispatchQueue.global().async { cleanup.run(); firstReturned.signal() }
+        XCTAssertEqual(started.wait(timeout: .now() + 1), .success)
+        DispatchQueue.global().async {
+            secondEntered.signal()
+            cleanup.run()
+            secondReturned.signal()
+        }
+        XCTAssertEqual(secondEntered.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(secondReturned.wait(timeout: .now() + 0.05), .timedOut,
+                       "the signal caller must not exit while foreground session removal is still running")
+        release.signal()
+        XCTAssertEqual(firstReturned.wait(timeout: .now() + 1), .success)
+        XCTAssertTrue(removed.value)
+        cleanup.run()
+    }
+
     func testStartupInterruptIsNotTranslatedToWDATimeoutInAnyOutputMode() async throws {
         for flags in [[], ["--quiet"], ["--json"]] {
             let command = try RunnerStartCommand.parse(flags)
