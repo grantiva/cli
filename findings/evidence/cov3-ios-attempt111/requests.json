@@ -1,0 +1,15 @@
+[
+ {"method":"initialize","params":{}},
+ {"_shell":"/Users/kyle/.grantiva-qa/bin/grantiva runner start --json --bundle-id com.kylebrowning.Landmarks --simulator 563907E1-703D-4322-AE5F-FC3B06D03143 --platform ios --detach"},
+ {"_shell":"xcrun simctl launch 563907E1-703D-4322-AE5F-FC3B06D03143 com.kylebrowning.Landmarks"},
+ {"_shell":"for n in {1..20}; do /Users/kyle/.grantiva-qa/bin/grantiva hierarchy --udid 563907E1-703D-4322-AE5F-FC3B06D03143 --format json > /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt111/readiness-$n.json 2> /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt111/readiness-$n.err && rg -q Landmarks /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt111/readiness-$n.json && exit 0; sleep 1; done; exit 1"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"No Such Element"}},"_save":"01-fail-before-subscribe.json"},
+ {"method":"tools/call","params":{"name":"grantiva_swipe","arguments":{"direction":"diagonal"}},"_save":"02-rejected.json"},
+ {"method":"resources/subscribe","params":{"uri":"grantiva://hierarchy"},"_save":"03-subscribe.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"Favorites"}},"_save":"04-success-subscribed.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"No Such Element"}},"_save":"05-fail-subscribed.json"},
+ {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap":"Landmarks"},{"tap":"No Such Element"}]}},"_save":"06-partial-script.json"},
+ {"method":"resources/unsubscribe","params":{"uri":"grantiva://hierarchy"},"_save":"07-unsubscribe.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"Favorites"}},"_save":"08-success-after-unsubscribe.json"},
+ {"method":"tools/list","params":{}}
+]
