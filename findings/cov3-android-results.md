@@ -518,6 +518,14 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L46 [android] | pass | findings/evidence/cov3-android/B3-L46-installed-retention-rerun2/ | In each of three cycles a fresh frozen APK install is followed by the required five-second wait, verbose teardown runs bounded `adb shell sync` successfully before kill, and JSON reports `killed: true`. Teardown takes 2.45–2.89 seconds; after every reboot the Landmarks package remains installed. The wrapper's list-vs-object and final `tr` errors are disclosed in the additive decoder. |
 
+| B3-L45 [android] | pass | findings/evidence/cov3-android/B3-L45-mcp-boot-text-rerun1/ | Explicit-name and configured empty-argument MCP calls against the running primary return the exact `Emulator reused: cov3-android (emulator-5554), already running` text. A row-created shutdown secondary returns the exact booted name/serial text and is then removed. |
+
+| B-A06.1 [android] | pass | findings/evidence/cov3-android/X-004/, findings/evidence/cov3-android/B2-K10-K80-screens-timeout-interrupt-rerun1/ | Genuine SIGINT records group and flow `interrupted`; timeout records `failed` with no running flow; and the successful no-report control omits `reportDir`. |
+
+| B-A06.2 [android] | pass | findings/evidence/cov3-android/X-004/ | The live interrupt result joins exact-head termination semantics: cleanup writes interrupted flow state before termination handling, and signal relay marks termination before signalling tracked process groups. |
+
+| B-C04.1 [android] | pass | findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/ | Ready JSON names the exact retained configured-screens report directory. After exit it still contains root and screens reports, flow files, assets/captures, JUnit, logs, and Allure results. |
+
 ## Counts
 
-368 of 467 slice rows recorded: 345 pass, 17 fail, 4 blocked, 2 n/a.
+372 of 467 slice rows recorded: 349 pass, 17 fail, 4 blocked, 2 n/a.
