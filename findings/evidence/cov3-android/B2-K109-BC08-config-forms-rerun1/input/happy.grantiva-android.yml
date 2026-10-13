@@ -1,0 +1,37 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- swipe:
+    direction: UP
+- tapOn: "Deep Links"
+- tapOn: "Caching Demo"
+- extendedWaitUntil:
+    visible: "Cache Policy"
+    timeout: 5000
+- extendedWaitUntil:
+    notVisible:
+      id: "definitely-missing-id"
+    timeout: 2000
+- extendedWaitUntil:
+    visible:
+      text: "Cache Policy"
+      exact: true
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: "clock"
+    timeout: 5000
+- extendedWaitUntil:
+    visible: "Cache Policy"
+- tapOn:
+    id: "clock"
+- assertVisible:
+    id: "clock"
+- assertNotVisible:
+    id: "definitely-missing-id"
+- scrollUntilVisible:
+    element:
+      id: "clock"
+    direction: DOWN
+    timeout: 5000
+- takeScreenshot: "K109 Forms"

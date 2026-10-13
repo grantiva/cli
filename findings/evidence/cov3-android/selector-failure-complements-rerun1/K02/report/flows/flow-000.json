@@ -1,0 +1,65 @@
+{
+  "id": "flow-000",
+  "name": "K02-tap-missing",
+  "sourceFile": ".maestro/coverage/K02-tap-missing.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:28:55.631706-07:00",
+  "endTime": "2026-10-13T00:29:14.749346-07:00",
+  "duration": 19117,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T00:28:55.637172-07:00",
+      "endTime": "2026-10-13T00:28:57.198172-07:00",
+      "duration": 1561,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-13T00:28:57.335015-07:00",
+      "endTime": "2026-10-13T00:29:14.598015-07:00",
+      "duration": 17263,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Battery 100 percent.\", \"Half Dome\")"
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 9412,
+    "p50": 1561,
+    "p95": 17263,
+    "max": 17263,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}

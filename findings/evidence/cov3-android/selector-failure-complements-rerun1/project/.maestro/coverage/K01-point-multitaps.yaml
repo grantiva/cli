@@ -1,0 +1,11 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp: {clearState: true}
+- tapOn: "Deep Links"
+- tapOn: "Gesture Lab"
+- assertVisible: "Double taps: 0"
+- doubleTapOn: {point: "50%,50%"}
+- assertVisible: "Double taps: 1"
+- assertVisible: "Long presses: 0"
+- longPressOn: {point: "50%,50%"}
+- assertVisible: "Long presses: 1"

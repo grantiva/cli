@@ -1,0 +1,101 @@
+        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .ios, from: scratch))
+        XCTAssertEqual(config.screens.map(\.name), ["FromSub", "Main"])
+    }
+
+    // MARK: - K109: extendedWaitUntil keeps its timeout; scrollUntilVisible scrolls
+
+    func testExtendedWaitUntilKeepsItsTimeoutAndSelector() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: x
+        ---
+        - extendedWaitUntil:
+            visible: "Cache Policy"
+            timeout: 5000
+        - extendedWaitUntil:
+            notVisible:
+              id: "spinner"
+            timeout: 2000
+        - extendedWaitUntil:
+            visible:
+              text: "Exact"
+              exact: true
+        - takeScreenshot: "S"
+        """)
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("steps") }
+        XCTAssertEqual(steps[0].assertVisible, "Cache Policy")
+        XCTAssertEqual(steps[0].waitTimeout, 5000)
+        XCTAssertEqual(steps[1].assertNotVisible, "spinner")
+        XCTAssertTrue(steps[1].assertNotVisibleById)
+        XCTAssertEqual(steps[1].waitTimeout, 2000)
+        XCTAssertTrue(steps[2].assertVisibleExact)
+        XCTAssertNil(steps[2].waitTimeout)
+
+        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "x")
+        XCTAssertTrue(yaml.contains("""
+        - extendedWaitUntil:
+            visible: "Cache Policy"
+            timeout: 5000
+        """), yaml)
+        XCTAssertTrue(yaml.contains("""
+        - extendedWaitUntil:
+            notVisible:
+              id: "spinner"
+            timeout: 2000
+        """), yaml)
+        // Without a timeout the step is generated as before.
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    text: \"Exact\"\n    exact: true"), yaml)
+    }
+
+    func testScrollUntilVisibleStaysAScroll() throws {
+        let config = try MaestroFlowParser.parse("""
+        appId: x
+        ---
+        - scrollUntilVisible:
+            element:
+              id: "row-12"
+            direction: DOWN
+            timeout: 20000
+        - takeScreenshot: "S"
+        """)
+        let yaml = FlowGenerator.generate(screens: config.screens, bundleId: "x")
+        XCTAssertTrue(yaml.contains("""
+        - scrollUntilVisible:
+            element:
+              id: "row-12"
+            direction: DOWN
+            timeout: 20000
+        """), yaml)
+        XCTAssertFalse(yaml.contains("- assertVisible"), yaml)
+    }
+
+    // MARK: - K24: Maestro-format grantiva-android.yml
+
+    static let androidMaestroConfig = """
+    appId: com.kylebrowning.landmarks
+    ---
+    - launchApp
+    - swipe:
+        direction: UP
+    - waitForAnimationToEnd
+    - takeScreenshot: "Home Swiped"
+    - tapOn: "Deep Links"
+    - tapOn: "Caching Demo"
+    - extendedWaitUntil:
+        visible: "Cache Policy"
+        timeout: 5000
+    - tapOn:
+        id: "clock"
+    - assertVisible:
+        id: "clock"
+    - takeScreenshot: "Caching Maestro"
+    """
+
+    func testAMaestroFormatAndroidConfigLoadsWithAndroidDefaults() throws {
+        try Self.androidMaestroConfig.write(to: scratch.appendingPathComponent("grantiva-android.yml"), atomically: true, encoding: .utf8)
+        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .android, from: scratch))
+        XCTAssertEqual(config.platform, .android)
+        XCTAssertEqual(config.android?.applicationId, "com.kylebrowning.landmarks")
+        XCTAssertEqual(config.android?.module, "app")
+        XCTAssertEqual(config.android?.variant, "debug")
+        XCTAssertEqual(config.screens.map(\.name), ["Home Swiped", "Caching Maestro"])
+        guard case .steps(let steps) = config.screens[1].path else { return XCTFail("steps") }

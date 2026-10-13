@@ -1,0 +1,93 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-325BC6D0-2DE1-4FA1-8329-8049F843626B/grantiva-android.yml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:28:00.641122-07:00",
+  "endTime": "2026-10-13T00:28:04.394784-07:00",
+  "duration": 3753,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:28:00.646949-07:00",
+      "endTime": "2026-10-13T00:28:02.005949-07:00",
+      "duration": 1359,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "label": "Wait for the app to draw",
+      "yaml": "extendedWaitUntil: visible text=\".+\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:28:02.007229-07:00",
+      "endTime": "2026-10-13T00:28:02.175229-07:00",
+      "duration": 168,
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 541,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"No Such Element\"",
+      "status": "failed",
+      "startTime": "2026-10-13T00:28:02.176445-07:00",
+      "endTime": "2026-10-13T00:28:04.228445-07:00",
+      "duration": 2052,
+      "error": {
+        "type": "assertion",
+        "message": "Element 'No Such Element' not visible within 2s (cause: context deadline exceeded)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-002-hierarchy.xml"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 1193,
+    "p50": 1359,
+    "p95": 2052,
+    "max": 2052,
+    "slowestType": "extendedWaitUntil"
+  },
+  "artifacts": {}
+}
