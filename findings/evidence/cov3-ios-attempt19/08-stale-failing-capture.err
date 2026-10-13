@@ -1,0 +1,80 @@
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T05:12:52Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T05:12:53Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T05:12:53Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T05:12:53Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T05:12:53Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F8019EE9-AFE0-4A4F-9441-0A33439550D5 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-367FA481-31AB-4D74-9F3A-24F4868FB1B1/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (260ms)
+    ✓ takeScreenshot (217ms)
+    ✗ tapOn: text="No Such Element" (12.7s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+✗ screens 18.5s
+
+  [1/1] screens (grantiva.yml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ waitForAnimationToEnd (260ms)
+    ✓ takeScreenshot (217ms)
+    ✗ tapOn: text="No Such Element" (12.7s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 18.5s
+
+  3 steps passing (18.5s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       6      3      1      2      18.5s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      3      1      2      18.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-13T05:13:15Z com.grantiva.cli: exit 1: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-F8019EE9-AFE0-4A4F-9441-0A33439550D5 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-367FA481-31AB-4D74-9F3A-24F4868FB1B1/grantiva.yml
+[debug] 2026-10-13T05:13:15Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T05:13:15Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+Error: Runner failed (exit 1): Screen "Broken" failed at tapOn: text="No Such Element": Element not found: text='No Such Element' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such Element' OR value ==[c] 'No Such Element')'; page source: no elements match selector; closest on-screen texts: "Half Dome, Yosemite, CA", "Half Dome", "Mountains")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
