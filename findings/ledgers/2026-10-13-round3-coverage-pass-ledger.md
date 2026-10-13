@@ -175,3 +175,11 @@ Checkpoint: iOS8761206b through valid27b; Android64f54f21 phaseb/083 completed r
 - iOS30logsdefault/predicate/levels supported; IOS057/064cleanup partial because sawLogStreamfalse and no exact WDA/simctl-diagnose descendant proof.31newshutdownsimensure/reuse/concurrent casespass; CLIteardown reclaimedfalse leavesnewshutdownsims, so parentguardedcleanup verifiedexact3newUUID/namepairs andsimctldeletedthem, absenceconfirmed.
 - Androidbuildbatch B-A09.2 initiallymisgraded: rawactuallyenumeratesavailablevariantsandModulesapp, correctedpass. AND022 releasefixtureusesdebugsigning, so unsignedcase expectationconflict—not productbug. B-A10.2 allegedCHANGELOGgap retracted: bindingmatrix924–925 substitutesREADME/docs/releasenotesafterCLI changelogremoval#179; README252–255fulfillsnote. NoL69filed.
 - Androidsettingsrun apply/restoration casescompleted0; graded066/067/145pass,065stilldiffcapturelegmissing. K25pairedAPKbatchcomplete0actualclausespendingadjudication. iOS32live-sessiondefaultresolution/5bootedambiguityrefusalpassed withoutownerdevicecommands. iOS33env/appfilebatchcomplete0pendingadjudication.
+
+
+### Paired app files, launch arguments, and duplicate flow names
+
+- iOS33 environment and prebuilt-app checks passed four rows; iOS34 crash continuation and fail-fast behavior passed. IOS072 fails: two explicitly named files in distinct directories share `same.yaml`, but only the second flow appears in output/report. Independent cause review assigned before filing the next brief. Raw checkpoint 520a103b.
+- Android K25 paired app-file checks install correctly for build install, run, and diff capture. The initial CI invocation used unsupported --flow and is excluded; the corrected config-driven invocation stops at Android baseline support validation before installation. Literal compound fail retained pending independent applicability triage. No product brief assigned from that restriction yet.
+- Android027 override identity and065 capture settings completed, graded pass. Completed raw checkpoint edc2b9e0;215/467 rows recorded (200 pass,9 fail,4 blocked,2 n/a). iOS35 VRT batch completed, awaiting grading.
+- Existing agents continue preparing and grading coverage; CLI agent independently reviews latest evidence. Full coverage and Task6 remain incomplete.
