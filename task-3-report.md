@@ -6,13 +6,13 @@ Status: **DONE_WITH_CONCERNS**
 
 All 384 CLI-slice matrix rows are graded in `findings/cov3-cli-results.md`:
 
-- pass: 361
+- pass: 368
 - fail: 7
-- blocked: 12
+- blocked: 5
 - n/a: 4
 - ungraded: 0
 
-The slice used `/Users/kyle/.grantiva-qa/bin/grantiva` 2.1.0, SHA-256 `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`, built from CLI `8f2cff67`. Its bundled runner is `grantiva-runner 1.1.28-grantiva.13`; the installed stamp is `1.1.28-grantiva.13+android-drivers-2`, with source provenance `fd9d8e8`. Every runner install exercised by this completion used a per-row scratch home. No product source was edited, no Swift build/test was run, no device action was taken, and nothing was pushed.
+The slice used `/Users/kyle/.grantiva-qa/bin/grantiva` 2.1.0, SHA-256 `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`, built from CLI `8f2cff67`. Its bundled runner is `grantiva-runner 1.1.28-grantiva.13`; the installed stamp is `1.1.28-grantiva.13+android-drivers-2`, with source provenance `fd9d8e8`. Every runner install exercised by this completion used a per-row scratch home. The CLI worker performed no device action; this report now integrates cited iOS-worker captures from its owned simulator. No product source was edited, no Swift build/test was run by this slice, and nothing was pushed.
 
 ## Fails
 
@@ -28,17 +28,17 @@ All seven fails are matrix/brief expectation or stale-evidence issues.
 
 ## Blocked rows
 
-Blocked rows are `CLI-048`, `CLI-049`, `CLI-061`, `CLI-064`, `CLI-066`, `CLI-083`, `CLI-153`, `B3-L14.1`, `B3-L29`, `B3-L53`, `N3-11`, and `N3-15`. CLI-153 lacks the mandated smoke prerequisite; B3-L14.1 lacks the live delayed-cancellation observation; B3-L29 lacks the no-effect/ABI build clauses; B3-L53 ends in discovery rather than signing or explicit empty-value rejection. N3-11 and N3-15 retain their documented constraints. B3-L17 is resolved by the later full-access, device-free rerun; its original blocked capture remains in the ledger for traceability.
+Blocked rows are `CLI-083`, `CLI-153`, `B3-L29`, `B3-L53`, and `N3-15`. CLI-153 lacks the mandated smoke prerequisite; B3-L29 lacks the no-effect/ABI build clauses; B3-L53 ends in discovery rather than signing or explicit empty-value rejection; N3-15 retains its documented shared-device constraint. The five device-dependent CLI parser rows, B3-L14.1, B3-L17, and N3-11 are resolved by later handoff/full-access evidence; every original blocked capture remains in the ledger for traceability.
 
 ## Evidence limitations and incidents
 
-- `B3-L14.1`: the immediate cancellation is directly reproduced in D2-34. The attempted live 200 ms cancellation finished early on a sandbox CoreSimulator failure and is not counted as that delayed repro; source tests at 8f2cff67 explicitly cover immediate, 200 ms, and unknown-id cancellation.
+- `B3-L14.1`: the immediate and unknown-id cases remain in the CLI evidence. The first attempted live 200 ms cancellation finished early on a sandbox CoreSimulator failure and remains disclosed. The iOS handoff later sent cancellation at 212.6 ms during a live call, observed no response for that request over 120 seconds, and received the following `tools/list` response; source tests at 8f2cff67 cover all three cases. This completes L14.1 only; attempt 11b's separate process-cleanup evidence grades L14.2 in the iOS slice.
 - `B3-L31`: main CI run `38227743323` at exact head `8f2cff67` completed successfully. The raw log shows `Runner home stayed empty.` and all three default-lock guard tests passing.
 - That CI log also contains existing validation noise: deprecated LogHandler default (line 455), unused `try?` result (997), deprecated `copyCGImage` (1213), and an unmutated variable (1614). These do not invalidate the fresh-home check and were not introduced by this verification task.
 - `B3-L29`: the required hidden-option commands were accepted and reached Gradle, which was blocked from its user-home lock by the sandbox. No product build completed and no device was touched.
 - Initial fixture mistakes for `B3-L15.1`, `B3-L16`, `B3-L42-b`, and `D2-42` are preserved. Corrected raw captures live in the cited `-rerun`/`-rerun2` evidence directories; the ledger cites those corrected captures.
 - The first sandboxed doctor/context reads could not connect to CoreSimulatorService. The read-only N3-15 rerun was performed outside that sandbox and preserved verbatim.
-- `N3-11`: source at `DriverCommand.swift:81-98` shows `runner version` prints the version constant and does not invoke RunnerManager installation; `hierarchy` fails at no-session lookup. A later full-access fake-device start successfully listed simulators, then exited `Simulator not found` before RunnerManager. Its zero warning count is therefore inconclusive. The row remains blocked as an evidence gap and is not classified as a product failure.
+- `N3-11`: source at `DriverCommand.swift:81-98` shows `runner version` prints the version constant and does not invoke RunnerManager installation; `hierarchy` fails at no-session lookup. The first fake-device start exited before RunnerManager and remains inconclusive. The later iOS handoff uses the exact QA binary copied without its bundle and a scratch clone of the current runner home; start reaches and launches the installed runner on the slice-owned simulator, prints the missing-bundle warning exactly once, succeeds, and stop succeeds without repeating it. Joined with the original install/version/hierarchy captures, this completes the row without treating the earlier pre-runner observation as a product failure.
 
 ## Provenance
 
@@ -48,7 +48,7 @@ The existing branch commits recovered at start were `33d6c0d9` (CLI rows), `f07b
 
 `findings/evidence/cov3-cli/STEP3-DOC-EXAMPLES-v2/inventory.tsv` recursively scans the user-facing README and `docs/**/*.md`, explicitly excluding `docs/superpowers/**` as internal campaign material. It inventories 160 complete command examples against the controller-regenerated 172-page corpus at `/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/help`, with zero unknown flags and zero malformed examples. It includes indented examples and joins shell continuations; only command-position `grantiva` invocations count, so copy operands and prose mentions do not. Each row either links existing device-free execution evidence or gives an explicit authentication, remote-service, destructive, build, or device execution exclusion. This inventory does not claim excluded examples were executed.
 
-The results ledger now uses separate `[ios]` and `[android]` lines for all 21 matrix rows marked `both`. There are 384 unique matrix IDs and 405 base platform/result lines, plus two preserved full-access rerun lines. Latest-verdict unique-ID counts are 361 pass, 7 fail, 12 blocked, and 4 n/a.
+The results ledger now uses separate `[ios]` and `[android]` lines for all 21 matrix rows marked `both`. There are 384 unique matrix IDs and 405 base platform/result lines, plus nine preserved rerun/handoff lines. Latest-verdict unique-ID counts are 368 pass, 7 fail, 5 blocked, and 4 n/a.
 
 ## Fix-round appendix
 
@@ -85,5 +85,12 @@ No product files were changed, no device action was taken, and no Swift build/te
 ## Full-access rerun appendix
 
 - `B3-L17` now passes. The device-free rerun covers an explicit empty `--project-dir` in auto and iOS modes and a genuine no-`--project-dir` invocation from that empty cwd. Auto mode names both config files and the searched realpath; iOS mode names only `grantiva.yml`; every capture reports no runner session and labels booted simulators as hints only. Evidence: `findings/evidence/cov3-cli/B3-L17-fullaccess/`.
-- `N3-11` remains blocked. The scratch-home installation succeeded, and the bundle-less copy's fake-device start reached a successful `simctl list` before exiting `Simulator not found`. This is still before RunnerManager, so the observed zero missing-bundle warnings neither verifies the runner-use path nor demonstrates a product failure. Evidence: `findings/evidence/cov3-cli/N3-11-fullaccess/`.
-- Remaining environment-dependent handoffs are concrete: `B3-L14.1` needs an actual in-flight 200 ms build cancellation in the build/device-capable slice; `B3-L29` needs completed flagged and unflagged builds to compare no-effect behavior and device ABI selection; `B3-L53` needs the signing/device context required to distinguish signing-path acceptance from explicit empty-value rejection. The CLI slice did not run any of those device/build operations.
+- `N3-11` was initially still blocked after this rerun. The scratch-home installation succeeded, but the bundle-less copy's fake-device start exited before RunnerManager, so its zero warning count was inconclusive. Evidence: `findings/evidence/cov3-cli/N3-11-fullaccess/`. The later iOS handoff below resolves the gap while preserving this limitation.
+- At this checkpoint the remaining environment-dependent handoffs were B3-L14.1, B3-L29, and B3-L53. The iOS attempt-11 handoff below resolves B3-L14.1. B3-L29 still needs completed flagged and unflagged builds to compare no-effect behavior and device ABI selection; B3-L53 still needs the signing/device context required to distinguish signing-path acceptance from explicit empty-value rejection.
+
+## iOS handoff integration appendix
+
+- Preserved the original blocked CLI-048/049/061/064/066 rows and added pass reruns pointing to `../cov3-ios/findings/evidence/cov3-ios-attempt5/`. The handoff establishes relative/missing run-flow resolution, the named A→B→A cycle without a hang, byte-preserved quoted emoji staging, distinct text/id selector staging, and the two scroll-direction mappings.
+- Added the B3-L14.1 pass rerun from `cov3-ios-attempt11`, not attempt 11b: its measured delay is 212.6 ms and it supplies the missing delayed no-response observation. The immediate case, unknown-id behavior, and source tests remain the earlier CLI evidence. Attempt 11b's 2.014 s active-build cancellation belongs to B3-L14.2 and is not substituted for the 200 ms L14.1 requirement.
+- Added the N3-11 pass rerun from `cov3-ios-attempt9b`. It is the first start capture that actually reaches the installed runner; the earlier fake-device start remains preserved as inconclusive. The bundleless QA copy and source binary share SHA-256 `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`, and the runner home is a scratch clone.
+- Updated latest-verdict counts to 368 pass, 7 fail, 5 blocked, and 4 n/a. No raw evidence was copied between worktrees.
