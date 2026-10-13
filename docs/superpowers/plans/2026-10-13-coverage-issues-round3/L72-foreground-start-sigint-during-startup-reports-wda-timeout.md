@@ -4,7 +4,7 @@ Severity: contract
 Component: cli / runner lifecycle
 Rows: N2-15 [ios] (B3-L37 [ios] notice remains passing)
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.
-Status: evidence-backed triage during the incomplete round-3 coverage pass; steady-ready control pending.
+Status: evidence-backed triage during the incomplete round-3 coverage pass; steady-ready control passed.
 
 ## Expected
 
@@ -28,7 +28,7 @@ The harness sent SIGINT to the recorded Grantiva foreground process group. It di
 - `summary.json` records all three modes with `sessionState: starting`, exit 1, and no session afterward.
 - `plain.err`, `quiet.err`, and `json.err` contain the correct B3-L37 signal notice followed by the false WDA-timeout error.
 - Independent source/evidence review: CLI slice `findings/ios69b-70-android-k87-review.md`.
-- A steady-ready repeat is being retained separately as attempt 70c. It is a scope control and is not assumed or claimed by this draft.
+- iOS slice `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt70c/` is the steady-ready scope control. Plain, quiet and JSON starts each publish `state: ready` with numeric port 8511, answer an explicit-UDID hierarchy request, then exit 130 on SIGINT with the correct notice and no session left. This confirms the false timeout is limited to interruption during the startup wait; ordinary ready-state foreground interruption works.
 
 ## Cause
 
