@@ -372,6 +372,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K87 [android] | pass | findings/evidence/cov3-android/B2-K87-ten-runner-cycles-rerun2/ | Ten consecutive detached start/dump/stop cycles each returned valid numeric PID/port metadata, a live Android hierarchy, and stopped cleanly. All ten runner PIDs were unique and dead afterward; every cycle removed its project session and PID-specific global owner/runner/stop files, while the adb-forward inventory returned byte-for-byte to its initial state. Exact-head lifecycle/store cleanup tests were inspected, not newly executed. |
 
+| N3-06 | fail | findings/evidence/cov3-android/N3-06-ten-recordings-rerun1/ | All ten exact 3-second Android record commands exited 0 and every retained MP4 is exactly 3.000000s by ffprobe. The literal criterion nevertheless requires `recordedMilliseconds >= 3000`; nine JSON documents report 0 and one reports 1316, with each stderr explaining that the idle last frame was held to 3.0s. Current docs/source define this field as the pre-hold track end, so this is an accepted Task 6 expectation conflict rather than a recording defect. The original wrapper failure was a disclosed harness assertion error; read-only posthoc measurements grade the preserved artifacts. |
+
 ## Counts
 
-296 of 467 slice rows recorded: 278 pass, 12 fail, 4 blocked, 2 n/a.
+297 of 467 slice rows recorded: 278 pass, 13 fail, 4 blocked, 2 n/a.
