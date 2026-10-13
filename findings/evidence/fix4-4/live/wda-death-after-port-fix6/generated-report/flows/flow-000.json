@@ -1,0 +1,49 @@
+{
+  "id": "flow-000",
+  "name": "session-flow",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/session-flow.yaml",
+  "device": {
+    "id": "7FFA9197-B06B-4C08-B3C0-AE6798FF7026",
+    "name": "fix4-4-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T07:40:34.868091-07:00",
+  "endTime": "2026-10-13T07:40:38.342073-07:00",
+  "duration": 3473,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "failed",
+      "startTime": "2026-10-13T07:40:36.374104-07:00",
+      "endTime": "2026-10-13T07:40:38.340104-07:00",
+      "duration": 1966,
+      "error": {
+        "type": "network",
+        "message": "Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post \"http://127.0.0.1:8834/session\": dial tcp 127.0.0.1:8834: connect: connection refused. Check that WebDriverAgent is still running on http://127.0.0.1:8834 and that no other run holds its port. (cause: failed to create session: Post \"http://127.0.0.1:8834/session\": dial tcp 127.0.0.1:8834: connect: connection refused)"
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 1,
+    "mean": 1966,
+    "p50": 1966,
+    "p95": 1966,
+    "max": 1966,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,56 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 5]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[9 / 13] GrantivaAPI
+[11 / 15] GrantivaCore
+[13 / 17] GrantivaCore
+[17 / 19] GrantivaAPITests-product
+[20 / 21] GrantivaAPITests-product
+[22 / 22] GrantivaAPITests-product
+[23 / 27] GrantivaMCP
+[24 / 28] GrantivaMCP
+[30 / 34] GrantivaCLI
+[31 / 35] GrantivaCLI
+[37 / 41] GrantivaMCP
+[38 / 42] GrantivaMCP
+[39 / 43] GrantivaMCP
+[43 / 46] GrantivaCLITests-product
+[45 / 46] GrantivaCLITests-product
+[46 / 50] GrantivaCLITests-product
+[50 / 50] GrantivaCLITests-product
+[51 / 55] GrantivaCoreTests-product
+[54 / 58] GrantivaCoreTests-product
+[55 / 58] GrantivaCoreTests-product
+[61 / 63] GrantivaCoreTests-product
+[63 / 63] GrantivaCoreTests-product
+[64 / 68] GrantivaMCPTests-product
+[72 / 76] GrantivaMCPTests-product
+[79 / 81] GrantivaMCPTests-product
+[81 / 81] GrantivaMCPTests-product
+[83 / 87] grantiva-product
+[86 / 87] grantiva-product
+Build complete! (9.77 sec)

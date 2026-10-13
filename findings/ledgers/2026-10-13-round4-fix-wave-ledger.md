@@ -49,17 +49,17 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L65 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L66 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L67 | 6 | pending | pending | pending | pending | pending | pending |
-| L68 | 4 | pending | pending | pending | pending | pending | pending |
-| L69 | 4 | pending | pending | pending | pending | pending | pending |
+| L68 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
+| L69 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L70 | 6 | pending | pending | pending | pending | pending | pending |
-| L71 | 4 | pending | pending | pending | pending | pending | pending |
-| L72 | 4 | pending | pending | pending | pending | pending | pending |
-| L73 | 4 | pending | pending | pending | pending | pending | pending |
+| L71 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
+| L72 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
+| L73 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L74 | 6 | pending | pending | pending | pending | pending | pending |
-| L75 | 4 | pending | pending | pending | pending | pending | pending |
-| L76 | 4 | pending | pending | pending | pending | pending | pending |
+| L75 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
+| L76 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L77 | 2 | pending | pending | pending | pending | pending | pending |
-| L78 | 4 | pending | pending | pending | pending | pending | pending |
+| L78 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L79 | 3 | pending | pending | pending | pending | pending | pending |
 | L80 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L81 | 6 | pending | pending | pending | pending | pending | pending |
@@ -187,3 +187,9 @@ Task 2 draft PR25 opened at4d425170: https://github.com/grantiva/runner/pull/25.
 Task 2 independent source/spec/quality review needs fixes: (1) stopApp's nominal two-second poll calls context-free adb shell execution and can hang/ignore cancellation; (2) post-swipe bounds and final tap bypass the narrow context, allowing slow bounds to trigger a late tap. Full report archived in findings/reviews/fix4-task2-source-review1.md; original implementer assigned fix1 with semantic stalled-shell and late-rect regressions, exact child cleanup and actual hard transport deadlines. PR25 remains draft regardless of old-head CI.
 Task 2 final committed-binary software controls reported complete: four gestures, favorite5/5, stop3/3; software emulator PID39851 cleaned, serial/AVD absent and protected AVD config hash unchanged. GPU fix4-2-android-gpu / emulator5580 / PID49159, renderer host, owned load PID49568 now active. Final cleanup remains required. Future demo Android input is clean-source APK5891bf... at /private/tmp/landmarks-fix4-2-demo/android/app/build/outputs/apk/free/debug/app-free-debug.apk; do not silently revert to stale c7e4... in later smoke/coverage.
 Task 4 readiness fix6 committed05d8cd393fcaa08b71ea9e05ad2000d88ee5f7ee after path fix5 e9ae823d. Semantic RED3assertions/2tests then69lifecycle tests passed with empty home. Both iOS startup modes require their unique flat passed launch report; changed-path live replay, final suite/CI pending. Scoped reviewer /root/review_fix4_cli_lifecycle now reviewing complete fixes5+6 package f6b4a1ad→05d8cd39. Previous actual WDA-death and path failures remain preserved.
+
+Task 4 fix6 actual post-port WDA-death control now passes on05d8cd39: exact owned WDA PID56162 killed after port announcement while session was starting; retained flat report failed; CLI exited1 in8.090s with explicit iOS app launch flow failure, never published ready, received no CLI SIGINT, and left no owned runner/session/shared file. Evidence live/wda-death-after-port-fix6. Healthy detached starting-null/same-ready-PID and foreground ready interruption also pass; six startup interruptions pass130, runner death passes1; final real-timeout control and new-device cleanup underway. New-head CI38415493813 started; full final suite pending.
+
+Task 4: complete (base8f2cff67 through05d8cd39; independent source/spec/quality/live/cleanup approved; 2,006 final-head tests; CI38415493813 passed; PR208 squash merged03cee568869c45077c3015f97f8b75d19ea822c4 at2026-10-13T14:53:44Z). L53 CLI half complete; runner half remainsTask3. Final live manifest independently verified1,087 files. All three owned simulators and session capacity records removed; protected devices unchanged. Task7 schema integration remains mandatory.
+
+Task 6: active — fresh /root/fix4_public_docs, worktree fix4-public-docs, branchfix4/public-docs, base03cee568869c45077c3015f97f8b75d19ea822c4. Fresh spawn now succeeded. Independent resident reviewer reviewing Task9 scratch matrix while Task2 deadline fixes finish.

@@ -76,3 +76,21 @@ Controller explicitly assigned the new runner artifact schema integration to **T
 ## Review fix round 1
 
 Both Important L78 ownership/deadline findings and the introduced warning-leak test were addressed in `9c7748523e703338887124a52a0a3af6d40a884b`. See `task-4-fix1-report.md` for semantic RED/GREEN evidence, precise identity and bounded inventory behavior, and reconciliation of unchanged brief-named files. Final focused groups: 19 LogStreamerTests and 63 RunnerLifecycleCommandTests passed; all fresh homes remained empty. No full suite was repeated: the earlier 1,976-test full pass predates this fix and the final argument-order correction. Final-tree CI, re-review, all scheduled live acceptance and merge remain pending. No push or device actions.
+
+
+## Completed live acceptance and combined integration (2026-10-13)
+
+The original pending live list is superseded by `task-4-live-report.md`, which maps every Step9 criterion to raw evidence, preserves actual product/harness failures, records owned-device cleanup and corrects app provenance. Live-discovered source fixes ed2e10e6 (--flatten), fbaf0f25 (mixed cycle hops), and60ccdf13 (concurrent cleanup completion) have semantic RED/GREEN evidence and approved source review `task-4-live-fixes-review.md`. App debug dylib proves baseline demo75acc87, not stable4e3ecfd; Task4 does not exercise literalheart.
+
+Controller-authorized merge of reviewed Task5 main4231a01a into reviewed Task4 source60ccdf13 produced **f6b4a1ad9c9959998d58b336eddfa316fae14c9e**, no conflicts and no new source beyond those two branches. Full fresh-empty-home `swift test` now passes **1,998 tests** (281MCP,961Core,655CLI,101API), zero failures, home empty after. This supersedes the earlier final-tree full-suite qualification for this combined head. Exact commands/status/raw output: `findings/evidence/fix4-4/integration/`. Branch pushed to PR208 as explicitly directed; no merge/release/tag performed.
+
+Both owned iOS simulators and owned Android AVD deleted; no owned PIDs/log markers/shared session files; owner simulator states unchanged. Scratch clone retained for acceptance evidence, explicitly recorded. Independent live acceptance review and final combined-head CI remain pending; Task7 notes/logTail compatibility remains separately assigned.
+
+
+## Final literal acceptance follow-up
+
+Independent acceptance review found two missing literal controls: actual WDA-process death (the prior runner-only death was distinct) and exact screens four-hop output. The added real captures exposed genuine false-ready and absolute-alias duplication defects. Separate commits e9ae823d and05d8cd39 fix these with semantic RED/GREEN and narrowly scoped source/tests; see task-4-fix5-report.md and task-4-fix6-report.md. Both commits were pushed to PR208 under controller authorization.
+
+The updated task-4-live-report.md now indexes every literal criterion, original failures and final changed-path replays. All live criteria now pass. Recreated simulator7FFA9197-B06B-4C08-B3C0-AE6798FF7026 was targeted-cleaned/shutdown/deleted; no owned process/shared session remains and owner simulator states are unchanged. Earlier untouched live captures remain tied to their recorded heads. No broad unrelated replay was claimed. Final05d8cd39 fresh-empty-home full suite is running under findings/evidence/fix4-4/integration-fix6, and independent source/acceptance review and final-head CI remain pending. Task4 is not merge-ready on the strength of the earlier1998-test f6b4a1ad suite alone.
+
+Final update: final05d8cd39 full suite passed2006 tests, zero failures, fresh empty runner home/API key unset, evidence integration-fix6. All live criteria completed. The retained fix4-4 capacity reservation found during independent review was released through supported simulator teardown --session-id fix4-4; ios-capacity-cleanup-fix6 proves pre/post ledger active→[], no task devices/processes and unchanged owner states. No live acceptance or cleanup remains pending. Final-head CI and independent fix5–6/source/live acceptance review remain pending. No push beyond already-authorized05d8cd39 or merge was performed.

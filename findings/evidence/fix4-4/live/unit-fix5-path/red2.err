@@ -1,0 +1,16 @@
+Building for debugging...
+[Computing dependencies]
+[2 / 6] GrantivaCoreTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 21 | 
+ 22 |     func testAnEmptyRewriterPassesTextThrough() {
+ 23 |         var empty = OutputRewriter(replacements: [:])
+    |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 24 |         XCTAssertTrue(empty.isEmpty)
+ 25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[4 / 8] GrantivaCoreTests-product
+[10 / 12] GrantivaCoreTests-product
+[12 / 12] GrantivaCoreTests-product
+Build complete! (1.99 sec)

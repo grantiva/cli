@@ -215,15 +215,15 @@ XCTAssertFalse(text.contains(project.path), text)
 - [x] **Step 5: Verify red.** With `GRANTIVA_RUNNER_HOME=$(mktemp -d)`, run `swift test --filter TargetOptionsTests`, `swift test --filter SimulatorCommandTests`, `swift test --filter RunnerSessionOutputTests`, `swift test --filter RunnerLifecycleCommandTests`, `swift test --filter BuildCommandTests`, `swift test --filter LogStreamerTests`, and `swift test --filter SimulatorReaperTests`. Confirm the new assertions fail and the temporary home remains empty.
 - [x] **Step 6: Implement lifecycle changes.** Await the Android launch task before ready/detach return; set null-preserving lifecycle encoding for starting; check SignalRelay before translating startup errors; carry preliminary stopped-runner metadata into force results.
 - [x] **Step 7: Implement cleanup/install/path changes.** Classify by executable token; track the simulator-side log child with exact device/run ownership and await bounded termination; calculate skipped install output before data-container lookup; reject empty target values before runner argv construction; and change only the `RunnerSession` map merge needed for canonical cycle paths.
-- [ ] **Step 8: Verify green.** Re-run every focused command from Step 5, then `swift test`; assert the fresh runner home remains empty.
-- [ ] **Step 9: Bounded device acceptance.** Use only row-owned devices/PIDs and retain each literal control:
+- [x] **Step 8: Verify green.** Re-run every focused command from Step 5, then `swift test`; assert the fresh runner home remains empty.
+- [x] **Step 9: Bounded device acceptance.** Use only row-owned devices/PIDs and retain each literal control:
   - **L68 / AND-127:** after detached return, immediate hierarchy is the app; metadata and all required tool listings name the same PID/device; stop succeeds; session files and owned forwards are removed.
   - **L69 / N3-03 on both platforms:** observe a genuine `starting` document from the detached first-start form with explicit `"port":null`; the same PID transitions to ready/port and then stopped, and no second runner process appears.
   - **L72:** interrupt startup in plain, quiet and JSON modes; each exits 130, reports the B3-L37 interruption notice, never substitutes a WDA timeout, and removes its session. Keep separate steady-ready interruption, genuine WDA-timeout and unprompted-WDA-death controls.
   - **L73:** force teardown a live session and require `runnerSessionStopped:true`; also run the genuinely free force no-op, non-force refusal, and helper-array/cleanup controls.
   - **L78:** after success, failure and interruption, take repeated immediate process inventories and require the exact owned log child absent before return; another live run remains unaffected; interruption exits 130 and verbose output has one truthful terminal diagnostic.
   - **L71:** run absent, installed-skipped and D2-08 `--app-file` install/no-launch controls. Also verify harmless lookalike survival, empty target rejection before forwarding, and the exact canonical subdirectory cycle.
-- [ ] **Step 10: Review and merge.** PR `Fix lifecycle, install and flow-path output contracts (L53, L68, L69, L71–L73, L75, L76, L78)`, review, CI, squash merge.
+- [x] **Step 10: Review and merge.** PR `Fix lifecycle, install and flow-path output contracts (L53, L68, L69, L71–L73, L75, L76, L78)`, review, CI, squash merge.
 
 ### Task 5: CLI MCP and iOS selector correctness (L65, L66, L80)
 

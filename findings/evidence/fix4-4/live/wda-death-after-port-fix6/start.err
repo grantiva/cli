@@ -1,0 +1,79 @@
+[debug] 2026-10-13T14:40:30Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:30Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:30Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:30Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:30Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Starting runner...
+  Bundle ID: com.kylebrowning.Landmarks
+  Simulator: fix4-4-ios-26 (7FFA9197-B06B-4C08-B3C0-AE6798FF7026)
+[debug] 2026-10-13T14:40:31Z com.grantiva.cli: $ /private/tmp/grantiva-fix4-4.b2UyuL/runner-home/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 7FFA9197-B06B-4C08-B3C0-AE6798FF7026 --no-ansi --no-app-install test --wait-for-idle-timeout 0 --keep-alive --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report --flatten /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/session-flow.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8834
+
+  [1/1] session-flow (session-flow.yaml)
+────────────────────────────────────────────────────────────
+    ✗ launchApp (2.0s)
+      ╰─ Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post "http://127.0.0.1:8834/session": dial tcp 127.0.0.1:8834: connect: connection refused. Check that WebDriverAgent is still running on http://127.0.0.1:8834 and that no other run holds its port. (cause: failed to create session: Post "http://127.0.0.1:8834/session": dial tcp 127.0.0.1:8834: connect: connection refused)
+✗ session-flow 3.5s
+
+  [1/1] session-flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/session-flow.yaml) - Device: fix4-4-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✗ launchApp (2.0s)
+      ╰─ Failed to create session for app: com.kylebrowning.Landmarks — failed to create session: Post "http://127.0.0.1:8834/session": dial tcp 127.0.0.1:8834: connect: connection refused. Check that WebDriverAgent is still running on http://127.0.0.1:8834 and that no other run holds its port. (cause: failed to create session: Post "http://127.0.0.1:8834/session": dial tcp 127.0.0.1:8834: connect: connection refused)
+    - waitForAnimationToEnd (skipped)
+✗ session-flow 3.5s
+
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  session-flow                   ✗ FAIL       2      0      1      1       3.5s  fix4-4-ios-26 (ios 26.0 Sim...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      0      1      1       3.5s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report/report.json
+    JUnit:  /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report/junit-report.xml
+    Allure: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report/allure-results
+
+  Built by Grantiva
+
+
+  GrantivaAgent keep-alive: port=8834 session=56064-1791902438344638000
+  /tmp/grantiva-sessions/56064-1791902438344638000.grantiva
+    Press Ctrl-C to release.
+
+  Releasing GrantivaAgent session...
+[debug] 2026-10-13T14:40:38Z com.grantiva.cli: exit 1: /private/tmp/grantiva-fix4-4.b2UyuL/runner-home/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 7FFA9197-B06B-4C08-B3C0-AE6798FF7026 --no-ansi --no-app-install test --wait-for-idle-timeout 0 --keep-alive --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/report --flatten /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-2D6CE1B2-DCA1-4AE4-9740-56D2387BD01A/session-flow.yaml
+Error: The iOS app launch flow failed.
