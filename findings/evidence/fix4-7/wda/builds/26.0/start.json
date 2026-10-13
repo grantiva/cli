@@ -1,0 +1,46 @@
+{
+  "session": "fix4-7",
+  "cliHead": "138c34136d544026a0b249c81af4129aa71b1297",
+  "version": "26.0",
+  "udid": "D0F49870-E499-4434-8B11-DCC9132F7F3C",
+  "startedAt": "2026-10-13T16:33:14Z",
+  "apiEnvironmentUnset": true,
+  "grantivaRunnerHome": "/private/tmp/grantiva-fix4-7-wda.dBBnDs/runner-home",
+  "seedApp": "/Users/kyle/Library/Developer/Xcode/DerivedData/Landmarks-ginfwepkadrdtaaoqgqucywpcdqb/Build/Products/UITesting-iphonesimulator/Landmarks.app",
+  "expectedConfig": "sim-ios26.0-iphone-wda16.12.8-r1",
+  "commands": [
+    [
+      "xcrun",
+      "simctl",
+      "boot",
+      "D0F49870-E499-4434-8B11-DCC9132F7F3C"
+    ],
+    [
+      "xcrun",
+      "simctl",
+      "bootstatus",
+      "D0F49870-E499-4434-8B11-DCC9132F7F3C",
+      "-b"
+    ],
+    [
+      "xcrun",
+      "simctl",
+      "install",
+      "D0F49870-E499-4434-8B11-DCC9132F7F3C",
+      "/Users/kyle/Library/Developer/Xcode/DerivedData/Landmarks-ginfwepkadrdtaaoqgqucywpcdqb/Build/Products/UITesting-iphonesimulator/Landmarks.app"
+    ],
+    [
+      "/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/.build/out/Products/Debug/grantiva",
+      "run",
+      "--platform",
+      "ios",
+      "--simulator",
+      "D0F49870-E499-4434-8B11-DCC9132F7F3C",
+      "--bundle-id",
+      "com.kylebrowning.Landmarks",
+      "--no-build",
+      "--flow",
+      "/private/tmp/grantiva-fix4-7-wda.dBBnDs/wda-seed.yaml"
+    ]
+  ]
+}

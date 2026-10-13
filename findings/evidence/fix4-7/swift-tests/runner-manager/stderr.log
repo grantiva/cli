@@ -1,0 +1,38 @@
+Building for debugging...
+[Computing dependencies]
+[5 / 63] grantiva_GrantivaCore
+[5 / 63]
+[6 / 36] GrantivaCore
+[8 / 38] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[18 / 32] GrantivaAPITests-product
+[25 / 37] GrantivaCLITests-product
+[27 / 39] GrantivaAPITests-product
+[32 / 43] GrantivaMCPTests-product
+[34 / 43] GrantivaCLITests-product
+[48 / 51] GrantivaCoreTests-product
+[48 / 51] GrantivaMCPTests-product
+[52 / 54] GrantivaMCPTests-product
+[55 / 57] GrantivaCoreTests-product
+Build complete! (3.33 sec)
