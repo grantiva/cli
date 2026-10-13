@@ -19,7 +19,7 @@ Thus the underlying simulator-side stream briefly survives the owning CLI, despi
 
 ## Repro and evidence
 
-Use the preserved `findings/evidence/cov3-ios/run-attempt119b.sh` with the campaign-owned cov3-ios-26 device, QA runner home and `GRANTIVA_SESSION_ID=cov3-ios`. It runs the success/failure controls, launches `run --no-build --simulator <owned UUID> --flow .maestro/11-slow.yaml --logs --verbose`, observes the actual logging process, sends SIGINT only to its recorded CLI PID, waits for exit, and immediately inventories processes.
+Use the preserved `findings/evidence/cov3-ios-attempt119b/harness.sh` with the campaign-owned cov3-ios-26 device, QA runner home and `GRANTIVA_SESSION_ID=cov3-ios`. It runs the success/failure controls, launches `run --no-build --simulator <owned UUID> --flow .maestro/11-slow.yaml --logs --verbose`, observes the actual logging process, sends SIGINT only to its recorded CLI PID, waits for exit, and immediately inventories processes.
 
 Evidence in the iOS slice `findings/evidence/cov3-ios-attempt119b/`: `harness.sh`, `commands.txt`, `sigint-active-observed`, `sigint.pid`, `sigint.exit`, `sigint.err`, `sigint-after-processes.txt`, `sigint-after-2s-processes.txt`, and the success/failure controls. The original attempt119 is excluded because its incorrect session ID caused ownership refusals before valid device work. No owner device or unrelated process was touched.
 
