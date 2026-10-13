@@ -76,21 +76,22 @@ final class WDAClientTests: XCTestCase {
     private let focused = #"{"value":{"ELEMENT":"F1"}}"#
 
     func testTapByLabelFindsByAccessibilityLabelPredicate() async throws {
-        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Favorites")
         let calls = transport.calls
-        XCTAssertEqual(calls.map(\.path), ["/status", "/session/S1/elements", "/session/S1/element/E1/click"])
-        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(calls[1].body.utf8)) as? [String: String])
+        XCTAssertEqual(calls.map(\.path), ["/status", "/session/S1/elements", "/session/S1/elements", "/session/S1/element/E1/click"])
+        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(calls[2].body.utf8)) as? [String: String])
         XCTAssertEqual(find["using"], "predicate string")
         XCTAssertEqual(find["value"], #"label == "Favorites" AND type != "XCUIElementTypeApplication""#)
     }
 
     func testTapByLabelFallsBackToTheIdentifierWhenNoLabelMatches() async throws {
-        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
         let finds = transport.calls.filter { $0.path.hasSuffix("/elements") }
         let values = try finds.map { try XCTUnwrap(JSONSerialization.jsonObject(with: Data($0.body.utf8)) as? [String: String])["value"] }
         XCTAssertEqual(values, [
+            #"label == "heart" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#,
             #"label == "heart" AND type != "XCUIElementTypeApplication""#,
             #"identifier == "heart" AND type != "XCUIElementTypeApplication""#,
         ])
@@ -98,9 +99,11 @@ final class WDAClientTests: XCTestCase {
     }
 
     func testTapByLabelEscapesQuotesAndBackslashesInThePredicate() async throws {
-        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel(#"Say "hi" \o/"#)
-        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: String])
+        let preferred = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[1].body.utf8)) as? [String: String])
+        XCTAssertEqual(preferred["value"], #"label == "Say \"hi\" \\o/" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#)
+        let find = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(transport.calls[2].body.utf8)) as? [String: String])
         XCTAssertEqual(find["value"], #"label == "Say \"hi\" \\o/" AND type != "XCUIElementTypeApplication""#)
         XCTAssertEqual(DriverClient.predicateLiteral(#"a"b"#), #""a\"b""#)
     }
@@ -181,18 +184,50 @@ final class WDAClientTests: XCTestCase {
     }
 
     func testTapByLabelReportsALabelMatch() async throws {
-        let transport = ScriptedTransport([(status, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
         let match = try await tap("Favorites")
         XCTAssertEqual(match, .label)
     }
 
+    func testTapByLabelPrefersANavigationBackButtonOverACompetingLabelMatch() async throws {
+        let fixture = PredicateWDA(nodes: [
+            ["ELEMENT": "selected-tab", "type": "XCUIElementTypeButton", "label": "Landmarks", "identifier": "LandmarksTab"],
+            ["ELEMENT": "navigation-back", "type": "XCUIElementTypeButton", "label": "Landmarks", "identifier": "BackButton"],
+        ])
+        let tap = try XCTUnwrap(DriverClient.wda(port: 8100, transport: fixture.transport, retryDelay: .zero).tapByLabelMatch)
+
+        let match = try await tap("Landmarks")
+        XCTAssertEqual(match, .label)
+        XCTAssertEqual(fixture.clickedIDs, ["navigation-back"])
+        XCTAssertEqual(fixture.predicates, [
+            #"label == "Landmarks" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#,
+        ])
+    }
+
+    func testTapByLabelKeepsTheFirstBroadLabelMatchWhenThereIsNoBackButton() async throws {
+        let fixture = PredicateWDA(nodes: [
+            ["ELEMENT": "first", "type": "XCUIElementTypeButton", "label": "Landmarks", "identifier": "LandmarksTab"],
+            ["ELEMENT": "second", "type": "XCUIElementTypeButton", "label": "Landmarks", "identifier": "OtherButton"],
+        ])
+        let tap = try XCTUnwrap(DriverClient.wda(port: 8100, transport: fixture.transport, retryDelay: .zero).tapByLabelMatch)
+
+        let match = try await tap("Landmarks")
+        XCTAssertEqual(match, .label)
+        XCTAssertEqual(fixture.clickedIDs, ["first"])
+        XCTAssertEqual(fixture.predicates, [
+            #"label == "Landmarks" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#,
+            #"label == "Landmarks" AND type != "XCUIElementTypeApplication""#,
+        ])
+    }
+
     func testTapByLabelReportsAnIdentifierFallbackMatch() async throws {
-        let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
         let match = try await tap("heart")
         XCTAssertEqual(match, .identifier)
         XCTAssertEqual(try findPredicates(transport), [
+            #"label == "heart" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#,
             #"label == "heart" AND type != "XCUIElementTypeApplication""#,
             #"identifier == "heart" AND type != "XCUIElementTypeApplication""#,
         ])
@@ -203,11 +238,12 @@ final class WDAClientTests: XCTestCase {
     /// placeholder, not its label; the flow's `tapOn: "Name"` reaches it, so
     /// the MCP tap does too, after label and identifier.
     func testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndIdentifier() async throws {
-        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
+        let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
         let match = try await tap("Name")
         XCTAssertEqual(match, .placeholder)
         XCTAssertEqual(try findPredicates(transport), [
+            #"label == "Name" AND identifier == "BackButton" AND type == "XCUIElementTypeButton""#,
             #"label == "Name" AND type != "XCUIElementTypeApplication""#,
             #"identifier == "Name" AND type != "XCUIElementTypeApplication""#,
             #"placeholderValue == "Name" AND type != "XCUIElementTypeApplication""#,
@@ -236,7 +272,9 @@ final class WDAClientTests: XCTestCase {
             XCTAssertEqual(fixture.clickedIDs, ["winner"])
             let attributes = ["label", "identifier", "placeholderValue"]
             let count = try XCTUnwrap(attributes.firstIndex(of: attribute)) + 1
-            XCTAssertEqual(fixture.predicates, attributes.prefix(count).map {
+            XCTAssertEqual(fixture.predicates, [
+                "label == \(DriverClient.predicateLiteral(text)) AND identifier == \"BackButton\" AND type == \"XCUIElementTypeButton\"",
+            ] + attributes.prefix(count).map {
                 "\($0) == \(DriverClient.predicateLiteral(text)) AND type != \"XCUIElementTypeApplication\""
             })
         }
