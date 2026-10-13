@@ -1,6 +1,6 @@
 # ISO-8601 JSON date change lacks a public note
 
-Severity: documentation contract
+Severity: contract
 Component: CLI JSON output documentation
 Rows: B-C22.2 [ios], B-C22.2 [android]
 Candidate: CLI 8f2cff676b3c12e951478920fa20e600cdca4e29.

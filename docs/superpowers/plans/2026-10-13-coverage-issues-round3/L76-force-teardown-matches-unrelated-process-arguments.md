@@ -1,6 +1,6 @@
 # Force teardown matches unrelated processes whose arguments mention Grantiva and a UDID
 
-Severity: destructive process-selection defect
+Severity: wrong-result
 Component: iOS simulator force teardown
 Rows: IOS3-OBS-01 (round-3 side finding)
 Candidate: CLI `8f2cff676b3c12e951478920fa20e600cdca4e29`.
