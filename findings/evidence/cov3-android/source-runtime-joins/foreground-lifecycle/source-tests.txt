@@ -1,0 +1,227 @@
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-17-        SignalRelay.shared.runCleanupsForTesting()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-18-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-19-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-20-    func testTrackedGroupsAreDeduplicated() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:21:        SignalRelay.shared.track(group: 12345, deviceNoun: "simulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:22:        SignalRelay.shared.track(group: 12345, deviceNoun: "simulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-23-        SignalRelay.shared.untrack(group: 12345)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-24-        // Untracking once must clear the group; a stale entry would signal a
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-25-        // pid the OS may have reused.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-26-        SignalRelay.shared.untrack(group: 12345)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-48-    // MARK: - L37
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-49-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-50-    func testTheAnnouncementNamesEachPlatformsDevice() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-51-        XCTAssertEqual(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:52:            SignalRelay.announcement(signalName: "SIGINT", deviceNoun: SignalRelay.deviceNoun(for: .android)),
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:53:            "\n[grantiva] received SIGINT — releasing emulator and reaping child processes\n"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-54-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:55:        XCTAssertEqual(SignalRelay.deviceNoun(for: .ios), "simulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-56-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-57-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-58-    func testTrackingAGroupSetsTheNoun() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:59:        let saved = SignalRelay.shared.deviceNoun
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-60-        defer {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-61-            SignalRelay.shared.untrack(group: 12346)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:62:            SignalRelay.shared.deviceNoun = saved
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-63-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:64:        SignalRelay.shared.track(group: 12346, deviceNoun: "emulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift:65:        XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-66-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCoreTests/SignalRelayTests.swift-67-}
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-268-        dependencies.terminateGroup = { _ in events.append("terminate"); return .killed }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-269-        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-270-        XCTAssertEqual(result, .stopped(pid: 1234, udid: session.udid, killed: true, details: .init(port: 8430, appID: "com.example")))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-271-        XCTAssertTrue(events.value.contains("files 1234"), "\(events.value)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:272:        XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234; it ignored SIGINT and SIGTERM and was killed)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-273-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-274-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-275-    // MARK: - L04: `runner stop` ends the helpers its runner started
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-276-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-316-        XCTAssertEqual(list.first?["pid"] as? Int, 1250)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-317-        XCTAssertEqual(list.first?["command"] as? String, diagnose)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-318-        XCTAssertEqual(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-319-            RunnerStopCommand.render(result),
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:320:            "Runner stopped (pid 1234)\nAlso stopped diagnose pid 1250, which the runner left running for \(udid)."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-321-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-322-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-323-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-324-    func testStopReportsAnEmptyReapedListWhenTheRunnerLeftNothing() async throws {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-325-        let result = RunnerStopCommand.Result.stopped(pid: 1234, udid: makeSession().udid, killed: false)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-326-        let json = try decode(RunnerStopCommand.document(result))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-327-        XCTAssertEqual((json["reaped"] as? [Any])?.count, 0)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:328:        XCTAssertEqual(RunnerStopCommand.render(result), "Runner stopped (pid 1234)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-329-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-330-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-331-    // MARK: - K14: `runner stop` finds a `run --keep-alive` session
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-332-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-664-        )))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-665-        XCTAssertFalse(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: makeSession()))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-666-        XCTAssertEqual(
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-667-            try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: true),
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:668:            "Runner stopped (pid 1234); the session has ended."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-669-        )
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-670-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-671-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-672-    func testAForegroundRunnerKilledUnpromptedFailsWhateverTheSignal() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-673-        for status in [SIGKILL, SIGTERM, SIGINT, 128 + SIGINT] {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-674-            XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: status, pid: 1234, stopRequested: false), "status \(status)") {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:675:                XCTAssertEqual($0.localizedDescription, "The runner exited with status \(status); the session has ended.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-676-            }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-677-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-678-        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: SIGKILL, pid: 1234, stopRequested: true),
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:679:                       "Runner stopped (pid 1234); the session has ended.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-680-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-681-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-682-    /// L36 fix round 2: a foreground `runner start` in directory A torn down
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-683-    /// from directory B. B's teardown cannot touch A's session file, but its
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-712-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-713-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-714-    func testAForegroundRunnerThatExitsOneUnpromptedStillFails() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-715-        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:716:            XCTAssertEqual($0.localizedDescription, "The runner exited with status 1; the session has ended.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-717-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-718-        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: 0, pid: 1234, stopRequested: false),
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:719:                       "Runner stopped (pid 1234); the session has ended.")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-720-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-721-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-722-    // MARK: - L37: the interrupt notice names the emulator on Android
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-723-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-724-    func testTheForegroundSetUpForAnAndroidLaunchSaysEmulator() {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:725:        let saved = SignalRelay.shared.deviceNoun
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-726-        defer {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-727-            SignalRelay.shared.untrack(group: 999_997)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:728:            SignalRelay.shared.deviceNoun = saved
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-729-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-730-        RunnerStartCommand.trackRunner(group: 999_997, platform: .android)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:731:        XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-732-        RunnerStartCommand.trackRunner(group: 999_997, platform: .ios)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift:733:        XCTAssertEqual(SignalRelay.shared.deviceNoun, "simulator")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-734-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-735-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-736-    // MARK: - L38-a: a starting session is reported as starting
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift-737-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-197-        let simulatorLease = try SimulatorLease.acquire(udid: booted.udid, platform: platform)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-198-        var handedOff = false
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-199-        defer { if !handedOff { simulatorLease.release() } }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-200-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:201:        let deviceNoun = platform == .ios ? "Simulator" : "Device"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-202-        options.note("Starting runner...")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-203-        options.note("  \(platform == .ios ? "Bundle ID" : "Application ID"): \(resolvedAppID)")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:204:        options.note("  \(deviceNoun): \(booted.name) (\(booted.udid))")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-205-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-206-        let runner = RunnerManager.live
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-207-        try await runner.ensureAvailable()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-208-        let runnerBin = runner.runnerPath()
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-394-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-395-    /// Hands the runner's group to the interrupt relay, naming the device
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-396-    /// the notice says is released (L37).
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-397-    static func trackRunner(group: pid_t, platform: Platform) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:398:        SignalRelay.shared.track(group: group, deviceNoun: SignalRelay.deviceNoun(for: platform))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-399-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-400-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-401-    /// `.grantiva/session.json` the moment the runner is spawned: `starting`
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-402-    /// until the driver answers, so readers say so instead of "no session" (L38-a).
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-460-        switch stop {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-461-        case .teardown:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-462-            return "Runner stopped by teardown (pid \(pid)); the session has ended."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-463-        case .runnerStop:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:464:            return "Runner stopped (pid \(pid)); the session has ended."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-465-        case nil:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-466-            guard isOrderlyRunnerExit(status) else {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:467:                throw GrantivaError.commandFailed("The runner exited with status \(status); the session has ended.", 1)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-468-            }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:469:            return "Runner stopped (pid \(pid)); the session has ended."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-470-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-471-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-472-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-473-    static func foregroundEnding(status: Int32, pid: Int32, stopRequested: Bool) throws -> String {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1074-        case .notRunning:
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1075-            return "No active session found."
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1076-        case .stopped(let pid, let udid, let killed, let reaped, _):
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1077-            let line = killed
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:1078:                ? "Runner stopped (pid \(pid); it ignored SIGINT and SIGTERM and was killed)"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift:1079:                : "Runner stopped (pid \(pid))"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1080-            return ([line] + reapedLines(reaped, udid: udid)).joined(separator: "\n")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1081-        case .exited(let pid, let udid, let reaped, _):
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1082-            return (["No running runner (pid \(pid) had exited); cleaned up its session."] + reapedLines(reaped, udid: udid))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/DriverCommand.swift-1083-                .joined(separator: "\n")
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-285-                try await runnerManager.ensureAvailable()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-286-                rlog("Runner ready")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-287-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-288-                // 1. Boot → Build → Install → Launch → Capture
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift:289:                let deviceNoun = platform == .ios ? "simulator" : "emulator"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-290-                rlog(RunCommand.bootNarration(platform: platform, target: resolved.simulator))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-291-                let booted = try await device.bootDevice(for: resolved)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift:292:                rlog("\(deviceNoun.capitalized) booted: \(booted.name) (\(booted.udid))")
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-293-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-294-                var productPath: String?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-295-                var builtAppID: String?
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCLI/CICommand.swift-296-
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-44-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-45-    private init() {}
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-46-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-47-    /// What the interrupt notice says is being released: `simulator` on iOS,
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:48:    /// `emulator` on Android. Set by `track(group:deviceNoun:)`, so every
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-49-    /// entry point that hands the relay a runner names its device (L37).
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:50:    public var deviceNoun: String {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-51-        get { lock.withLock { noun } }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-52-        set { lock.withLock { noun = newValue } }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-53-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-54-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-55-    /// The noun for `platform`'s device in the interrupt notice.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:56:    public static func deviceNoun(for platform: Platform) -> String {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-57-        platform == .android ? "emulator" : "simulator"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-58-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-59-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:60:    static func announcement(signalName: String, deviceNoun: String) -> String {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:61:        "\n[grantiva] received \(signalName) — releasing \(deviceNoun) and reaping child processes\n"
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-62-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-63-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-64-    /// Installs handlers for SIGINT and SIGTERM. Safe to call repeatedly.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-65-    public func install() {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-87-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-88-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-89-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-90-    /// Tracks a process group to be signalled when grantiva is interrupted;
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:91:    /// `deviceNoun` is what the interrupt notice says is being released.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:92:    public func track(group pgid: pid_t, deviceNoun: String) {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-93-        install()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-94-        lock.lock()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-95-        defer { lock.unlock() }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:96:        noun = deviceNoun
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-97-        if !groups.contains(pgid) { groups.append(pgid) }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-98-    }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-99-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-100-    public func untrack(group pgid: pid_t) {
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-263-        let pendingCleanups = cleanups.map(\.body)
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-264-        lock.unlock()
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-265-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-266-        if let signalName {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift:267:            FileHandle.standardError.write(Data(Self.announcement(signalName: signalName, deviceNoun: deviceNoun).utf8))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-268-        }
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-269-
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-270-        for pgid in trackedGroups {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/SignalRelay.swift-271-            ChildProcess.terminateGroup(pgid, gracePeriod: 5)
+--
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-119-        // Ctrl-C (or `kill -INT`) now reaps the runner's whole process group —
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-120-        // grantiva-runner, WebDriverAgent's xcodebuild, and any simctl diagnose
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-121-        // it started — and then releases the lease so the next run is not
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-122-        // refused by a lock whose owner is gone.
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift:123:        SignalRelay.shared.track(group: child.processGroup, deviceNoun: SignalRelay.deviceNoun(for: request.platform ?? .ios))
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-124-        let lease = request.lease
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-125-        let readyFile = request.readyFile
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-126-        let cleanupToken = SignalRelay.shared.onTermination {
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-main/Sources/GrantivaCore/Runner/RunnerExecution.swift-127-            readyFile.write(RunReadyState(

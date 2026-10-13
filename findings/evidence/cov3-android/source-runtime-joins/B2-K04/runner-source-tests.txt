@@ -1,0 +1,146 @@
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-94-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-95-// The only detail the per-device view had that the table lacked was the
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-96-// "(Simulator)" marker, so the table's device label carries it now.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-97-func TestFormatDeviceLabel_MarksSimulator(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go:98:	label := formatDeviceLabel(&report.Device{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-99-		Name: "iPhone 15", Platform: "ios", OSVersion: "18.0", IsSimulator: true,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-100-	})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-101-	if !strings.Contains(label, "Simulator") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-102-		t.Errorf("label = %q, want it to mark the device as a simulator", label)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-104-	if !strings.Contains(label, "iPhone 15") || !strings.Contains(label, "18.0") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-105-		t.Errorf("label = %q, want device name and OS version", label)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-106-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-107-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go:108:	physical := formatDeviceLabel(&report.Device{Name: "iPhone 15", Platform: "ios", OSVersion: "18.0"})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-109-	if strings.Contains(physical, "Simulator") {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-110-		t.Errorf("physical device label = %q, should not say Simulator", physical)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-111-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output_test.go-112-}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-162-		{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-163-			name:    "android physical",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-164-			device:  report.Device{Name: "Pixel 8", Platform: "android", OSVersion: "15"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-165-			want:    "Pixel 8 (android 15)",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:166:			notWant: []string{"Simulator", "Emulator"},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-167-		},
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-168-		{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-169-			name:    "ios simulator",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-170-			device:  report.Device{Name: "iPhone 17", Platform: "ios", OSVersion: "26.0", IsSimulator: true},
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-174-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-175-	for _, tc := range tests {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-176-		t.Run(tc.name, func(t *testing.T) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-177-			d := tc.device
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:178:			got := formatDeviceLabel(&d)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-179-			if got != tc.want {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:180:				t.Errorf("formatDeviceLabel = %q, want %q", got, tc.want)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-181-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-182-			for _, w := range tc.notWant {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-183-				if strings.Contains(got, w) {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go:184:					t.Errorf("formatDeviceLabel = %q contains %q", got, w)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-185-				}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-186-			}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-187-		})
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/narration_test.go-188-	}
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-228-// simulators (#111). Otherwise fall back to the named device, or a
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-229-// currently-booted simulator.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-230-func iosTargetsSimulator(cfg *RunConfig) bool {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-231-	switch {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go:232:	case cfg.AutoStartEmulator, cfg.StartSimulator != "":
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-233-		return true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-234-	case len(cfg.Devices) > 0:
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-235-		return isIOSSimulator(cfg.Devices[0])
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/ios.go-236-	default:
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-74-	return &detail, nil
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-75-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-76-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-77-// virtualDeviceWord names a virtual device the way its platform does: an
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:78:// Android emulator is an "Emulator", an iOS simulator a "Simulator". A
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-79-// physical device gets no word. report.json keeps one isSimulator key for
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-80-// both (documented as simulator/emulator vs real device).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-81-func virtualDeviceWord(device *report.Device) string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-82-	if !device.IsSimulator {
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-87-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-88-	return "Simulator"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-89-}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-90-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:91:// formatDeviceLabel formats device info for display.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:92:func formatDeviceLabel(device *report.Device) string {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-93-	if device == nil {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-94-		return "Unknown"
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-95-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-96-
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-111-// printDetailedFlowResults prints flow-by-flow results with all commands.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-112-func printDetailedFlowResults(outputDir string, reportIndex *report.Index) error {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-113-	for i, flowEntry := range reportIndex.Flows {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-114-		// Print flow header with device info
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:115:		deviceLabel := formatDeviceLabel(flowEntry.Device)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-116-		fmt.Printf("\n  %s[%d/%d]%s %s%s%s (%s) - Device: %s\n",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-117-			color(colorCyan), i+1, len(reportIndex.Flows), color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-118-			color(colorBold), flowEntry.Name, color(colorReset),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-119-			flowEntry.SourceFile, deviceLabel)
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-280-			name = name[:27] + "..."
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-281-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-282-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-283-		// Format device label
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go:284:		deviceLabel := formatDeviceLabel(flowEntry.Device)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-285-		if len(deviceLabel) > 30 {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-286-			deviceLabel = deviceLabel[:27] + "..."
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-287-		}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test_unified_output.go-288-
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-287-		Platform:     "android",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-288-		DeviceID:     info.Serial,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-289-		DeviceName:   fmt.Sprintf("%s %s", info.Brand, info.Model),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-290-		OSVersion:    info.SDK,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go:291:		IsSimulator:  info.IsEmulator,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-292-		ScreenWidth:  screenW,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-293-		ScreenHeight: screenH,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-294-		AppID:        cfg.AppID,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-295-		AppVersion:   appVersion,
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-521-		Platform:     "android",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-522-		DeviceID:     info.Serial,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-523-		DeviceName:   fmt.Sprintf("%s %s", info.Brand, info.Model),
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-524-		OSVersion:    info.SDK,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go:525:		IsSimulator:  info.IsEmulator,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-526-		ScreenWidth:  screenW,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-527-		ScreenHeight: screenH,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-528-		AppID:        cfg.AppID,
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/android.go-529-		AppVersion:   appVersion,
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-13-)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-14-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-15-var startDeviceCommand = &cli.Command{
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-16-	Name:  "start-device",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go:17:	Usage: "Start or create an iOS Simulator or Android Emulator",
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-18-	Description: `Start or create a device similar to ones used in cloud testing.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-19-Requires --platform global flag (before command).
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-20-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/device.go-21-Examples:
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-585-	TypingFrequency    int    // WDA typing frequency in keys/sec (0 = use WDA default of 60)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-586-	TeamID             string // Apple Development Team ID for WDA code signing
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-587-	WDABundleID        string // Custom WDA bundle identifier
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-588-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:589:	// Emulator/Simulator management
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-590-	StartEmulator     string // AVD name to start (e.g., Pixel_7_API_33)
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-591-	StartSimulator    string // iOS simulator name/UDID to start (e.g., "iPhone 15 Pro")
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-592-	AutoStartEmulator bool   // Auto-start an emulator/simulator if no devices found
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-593-	ShutdownAfter     bool   // Shutdown emulators/simulators started by maestro-runner after tests
+--
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3075-
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3076-// anyIOSTargetAvailable reports whether there is any iOS device to run on: one
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3077-// named explicitly, a booted simulator, or a connected phone.
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3078-func anyIOSTargetAvailable(cfg *RunConfig) bool {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go:3079:	if len(cfg.Devices) > 0 || cfg.StartSimulator != "" || cfg.AutoStartEmulator {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3080-		return true
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3081-	}
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3082-	if hasBootedSimulator() {
+/Users/kyle/Developer/maestro-runner/.worktrees/release-round3b/pkg/cli/test.go-3083-		return true
