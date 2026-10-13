@@ -3,6 +3,50 @@ import XCTest
 @testable import GrantivaCore
 
 final class LogStreamerTests: XCTestCase {
+    func testOwnedLogMatchingRequiresExecutableAndThisRunMarker() {
+        let owner = LogStreamer.OwnedLogChildren(deviceID: "DEVICE", marker: "grantiva-log-owned", snapshot: { "" })
+        XCTAssertEqual(owner.matchingPIDs(in: """
+        500 /usr/bin/log stream --predicate grantiva-log-owned
+        501 /usr/bin/python helper.py log stream grantiva-log-owned
+        502 log stream --predicate grantiva-log-other
+        503 log show --predicate grantiva-log-owned
+        """), [500])
+    }
+
+    func testFailedChildInventoryIsReportedAsIncompleteCleanup() throws {
+        let streamer = LogStreamer()
+        streamer.ownedLogChildren = .init(deviceID: "TEST-DEVICE", marker: "grantiva-log-test", snapshot: { throw CocoaError(.fileReadUnknown) })
+        try streamer.start(executable: "/usr/bin/true", arguments: [])
+        XCTAssertFalse(streamer.stop())
+        XCTAssertFalse(streamer.stop(), "a second call must not hide an incomplete cleanup")
+    }
+
+    func testStopWaitsForTheOwnedLogChildAfterTheWrapperHasExited() throws {
+        let child = Process()
+        child.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        child.arguments = ["30"]
+        try child.run()
+        let other = Process()
+        other.executableURL = URL(fileURLWithPath: "/bin/sleep")
+        other.arguments = ["30"]
+        try other.run()
+        defer {
+            if child.isRunning { child.terminate() }; child.waitUntilExit()
+            if other.isRunning { other.terminate() }; other.waitUntilExit()
+        }
+        let streamer = LogStreamer()
+        streamer.ownedLogChildren = .init(deviceID: "TEST-DEVICE", marker: "grantiva-log-test-owned", snapshot: {
+            let owned = child.isRunning ? "\(child.processIdentifier) log stream --predicate grantiva-log-test-owned\n" : ""
+            return owned + "\(other.processIdentifier) log stream --predicate grantiva-log-another-run"
+        })
+        try streamer.start(executable: "/usr/bin/true", arguments: [])
+        let wrapper = try XCTUnwrap(streamer.processIdentifier)
+        XCTAssertTrue(waitForExit(wrapper))
+        XCTAssertTrue(streamer.stop())
+        XCTAssertFalse(child.isRunning, "the remote child must be absent before stop returns")
+        XCTAssertTrue(other.isRunning, "another run's log child must survive")
+    }
+
     func testDecoderEmitsWholeAndMultipleLines() {
         let decoder = PrefixedLineDecoder()
 

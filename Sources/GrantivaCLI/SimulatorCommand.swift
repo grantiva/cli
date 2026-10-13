@@ -146,7 +146,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             if !options.json { stopped.lines.forEach(Output.line) }
 
             if force {
-                try await runForce(reaped: stopped.reaped)
+                try await runForce(reaped: stopped.reaped, stopped: stopped.stopped)
                 return
             }
 
@@ -245,7 +245,7 @@ struct SimulatorCommand: AsyncParsableCommand {
 
         /// `reaped`: the helpers the runner-session stop already ended per
         /// device, listed in each result's `reapedProcesses` (L63).
-        private func runForce(reaped: [String: [ReapedProcess]] = [:]) async throws {
+        private func runForce(reaped: [String: [ReapedProcess]] = [:], stopped: [String] = []) async throws {
             var udids: [String] = []
             if let target {
                 udids = [target]
@@ -264,7 +264,7 @@ struct SimulatorCommand: AsyncParsableCommand {
             for target in udids {
                 results.append(try await SimulatorReaper.forceTeardown(udid: target))
             }
-            results = Self.addingReaped(reaped, to: results)
+            results = Self.addingReaped(reaped, to: results, stopped: stopped)
 
             let output = try Self.forceOutput(results, json: options.json)
             output.lines.forEach(Output.line)
@@ -273,11 +273,12 @@ struct SimulatorCommand: AsyncParsableCommand {
 
         /// `results` with the helpers the runner-session stop ended on each
         /// device; a device that had some counts as reclaimed.
-        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult]) -> [ForceTeardownResult] {
+        static func addingReaped(_ reaped: [String: [ReapedProcess]], to results: [ForceTeardownResult], stopped: [String] = []) -> [ForceTeardownResult] {
             results.map { result in
                 var result = result
+                result.runnerSessionStopped = stopped.contains { $0.caseInsensitiveCompare(result.udid) == .orderedSame }
                 result.reapedProcesses = reaped[result.udid.uppercased()] ?? []
-                if !result.reapedProcesses.isEmpty { result.reclaimed = true }
+                if result.runnerSessionStopped || !result.reapedProcesses.isEmpty { result.reclaimed = true }
                 return result
             }
         }

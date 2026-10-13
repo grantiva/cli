@@ -1,10 +1,85 @@
 import Foundation
+import ArgumentParser
 import XCTest
 @testable import GrantivaCLI
 import GrantivaCore
 
 @available(macOS 15, *)
 final class RunnerLifecycleCommandTests: XCTestCase {
+    func testLaunchReportOptionPrecedesThePositionalFlow() {
+        let arguments = RunnerStartCommand.runnerArguments(
+            platform: FakeDevicePlatform(platform: .android), deviceID: "emulator-5554",
+            flowPath: "/tmp/session-flow.yaml", reportDir: "/tmp/session-report"
+        )
+        XCTAssertEqual(Array(arguments.suffix(4)), ["--keep-alive", "--output", "/tmp/session-report", "/tmp/session-flow.yaml"])
+    }
+
+    func testFailedLaunchDoesNotPublishReadyAndReleasesItsForward() async {
+        let detached = LockedValue(false)
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: { detached.set(true) }) },
+            timeout: 1, launchStatus: { "failed" }, sleep: {}
+        )
+        XCTAssertNil(result.attachment)
+        XCTAssertTrue(result.launchFailed)
+        XCTAssertTrue(detached.value)
+    }
+
+    func testUnfinishedLaunchStaysBoundedAndReleasesRejectedForwards() async {
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: { detached.set(detached.value + 1) }) },
+            timeout: 0, launchStatus: { nil }, sleep: {}
+        )
+        XCTAssertNil(result.attachment)
+        XCTAssertFalse(result.launchFailed)
+        XCTAssertEqual(detached.value, 1)
+    }
+
+    func testDriverAttachmentDoesNotPublishReadyBeforeLaunchSettles() async {
+        let polls = LockedValue(0)
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: { DriverAttachment(client: .failing, port: 61211, sessionID: "new", detach: {}) },
+            timeout: 1,
+            launchStatus: { polls.value >= 3 ? "passed" : nil },
+            sleep: { polls.set(polls.value + 1) }
+        )
+        XCTAssertEqual(result.attachment?.sessionID, "new")
+        XCTAssertGreaterThanOrEqual(polls.value, 3, "driver attachment alone is not app readiness")
+    }
+
+    func testStartupInterruptIsNotTranslatedToWDATimeoutInAnyOutputMode() async throws {
+        for flags in [[], ["--quiet"], ["--json"]] {
+            let command = try RunnerStartCommand.parse(flags)
+            command.options.applyRunnerNarration()
+            defer { SignalRelay.shared.resetTerminationForTesting(); RunnerNarration.isSilenced = false }
+            let cleaned = LockedValue(false)
+            let token = SignalRelay.shared.onTermination { cleaned.set(true) }
+            defer { SignalRelay.shared.removeCleanup(token) }
+            let result = await RunnerStartCommand.waitForForegroundWDAPort(
+                chunks: AsyncStream { continuation in
+                    SignalRelay.shared.simulateTerminationForTesting()
+                    continuation.finish()
+                }, timeout: { _ in try? await Task.sleep(for: .seconds(1)) }, probe: { nil }
+            )
+            let error = RunnerStartCommand.foregroundStartupError(result)
+            XCTAssertEqual(error as? ExitCode, ExitCode(130), "\(flags): \(error)")
+            XCTAssertTrue(cleaned.value)
+        }
+        XCTAssertTrue(RunnerStartCommand.foregroundStartupError(nil).localizedDescription.contains("Timed out"))
+    }
+
+    func testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms() throws {
+        for platform: Platform in [.ios, .android] {
+            let json = try decode(RunnerLifecycleDocument(
+                status: "already_running", pid: 123, port: nil, appID: "com.example",
+                deviceID: platform == .ios ? "IOS" : "emulator-5554", platform: platform
+            ))
+            XCTAssertTrue(json["port"] is NSNull, "\(json)")
+            XCTAssertEqual(json["pid"] as? Int, 123)
+        }
+    }
+
     func testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks() async {
         let (stream, continuation) = AsyncStream<Data>.makeStream()
         let probed = LockedValue(false)

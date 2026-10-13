@@ -5,6 +5,22 @@ import GrantivaCore
 
 final class SimulatorCommandTests: XCTestCase {
     // `simulator --help` listed `delete` and `sessions` with empty descriptions.
+    func testForceOutputIncludesTheRunnerStoppedBeforeTheReaperSnapshot() throws {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let empty = ForceTeardownResult(udid: udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0)
+        let results = SimulatorCommand.Teardown.addingReaped([:], to: [empty], stopped: [udid])
+        let output = try SimulatorCommand.Teardown.forceOutput(results, json: true)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(output.lines[0].utf8)) as? [[String: Any]])
+        XCTAssertEqual(json[0]["runnerSessionStopped"] as? Bool, true)
+        XCTAssertEqual(json[0]["reclaimed"] as? Bool, true)
+        let free = SimulatorCommand.Teardown.addingReaped([:], to: [empty])
+        XCTAssertFalse(free[0].reclaimed)
+    }
+
+    func testTeardownRejectsUUIDShapedNonHexTarget() {
+        XCTAssertThrowsError(try SimulatorCommand.Teardown.parse(["--udid", "Z21A0945-7157-4533-BA1F-21E8132D3E40", "--force"]))
+    }
+
     func testEverySimulatorSubcommandHasAnAbstract() {
         for command in SimulatorCommand.configuration.subcommands {
             XCTAssertFalse(

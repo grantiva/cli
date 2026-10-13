@@ -149,6 +149,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     var devicePlatform = InjectedDevicePlatform()
 
     func validate() throws {
+        try validateTargetValues(device: device, simulator: simulator, emulator: emulator)
         try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
     }
 
@@ -216,17 +217,22 @@ struct RunnerStartCommand: AsyncParsableCommand {
             timeout: 3600000
         """
         let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("grantiva-session")
+            .appendingPathComponent("grantiva-session-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+        let reportDir = tempDir.appendingPathComponent("report").path
         let flowPath = tempDir.appendingPathComponent("session-flow.yaml").path
         try flowYaml.write(toFile: flowPath, atomically: true, encoding: .utf8)
 
-        let runnerArgs = Self.runnerArguments(platform: platformDevice, deviceID: booted.udid, flowPath: flowPath)
+        let runnerArgs = Self.runnerArguments(
+            platform: platformDevice, deviceID: booted.udid, flowPath: flowPath,
+            reportDir: platform == .android ? reportDir : nil
+        )
         let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
         var launch = Launch(
             runnerBin: runnerBin, runnerDir: runnerDir, runnerArgs: runnerArgs,
             environment: environment.isEmpty ? nil : environment,
-            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice
+            appID: resolvedAppID, device: booted, platform: platform, platformDevice: platformDevice, reportDir: reportDir
         )
         // A UIAutomator2 session already on the device belongs to no runner
         // this command starts (a `kill -9`'d keep-alive run leaves one): its
@@ -276,9 +282,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// finishes the flow and exits seconds after `runner start` reports
     /// success. `--keep-alive` holds the session until SIGINT, which is what
     /// `runner stop` sends.
-    static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String) -> [String] {
+    static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String, reportDir: String? = nil) -> [String] {
         platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments()
-            + ["--keep-alive", flowPath]
+            + ["--keep-alive"] + (reportDir.map { ["--output", $0] } ?? []) + [flowPath]
     }
 
     /// How a wait for the runner's UIAutomator2 session ended: attached, the
@@ -286,9 +292,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
     struct UIAutomator2Wait {
         var attachment: DriverAttachment?
         var exitStatus: Int32?
+        var launchFailed = false
     }
 
-    /// Polls `attach` until the runner has opened its UIAutomator2 session.
+    /// Polls until the runner has its own UIAutomator2 session and the launch
+    /// report is passed. A nil launch status means the app is still settling.
     /// The successful attachment is returned un-detached: its forward is the
     /// port `session.json` records and `dump-hierarchy` and the MCP server use.
     /// `runnerExit` (the spawned runner's status once it has exited) ends the
@@ -300,6 +308,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         attach: @Sendable () async throws -> DriverAttachment,
         timeout: TimeInterval,
         staleSessionID: String? = nil,
+        launchStatus: @Sendable () -> String? = { "passed" },
         runnerExit: @Sendable () -> Int32? = { nil },
         sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
     ) async -> UIAutomator2Wait {
@@ -309,8 +318,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
             if let attachment = try? await attach() {
                 if let stale = staleSessionID, attachment.sessionID == stale {
                     await attachment.detach()
+                } else if let status = launchStatus() {
+                    if status == "passed" { return UIAutomator2Wait(attachment: attachment) }
+                    await attachment.detach()
+                    return UIAutomator2Wait(launchFailed: true)
                 } else {
-                    return UIAutomator2Wait(attachment: attachment)
+                    await attachment.detach()
                 }
             }
             await sleep()
@@ -364,22 +377,29 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let device: BootedDevice
         let platform: Platform
         let platformDevice: any DevicePlatform
+        var reportDir: String? = nil
         /// The UIAutomator2 session on the device before this runner started.
         var staleSessionID: String? = nil
     }
 
     /// The local end of the forward to the runner's UIAutomator2 session. The
     /// forward is left in place: it is the port the session records.
-    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?) {
+    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?, launchFailed: Bool) {
         let device = launch.platformDevice
         let serial = launch.device.udid
         let wait = await Self.waitForUIAutomator2(
             attach: { try await device.attachDriver(deviceID: serial, port: nil) },
             timeout: uiAutomator2WaitTimeout(),
             staleSessionID: launch.staleSessionID,
+            launchStatus: {
+                guard let directory = launch.reportDir,
+                      let report = RunnerReportIndex.load(reportDir: directory),
+                      report.isComplete(expectedFlows: 1) else { return nil }
+                return report.readyState.status
+            },
             runnerExit: { child.poll() }
         )
-        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus)
+        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
     }
 
     /// The UIAutomator2 session already on the device before the runner is
@@ -532,6 +552,10 @@ struct RunnerStartCommand: AsyncParsableCommand {
         let port: UInt16
         if launch.platform == .android {
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
+            if wait.launchFailed {
+                abandon()
+                throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid). Log: \(logPath)", 1)
+            }
             if let status = wait.exitStatus {
                 abandon()
                 let text = (try? String(contentsOfFile: logPath, encoding: .utf8)) ?? ""
@@ -648,6 +672,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
             // The port comes from the forward, not the output.
             output.endStartup()
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
+            if SignalRelay.shared.isTerminating || wait.launchFailed {
+                child.terminateGroup(gracePeriod: 1)
+                cleanup.run()
+                if SignalRelay.shared.isTerminating { throw ExitCode(130) }
+                throw GrantivaError.commandFailed("The app launch flow failed on \(launch.device.udid).", 1)
+            }
             if let status = wait.exitStatus {
                 // `runner stop` removed the session file, or a teardown
                 // marked the runner, before stopping it.
@@ -682,12 +712,13 @@ struct RunnerStartCommand: AsyncParsableCommand {
                 let requested = requestedStop()
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
+                if SignalRelay.shared.isTerminating { throw Self.foregroundStartupError(startup) }
                 if let requested {
                     let ending = try Self.foregroundEnding(status: child.wait(), pid: runnerPid, stop: requested)
                     options.note(ending)
                     return
                 }
-                throw Self.wdaStartupError(startup, logPath: nil)
+                throw Self.foregroundStartupError(startup)
             }
             port = found
         }
@@ -847,6 +878,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
             group.cancelAll()
             return result
         }
+    }
+
+    static func foregroundStartupError(_ startup: WDAStartup?) -> Error {
+        if SignalRelay.shared.isTerminating { return ExitCode(130) }
+        return wdaStartupError(startup, logPath: nil)
     }
 
     private final class BuildFlag: @unchecked Sendable {

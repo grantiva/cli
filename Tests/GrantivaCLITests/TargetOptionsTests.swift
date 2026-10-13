@@ -4,6 +4,16 @@ import XCTest
 import GrantivaCore
 
 final class TargetOptionsTests: XCTestCase {
+    func testExplicitEmptyTargetsAreRejectedBeforeForwarding() throws {
+        for flag in ["--device", "--simulator", "--emulator"] {
+            for value in ["", "   "] {
+                XCTAssertThrowsError(try TargetOptions.parse([flag, value]).validate(), "\(flag) = \(value)")
+            }
+        }
+        XCTAssertNoThrow(try TargetOptions.parse(["--simulator", "Grantiva iPhone 18 Pro"]).validate())
+        XCTAssertThrowsError(try TargetOptions.parse(["--serial", "anything"]))
+    }
+
     func testIOSFlagsAreRejectedOnAndroidAndViceVersa() throws {
         let scheme = try TargetOptions.parse(["--scheme", "Demo"])
         XCTAssertThrowsError(try scheme.checkFlags(for: .android, derivedDataPath: nil)) { error in

@@ -68,6 +68,10 @@ final class JSONKeyCasingContractTests: XCTestCase {
             ("simulator teardown", try JSONOutput.string([SimulatorTeardownOutcome(
                 session: session, deleted: true, deviceHomesRemoved: ["/h/devices/x"]
             )])),
+            ("simulator teardown --force", try JSONOutput.string(SimulatorCommand.Teardown.addingReaped(
+                [:], to: [ForceTeardownResult(udid: session.udid, processes: [], leaseReleased: false, capacityRecordsCleared: 0)],
+                stopped: [session.udid]
+            ))),
             ("simulator sessions", try JSONOutput.string([session])),
             ("emulator ensure", try JSONOutput.string(EmulatorProvisionResult(
                 name: "fix2-4-android", serial: "emulator-5554", created: true, state: "booted"

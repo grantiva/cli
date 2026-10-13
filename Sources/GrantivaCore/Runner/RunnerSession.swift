@@ -456,8 +456,8 @@ public enum RunnerSession {
         }
 
         // Every flow reachable through runFlow, by its project-relative path
-        // (the runner resolves a sub-flow's own runFlows itself), then the
-        // sub-flow paths as written, then the staged top-level paths, so a
+        // (the runner resolves a sub-flow's own runFlows itself). As-written
+        // operands only fill gaps; then the staged top-level paths ensure a
         // staged path always wins (L20).
         let reachablePathMap = FlowReferenceResolver.reachableFlowDisplayMap(
             roots: absoluteFlowPaths, cwd: FileManager.default.currentDirectoryPath
@@ -466,7 +466,12 @@ public enum RunnerSession {
             uniquingKeysWith: { first, _ in first }
         )) { _, passed in passed }
         let reportPathMap = reachablePathMap
-            .merging(subFlowPathMap) { _, written in written }
+            .merging(subFlowPathMap) { canonical, written in
+                // Outside the project the resolver can only return an absolute
+                // identity, not a project-relative display name. Preserve the
+                // written operand there, unless the caller named that root absolutely.
+                (canonical as NSString).isAbsolutePath && !flowPaths.contains(canonical) ? written : canonical
+            }
             .merging(stagedPathMap) { _, staged in staged }
         let outputPathMap = expandedPathMap(reportPathMap)
 

@@ -47,7 +47,7 @@ struct RunnerLifecycleDocument: Encodable, Equatable {
         try container.encodeIfPresent(runnerPid, forKey: "runnerPid")
         if let port {
             try container.encode(port, forKey: "port")
-        } else if nullWhenUnrecorded {
+        } else if nullWhenUnrecorded || status == "already_running" {
             try container.encodeNil(forKey: "port")
         }
         try container.encodeIfPresent(platform?.rawValue, forKey: "platform")

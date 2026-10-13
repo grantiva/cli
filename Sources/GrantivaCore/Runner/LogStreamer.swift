@@ -89,10 +89,57 @@ public final class LogStreamer: @unchecked Sendable {
     private let lock = NSLock()
     private let output = SerializedLogOutput()
     private var stopped = false
+    private var cleanupSucceeded = true
     private var terminationCleanup: UInt64?
     private var terminationLogged: EndedOnce?
 
     public init() {}
+
+    struct OwnedLogChildren {
+        let deviceID: String
+        let marker: String
+        var snapshot: () throws -> String = LogStreamer.processSnapshot
+
+        /// The UUID predicate is minted for this device and this run only.
+        /// Arguments mentioning it on another executable never confer ownership.
+        func matchingPIDs(in snapshot: String) -> [Int32] {
+            snapshot.split(separator: "\n").compactMap { line in
+                let fields = line.split(maxSplits: 1, whereSeparator: { $0 == " " || $0 == "\t" })
+                guard fields.count == 2, let pid = Int32(fields[0]), pid > 1, pid != getpid() else { return nil }
+                let words = fields[1].split(maxSplits: 2, whereSeparator: { $0 == " " || $0 == "\t" })
+                guard words.count == 3, URL(fileURLWithPath: String(words[0])).lastPathComponent == "log",
+                      words[1] == "stream", words[2].contains(marker) else { return nil }
+                return pid
+            }
+        }
+
+        /// Re-snapshot before each signal, including after wrapper exit. This
+        /// finds the child even when simctl reparented it to the device launchd.
+        func stop(gracePeriod: TimeInterval = 2) -> Bool {
+            let deadline = Date().addingTimeInterval(gracePeriod)
+            let killDeadline = deadline.addingTimeInterval(1)
+            var signalled: [Int32: Int64] = [:]
+            repeat {
+                guard let current = try? snapshot() else { return false }
+                let pids = matchingPIDs(in: current)
+                if pids.isEmpty { return true }
+                for pid in pids {
+                    guard let started = RunnerStopMarker.processStartTime(pid) else { continue }
+                    if Date() >= deadline {
+                        // A reused PID must still have the unique marker and
+                        // executable in this snapshot before it is signalled.
+                        if signalled[pid] == started { kill(pid, SIGKILL) }
+                    } else if signalled[pid] != started {
+                        signalled[pid] = started
+                        kill(pid, SIGTERM)
+                    }
+                }
+                usleep(10_000)
+            } while Date() < killDeadline
+            return (try? snapshot()).map { matchingPIDs(in: $0).isEmpty } ?? false
+        }
+    }
+    var ownedLogChildren: OwnedLogChildren?
 
     /// The running log process's pid, for tests.
     var processIdentifier: Int32? {
@@ -122,6 +169,19 @@ public final class LogStreamer: @unchecked Sendable {
         // never be stopped and would outlive the exit.
         guard !SignalRelay.shared.isTerminating else { return }
 
+        var arguments = arguments
+        if URL(fileURLWithPath: executable).lastPathComponent == "xcrun",
+           arguments.count >= 5, arguments[0] == "simctl", arguments[1] == "spawn",
+           arguments[3] == "log", arguments[4] == "stream" {
+            let marker = "grantiva-log-\(UUID().uuidString)"
+            ownedLogChildren = OwnedLogChildren(deviceID: arguments[2], marker: marker)
+            let identity = "\"\(marker)\" == \"\(marker)\""
+            if let index = arguments.firstIndex(of: "--predicate"), arguments.indices.contains(index + 1) {
+                arguments[index + 1] = "(\(arguments[index + 1])) AND (\(identity))"
+            } else {
+                arguments += ["--predicate", identity]
+            }
+        }
         let p = Process()
         p.executableURL = URL(fileURLWithPath: executable)
         p.arguments = arguments
@@ -154,8 +214,9 @@ public final class LogStreamer: @unchecked Sendable {
         // `--verbose` names the stream when it ends, however it ends; the
         // flag keeps stop() and the handler from logging it twice.
         let ended = EndedOnce()
+        let waitsForRemoteChild = ownedLogChildren != nil
         p.terminationHandler = { process in
-            ended.once { SubprocessLog.ended(process) }
+            if !waitsForRemoteChild { ended.once { SubprocessLog.ended(process) } }
         }
         terminationLogged = ended
 
@@ -173,6 +234,7 @@ public final class LogStreamer: @unchecked Sendable {
         stdoutDecoder = outDecoder
         stderrDecoder = errDecoder
         stopped = false
+        cleanupSucceeded = true
         // Ctrl-C reaches SignalRelay, which runs its cleanups and calls exit,
         // so a caller's `defer { stop() }` never runs and the log process
         // (`adb logcat`, `log stream`) would be reparented to launchd.
@@ -180,11 +242,12 @@ public final class LogStreamer: @unchecked Sendable {
     }
 
     /// Stops the log stream subprocess. Safe to call multiple times.
-    public func stop() {
+    @discardableResult
+    public func stop() -> Bool {
         lock.lock()
         defer { lock.unlock() }
 
-        guard !stopped else { return }
+        guard !stopped else { return cleanupSucceeded }
         stopped = true
         if let terminationCleanup {
             SignalRelay.shared.removeCleanup(terminationCleanup)
@@ -196,13 +259,27 @@ public final class LogStreamer: @unchecked Sendable {
         output.write(stdoutDecoder?.finish() ?? [])
         output.write(stderrDecoder?.finish() ?? [])
 
+        var complete = true
         if let p = process {
             if p.isRunning { p.terminate() }
-            // Wait briefly so the exit is logged here, in order, rather than
-            // from the termination handler after the caller has moved on.
             let deadline = Date().addingTimeInterval(2)
             while p.isRunning, Date() < deadline { usleep(10_000) }
-            if !p.isRunning { terminationLogged?.once { SubprocessLog.ended(p) } }
+            if p.isRunning {
+                kill(p.processIdentifier, SIGKILL)
+                let killDeadline = Date().addingTimeInterval(1)
+                while p.isRunning, Date() < killDeadline { usleep(10_000) }
+            }
+            complete = !p.isRunning
+            if !complete {
+                FileHandle.standardError.write(Data("Warning: log wrapper pid \(p.processIdentifier) did not stop before the cleanup deadline.\n".utf8))
+            }
+        }
+        if let children = ownedLogChildren, !children.stop() {
+            complete = false
+            FileHandle.standardError.write(Data("Warning: could not confirm log-stream cleanup for \(children.deviceID) (\(children.marker)).\n".utf8))
+        }
+        if let p = process, !p.isRunning {
+            terminationLogged?.once { SubprocessLog.ended(p) }
         }
         terminationLogged = nil
         process = nil
@@ -210,6 +287,23 @@ public final class LogStreamer: @unchecked Sendable {
         stderrPipe = nil
         stdoutDecoder = nil
         stderrDecoder = nil
+        ownedLogChildren = nil
+        cleanupSucceeded = complete
+        return complete
+    }
+
+    private static func processSnapshot() throws -> String {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/bin/ps")
+        process.arguments = ["-ww", "-axo", "pid=,command="]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        try process.run()
+        let data = pipe.fileHandleForReading.readDataToEndOfFile()
+        process.waitUntilExit()
+        guard process.terminationStatus == 0 else { throw CocoaError(.fileReadUnknown) }
+        return String(decoding: data, as: UTF8.self)
     }
 }
 
