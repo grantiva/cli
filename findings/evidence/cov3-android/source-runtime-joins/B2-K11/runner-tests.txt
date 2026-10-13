@@ -1,0 +1,47 @@
+package cli
+
+import (
+	"strings"
+	"testing"
+)
+
+// K11: the keep-alive banner and the release line name the session the run
+// actually holds: UIAutomator2 on Android, GrantivaAgent on iOS.
+func TestKeepAliveLinesNameThePlatformAgent(t *testing.T) {
+	for _, tc := range []struct {
+		platform, driver, want string
+	}{
+		{"android", "", "UIAutomator2"},
+		{"android", "uiautomator2", "UIAutomator2"},
+		{"", "", "UIAutomator2"}, // detected Android default
+		{"android", "devicelab", "runner keep-alive"},
+		{"android", "appium", "runner keep-alive"},
+		{"ios", "", "GrantivaAgent"},
+		{"ios", "appium", "runner keep-alive"},
+	} {
+		agent := keepAliveAgentName(&RunConfig{Platform: tc.platform, Driver: tc.driver}, tc.platform)
+		banner := keepAliveBanner(agent, 0, "s1")
+		release := keepAliveReleaseLine(agent)
+		want := strings.TrimSuffix(tc.want, " keep-alive")
+		if !strings.Contains(banner, tc.want) {
+			t.Errorf("%s/%s: banner %q does not name %s", tc.platform, tc.driver, banner, tc.want)
+		}
+		for _, line := range []string{banner, release} {
+			if !strings.Contains(line, want) {
+				t.Errorf("%s/%s: %q does not name %s", tc.platform, tc.driver, line, want)
+			}
+			if tc.want != "GrantivaAgent" && strings.Contains(line, "GrantivaAgent") {
+				t.Errorf("%s/%s: %q names GrantivaAgent", tc.platform, tc.driver, line)
+			}
+		}
+	}
+	if got := keepAliveBanner("GrantivaAgent", 8100, "s1"); got != "  GrantivaAgent keep-alive: port=8100 session=s1" {
+		t.Errorf("iOS banner = %q", got)
+	}
+	if got := keepAliveBanner("UIAutomator2", 0, "s1"); got != "  UIAutomator2 keep-alive: session=s1" {
+		t.Errorf("Android banner = %q", got)
+	}
+	if got := keepAliveReleaseLine("UIAutomator2"); got != "  Releasing UIAutomator2 session..." {
+		t.Errorf("Android release = %q", got)
+	}
+}

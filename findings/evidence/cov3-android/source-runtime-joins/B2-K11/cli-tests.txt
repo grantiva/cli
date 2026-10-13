@@ -1,0 +1,50 @@
+import ArgumentParser
+import XCTest
+@testable import GrantivaCLI
+import GrantivaCore
+
+/// `run`'s narration, its `--json` document and the checks it makes before
+/// any device work (K11, K12, K13, K19, K20, K21, K22, K23, K44).
+final class RunSessionContractTests: XCTestCase {
+    override func tearDown() {
+        RunnerNarration.isSilenced = false
+        super.tearDown()
+    }
+
+    // MARK: - K11: Android narration names UIAutomator2
+
+    func testTheSessionLineNamesEachPlatformsDriver() {
+        let flows = [".maestro/01-browse.yaml", ".maestro/02-favorite.yaml"]
+        XCTAssertEqual(
+            RunCommand.sessionNarration(platform: .android, flows: flows, countGiven: false),
+            "Running 2 flow(s) in one UIAutomator2 session: .maestro/01-browse.yaml, .maestro/02-favorite.yaml"
+        )
+        XCTAssertEqual(
+            RunCommand.sessionNarration(platform: .ios, flows: flows, countGiven: false),
+            "Running 2 flow(s) in one GrantivaAgent session: .maestro/01-browse.yaml, .maestro/02-favorite.yaml"
+        )
+        XCTAssertFalse(RunCommand.sessionNarration(platform: .android, flows: flows, countGiven: true).contains("GrantivaAgent"))
+    }
+
+    func testKeepAliveHelpNamesBothDrivers() {
+        let help = RunCommand.helpMessage()
+        XCTAssertTrue(help.contains("GrantivaAgent on iOS"), help)
+        XCTAssertTrue(help.contains("UIAutomator2 on Android"), help)
+    }
+
+    // MARK: - K12: a running device is used, not booted
+
+    func testBootNarrationForARunningTargetSaysUsing() {
+        XCTAssertEqual(
+            RunCommand.bootNarration(platform: .android, target: "cov-android (emulator-5554)", running: true),
+            "Using emulator: cov-android (emulator-5554)"
+        )
+        XCTAssertEqual(RunCommand.bootNarration(platform: .ios, target: "qa-ios-1"), "Booting simulator: qa-ios-1")
+    }
+
+    func testDeviceFlagResolvesThroughTheAttachedDevicePathAndNeverBoots() async throws {
+        let fake = FakeDevicePlatform(platform: .android)
+        fake.bootedName = "cov-android"
+        var lines: [String] = []
+        let device = try await RunCommand.targetDevice(
+            platform: .android, device: fake, target: "emulator-5554", serialFlag: "emulator-5554",
