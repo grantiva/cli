@@ -135,3 +135,23 @@ iOS20controllerfixedprelaunchharnesslocal-variableexpansion andglobal-sessiondir
 - L68 records Android detached start returning ready before its generated launch flow makes the app available. Isolated reproduction proves this occurrence without concurrent starts; shared temporary flow remains an unproven separate risk. Independent iOS review approved after wording explicitly attributed the stronger promise to matrix AND-127 rather than driver-up help.
 - Completed Android evidence checkpoint f64a5e8c and iOS through22 checkpoint27cb86da. Independent CLI review `findings/ios20-22-android-new-batch-review.md` supports IOS084/087, N2-11, MCP065/070/073 and AND103/105/124/125/126; AND127 remains fail. Minor Android124 duplicate/count and127 evidence-link corrections assigned to worker.
 - Attempt20 original stale manifest preserved unchanged; disclosure plus supplemental final manifest verifies retained bytes. iOS23 snapshot/crash batch completed;24 MCP argument/platform batch running. Android118 no-explicit-device run completed0 against sole connected owned emulator; adjudication pending. Tasks3–5 remain active; no complete full-pass claim.
+
+
+### Snapshot, MCP isolation, and runner lifecycle continuation
+
+- iOS23 completed snapshot modes; independent source audit supports K05, K81 and K82-a joins. iOS24 omitted platform on the shell runner start in a two-config project; its injection check is valid, live clauses ungraded. Fresh24b corrects the omission, preserves full raw JSON, and verifies typed Yosemite. Full raw responses, not truncated transcript previews, support text values. iOS25 cross-project isolation completed.
+- Android118 no-device narration and119 screen failure/timeout completed and checkpointed ff38cb41. Runner hierarchy/stale batch completed with strict start identity and dead-PID guards; tree/JSON/XML, override identity, stop cleanup and stale replacement all pass.
+- iOS evidence checkpoint bb1a4ec6 preserves attempts23/24/24b and exact K05 source assertions. Independent review docs checkpoint595e5d6e.
+- Current exact-ID audit: iOS205/478 (195pass/5fail/5blocked), Android162/467 (152pass/4fail/4blocked/2n-a); both have zero duplicate IDs and missing evidence paths. CLI384 IDs complete but retains prior raw platform/rerun lines; effective CLI totals remain368pass/7fail/5blocked/4n-a.
+- Ruling: serialization is per device. Cross-platform verification may run concurrently, except explicitly isolated defect reproductions such as AND127. An unrelated iOS process in an Android process snapshot is expected and does not invalidate exact Android-owned PID/serial evidence. Cost if wrong: investigate any observed cross-platform artifact contamination separately; none is proved here.
+
+
+### Broader command batches and a new output failure
+
+- iOS26 eight build/install rows approved independently, including preserved Xcode build request proving retained OTHER_SWIFT_FLAGS while the derived-data flag wins; additive evidence has separate checksum disclosure. Attempt27 supplies interrupted ready state, but timeout3 was invalid input (exit64). Fresh27b uses timeout30, exits1 after33s total, and publishes failed terminal flow/group state. iOS215/478 before28 grading.
+- Reviewer found B-C03.2 project isolation lacks platform-mismatch half and AND083 override lacks competing-config snapshot; provisional passes removed pending exact follow-up. X001/X003 initial negative comparison used unsuitable AndroidAND106; matching AND043 one-flow raw/report supports both, documented in independent addendum.
+- Android output-contract batch finished all expected exit codes but actual stderr exposes B2-K19 failure: --json --quiet --verbose emits verbose runner output. Quiet-only negative is concise. Independent triage assigned; no wrapper exit used as all-pass. Android169/467=158pass/5fail/4blocked/2n-a beforephaseb.
+- Current controller sessions: iOS28 repeated captures/discard/systemalert18583; Androidphaseb build/boot/diff37106. Builds have <20 one-minute-load guard; ownership/AVD selection guarded; capture artifacts preserved per command.
+
+
+Ruling: B2-K19 combined --json --quiet --verbose output is an expectation conflict, not a proven new product defect. Exact candidate LogVerbosity15–20 and RunnerNarration26–30 deliberately let verbose win; acceptance also says verbose shows runner output but does not resolve the combined flags explicitly. Preserve literal fail/raw until Task6 correction, file no L69 from this observation, and complete separate quiet/JSON/diff/ci clauses. Cost if wrong: revisit flag-precedence product behavior and align source/tests/docs rather than silently claiming a regression. Independent triage: cov3-cli/findings/B2-K19-android-triage-and-json-review.md.
