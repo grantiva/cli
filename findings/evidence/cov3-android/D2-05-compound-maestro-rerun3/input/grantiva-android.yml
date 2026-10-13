@@ -1,0 +1,25 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- scrollUntilVisible:
+    element:
+      text: "Deep Links"
+    direction: DOWN
+    timeout: 5000
+- takeScreenshot: "Scrolled"
+- runFlow: sub-scalar.yaml
+- runFlow:
+    file: sub-mapping.yaml
+- runFlow:
+    commands:
+      - launchApp
+      - tapOn: "Deep Links"
+      - tapOn: "Caching Demo"
+      - extendedWaitUntil:
+          visible: "Cache Policy"
+          timeout: 5000
+      - takeScreenshot: "From Inline"
+- extendedWaitUntil:
+    visible: "Cache Policy"
+    timeout: 5000
+- takeScreenshot: "Main"

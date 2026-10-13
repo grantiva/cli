@@ -1,0 +1,10 @@
+## Hierarchy and keep-alive
+
+    grantiva run --keep-alive            # terminal 1, holds the UIAutomator2 session
+    grantiva hierarchy                   # terminal 2: the UIAutomator2 page source (XML)
+    grantiva hierarchy --format json     # the same tree as JSON, frames in dp
+
+The runner does not proxy UIAutomator2, so Grantiva forwards a local port to the
+emulator's port 6790 (`adb forward tcp:0 tcp:6790`) for the duration of the command and
+reads the session the runner holds. `--udid <serial>` picks a session when several are
+live. `runner dump-hierarchy` reads the same tree and prints it as a tree, JSON, or XML.
