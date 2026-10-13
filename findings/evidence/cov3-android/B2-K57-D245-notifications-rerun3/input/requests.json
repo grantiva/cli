@@ -1,0 +1,12 @@
+[
+ {"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"round3-notifications","version":"1"}}},
+ {"method":"notifications/initialized","params":{}},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"No Such Element"}},"_save":"01-failed-before-subscribe.json"},
+ {"method":"resources/subscribe","params":{"uri":"grantiva://hierarchy"},"_save":"02-subscribe.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"label":"Gesture Lab"}},"_save":"03-successful-tap.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{}},"_save":"04-rejected-tap.json"},
+ {"method":"tools/call","params":{"name":"grantiva_script","arguments":{"steps":[{"tap_xy":{"x":205,"y":457}},{"tap":"No Such Element"}]}},"_save":"05-partial-script.json"},
+ {"method":"resources/unsubscribe","params":{"uri":"grantiva://hierarchy"},"_save":"06-unsubscribe.json"},
+ {"method":"tools/call","params":{"name":"grantiva_tap","arguments":{"x":205,"y":457}},"_save":"07-success-after-unsubscribe.json"},
+ {"method":"resources/read","params":{"uri":"grantiva://hierarchy"},"_save":"08-final-tree.json"}
+]
