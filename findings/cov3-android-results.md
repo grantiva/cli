@@ -540,6 +540,18 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K15 [android] | pass | findings/evidence/cov3-android/B2-K15-live-teardown-refusal-rerun1/, findings/evidence/cov3-android/B2-K15-live-teardown-accepted-rerun3/ | Exact live targeted teardown in text and JSON stops the selected detached runner, releases its exact lease and session, kills the owned emulator, and reports the structured recorded/killed/session-stop fields. The unrelated primary device remains untouched; exact candidate tests and the shared per-serial teardown-all loop cover unrelated-session preservation and the globally prohibited `--all` runtime branch. |
 
+| D2-02 [android] | pass | findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/, findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/ | The exact stock success ready file lists `screens` before all twelve configured flows and retains the exact requested report directory; the report passes and remains readable. The retained failure counterpart has the same screens-first ordering and exact report directory with its failed report intact. |
+
+| B2-K86-a [android] | pass | findings/evidence/cov3-android/B2-K86-a-handedoff-refusal-rerun2/ | After a detached runner becomes usable, the exact no-build run refuses in 0.132 seconds with the handed-off `runner start` owner, exact pid/project, and `runner stop` remedy. It creates no report and leaves the pid, lease, and byte-identical session intact until explicit stop; retained keep-alive/dead-owner controls and exact lease tests cover the other branches. |
+
+| D2-07 [android] | pass | findings/evidence/cov3-android/B3-L39-install-json-rerun2/ | Exact launched, installed, and skipped modes return the required application ID, app path, device name, and serial fields; skipped carries the required null app path. The additional frozen app-file no-launch mode corroborates the same structured contract. |
+
+| D2-39 [android] | pass | findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/, findings/evidence/cov3-android/D239-X011-MCP076-context-resources-rerun2/ | Configured, platform-mismatch, and live keep-alive context variants retain their exact config source and platform fields. The live Android response includes pid, application ID, serial, and the documented `driver_port: (forwarded on attach)` value. |
+
+| B3-L42-a [android] | pass | findings/evidence/cov3-android/B2-K24-exact-rerun1/, findings/evidence/cov3-android/B2-K109-BC08-config-forms-rerun1/, findings/evidence/cov3-android/B3-L42-a-both-selector-negative-rerun1/ | Positive native ID tap/assert capture succeeds without an unknown-key warning, with exact parser/generator tests, CI, and documentation. The exact negative `{id,text}` tap rejects before capture and names the config, step, both keys, and their exclusivity. |
+
+| B-A10.1 [android] | pass | findings/evidence/cov3-android/B-A10.1-early-refusal-no-capture-rerun1/, findings/evidence/cov3-android/AND-063/ | The exact active keep-alive ownership conflict names the emulator, gives the force-teardown and unique-name remedies, and omits a generic child-process suffix. A full before/after SHA inventory proves the competitor writes no failure capture; the owner remains live and then stops cleanly. |
+
 ## Counts
 
-379 of 467 slice rows recorded: 356 pass, 17 fail, 4 blocked, 2 n/a.
+385 of 467 slice rows recorded: 362 pass, 17 fail, 4 blocked, 2 n/a.
