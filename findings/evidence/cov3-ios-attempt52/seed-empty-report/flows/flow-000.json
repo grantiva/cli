@@ -1,0 +1,79 @@
+{
+  "id": "flow-000",
+  "name": "09-seed-empty",
+  "sourceFile": ".maestro/09-seed-empty.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:02:01.091794-07:00",
+  "endTime": "2026-10-13T00:02:06.174614-07:00",
+  "duration": 5082,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:02:03.72345-07:00",
+      "endTime": "2026-10-13T00:02:05.67645-07:00",
+      "duration": 1953,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:02:05.678368-07:00",
+      "endTime": "2026-10-13T00:02:06.102368-07:00",
+      "duration": 424,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "37000000-0000-0000-B992-000000000000",
+        "text": "No landmarks yet",
+        "class": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 111,
+          "y": 434,
+          "width": 180,
+          "height": 92
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T00:02:06.103686-07:00",
+      "endTime": "2026-10-13T00:02:06.173686-07:00",
+      "duration": 70,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-002-Empty.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 815,
+    "p50": 424,
+    "p95": 1953,
+    "max": 1953,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
