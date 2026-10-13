@@ -526,6 +526,12 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B-C04.1 [android] | pass | findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/ | Ready JSON names the exact retained configured-screens report directory. After exit it still contains root and screens reports, flow files, assets/captures, JUnit, logs, and Allure results. |
 
+| B3-L48.1 [android] | pass | findings/evidence/cov3-android/B3-L48-driver-timeout-rerun3/ | With `GRANTIVA_DRIVER_START_TIMEOUT=60`, verbose detached start and ordinary run both pass the exact `--driver-start-timeout 60` runner argument. Candidate docs state the default and source applies the ruled 150-second outer wait. |
+
+| B3-L48.2 [android] | pass | findings/evidence/cov3-android/B3-L48-driver-timeout-rerun3/ | With timeout one, detached start and run exercise the permitted fast-success branch. Foreground start exits 1 in 4.621 seconds with the runner's exact two-attempt UIAutomator2 reason and both flag/env remedies, rather than waiting 90 seconds; semantic tests pin fast propagation. |
+
+| B3-L39 [android] | pass | findings/evidence/cov3-android/B3-L39-install-json-rerun2/ | Exact launched, installed, skipped, and frozen app-file install modes all return valid JSON containing `appPath`. The skipped result carries null appPath/scheme/dataContainerPath; app-file reports the exact supplied APK path, and the other statuses retain their installed product path. |
+
 ## Counts
 
-372 of 467 slice rows recorded: 349 pass, 17 fail, 4 blocked, 2 n/a.
+375 of 467 slice rows recorded: 352 pass, 17 fail, 4 blocked, 2 n/a.
