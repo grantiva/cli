@@ -1,0 +1,9 @@
+# Task4 iOS launch readiness follow-up
+
+Commit `05d8cd393fcaa08b71ea9e05ad2000d88ee5f7ee`, parent path-fix5 `e9ae823d`. Independent review, live replay, final combined suite and CI pending.
+
+The exact simulator-side WDA death in `live/wda-death-attempt1` exposed a real failure: the runner announced its port after WDA PID41311 died, its generated launch flow failed connection-refused, but the CLI published ready and held until an explicit runner stop. That stop's exit0 is not a natural successful start. The original attempt and process/device provenance remain retained.
+
+Both iOS startup modes now pass their unique generated report directory with --output/--flatten, and after port discovery require a complete passed launch report before publishing ready. The gate reuses the existing Android polling and report parser; the Android semantics are unchanged. Failed reports, runner exits and a bounded60s report wait become distinct errors. Foreground preserves interrupt130 and explicit stop handling, reaps its exact child and cleans its session; detached failure also terminates/reaps before removing ownership. No global cleanup was added.
+
+Semantic RED follows a behavior-neutral extraction of the old immediate port acceptance into the production helper used by both callers. A real failed report and missing report produced3 assertion failures in2 tests. Two earlier compilation attempts are explicitly retained as build-attempt1/2, not counted as semantic RED. GREEN:69 RunnerLifecycleCommandTests passed, including real running-to-passed report transition, failed/missing report, death/interrupt, and iOS flat argv. Fresh empty runner home stayed empty; API key unset. Raw commands/stdout/stderr/exit/home in `findings/evidence/fix4-4/live/unit-fix6-ios`. git diff --check clean; self-review completed. Both changes are limited to DriverCommand.swift and RunnerLifecycleCommandTests.swift.
