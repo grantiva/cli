@@ -710,6 +710,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L38-b [android] | pass | findings/evidence/cov3-android/B3-L38-b-orphan-three-cycles-rerun4/, findings/android-b3l38b-rerun4-review.md | Three exact cycles preserve the killed run's orphan UIAutomator2 session, then detached start returns only after its own different session is ready. Immediate hierarchy and stop succeed 3/3; verbose subprocess lists contain no kill or force-stop, row-owned diagnostic forwards are removed, and exact lifecycle tests cover early runner exit and the shared foreground rule. |
 
+| N2-16 [android] | pass | findings/evidence/cov3-android/N2-16-restore-dead-complement-rerun4/, findings/evidence/cov3-android/B2-K06-N06-three-fresh-captures-rerun2/, findings/android-n216-rerun4-review.md | Three fresh first captures pass on distinct emulator processes. In the exact mid-flow teardown leg, restoration takes the documented absent-device branch and emits one five-second warning; an isolated exact-QEMU-death control measures that branch at 5.452 seconds. Source/tests preserve the separate 30-second listed-offline behavior. The 70-second process-exit proxy is excluded because it includes later runner retries and artifact generation. |
+
 ## Counts
 
-463 of 467 slice rows recorded: 438 pass, 17 fail, 6 blocked, 2 n/a.
+464 of 467 slice rows recorded: 439 pass, 17 fail, 6 blocked, 2 n/a.
