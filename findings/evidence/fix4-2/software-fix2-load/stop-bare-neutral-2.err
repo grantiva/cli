@@ -1,0 +1,66 @@
+Resolved: module=app variant=debug device=emulator-5580 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: fix4-2-android-software (emulator-5580)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare-clearstate.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software-fix2-load/stop-bare-neutral-2
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5580...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5580.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] stop-bare-clearstate (stop-bare-clearstate.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ assertVisible: text="Landmarks" (134ms)
+    ✓ stopApp (38ms)
+    ✓ assertNotVisible: text="Landmarks" (844ms)
+✓ stop-bare-clearstate 2.4s
+
+  [1/1] stop-bare-clearstate (/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare-clearstate.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (1.4s)
+    ✓ assertVisible: text="Landmarks" (134ms)
+    ✓ stopApp (38ms)
+    ✓ assertNotVisible: text="Landmarks" (844ms)
+✓ stop-bare-clearstate 2.4s
+
+  4 steps passing (2.4s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  stop-bare-clearstate           ✓ PASS       4      4      0      0       2.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       4      4      0      0       2.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software-fix2-load/stop-bare-neutral-2
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software-fix2-load/stop-bare-neutral-2/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software-fix2-load/stop-bare-neutral-2/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software-fix2-load/stop-bare-neutral-2/allure-results
+
+  Built by Grantiva
+

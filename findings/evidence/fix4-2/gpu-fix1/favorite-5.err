@@ -1,0 +1,84 @@
+Resolved: module=app variant=debug device=emulator-5580 screens=0 flows=1
+Preparing runner...
+Runner ready
+Using emulator: fix4-2-android-gpu (emulator-5580)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one UIAutomator2 session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/02-favorite.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/gpu-fix1/favorite-5
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5580...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5580.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 02-favorite (02-favorite.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ tapOn: text="Lake Tahoe" (804ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (98ms)
+    ✓ tapOn: text="Landmarks" (126ms)
+    ✓ tapOn: text="Favorites" (731ms)
+    ✓ assertVisible: text="Lake Tahoe" (522ms)
+    ✓ takeScreenshot (124ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (745ms)
+    ✓ tapOn: text="Remove from favorites" (172ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (666ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (24ms)
+    ✓ takeScreenshot (123ms)
+✓ 02-favorite 6.7s
+
+  [1/1] 02-favorite (/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/02-favorite.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.3s)
+    ✓ tapOn: text="Lake Tahoe" (804ms)
+    ✓ tapOn: text="Favorite" (1.2s)
+    ✓ assertVisible: text="Unfavorite" (98ms)
+    ✓ tapOn: text="Landmarks" (126ms)
+    ✓ tapOn: text="Favorites" (731ms)
+    ✓ assertVisible: text="Lake Tahoe" (522ms)
+    ✓ takeScreenshot (124ms)
+    ✓ swipe: LEFT from text="Lake Tahoe" (745ms)
+    ✓ tapOn: text="Remove from favorites" (172ms)
+    ✓ assertNotVisible: text="Lake Tahoe" (666ms)
+    ✓ assertVisible: text="Landmarks you favorite will appear here." (24ms)
+    ✓ takeScreenshot (123ms)
+✓ 02-favorite 6.7s
+
+  13 steps passing (6.7s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-favorite                    ✓ PASS      13     13      0      0       6.7s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1      13     13      0      0       6.7s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/gpu-fix1/favorite-5
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/gpu-fix1/favorite-5/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/gpu-fix1/favorite-5/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/gpu-fix1/favorite-5/allure-results
+
+  Built by Grantiva
+

@@ -1,0 +1,92 @@
+{
+  "id": "flow-000",
+  "name": "stop-bare",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T07:59:16.298213-07:00",
+  "endTime": "2026-10-13T07:59:18.871993-07:00",
+  "duration": 2573,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T07:59:16.302898-07:00",
+      "endTime": "2026-10-13T07:59:17.624898-07:00",
+      "duration": 1322,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T07:59:17.626058-07:00",
+      "endTime": "2026-10-13T07:59:17.700058-07:00",
+      "duration": 74,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00df-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "stopApp",
+      "yaml": "stopApp",
+      "status": "passed",
+      "startTime": "2026-10-13T07:59:17.700976-07:00",
+      "endTime": "2026-10-13T07:59:17.731976-07:00",
+      "duration": 31,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T07:59:17.732855-07:00",
+      "endTime": "2026-10-13T07:59:18.870855-07:00",
+      "duration": 1138,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 641,
+    "p50": 74,
+    "p95": 1322,
+    "max": 1322,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

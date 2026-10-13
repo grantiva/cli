@@ -1,0 +1,69 @@
+
+  grantiva-runner 1.1.0 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software/l51-direction-accepted2
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5580...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Installing UIAutomator2 APKs...
+  ✓ UIAutomator2 installed
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5580.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] l51-direction (l51-direction.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (2.1s)
+    ✓ assertVisible: text="Golden Gate Bridge" (321ms)
+    ✓ takeScreenshot (260ms)
+    ✓ swipe: UP (818ms)
+    ✗ assertVisible: text="Landmark 11" (17.3s)
+      ╰─ Element not visible: text='Landmark 11' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "All Landmarks", "Mono Lake")
+✗ l51-direction 21.4s
+
+  [1/1] l51-direction (/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/l51-direction.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (clearState) (2.1s)
+    ✓ assertVisible: text="Golden Gate Bridge" (321ms)
+    ✓ takeScreenshot (260ms)
+    ✓ swipe: UP (818ms)
+    ✗ assertVisible: text="Landmark 11" (17.3s)
+      ╰─ Element not visible: text='Landmark 11' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: "Landmarks", "All Landmarks", "Mono Lake")
+    - takeScreenshot (skipped)
+✗ l51-direction 21.4s
+
+  4 steps passing (21.4s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  l51-direction                  ✗ FAIL       6      4      1      1      21.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       6      4      1      1      21.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software/l51-direction-accepted2
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software/l51-direction-accepted2/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software/l51-direction-accepted2/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/software/l51-direction-accepted2/allure-results
+
+  Built by Grantiva
+

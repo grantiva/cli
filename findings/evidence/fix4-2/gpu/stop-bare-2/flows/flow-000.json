@@ -1,0 +1,104 @@
+{
+  "id": "flow-000",
+  "name": "stop-bare",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T07:38:01.978466-07:00",
+  "endTime": "2026-10-13T07:38:06.079727-07:00",
+  "duration": 4101,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T07:38:01.983095-07:00",
+      "endTime": "2026-10-13T07:38:03.794095-07:00",
+      "duration": 1811,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T07:38:03.93007-07:00",
+      "endTime": "2026-10-13T07:38:04.15907-07:00",
+      "duration": 229,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0082-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "stopApp",
+      "yaml": "stopApp",
+      "status": "passed",
+      "startTime": "2026-10-13T07:38:04.288095-07:00",
+      "endTime": "2026-10-13T07:38:04.525095-07:00",
+      "duration": 237,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-002-after.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T07:38:04.856492-07:00",
+      "endTime": "2026-10-13T07:38:05.569492-07:00",
+      "duration": 713,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-003-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 747,
+    "p50": 237,
+    "p95": 1811,
+    "max": 1811,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

@@ -1,0 +1,135 @@
+{
+  "id": "flow-000",
+  "name": "l51-direction",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/l51-direction.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T07:19:18.064206-07:00",
+  "endTime": "2026-10-13T07:19:39.513532-07:00",
+  "duration": 21449,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T07:19:18.07067-07:00",
+      "endTime": "2026-10-13T07:19:20.15167-07:00",
+      "duration": 2081,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-000-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-000-after.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Golden Gate Bridge\"",
+      "status": "passed",
+      "startTime": "2026-10-13T07:19:20.324036-07:00",
+      "endTime": "2026-10-13T07:19:20.645036-07:00",
+      "duration": 321,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Golden Gate Bridge"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-000a-0000-003f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-001-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T07:19:20.774008-07:00",
+      "endTime": "2026-10-13T07:19:21.034008-07:00",
+      "duration": 260,
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-002-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-002-before-direction.png"
+      }
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "swipe",
+      "yaml": "swipe: UP",
+      "status": "passed",
+      "startTime": "2026-10-13T07:19:21.162839-07:00",
+      "endTime": "2026-10-13T07:19:21.980839-07:00",
+      "duration": 818,
+      "params": {
+        "direction": "UP"
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-003-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png"
+      }
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmark 11\"",
+      "status": "failed",
+      "startTime": "2026-10-13T07:19:22.113266-07:00",
+      "endTime": "2026-10-13T07:19:39.372266-07:00",
+      "duration": 17259,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmark 11"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='Landmark 11' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Landmarks\", \"All Landmarks\", \"Mono Lake\")"
+      },
+      "artifacts": {
+        "screenshotBefore": "assets/flow-000/cmd-004-before.png",
+        "screenshotAfter": "assets/flow-000/cmd-004-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-004-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-004-log-tail.txt"
+      }
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "skipped",
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 4147,
+    "p50": 818,
+    "p95": 17259,
+    "max": 17259,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

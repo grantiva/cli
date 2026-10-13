@@ -1,0 +1,92 @@
+{
+  "id": "flow-000",
+  "name": "stop-bare-clearstate",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare-clearstate.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T08:16:50.947626-07:00",
+  "endTime": "2026-10-13T08:16:53.359757-07:00",
+  "duration": 2412,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp (clearState)",
+      "status": "passed",
+      "startTime": "2026-10-13T08:16:50.953457-07:00",
+      "endTime": "2026-10-13T08:16:52.340457-07:00",
+      "duration": 1387,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T08:16:52.34088-07:00",
+      "endTime": "2026-10-13T08:16:52.47488-07:00",
+      "duration": 134,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-00c1-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "stopApp",
+      "yaml": "stopApp",
+      "status": "passed",
+      "startTime": "2026-10-13T08:16:52.475741-07:00",
+      "endTime": "2026-10-13T08:16:52.513741-07:00",
+      "duration": 38,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T08:16:52.514645-07:00",
+      "endTime": "2026-10-13T08:16:53.358645-07:00",
+      "duration": 844,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 600,
+    "p50": 134,
+    "p95": 1387,
+    "max": 1387,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

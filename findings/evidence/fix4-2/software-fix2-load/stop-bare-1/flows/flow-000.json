@@ -1,0 +1,99 @@
+{
+  "id": "flow-000",
+  "name": "stop-bare",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-2/inputs/stop-bare.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T08:13:32.066425-07:00",
+  "endTime": "2026-10-13T08:13:39.261278-07:00",
+  "duration": 7194,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T08:13:32.072851-07:00",
+      "endTime": "2026-10-13T08:13:33.494851-07:00",
+      "duration": 1422,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T08:13:33.496024-07:00",
+      "endTime": "2026-10-13T08:13:33.677024-07:00",
+      "duration": 181,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0082-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "stopApp",
+      "yaml": "stopApp",
+      "status": "passed",
+      "startTime": "2026-10-13T08:13:33.678146-07:00",
+      "endTime": "2026-10-13T08:13:33.711146-07:00",
+      "duration": 33,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Landmarks\"",
+      "status": "failed",
+      "startTime": "2026-10-13T08:13:33.712159-07:00",
+      "endTime": "2026-10-13T08:13:38.713159-07:00",
+      "duration": 5001,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "error": {
+        "type": "unknown",
+        "message": "Element still visible: text='Landmarks' after 5s (cause: element should not be visible; still matched \"Landmarks\" at (824,1873 173x195))"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 1659,
+    "p50": 181,
+    "p95": 5001,
+    "max": 5001,
+    "slowestType": "assertNotVisible"
+  },
+  "artifacts": {}
+}
