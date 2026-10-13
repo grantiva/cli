@@ -1,6 +1,6 @@
 # Task 5 — L65, L66, L80
 
-Status: REVIEW-FIX-ACTIVE — independent review found cancellation expiry could release a queued response after prolonged backpressure. Fix committed/pushed as `a485f7b6`; 21 focused and 1,973 full fresh-home tests passed. Awaiting independent re-review/CI; see task-5-fix1-report.md. Earlier live criteria and both-device cleanup evidence remain valid. No push/merge performed by implementer. Controller owns PRs, independent review and CI.
+Status: COMPLETE — independent source/fix1/demo review approved; final a485f7b6 passed1973tests and CI; CLI PR209 merged4231a01a and demo PR4 merged1552ae98. Detailed prior evidence and chronology below remain unchanged.
 
 ## Provenance / commits
 
@@ -90,3 +90,5 @@ Android cleanup complete: `android-cleanup.json` records runner stop0, emulator 
 iOS cleanup complete: `ios-cleanup.json` records runner stop0, final no-session precedence pass, scoped simulator shutdown0/delete0, owned UDID absent, every pre-existing simulator ID preserved, runner PIDs8270/16138/18867/21826 absent. `ios-cleanup-{before,after}-{devices,processes}.out` retain inventories. No remaining process command references the owned UDID, cloned runner home or task CLI binary. iOS slot released to controller. Scratch/evidence retained for review.
 
 No open implementer live criteria. Both worktrees clean. Controller owns independent review, PR/CI, and merge. No criterion has been weakened or silently deferred.
+
+Controller completion: see task-5-fix1-report.md, task-5-fix1-review.md and task-5-demo-final-review.md. Final CLI source a485f7b6; full suite1973pass; CI38409615340 SUCCESS; merged4231a01aedba3cffaaa27986b58cd7b0251af742. All owned devices cleaned, no release/tag.
