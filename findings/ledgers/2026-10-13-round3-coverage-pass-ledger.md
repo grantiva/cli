@@ -204,3 +204,30 @@ Review gaps: B-I02.2 lacks conflicting flag/config and sole-booted fallback; IOS
 - Android flow-contracts-bulk attempt1 was interrupted with shell exit2 after the worker edited an announced-ready script around launch. Frozen old script and controller completion output retained; no row grades from that interrupted batch. Ready-script paths are now immutable from announcement, with any change requiring a fresh version. v2 was inspected but not run because config-free K22 commands omitted explicit Android platform. Fresh v3 fixes that and completes all10 command outcomes as expected.
 - iOS39 five-screen app-file workflow completes capture0, no-baseline compare1, approve0 and comparison0. iOS40 and AndroidK44 preflight cases reject immediately, but used already-booted devices while the matrix requires shut-down input; retained as partial, provisional grades withheld pending an owned-device lifecycle batch.
 - iOS37/38 raw checkpoint1b0c924d; AndroidK44 raw40ee72ff. iOS41 output-mode/report batch runs next. No L69 product brief from the recent batches.
+
+
+### Completed exact lifecycle inputs and review corrections
+
+- Androidsecondary shutdown v3 completes K44 on a truly stopped newlycreated AVD, K29 no-boot running/stopped forms, K30 deleteJSON, and X014 freshboot plain/JSON plusreuse complements. Exact AVDname checks guard each returnedserial before teardown; finalinventory excludes secondary. Raw3be05757.
+- iOS42c completes four timed shutdown preflight checks, runtime spelling/reuse/mismatch/inference, teardown outputmodes, concurrent ensure and guarded session-scoped cleanup. All new at42c names absent in finalinventory; EXIT cleanup required no deleteoperations. Raw161f8aa7.42/42b were rejected before execution for harnessguards and remain unrun.
+- Reviewer initially treated Android K22 `Runner ready` narration as processstartup. Exact source shows this only reports binaryavailability; FlowReferenceResolver rejects before launching a subprocess. Finding retracted, K22pass restored; no L69. IOS145 remains partial because appfile/json substitutions do not prove bare READMEcapture. IOS129 retains functionalcoverage with explicit coordinationflag disclosure.
+- AndroidK23a ID precedence completion passes; D2-08 permits recording the unsupportedCIerror and joins K25raw without a contradiction. Sourceaudit N14/K04 map existing exactAndroidraw; N17 withheld until per-step duration equality is inspectable.
+
+
+Ruling: documentation rows requiring bare commands may select the campaign simulator from a frozen scratch config when preflight verifies its exact owned name/UDID. This is the narrow reconciliation with the standing explicit-device rule: it exercises documented config resolution without making the command nonliteral or permitting an owner/default device. Cost if wrong: investigate config-resolution evidence and fail any unexpected selection; never clean up owner devices. IOS145 will use this guarded form, not appfile/json substitutions.
+
+Harness correction: iOS43 diff-preserved and ci-no-key commands incorrectly supplied unsupported --report-dir and exited64; exclude those two legs. Negative device/scheme JSON, doctor failures and ephemeral diff remain valid raw. Fresh CI invocation must omit unsupported options. Parent and workers now verify each command's flags against exact help before launch.
+
+
+### Duration, report, and documentation continuation
+
+- Android duration/snapshot five-case batch passed expected command outcomes. N17/K05/K82-a/D2-04 grades independently supported; K05 now includes exact fd9d8e8 semantic duration-consistency test source, not a claim of freshly executed Go tests. K81 remains waiting on no-report leg; K17 waiting on direct underlying report comparison. Raw a4abcf10, reviewed grades/source joins37686331.
+- iOS44 exact guarded bare README workflow and current buildJSON/DerivedData variants complete0 wrapper; initial no-baseline comparison1 expected. Raw496a36bc. iOS43 missing-build hintnegative supported, while K36 needs workingtoolchain/noboot and D218 needs configuredscreen JSON; provisional broad grades withheld. Reviewed ledger0983e1b9.
+- iOS45 crash/wait family and Android K17/K81 report-monitor completion are running. Current exact-ID audit before these: iOS271/478=260pass6fail5blocked; Android240/467=225pass9fail4blocked2n-a; no duplicate IDs or missing cited paths. CLI384 IDs complete, effective368pass7fail5blocked4n-a. Full pass remains incomplete.
+
+
+### Starting-state and artifact review continuation
+
+- Independent review approves iOS46 B3-L18, iOS47 N3-02 and Android K81/K82-b/K17. K17 monitor captured the exact temporary report named by its own verbose invocation; source assertion citation added. N3-03 literal fail: second start JSON omits required port:null while plain text identifies starting; exact source/docs triage assigned before a new brief. N3-01 awaits review of retained attempt16c detached screenshot join.
+- Current audits: iOS280/478 (265 pass,7 fail,8 blocked), Android245/467 (230 pass,9 fail,4 blocked,2 n/a), no duplicate IDs or missing cited paths. Protected-owner/no-observable-endpoint constraints support newly recorded iOS blocks.
+- Parent launched immutable iOS48 lifecycle and Android K83 subflow batches. Android X005 build retry stopped at load guard with wrapper3 before invoking Gradle; retain evidence and retry with a fresh output path when load permits.
