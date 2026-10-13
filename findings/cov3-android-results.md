@@ -217,6 +217,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | AND-014 | pass | findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/AND-014-146/ | Delete removed the stopped Grantiva-created cov3-android-2 AVD, and the following avdmanager inventory no longer listed it. |
 | AND-146 | pass | findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/AND-014-146/ | Delete JSON decoded successfully as `{deleted:true,name:"cov3-android-2"}`, and avdmanager no longer listed the AVD. |
 | AND-109 | pass | findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/ | After recreating cov3-android-2 and deleting it externally with avdmanager, the next Grantiva sessions call pruned its created-AVD ledger record and listed only the primary campaign AVD. |
+| AND-137 | fail | findings/evidence/cov3-android/output-modes-exact-rerun3/, findings/evidence/cov3-android/output-contracts-exact-rerun1/AND-137-quiet-fail/ | Plain, quiet, and verbose used the identical cwd, config, flow, device, and report path, but stdout was not byte-identical because real per-step durations differed. Quiet stderr was empty, verbose added timestamped subprocess/exit lines, and a quiet failure retained only its Error message, so the remaining mismatch is the literal byte-equality criterion over dynamic JSON. |
+| AND-138 | fail | findings/evidence/cov3-android/output-modes-exact-rerun3/ | Plain, quiet, and verbose used the identical cwd, config, device, and capture path, but stdout was not byte-identical because capture duration, measured step duration, and timestamp differed. Quiet stderr was empty and verbose added timestamped subprocess/exit lines; the remaining mismatch is the literal byte-equality criterion over dynamic JSON. |
 ## Counts
 
-194 of 467 slice rows recorded: 183 pass, 5 fail, 4 blocked, 2 n/a.
+196 of 467 slice rows recorded: 183 pass, 7 fail, 4 blocked, 2 n/a.
