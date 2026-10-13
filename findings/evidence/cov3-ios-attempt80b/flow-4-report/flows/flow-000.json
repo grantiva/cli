@@ -1,0 +1,61 @@
+{
+  "id": "flow-000",
+  "name": "23-missing-first",
+  "sourceFile": ".maestro/coverage/23-missing-first.yaml",
+  "device": {
+    "id": "563907E1-703D-4322-AE5F-FC3B06D03143",
+    "name": "cov3-ios-26",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T01:32:13.620644-07:00",
+  "endTime": "2026-10-13T01:32:32.521801-07:00",
+  "duration": 18901,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T01:32:16.212301-07:00",
+      "endTime": "2026-10-13T01:32:18.174301-07:00",
+      "duration": 1962,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such\"",
+      "status": "failed",
+      "startTime": "2026-10-13T01:32:18.175978-07:00",
+      "endTime": "2026-10-13T01:32:31.789978-07:00",
+      "duration": 13614,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such' (cause: context deadline exceeded: WDA error: unable to find an element using 'predicate string', value '(label ==[c] 'No Such' OR value ==[c] 'No Such')'; page source: no elements match selector; closest on-screen texts: \"Vertical scroll bar, 2 pages\", \"Lake Tahoe, Sierra Nevada, CA\", \"Golden Gate Bridge, San Francisco, CA\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 7788,
+    "p50": 1962,
+    "p95": 13614,
+    "max": 13614,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
