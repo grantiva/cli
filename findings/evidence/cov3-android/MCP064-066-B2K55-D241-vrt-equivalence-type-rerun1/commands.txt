@@ -1,0 +1,7 @@
+# cwd=/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/project
+$ /Users/kyle/.grantiva-qa/bin/grantiva diff capture --platform android --device emulator-5554 --no-build --json
+$ python3 -I client.py capture.json mcp-no-session project -- grantiva mcp --project-dir project --platform android
+$ /Users/kyle/.grantiva-qa/bin/grantiva run --platform android --device emulator-5554 --no-build --keep-alive --flow /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/input/park-list.yaml --report-dir /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/report
+$ python3 -I client.py capture.json mcp-live project -- grantiva mcp --project-dir project --platform android
+$ cp unfocused-type.yml project/grantiva-android.yml
+$ python3 -I client.py capture.json mcp-type project -- grantiva mcp --project-dir project --platform android
