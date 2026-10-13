@@ -95,10 +95,36 @@ public final class LogStreamer: @unchecked Sendable {
 
     public init() {}
 
+    struct ProcessIdentity: Equatable {
+        let seconds: UInt64
+        let microseconds: UInt64
+    }
+
+    static func processIdentity(_ pid: Int32) -> ProcessIdentity? {
+        var info = proc_bsdinfo()
+        let size = Int32(MemoryLayout<proc_bsdinfo>.size)
+        guard pid > 0, proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, size) == size else { return nil }
+        return ProcessIdentity(seconds: info.pbi_start_tvsec, microseconds: info.pbi_start_tvusec)
+    }
+
+    static func processIdentities() -> [Int32: ProcessIdentity] {
+        let count = proc_listallpids(nil, 0)
+        guard count > 0 else { return [:] }
+        var pids = [Int32](repeating: 0, count: Int(count) + 64)
+        let read = pids.withUnsafeMutableBytes { proc_listallpids($0.baseAddress, Int32($0.count)) }
+        guard read > 0 else { return [:] }
+        return Dictionary(pids.prefix(min(Int(read), pids.count)).compactMap { pid in
+            processIdentity(pid).map { (pid, $0) }
+        }, uniquingKeysWith: { first, _ in first })
+    }
+
     struct OwnedLogChildren {
         let deviceID: String
         let marker: String
-        var snapshot: () throws -> String = LogStreamer.processSnapshot
+        var snapshot: (Date) throws -> String = { try LogStreamer.processSnapshot(deadline: $0) }
+        var identities: () -> [Int32: ProcessIdentity] = LogStreamer.processIdentities
+        var identity: (Int32) -> ProcessIdentity? = LogStreamer.processIdentity
+        var signal: (Int32, Int32) -> Void = { _ = kill($0, $1) }
 
         /// The UUID predicate is minted for this device and this run only.
         /// Arguments mentioning it on another executable never confer ownership.
@@ -108,35 +134,62 @@ public final class LogStreamer: @unchecked Sendable {
                 guard fields.count == 2, let pid = Int32(fields[0]), pid > 1, pid != getpid() else { return nil }
                 let words = fields[1].split(maxSplits: 2, whereSeparator: { $0 == " " || $0 == "\t" })
                 guard words.count == 3, URL(fileURLWithPath: String(words[0])).lastPathComponent == "log",
-                      words[1] == "stream", words[2].contains(marker) else { return nil }
+                      words[1] == "stream",
+                      words[2].components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_")).inverted)
+                        .contains(marker) else { return nil }
                 return pid
             }
         }
 
-        /// Re-snapshot before each signal, including after wrapper exit. This
-        /// finds the child even when simctl reparented it to the device launchd.
+        struct Discovery {
+            let identities: [Int32: ProcessIdentity]
+            let sawMatchingCommand: Bool
+        }
+
+        /// Bracket command discovery with kernel identities. Reading only a
+        /// start time after ps would incorrectly adopt a PID reused while ps ran.
+        func discover(until deadline: Date) throws -> Discovery {
+            guard Date() < deadline else { throw InventoryError.timedOut }
+            let before = identities()
+            let commands = try snapshot(deadline)
+            guard Date() < deadline else { throw InventoryError.timedOut }
+            let pids = matchingPIDs(in: commands)
+            let stable = pids.compactMap { pid -> (Int32, ProcessIdentity)? in
+                guard let original = before[pid], identity(pid) == original else { return nil }
+                return (pid, original)
+            }
+            return Discovery(identities: Dictionary(stable, uniquingKeysWith: { first, _ in first }), sawMatchingCommand: !pids.isEmpty)
+        }
+
+        /// Revalidate the captured identity and exact marker before every
+        /// signal. A replacement never inherits an earlier PID's ownership.
         func stop(gracePeriod: TimeInterval = 2) -> Bool {
-            let deadline = Date().addingTimeInterval(gracePeriod)
-            let killDeadline = deadline.addingTimeInterval(1)
-            var signalled: [Int32: Int64] = [:]
-            repeat {
-                guard let current = try? snapshot() else { return false }
-                let pids = matchingPIDs(in: current)
-                if pids.isEmpty { return true }
-                for pid in pids {
-                    guard let started = RunnerStopMarker.processStartTime(pid) else { continue }
-                    if Date() >= deadline {
-                        // A reused PID must still have the unique marker and
-                        // executable in this snapshot before it is signalled.
-                        if signalled[pid] == started { kill(pid, SIGKILL) }
-                    } else if signalled[pid] != started {
-                        signalled[pid] = started
-                        kill(pid, SIGTERM)
+            let terminateDeadline = Date().addingTimeInterval(gracePeriod)
+            let deadline = terminateDeadline.addingTimeInterval(1)
+            var discovered: [Int32: ProcessIdentity] = [:]
+            var signalled: [Int32: ProcessIdentity] = [:]
+            while Date() < deadline {
+                guard let current = try? discover(until: deadline) else { return false }
+                if !current.sawMatchingCommand { return true }
+                for (pid, original) in current.identities {
+                    if discovered[pid] == nil { discovered[pid] = original }
+                    guard discovered[pid] == original,
+                          let confirmed = try? discover(until: deadline),
+                          confirmed.identities[pid] == original,
+                          Date() < deadline, identity(pid) == original else { continue }
+                    if Date() >= terminateDeadline, signalled[pid] == original {
+                        signal(pid, SIGKILL)
+                    } else if signalled[pid] == nil {
+                        signalled[pid] = original
+                        signal(pid, SIGTERM)
                     }
                 }
-                usleep(10_000)
-            } while Date() < killDeadline
-            return (try? snapshot()).map { matchingPIDs(in: $0).isEmpty } ?? false
+                let remaining = deadline.timeIntervalSinceNow
+                if remaining > 0 { usleep(useconds_t(min(0.01, remaining) * 1_000_000)) }
+            }
+            // No unbudgeted final inventory: without an in-budget empty
+            // confirmation, cleanup is explicitly incomplete.
+            return false
         }
     }
     var ownedLogChildren: OwnedLogChildren?
@@ -292,19 +345,59 @@ public final class LogStreamer: @unchecked Sendable {
         return complete
     }
 
-    private static func processSnapshot() throws -> String {
+    enum InventoryError: Error {
+        case timedOut
+        case readFailed
+        case commandFailed
+    }
+
+    /// The inventory gets only the cleanup budget that remains. Its pipe is
+    /// nonblocking, and part of that budget is reserved for killing/reaping
+    /// this exact child if it stalls. Foundation owns child reaping throughout.
+    static func processSnapshot(
+        deadline: Date, executable: String = "/bin/ps", arguments: [String] = ["-ww", "-axo", "pid=,command="],
+        didSpawn: (Int32) -> Void = { _ in }
+    ) throws -> String {
+        let remaining = deadline.timeIntervalSinceNow
+        guard remaining > 0 else { throw InventoryError.timedOut }
+        let executionDeadline = deadline.addingTimeInterval(-min(0.1, remaining / 2))
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/bin/ps")
-        process.arguments = ["-ww", "-axo", "pid=,command="]
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
         let pipe = Pipe()
         process.standardOutput = pipe
         process.standardError = FileHandle.nullDevice
+        let descriptor = pipe.fileHandleForReading.fileDescriptor
+        let flags = fcntl(descriptor, F_GETFL)
+        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0 else { throw InventoryError.readFailed }
         try process.run()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        process.waitUntilExit()
-        guard process.terminationStatus == 0 else { throw CocoaError(.fileReadUnknown) }
-        return String(decoding: data, as: UTF8.self)
+        didSpawn(process.processIdentifier)
+        try? pipe.fileHandleForWriting.close()
+        defer {
+            if process.isRunning {
+                kill(process.processIdentifier, SIGKILL)
+                while process.isRunning, Date() < deadline { usleep(1_000) }
+            }
+            try? pipe.fileHandleForReading.close()
+        }
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 16_384)
+        while Date() < executionDeadline {
+            let count = buffer.withUnsafeMutableBytes { Darwin.read(descriptor, $0.baseAddress, $0.count) }
+            if count > 0 {
+                data.append(contentsOf: buffer.prefix(count))
+                continue
+            }
+            if count < 0, errno != EAGAIN, errno != EINTR { throw InventoryError.readFailed }
+            if count == 0, !process.isRunning {
+                guard process.terminationStatus == 0 else { throw InventoryError.commandFailed }
+                return String(decoding: data, as: UTF8.self)
+            }
+            usleep(1_000)
+        }
+        throw InventoryError.timedOut
     }
+
 }
 
 /// Set once by whichever of `stop()` and the termination handler sees the
