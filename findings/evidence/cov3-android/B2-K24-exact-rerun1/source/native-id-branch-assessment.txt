@@ -1,0 +1,11 @@
+Candidate: 8f2cff676b3c12e951478920fa20e600cdca4e29
+B-C08.2 incorporated branch selected: native config gained `{id: ...}` support.
+
+GrantivaConfigPlatformTests.testNativeStepsAcceptAnIdSelector decodes native tap,
+assert_visible, and assert_not_visible `{id}` mappings and verifies all three by-id
+flags survive YAML round-trip. FlowGenerator's shared, platform-independent screen
+step path passes those three flags to selector emission, so both iOS and Android
+receive `id:` selectors. FlowGeneratorTests.testAnIdStepIsEmittedAsAnIdSelector
+pins generated tapOn/assertVisible id syntax. The exact-head CI log records both
+tests passing. README lines 136-185 document native `{id}` and state the iOS and
+Android meanings.

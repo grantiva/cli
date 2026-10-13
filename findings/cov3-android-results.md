@@ -135,7 +135,6 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | MCP-018 | pass | findings/evidence/cov3-android/MCP-interactions-retry/ | Confirmed Deep Links app session returned a JSON accessibility hierarchy with app labels, element types, frames, and states. |
 | B3-L15.2 [android] | fail | findings/evidence/cov3-android/MCP-live-readonly/mcp/script-missing.json, findings/evidence/cov3-android/MCP-live-readonly/mcp/swipe-missing.json, findings/evidence/cov3-android/MCP-live-readonly/mcp/type-missing.json | Live swipe and type errors match exactly, but script returned `'steps' array is required.` instead of the required exact `'steps' is required.`; all three were single-Error isError results. Shared defect L65. |
 | B2-K89 [android] | pass | findings/evidence/cov3-android/B2-K89-exact/, findings/evidence/cov3-android/B2-K89-mixed-retry/ | No-baseline and mixed comparisons exit 1 with `passed:false`, MCP matches, and candidate README lines 726-729 explicitly document both cases and distinguish `ci run`. The earlier relative-path audit read the demo scratch README and is retained as invalid harness evidence; `readme-audit-absolute.txt` records the exact candidate path and HEAD. |
-| B2-K24 | pass | findings/evidence/cov3-android/AND-128-maestro-format/, findings/evidence/cov3-android/B2-K24-doc-audit-absolute.txt | Android Maestro-format capture parses and runs id selectors successfully; candidate docs/android.md lines 35-42 state that grantiva-android.yml supports Maestro format, Android defaults, and appId semantics. The earlier relative-path audit read demo scratch docs and is retained as invalid harness evidence. |
 
 | AND-051 | pass | findings/evidence/cov3-android/HIERARCHY-session-exact/ | The passing flow reached its ready file while the keep-alive process remained alive; the held UIAutomator2 session served four hierarchy commands before an explicit clean stop. |
 | AND-053 | pass | findings/evidence/cov3-android/AND-053-exact/ | Default hierarchy returned the live UIAutomator2 XML page source containing the unchanged Landmarks detail app tree. |
@@ -148,6 +147,21 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | MCP-026 | pass | findings/evidence/cov3-android/MCP-script-exact/ | The four-step tap/wait/dp-tap/swipe script ran in order and returned Taps 1 / Last swipe up; a no-focus type stopped at step 1 with the required focused-field error, and the invalid script ran nothing while naming both invalid steps. |
 | B-C17.1 | pass | findings/evidence/cov3-android/MCP-script-exact/ | The invalid live script returned a tool-level isError, stated no steps were run, and explained both step 1 unknown action and step 2 non-object errors. |
 
+| B-C21.2 [android] | pass | findings/evidence/cov3-android/MCP-killed-app-errors/live/ | A live tap for a definitely missing label returned a tool-level `isError` with `Error: Element not found`, never a JSON-RPC error, and the MCP server remained alive. |
+| MCP-078 [android] | fail | findings/evidence/cov3-android/MCP-killed-app-errors/ | After an explicit force-stop and pid absence, tap, type, and script returned tool-level isError results, but screenshot, swipe, a11y_tree, and a11y_check incorrectly succeeded against system UI instead of reporting that the session app was killed. |
+
+| B2-K102 [android] | pass | findings/evidence/cov3-android/MCP-killed-app-errors/live/, findings/evidence/cov3-android/MCP-type-exact/, findings/evidence/cov3-android/MCP-script-exact/, findings/evidence/cov3-android/MCP-k102-focus/ | Standalone and script type calls with no focused field returned isError without typing; the script stopped at its named first step. After focusing Name, standalone type produced Golden Gate Bridge Renamed and the two-step script produced Golden Gate Bridge Scripted. Candidate Android transport and MCP tests encode the same no-keys/focus contract. |
+| AND-099 | pass | findings/evidence/cov3-android/MCP-a11y-two-screens/ | The live audit applied the 48dp threshold (reporting a 411x13dp target) on the Landmarks list; Deep Links returned no violations, so its merged-text Compose controls were not falsely reported missing_label. |
+
+| B2-K24 | pass | findings/evidence/cov3-android/B2-K24-exact-rerun1/, findings/evidence/cov3-android/B2-K24-doc-audit-absolute.txt | Fresh default and explicit `--platform android` captures each exited 0, wrote both PNGs, and showed `Tap on id "clock"` / `Assert visible id "clock"` passing. Exact candidate docs cover Maestro Android configs and native `{id}` selectors; source plus exact-head CI prove Android defaults, appId override, and id-selector generation tests. |
+
+| AND-030 | pass | findings/evidence/cov3-android/AND-043-exact-rerun1/ | Twelve exact `--device emulator-5554` runs all narrated and reported cov3-android/emulator-5554, targeting the requested serial. |
+| AND-043 | pass | findings/evidence/cov3-android/AND-043-exact-rerun1/ | Stock flows 01 through 12 were each invoked separately with `--flow`; every run exited 0 and each report contained exactly the one requested passing flow. |
+| AND-045 | pass | findings/evidence/cov3-android/AND-043-exact-rerun1/ | All twelve installed-app runs explicitly narrated `Skipping build and install (--no-build)` and proceeded directly to the runner, with no Gradle command or build execution. |
+
+| AND-046 | pass | findings/evidence/cov3-android/AND-046-049-exact-rerun1/continue/ | With crash flow first and `--continue-on-failure`, the crash failed, the following browse flow still passed 8/8, the report recorded one failed plus one passed flow, and the command exited 1. |
+| AND-049 | pass | findings/evidence/cov3-android/AND-046-049-exact-rerun1/timeout/ | The 30-second cap returned after 31.5 seconds wall time with exit 1; ready and report were terminal failed with no running flow, and the kill sentence had no stray trailing colon. |
+
 ## Counts
 
-141 of 467 slice rows recorded: 133 pass, 2 fail, 4 blocked, 2 n/a.
+150 of 467 slice rows recorded: 141 pass, 3 fail, 4 blocked, 2 n/a.

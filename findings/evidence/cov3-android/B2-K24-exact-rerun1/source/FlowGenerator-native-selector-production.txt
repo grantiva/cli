@@ -1,0 +1,81 @@
+        } else {
+            lines.append("- launchApp:")
+            lines.append("    \(FlowEnvironment.launchField(for: platform)):")
+            for key in environment.keys.sorted() {
+                lines.append("      \(key): \(FlowEnvironment.quoted(environment[key] ?? ""))")
+            }
+        }
+        if platform == .android {
+            lines += appDrawnWait
+        }
+
+        for (screenIndex, screen) in screens.enumerated() {
+            if screenIndex == 0 { claim(CommandOwner(screen: screen.name, step: nil)) }
+            if case .steps(let steps) = screen.path {
+                for (stepIndex, step) in steps.enumerated() {
+                    defer { claim(CommandOwner(screen: screen.name, step: stepIndex)) }
+                    if let label = step.tap {
+                        appendSelector("tapOn", label, byId: step.tapById, exact: step.tapExact, to: &lines)
+                        appendSettle(to: &lines)
+                    }
+                    if let direction = step.swipe {
+                        lines.append("- swipe:")
+                        if let start = step.swipeStart, let end = step.swipeEnd {
+                            lines.append("    start: \(FlowEnvironment.quoted(start))")
+                            lines.append("    end: \(FlowEnvironment.quoted(end))")
+                        } else {
+                            lines.append("    direction: \(maestroSwipeDirection(direction))")
+                        }
+                        if let duration = step.swipeDuration {
+                            lines.append("    duration: \(duration)")
+                        }
+                        if let from = step.swipeFrom {
+                            if step.swipeFromById {
+                                lines.append("    from:")
+                                lines.append("      id: \(FlowEnvironment.quoted(from))")
+                            } else {
+                                lines.append("    from: \(FlowEnvironment.quoted(from))")
+                            }
+                        }
+                        appendSettle(to: &lines)
+                    }
+                    if let text = step.type {
+                        lines.append("- inputText: \(FlowEnvironment.quoted(text))")
+                        appendSettle(to: &lines)
+                    }
+                    if let seconds = step.wait {
+                        lines.append("- evalScript:")
+                        lines.append("    script: \(FlowEnvironment.quoted(sleepScript(seconds: seconds)))")
+                        lines.append("    label: \(FlowEnvironment.quoted(waitLabel(seconds: seconds)))")
+                    }
+                    if let seconds = step.settle {
+                        // An explicit settle replaces the generated one before it.
+                        if lines.suffix(2).first == "- waitForAnimationToEnd:" { lines.removeLast(2) }
+                        lines.append("- waitForAnimationToEnd:")
+                        lines.append("    timeout: \(Int(seconds * 1000))")
+                    }
+                    if let label = step.assertVisible {
+                        if step.scrollUntilVisible {
+                            appendScrollUntilVisible(label, step: step, to: &lines)
+                        } else if let timeout = step.waitTimeout {
+                            appendExtendedWait("visible", label, byId: step.assertVisibleById,
+                                               exact: step.assertVisibleExact, timeout: timeout, to: &lines)
+                        } else {
+                            appendSelector("assertVisible", label, byId: step.assertVisibleById, exact: step.assertVisibleExact, to: &lines)
+                        }
+                    }
+                    if let label = step.assertNotVisible {
+                        if let timeout = step.waitTimeout {
+                            appendExtendedWait("notVisible", label, byId: step.assertNotVisibleById,
+                                               exact: step.assertNotVisibleExact, timeout: timeout, to: &lines)
+                        } else {
+                            appendSelector(
+                                "assertNotVisible", label, byId: step.assertNotVisibleById, exact: step.assertNotVisibleExact, to: &lines
+                            )
+                        }
+                    }
+                    if let path = step.runFlow {
+                        lines.append("- runFlow: \(FlowEnvironment.quoted(path))")
+                        appendSettle(to: &lines)
+                    }
+                }
