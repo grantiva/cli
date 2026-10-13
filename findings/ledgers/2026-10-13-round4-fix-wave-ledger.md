@@ -48,21 +48,21 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L64 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L65 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L66 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
-| L67 | 6 | pending | pending | pending | pending | pending | pending |
+| L67 | 6 | semanticRED + CI8assertions | ce23e52b | exactdoctor + portablefixtures; no device mutation | cli#210 | CI38422710253 passed | 63c9b451 |
 | L68 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L69 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
-| L70 | 6 | pending | pending | pending | pending | pending | pending |
+| L70 | 6 | semanticRED + CI8assertions | ce23e52b | exactdoctor + portablefixtures; no device mutation | cli#210 | CI38422710253 passed | 63c9b451 |
 | L71 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L72 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L73 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
-| L74 | 6 | pending | pending | pending | pending | pending | pending |
+| L74 | 6 | semanticRED + CI8assertions | ce23e52b | exactdoctor + portablefixtures; no device mutation | cli#210 | CI38422710253 passed | 63c9b451 |
 | L75 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L76 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L77 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L78 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L79 | 3 | pending | pending | pending | pending | pending | pending |
 | L80 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
-| L81 | 6 | pending | pending | pending | pending | pending | pending |
+| L81 | 6 | semanticRED + CI8assertions | ce23e52b | exactdoctor + portablefixtures; no device mutation | cli#210 | CI38422710253 passed | 63c9b451 |
 
 Task 0: active — bases and first worktrees prepared; remaining branches created on dependency completion.
 
@@ -233,3 +233,7 @@ Task3 optionalstatusRED mustshow actualproduction-reportbehavior onbase via stri
 
 Task3 source567fd5f3b911cbb6a49cc7864aac3e64830784c7 pushed draft runnerPR26. Source-compatible optional productionreport behavioralREDretained separatelyfromcompileattempt; explicitexecutor/core/report/cli tests+vetgreen, emptytesthome. Freshreviewer /root/review_fix4_optional_device assigned23,558bytepackage. OwnAndroidintegrationpreparing; futureTask8repackedrepeatremainsmandatory.
 Task9 aliascorrectionindependentlyapproved source/specquality: existing--udidpreserved, --serialunknown, currentP1/P2/P3quotesupdated, oldbriefquotes/inherited1170unchanged, 1293/1468 blankresultsUNKNOWNcandidate. Reportonlytypo64ddlabelCLI→runnercorrected. Task6fix1 source/spec/quality/evidenceallapproved aftertruthfulREDclassification; finalCI38422710253remainsgate.
+
+Task 6: complete (base03cee568 throughce23e52b; independent source/spec/quality/evidence approved; full2010freshhometests; CI38422710253passed; PR210squashmerged63c9b45190e43bfb8aa239d0f9fcc75ec455dd72 at2026-10-13T15:40:20Z). Allfourbriefsclosed, noowneddevicescreated.
+Task7compatbranch mergedcurrentCLImain63c9b451 withoutconflict at8a6c7d8e5d76f369e5ac4628c772b3e96ac941c2; cleanworktree. Fullcombinedvalidation remainsTask7finalbundle gate; phase1focusedsourceapprovaldoesnotclaimfuturebundlevalidated.
+Task3source/specreview approved567fd5f3; literalCLI/device surfacespending. Acceptance mustverifyactualelement_not_found and emittedskippedrequiredsibling (unitassertionslessspecific, no sourcefinding).
