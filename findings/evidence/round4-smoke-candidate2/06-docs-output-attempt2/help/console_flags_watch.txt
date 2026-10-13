@@ -1,0 +1,20 @@
+OVERVIEW: Stream live flag configuration updates (SSE). Ctrl-C to stop.
+
+Connects to the flags SSE stream and prints one line per server push: the
+current configuration immediately on connect, then again on every flag change.
+With --json, each line is one compact JSON document (NDJSON) of the form
+{"event": ..., "data": ...}.
+
+USAGE: grantiva console flags watch [--json] [--verbose] [--quiet] [--env <env>]
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --env <env>             Environment to stream (default: production).
+  --version               Show the version.
+  -h, --help              Show help information.
+

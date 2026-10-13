@@ -1,0 +1,22 @@
+OVERVIEW: Delete an app and everything attached to it.
+
+Deleting an app removes its device profiles, flags, and attestation history.
+The primary app and the last remaining app cannot be deleted.
+
+USAGE: grantiva console apps delete [--json] [--verbose] [--quiet] <app> [--yes]
+
+ARGUMENTS:
+  <app>                   Bundle ID or app UUID.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --yes                   Skip the confirmation prompt (required when stdin is
+                          not a TTY).
+  --version               Show the version.
+  -h, --help              Show help information.
+

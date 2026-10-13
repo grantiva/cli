@@ -1,0 +1,109 @@
+Building for production...
+[Computing dependencies]
+[Pre-planning 1 / 596]
+[Planning deferred tasks]
+[38 / 127]
+[47 / 130] SystemPackage
+[53 / 133] ArgumentParserToolInfo
+[60 / 138] EventSource
+[64 / 139] Logging
+[69 / 141] Yams
+[77 / 147] SystemPackage
+[85 / 153] ArgumentParser
+[90 / 155] MCP
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Sources/GrantivaCore/Simulator/SimulatorManager.swift:312:13: warning: result of 'try?' is unused [#NoUsage]
+310 |             }
+311 |             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+312 |             try? capacity.remove(udid: udid, ownedBy: me)
+    |             `- warning: result of 'try?' is unused [#NoUsage]
+313 |             try? provenance.remove(udid: udid)
+314 |             removeDeviceHomes(udid)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+[95 / 157] GrantivaCore
+[107 / 166] GrantivaAPI
+[111 / 168] GrantivaCoreTests-product
+[122 / 184]
+[123 / 184]
+[126 / 184]
+[127 / 184]
+[128 / 184] GrantivaMCP
+[137 / 187] GrantivaMCPTests-product
+[139 / 188] GrantivaAPI
+[149 / 194] GrantivaCLI
+[151 / 195] GrantivaAPITests-product
+[153 / 196] GrantivaAPITests-product
+[158 / 196] GrantivaAPITests-product
+[160 / 196] GrantivaAPITests-product
+[162 / 196] GrantivaMCPTests-product
+[167 / 196] GrantivaMCPTests-product
+[169 / 196] GrantivaMCPTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 21 | 
+ 22 |     func testAnEmptyRewriterPassesTextThrough() {
+ 23 |         var empty = OutputRewriter(replacements: [:])
+    |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 24 |         XCTAssertTrue(empty.isEmpty)
+ 25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[171 / 196] GrantivaCoreTests-product
+[176 / 196] GrantivaCoreTests-product
+[178 / 196] GrantivaCoreTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Sources/GrantivaCLI/RecordCommand.swift:313:39: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+311 |             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
+312 |             var actualTime = CMTime.zero
+313 |             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+    |                                       `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+314 |             let fileName = String(format: "%06dms.png", requested)
+315 |             let path = frameDirectory.appendingPathComponent(fileName)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[180 / 196] GrantivaCLI
+[189 / 203] GrantivaCLITests-product
+[191 / 204] grantiva-product
+[193 / 204] GrantivaCLITests-product
+[196 / 205] grantiva-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:89:31: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 87 |         for (requested, expected) in [(0, 0), (1_500, 500)] {
+ 88 |             var actual = CMTime.zero
+ 89 |             _ = try generator.copyCGImage(at: CMTime(value: CMTimeValue(requested), timescale: 1_000), actualTime: &actual)
+    |                               `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 90 |             XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), expected, "requested \(requested)")
+ 91 |         }
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate2/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:114:27: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+112 |         generator.requestedTimeToleranceAfter = .zero
+113 |         var actual = CMTime.zero
+114 |         _ = try generator.copyCGImage(at: CMTime(value: 750, timescale: 1_000), actualTime: &actual)
+    |                           `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+115 |         XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), 500)
+116 |     }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[198 / 207] GrantivaCLITests-product
+[203 / 207] GrantivaCLITests-product
+[205 / 207] GrantivaCLITests-product
+Build complete! (66.62 sec)

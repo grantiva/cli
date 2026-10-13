@@ -1,8 +1,9 @@
 """Controller docs/output smoke against the frozen candidate; no device mutations."""
 from pathlib import Path
-import hashlib,json,os,re,subprocess,time,shutil
+import argparse,hashlib,json,os,re,subprocess,time,shutil
+p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args()
 r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/round4-smoke-candidate2'
-c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());s=Path(state['scratch']);src=Path(c['cli']['repoPath']);b=Path(c['cli']['binary']['path']);o=e/'06-docs-output';o.mkdir(exist_ok=False)
+c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());s=Path(state['scratch']);src=Path(c['cli']['repoPath']);b=Path(c['cli']['binary']['path']);o=Path(a.output).resolve();o.mkdir(parents=True,exist_ok=False)
 def save(path,data):path.write_text(json.dumps(data,indent=2)+'\n')
 assert hashlib.sha256(b.read_bytes()).hexdigest()==c['cli']['binary']['sha256']
 env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.pop('GRANTIVA_PLATFORM',None);env.update(GRANTIVA_RUNNER_HOME=state['runnerHome'],MAESTRO_RUNNER_HOME=state['runnerHome'],GRANTIVA_SESSION_ID='fix4-8')
@@ -19,7 +20,7 @@ while queue:
   if line=='SUBCOMMANDS:':section=True;continue
   if section and line and not line.startswith(' '):section=False
   if section:
-   match=re.match(r'^  ([a-z][a-z0-9-]*)(?:\s|$)',line)
+   match=re.match(r'^  ([a-z][a-z0-9-]*)(?:,|\s|$)',line)
    if match:queue.append(path+[match.group(1)])
 assert len(rows)==172,len(rows);save(helpdir/'manifest.json',rows)
 for name in ['grantiva.txt','runner_start.txt','run.txt','doctor.txt']:assert (helpdir/name).is_file()

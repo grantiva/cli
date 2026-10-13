@@ -1,0 +1,51 @@
+OVERVIEW: Evaluate a claim definition against a simulated device without saving
+it.
+
+Takes the same definition options as `create`, plus a simulated device.
+
+USAGE: grantiva console claims test [<options>] <key> --type <type>
+
+ARGUMENTS:
+  <key>                   Claim key for the definition under test.
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Display name. Defaults to the claim key.
+  --type <type>           Claim type: static, conditional, dynamic, or
+                          external. (values: static, conditional, dynamic,
+                          external)
+  --data-type <data-type> Value type: string, number, boolean, array, object,
+                          or date. Default string. (values: string, number,
+                          boolean, array, object, date; default: string)
+  --description <description>
+                          Description.
+  --value <value>         Static value (for --type static).
+  --rules <rules>         Conditional rules as a JSON array, or @file.json (for
+                          --type conditional).
+  --expression <expression>
+                          Expression (for --type dynamic).
+  --external <external>   External endpoint configuration as JSON, or
+                          @file.json (for --type external, Enterprise).
+  --validation <validation>
+                          Validation rules as JSON, or @file.json.
+  --device-model <device-model>
+                          Simulated device model, e.g. iPhone16,1.
+  --os-version <os-version>
+                          Simulated OS version, e.g. 18.0.
+  --app-version <app-version>
+                          Simulated app version.
+  --risk-score <risk-score>
+                          Simulated risk score, 0–100.
+  --attestation-count <attestation-count>
+                          Simulated attestation count.
+  --jailbroken            Simulate a jailbroken device.
+  --country <country>     Simulated country code, e.g. CA.
+  --data <data>           Extra evaluation data as key=value. Repeatable.
+  --version               Show the version.
+  -h, --help              Show help information.
+

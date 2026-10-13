@@ -1,0 +1,15 @@
+appId: com.kylebrowning.landmarks
+env:
+  LANDMARKS_SEED: many
+---
+- launchApp:
+    clearState: true
+- assertVisible: "Golden Gate Bridge"
+- takeScreenshot: "before-direction"
+- wait: 5000
+- swipe:
+    direction: UP
+    duration: 375
+- assertVisible: "Mono Lake"
+- takeScreenshot: "after-direction"
+- wait: 5000
