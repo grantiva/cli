@@ -1,0 +1,87 @@
+Building for debugging...
+[Computing dependencies]
+[1 / 1]
+[2 / 20] GrantivaMCP
+[5 / 23] GrantivaMCP
+[12 / 33] GrantivaMCP
+[19 / 30] GrantivaMCPTests-product
+[23 / 32] GrantivaCLITests-product
+[27 / 34] grantiva-product
+[31 / 36] GrantivaCLITests-product
+[33 / 37] GrantivaMCPTests-product
+[35 / 37] GrantivaCLITests-product
+[35 / 37] GrantivaMCPTests-product
+[37 / 37] GrantivaMCPTests-product
+Build complete! (2.62 sec)
+Test Suite 'Selected tests' started at 2026-10-13 06:55:24.403.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 06:55:24.404.
+Test Suite 'MCPCancellationTests' started at 2026-10-13 06:55:24.404.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelForAnUnknownIDIsIgnored]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelForAnUnknownIDIsIgnored]' passed (2.531 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelRightBehindTheRequestYieldsNoResponse]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelRightBehindTheRequestYieldsNoResponse]' passed (1.597 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelWhileTheToolRunsYieldsNoResponse]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelWhileTheToolRunsYieldsNoResponse]' passed (1.813 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testQueuedResponseOwnershipRetainsBatchCancellationUntilScreened]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testQueuedResponseOwnershipRetainsBatchCancellationUntilScreened]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testReleasingUnscreenedQueuedResponseCleansCancellationBookkeeping]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testReleasingUnscreenedQueuedResponseCleansCancellationBookkeeping]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTrackerDropsOnlyACancelledPendingRequestsAnswer]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTrackerDropsOnlyACancelledPendingRequestsAnswer]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch]' passed (1.611 seconds).
+Test Suite 'MCPCancellationTests' passed at 2026-10-13 06:55:31.958.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 7.553 (7.554) seconds
+Test Suite 'MCPTransportTests' started at 2026-10-13 06:55:31.958.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAMalformedResponseIsDroppedNotAnswered]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAMalformedResponseIsDroppedNotAnswered]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testANoSessionResourceReadReachesTheClientWithoutTheSDKPrefix]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testANoSessionResourceReadReachesTheClientWithoutTheSDKPrefix]' passed (0.055 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAProtocolCancellationDropsAResponseWaitingBehindAnotherFrame]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAProtocolCancellationDropsAResponseWaitingBehindAnotherFrame]' passed (0.032 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testBatchMembersAreScreenedOneByOne]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testBatchMembersAreScreenedOneByOne]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testCancellingAnActiveWriteFinishesItsFrameBeforeTheNextMessage]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testCancellingAnActiveWriteFinishesItsFrameBeforeTheNextMessage]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testCancellingAPendingWriteDoesNotStartItsFrameOrStrandTheNextSender]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testCancellingAPendingWriteDoesNotStartItsFrameOrStrandTheNextSender]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentLargeResourceAndToolResponsesAreWholeLines]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentLargeResourceAndToolResponsesAreWholeLines]' passed (0.748 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentSmallResponsesNotificationsAndValidationErrorsAreWholeLines]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentSmallResponsesNotificationsAndValidationErrorsAreWholeLines]' passed (0.798 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testDisconnectStopsTheOwnedWriteAndReleasesQueuedSenders]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testDisconnectStopsTheOwnedWriteAndReleasesQueuedSenders]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testFailedPartialWriteClosesTransportAndReleasesQueuedSenders]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testFailedPartialWriteClosesTransportAndReleasesQueuedSenders]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testQueuedProtocolCancellationSurvivesExpiryAndReleasesTheNextSender]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testQueuedProtocolCancellationSurvivesExpiryAndReleasesTheNextSender]' passed (2.250 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testRepliesDoNotEscapeSlashes]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testRepliesDoNotEscapeSlashes]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testScreeningOfEachKindOfLine]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testScreeningOfEachKindOfLine]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testTheServerAnswersOnlyWhatItShould]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testTheServerAnswersOnlyWhatItShould]' passed (0.373 seconds).
+Test Suite 'MCPTransportTests' passed at 2026-10-13 06:55:36.222.
+	 Executed 14 tests, with 0 failures (0 unexpected) in 4.262 (4.264) seconds
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 06:55:36.222.
+	 Executed 21 tests, with 0 failures (0 unexpected) in 11.815 (11.818) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:55:36.222.
+	 Executed 21 tests, with 0 failures (0 unexpected) in 11.815 (11.818) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:55:36.311.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 06:55:36.311.
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 06:55:36.311.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:55:36.311.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:55:36.390.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 06:55:36.390.
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 06:55:36.390.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:55:36.390.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:55:36.467.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 06:55:36.468.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 06:55:36.468.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:55:36.468.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
