@@ -6,10 +6,10 @@ Reviewed against candidate `8f2cff67`, runner `fd9d8e8`, and the literal matrix 
 
 | Row | Verdict | Reason |
 |---|---|---|
-| B2-L02 | **FAIL on retained evidence; controlled rerun required before defect attribution** | The exact current-round `99-crash.yaml` repetitions correctly report `app_crash` and capture artifacts promptly after `am_crash`, but flow durations are 17.528 s, 13.206 s, and 10.420 s (all over the required 6 s), and wall times are 27.01 s, 23.70 s, and 26.92 s (all over 12 s). Those older captures have no retained host-load samples; the newer selector batch finishes in 4.31–5.25 s. A quiet exact-stock rerun is needed before attributing the old timing miss to the product. |
-| B2-L05 | **PARTIAL / observed timing fail pending controlled rerun** | Present and absent first element requests satisfy the lookup bounds. The retained exact `99-crash` repetitions exceed the flow/wall bounds, but lack contemporaneous host-load evidence and should be repeated under controlled load before final defect attribution. The optional-step exit-1 behavior is a separate product contract defect. |
+| B2-L02 | **PASS** | Quiet exact-stock repetitions fail 3/3 at `launchApp` with `app_crash`; flows take 1.662–1.831 s, walls 4.321–5.266 s, crash-to-failure 0.241–0.381 s, and first failure artifact 0.514–0.763 s after `am_crash`. |
+| B2-L05 | **PASS** | Present and absent first element requests satisfy the lookup bounds. Quiet exact-stock repetitions satisfy the crash flow, wall, and artifact bounds. The optional-step CLI exit-1 behavior is a separate product contract defect tracked by L79. |
 | B2-L06 | **PASS** | Index-0, relative-below, and width variants each fail 3/3 with `app_crash`; launch-to-FATAL is about 0.52 s and launch failure is 1.17–1.28 s. No selector step passes. Exact runner semantic tests cover the selector path skipped when cold launch detects the crash first. |
-| B3-L05 | **PARTIAL / observed timing fail pending controlled rerun** | Present and absent first element requests satisfy their bounds. The retained exact stock crash runs violate the 6 s flow and 12 s wall bounds but lack host-load samples, and the retained evidence has not yet established the maximum first lookup across all stock flows. The optional-step exit-1 behavior is a separate product contract defect. |
+| B3-L05 | **PASS** | Present and absent first element requests satisfy their bounds; the retained full-stock client log's maximum first post-launch element request is 1.146 s. Quiet exact-stock repetitions satisfy the crash and artifact bounds. Session-setting logs, per-flow override behavior, and semantic source tests complete the row. L79 separately tracks the optional-step CLI aggregation defect. |
 | B3-L06 | **PASS** | Index-1-regex and tap-fallback variants add 3/3 failures each to the B2 selector variants. Every runtime failure is `app_crash` at cold `launchApp`, about 0.52 s after launch; the matrix expressly permits the selector half to be graded from the exact runner tests in this case. The retained stock control passes. |
 
 ## Timing evidence
@@ -28,7 +28,9 @@ The exact stock crash evidence is `CF-crash1`, `CF-crash2`, and `CF-crash3`:
 | 2 | 13.206 s | 23.70 s | 1.229 s | `app_crash`; screenshot and hierarchy on failed assert |
 | 3 | 10.420 s | 26.92 s | 0.695 s | `app_crash`; screenshot and hierarchy on failed launch |
 
-Thus crash recognition and artifact completion are within about two seconds of `am_crash`, but the independent flow and wall limits fail in all three repetitions. These captures contain no host-load snapshot. Because the newer crash-selector runs complete in 4.31–5.25 seconds, the old 23.70–27.01-second wall results cannot by themselves distinguish product latency from transient host contention. They remain literal failure evidence, while a quiet exact-stock three-run complement is the minimum evidence needed for final causal classification.
+Those older captures establish correct error/artifact semantics but miss the timing bounds and contain no host-load snapshot. The controlled complement `B2-B3-L02-L05-stock99-quiet-rerun2` supersedes them for current timing: wall 4.321/4.672/5.266 s, flow 1.662/1.778/1.831 s, failed launch 1.234/1.281/1.348 s, `am_crash` to failure 0.241/0.265/0.381 s, and `am_crash` to first screenshot/hierarchy artifact 0.514/0.737/0.763 s. All three exit 1 with the exact `app_crash` cause and preserve screenshot plus hierarchy.
+
+For the B3-L05 stock lookup clause, `D2-02-stock-ready-pass-rerun1/report/client.log` was joined to each flow JSON's launch end and flow end. The first post-launch `/element` or `/elements` request for all 12 flows ranges from 11.456 ms to 1.146137 s; the maximum is the `Mountains` request in `12-quote-label`. No stock first lookup exceeds two seconds.
 
 The fresh selector batch `B2-L05-L06-exact-rerun3` records these ranges:
 
@@ -44,6 +46,7 @@ The fresh selector batch `B2-L05-L06-exact-rerun3` records these ranges:
 - `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/CF-crash1/`
 - `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/CF-crash2/`
 - `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/CF-crash3/`
+- `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B2-B3-L02-L05-stock99-quiet-rerun2/`
 - `/Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/`
 
 The exact runner selector/crash semantic tests previously retained with the campaign supply the source half for selector paths skipped after launch-time crash. The runtime verdicts above do not rely on test names alone.
