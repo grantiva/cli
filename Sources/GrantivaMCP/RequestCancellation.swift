@@ -15,6 +15,7 @@ import MCP
 struct CancellationTracker: Sendable {
     private var pending: Set<String> = []
     private var cancelled: Set<String> = []
+    private var queuedResponses: [String: Int] = [:]
 
     enum Incoming: Equatable {
         case none
@@ -63,9 +64,39 @@ struct CancellationTracker: Sendable {
     /// Whether `id` is still a cancelled, unanswered request.
     func isCancelled(_ id: String) -> Bool { cancelled.contains(id) }
 
+    /// A completed handler's response may wait behind stdout backpressure
+    /// longer than the SDK cancellation grace period. Own its bookkeeping
+    /// until the write gate can screen it, including responses in a batch.
+    mutating func retainQueuedResponse(_ data: Data) -> [String] {
+        guard !pending.isEmpty,
+              let parsed = try? JSONSerialization.jsonObject(with: data) else { return [] }
+        let members = (parsed as? [Any]) ?? [parsed]
+        let ids = members.compactMap { member -> String? in
+            guard let object = member as? [String: Any], object["method"] == nil,
+                  let id = Self.key(object["id"]), pending.contains(id) else { return nil }
+            return id
+        }
+        for id in ids { queuedResponses[id, default: 0] += 1 }
+        return ids
+    }
+
+    /// Release on every gate outcome, including task cancellation/failure
+    /// before outgoing screening. No response is left to clear those IDs.
+    mutating func releaseQueuedResponse(_ ids: [String]) {
+        for id in ids {
+            guard let count = queuedResponses[id] else { continue }
+            if count > 1 { queuedResponses[id] = count - 1 }
+            else {
+                queuedResponses.removeValue(forKey: id)
+                forget(id)
+            }
+        }
+    }
+
     /// Drops `id` once the SDK has had every chance to stop it: a request
     /// it cancelled is never answered, so no response would remove it.
     mutating func forget(_ id: String) {
+        guard queuedResponses[id] == nil else { return }
         pending.remove(id)
         cancelled.remove(id)
     }

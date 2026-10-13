@@ -147,6 +147,7 @@ actor ValidatingTransport: Transport {
     /// entire encoded message (including its newline) has been written.
     /// Validation replies use this same gate as SDK responses/notifications.
     private func sendWholeMessage(_ data: Data, screenResponse: Bool = false) async throws {
+        let retained = screenResponse ? cancellations.retainQueuedResponse(data) : []
         if sending {
             await withCheckedContinuation { sendWaiters.append($0) }
         } else {
@@ -159,16 +160,19 @@ actor ValidatingTransport: Transport {
                 sendWaiters.removeFirst().resume()
             }
         }
-        try Task.checkCancellation()
-        if let sendFailure { throw sendFailure }
         let outgoing: Data
-        if screenResponse {
-            // A response can be cancelled while it waits behind another
-            // frame. Keep it pending until it is actually ready to write.
-            guard let kept = cancellations.outgoing(data) else { return }
-            outgoing = JSONRPCScreen.outgoing(kept)
-        } else {
-            outgoing = data
+        do {
+            // Release synchronously with screening, before a write can yield
+            // and a new request can reuse this completed response's ID.
+            defer { cancellations.releaseQueuedResponse(retained) }
+            try Task.checkCancellation()
+            if let sendFailure { throw sendFailure }
+            if screenResponse {
+                guard let kept = cancellations.outgoing(data) else { return }
+                outgoing = JSONRPCScreen.outgoing(kept)
+            } else {
+                outgoing = data
+            }
         }
         // Once bytes start, caller cancellation must not truncate the frame.
         // Retain the task so explicit disconnect can still cancel/await it.

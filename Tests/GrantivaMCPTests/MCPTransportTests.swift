@@ -261,6 +261,50 @@ final class MCPTransportTests: XCTestCase {
         await transport.disconnect()
     }
 
+    func testQueuedProtocolCancellationSurvivesExpiryAndReleasesTheNextSender() async throws {
+        let started = expectation(description: "first partial write")
+        let requestSeen = expectation(description: "request forwarded")
+        let cancelSeen = expectation(description: "cancel forwarded")
+        let completed = expectation(description: "senders returned")
+        completed.expectedFulfillmentCount = 3
+        let sink = SuspendedWriteTransport(started: { started.fulfill() })
+        let transport = ValidatingTransport(wrapping: sink)
+        let stream = await transport.receive()
+        let reader = Task {
+            var cancelled = false
+            for try await data in stream {
+                let text = String(decoding: data, as: UTF8.self)
+                if text.contains("notifications/cancelled") {
+                    if !cancelled { cancelled = true; cancelSeen.fulfill() }
+                } else { requestSeen.fulfill() }
+            }
+        }
+        defer { reader.cancel() }
+        let first = Data(#"{"jsonrpc":"2.0","id":1,"result":{}}"#.utf8)
+        let second = Data(#"{"jsonrpc":"2.0","id":2,"result":{}}"#.utf8)
+        await sink.deliver(Data(#"{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"x"}}"#.utf8))
+        await fulfillment(of: [requestSeen], timeout: 2)
+        let active = Task { defer { completed.fulfill() }; try? await transport.send(first) }
+        await fulfillment(of: [started], timeout: 2)
+        let pending = Task { defer { completed.fulfill() }; try? await transport.send(second) }
+        // Let the second send reach the gate before delivering its protocol
+        // cancellation; the underlying first write remains explicitly blocked.
+        try await Task.sleep(for: .milliseconds(20))
+        await sink.deliver(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":2}}"#.utf8))
+        await fulfillment(of: [cancelSeen], timeout: 2)
+        // The production retry schedule and cleanup grace expire after two
+        // seconds. Keep the first frame blocked past that expiry.
+        try await Task.sleep(for: .milliseconds(2200))
+        let third = Data(#"{"jsonrpc":"2.0","id":3,"result":{}}"#.utf8)
+        let last = Task { defer { completed.fulfill() }; try? await transport.send(third) }
+        await sink.resumeWrite()
+        await fulfillment(of: [completed], timeout: 2)
+        active.cancel(); pending.cancel(); last.cancel()
+        let bytes = await sink.bytes
+        XCTAssertEqual(bytes, first + Data([10]) + third + Data([10]))
+        await transport.disconnect()
+    }
+
     func testFailedPartialWriteClosesTransportAndReleasesQueuedSenders() async throws {
         try await assertPartialWriteStopsQueue(disconnect: false)
     }
@@ -445,6 +489,39 @@ final class MCPCancellationTests: XCTestCase {
         XCTAssertEqual(tracker.outgoing(answer11), answer11)
         // Answered (dropped) once: a later id 10 is no longer cancelled.
         XCTAssertEqual(tracker.outgoing(answer10), answer10)
+    }
+
+    func testQueuedResponseOwnershipRetainsBatchCancellationUntilScreened() {
+        var tracker = CancellationTracker()
+        _ = tracker.incoming(Data(call10.utf8))
+        let batch = Data(#"[{"jsonrpc":"2.0","id":10,"result":{}},{"jsonrpc":"2.0","id":11,"result":{}}]"#.utf8)
+        let ids = tracker.retainQueuedResponse(batch)
+        _ = tracker.incoming(Data(cancel10.utf8))
+        tracker.forget("n:10")
+        XCTAssertTrue(tracker.isCancelled("n:10"))
+        let kept = tracker.outgoing(batch)
+        tracker.releaseQueuedResponse(ids)
+        XCTAssertEqual(String(decoding: kept ?? Data(), as: UTF8.self), #"[{"id":11,"jsonrpc":"2.0","result":{}}]"#)
+        XCTAssertFalse(tracker.isCancelled("n:10"))
+        // No stale ownership or marker affects a new request using this ID.
+        _ = tracker.incoming(Data(call10.utf8))
+        _ = tracker.incoming(Data(cancel10.utf8))
+        tracker.forget("n:10")
+        XCTAssertFalse(tracker.isCancelled("n:10"))
+    }
+
+    func testReleasingUnscreenedQueuedResponseCleansCancellationBookkeeping() {
+        var tracker = CancellationTracker()
+        _ = tracker.incoming(Data(call10.utf8))
+        let answer = Data(#"{"jsonrpc":"2.0","id":10,"result":{}}"#.utf8)
+        let ids = tracker.retainQueuedResponse(answer)
+        _ = tracker.incoming(Data(cancel10.utf8))
+        tracker.forget("n:10")
+        XCTAssertTrue(tracker.isCancelled("n:10"))
+        // The sender was cancelled or the transport failed before screening.
+        tracker.releaseQueuedResponse(ids)
+        XCTAssertFalse(tracker.isCancelled("n:10"))
+        XCTAssertEqual(tracker.incoming(Data(cancel10.utf8)), [])
     }
 
     func testACancelForAnUnknownIDIsIgnored() async throws {
