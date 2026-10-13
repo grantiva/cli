@@ -1,0 +1,304 @@
+Fetching https://github.com/apple/swift-collections.git from cache
+Fetching https://github.com/jpsim/Yams from cache
+Fetching https://github.com/apple/swift-log from cache
+Fetching https://github.com/modelcontextprotocol/swift-sdk from cache
+Fetching https://github.com/apple/swift-argument-parser from cache
+Fetching https://github.com/apple/swift-nio.git from cache
+Fetching https://github.com/mattt/eventsource.git from cache
+Fetching https://github.com/apple/swift-atomics.git from cache
+Fetching https://github.com/apple/swift-system.git from cache
+Fetched https://github.com/modelcontextprotocol/swift-sdk from cache (0.59s)
+Fetched https://github.com/apple/swift-log from cache (0.61s)
+Fetched https://github.com/jpsim/Yams from cache (0.66s)
+Fetched https://github.com/apple/swift-collections.git from cache (0.68s)
+Fetched https://github.com/mattt/eventsource.git from cache (0.86s)
+Fetched https://github.com/apple/swift-atomics.git from cache (0.86s)
+Fetched https://github.com/apple/swift-argument-parser from cache (0.87s)
+Computing version for https://github.com/modelcontextprotocol/swift-sdk
+Fetched https://github.com/apple/swift-nio.git from cache (0.87s)
+Fetched https://github.com/apple/swift-system.git from cache (0.87s)
+Computed https://github.com/modelcontextprotocol/swift-sdk at 0.12.1 (1.20s)
+Computing version for https://github.com/jpsim/Yams
+Computed https://github.com/jpsim/Yams at 5.4.0 (0.34s)
+Computing version for https://github.com/apple/swift-log
+Computed https://github.com/apple/swift-log at 1.15.0 (0.30s)
+Computing version for https://github.com/apple/swift-argument-parser
+Computed https://github.com/apple/swift-argument-parser at 1.8.2 (0.30s)
+Computing version for https://github.com/apple/swift-nio.git
+Computed https://github.com/apple/swift-nio.git at 2.102.0 (0.37s)
+Computing version for https://github.com/mattt/eventsource.git
+Computed https://github.com/mattt/eventsource.git at 1.5.1 (0.28s)
+Computing version for https://github.com/apple/swift-system.git
+Computed https://github.com/apple/swift-system.git at 1.8.1 (0.31s)
+Computing version for https://github.com/apple/swift-collections.git
+Computed https://github.com/apple/swift-collections.git at 1.6.0 (0.34s)
+Computing version for https://github.com/apple/swift-atomics.git
+Computed https://github.com/apple/swift-atomics.git at 1.3.1 (0.28s)
+Creating working copy for https://github.com/jpsim/Yams
+Working copy of https://github.com/jpsim/Yams resolved at 5.4.0
+Creating working copy for https://github.com/apple/swift-nio.git
+Working copy of https://github.com/apple/swift-nio.git resolved at 2.102.0
+Creating working copy for https://github.com/apple/swift-system.git
+Working copy of https://github.com/apple/swift-system.git resolved at 1.8.1
+Creating working copy for https://github.com/apple/swift-collections.git
+Working copy of https://github.com/apple/swift-collections.git resolved at 1.6.0
+Creating working copy for https://github.com/apple/swift-log
+Working copy of https://github.com/apple/swift-log resolved at 1.15.0
+Creating working copy for https://github.com/apple/swift-argument-parser
+Working copy of https://github.com/apple/swift-argument-parser resolved at 1.8.2
+Creating working copy for https://github.com/apple/swift-atomics.git
+Working copy of https://github.com/apple/swift-atomics.git resolved at 1.3.1
+Creating working copy for https://github.com/mattt/eventsource.git
+Working copy of https://github.com/mattt/eventsource.git resolved at 1.5.1
+Creating working copy for https://github.com/modelcontextprotocol/swift-sdk
+Working copy of https://github.com/modelcontextprotocol/swift-sdk resolved at 0.12.1
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 596]
+[Planning deferred tasks]
+[140 / 319] grantiva_GrantivaCore
+[143 / 319]
+[162 / 339]
+[174 / 347]
+[199 / 388] CYaml
+[204 / 412] Yams
+[219 / 459]
+[227 / 474]
+[234 / 474]
+[246 / 474] Logging
+[254 / 474] SystemPackage
+[257 / 474] Logging
+[273 / 474] SystemPackage
+[277 / 474]
+[283 / 474] SystemPackage
+[288 / 474] SystemPackage
+[300 / 474]
+[302 / 474]
+[304 / 474]
+[305 / 474]
+[318 / 474] ArgumentParser
+[322 / 474] EventSource
+[329 / 474] Yams
+[332 / 474] Yams
+[340 / 474] ArgumentParser
+[343 / 474] Yams
+[350 / 474] Yams-product
+[354 / 474] GrantivaCore
+[358 / 476] Yams
+[362 / 476] EventSource
+[362 / 476] ArgumentParser
+[364 / 492] GrantivaCore
+[381 / 513] MCP
+[385 / 513]
+[388 / 513] MCP
+[393 / 513] GrantivaCore
+[394 / 513] MCP
+[396 / 513] MCP
+[403 / 513] MCP-product
+[404 / 513] MCP-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[406 / 513] GrantivaCore
+[413 / 513] GrantivaMCP
+[416 / 514]
+[417 / 515] GrantivaCore
+[419 / 515] GrantivaMCP
+[425 / 541] GrantivaAPI
+[426 / 541] GrantivaMCP
+[437 / 541] GrantivaMCPTests-product
+[440 / 541] GrantivaAPI
+[444 / 541] GrantivaMCP
+[454 / 541] GrantivaAPI
+[457 / 541] GrantivaCore
+[463 / 542]
+[463 / 542] GrantivaAPI
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Simulator/SimulatorManager.swift:312:13: warning: result of 'try?' is unused [#NoUsage]
+310 |             }
+311 |             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+312 |             try? capacity.remove(udid: udid, ownedBy: me)
+    |             `- warning: result of 'try?' is unused [#NoUsage]
+313 |             try? provenance.remove(udid: udid)
+314 |             removeDeviceHomes(udid)
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+[463 / 542] GrantivaCore
+[463 / 542] GrantivaCLI
+[478 / 574] GrantivaCoreTests-product
+[488 / 576]
+[490 / 576]
+[497 / 577]
+[499 / 577]
+[510 / 618]
+[511 / 618]
+[522 / 629]
+[524 / 629]
+[525 / 629] GrantivaCLI
+[527 / 629]
+[528 / 629] GrantivaCLI
+[531 / 629] GrantivaAPITests-product
+[546 / 629] GrantivaMCPTests-product
+[548 / 629] GrantivaCLI
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCLI/RecordCommand.swift:313:39: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+311 |             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
+312 |             var actualTime = CMTime.zero
+313 |             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+    |                                       `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+314 |             let fileName = String(format: "%06dms.png", requested)
+315 |             let path = frameDirectory.appendingPathComponent(fileName)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[556 / 629] GrantivaMCPTests-product
+[558 / 629] GrantivaCoreTests-product
+[564 / 629] GrantivaMCPTests-product
+[568 / 629] GrantivaCoreTests-product
+[571 / 629] GrantivaMCPTests-product
+[576 / 629] GrantivaCoreTests-product
+[580 / 629] GrantivaMCPTests-product
+[580 / 629] GrantivaCoreTests-product
+[583 / 629] GrantivaMCPTests-product
+[586 / 629] GrantivaCoreTests-product
+[591 / 629] grantiva-product
+[596 / 630] GrantivaMCPTests-product
+[601 / 631]
+[603 / 631] GrantivaCoreTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+21 | 
+22 |     func testAnEmptyRewriterPassesTextThrough() {
+23 |         var empty = OutputRewriter(replacements: [:])
+   |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+24 |         XCTAssertTrue(empty.isEmpty)
+25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[607 / 633] grantiva-product
+[620 / 646] GrantivaCLITests-product
+[621 / 646] GrantivaCLITests-product
+[621 / 646] grantiva-product
+[624 / 646] GrantivaCoreTests-product
+[627 / 646] GrantivaCLITests-product
+[634 / 646]
+[636 / 646] GrantivaCoreTests-product
+[640 / 646] GrantivaCLITests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:89:31: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 87 |         for (requested, expected) in [(0, 0), (1_500, 500)] {
+ 88 |             var actual = CMTime.zero
+ 89 |             _ = try generator.copyCGImage(at: CMTime(value: CMTimeValue(requested), timescale: 1_000), actualTime: &actual)
+    |                               `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 90 |             XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), expected, "requested \(requested)")
+ 91 |         }
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:114:27: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+112 |         generator.requestedTimeToleranceAfter = .zero
+113 |         var actual = CMTime.zero
+114 |         _ = try generator.copyCGImage(at: CMTime(value: 750, timescale: 1_000), actualTime: &actual)
+    |                           `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+115 |         XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), 500)
+116 |     }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[642 / 646] GrantivaCLITests-product
+[644 / 646] GrantivaCLITests-product
+Build complete! (16.53 sec)
+Test Suite 'Selected tests' started at 2026-10-13 06:03:58.529.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 06:03:58.530.
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 06:03:58.530.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:03:58.530.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:03:58.605.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 06:03:58.606.
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 06:03:58.606.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:03:58.606.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:03:58.667.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 06:03:58.668.
+Test Suite 'TargetOptionsTests' started at 2026-10-13 06:03:58.668.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidAppIDRanksFlagThenAppThenConfigAndReportsDisagreement]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidAppIDRanksFlagThenAppThenConfigAndReportsDisagreement]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidResolutionMergesFlagsOverConfig]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidResolutionMergesFlagsOverConfig]' passed (0.015 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidResolutionPrefersTheAPKsApplicationIDOverConfig]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAndroidResolutionPrefersTheAPKsApplicationIDOverConfig]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAppIDMessagesNameThePlatformsFlag]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAppIDMessagesNameThePlatformsFlag]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAppIDWarningFitsTheCommand]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testAppIDWarningFitsTheCommand]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testDeviceAndEmulatorTogetherAreAUsageErrorEverywhere]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testDeviceAndEmulatorTogetherAreAUsageErrorEverywhere]' passed (0.154 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testDeviceSerialIsValidated]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testDeviceSerialIsValidated]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding]' started.
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --device = 
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --device =    
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --simulator = 
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --simulator =    
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --emulator = 
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCLITests/TargetOptionsTests.swift:10: error: -[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding] : XCTAssertThrowsError failed: did not throw an error - --emulator =    
+Test Case '-[GrantivaCLITests.TargetOptionsTests testExplicitEmptyTargetsAreRejectedBeforeForwarding]' failed (0.344 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testExtraBuildSettingsUseGradleArgsOnAndroid]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testExtraBuildSettingsUseGradleArgsOnAndroid]' passed (0.117 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInstallAppIDIsTheAppsOwnIDOnAndroid]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInstallAppIDIsTheAppsOwnIDOnAndroid]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInstalledAppIDPrefersTheBuiltVariantsIDOnAndroidOnly]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInstalledAppIDPrefersTheBuiltVariantsIDOnAndroidOnly]' passed (0.007 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInvalidApplicationIDIsRejected]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testInvalidApplicationIDIsRejected]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.TargetOptionsTests testIOSFlagsAreRejectedOnAndroidAndViceVersa]' started.
+Test Case '-[GrantivaCLITests.TargetOptionsTests testIOSFlagsAreRejectedOnAndroidAndViceVersa]' passed (0.018 seconds).
+Test Suite 'TargetOptionsTests' failed at 2026-10-13 06:03:59.334.
+	 Executed 13 tests, with 6 failures (0 unexpected) in 0.665 (0.666) seconds
+Test Suite 'GrantivaCLITests.xctest' failed at 2026-10-13 06:03:59.334.
+	 Executed 13 tests, with 6 failures (0 unexpected) in 0.665 (0.666) seconds
+Test Suite 'Selected tests' failed at 2026-10-13 06:03:59.334.
+	 Executed 13 tests, with 6 failures (0 unexpected) in 0.665 (0.666) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:03:59.409.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 06:03:59.410.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 06:03:59.410.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:03:59.410.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Note: Some test targets reported failures:
+  - GrantivaCLITests (XCTest)

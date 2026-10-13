@@ -1,0 +1,193 @@
+Building for debugging...
+[Computing dependencies]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[7 / 11] GrantivaCore
+[10 / 11] GrantivaAPITests-product
+[12 / 12] GrantivaAPITests-product
+[13 / 17] GrantivaCLI
+[14 / 18] GrantivaCLI
+[18 / 22] GrantivaCLI
+[21 / 22] GrantivaCLITests-product
+[23 / 23] GrantivaCLITests-product
+[24 / 25] GrantivaCoreTests-product
+[26 / 26] GrantivaCoreTests-product
+[27 / 28] GrantivaMCPTests-product
+[29 / 29] GrantivaMCPTests-product
+[31 / 32] grantiva-product
+Build complete! (6.28 sec)
+Test Suite 'Selected tests' started at 2026-10-13 06:18:12.768.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 06:18:12.769.
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 06:18:12.769.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:18:12.769.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:18:12.845.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 06:18:12.845.
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 06:18:12.845.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:18:12.845.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:18:12.905.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 06:18:12.906.
+Test Suite 'RunnerLifecycleCommandTests' started at 2026-10-13 06:18:12.906.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerKilledUnpromptedFailsWhateverTheSignal]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerKilledUnpromptedFailsWhateverTheSignal]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerThatExitsOneAfterARunnerStopEndsInOrder]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerThatExitsOneAfterARunnerStopEndsInOrder]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerThatExitsOneUnpromptedStillFails]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundRunnerThatExitsOneUnpromptedStillFails]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundStartTornDownFromAnotherDirectoryEndsInOrder]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAForegroundStartTornDownFromAnotherDirectoryEndsInOrder]' passed (0.002 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAlreadyStartingDocumentsPreserveNullPortOnBothPlatforms]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAppFileHelpNamesTheAPK]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAppFileHelpNamesTheAPK]' passed (0.029 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAppIDAndTargetResolutionPerPlatform]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAppIDAndTargetResolutionPerPlatform]' passed (0.245 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAStopWhoseSessionRecordedNoPortOrAppWritesNull]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testAStopWhoseSessionRecordedNoPortOrAppWritesNull]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDeadSessionIsCleanedWithoutSnapshotOrSignal]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDeadSessionIsCleanedWithoutSnapshotOrSignal]' passed (0.005 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDriverAttachmentDoesNotPublishReadyBeforeLaunchSettles]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDriverAttachmentDoesNotPublishReadyBeforeLaunchSettles]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDumpHierarchyOnAStartingSessionSaysItIsStarting]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDumpHierarchyOnAStartingSessionSaysItIsStarting]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDumpHierarchyPortHelpNamesBothDrivers]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testDumpHierarchyPortHelpNamesBothDrivers]' passed (0.003 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testEveryStopShapeCarriesStartsKeysOnBothPlatforms]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testEveryStopShapeCarriesStartsKeysOnBothPlatforms]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testFailedLaunchDoesNotPublishReadyAndReleasesItsForward]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testFailedLaunchDoesNotPublishReadyAndReleasesItsForward]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundHoldCleansUpOnceOnInterrupt]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundHoldCleansUpOnceOnInterrupt]' passed (0.211 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundHoldWaitsForTheRunnerThenCleansUp]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundHoldWaitsForTheRunnerThenCleansUp]' passed (0.320 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryHandlesPortSplitAcrossOutputChunks]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryProbesAfterLaunchCompletes]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryProbesAfterLaunchCompletes]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryStopsOnAFailedBuild]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryStopsOnAFailedBuild]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryTimesOutWhenRunnerIsSilent]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundPortDiscoveryTimesOutWhenRunnerIsSilent]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundStartHelpSaysItStaysAttached]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundStartHelpSaysItStaysAttached]' passed (0.010 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundTimeoutLearnsThatWDAIsBeingBuilt]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testForegroundTimeoutLearnsThatWDAIsBeingBuilt]' passed (0.213 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testHierarchyTimeoutHelpNamesBothDrivers]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testHierarchyTimeoutHelpNamesBothDrivers]' passed (0.007 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testLaunchReportOptionPrecedesThePositionalFlow]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testLaunchReportOptionPrecedesThePositionalFlow]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testRunnerArgumentsHoldTheSessionWithKeepAliveOnBothPlatforms]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testRunnerStartAbstractNamesBothDriversAndMatchesTheREADME]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testRunnerStartAbstractNamesBothDriversAndMatchesTheREADME]' passed (0.003 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testSnapshotFailurePreservesSessionAndLease]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testSnapshotFailurePreservesSessionAndLease]' passed (0.006 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartDocumentsUseNumbersAndThePlatformsKeys]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartDocumentsUseNumbersAndThePlatformsKeys]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartTerminatesSpawnedProcessWhenSessionCannotBeRecorded]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartTerminatesSpawnedProcessWhenSessionCannotBeRecorded]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartupInterruptIsNotTranslatedToWDATimeoutInAnyOutputMode]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStartupInterruptIsNotTranslatedToWDATimeoutInAnyOutputMode]' passed (0.018 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopCarriesThePortAndAppTheSessionFileRecorded]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopCarriesThePortAndAppTheSessionFileRecorded]' passed (0.005 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopCleansStaleReusedPIDWithoutSignallingIt]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopCleansStaleReusedPIDWithoutSignallingIt]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopDocumentUsesTheSameKeys]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopDocumentUsesTheSameKeys]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopHelpSaysItReleasesKeepAliveSessions]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopHelpSaysItReleasesKeepAliveSessions]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopLeavesAKeepAliveSessionFromAnotherDirectoryAlone]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopLeavesAKeepAliveSessionFromAnotherDirectoryAlone]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfADeadRunnerSaysItHadExited]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfADeadRunnerSaysItHadExited]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfAKeepAliveSessionCarriesItsPortAndApp]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfAKeepAliveSessionCarriesItsPortAndApp]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfARunnerThatIgnoresSIGINTRemovesItsSessionFileAndSaysItKilled]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOfARunnerThatIgnoresSIGINTRemovesItsSessionFileAndSaysItKilled]' passed (0.003 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOnAnAndroidSessionCleansOrphansAfterTerminating]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopOnAnAndroidSessionCleansOrphansAfterTerminating]' passed (0.003 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReapsTheDiagnoseTheRunnersXcodebuildLeftAndReportsIt]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReapsTheDiagnoseTheRunnersXcodebuildLeftAndReportsIt]' passed (0.207 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesAKeepAliveRunStillInItsFlows]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesAKeepAliveRunStillInItsFlows]' passed (0.011 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesAKeepAliveSessionFromThisDirectory]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesAKeepAliveSessionFromThisDirectory]' passed (0.006 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesEveryKeepAliveSessionFromThisDirectory]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReleasesEveryKeepAliveSessionFromThisDirectory]' passed (0.006 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopRemovesTheSessionFileBeforeSignallingTheRunner]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopRemovesTheSessionFileBeforeSignallingTheRunner]' passed (0.006 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReportsAnEmptyReapedListWhenTheRunnerLeftNothing]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopReportsAnEmptyReapedListWhenTheRunnerLeftNothing]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopTerminatesOwnedRunnerThenRemovesMetadata]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopTerminatesOwnedRunnerThenRemovesMetadata]' passed (0.005 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopWithNoSessionAtAllKeepsTheNote]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testStopWithNoSessionAtAllKeepsTheNote]' passed (0.004 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheForegroundSetUpForAnAndroidLaunchSaysEmulator]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheForegroundSetUpForAnAndroidLaunchSaysEmulator]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheRunnersStartFailureIsReportedWithItsReason]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheRunnersStartFailureIsReportedWithItsReason]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheStaleSessionIsReadWithoutClearingTheDevice]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheStaleSessionIsReadWithoutClearingTheDevice]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheUIAutomator2WaitIsTwiceTheDriverLimitPlusThirtyWithA90SecondFloor]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheUIAutomator2WaitIsTwiceTheDriverLimitPlusThirtyWithA90SecondFloor]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheWaitSkipsTheSessionTheDeviceHeldBeforeTheRunnerStarted]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testTheWaitSkipsTheSessionTheDeviceHeldBeforeTheRunnerStarted]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testUnfinishedLaunchStaysBoundedAndReleasesRejectedForwards]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testUnfinishedLaunchStaysBoundedAndReleasesRejectedForwards]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2EndsAsSoonAsTheRunnerExits]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2EndsAsSoonAsTheRunnerExits]' passed (1.070 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2GivesUpAtTheTimeout]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2GivesUpAtTheTimeout]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2RetriesUntilAttachSucceeds]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWaitForUIAutomator2RetriesUntilAttachSucceeds]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupErrorNamesTheFailedBuild]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupErrorNamesTheFailedBuild]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingAcceptsTheRunnerAnnouncement]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingAcceptsTheRunnerAnnouncement]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingIgnoresBuildLogNoise]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingIgnoresBuildLogNoise]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingPrefersAPortOverAnEarlierFailure]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingPrefersAPortOverAnEarlierFailure]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingReportsAFailedBuild]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWDAStartupParsingReportsAFailedBuild]' passed (0.000 seconds).
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWithoutAStaleSessionTheFirstAttachmentIsTaken]' started.
+Test Case '-[GrantivaCLITests.RunnerLifecycleCommandTests testWithoutAStaleSessionTheFirstAttachmentIsTaken]' passed (0.000 seconds).
+Test Suite 'RunnerLifecycleCommandTests' passed at 2026-10-13 06:18:15.344.
+	 Executed 63 tests, with 0 failures (0 unexpected) in 2.433 (2.438) seconds
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 06:18:15.344.
+	 Executed 63 tests, with 0 failures (0 unexpected) in 2.433 (2.438) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:18:15.344.
+	 Executed 63 tests, with 0 failures (0 unexpected) in 2.433 (2.439) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:18:15.439.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 06:18:15.440.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 06:18:15.440.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:18:15.440.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
