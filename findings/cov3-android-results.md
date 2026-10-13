@@ -534,6 +534,10 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L23 [android] | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/ | Under the same live detached session, CLI and MCP five-screen capture documents retain the same duration keys. Home launch duration and every recorded step duration are positive; the no-session error response is correctly excluded from the runtime inventory. |
 
+| B3-L34 [android] | pass | findings/evidence/cov3-android/B3-L34-scroll-distance-rerun1/ | Five exact seeded `08-scroll` runs pass. Each runner log records at least twelve down and twelve up moves with measured content displacement, including the required upward top-up, and none falls back to `input swipe`; exact runner source/tests pin held drags, top-up, explicit engine selection, and the absence of an implicit 20-scroll cap. |
+
+| B3-L41 [android] | pass | findings/evidence/cov3-android/B3-L41-variant-module-rerun2/ | Invalid variant text and JSON both list the four buildable app variants, while an invalid module lists `app`; all reject nonzero. A separately bounded Gradle tasks query retains the assemble-task inventory, and exact candidate source/tests/docs pin the discovery and remediation contract. |
+
 ## Counts
 
-376 of 467 slice rows recorded: 353 pass, 17 fail, 4 blocked, 2 n/a.
+378 of 467 slice rows recorded: 355 pass, 17 fail, 4 blocked, 2 n/a.
