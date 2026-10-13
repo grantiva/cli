@@ -1,0 +1,43 @@
+{
+  "allPassed" : true,
+  "screens" : [
+    {
+      "kind" : "flow",
+      "name" : "21-system-alert-maps",
+      "passed" : true,
+      "screenshots" : [
+        {
+          "name" : "21-system-alert-maps-cmd-003-maps",
+          "path" : ".grantiva\/run-captures\/21-system-alert-maps-cmd-003-maps.png"
+        }
+      ],
+      "steps" : [
+        {
+          "action" : "launchApp",
+          "duration" : 2.003,
+          "status" : "passed"
+        },
+        {
+          "action" : "waitForAnimationToEnd",
+          "duration" : 0.217,
+          "status" : "passed"
+        },
+        {
+          "action" : "tapOn: id=\"MapsTrayHeaderSearchField\"",
+          "duration" : 7.524,
+          "status" : "passed"
+        },
+        {
+          "action" : "takeScreenshot",
+          "duration" : 0.075,
+          "status" : "passed"
+        },
+        {
+          "action" : "assertNotVisible: text=\"Allow Once\"",
+          "duration" : 0.774,
+          "status" : "passed"
+        }
+      ]
+    }
+  ]
+}
