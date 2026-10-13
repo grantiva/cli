@@ -14,7 +14,7 @@ Raw evidence: `findings/evidence/round4-smoke-candidate2/04-mcp-ios-attempt3/hel
 
 ## Cause
 
-Frozen `Sources/GrantivaCore/WDA/WDAClient.swift:249-299` excludes application roots but clicks the first result of a broad label predicate. Multiple actionable elements still match; WDA query order is not a navigation priority. The selected tab is the strongest inference for the winner, not an directly observed clicked ID. The runner does not choose the element.
+Frozen `Sources/GrantivaCore/WDA/WDAClient.swift:249-299` excludes application roots but clicks the first result of a broad label predicate. Multiple actionable elements still match; WDA query order is not a navigation priority. The selected tab is the strongest inference for the winner, not a directly observed clicked ID. The runner does not choose the element.
 
 ## Acceptance criteria
 

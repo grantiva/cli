@@ -14,7 +14,7 @@ This is not a helper false negative. The corrected helper requires the two real 
 
 ## Source mechanism
 
-`Sources/GrantivaCore/WDA/WDAClient.swift:80-110` sends an `/elements` predicate for every node whose `label` equals the requested text, excluding only `XCUIElementTypeApplication`, and unconditionally chooses `elements.first`. The exclusion correctly removes the application root, but it leaves both the navigation back button and selected tab eligible. Nothing in this path ranks `BackButton`, navigation ancestry, geometry, or another actionable-context signal. The observed stable Mountains state is consistent with WDA returning the selected tab first and Grantiva clicking it.
+Frozen candidate source `Sources/GrantivaCore/WDA/WDAClient.swift:249-299` sends an `/elements` predicate for every node whose `label` equals the requested text, excluding only `XCUIElementTypeApplication`, and unconditionally chooses `elements.first` at line 285. The exclusion correctly removes the application root, but it leaves both the navigation back button and selected tab eligible. Nothing in this path ranks `BackButton`, navigation ancestry, geometry, or another actionable-context signal. The observed stable Mountains state is consistent with WDA returning the selected tab first and Grantiva clicking it.
 
 `Sources/GrantivaMCP/Tools/UITools.swift:151-156` already waits 500 ms before returning the hierarchy. Before the additive capture, snapshot timing remained a possible alternative explanation. The unchanged visual state roughly 55 seconds later eliminates that explanation for this run: the back navigation never occurred.
 

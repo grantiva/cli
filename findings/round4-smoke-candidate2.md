@@ -51,4 +51,4 @@ The first cleanup helper conservatively refused two simulator-managed processes 
 
 Protected booted iPhone 17 Pro `B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C` and iPhone 18 Pro `FE441EE5-BBFC-4981-B68A-59C0DBCE26D6` metadata remained equal to baseline, excluding only dynamic data/log sizes. Protected Pixel_8_API_35 config SHA256 remains `3caad1a0f9164280a264968a81249241e183fe4981462fbabf9181e4c18eae27`.
 
-Final independent failed-candidate closeout review is pending. No tag or release was created.
+Final independent closeout review is APPROVED AS FAILED, with evidence quality APPROVED. No tag or release was created.
