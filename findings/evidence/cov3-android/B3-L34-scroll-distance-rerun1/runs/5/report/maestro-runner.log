@@ -1,0 +1,189 @@
+02:55:08.155345 [INFO] === Test execution started ===
+02:55:08.155429 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L34-scroll-distance-rerun1/runs/5/report
+02:55:08.155436 [INFO] Platform: android
+02:55:08.155440 [INFO] Driver: uiautomator2
+02:55:08.155872 [INFO] Validated 1 flow(s)
+02:55:08.155897 [INFO] Single device execution mode
+02:55:08.155903 [INFO] Starting flow execution (parallel: false, devices: [])
+02:55:08.155915 [INFO] Creating driver for single device execution
+02:55:08.155921 [INFO] Connecting to Android device: emulator-5554
+02:55:08.251298 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+02:55:08.278961 [INFO] Starting UIAutomator2 server on device emulator-5554
+02:55:08.723555 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:55:08.745198 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:55:10.166690 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+02:55:10.193081 [INFO] Session created successfully: a90f9fc9-ba7a-4a28-a7e5-a8306b4a7135
+02:55:10.357247 [INFO] Driver created: android on google sdk_gphone64_arm64
+02:55:10.359985 [INFO] === Starting flow: 08-scroll ===
+02:55:10.359995 [INFO] Flow file: .maestro/08-scroll.yaml
+02:55:10.359998 [INFO] Total steps: 7
+02:55:10.372919 [DEBUG] Executing step 0: launchApp
+02:55:10.946601 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+02:55:10.946622 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 118ms
+02:55:12.558226 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.314s after launch, pids [26635], drawn=false crashed=false (read 267ms)
+02:55:12.920074 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.834s after launch, pids [26635], drawn=false crashed=false (read 109ms)
+02:55:13.287789 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 2.195s after launch, pids [26635], drawn=true crashed=false (read 116ms)
+02:55:13.287853 [DEBUG] Step 0 completed successfully (2914ms): launchApp
+02:55:13.288313 [DEBUG] Executing step 1: scroll: DOWN
+02:55:16.070181 [INFO] scroll down: dragged 1200 px in {0 432 1080 1632}, content moved 1179 px (measured=true)
+02:55:16.070452 [DEBUG] Step 1 completed successfully (2782ms): scroll: DOWN
+02:55:16.070834 [DEBUG] Executing step 2: scrollUntilVisible: text="Landmark 70"
+02:55:16.123237 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 52ms)
+02:55:16.474250 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 99ms)
+02:55:16.474303 [DEBUG] crash check during a lookup in flight for 351ms: crashed=false (took 99ms)
+02:55:16.695513 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+02:55:17.029436 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 35ms)
+02:55:18.868391 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:18.925501 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 57ms)
+02:55:19.220402 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+02:55:19.524856 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+02:55:19.823909 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+02:55:21.317169 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:21.343234 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+02:55:21.593960 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+02:55:21.889644 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+02:55:22.149197 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 23ms)
+02:55:23.198927 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 972 px (measured=true)
+02:55:23.225358 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+02:55:23.496211 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+02:55:23.745761 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+02:55:24.003385 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+02:55:25.153857 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 978 px (measured=true)
+02:55:25.205924 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 52ms)
+02:55:25.476688 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+02:55:25.819659 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 90ms)
+02:55:25.819717 [DEBUG] crash check during a lookup in flight for 343ms: crashed=false (took 90ms)
+02:55:26.243800 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 127ms)
+02:55:26.243874 [DEBUG] crash check during a lookup in flight for 379ms: crashed=false (took 128ms)
+02:55:29.619997 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:29.659937 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+02:55:29.990424 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 56ms)
+02:55:30.303841 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 61ms)
+02:55:30.658169 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+02:55:32.985912 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:33.025620 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+02:55:33.379485 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 89ms)
+02:55:33.621992 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 33ms)
+02:55:33.949402 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+02:55:36.030981 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 981 px (measured=true)
+02:55:36.076315 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 45ms)
+02:55:36.341224 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+02:55:36.770967 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 46ms)
+02:55:38.335892 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:38.363177 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+02:55:38.617169 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 25ms)
+02:55:38.879494 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+02:55:39.328624 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+02:55:45.291104 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:45.385403 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 94ms)
+02:55:45.687410 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 74ms)
+02:55:46.124594 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 49ms)
+02:55:48.742305 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:48.961455 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 217ms)
+02:55:49.486892 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 258ms)
+02:55:49.486969 [DEBUG] crash check during a lookup in flight for 525ms: crashed=false (took 258ms)
+02:55:49.968413 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 481ms)
+02:55:49.968477 [DEBUG] crash check during a lookup in flight for 1.007s: crashed=false (took 481ms)
+02:55:50.511661 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 262ms)
+02:55:50.511698 [DEBUG] crash check during a lookup in flight for 543ms: crashed=false (took 262ms)
+02:55:50.622962 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 111ms)
+02:55:50.622981 [DEBUG] crash check during a lookup in flight for 654ms: crashed=false (took 111ms)
+02:55:53.271957 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:53.317029 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 45ms)
+02:55:53.628525 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+02:55:53.984110 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 97ms)
+02:55:54.588878 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 363ms)
+02:55:55.099816 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 244ms)
+02:55:55.099844 [DEBUG] crash check during a lookup in flight for 511ms: crashed=false (took 244ms)
+02:55:55.215482 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 116ms)
+02:55:55.215519 [DEBUG] crash check during a lookup in flight for 627ms: crashed=false (took 116ms)
+02:55:55.606139 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 135ms)
+02:55:55.606491 [DEBUG] crash check during a lookup in flight for 391ms: crashed=false (took 136ms)
+02:55:58.839330 [INFO] scrollUntilVisible down: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:55:58.886713 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 47ms)
+02:55:59.017076 [DEBUG] Step 2 completed successfully (42946ms): scrollUntilVisible: text="Landmark 70"
+02:55:59.017473 [DEBUG] Executing step 3: assertVisible: text="Landmark 70"
+02:55:59.017705 [DEBUG] Flutter: parallel search (text="Landmark 70", id="")
+02:55:59.104807 [DEBUG] Flutter: com.kylebrowning.landmarks has no libflutter.so; not searching the Flutter VM
+02:55:59.104839 [DEBUG] Flutter fallback: failed to get trees: not a Flutter app
+02:55:59.104850 [DEBUG] Step 3 completed successfully (87ms): assertVisible: text="Landmark 70"
+02:55:59.105186 [DEBUG] Executing step 4: scrollUntilVisible: text="Golden Gate Bridge"
+02:55:59.177876 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 72ms)
+02:55:59.801385 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 209ms)
+02:55:59.801439 [DEBUG] crash check during a lookup in flight for 466ms: crashed=false (took 209ms)
+02:56:00.052807 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 212ms)
+02:56:00.052950 [DEBUG] crash check during a lookup in flight for 717ms: crashed=false (took 212ms)
+02:56:02.742222 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:02.794142 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 52ms)
+02:56:03.077994 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 54ms)
+02:56:03.412019 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 56ms)
+02:56:03.803512 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 138ms)
+02:56:03.803597 [DEBUG] crash check during a lookup in flight for 392ms: crashed=false (took 138ms)
+02:56:06.439727 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:06.481652 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 42ms)
+02:56:06.816320 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 77ms)
+02:56:07.064853 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 68ms)
+02:56:07.385612 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 27ms)
+02:56:09.132303 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:09.227943 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 95ms)
+02:56:09.443305 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 49ms)
+02:56:09.716545 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 54ms)
+02:56:10.080176 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 88ms)
+02:56:10.388986 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 55ms)
+02:56:10.389026 [DEBUG] crash check during a lookup in flight for 309ms: crashed=false (took 55ms)
+02:56:12.604392 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:12.686246 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 82ms)
+02:56:12.940133 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 45ms)
+02:56:13.199193 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+02:56:13.492651 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+02:56:16.339813 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:16.410890 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 71ms)
+02:56:16.890222 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 82ms)
+02:56:16.890325 [DEBUG] crash check during a lookup in flight for 336ms: crashed=false (took 82ms)
+02:56:17.266915 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 60ms)
+02:56:18.543197 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:18.577524 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+02:56:18.924237 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 52ms)
+02:56:19.309973 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 39ms)
+02:56:19.559961 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 30ms)
+02:56:21.262336 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:21.328130 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 66ms)
+02:56:21.585730 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 44ms)
+02:56:21.900609 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 32ms)
+02:56:22.230046 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 58ms)
+02:56:23.412086 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 963 px (measured=true)
+02:56:23.559306 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 147ms)
+02:56:23.773495 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+02:56:24.029056 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 38ms)
+02:56:24.374521 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+02:56:25.324150 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:25.350722 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 26ms)
+02:56:25.679381 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 62ms)
+02:56:26.064991 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+02:56:27.702431 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:27.753352 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 51ms)
+02:56:28.048051 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 76ms)
+02:56:28.311304 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 55ms)
+02:56:28.600143 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+02:56:29.843735 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:29.883809 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 40ms)
+02:56:30.148244 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 36ms)
+02:56:30.425721 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 31ms)
+02:56:30.697611 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 47ms)
+02:56:32.273128 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:32.307472 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 34ms)
+02:56:34.021960 [INFO] scrollUntilVisible up: dragged 979 px in {0 432 1080 1632}, content moved 957 px (measured=true)
+02:56:34.045998 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=false (took 24ms)
+02:56:34.102288 [DEBUG] Step 4 completed successfully (34996ms): scrollUntilVisible: text="Golden Gate Bridge"
+02:56:34.102670 [DEBUG] Executing step 5: assertVisible: text="Golden Gate Bridge"
+02:56:34.128304 [DEBUG] Step 5 completed successfully (25ms): assertVisible: text="Golden Gate Bridge"
+02:56:34.128720 [DEBUG] Executing step 6: tapOn: text="Deep Links"
+02:56:34.251990 [DEBUG] Step 6 completed successfully (123ms): tapOn: text="Deep Links"
+02:56:34.253269 [INFO] === Flow completed: 08-scroll (status: passed, duration: 83892ms, passed: 7, failed: 0, skipped: 0) ===
+02:56:34.682787 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+02:56:34.696283 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+02:56:34.696325 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+02:56:34.696551 [INFO] Generating reports...
+02:56:34.697246 [INFO] Shutting down devices started by maestro-runner...
+02:56:34.697265 [INFO] Shutting down all tracked emulators
+02:56:34.697277 [INFO] Shutting down all tracked simulators

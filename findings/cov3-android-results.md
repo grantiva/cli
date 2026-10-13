@@ -532,6 +532,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L39 [android] | pass | findings/evidence/cov3-android/B3-L39-install-json-rerun2/ | Exact launched, installed, skipped, and frozen app-file install modes all return valid JSON containing `appPath`. The skipped result carries null appPath/scheme/dataContainerPath; app-file reports the exact supplied APK path, and the other statuses retain their installed product path. |
 
+| B3-L23 [android] | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/ | Under the same live detached session, CLI and MCP five-screen capture documents retain the same duration keys. Home launch duration and every recorded step duration are positive; the no-session error response is correctly excluded from the runtime inventory. |
+
 ## Counts
 
-375 of 467 slice rows recorded: 352 pass, 17 fail, 4 blocked, 2 n/a.
+376 of 467 slice rows recorded: 353 pass, 17 fail, 4 blocked, 2 n/a.
