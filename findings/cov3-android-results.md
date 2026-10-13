@@ -406,6 +406,30 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B-C22.2 | fail | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-cli/findings/bc22-k103-ios76d-77-review.md | Current Android session JSON uses ISO-8601 timestamps and exact-head JSON encoding/tests pin ISO-8601 dates, but the mandatory public change note is absent from the allowed README/docs/release-note surfaces. This documentation-contract failure is tracked by accepted L74; no runtime change is needed. |
 
+| S2-01 | pass | findings/evidence/cov3-android/S2-01-inputtext-three-runs-rerun1/ | Three exact standalone Android `03-edit` runs all passed. Their `inputText: " Renamed"` commands completed in 2040, 1943, and 2092 ms with no 10-second HTTP timeout, and all retained commands are passed. Per-run host loads and total timings are recorded; the provenance-verified owned AVD config snapshot records `hw.gpu.enabled=no` (the guest property itself returned empty). |
+
+| MCP-030 | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | Exact `grantiva_build {}` with the frozen landmarks Android config returned success, module `app`, variant `freeDebug`, duration, zero warnings/errors, and the built APK product path. The attached-device inventory was byte-identical before and after the build. |
+
+| MCP-035 | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | Exact `grantiva_run {}` with the frozen landmarks Android config built, installed, and launched the app, naming module/variant, application ID, owned AVD and serial, and APK product path. |
+
+| D2-38 [android] | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | Exact empty-argument MCP build/run calls returned the documented complete texts. Build includes success, duration, warnings, errors, and product and leaves `adb devices -l` unchanged; run includes `App built and launched.`, module/variant, application ID, device name/serial, and the same product path. |
+
+| N3-04 [android] | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | The exact empty-argument Android MCP build names only module/variant and leaves the adb device inventory unchanged. The matching run names `Device: cov3-android (emulator-5554)` after a successful build, install, and launch. |
+
+| B3-L20 | fail | findings/evidence/cov3-android/B3-L20-cycle-four-forms-rerun2/ | All four cycle checks exit 1 in under 1.1 seconds and root/screens forms give clear circular dependency chains. The prescribed subdirectory form violates the literal project-relative-hop criterion, however: it reports `flows/a.yaml -> ../shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml` instead of normalizing every hop relative to the project directory. This matches the cross-platform L75 finding. |
+
+| B2-K90-b [android] | pass | findings/evidence/cov3-android/B3-L20-cycle-four-forms-rerun2/ | Both exact screens-config `run --no-build` and `diff capture --no-build` failures name `grantiva-android.yml -> a.yaml -> b.yaml -> a.yaml`; neither stdout nor stderr exposes a `grantiva-flows-` staging path. Exact-head output rewriter and runner session tests pin rewriting in streamed and terminal failure text (inspected, not newly executed). |
+
+| MCP-032 | pass | findings/evidence/cov3-android/MCP032-037-configless-build-run-rerun1/ | In a frozen real Gradle project copy with no `grantiva-android.yml`, exact MCP `grantiva_build {module:"app", variant:"freeDebug"}` succeeded and returned module, variant, duration, warnings, errors, and the APK product path. The attached-device inventory remained byte-identical. |
+
+| MCP-037 | pass | findings/evidence/cov3-android/MCP032-037-configless-build-run-rerun1/ | In the same configless Gradle project, exact MCP `grantiva_run {module:"app", variant:"freeDebug"}` used the sole attached owned emulator, built, installed, and launched the app, and returned module/variant, application ID, device name/serial, and APK product path. |
+
+| B-D01.1 | pass | findings/evidence/cov3-android/B-D01.1-hierarchy-json-alias-rerun1/ | Against one live owned keep-alive session, `hierarchy` and `runner dump-hierarchy` each produced valid, byte-identical JSON through `--json` and `--format json`. For both commands, conflicting `--json --format xml` was rejected during argument validation with exit 64 and the exact conflict/remedy text; the session then stopped and reaped cleanly. |
+
+| B-C11.3 [android] | pass | findings/evidence/cov3-android/B-C11.3-configless-tools-rerun1/ | On one MCP server rooted at an empty directory, config-dependent build, run, and VRT capture each returned `isError` naming the exact missing `grantiva-android.yml` path and init remedy. Emulator list and explicit boot remained usable without config, the latter safely reusing the owned AVD; the server completed every request and adb inventory stayed unchanged. |
+
+| MCP-058 | pass | findings/evidence/cov3-android/B-C11.3-configless-tools-rerun1/, findings/evidence/cov3-android/MCP056-057-emulator-list-boot-rerun1/ | Explicit emulator boot works from a directory with no config and safely reuses `cov3-android` at `emulator-5554`. On a separate configured server, empty arguments use `emulator: cov3-android` and return the same documented reuse result; both retain the same sole attached owned emulator. |
+
 ## Counts
 
-313 of 467 slice rows recorded: 292 pass, 15 fail, 4 blocked, 2 n/a.
+325 of 467 slice rows recorded: 303 pass, 16 fail, 4 blocked, 2 n/a.
