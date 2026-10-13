@@ -335,3 +335,10 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - iOS99 configured/configless name-only simulator lifecycle calls succeed and remove all three created UUIDs.100b first/cached sole-scheme builds pass; restoring second scheme yields named ambiguity error.98b polled wrong project file and is ready-only;98c observes the correct owner-sidecar pending state and obtains hierarchy/dump retry errors, then completes ready controls.
 - Android installed-app retention survives three fresh-install/wait5/shutdown/reboot cycles; teardown2.89/2.45/2.58s with killed:true and sync. Wrapper assumed object instead of top-level array and final name escaping was wrong; additive decoded audit retained. Secondary removed; no owner device manipulated.
 - Latest worker counts iOS419/478, Android367/467; latest finding L77 committed. Full coverage and Task6 remain incomplete.
+
+
+### Startup and ownership continuation
+
+- iOS98d supplies detached starting tool/resource responses;98e supplies keep-alive early and ready hierarchy/dump in one run. N13/K100.2/L52 pass; current exact audits have no duplicate rows or missing evidence.
+- iOS102 had an unterminated harness heredoc and executed no device commands. Corrected102b proves same-device run ownership refusal in1s, preserves live context, and stops normally. Its EXIT trap recreated the old owner sidecar after stop; exact project/PID and absent process were verified before archiving/removing only that test-created file.103 preflight caught it without device effects.103b is the corrected stop/other-directory batch.
+- AndroidL45 and additional report/ready joins reviewed; count372/467 (349pass/17fail/4blocked/2na). iOS428/478 (401pass/18fail/9blocked). Exact CLI and runner source worktrees remain clean. Full coverage and Task6 still incomplete.
