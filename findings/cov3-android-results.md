@@ -376,6 +376,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K55 [android] | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/, findings/evidence/cov3-android/B2-K55-detached-vrt-equivalence-rerun1/ | Exact CLI, no-session MCP, keep-alive MCP, and prescribed detached-session MCP captures each produced the same five ordered screens with identical stable top-level/device/per-screen key sets, relative Android paths, emulator identity/dimensions, and equal `emulator`/`simulator` objects. Each leg preserved all five PNGs; only legitimate measurements vary. Exact-head shared session-shape tests were inspected, not newly executed. |
 
+| MCP-064 [android] | pass | findings/evidence/cov3-android/MCP064-selector-families-rerun1/, findings/evidence/cov3-android/MCP064-id-selectors-rerun4/ | Live detached-session VRT captures exercised all prescribed Android selector families. The first immutable attempt preserved successful Content Description (`Favorite`) and Hint (`Name`) PNGs before a disclosed later navigation-fixture failure. A fresh standalone attempt JSON-decoded the live hierarchy to prove the exact `com.android.systemui:id/clock` resource ID, then captured passed whole-ID and suffix-ID steps with all three PNGs and no MCP error; start/stop and cleanup succeeded. |
+
 ## Counts
 
-298 of 467 slice rows recorded: 279 pass, 13 fail, 4 blocked, 2 n/a.
+299 of 467 slice rows recorded: 280 pass, 13 fail, 4 blocked, 2 n/a.
