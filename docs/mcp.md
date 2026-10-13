@@ -109,12 +109,12 @@ a config file its `[Config]` section names the file it looked for and where, for
 | Tool | Platform | Session | Description |
 | --- | --- | --- | --- |
 | `grantiva_screenshot` | iOS, Android | yes | Take a screenshot of the device (iOS simulator or Android emulator). Returns a base64-encoded PNG image. |
-| `grantiva_tap` | iOS, Android | yes | Tap on a UI element by accessibility label or by coordinates (`x`/`y` in points on iOS, dp on Android). Returns the updated accessibility tree. A `label` is matched in this order: the accessibility label first; on iOS, when no element has that label, the accessibility identifier (WDA's `name`, which for an SF Symbol image is the symbol name), then a text field's placeholder (so `Name` reaches `TextField("Name", ...)`, as a flow's `tapOn: "Name"` does). A fallback match says so: `Tapped on "heart" (matched by identifier)`. Android matches the content description or the text. |
+| `grantiva_tap` | iOS, Android | yes | Tap on a UI element by accessibility label or by coordinates (`x`/`y` in points on iOS, dp on Android). Returns the updated accessibility tree. A `label` is matched in this order: the accessibility label first; on iOS, when no element has that label, the accessibility identifier (WDA's `identifier`, which for an SF Symbol image can be the symbol name), then a text field's placeholder (so `Name` reaches `TextField("Name", ...)`, as a flow's `tapOn: "Name"` does). A fallback match says so: `Tapped on "heart" (matched by identifier)`. Android matches the content description or the text. |
 | `grantiva_swipe` | iOS, Android | yes | Swipe on the device screen. Returns the updated accessibility tree. |
 | `grantiva_type` | iOS, Android | yes | Type text into the currently focused field. Returns the updated accessibility tree. With no focused field nothing is typed and the result is an error: `No focused text field: tap a field before typing "x".` |
 | `grantiva_a11y_tree` | iOS, Android | yes | Get the current accessibility tree (view hierarchy) of the running app as a JSON tree. |
 | `grantiva_a11y_check` | iOS, Android | yes | Run an accessibility audit on the current screen: missing labels on interactive elements and tap targets smaller than 44pt (iOS) or 48dp (Android). |
-| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`; one action per step). Every step is validated first: if any is invalid, nothing runs and the result is an error naming each bad step. A step that fails while running (an element not found, nothing focused for `type`) stops the script; the error names the step (`Step 2 (type "x") failed: ...`) and lists the steps that ran. Returns the final accessibility tree. |
+| `grantiva_script` | iOS, Android | yes | Execute a batch of UI actions sequentially (`tap`, `tap_xy`, `swipe`, `type`, `wait`; one action per step). Missing `steps` returns `Error: Invalid argument: 'steps' is required.` with `isError`; a wrong-type value is rejected as an array requirement, and an empty array returns the current hierarchy. Every step is validated first: if any is invalid, nothing runs and the result is an error naming each bad step. A step that fails while running (an element not found, nothing focused for `type`) stops the script; the error names the step (`Step 2 (type "x") failed: ...`) and lists the steps that ran. Returns the final accessibility tree. |
 
 ### Build and run
 
@@ -173,6 +173,8 @@ seconds.` Any other failure while reading (for example a page source that cannot
 `grantiva_type` or `grantiva_script` call that may have changed the UI: a call that failed or was
 rejected sends none (a script that ran at least one step before failing does send one). Nothing is
 sent to a client that did not subscribe.
+
+Concurrent requests may finish in any order. Each stdout line contains one complete JSON-RPC message, including responses larger than the pipe buffer; response and notification bytes never interleave.
 
 ## Malformed input
 

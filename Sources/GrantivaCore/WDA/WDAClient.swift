@@ -236,14 +236,14 @@ extension DriverClient {
     // MARK: - Helpers
 
     /// Label first (what VoiceOver reads and `grantiva_a11y_tree` shows as
-    /// `label`), then WDA's `name` (the accessibility identifier; for an SF
-    /// Symbol, its name), then the placeholder: a SwiftUI `TextField("Name",
+    /// `label`), then the actual accessibility `identifier` (which can be
+    /// an SF Symbol name), then the placeholder: a SwiftUI `TextField("Name",
     /// ...)` has no label and shows "Name" as its placeholder, which is what
     /// a flow's `tapOn: "Name"` matches. The application element is excluded:
     /// it carries the app's display name as its label and would shadow a
     /// same-named back button.
     static let labelAttributes: [(attribute: String, match: LabelMatch)] = [
-        ("label", .label), ("name", .identifier), ("placeholderValue", .placeholder),
+        ("label", .label), ("identifier", .identifier), ("placeholderValue", .placeholder),
     ]
 
     static func tapByLabel(

@@ -85,14 +85,14 @@ final class WDAClientTests: XCTestCase {
         XCTAssertEqual(find["value"], #"label == "Favorites" AND type != "XCUIElementTypeApplication""#)
     }
 
-    func testTapByLabelFallsBackToTheNameWhenNoLabelMatches() async throws {
+    func testTapByLabelFallsBackToTheIdentifierWhenNoLabelMatches() async throws {
         let transport = ScriptedTransport([(status, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
         let finds = transport.calls.filter { $0.path.hasSuffix("/elements") }
         let values = try finds.map { try XCTUnwrap(JSONSerialization.jsonObject(with: Data($0.body.utf8)) as? [String: String])["value"] }
         XCTAssertEqual(values, [
             #"label == "heart" AND type != "XCUIElementTypeApplication""#,
-            #"name == "heart" AND type != "XCUIElementTypeApplication""#,
+            #"identifier == "heart" AND type != "XCUIElementTypeApplication""#,
         ])
         XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
     }
@@ -105,7 +105,7 @@ final class WDAClientTests: XCTestCase {
         XCTAssertEqual(DriverClient.predicateLiteral(#"a"b"#), #""a\"b""#)
     }
 
-    func testTapByLabelThrowsElementNotFoundWhenNeitherLabelNorNameMatches() async {
+    func testTapByLabelThrowsElementNotFoundWhenNoAttributeMatches() async {
         let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200)])
         do {
             try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("Missing")
@@ -147,7 +147,7 @@ final class WDAClientTests: XCTestCase {
         XCTAssertEqual(transport.calls.count, 3, "a non-404 failure must not retry /keys")
     }
 
-    func testTapByLabelTriesTheNameAfterA404OnTheLabelQuery() async throws {
+    func testTapByLabelTriesTheIdentifierAfterA404OnTheLabelQuery() async throws {
         let transport = ScriptedTransport([(status, 200), ("{}", 404), (oneElement, 200), ("{}", 200)])
         try await DriverClient.wda(port: 8100, transport: transport.transport).tapByLabel("heart")
         XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 2)
@@ -165,10 +165,10 @@ final class WDAClientTests: XCTestCase {
         } catch {
             XCTFail("\(error)")
         }
-        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 1, "a 500 must not fall through to the name query")
+        XCTAssertEqual(transport.calls.filter { $0.path.hasSuffix("/elements") }.count, 1, "a 500 must not fall through to the identifier query")
     }
 
-    // MARK: - K78: label first, then name (identifier), then placeholder; the match is reported
+    // MARK: - K78: label first, then identifier, then placeholder; the match is reported
 
     private func wda(_ transport: ScriptedTransport) -> DriverClient {
         DriverClient.wda(port: 8100, transport: transport.transport, retryDelay: .zero)
@@ -192,23 +192,54 @@ final class WDAClientTests: XCTestCase {
         let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
         let match = try await tap("heart")
         XCTAssertEqual(match, .identifier)
+        XCTAssertEqual(try findPredicates(transport), [
+            #"label == "heart" AND type != "XCUIElementTypeApplication""#,
+            #"identifier == "heart" AND type != "XCUIElementTypeApplication""#,
+        ])
         XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
     }
 
     /// IOS-OBS-06: a SwiftUI `TextField("Name", ...)` carries "Name" as its
     /// placeholder, not its label; the flow's `tapOn: "Name"` reaches it, so
-    /// the MCP tap does too, after label and name.
-    func testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndName() async throws {
+    /// the MCP tap does too, after label and identifier.
+    func testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndIdentifier() async throws {
         let transport = ScriptedTransport([(status, 200), (noElements, 200), (noElements, 200), (oneElement, 200), ("{}", 200)])
         let tap = try XCTUnwrap(wda(transport).tapByLabelMatch)
         let match = try await tap("Name")
         XCTAssertEqual(match, .placeholder)
         XCTAssertEqual(try findPredicates(transport), [
             #"label == "Name" AND type != "XCUIElementTypeApplication""#,
-            #"name == "Name" AND type != "XCUIElementTypeApplication""#,
+            #"identifier == "Name" AND type != "XCUIElementTypeApplication""#,
             #"placeholderValue == "Name" AND type != "XCUIElementTypeApplication""#,
         ])
         XCTAssertEqual(transport.calls.last?.path, "/session/S1/element/E1/click")
+    }
+
+    /// Match actual node attributes, so a query for `name` cannot accidentally
+    /// pass by receiving the scripted response intended for `identifier`.
+    func testPredicateSelectionUsesActualAttributesAndExcludesApplicationNodes() async throws {
+        let quoted = #"Say "hi" \o/"#
+        for (text, attribute, expectedMatch) in [
+            ("Shared", "label", LabelMatch.label),
+            ("heart", "identifier", .identifier),
+            ("Name", "placeholderValue", .placeholder),
+            (quoted, "identifier", .identifier),
+        ] {
+            let fixture = PredicateWDA(nodes: [
+                ["ELEMENT": "app", "type": "XCUIElementTypeApplication", "label": text],
+                ["ELEMENT": "winner", "type": "XCUIElementTypeButton", attribute: text],
+                ["ELEMENT": "later", "type": "XCUIElementTypeTextField", "placeholderValue": text],
+            ])
+            let driver = DriverClient.wda(port: 8100, transport: fixture.transport, retryDelay: .zero)
+            let match = try await XCTUnwrap(driver.tapByLabelMatch)(text)
+            XCTAssertEqual(match, expectedMatch)
+            XCTAssertEqual(fixture.clickedIDs, ["winner"])
+            let attributes = ["label", "identifier", "placeholderValue"]
+            let count = try XCTUnwrap(attributes.firstIndex(of: attribute)) + 1
+            XCTAssertEqual(fixture.predicates, attributes.prefix(count).map {
+                "\($0) == \(DriverClient.predicateLiteral(text)) AND type != \"XCUIElementTypeApplication\""
+            })
+        }
     }
 
     // MARK: - K92: a 400 right after startup, and an app that is not running
@@ -287,5 +318,33 @@ final class WDAClientTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, #"No focused text field: tap a field before typing "x"."#)
         }
         XCTAssertEqual(transport.calls.map(\.path), ["/status", "/session/S1/element/active"])
+    }
+}
+
+private final class PredicateWDA: @unchecked Sendable {
+    private let lock = NSLock()
+    private let nodes: [[String: String]]
+    private var recordedPredicates: [String] = []
+    private var clicks: [String] = []
+    init(nodes: [[String: String]]) { self.nodes = nodes }
+    var predicates: [String] { lock.withLock { recordedPredicates } }
+    var clickedIDs: [String] { lock.withLock { clicks } }
+    var transport: UIAutomator2Transport {
+        UIAutomator2Transport { request in
+            try self.lock.withLock {
+                let path = request.url?.path ?? ""
+                if path == "/status" { return (Data(#"{"sessionId":"S1","value":{"ready":true}}"#.utf8), 200) }
+                if path.hasSuffix("/elements") {
+                    let body = try XCTUnwrap(JSONSerialization.jsonObject(with: XCTUnwrap(request.httpBody)) as? [String: String])
+                    let expression = try XCTUnwrap(body["value"])
+                    self.recordedPredicates.append(expression)
+                    let predicate = NSPredicate(format: expression)
+                    let matches = self.nodes.filter { predicate.evaluate(with: $0) }
+                    return (try JSONSerialization.data(withJSONObject: ["value": matches]), 200)
+                }
+                if path.hasSuffix("/click") { self.clicks.append(String(path.split(separator: "/").dropLast().last ?? "")) }
+                return (Data("{}".utf8), 200)
+            }
+        }
     }
 }
