@@ -1,0 +1,69 @@
+ensure: findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/AND-008/stdout.log sha256=620cba6c0caeacc64d89066fa8a9a2ffcf6a4913b6271074f39e7e3272ff3b28
+  snake_case keys: []
+capture: findings/evidence/cov3-android/B2-K82b-artifact-separation-rerun1/capture/stdout.log sha256=ca81c5319800484a6cd052822df08039a05e11b26361fbfe94d522dfc02d6a8b
+  equal point_dimensions == pointDimensions: {'height': 914, 'width': 411}
+  equal pixel_dimensions == pixelDimensions: {'height': 2400, 'width': 1080}
+  equal display_scale == displayScale: 2.625
+  equal screen_name == screenName: 'Home'
+  equal size_bytes == sizeBytes: 125344
+  equal screen_name == screenName: 'Favorites'
+  equal size_bytes == sizeBytes: 54196
+  equal screen_name == screenName: 'Deep Links'
+  equal size_bytes == sizeBytes: 126926
+  equal screen_name == screenName: 'Lakes'
+  equal size_bytes == sizeBytes: 70114
+  equal screen_name == screenName: 'Detail'
+  equal size_bytes == sizeBytes: 89835
+  equal point_dimensions == pointDimensions: {'height': 914, 'width': 411}
+  equal pixel_dimensions == pixelDimensions: {'height': 2400, 'width': 1080}
+  equal display_scale == displayScale: 2.625
+  snake_case keys: ['display_scale', 'pixel_dimensions', 'point_dimensions', 'screen_name', 'size_bytes']
+compare: findings/evidence/cov3-android/B2-K82b-artifact-separation-rerun1/compare/stdout.log sha256=0588417af9b86490eb9c9b5523c3c8a62e8bb1545ca26b375ca385612b581b90
+  equal screen_name == screenName: 'Deep Links'
+  equal pixel_diff_percent == pixelDiffPercent: 0
+  equal perceptual_distance == perceptualDistance: 0
+  equal pixel_threshold == pixelThreshold: 0.02
+  equal perceptual_threshold == perceptualThreshold: 5
+  equal baseline_path == baselinePath: '.grantiva/baselines/android/Deep Links.png'
+  equal capture_path == capturePath: '.grantiva/captures/android/Deep Links.png'
+  equal screen_name == screenName: 'Detail'
+  equal pixel_diff_percent == pixelDiffPercent: 0
+  equal perceptual_distance == perceptualDistance: 0
+  equal pixel_threshold == pixelThreshold: 0.02
+  equal perceptual_threshold == perceptualThreshold: 5
+  equal baseline_path == baselinePath: '.grantiva/baselines/android/Detail.png'
+  equal capture_path == capturePath: '.grantiva/captures/android/Detail.png'
+  equal screen_name == screenName: 'Favorites'
+  equal pixel_diff_percent == pixelDiffPercent: 0
+  equal perceptual_distance == perceptualDistance: 0
+  equal pixel_threshold == pixelThreshold: 0.02
+  equal perceptual_threshold == perceptualThreshold: 5
+  equal baseline_path == baselinePath: '.grantiva/baselines/android/Favorites.png'
+  equal capture_path == capturePath: '.grantiva/captures/android/Favorites.png'
+  equal screen_name == screenName: 'Home'
+  equal pixel_diff_percent == pixelDiffPercent: 0
+  equal perceptual_distance == perceptualDistance: 0
+  equal pixel_threshold == pixelThreshold: 0.02
+  equal perceptual_threshold == perceptualThreshold: 5
+  equal baseline_path == baselinePath: '.grantiva/baselines/android/Home.png'
+  equal capture_path == capturePath: '.grantiva/captures/android/Home.png'
+  equal screen_name == screenName: 'Lakes'
+  equal pixel_diff_percent == pixelDiffPercent: 0
+  equal perceptual_distance == perceptualDistance: 0
+  equal pixel_threshold == pixelThreshold: 0.02
+  equal perceptual_threshold == perceptualThreshold: 5
+  equal baseline_path == baselinePath: '.grantiva/baselines/android/Lakes.png'
+  equal capture_path == capturePath: '.grantiva/captures/android/Lakes.png'
+  snake_case keys: ['baseline_path', 'capture_path', 'perceptual_distance', 'perceptual_threshold', 'pixel_diff_percent', 'pixel_threshold', 'screen_name']
+approve: findings/evidence/cov3-android/B2-K82b-artifact-separation-rerun1/approve/stdout.log sha256=50f1605a1006299746e7db61bc9900745f33a1630ac39763116768ba3bcd19f2
+  equal approved_screens == approvedScreens: ['Deep Links', 'Detail', 'Favorites', 'Home', 'Lakes']
+  equal baseline_directory == baselineDirectory: '.grantiva/baselines/android'
+  snake_case keys: ['approved_screens', 'baseline_directory']
+start: findings/evidence/cov3-android/B2-K55-detached-vrt-equivalence-rerun1/start.json sha256=0cb4dd691fff093695e4b0d8b1dd90d46236a00c03f743f13c2a007c41c2f4c4
+  equal bundle_id == applicationId: 'com.kylebrowning.landmarks'
+  equal serial == udid: 'emulator-5554'
+  snake_case keys: ['bundle_id']
+stop: findings/evidence/cov3-android/B2-K55-detached-vrt-equivalence-rerun1/stop.json sha256=52f0cd0adc2a65b4be02ac71068eed4cad5dd2286fea2f32fe430732bad27ea5
+  equal bundle_id == applicationId: 'com.kylebrowning.landmarks'
+  equal serial == udid: 'emulator-5554'
+  snake_case keys: ['bundle_id']
