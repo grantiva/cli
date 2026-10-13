@@ -2,7 +2,7 @@
 
 Severity: destructive process-selection defect
 Component: iOS simulator force teardown
-Rows: IOS3-OBS (round-3 side finding)
+Rows: IOS3-OBS-01 (round-3 side finding)
 Candidate: CLI `8f2cff676b3c12e951478920fa20e600cdca4e29`.
 Status: evidence-backed triage during the incomplete round-3 coverage pass.
 
