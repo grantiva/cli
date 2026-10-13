@@ -1,0 +1,7 @@
+# B2-K95 configless MCP run review
+
+The main runtime clause is satisfied by iOS attempt 88. Its scratch invocation calls `grantiva_run` with scheme `Landmarks (UI Testing)` and an explicit row-owned simulator selector but no config or bundle ID. `mcp/run.json` is a successful MCP result and reports the built product, discovered bundle ID `com.kylebrowning.Landmarks`, installation/launch, and the selected simulator. The safety-required simulator selector does not weaken the configless bundle-discovery input.
+
+The conditional no-ID and configured-ID precedence clauses are semantic-source clauses under the campaign's source-inspection rule, and exact candidate `8f2cff67` covers them directly. `Sources/GrantivaMCP/Tools/BuildTools.swift` chooses `resolved.bundleId ?? buildResult.applicationId ?? CFBundleIdentifier`, and emits an error distinguishing no `grantiva.yml` from a config lacking `bundle_id`. `Tests/GrantivaMCPTests/BuildToolsTests.swift` contains `testRunWithoutAConfigLaunchesTheBundleIDOfTheBuiltApp`, `testRunPrefersTheConfiguredBundleID`, and `testRunWithNoBundleIDAnywhereSaysWhereItLooked`; the last asserts the exact lookup error and that launch was not called.
+
+This is a complete B2-K95 `[ios]` join: genuine configless runtime for the principal behavior plus exact semantic assertions for the conditional error and precedence branches. Source inspection is not being used to replace the runtime launch clause.
