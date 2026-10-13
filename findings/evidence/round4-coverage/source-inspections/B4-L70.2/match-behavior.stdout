@@ -1,0 +1,20 @@
+README.md:738:only path-unsafe characters. Grantiva still performs legacy baseline lookup
+README.md:739:for the older percent-encoded filename (for example, `Deep%20Links.png` for
+README.md:740:`Deep Links`) and performs migration on approval to `Deep Links.png`; working
+README.md:741:legacy baselines do not need to be renamed by hand. Encoding literal `%` as
+README.md:742:`%25` also removes the ambiguous `%` filenames that the legacy scheme could
+Sources/GrantivaCore/Diff/BaselineStore.swift:6:    /// (`/`, `:`, NUL) percent-encoded, plus `%` so decoding stays
+Sources/GrantivaCore/Diff/BaselineStore.swift:23:    /// `urlPathAllowed` (spaces included) percent-encoded. Read as a fallback
+Sources/GrantivaCore/Diff/BaselineStore.swift:25:    public static func legacyFileName(for screenName: String, extension fileExtension: String = "png") -> String {
+Sources/GrantivaCore/Diff/BaselineStore.swift:34:        fileName == Self.fileName(for: screenName) || fileName == legacyFileName(for: screenName)
+Sources/GrantivaCore/Diff/BaselineStore.swift:38:    /// the legacy one when only that exists. The current name when neither does.
+Sources/GrantivaCore/Diff/BaselineStore.swift:42:        let legacy = legacyFileName(for: screenName)
+Sources/GrantivaCore/Diff/BaselineStore.swift:43:        if legacy != current, fileManager.fileExists(atPath: "\(directory)/\(legacy)") { return legacy }
+Sources/GrantivaCore/Diff/BaselineStore.swift:47:    /// Decodes both the current and the legacy form.
+Sources/GrantivaCore/Diff/BaselineStore.swift:92:                // Approving migrates a baseline saved under the legacy name.
+Sources/GrantivaCore/Diff/BaselineStore.swift:93:                let legacy = ScreenArtifact.legacyFileName(for: screenName)
+Sources/GrantivaCore/Diff/BaselineStore.swift:94:                if legacy != fileName {
+Sources/GrantivaCore/Diff/BaselineStore.swift:95:                    try? fm.removeItem(atPath: "\(dir)/\(legacy)")
+Sources/GrantivaCore/Diff/BaselineStore.swift:114:                // Both the current and the legacy name, so no stale copy is
+Sources/GrantivaCore/Diff/BaselineStore.swift:117:                let legacy = ScreenArtifact.legacyFileName(for: screenName)
+Sources/GrantivaCore/Diff/BaselineStore.swift:120:                for name in Set([current, legacy]) {

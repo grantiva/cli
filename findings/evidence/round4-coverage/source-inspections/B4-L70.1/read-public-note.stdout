@@ -1,0 +1,9 @@
+Local baselines are stored in `.grantiva/baselines/`. Capture, baseline, and
+diff filenames now keep ordinary characters such as spaces literal and encode
+only path-unsafe characters. Grantiva still performs legacy baseline lookup
+for the older percent-encoded filename (for example, `Deep%20Links.png` for
+`Deep Links`) and performs migration on approval to `Deep Links.png`; working
+legacy baselines do not need to be renamed by hand. Encoding literal `%` as
+`%25` also removes the ambiguous `%` filenames that the legacy scheme could
+produce.
+

@@ -1,0 +1,12 @@
+25:    public static func legacyFileName(for screenName: String, extension fileExtension: String = "png") -> String {
+33:    public static func isCanonical(_ fileName: String, for screenName: String) -> Bool {
+34:        fileName == Self.fileName(for: screenName) || fileName == legacyFileName(for: screenName)
+39:    public static func existingFileName(for screenName: String, in directory: String, fileManager: FileManager = .default) -> String {
+42:        let legacy = legacyFileName(for: screenName)
+52:        return stem.removingPercentEncoding
+92:                // Approving migrates a baseline saved under the legacy name.
+93:                let legacy = ScreenArtifact.legacyFileName(for: screenName)
+95:                    try? fm.removeItem(atPath: "\(dir)/\(legacy)")
+100:                let path = "\(dir)/\(ScreenArtifact.existingFileName(for: screenName, in: dir))"
+117:                let legacy = ScreenArtifact.legacyFileName(for: screenName)
+122:                        try FileManager.default.removeItem(atPath: "\(dir)/\(name)")

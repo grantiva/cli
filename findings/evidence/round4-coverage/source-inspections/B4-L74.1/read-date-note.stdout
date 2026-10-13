@@ -1,0 +1,10 @@
+## JSON date compatibility
+
+Date-valued JSON fields use ISO 8601 UTC strings, such as
+`1970-01-01T00:00:00Z`. This is the representation scripts should consume;
+numeric Unix and Apple-reference timestamps are not output alternatives. The
+fields are `timestamp` on screen captures, `detectedAt` on detected projects,
+`startedAt` on runner sessions, simulator or emulator leases and provenance,
+`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
+and keep-alive ownership records, and `finishedAt` in ready files.
+

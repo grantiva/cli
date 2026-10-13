@@ -1,0 +1,47 @@
+//
+//  ContentView.swift
+//  Landmarks
+//
+
+import SwiftUI
+
+struct ContentView: View {
+    @State private var navigator = Navigator()
+
+    var body: some View {
+        @Bindable var navigator = navigator
+
+        PersistentTabContainer(selection: $navigator.selectedTab) {
+            NavigationStack(path: $navigator.landmarksPath) {
+                LandmarkListView()
+                    .screenDestination(path: $navigator.landmarksPath)
+            }
+        } favorites: {
+            NavigationStack(path: $navigator.favoritesPath) {
+                FavoritesView()
+                    .screenDestination(path: $navigator.favoritesPath)
+            }
+        } deepLinks: {
+            NavigationStack(path: $navigator.deepLinksPath) {
+                DeepLinksView()
+                    .screenDestination(path: $navigator.deepLinksPath)
+            }
+        }
+        .ignoresSafeArea(.container)
+        .environment(navigator)
+        .onOpenURL { url in
+            navigator.handleDeepLink(url)
+        }
+        .onAppear {
+            navigator.loadState()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willResignActiveNotification)) { _ in
+            navigator.saveState()
+        }
+    }
+}
+
+#Preview {
+    ContentView()
+        .services(.preview)
+}
