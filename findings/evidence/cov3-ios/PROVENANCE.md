@@ -165,3 +165,11 @@ Attempt57's intermediate `cp .grantiva/diffs` looked in the wrong directory and 
 
 
 `findings/evidence/cov3-ios-attempt60b/` is the corrected native-ID batch. The earlier `run-attempt60.sh` was never executed because its expectation came from the wrong worker checkout; it is excluded. Attempt60b uses exact release-main `8f2cff67` semantics, explicit owned U1, and immutable before/after inventories. The ID-only Clock screen passes and its scratch capture is copied additively into `preserved-captures/`; `{id, text}` fails during config decoding before device work. `postrun-additive.sha256` authenticates the copied PNG without changing frozen raw outputs.
+
+
+`findings/evidence/cov3-ios-attempt61/` is the fresh Landmarks-list hierarchy batch. It starts only explicit owned U1, requires an explicit-UDID hierarchy containing Landmarks, navigates to the list with MCP, and retains the same list state in MCP tree, CLI XML, and CLI JSON before same-owner stop.
+
+`findings/evidence/cov3-ios-attempt62/` is the fresh lifecycle/doctor/logs cross-platform-input batch. Exact iOS text and JSON detached starts/stops plus no-session JSON stop all exit 0. Exact iOS doctor text/JSON exit 0; Android doctor text/JSON truthfully exit 1 in this iOS host project and are retained for record comparison, not called an iOS failure. Exact flow 08 with `--logs` exits 0 and retains interleaved `[log]` stderr. Wrapper exit 1 reflects its overly strict expectation that both Android doctor commands exit 0.
+
+
+`findings/evidence/cov3-ios-attempt63/` is the fresh recording boundary/path/concurrency batch. It first retains a default recording, then proves the past-duration validation exits 64 quickly without changing those bytes and the equal-duration boundary is accepted. Unique relative and absolute text/JSON outputs preserve every MOV and extracted frame. For the scrolling case, the harness waits until exact flow 10 completes a live scroll while its PID remains active, records the observed line/epoch, then captures requested 500/1500 ms frames at actual 487/1493 ms while the remaining scroll steps run; both the recording and flow exit 0.
