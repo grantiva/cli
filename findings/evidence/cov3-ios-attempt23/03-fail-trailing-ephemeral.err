@@ -1,0 +1,61 @@
+Resolved: scheme=Landmarks (UI Testing) simulator=563907E1-703D-4322-AE5F-FC3B06D03143 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: 563907E1-703D-4322-AE5F-FC3B06D03143
+Simulator booted: cov3-ios-26 (563907E1-703D-4322-AE5F-FC3B06D03143)
+Skipping build and install (--no-build)
+Running 1 flow(s) in one GrantivaAgent session: .maestro/coverage/02-exact-negative.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] 02-exact-negative (02-exact-negative.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ assertVisible: text="Golden Gate.*" (1.1s)
+    ✗ assertVisible: text="Golden Gate.*", exact=true (12.4s)
+      ╰─ Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+✗ 02-exact-negative 19.1s
+
+  [1/1] 02-exact-negative (.maestro/coverage/02-exact-negative.yaml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.1s)
+    ✓ assertVisible: text="Golden Gate.*" (1.1s)
+    ✗ assertVisible: text="Golden Gate.*", exact=true (12.4s)
+      ╰─ Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+✗ 02-exact-negative 19.1s
+
+  2 steps passing (19.1s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  02-exact-negative              ✗ FAIL       3      2      1      0      19.1s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       3      2      1      0      19.1s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Failure screenshot: .grantiva/run-captures/failure-1791869296.png
+Error: Runner failed (exit 1): 02-exact-negative: assertVisible: text="Golden Gate.*", exact=true: Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.
