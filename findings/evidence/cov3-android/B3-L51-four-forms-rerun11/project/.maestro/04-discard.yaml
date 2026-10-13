@@ -1,0 +1,15 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Deep Links"
+- tapOn: "Edit Landmark"
+- tapOn: "Location"
+- inputText: "X"
+- tapOn: "Cancel"
+- assertVisible: "You have unsaved changes that will be lost."
+- takeScreenshot: "Discard Alert"
+- tapOn: "Keep Editing"
+- assertVisible: "Edit Landmark"
+- tapOn: "Cancel"
+- tapOn: "Discard"
+- assertVisible: "Deep Links"

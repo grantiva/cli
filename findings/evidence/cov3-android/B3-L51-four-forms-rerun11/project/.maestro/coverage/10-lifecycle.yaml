@@ -1,0 +1,21 @@
+appId: com.kylebrowning.landmarks
+---
+- stopApp
+- launchApp:
+    arguments:
+      "--flag": true
+- assertVisible: "Featured"
+- tapOn: "Lake Tahoe"
+- tapOn: "Favorite"
+- assertVisible: "Unfavorite"
+- launchApp:
+    clearState: true
+- tapOn: "Favorites"
+- assertVisible: "Landmarks you favorite will appear here."
+- stopApp
+- stopApp
+- launchApp
+- assertVisible: "Featured"
+- killApp
+- launchApp
+- assertVisible: "Featured"
