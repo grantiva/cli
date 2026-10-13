@@ -179,3 +179,9 @@ Attempt57's intermediate `cp .grantiva/diffs` looked in the wrong directory and 
 
 
 `findings/evidence/cov3-ios-attempt65/` is the guarded fresh-device app-file batch. It creates one name proven absent, validates the new UUID/name mapping, and deletes only that UUID on EXIT; final inventory proves absence. App-file build-install, run, and shutdown-device diff capture each begin without the app, install the proven attempt44 product, and succeed. CI returns the permitted no-key authentication error before installation. The no-app-file skipped control logs `Skipping build and install` but then exits 1 because the freshly uninstalled app is absent; D2-08 remains partial pending review of its literal Done-line clause. D2-09 is graded from the exact shutdown/app-absent capture. Cleanup files postdate the frozen pre-EXIT manifest and remain additive raw evidence.
+
+
+`findings/evidence/cov3-ios-attempt67b/` supersedes unrun attempt67. It places a Maestro-format flow directly in `grantiva.yml` and runs it through diff capture/staging, rather than merely running a native flow file. The exact scalar subflow screenshot, scroll direction, scrollUntilVisible fields and extended-wait timeout pass and retain FromSub/Main PNGs. Joined mapping/inline attempt59 fixtures and exact-head staging tests cover all named runFlow forms.
+
+
+`findings/evidence/cov3-ios-attempt65b/` is the installed-app discriminator for attempt65's no-app-file skipped control. On U1 with the app proven present, the exact command exits 0 and prints the documented Done/install-skipped line while preserving the same container. This does not erase attempt65's valid absent-app result: there the same control prints skipping then exits 1 NSPOSIX2. D2-08 records that literal product-contract failure while retaining the three successful app-file surfaces and permitted CI auth boundary.

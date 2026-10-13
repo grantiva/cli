@@ -1,0 +1,17 @@
+appId: com.kylebrowning.Landmarks
+---
+- launchApp
+- runFlow: sub-shot.yaml
+- tapOn: "Deep Links"
+- tapOn: "Caching Demo"
+- scroll: DOWN
+- scrollUntilVisible:
+    element: {text: "Cache Policy", exact: true}
+    direction: DOWN
+    timeout: 10000
+    speed: 40
+    centerElement: true
+- extendedWaitUntil:
+    visible: {text: "Cache Policy", exact: true}
+    timeout: 5000
+- takeScreenshot: Main
