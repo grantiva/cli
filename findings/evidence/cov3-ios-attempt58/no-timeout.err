@@ -1,0 +1,80 @@
+[debug] 2026-10-13T07:21:54Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: exit 0: xcrun simctl getenv '563907E1-703D-4322-AE5F-FC3B06D03143' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T07:21:55Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:21:56Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T07:21:56Z com.grantiva.cli: $ /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EA62E186-3820-4DD5-96DC-741BDFDFD3F9 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-2505CFB3-6950-4169-810C-29110E8666D5/grantiva.yml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.2s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✓ waitForAnimationToEnd (937ms)
+    ✓ tapOn: text="Caching Demo" (1.0s)
+    ✓ waitForAnimationToEnd (742ms)
+    ✓ assertVisible: text="Cache Policy" (395ms)
+    ✓ waitForAnimationToEnd (239ms)
+    ✓ takeScreenshot (178ms)
+✓ screens 10.2s
+
+  [1/1] screens (grantiva.yml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.2s)
+    ✓ tapOn: text="Deep Links" (1.9s)
+    ✓ waitForAnimationToEnd (937ms)
+    ✓ tapOn: text="Caching Demo" (1.0s)
+    ✓ waitForAnimationToEnd (742ms)
+    ✓ assertVisible: text="Cache Policy" (395ms)
+    ✓ waitForAnimationToEnd (239ms)
+    ✓ takeScreenshot (178ms)
+✓ screens 10.2s
+
+  8 steps passing (10.2s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✓ PASS       8      8      0      0      10.2s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0      10.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+[debug] 2026-10-13T07:22:09Z com.grantiva.cli: exit 0: /Users/kyle/.grantiva-qa/runner/versions/1.1.28-grantiva.13+android-drivers-2/grantiva-runner --platform ios --device 563907E1-703D-4322-AE5F-FC3B06D03143 --no-ansi --no-app-install test --output /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-report-EA62E186-3820-4DD5-96DC-741BDFDFD3F9 --flatten --wait-for-idle-timeout 0 --artifacts failure /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-flows-2505CFB3-6950-4169-810C-29110E8666D5/grantiva.yml
+[debug] 2026-10-13T07:22:09Z com.grantiva.cli: $ xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
+[debug] 2026-10-13T07:22:10Z com.grantiva.cli: exit 0: xcrun simctl status_bar 563907E1-703D-4322-AE5F-FC3B06D03143 clear
