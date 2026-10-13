@@ -702,6 +702,14 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L44 [android] | pass | findings/evidence/cov3-android/B3-L44-N12-capture-equivalence-rerun2/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios/IOS-117/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios/IOS-118/ | Home is captured as the app's first screen 3/3 and compares successfully each time. Its CLI sizes differ from the MCP session capture by at most 0.0264%, well inside 10%; exact runner first-frame tests cover the added wait and its already-drawn fast path, README documents the launch wait, and current iOS controls remain unchanged. |
 
+| B3-L07 [android] | pass | findings/evidence/cov3-android/B3-L07-high-load-ten-rerun2/ | Ten exact stock favorite flows with full snapshots pass under generated one-minute load of 8.31–44.78. Every run performs one unredacted W3C drag from `(246,500)` to `(0,500)` over 300 ms, holds and lifts without shell `input swipe`, then proves the distinct removal and empty-state postconditions; exact gesture tests pin the route and all owned load processes are absent afterward. |
+
+| B2-K106 | pass | findings/evidence/cov3-android/B2-K106-B3-L35-killed-temp-rerun4/, findings/android-k106-l35-rerun4-review.md | Exact keep-alive and ordinary browse runs are killed after their owned claims expose both ephemeral staging/report paths; targeted forced teardown removes and lists every claimed path. A preserved report survives, the unrelated live primary claim and its paths survive every secondary teardown, leases disappear, and exact dead/live/preserved source tests cover the shared reaper contract. |
+
+| B3-L35 [android] | pass | findings/evidence/cov3-android/B2-K106-B3-L35-killed-temp-rerun4/, findings/android-k106-l35-rerun4-review.md | Text teardown names both removed paths, JSON teardown returns both under `temporaryDirectoriesRemoved`, and the preserved-report leg removes only staging while retaining its report. Before/after path comparison is empty, the stale serial lease is gone, the unrelated live claim remains untouched, and the prohibited `--all` half is covered by exact EmulatorManager tests. |
+
+| B3-L38-b [android] | pass | findings/evidence/cov3-android/B3-L38-b-orphan-three-cycles-rerun4/, findings/android-b3l38b-rerun4-review.md | Three exact cycles preserve the killed run's orphan UIAutomator2 session, then detached start returns only after its own different session is ready. Immediate hierarchy and stop succeed 3/3; verbose subprocess lists contain no kill or force-stop, row-owned diagnostic forwards are removed, and exact lifecycle tests cover early runner exit and the shared foreground rule. |
+
 ## Counts
 
-459 of 467 slice rows recorded: 434 pass, 17 fail, 6 blocked, 2 n/a.
+463 of 467 slice rows recorded: 438 pass, 17 fail, 6 blocked, 2 n/a.

@@ -1,0 +1,86 @@
+{
+  "id": "flow-000",
+  "name": "11-slow",
+  "sourceFile": "/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-2F042F25-E5C6-4164-89AC-10D8E3F9932A/0/11-slow.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T05:10:47.612734-07:00",
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T05:10:47.617751-07:00",
+      "endTime": "2026-10-13T05:10:48.999751-07:00",
+      "duration": 1382,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "running",
+      "startTime": "2026-10-13T05:10:49.000384-07:00",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Slow Screen\"",
+      "status": "pending",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Slow Screen"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Loading…\"",
+      "status": "pending",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Loading…"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"Loaded after delay\"",
+      "status": "pending",
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "pending",
+      "artifacts": {}
+    }
+  ],
+  "artifacts": {}
+}

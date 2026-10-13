@@ -1,0 +1,17 @@
+appId: com.kylebrowning.landmarks
+env:
+  LANDMARKS_SEED: many
+---
+- launchApp
+- scroll
+- scrollUntilVisible:
+    element: "Landmark 70"
+    direction: DOWN
+    timeout: 60000
+- assertVisible: "Landmark 70"
+- scrollUntilVisible:
+    element: "Golden Gate Bridge"
+    direction: UP
+    timeout: 60000
+- assertVisible: "Golden Gate Bridge"
+- tapOn: "Deep Links"

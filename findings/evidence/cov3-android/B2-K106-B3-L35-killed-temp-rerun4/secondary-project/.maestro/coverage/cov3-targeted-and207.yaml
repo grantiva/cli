@@ -1,0 +1,8 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp: {clearState: true}
+- tapOn: "Lakes"
+- tapOn: {text: "(Lake .*|.* Lake)", index: 1}
+- assertVisible: "Mono Lake"
+- assertVisible: "Lee Vining, CA"
+- assertNotVisible: "Lake Tahoe"

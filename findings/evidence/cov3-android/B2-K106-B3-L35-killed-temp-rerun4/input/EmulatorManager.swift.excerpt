@@ -1,0 +1,86 @@
+        // one running the same AVD (an AVD name does not say who started it).
+        // Drop it.
+        if let stale = record, !(await isOurs(stale, listed: true)),
+           try await adb.devices().contains(where: { $0.serial == serial }) {
+            try provenance.remove(serial: serial)
+            record = nil
+        }
+        guard record != nil || force else {
+            throw GrantivaError.invalidArgument(
+                "\(serial) \(Self.notStartedByGrantiva) (see `grantiva emulator sessions`). Pass --force to kill it anyway."
+            )
+        }
+        for package in ADB.uiAutomator2Packages {
+            _ = try? await adb.forceStop(serial: serial, applicationId: package)
+        }
+        _ = try? await adb.removeForwards(serial: serial)
+
+        var listed = try await adb.devices().contains { $0.serial == serial }
+        var killed = false
+        if listed {
+            // `emu kill` stops the guest without a shutdown: whatever its page
+            // cache still holds (an app installed seconds ago) is lost on the
+            // next boot. Flush it first, bounded so a wedged guest cannot hold
+            // the teardown (L46). The flush counts against `killTimeout`, so
+            // the whole stop stays within it; a hung `adb shell sync` is ended
+            // by its own alarm, and the race below is the backstop.
+            let adb = self.adb
+            let started = Date()
+            let flushSeconds = max(1, Int(flushTimeout.rounded(.up)))
+            await Self.bounded(seconds: flushTimeout) { _ = try? await adb.sync(serial: serial, timeoutSeconds: flushSeconds) }
+            _ = try? await adb.emuKill(serial: serial)
+            killed = true
+            let deadline = started.addingTimeInterval(killTimeout)
+            while true {
+                listed = try await adb.devices().contains { $0.serial == serial }
+                let processGone = record.map { !Self.isRecordedProcessAlive($0) } ?? true
+                if !listed, processGone { break }
+                guard Date() < deadline else {
+                    throw GrantivaError.commandFailed(
+                        "\(serial) did not exit within \(Int(killTimeout))s after adb emu kill. Check `adb devices` and the emulator log.", 1
+                    )
+                }
+                try await Task.sleep(for: .seconds(pollInterval))
+            }
+        }
+        if record != nil {
+            try provenance.remove(serial: serial)
+        }
+        var temporaryDirectoriesRemoved: [String] = []
+        if let claim = SimulatorLease.claim(udid: serial, directory: leaseDirectory), !claim.isLive {
+            temporaryDirectoriesRemoved = SimulatorReaper.removeTemporaryDirectories(of: claim)
+            SimulatorLease.removeLeaseFile(udid: serial, directory: leaseDirectory)
+        }
+        return EmulatorTeardownOutcome(
+            serial: serial, avd: record?.avd, killed: killed, recorded: record != nil,
+            temporaryDirectoriesRemoved: temporaryDirectoriesRemoved
+        )
+    }
+
+    /// Runs `work`, returning when it finishes or after `seconds`, whichever
+    /// is first; work still running then is cancelled and not waited for (a
+    /// task group would wait for it).
+    static func bounded(seconds: TimeInterval, _ work: @escaping @Sendable () async -> Void) async {
+        let (finished, signal) = AsyncStream<Void>.makeStream()
+        let worker = Task {
+            await work()
+            signal.yield()
+        }
+        let timer = Task {
+            try? await Task.sleep(for: .seconds(seconds))
+            signal.yield()
+        }
+        for await _ in finished { break }
+        timer.cancel()
+        worker.cancel()
+    }
+
+    /// A record is ours while its process lives (the same process, by start
+    /// time, not just the same pid) and, when its serial is listed, no other
+    /// process owns that serial's console port. An empty or unreadable owner
+    /// list proves nothing either way, so the start time decides then.
+    private func isOurs(_ record: StartedEmulatorRecord, listed: Bool) async -> Bool {
+        guard Self.isRecordedProcessAlive(record) else { return false }
+        guard listed, let port = Int(record.serial.replacingOccurrences(of: "emulator-", with: "")),
+              let owners = await consolePortOwners(port), !owners.isEmpty else { return true }
+        return owners.contains(record.pid)

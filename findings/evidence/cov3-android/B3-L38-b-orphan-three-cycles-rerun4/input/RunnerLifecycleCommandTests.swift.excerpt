@@ -1,0 +1,161 @@
+        XCTAssertEqual(exited["alreadyExited"] as? Bool, true)
+
+        let multi = try decode(RunnerStopCommand.document(.keepAlive(
+            [
+                .released(grantivaPid: 4163, runnerPid: 4267, udid: iosUDID),
+                .terminated(runnerPid: 4300, udid: "emulator-5556", killed: true),
+            ],
+            details: [4267: details, 4300: android]
+        )))
+        assertStopShape(multi, android: false)
+        let entries = try XCTUnwrap(multi["sessions"] as? [[String: Any]])
+        assertStopShape(entries[0], android: false)
+        assertStopShape(entries[1], android: true)
+        XCTAssertEqual(entries[0]["killed"] as? Bool, false)
+        XCTAssertEqual(entries[1]["killed"] as? Bool, true)
+    }
+
+    func testAStopWhoseSessionRecordedNoPortOrAppWritesNull() throws {
+        let json = try decode(RunnerStopCommand.document(.stopped(pid: 1, udid: "emulator-5554", killed: false)))
+        assertStopShape(json, android: true)
+        XCTAssertTrue(json["port"] is NSNull)
+        XCTAssertTrue(json["applicationId"] is NSNull)
+    }
+
+    func testStopCarriesThePortAndAppTheSessionFileRecorded() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
+        let result = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        let json = try decode(RunnerStopCommand.document(result))
+        XCTAssertEqual(json["port"] as? Int, 8430)
+        XCTAssertEqual(json["bundleId"] as? String, "com.example")
+    }
+
+    func testStopOfAKeepAliveSessionCarriesItsPortAndApp() async throws {
+        let events = LockedValue<[String]>([])
+        let keepAlive = KeepAliveSession(
+            sessionId: "s", port: 8100, pid: 4267, udid: makeSession().udid, path: "/x",
+            projectDirectory: "/private/tmp/project", platform: .ios, ownerPid: 4163, detached: false, appId: "com.example"
+        )
+        var dependencies = dependencies(session: makeSession(), events: events, snapshot: "")
+        dependencies.loadSession = { throw CocoaError(.fileNoSuchFile) }
+        dependencies.keepAliveSessions = { [keepAlive] }
+        dependencies.stopKeepAlive = { _ in .released(grantivaPid: 4163, runnerPid: 4267, udid: keepAlive.udid!) }
+        let json = try decode(RunnerStopCommand.document(try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)))
+        XCTAssertEqual(json["port"] as? Int, 8100)
+        XCTAssertEqual(json["bundleId"] as? String, "com.example")
+        XCTAssertEqual(json["killed"] as? Bool, false)
+    }
+
+    // MARK: - L36: `runner stop` of a foreground `runner start` is orderly
+
+    func testStopRemovesTheSessionFileBeforeSignallingTheRunner() async throws {
+        let events = LockedValue<[String]>([])
+        let session = makeSession()
+        let dependencies = dependencies(session: session, events: events, snapshot: "\(session.pid) 1 /tmp/grantiva-runner --device X")
+        _ = try await RunnerStopCommand.parse([]).perform(dependencies: dependencies)
+        XCTAssertEqual(events.value, ["snapshot", "remove", "terminate", "files 1234", "owner", "release"])
+    }
+
+    func testAForegroundRunnerThatExitsOneAfterARunnerStopEndsInOrder() throws {
+        XCTAssertTrue(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: nil))
+        XCTAssertTrue(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: RunnerSessionInfo(
+            pid: 999, wdaPort: 1, bundleId: "b", udid: "emulator-5554", startedAt: Date()
+        )))
+        XCTAssertFalse(RunnerStartCommand.stopWasRequested(runnerPid: 1234, session: makeSession()))
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: true),
+            "Runner stopped (pid 1234); the session has ended."
+        )
+    }
+
+    func testAForegroundRunnerKilledUnpromptedFailsWhateverTheSignal() {
+        for status in [SIGKILL, SIGTERM, SIGINT, 128 + SIGINT] {
+            XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: status, pid: 1234, stopRequested: false), "status \(status)") {
+                XCTAssertEqual($0.localizedDescription, "The runner exited with status \(status); the session has ended.")
+            }
+        }
+        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: SIGKILL, pid: 1234, stopRequested: true),
+                       "Runner stopped (pid 1234); the session has ended.")
+    }
+
+    /// L36 fix round 2: a foreground `runner start` in directory A torn down
+    /// from directory B. B's teardown cannot touch A's session file, but its
+    /// stop marker names the runner: the start ends in order.
+    func testAForegroundStartTornDownFromAnotherDirectoryEndsInOrder() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let started: Int64 = 1_791_700_000
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in started }, isProcessAlive: { _ in true })
+        XCTAssertTrue(try marker.mark(runnerPid: 1234, ownerPid: 77))
+        // A's session file still names the runner: no `runner stop` happened.
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: started)
+        )
+        XCTAssertEqual(request, .teardown)
+        XCTAssertEqual(
+            try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request),
+            "Runner stopped by teardown (pid 1234); the session has ended."
+        )
+    }
+
+    func testAStaleStopMarkerDoesNotMakeARunnerDeathOrderly() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-stops-\(UUID().uuidString)").path
+        defer { try? FileManager.default.removeItem(atPath: directory) }
+        let marker = RunnerStopMarker(directory: directory, startTime: { _ in 1_791_600_000 }, isProcessAlive: { _ in true })
+        XCTAssertTrue(try marker.mark(runnerPid: 1234, ownerPid: 77))
+        let request = RunnerStartCommand.stopRequest(
+            runnerPid: 1234, session: makeSession(), marked: marker.isMarked(runnerPid: 1234, runnerStartTime: 1_791_700_000)
+        )
+        XCTAssertNil(request)
+        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: SIGTERM, pid: 1234, stop: request))
+    }
+
+    func testAForegroundRunnerThatExitsOneUnpromptedStillFails() {
+        XCTAssertThrowsError(try RunnerStartCommand.foregroundEnding(status: 1, pid: 1234, stopRequested: false)) {
+            XCTAssertEqual($0.localizedDescription, "The runner exited with status 1; the session has ended.")
+        }
+        XCTAssertEqual(try? RunnerStartCommand.foregroundEnding(status: 0, pid: 1234, stopRequested: false),
+                       "Runner stopped (pid 1234); the session has ended.")
+    }
+
+    // MARK: - L37: the interrupt notice names the emulator on Android
+
+    func testTheForegroundSetUpForAnAndroidLaunchSaysEmulator() {
+        let saved = SignalRelay.shared.deviceNoun
+        defer {
+            SignalRelay.shared.untrack(group: 999_997)
+            SignalRelay.shared.deviceNoun = saved
+        }
+        RunnerStartCommand.trackRunner(group: 999_997, platform: .android)
+        XCTAssertEqual(SignalRelay.shared.deviceNoun, "emulator")
+        RunnerStartCommand.trackRunner(group: 999_997, platform: .ios)
+        XCTAssertEqual(SignalRelay.shared.deviceNoun, "simulator")
+    }
+
+    // MARK: - L38-a: a starting session is reported as starting
+
+    func testDumpHierarchyOnAStartingSessionSaysItIsStarting() {
+        let starting = RunnerSessionInfo.starting(pid: 5, bundleId: "a.b", udid: "emulator-5554", startedAt: Date(), platform: .android)
+        XCTAssertThrowsError(try DumpHierarchyCommand.resolveTarget(port: nil, runnerSession: starting, keepAlive: nil)) {
+            XCTAssertEqual($0.localizedDescription, "The runner session is starting (UIAutomator2 has no session yet). Retry in a few seconds.")
+        }
+    }
+
+    // MARK: - L38-b: a new runner never adopts an orphaned UIAutomator2 server
+
+    /// The device still holds the session of a `kill -9`'d keep-alive run's
+    /// server ("old") until the new runner restarts it: the wait skips "old"
+    /// and returns the new runner's own session, without clearing anything.
+    func testTheWaitSkipsTheSessionTheDeviceHeldBeforeTheRunnerStarted() async {
+        let polls = LockedValue(0)
+        let detached = LockedValue(0)
+        let result = await RunnerStartCommand.waitForUIAutomator2(
+            attach: {
+                polls.set(polls.value + 1)
+                let id = polls.value <= 3 ? "old" : "new"
+                return DriverAttachment(client: .failing, port: 61000 + polls.value, sessionID: id, detach: { detached.set(detached.value + 1) })
+            },
+            timeout: 5,
+            staleSessionID: "old",
