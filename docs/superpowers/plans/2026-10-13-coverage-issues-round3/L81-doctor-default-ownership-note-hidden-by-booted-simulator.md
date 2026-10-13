@@ -55,4 +55,3 @@ JSON likewise contains a single successful `Booted Simulator` record whose messa
 - When the default-named simulator's UDID is in the active runner home's created ledger, no `was not created by Grantiva` note is emitted.
 - Preserve the existing no-booted behavior, including its ownership-aware ensure fix, and preserve the `Could not list simulators` failure branch.
 - Add focused `GrantivaCoreTests/DoctorTests` coverage through `checkBootedSimulator`, not only direct tests of `noBootedSimulatorCheck`.
-
