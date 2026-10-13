@@ -16,7 +16,7 @@ Candidate manifest: `findings/evidence/round4-smoke-candidate3/candidate.json`, 
 | Owned provisioning | PASS | Independent APPROVED |
 | iOS MCP selectors and transport | PASS | Independent APPROVED |
 | Android runner | PASS | Independent APPROVED |
-| Lifecycle | Two helper failures preserved; round-5 correction in progress | Pending |
+| Lifecycle | Two helper failures preserved; approved round-5 helper running fresh attempt3 | Pending |
 | Joint forwarding ownership | PASS | Independent APPROVED |
 | Android MCP | PASS | Independent APPROVED |
 | Final force teardown | Not run | Pending |

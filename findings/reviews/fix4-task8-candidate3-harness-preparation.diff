@@ -877,10 +877,10 @@ index 00000000..e14c3ce7
 +Every nested command preserves argv, cwd, start, exit, stdout, and stderr. `owned-resources.json` records verified provenance and exact observed PIDs. If an assertion fails after a runner starts, bounded cleanup stops only a session whose PID was previously verified against the owned device, signals only that exact verified PID if needed, removes only forwards enumerated for the owned Android serial, and records all actions in `cleanup.json`. `acceptance.json` is written only after all selected assertions pass.
 diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py
 new file mode 100644
-index 00000000..9b800d71
+index 00000000..2dd6a601
 --- /dev/null
 +++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task8-candidate3-harness/lifecycle_smoke.py
-@@ -0,0 +1,877 @@
+@@ -0,0 +1,878 @@
 +#!/usr/bin/env python3
 +"""Task 8 lifecycle smoke, rebound to one final candidate and owned devices."""
 +
@@ -1320,8 +1320,6 @@ index 00000000..9b800d71
 +                raise AssertionError("authenticated generated flow was not retained")
 +            terminal = {"reportPath": str(report), "reportRequired": state["reportRequired"], "reportWasPresent": state["reportWasPresent"], "snapshotCaptured": state["reportSnapshotCaptured"], "terminalReportCopied": state["terminalReportCopied"], "terminalReportAbsent": state["terminalReportAbsent"], "generatedFlowRetained": bool(state.get("flowWasPresent"))}
 +            write_json(self.output / phase / f"{label}-snapshot-terminal.json", terminal)
-+            if state["reportRequired"] and not state["terminalReportCopied"]:
-+                raise FileNotFoundError(f"required terminal runner report disappeared: {report}")
 +        except BaseException as exc:
 +            state["error"] = exc
 +            authenticated = state.get("authenticated")
@@ -1363,11 +1361,14 @@ index 00000000..9b800d71
 +        error = state.get("error")
 +        if isinstance(error, BaseException):
 +            raise error
-+        if not state.get("terminalReportCopied") and not (state.get("terminalReportAbsent") and not state.get("reportRequired")):
-+            raise AssertionError("runner report terminal snapshot was not captured")
++        if not state.get("terminalReportCopied") and not state.get("terminalReportAbsent"):
++            raise AssertionError("runner report terminal source state was not recorded")
 +        if state.get("reportRequired"):
 +            # Validate only retained bytes after the worker has joined. Repeated
 +            # stops must not re-read the live source after legitimate cleanup.
++            # Detached start also deletes its temporary launch report on normal
++            # return while the runner stays ready; retained proof is mandatory,
++            # continued source existence is not.
 +            report = json.loads(state["retainedReport"].read_text())
 +            flows = report.get("flows", [])
 +            if (report.get("status") != "passed" or not report.get("endTime")

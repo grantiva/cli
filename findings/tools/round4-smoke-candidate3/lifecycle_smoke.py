@@ -437,8 +437,6 @@ class Smoke:
                 raise AssertionError("authenticated generated flow was not retained")
             terminal = {"reportPath": str(report), "reportRequired": state["reportRequired"], "reportWasPresent": state["reportWasPresent"], "snapshotCaptured": state["reportSnapshotCaptured"], "terminalReportCopied": state["terminalReportCopied"], "terminalReportAbsent": state["terminalReportAbsent"], "generatedFlowRetained": bool(state.get("flowWasPresent"))}
             write_json(self.output / phase / f"{label}-snapshot-terminal.json", terminal)
-            if state["reportRequired"] and not state["terminalReportCopied"]:
-                raise FileNotFoundError(f"required terminal runner report disappeared: {report}")
         except BaseException as exc:
             state["error"] = exc
             authenticated = state.get("authenticated")
@@ -480,11 +478,14 @@ class Smoke:
         error = state.get("error")
         if isinstance(error, BaseException):
             raise error
-        if not state.get("terminalReportCopied") and not (state.get("terminalReportAbsent") and not state.get("reportRequired")):
-            raise AssertionError("runner report terminal snapshot was not captured")
+        if not state.get("terminalReportCopied") and not state.get("terminalReportAbsent"):
+            raise AssertionError("runner report terminal source state was not recorded")
         if state.get("reportRequired"):
             # Validate only retained bytes after the worker has joined. Repeated
             # stops must not re-read the live source after legitimate cleanup.
+            # Detached start also deletes its temporary launch report on normal
+            # return while the runner stays ready; retained proof is mandatory,
+            # continued source existence is not.
             report = json.loads(state["retainedReport"].read_text())
             flows = report.get("flows", [])
             if (report.get("status") != "passed" or not report.get("endTime")
