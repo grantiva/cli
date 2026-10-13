@@ -1,0 +1,10 @@
+appId: com.kylebrowning.Landmarks
+env:
+  LANDMARKS_NOTE: from header
+---
+- launchApp:
+    environment:
+      LANDMARKS_NOTE: from step
+- tapOn: "Deep Links"
+- assertVisible: "from step"
+- assertNotVisible: "from header"
