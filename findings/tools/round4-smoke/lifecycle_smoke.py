@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -28,6 +29,7 @@ INTERRUPT_NOTICES = {
     "ios": "[grantiva] received SIGINT — releasing simulator and reaping child processes",
     "android": "[grantiva] received SIGINT — releasing emulator and reaping child processes",
 }
+RUBY_YAML_DOCUMENTS = "content = File.read(ARGV[0]); docs = content.split(/^---[ \\t]*$\\n?/).map { |doc| YAML.safe_load(doc, [], [], false) }; puts JSON.generate(docs)"
 PHASES = (
     "startup-interrupt",
     "detach-ready",
@@ -44,6 +46,18 @@ def write_json(path: Path, value: object) -> None:
 
 def identity_token(value: object) -> str:
     return re.sub(r"[^a-z0-9]", "", str(value).lower())
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def yaml_documents(path: Path) -> object:
+    result = subprocess.run(
+        ["/usr/bin/ruby", "-rjson", "-ryaml", "-e", RUBY_YAML_DOCUMENTS, str(path)],
+        capture_output=True, text=True, check=True, timeout=10,
+    )
+    return json.loads(result.stdout)
 
 
 class Smoke:
@@ -86,6 +100,9 @@ class Smoke:
         self.provenance = ios_identity
         self.candidate_doc = json.loads(ns.candidate_manifest.read_text())
         self.ownership_doc = json.loads(ns.ownership_manifest.read_text())
+        installed = self.candidate_doc["runner"]["installed"]
+        self.installed_runner = Path(installed["path"]).resolve()
+        self.installed_runner_sha256 = installed["sha256"]
         if Path(self.candidate_doc["demo"]["iosApp"]["path"]).resolve() != ns.ios_app.resolve():
             raise AssertionError("supplied iOS app is not the frozen clean-built app")
         write_json(self.output / "verified-candidate-identity.json", self.provenance)
@@ -181,6 +198,54 @@ class Smoke:
         if device not in argv:
             raise AssertionError(f"PID {pid} is not bound to owned device {device}: {argv}")
         return argv
+
+    def pid_is_running(self, pid: int) -> bool:
+        try:
+            state = subprocess.check_output(["/bin/ps", "-p", str(pid), "-o", "stat="], text=True).strip()
+        except subprocess.CalledProcessError:
+            return False
+        return bool(state) and "Z" not in state
+
+    def bound_argv_if_running(self, pid: int, device: str) -> list[str] | None:
+        if not self.pid_is_running(pid):
+            return None
+        try:
+            return self.assert_pid_bound(pid, device)
+        except (AssertionError, subprocess.CalledProcessError):
+            if not self.pid_is_running(pid):
+                return None
+            raise
+
+    def bind_log_runner(self, line: str, cli_pid: int, device: str, expected_report: Path, source_flow: Path) -> dict[str, object] | None:
+        columns = line.split(maxsplit=3)
+        if len(columns) != 4:
+            return None
+        pid, ppid, pgid = map(int, columns[:3])
+        if ppid != cli_pid or pgid not in (cli_pid, pid):
+            return None
+        argv = shlex.split(columns[3])
+        if not argv or "--output" not in argv or "--device" not in argv:
+            return None
+        output_index = argv.index("--output")
+        device_index = argv.index("--device")
+        if output_index + 1 >= len(argv) or device_index + 1 >= len(argv) or argv[device_index + 1] != device:
+            return None
+        executable = Path(argv[0]).resolve()
+        if executable != self.installed_runner or file_sha256(executable) != self.installed_runner_sha256:
+            return None
+        runner_report = Path(argv[output_index + 1]).resolve()
+        runner_flow = Path(argv[-1]).resolve()
+        if runner_report != expected_report.resolve() or not runner_report.exists() or not runner_flow.exists():
+            return None
+        if yaml_documents(runner_flow) != yaml_documents(source_flow) or "extendedWaitUntil" not in runner_flow.read_text():
+            return None
+        return {
+            "pid": pid, "ppid": ppid, "pgid": pgid, "cliPID": cli_pid,
+            "executable": str(executable), "executableSHA256": self.installed_runner_sha256,
+            "report": str(runner_report), "sourceFlow": str(source_flow.resolve()),
+            "flow": str(runner_flow), "sourceFlowSHA256": file_sha256(source_flow),
+            "flowSHA256": file_sha256(runner_flow), "flowSemanticallyEquivalent": True,
+        }
 
     def register_runner(self, pid: int, platform: str, device: str, phase: str) -> list[str]:
         argv = self.assert_pid_bound(pid, device)
@@ -286,7 +351,8 @@ class Smoke:
             for line in forwards:
                 parts = line.split()
                 if len(parts) >= 2 and parts[0] == self.ns.android_serial:
-                    removed = self.command(phase, f"remove-forward-{parts[1].replace(':', '-')}", [str(self.adb), "-s", self.ns.android_serial, "forward", "--remove", parts[1]], expected=None)
+                    label = f"remove-forward-{identity_token(parts[1])}"
+                    removed = self.command(phase, label, [str(self.adb), "-s", self.ns.android_serial, "forward", "--remove", parts[1]], expected=None)
                     actions.append({"action": "remove-owned-forward", "local": parts[1], "exit": removed.returncode})
         except Exception as exc:
             actions.append({"action": "android-forward-cleanup", "result": "error", "error": str(exc)})
@@ -298,7 +364,9 @@ class Smoke:
             try:
                 doc = json.loads(self.session.read_text())
                 pid = int(doc["pid"])
-                argv = self.assert_pid_bound(pid, device)
+                argv = self.bound_argv_if_running(pid, device)
+                if argv is None:
+                    return
                 platform = "ios" if device == self.ns.ios_udid else "android"
                 self.active_runners[pid] = (platform, device)
                 self.owned_pids[pid] = {"kind": "grantiva-runner", "argv": argv, "device": device, "platform": platform, "phase": phase}
@@ -310,7 +378,7 @@ class Smoke:
                     if flow.exists():
                         shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
                 self.record_ownership()
-            except (FileNotFoundError, ProcessLookupError, json.JSONDecodeError, KeyError, subprocess.CalledProcessError):
+            except (FileNotFoundError, ProcessLookupError, json.JSONDecodeError, KeyError):
                 pass
             time.sleep(0.01)
 
@@ -495,6 +563,7 @@ class Smoke:
                 if not marker or child_pid is None:
                     raise TimeoutError(f"owned iOS log child not observed for {label}")
                 self.record_ownership()
+                active_runner = None
                 if label == "success":
                     deadline = time.monotonic() + 240
                     while not ready.exists() and time.monotonic() < deadline:
@@ -506,6 +575,19 @@ class Smoke:
                         raise AssertionError(ready_doc)
                     os.kill(proc.pid, signal.SIGINT)
                 elif label == "interrupted":
+                    deadline = time.monotonic() + 180
+                    while time.monotonic() < deadline and active_runner is None:
+                        ps = subprocess.check_output(["/bin/ps", "-ww", "-axo", "pid=,ppid=,pgid=,command="], text=True)
+                        for line in ps.splitlines():
+                            active_runner = self.bind_log_runner(line, proc.pid, self.ns.ios_udid, report, flow)
+                            if active_runner is not None:
+                                break
+                        if proc.poll() is not None:
+                            raise AssertionError("interrupted control exited before its long-wait runner became active")
+                        if active_runner is None:
+                            time.sleep(0.025)
+                    if active_runner is None:
+                        raise TimeoutError("interrupted long-wait runner/report did not become active")
                     os.kill(proc.pid, signal.SIGINT)
                 code = self.finish(phase, label, proc, 180)
                 expected = {"success": 0, "failed": 1, "interrupted": 130}[label]
@@ -519,11 +601,17 @@ class Smoke:
                 terminals = [line for line in err.splitlines() if f"simctl spawn {self.ns.ios_udid} log stream" in line and ("stopped by " in line or "exit " in line)]
                 if len(terminals) != 1 or "could not confirm log-stream cleanup" in err:
                     raise AssertionError({"case": label, "terminalDiagnostics": terminals})
-                report_doc = json.loads((report / "report.json").read_text())
-                expected_status = "passed" if label == "success" else "failed"
-                if report_doc.get("status") != expected_status and not any(f.get("status") == expected_status for f in report_doc.get("flows", [])):
-                    raise AssertionError({"case": label, "report": report_doc})
-                self.checks.append({"phase": phase, "case": label, "exit": code, "ownedMarker": marker, "ownedChildPID": child_pid, "absentSnapshots": 3, "terminalDiagnostic": terminals[0]})
+                report_path = report / "report.json"
+                report_status = None
+                if report_path.exists():
+                    report_doc = json.loads(report_path.read_text())
+                    expected_status = {"success": "passed", "failed": "failed", "interrupted": "interrupted"}[label]
+                    if report_doc.get("status") != expected_status and not any(f.get("status") == expected_status for f in report_doc.get("flows", [])):
+                        raise AssertionError({"case": label, "report": report_doc})
+                    report_status = expected_status
+                elif label != "interrupted":
+                    raise AssertionError(f"{label} report is absent")
+                self.checks.append({"phase": phase, "case": label, "exit": code, "ownedMarker": marker, "ownedChildPID": child_pid, "absentSnapshots": 3, "terminalDiagnostic": terminals[0], "activeRunner": active_runner, "reportStatus": report_status})
             finally:
                 if proc.poll() is None:
                     os.kill(proc.pid, signal.SIGINT)
@@ -560,15 +648,22 @@ class Smoke:
         self.register_runner(runner_pid, "ios", self.ns.ios_udid, phase)
         self.command(phase, "live-hierarchy", [str(self.binary), "runner", "dump-hierarchy", "--udid", self.ns.ios_udid, "--format", "tree"])
         force_doc = json.loads(self.command(phase, "live-force", [str(self.binary), "simulator", "teardown", "--udid", self.ns.ios_udid, "--force", "--json"], timeout=240).stdout)
-        write_json(self.output / "IOS-DEVICE-RECREATE-REQUIRED.json", {"destroyedOwnedUDID": self.ns.ios_udid, "phase": phase, "mayNotBeReused": True})
         entry = force_doc[0] if isinstance(force_doc, list) else force_doc
         if (entry.get("runnerSessionStopped") is not True or entry.get("reclaimed") is not True
                 or not isinstance(entry.get("processes"), list) or not isinstance(entry.get("reapedProcesses"), list)):
             raise AssertionError(entry)
         self.assert_pid_gone(runner_pid)
         self.assert_session_cleanup(runner_pid)
-        self.checks.append({"phase": phase, "runnerPID": runner_pid, "result": entry, "ownedDeviceDestroyed": self.ns.ios_udid, "recreateRequired": True})
-        self.record_ownership("destroyed-recreate-required")
+        write_json(self.output / "IOS-FORCE-RECLAIMED.json", {
+            "ownedUDID": self.ns.ios_udid, "phase": phase, "resourcesReclaimed": True,
+            "physicalDeviceDeleted": False, "finalCleanupRequired": True,
+        })
+        self.checks.append({
+            "phase": phase, "runnerPID": runner_pid, "result": entry,
+            "resourcesReclaimed": True, "physicalDeviceDeleted": False,
+            "finalCleanupRequired": True,
+        })
+        self.record_ownership("force-resources-reclaimed")
 
 
 def parser() -> argparse.ArgumentParser:
@@ -591,7 +686,7 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--ios-app", type=Path, required=True)
     p.add_argument("--android-application-id", default="com.kylebrowning.landmarks")
     p.add_argument("--phase", action="append", choices=PHASES)
-    p.add_argument("--allow-destroy-owned-ios", action="store_true")
+    p.add_argument("--allow-force-reclaim-owned-ios", action="store_true")
     p.add_argument("--validate-only", action="store_true")
     return p
 
@@ -613,10 +708,10 @@ def validate(ns: argparse.Namespace) -> list[str]:
     if ns.session_id != "fix4-8":
         errors.append("Task 8 session must be literal fix4-8")
     phases = ns.phase or list(PHASES[:-1])
-    if "force-teardown" in phases and (len(phases) != 1 or not ns.allow_destroy_owned_ios):
-        errors.append("force-teardown must run alone with --allow-destroy-owned-ios")
-    if "force-teardown" not in phases and ns.allow_destroy_owned_ios:
-        errors.append("--allow-destroy-owned-ios is valid only with --phase force-teardown")
+    if "force-teardown" in phases and (len(phases) != 1 or not ns.allow_force_reclaim_owned_ios):
+        errors.append("force-teardown must run alone with --allow-force-reclaim-owned-ios")
+    if "force-teardown" not in phases and ns.allow_force_reclaim_owned_ios:
+        errors.append("--allow-force-reclaim-owned-ios is valid only with --phase force-teardown")
     return errors
 
 
@@ -650,7 +745,7 @@ def main() -> int:
         raise
     finally:
         if smoke is not None:
-            smoke.record_ownership("destroyed-recreate-required" if (smoke.output / "IOS-DEVICE-RECREATE-REQUIRED.json").exists() else status)
+            smoke.record_ownership("force-resources-reclaimed" if (smoke.output / "IOS-FORCE-RECLAIMED.json").exists() else status)
 
 
 if __name__ == "__main__":

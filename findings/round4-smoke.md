@@ -1,4 +1,4 @@
-# Round 4 bounded smoke — in progress
+# Round 4 bounded smoke — candidate failed
 
 Candidate CLI `fb7af9d1702cd4f294aae48eb5f1ed52dbfe2d88`, runner `ff68658f73e4b6d9d94897d99ad1a0a270a105b7` / `1.1.28-grantiva.14`, demo `1552ae983a27528eff4c1f8145aa075698b47f71`. Candidate identity and all raw evidence are under `findings/evidence/round4-smoke/`. No full smoke or coverage pass is claimed yet.
 
@@ -9,6 +9,8 @@ Candidate CLI `fb7af9d1702cd4f294aae48eb5f1ed52dbfe2d88`, runner `ff68658f73e4b6
 - Android runner smoke: independently approved (see `findings/reviews/fix4-task8-android-final.md`). The first three attempts stopped on harness setup; attempt 4 invoked stock crash incorrectly via direct runner. Those remain excluded with raw captures; reviewed corrections bind the versioned driver home and invoke the CLI for Android header-env conversion. Attempt 5 plus the separately reviewed unchanged optional/required/cycle continuation and stop focus/hierarchy complement govern. The monolithic helper exit remains recorded as a diagnostic assertion failure; it is not regraded.
 - CLI lifecycle: reviewed notice correction applied. Startup and ready interruption plus detached readiness passed on both platforms. Isolated ready-exit reproduction confirmed L82: CLI-owned TCP forward survives SIGINT/exit130; absent-app rollback passes. Task4 repair is in progress. No full lifecycle pass claimed.
 - Android MCP: passed L65 and ten large-response pairs. iOS MCP transport/retry-only continuation passed L65, ten large pairs, and the two-lookup retry error; full L66 FAILED because literal `heart` is absent after selecting Landmarks. Installed iOS app matches every frozen clean-build file. Task5 demo repair reopened; no alias or relaxed selector contract is accepted. Both MCP sessions were stopped with captured exit0.
-- Remaining lifecycle log/cycle controls, final force teardown and exact owned cleanup: pending. Runtime2 harness corrections are under independent scoped review.
+- Remaining lifecycle log/cycle controls passed after independently reviewed notice/process/YAML serialization corrections. Raw failed harness attempts remain preserved. Force teardown JSON and exact runner/session cleanup passed.
+- New L83 FAILED: runner removes unrelated local tcp6790→tcp16790 during healthy stock exit0. Runner cleanup repair and repack required.
+- Final targeted cleanup passed: both owned devices deleted; no owned sessions/locks/forwards/processes remain. Force teardown reclaimed resources but did not delete the simulator; explicit targeted shutdown/delete is captured. Protected identities/boot states/last-used values and Android configuration unchanged; dynamic simulator storage-size growth retained separately.
 
-Owned simulator `B718468C-771F-47BC-9CD8-A1143D540AC5` (`smoke4-ios`, iOS26.0) and AVD `smoke4-android` (`emulator-5580`, emulator PID28028) remain active. Owner devices must remain untouched. Task9 remains gated until every bounded criterion and cleanup passes.
+Owned simulator `B718468C-771F-47BC-9CD8-A1143D540AC5` (`smoke4-ios`, iOS26.0) and AVD `smoke4-android` (`emulator-5580`, emulator PID28028) are deleted/stopped. Task9 remains gated: L82, reopened demo L66, and L83 require reviewed repairs and a rebuilt clean smoke candidate.

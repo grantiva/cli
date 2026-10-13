@@ -1,0 +1,1415 @@
+Resolved: scheme=(none) simulator=B718468C-771F-47BC-9CD8-A1143D540AC5 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: B718468C-771F-47BC-9CD8-A1143D540AC5
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: smoke4-ios (B718468C-771F-47BC-9CD8-A1143D540AC5)
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:36:03Z com.grantiva.cli: $ xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T17:36:04Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+[debug] 2026-10-13T17:36:04Z com.grantiva.cli: $ /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-E5610DE3-F195-4907-A174-ABD3E216FC7C" == "grantiva-log-E5610DE3-F195-4907-A174-ABD3E216FC7C")'
+Streaming simulator logs (predicate: process == "Landmarks")
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted.yaml
+[debug] 2026-10-13T17:36:04Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T17:36:04Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T17:36:04Z com.grantiva.cli: $ /private/tmp/grantiva-round4-smoke-j35_m7hg/runner-home/versions/1.1.28-grantiva.14+android-drivers-2/grantiva-runner --platform ios --device B718468C-771F-47BC-9CD8-A1143D540AC5 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-92C424ED-7FFA-4BF4-AB66-908A12DE45BF/0/interrupted.yaml
+
+  grantiva-runner 1.1.28-grantiva.14 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+[log] 2026-10-13 10:36:06.097 Df Landmarks[47593:187c9d6] [com.apple.launchservices:db] NotifyToken::RegisterDispatch(com.apple.LaunchServices.database) fired for session key LSSessionKey(system: 0 uid: 501)
+[log] 2026-10-13 10:36:06.697 Df Landmarks[47593:187c9d6] [com.apple.dt.automationmode:Default] Handling posted change notification (com.apple.dt.automationmode.state-changed)
+[log] 2026-10-13 10:36:06.697 Df Landmarks[47593:187c9d6] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:06.697 Df Landmarks[47593:187c9d6] [com.apple.xpc:connection] [0x10557d0f0] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:06.699 Df Landmarks[47593:187c9d6] [com.apple.xpc:connection] [0x10557d0f0] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:36:06.699 Df Landmarks[47593:187c9d6] [com.apple.dt.automationmode:Default] Comparing previous enabled state (0) to current enabled state (1)
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8913
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.xpc:connection] [0x1056042c0] Connection returned listener port: 0x7d0f
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.xpc:connection] [0x110304440] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x1056042c0.peer[47875].0x110304440
+[log] 2026-10-13 10:36:07.761 Df Landmarks[47593:187c9da] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x60000001c3c0>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:36:09.100 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x102c04080] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+[log] 2026-10-13 10:36:09.106 A  Landmarks[47937:187d041] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[log] 2026-10-13 10:36:09.107 Df Landmarks[47937:187d03d] (libMobileGestalt.dylib) No persisted cache on this platform.
+[log] 2026-10-13 10:36:09.107 Df Landmarks[47937:187d042] [com.apple.BoardServices:XPCErrors] [C:1] Alloc com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d042] [com.apple.xpc:connection] [0x1026080f0] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d040] [com.apple.UIKit:BackgroundTask] Creating new assertion because there is no existing background assertion.
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d040] [com.apple.UIKit:BackgroundTask] Creating new background assertion
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d040] [com.apple.UIKit:BackgroundTask] Created new background assertion <BKSProcessAssertion: 0x600002113ac0>
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d040] [com.apple.runningboard:connection] Initializing connection
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d040] [com.apple.runningboard:process] Removing all cached process handles
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d041] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d041] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+[log] 2026-10-13 10:36:09.108 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x102608430] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:36:09.109 A  Landmarks[47937:187d045] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason added: 10; deactivation reasons: 0 -> 1024; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d041] [com.apple.runningboard:connection] Handshake succeeded
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d03d] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.open
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d041] [com.apple.runningboard:connection] Identity resolved as app<com.kylebrowning.Landmarks((null))>
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d03d] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.workspace-service
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d040] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002113ac0>
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d040] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x6000017057c0>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501017 (elapsed = 0).
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:Common] FBSWorkspace registering source: com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:36:09.109 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UIApplicationSceneKeyboardSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneOcclusionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneInterfaceProtectionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:Common] FBSWorkspace connected to endpoint : <BSServiceConnectionEndpoint: 0x600000202a00; target: com.apple.frontboard.systemappservices; service: com.apple.frontboard.workspace-service>
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003000090 com.apple.frontboard.systemappservices> attempting immediate handshake from activate
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferencesHostSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneSafeAreaSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003000090 com.apple.frontboard.systemappservices> sent handshake
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferenceClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d03d] [com.apple.runningboard:general] Added observer for process assertions expiration warning: <_RBSExpirationWarningClient: 0x600000211fa0>
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UIHomeAffordanceHostSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISystemShellSceneHostingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:09.110 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneRenderingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneRenderingEnvironmentClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneTransitioningHostSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneFocusSystemSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneMainMenuSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneWindowingControlClientSettings on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingContentSizePreferenceClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneHostingTraitCollectionPropagationSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:09.111 Df Landmarks[47937:187d03d] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x102c06370> for initial
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d03d] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x102c06370> for CADisplay KVO
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingEventDeferringSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingViewControllerPreferencePropagationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d040] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneZoomTransitionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d03d] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 1, category name = (null)
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d045] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneSettingsCore on FBSSceneSettings
+[log] 2026-10-13 10:36:09.112 Df Landmarks[47937:187d03d] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 0, category name = (null)
+[log] 2026-10-13 10:36:09.113 Df Landmarks[47937:187d045] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneClientSettingsCore on FBSSceneClientSettings
+[log] 2026-10-13 10:36:09.113 Df Landmarks[47937:187d045] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneSettings setting counterpart class: UIApplicationSceneSettings
+[log] 2026-10-13 10:36:09.113 Df Landmarks[47937:187d045] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneClientSettings setting counterpart class: UIApplicationSceneClientSettings
+[log] 2026-10-13 10:36:09.113 Df Landmarks[47937:187d045] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneTransitionContextCore on FBSSceneTransitionContext
+[log] 2026-10-13 10:36:09.384 A  Landmarks[47937:187d045] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:36:09.390 Df Landmarks[47937:187d03d] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+[log] 2026-10-13 10:36:09.390 Df Landmarks[47937:187d03d] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:36:09.390 Df Landmarks[47937:187d03d] [com.apple.dt.xctest:Default] Test daemon availability confirmed via notify_get_state.
+[log] 2026-10-13 10:36:09.390 Df Landmarks[47937:187d03d] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:36:09.390 Df Landmarks[47937:187d042] [com.apple.xpc:connection] [0x102c0d7c0] activating connection: mach=true listener=false peer=false name=com.apple.dt.xctestd.target
+[log] 2026-10-13 10:36:09.391 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:36:09.391 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Attempting to load /Library/Developer/CoreSimulator/Volumes/iOS_23A343/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework.
+[log] 2026-10-13 10:36:09.391 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason added: 11; deactivation reasons: 1024 -> 3072; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:09.392 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason removed: 10; deactivation reasons: 3072 -> 2048; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:09.397 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventBus] Event Timing Profile for Touch: not found, path="/System/Library/EventTimingProfiles/Sim.Touch.plist"
+[log] 2026-10-13 10:36:09.423 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventBus] Event Timing Profile for Pencil: not found, path="/System/Library/EventTimingProfiles/Sim.Pencil.plist"
+[log] 2026-10-13 10:36:09.423 Df Landmarks[47937:187d03d] [com.apple.UIKit:UpdateScheduler] Selected display: name=LCD (PurpleMain), id=1
+[log] 2026-10-13 10:36:09.424 Df Landmarks[47937:187d041] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x105a05230] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x102b0d6a0] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x102b0d6a0] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Setting up target listener.
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x105a05b60] activating connection: mach=false listener=true peer=false name=(anonymous)
+[log] 2026-10-13 10:36:09.425 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x105a05b60] Connection returned listener port: 0x5907
+[log] 2026-10-13 10:36:09.426 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:36:09.426 Df Landmarks[47937:187d041] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:36:09.426 Df Landmarks[47937:187d041] [com.apple.xpc:connection] [0x1059180c0] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x105a05b60.peer[47875].0x1059180c0
+[log] 2026-10-13 10:36:09.426 Df Landmarks[47937:187d041] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x60000001c160>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:36:09.436 Df Landmarks[47937:187d03d] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+[log] 2026-10-13 10:36:09.436 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x105918600] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:36:09.436 Df Landmarks[47937:187d042] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+[log] 2026-10-13 10:36:09.437 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason added: 5; deactivation reasons: 2048 -> 2080; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:09.437 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Should send trait collection or coordinate space update, interface style 1 -> 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.437 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.437 Df Landmarks[47937:187d03d] [com.apple.UIKit:HomeAffordanceObservation] Initializing: <_UIHomeAffordanceSceneNotifier: 0x6000029404d0>; with scene: <UIWindowScene: 0x105916030>
+[log] 2026-10-13 10:36:09.437 Df Landmarks[47937:187d03d] [com.apple.BacklightServices:scenes] 0x600000c552c0 setDelegate:<0x600000c551a0 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventDeferring] [0x600002940620] Initialized with scene: <UIWindowScene: 0x105916030>; behavior: <_UIEventDeferringBehavior_iOS: 0x60000021e080>; availableForProcess: 1, systemShellManagesKeyboardFocus: 1
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d042] [com.apple.BackBoard:EventDelivery] BKSHIDEventObserver - connection activation
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x6000026183c0; process scope; status: target> was:none
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Scene target of keyboard event deferring environment did change: 1; scene: UIWindowScene: 0x105916030; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventDeferring] [0x600002940620] Scene target of event deferring environments did update: scene: 0x105916030; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x105916030; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Stack[KeyWindow] 0x600000c5f6c0: Taking no further action for migration from LastOneWins -> SystemShellManaged as there are no scenes
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to SystemShellManaged
+[log] 2026-10-13 10:36:09.438 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Key window needs update: 0; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x105916030; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x0; reason: UIWindowScene: 0x105916030: Window scene became target of keyboard environment
+[log] 2026-10-13 10:36:09.439 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.439 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.460 A  Landmarks[47937:187d03d] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:Orientation] <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059) Scene updated orientation preferences: none -> ( Pu Ll Lr )
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Key window API is scene-level: YES
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] UIWindowScene: 0x105916030: Window became key in scene: UIWindow: 0x105a09cd0; contextId: 0x15F55924: reason: UIWindowScene: 0x105916030: Window requested to become key in scene: 0x105a09cd0
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Key window needs update: 1; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x105916030; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x105a09cd0; reason: UIWindowScene: 0x105916030: Window requested to become key in scene: 0x105a09cd0
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x105a09cd0; contextId: 0x15F55924; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.481 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventDeferring] [0x600002940620] Begin local event deferring requested for token: 0x60000260dc80; environments: 1; reason: UIWindowScene: 0x105916030: Begin event deferring in keyboardFocus for window: 0x105a09cd0
+[log] 2026-10-13 10:36:09.482 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.482 Df Landmarks[47937:187d044] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x6000026183c0; token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059; status: ancestor> was:target
+[log] 2026-10-13 10:36:09.482 Df Landmarks[47937:187d03d] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Ignoring already applied deactivation reason: 5; deactivation reasons: 2080
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason added: 12; deactivation reasons: 2080 -> 6176; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason removed: 11; deactivation reasons: 6176 -> 4128; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneIntelligenceSupportSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d042] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d042] [com.apple.xpc:session] [0x600002127b10] Session created.
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d042] [com.apple.xpc:session] [0x600002127b10] Session created from connection [0x105b04c30]
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d042] [com.apple.xpc:connection] [0x105b04c30] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+[log] 2026-10-13 10:36:09.483 Df Landmarks[47937:187d042] [com.apple.xpc:session] [0x600002127b10] Session activated
+[log] 2026-10-13 10:36:09.496 Df Landmarks[47937:187d045] [com.apple.xpc:connection] [0x105a07910] activating connection: mach=true listener=false peer=false name=com.apple.fontservicesd
+[log] 2026-10-13 10:36:09.529 Df Landmarks[47937:187d03d] [PrototypeTools:domain] Not observing PTDefaults on customer install.
+[log] 2026-10-13 10:36:09.538 Df Landmarks[47937:187d03d] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:36:09.538 Df Landmarks[47937:187d03d] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [79384583-BBBA-43B8-B3DE-EF5F27776B08] (reporting strategy default)>
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [2CC01D3F-058F-4990-A444-DB3DEEFF145B] (reporting strategy default)>
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.network:activity] Set activity <nw_activity 50:1 [79384583-BBBA-43B8-B3DE-EF5F27776B08] (reporting strategy default)> as the global parent
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 1
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.UIKit:BackgroundTask] Ending task with identifier 1 and description: <_UIBackgroundTaskInfo: 0x6000017057c0>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501017 (elapsed = 1), _expireHandler: (null)
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002113ac0> (used by background task with identifier 1: <_UIBackgroundTaskInfo: 0x6000017057c0>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501017 (elapsed = 1))
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.UIKit:BackgroundTask] Will invalidate assertion: <BKSProcessAssertion: 0x600002113ac0> for task identifier: 1
+[log] 2026-10-13 10:36:09.563 Df Landmarks[47937:187d03d] [com.apple.UIKit:UpdateScheduler] Target list changed: <CADisplay:LCD PurpleMain>
+[log] 2026-10-13 10:36:09.564 Df Landmarks[47937:187d03d] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.564 A  Landmarks[47937:187d045] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:09.564 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.565 A  Landmarks[47937:187d046] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:09.604 Df Landmarks[47937:187d03d] [com.apple.UIKit:EventDeferring] [0x600002940620] Scene target of event deferring environments did update: scene: 0x105916030; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:36:09.604 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x105916030; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.604 Df Landmarks[47937:187d03d] [com.apple.BackBoard:Display] [FBSDisplaySource 1-1] silently connecting raw configuration: <FBSDisplayConfiguration: 0x600003d5cc30; Main; mode: "402x874@3x 60Hz p3 SDR">
+[log] 2026-10-13 10:36:09.605 Df Landmarks[47937:187d03d] [com.apple.FrontBoard:SceneExtension] Realizing settings extension SBUISecureRenderingSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:09.605 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.605 Df Landmarks[47937:187d03d] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x105916030> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:09.606 Df Landmarks[47937:187d03d] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:09.606 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason removed: 12; deactivation reasons: 4128 -> 32; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:09.606 Df Landmarks[47937:187d03d] [com.apple.KeyboardArbiter:Client] Send setDeactivating: N (-DeactivationReason:SuspendedEventsOnly)
+[log] 2026-10-13 10:36:09.607 Df Landmarks[47937:187d03d] [com.apple.UIKit:Application] Deactivation reason removed: 5; deactivation reasons: 32 -> 0; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:09.617 Df Landmarks[47937:187d03d] [com.apple.KeyboardArbiter:Client] startConnection
+[log] 2026-10-13 10:36:09.617 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x105b19b00] activating connection: mach=true listener=false peer=false name=com.apple.UIKit.KeyboardManagement.hosted
+[log] 2026-10-13 10:36:09.620 Df Landmarks[47937:187d03d] [com.apple.KeyboardArbiter:Client] handleKeyboardChange: set currentKeyboard:N (wasKeyboard:N)
+[log] 2026-10-13 10:36:09.620 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyboardSceneDelegate] forceReloadInputViews
+[log] 2026-10-13 10:36:09.620 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <(null): 0x0; > force:Y
+[log] 2026-10-13 10:36:09.620 Df Landmarks[47937:187d03d] [com.apple.UIKit:KeyboardArbiterClientLog] isWritingToolsHandlingKeyboardTracking:Y (WT ready:Y, Arbiter ready:Y)
+[log] 2026-10-13 10:36:09.631 Df Landmarks[47937:187d03d] [com.apple.Accessibility:AXCommon] Smart invert app status cached: (null)
+[log] 2026-10-13 10:36:09.658 Df Landmarks[47937:187d03d] [com.apple.network:activity] <nw_activity 50:1 [79384583-BBBA-43B8-B3DE-EF5F27776B08] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 748ms
+[log] 2026-10-13 10:36:09.658 Df Landmarks[47937:187d03d] [com.apple.network:activity] <nw_activity 50:2 [2CC01D3F-058F-4990-A444-DB3DEEFF145B] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 748ms
+[log] 2026-10-13 10:36:09.658 Df Landmarks[47937:187d03d] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [79384583-BBBA-43B8-B3DE-EF5F27776B08] (global parent) (reporting strategy default) complete (reason success)>
+[log] 2026-10-13 10:36:09.658 Df Landmarks[47937:187d03d] [com.apple.network:activity] Unset the global parent activity
+[log] 2026-10-13 10:36:09.673 A  Landmarks[47937:187d044] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:10.269 A  Landmarks[47937:187d045] (RunningBoardServices) didChangeInheritances
+
+  [1/1] interrupted (interrupted.yaml)
+────────────────────────────────────────────────────────────
+[log] 2026-10-13 10:36:10.512 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x105adf2e0] activating connection: mach=true listener=false peer=false name=com.apple.IOSurface.Remote
+[log] 2026-10-13 10:36:10.519 Df Landmarks[47937:187d03d] [com.apple.runningboard:connection] Creating side-channel connection to com.apple.runningboard
+[log] 2026-10-13 10:36:10.519 Df Landmarks[47937:187d03d] [com.apple.xpc:connection] [0x105aa8920] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:36:10.519 Df Landmarks[47937:187d03d] [com.apple.runningboard:process] Hit the server for a process handle 1e026c9e0000bb41 that resolved to: [app<com.kylebrowning.Landmarks((null))>:47937]
+[log] 2026-10-13 10:36:11.093 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x103005ac0] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+[log] 2026-10-13 10:36:11.099 A  Landmarks[48094:187d1f1] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[log] 2026-10-13 10:36:11.100 Df Landmarks[48094:187d1ed] (libMobileGestalt.dylib) No persisted cache on this platform.
+[log] 2026-10-13 10:36:11.100 Df Landmarks[48094:187d1f2] [com.apple.BoardServices:XPCErrors] [C:1] Alloc com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:36:11.101 Df Landmarks[48094:187d1f2] [com.apple.xpc:connection] [0x105804bd0] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:36:11.101 Df Landmarks[48094:187d1f0] [com.apple.UIKit:BackgroundTask] Creating new assertion because there is no existing background assertion.
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f0] [com.apple.UIKit:BackgroundTask] Creating new background assertion
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f0] [com.apple.UIKit:BackgroundTask] Created new background assertion <BKSProcessAssertion: 0x600002100fa0>
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f0] [com.apple.runningboard:connection] Initializing connection
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f0] [com.apple.runningboard:process] Removing all cached process handles
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f3] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f3] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x105d04080] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason added: 10; deactivation reasons: 0 -> 1024; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:11.102 A  Landmarks[48094:187d1f1] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1ed] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.open
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f3] [com.apple.runningboard:connection] Handshake succeeded
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1f3] [com.apple.runningboard:connection] Identity resolved as app<com.kylebrowning.Landmarks((null))>
+[log] 2026-10-13 10:36:11.102 Df Landmarks[48094:187d1ed] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.workspace-service
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:Common] FBSWorkspace registering source: com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1f0] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002100fa0>
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1f0] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x600001720240>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501019 (elapsed = 0).
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UIApplicationSceneKeyboardSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneOcclusionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.103 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:Common] FBSWorkspace connected to endpoint : <BSServiceConnectionEndpoint: 0x600000211980; target: com.apple.frontboard.systemappservices; service: com.apple.frontboard.workspace-service>
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003010090 com.apple.frontboard.systemappservices> attempting immediate handshake from activate
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003010090 com.apple.frontboard.systemappservices> sent handshake
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneInterfaceProtectionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferencesHostSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1ed] [com.apple.runningboard:general] Added observer for process assertions expiration warning: <_RBSExpirationWarningClient: 0x600000220cc0>
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneSafeAreaSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferenceClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.104 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UIHomeAffordanceHostSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISystemShellSceneHostingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneRenderingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneRenderingEnvironmentClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneTransitioningHostSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneFocusSystemSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneMainMenuSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneWindowingControlClientSettings on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingContentSizePreferenceClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.105 Df Landmarks[48094:187d1ed] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x105d04670> for initial
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneHostingTraitCollectionPropagationSettings on FBSSceneSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1ed] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x105d04670> for CADisplay KVO
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingEventDeferringSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingViewControllerPreferencePropagationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1f0] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneZoomTransitionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.106 Df Landmarks[48094:187d1ed] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 1, category name = (null)
+[log] 2026-10-13 10:36:11.107 Df Landmarks[48094:187d1f3] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneSettingsCore on FBSSceneSettings
+[log] 2026-10-13 10:36:11.107 Df Landmarks[48094:187d1ed] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 0, category name = (null)
+[log] 2026-10-13 10:36:11.107 Df Landmarks[48094:187d1f3] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneClientSettingsCore on FBSSceneClientSettings
+[log] 2026-10-13 10:36:11.107 Df Landmarks[48094:187d1f3] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneSettings setting counterpart class: UIApplicationSceneSettings
+[log] 2026-10-13 10:36:11.108 Df Landmarks[48094:187d1f3] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneClientSettings setting counterpart class: UIApplicationSceneClientSettings
+[log] 2026-10-13 10:36:11.108 Df Landmarks[48094:187d1f3] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneTransitionContextCore on FBSSceneTransitionContext
+[log] 2026-10-13 10:36:11.379 A  Landmarks[48094:187d1f2] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Test daemon availability confirmed via notify_get_state.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x103006bb0] activating connection: mach=true listener=false peer=false name=com.apple.dt.xctestd.target
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Attempting to load /Library/Developer/CoreSimulator/Volumes/iOS_23A343/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework.
+[log] 2026-10-13 10:36:11.385 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason added: 11; deactivation reasons: 1024 -> 3072; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:11.386 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason removed: 10; deactivation reasons: 3072 -> 2048; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:11.386 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventBus] Event Timing Profile for Touch: not found, path="/System/Library/EventTimingProfiles/Sim.Touch.plist"
+[log] 2026-10-13 10:36:11.391 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventBus] Event Timing Profile for Pencil: not found, path="/System/Library/EventTimingProfiles/Sim.Pencil.plist"
+[log] 2026-10-13 10:36:11.418 Df Landmarks[48094:187d1ed] [com.apple.UIKit:UpdateScheduler] Selected display: name=LCD (PurpleMain), id=1
+[log] 2026-10-13 10:36:11.420 Df Landmarks[48094:187d1f3] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:11.420 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x103208430] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+[log] 2026-10-13 10:36:11.420 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x1030047c0] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x1030047c0] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Setting up target listener.
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x105e04080] activating connection: mach=false listener=true peer=false name=(anonymous)
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x105e04080] Connection returned listener port: 0x5a13
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:36:11.421 Df Landmarks[48094:187d1f3] [com.apple.xpc:connection] [0x102f26b20] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x105e04080.peer[47875].0x102f26b20
+[log] 2026-10-13 10:36:11.422 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x600000008fb0>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:36:11.432 Df Landmarks[48094:187d1ed] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+[log] 2026-10-13 10:36:11.432 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x103605000] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:36:11.433 Df Landmarks[48094:187d1f2] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+[log] 2026-10-13 10:36:11.434 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Will add backgroundTask with taskName: Persistent SceneSession Map Update, expirationHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:36:11.434 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Reusing background assertion <BKSProcessAssertion: 0x600002100fa0>
+[log] 2026-10-13 10:36:11.434 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002100fa0>
+[log] 2026-10-13 10:36:11.434 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x60000173b8c0>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501020 (elapsed = 0).
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason added: 5; deactivation reasons: 2048 -> 2080; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Should send trait collection or coordinate space update, interface style 1 -> 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:HomeAffordanceObservation] Initializing: <_UIHomeAffordanceSceneNotifier: 0x6000029350a0>; with scene: <UIWindowScene: 0x1036121b0>
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.BacklightServices:scenes] 0x600000c4f1b0 setDelegate:<0x600000c4f2d0 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.435 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventDeferring] [0x6000029351f0] Initialized with scene: <UIWindowScene: 0x1036121b0>; behavior: <_UIEventDeferringBehavior_iOS: 0x60000024e7c0>; availableForProcess: 1, systemShellManagesKeyboardFocus: 1
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1f2] [com.apple.BackBoard:EventDelivery] BKSHIDEventObserver - connection activation
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002606400; process scope; status: target> was:none
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Scene target of keyboard event deferring environment did change: 1; scene: UIWindowScene: 0x1036121b0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventDeferring] [0x6000029351f0] Scene target of event deferring environments did update: scene: 0x1036121b0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x1036121b0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Stack[KeyWindow] 0x600000c40de0: Taking no further action for migration from LastOneWins -> SystemShellManaged as there are no scenes
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to SystemShellManaged
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Key window needs update: 0; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x1036121b0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x0; reason: UIWindowScene: 0x1036121b0: Window scene became target of keyboard environment
+[log] 2026-10-13 10:36:11.436 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.437 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.456 A  Landmarks[48094:187d1ed] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Orientation] <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059) Scene updated orientation preferences: none -> ( Pu Ll Lr )
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Key window API is scene-level: YES
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] UIWindowScene: 0x1036121b0: Window became key in scene: UIWindow: 0x103041d70; contextId: 0x1C83FBA7: reason: UIWindowScene: 0x1036121b0: Window requested to become key in scene: 0x103041d70
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Key window needs update: 1; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x1036121b0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x103041d70; reason: UIWindowScene: 0x1036121b0: Window requested to become key in scene: 0x103041d70
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x103041d70; contextId: 0x1C83FBA7; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.478 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventDeferring] [0x6000029351f0] Begin local event deferring requested for token: 0x600002601140; environments: 1; reason: UIWindowScene: 0x1036121b0: Begin event deferring in keyboardFocus for window: 0x103041d70
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1f1] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002606400; token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059; status: ancestor> was:target
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Ignoring already applied deactivation reason: 5; deactivation reasons: 2080
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason added: 12; deactivation reasons: 2080 -> 6176; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason removed: 11; deactivation reasons: 6176 -> 4128; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:11.479 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneIntelligenceSupportSettings> on FBSSceneSettings
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1f0] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1f0] [com.apple.xpc:session] [0x600002126120] Session created.
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1f0] [com.apple.xpc:session] [0x600002126120] Session created from connection [0x102f265e0]
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1f0] [com.apple.xpc:connection] [0x102f265e0] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+[log] 2026-10-13 10:36:11.480 Df Landmarks[48094:187d1f0] [com.apple.xpc:session] [0x600002126120] Session activated
+[log] 2026-10-13 10:36:11.492 Df Landmarks[48094:187d1f2] [com.apple.xpc:connection] [0x1036081d0] activating connection: mach=true listener=false peer=false name=com.apple.fontservicesd
+[log] 2026-10-13 10:36:11.525 Df Landmarks[48094:187d1ed] [PrototypeTools:domain] Not observing PTDefaults on customer install.
+[log] 2026-10-13 10:36:11.533 Df Landmarks[48094:187d1ed] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:36:11.533 Df Landmarks[48094:187d1ed] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [BDB37DDD-90FC-4E85-A07A-C168C1714A97] (reporting strategy default)>
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [C2040E65-E348-4EBE-8AAC-8BE9D83ECCD3] (reporting strategy default)>
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.network:activity] Set activity <nw_activity 50:1 [BDB37DDD-90FC-4E85-A07A-C168C1714A97] (reporting strategy default)> as the global parent
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 1
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Ending task with identifier 1 and description: <_UIBackgroundTaskInfo: 0x600001720240>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501019 (elapsed = 1), _expireHandler: (null)
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002100fa0> (used by background task with identifier 1: <_UIBackgroundTaskInfo: 0x600001720240>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501019 (elapsed = 1))
+[log] 2026-10-13 10:36:11.557 A  Landmarks[48094:187d1f0] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:11.557 Df Landmarks[48094:187d1ed] [com.apple.UIKit:UpdateScheduler] Target list changed: <CADisplay:LCD PurpleMain>
+[log] 2026-10-13 10:36:11.558 Df Landmarks[48094:187d1ed] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.558 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.559 A  Landmarks[48094:187d1f2] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:11.598 Df Landmarks[48094:187d1ed] [com.apple.UIKit:EventDeferring] [0x6000029351f0] Scene target of event deferring environments did update: scene: 0x1036121b0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:36:11.598 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x1036121b0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.598 Df Landmarks[48094:187d1ed] [com.apple.BackBoard:Display] [FBSDisplaySource 1-1] silently connecting raw configuration: <FBSDisplayConfiguration: 0x600003d24ff0; Main; mode: "402x874@3x 60Hz p3 SDR">
+[log] 2026-10-13 10:36:11.600 Df Landmarks[48094:187d1ed] [com.apple.FrontBoard:SceneExtension] Realizing settings extension SBUISecureRenderingSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:36:11.600 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.600 Df Landmarks[48094:187d1ed] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x1036121b0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:36:11.600 Df Landmarks[48094:187d1ed] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:36:11.601 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason removed: 12; deactivation reasons: 4128 -> 32; animating application lifecycle event: 1
+[log] 2026-10-13 10:36:11.601 Df Landmarks[48094:187d1ed] [com.apple.KeyboardArbiter:Client] Send setDeactivating: N (-DeactivationReason:SuspendedEventsOnly)
+[log] 2026-10-13 10:36:11.601 Df Landmarks[48094:187d1ed] [com.apple.UIKit:Application] Deactivation reason removed: 5; deactivation reasons: 32 -> 0; animating application lifecycle event: 0
+[log] 2026-10-13 10:36:11.604 Df Landmarks[48094:187d1ed] [com.apple.KeyboardArbiter:Client] startConnection
+[log] 2026-10-13 10:36:11.604 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x10361be80] activating connection: mach=true listener=false peer=false name=com.apple.UIKit.KeyboardManagement.hosted
+[log] 2026-10-13 10:36:11.605 Df Landmarks[48094:187d1ed] [com.apple.KeyboardArbiter:Client] handleKeyboardChange: set currentKeyboard:N (wasKeyboard:N)
+[log] 2026-10-13 10:36:11.606 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyboardSceneDelegate] forceReloadInputViews
+[log] 2026-10-13 10:36:11.606 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <(null): 0x0; > force:Y
+[log] 2026-10-13 10:36:11.606 Df Landmarks[48094:187d1ed] [com.apple.UIKit:KeyboardArbiterClientLog] isWritingToolsHandlingKeyboardTracking:Y (WT ready:Y, Arbiter ready:Y)
+[log] 2026-10-13 10:36:11.626 Df Landmarks[48094:187d1ed] [com.apple.Accessibility:AXCommon] Smart invert app status cached: (null)
+[log] 2026-10-13 10:36:11.666 Df Landmarks[48094:187d1ed] [com.apple.network:activity] <nw_activity 50:1 [BDB37DDD-90FC-4E85-A07A-C168C1714A97] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 754ms
+[log] 2026-10-13 10:36:11.666 Df Landmarks[48094:187d1ed] [com.apple.network:activity] <nw_activity 50:2 [C2040E65-E348-4EBE-8AAC-8BE9D83ECCD3] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 754ms
+[log] 2026-10-13 10:36:11.666 Df Landmarks[48094:187d1ed] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [BDB37DDD-90FC-4E85-A07A-C168C1714A97] (global parent) (reporting strategy default) complete (reason success)>
+[log] 2026-10-13 10:36:11.666 Df Landmarks[48094:187d1ed] [com.apple.network:activity] Unset the global parent activity
+[log] 2026-10-13 10:36:11.669 A  Landmarks[48094:187d1f2] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:36:11.936 Df Landmarks[48094:187d1f3] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 2
+[log] 2026-10-13 10:36:11.936 Df Landmarks[48094:187d1f3] [com.apple.UIKit:BackgroundTask] Ending task with identifier 2 and description: <_UIBackgroundTaskInfo: 0x60000173b8c0>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501020 (elapsed = 0), _expireHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:36:11.937 Df Landmarks[48094:187d1f3] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002100fa0> (used by background task with identifier 2: <_UIBackgroundTaskInfo: 0x60000173b8c0>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501020 (elapsed = 0))
+[log] 2026-10-13 10:36:11.937 Df Landmarks[48094:187d1f3] [com.apple.UIKit:BackgroundTask] Will invalidate assertion: <BKSProcessAssertion: 0x600002100fa0> for task identifier: 2
+[log] 2026-10-13 10:36:12.260 A  Landmarks[48094:187d1f2] (RunningBoardServices) didChangeInheritances
+    ✓ launchApp (2.0s)
+[log] 2026-10-13 10:36:12.502 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x105eba7c0] activating connection: mach=true listener=false peer=false name=com.apple.IOSurface.Remote
+[log] 2026-10-13 10:36:12.509 Df Landmarks[48094:187d1ed] [com.apple.runningboard:connection] Creating side-channel connection to com.apple.runningboard
+[log] 2026-10-13 10:36:12.509 Df Landmarks[48094:187d1ed] [com.apple.xpc:connection] [0x105d08a80] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:36:12.509 Df Landmarks[48094:187d1ed] [com.apple.runningboard:process] Hit the server for a process handle 1b7629200000bbde that resolved to: [app<com.kylebrowning.Landmarks((null))>:48094]
+[log] 2026-10-13 10:36:12.523 Df Landmarks[48094:187d1ed] (libMobileGestalt.dylib) Property isp[camera-front] found {length = 4, bytes = 0x01000000}
+[log] 2026-10-13 10:36:12.523 A  Landmarks[48094:187d1ed] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:36:12.526 A  Landmarks[48094:187d1ed] (libsystem_containermanager.dylib) container_system_group_path_for_identifier
+[log] 2026-10-13 10:36:12.526 Df Landmarks[48094:187d1ed] [com.apple.containermanager:xpc] Requesting container lookup; class = 13, identifier = (null), group_identifier = systemgroup.com.apple.configurationprofiles, create = 1, temp = 0, euid = 501, uid = 501
+[log] 2026-10-13 10:36:12.526 A  Landmarks[48094:187d1ed] (libsystem_containermanager.dylib) container_query_t
+[log] 2026-10-13 10:36:12.526 Df Landmarks[48094:187d1ed] [com.apple.containermanager:xpc] Query; euid = 501, uid = 501, class = 13, identifier = [(null)](0), flags = 900000003
+[log] 2026-10-13 10:36:12.526 Df Landmarks[48094:187d1ed] [com.apple.containermanager:unspecified] _container_query_get_result_at_index: success
+[log] 2026-10-13 10:36:12.526 A  Landmarks[48094:187d1ed] (libsystem_containermanager.dylib) container_copy_object
+[log] 2026-10-13 10:36:12.526 Df Landmarks[48094:187d1ed] [com.apple.containermanager:unspecified] container_system_group_path_for_identifier: success
+[log] 2026-10-13 10:36:12.526 Df Landmarks[48094:187d1ed] [com.apple.ManagedConfiguration:MC] Got system group container path from MCM for systemgroup.com.apple.configurationprofiles: /Users/kyle/Library/Developer/CoreSimulator/Devices/B718468C-771F-47BC-9CD8-A1143D540AC5/data/Containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:12.632 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:12.696 E  Landmarks[48094:187d1ed] [com.apple.Accessibility:AXRuntimeCommon] Unknown client: Landmarks
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:13.359 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:14.070 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:14.882 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:15.586 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:16.284 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:17.081 Df Landmarks[48094:187d1f3] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:17.791 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:18.499 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:19.311 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:19.312 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:19.312 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:20.016 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:20.017 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:20.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:21.549 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:22.267 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:22.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:23.789 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:24.502 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:24.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:25.222 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:26.029 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:26.741 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:27.454 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:28.261 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:28.976 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:29.695 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:30.506 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:30.507 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:31.222 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:31.944 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:32.755 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:33.460 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:33.461 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:34.190 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:35.049 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:35.824 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:35.825 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:36.581 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:37.425 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:38.181 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:38.182 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:38.926 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:39.770 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:40.504 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:40.505 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:41.246 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:41.246 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:41.246 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:41.247 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:42.104 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:42.887 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:43.621 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:44.430 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:45.157 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:45.882 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:46.700 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:46.701 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:46.701 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:47.432 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:48.182 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:49.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:49.727 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:50.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:51.266 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:52.000 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:52.722 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:53.538 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:53.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:53.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:53.539 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:54.261 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:54.995 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:55.841 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:56.601 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:57.354 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:57.355 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:57.355 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:58.207 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:58.952 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:36:59.690 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:36:59.690 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:36:59.691 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:00.538 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:01.308 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:01.309 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:02.055 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:02.891 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:03.610 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:04.332 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:05.144 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:05.889 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:06.624 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:07.450 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:08.176 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:08.899 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:09.733 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:09.734 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:10.503 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:11.257 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:12.095 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1f6] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:12.839 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:12.840 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:12.840 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:37:13.556 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 48094. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 48094
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1ed] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:37:13.557 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+[log] 2026-10-13 10:37:14.228 Df Landmarks[48094:187d1f2] [com.apple.xpc:connection] [0x102f26b20] invalidated because the client process (pid 47875) either cancelled the connection or exited
+[log] 2026-10-13 10:37:14.228 Df Landmarks[48094:187d1f2] [com.apple.dt.xctest:Default] Connection from client with pid 47875 was invalidated.
+[log] 2026-10-13 10:37:14.229 Df Landmarks[48094:187d1f2] [com.apple.dt.automationmode:Default] Handling posted change notification (com.apple.dt.automationmode.state-changed)
+[log] 2026-10-13 10:37:14.229 Df Landmarks[48094:187d1f2] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:37:14.230 Df Landmarks[48094:187d1f2] [com.apple.xpc:connection] [0x10582cd30] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:37:14.230 Df Landmarks[48094:187d1f2] [com.apple.xpc:connection] [0x10582cd30] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:37:14.230 Df Landmarks[48094:187d1f2] [com.apple.dt.automationmode:Default] Comparing previous enabled state (1) to current enabled state (0)
+[log] 2026-10-13 10:37:14.231 Df Landmarks[48094:187d1f5] [com.apple.dt.xctest:Default] Automation Mode has been disabled, existing connections will be invalidated.
+[log] 2026-10-13 10:37:14.232 A  Landmarks[48094:187d1f5] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[log] 2026-10-13 10:37:14.232 A  Landmarks[48094:187d1f5] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: exit 1: /private/tmp/grantiva-round4-smoke-j35_m7hg/runner-home/versions/1.1.28-grantiva.14+android-drivers-2/grantiva-runner --platform ios --device B718468C-771F-47BC-9CD8-A1143D540AC5 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-92C424ED-7FFA-4BF4-AB66-908A12DE45BF/0/interrupted.yaml
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-E5610DE3-F195-4907-A174-ABD3E216FC7C" == "grantiva-log-E5610DE3-F195-4907-A174-ABD3E216FC7C")'
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: $ xcrun simctl io 'B718468C-771F-47BC-9CD8-A1143D540AC5' screenshot '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted-report/captures/failure-1791913034.png'
+[debug] 2026-10-13T17:37:14Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear

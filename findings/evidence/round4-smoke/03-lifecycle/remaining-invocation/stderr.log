@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 657, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 639, in main
+    getattr(smoke, phase.replace("-", "_"))()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 493, in log_cleanup
+    raise AssertionError(f"{label} exited before owned log child was observed")
+AssertionError: success exited before owned log child was observed

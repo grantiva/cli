@@ -27,9 +27,9 @@ The helper intentionally does not claim the wider Task 9 lifecycle family. Quiet
 Run force teardown alone, last, with a new evidence path:
 
 ```text
---phase force-teardown --allow-destroy-owned-ios
+--phase force-teardown --allow-force-reclaim-owned-ios
 ```
 
-It starts an actual detached session, checks the live hierarchy, requires JSON `runnerSessionStopped: true`, `reclaimed: true`, typed process arrays, and absence of the exact runner PID plus project/shared session state. It writes `IOS-DEVICE-RECREATE-REQUIRED.json` immediately after the destructive command returns; the controller must provision and record a new owned simulator before any later iOS command.
+It starts an actual detached session, checks the live hierarchy, requires JSON `runnerSessionStopped: true`, `reclaimed: true`, typed process arrays, and absence of the exact runner PID plus project/shared session state. After those assertions pass, it writes `IOS-FORCE-RECLAIMED.json`. Force teardown reclaims Grantiva-owned runtime resources; it does not assert that CoreSimulator shut down or deleted the simulator. The controller must explicitly shut down and delete the owned simulator during final cleanup, then prove its UDID is absent.
 
 Every nested command preserves argv, cwd, start, exit, stdout, and stderr. `owned-resources.json` records verified provenance and exact observed PIDs. If an assertion fails after a runner starts, bounded cleanup stops only a session whose PID was previously verified against the owned device, signals only that exact verified PID if needed, removes only forwards enumerated for the owned Android serial, and records all actions in `cleanup.json`. `acceptance.json` is written only after all selected assertions pass.

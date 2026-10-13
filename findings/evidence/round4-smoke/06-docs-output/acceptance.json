@@ -5,5 +5,22 @@
   "corpusFailures": 0,
   "freshUnitHomeEmptyAfter": true,
   "doctorTextJSONOwnershipAgreement": true,
-  "publicMigrationNotesInspected": true
+  "publicMigrationNotesInspected": true,
+  "ambiguousPlatformAdvisory": {
+    "fix": "Pass --platform ios|android or set GRANTIVA_PLATFORM.",
+    "message": "Found both an Xcode project and Gradle settings",
+    "name": "Platform",
+    "section": "Advisory",
+    "status": "warning"
+  },
+  "ambiguousTextJSONExitZero": true,
+  "ambiguityFixture": {
+    "project": "/private/tmp/grantiva-round4-smoke-j35_m7hg/doctor-ambiguous-project",
+    "files": [
+      "App.xcodeproj/",
+      "settings.gradle.kts"
+    ],
+    "GRANTIVA_PLATFORM": "unset",
+    "priorDualConfigCapture": "not an ambiguous-detection fixture: configs resolve both toolchains explicitly; preserved as non-governing"
+  }
 }

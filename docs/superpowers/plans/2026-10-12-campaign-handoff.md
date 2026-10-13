@@ -160,3 +160,5 @@ Task8 docs/output complete:172candidatehelppages,16corpus/docs tests0failfreshho
 
 ### Task8 repair checkpoint (2026-10-13 17:35Z)
 Task7 merged fb7af9d1. Task8 candidate/owned devices remain as recorded in findings/evidence/round4-smoke/candidate.json and provision/ownership.json. Two real blockers: L82 foreground Android forward leak (CLI repair agent), reopened L66 clean-demo unselected heart identifier (diagnosis findings/reports/fix4-task8-heart-unselected-diagnosis.md). AndroidMCP passes; iOS transport/retry-only passes, full selector fails. Both MCP sessions stopped. Remaining lifecycle helper scoped fixes await independent review. No clean Task8 or Task9 publication. Owner devices untouched.
+
+Task8 candidate1 devices are now fully cleaned (08-final-cleanup-verification). Current status FAILED: L82/reopenedL66/L83. CLI PR213 startuphandoff reviewfix in progress; demo PR5 staticreview; runnerL83 exactlocalownershipfix queued. A new runnerpackageversion and complete clean smoke are required before Task9. Task9scratch amended fornewcriteria but remains UNKNOWN/noexecution.

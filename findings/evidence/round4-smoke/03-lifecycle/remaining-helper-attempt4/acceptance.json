@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "absentSnapshots": 3,
+      "activeRunner": null,
+      "case": "success",
+      "exit": 0,
+      "ownedChildPID": 54098,
+      "ownedMarker": "grantiva-log-AC8F6C03-43FC-4CE5-84F5-F64CE53AA532",
+      "phase": "log-cleanup",
+      "reportStatus": "passed",
+      "terminalDiagnostic": "[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == \"Landmarks\") AND (\"grantiva-log-AC8F6C03-43FC-4CE5-84F5-F64CE53AA532\" == \"grantiva-log-AC8F6C03-43FC-4CE5-84F5-F64CE53AA532\")'"
+    },
+    {
+      "absentSnapshots": 3,
+      "activeRunner": null,
+      "case": "failed",
+      "exit": 1,
+      "ownedChildPID": 54471,
+      "ownedMarker": "grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41",
+      "phase": "log-cleanup",
+      "reportStatus": "failed",
+      "terminalDiagnostic": "[debug] 2026-10-13T17:41:07Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == \"Landmarks\") AND (\"grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41\" == \"grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41\")'"
+    },
+    {
+      "absentSnapshots": 3,
+      "activeRunner": {
+        "cliPID": 54778,
+        "executable": "/private/tmp/grantiva-round4-smoke-j35_m7hg/runner-home/versions/1.1.28-grantiva.14+android-drivers-2/grantiva-runner",
+        "executableSHA256": "eb289d8a505b22351b88bf2dfb728dd4af74fb7187ce68637d99c809bf55cb07",
+        "flow": "/private/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-8939E063-030C-442F-A66C-9E7C975E7D4E/0/interrupted.yaml",
+        "flowSHA256": "6741d0e78fb14ab9ef8156d4aca8b1fc7b6fbd1295d95c3033c1d840c734a017",
+        "flowSemanticallyEquivalent": true,
+        "pgid": 54881,
+        "pid": 54881,
+        "ppid": 54778,
+        "report": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/interrupted-report",
+        "sourceFlow": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/interrupted.yaml",
+        "sourceFlowSHA256": "7e763b1dc42ad23af1c184c8b8f2502c7e667e7b7e7804b00c155d0bc07cf409"
+      },
+      "case": "interrupted",
+      "exit": 130,
+      "ownedChildPID": 54862,
+      "ownedMarker": "grantiva-log-69742F7A-3EBE-42F0-A040-CF6DB5793FC5",
+      "phase": "log-cleanup",
+      "reportStatus": null,
+      "terminalDiagnostic": "[debug] 2026-10-13T17:41:09Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == \"Landmarks\") AND (\"grantiva-log-69742F7A-3EBE-42F0-A040-CF6DB5793FC5\" == \"grantiva-log-69742F7A-3EBE-42F0-A040-CF6DB5793FC5\")'"
+    },
+    {
+      "case": "screens",
+      "diagnostic": "grantiva.yml -> a.yaml -> b.yaml -> a.yaml",
+      "duration": 1.7112265410250984,
+      "exit": 1,
+      "phase": "cycle-controls"
+    },
+    {
+      "case": "root",
+      "diagnostic": "a.yaml -> b.yaml -> a.yaml -> b.yaml",
+      "duration": 1.7163578750332817,
+      "exit": 1,
+      "phase": "cycle-controls"
+    },
+    {
+      "case": "absolute",
+      "diagnostic": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/cycle-controls/project/a.yaml -> b.yaml -> a.yaml -> b.yaml",
+      "duration": 1.6967833749949932,
+      "exit": 1,
+      "phase": "cycle-controls"
+    }
+  ],
+  "phases": [
+    "log-cleanup",
+    "cycle-controls"
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,676 @@
+Resolved: scheme=(none) simulator=B718468C-771F-47BC-9CD8-A1143D540AC5 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: B718468C-771F-47BC-9CD8-A1143D540AC5
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: smoke4-ios (B718468C-771F-47BC-9CD8-A1143D540AC5)
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41" == "grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41")'
+Streaming simulator logs (predicate: process == "Landmarks")
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed.yaml
+[debug] 2026-10-13T17:40:44Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T17:40:45Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T17:40:45Z com.grantiva.cli: $ /private/tmp/grantiva-round4-smoke-j35_m7hg/runner-home/versions/1.1.28-grantiva.14+android-drivers-2/grantiva-runner --platform ios --device B718468C-771F-47BC-9CD8-A1143D540AC5 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-FE5F35E8-DCAC-44CE-B1DB-6A5F454BBF9B/0/failed.yaml
+
+  grantiva-runner 1.1.28-grantiva.14 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+[log] 2026-10-13 10:40:46.941 Df Landmarks[54363:18820f9] [com.apple.launchservices:db] NotifyToken::RegisterDispatch(com.apple.LaunchServices.database) fired for session key LSSessionKey(system: 0 uid: 501)
+[log] 2026-10-13 10:40:47.511 Df Landmarks[54363:18820f9] [com.apple.dt.automationmode:Default] Handling posted change notification (com.apple.dt.automationmode.state-changed)
+[log] 2026-10-13 10:40:47.511 Df Landmarks[54363:18820f9] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:47.511 Df Landmarks[54363:18820f9] [com.apple.xpc:connection] [0x105204f60] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:47.512 Df Landmarks[54363:18820f9] [com.apple.xpc:connection] [0x105204f60] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:40:47.512 Df Landmarks[54363:18820f9] [com.apple.dt.automationmode:Default] Comparing previous enabled state (0) to current enabled state (1)
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8913
+[log] 2026-10-13 10:40:48.658 Df Landmarks[54363:18820fd] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:40:48.658 Df Landmarks[54363:18820fd] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:40:48.658 Df Landmarks[54363:18820fd] [com.apple.xpc:connection] [0x100e29d70] Connection returned listener port: 0x7b0b
+[log] 2026-10-13 10:40:48.659 Df Landmarks[54363:18820fd] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:40:48.659 Df Landmarks[54363:18820fd] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:40:48.659 Df Landmarks[54363:18820fd] [com.apple.xpc:connection] [0x100c4a510] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x100e29d70.peer[54544].0x100c4a510
+[log] 2026-10-13 10:40:48.659 Df Landmarks[54363:18820fd] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x600000006b90>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:40:50.027 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x103004e80] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+[log] 2026-10-13 10:40:50.032 A  Landmarks[54593:188253c] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[log] 2026-10-13 10:40:50.033 Df Landmarks[54593:1882539] (libMobileGestalt.dylib) No persisted cache on this platform.
+[log] 2026-10-13 10:40:50.034 Df Landmarks[54593:188253d] [com.apple.BoardServices:XPCErrors] [C:1] Alloc com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:40:50.034 Df Landmarks[54593:188253d] [com.apple.xpc:connection] [0x103006350] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:40:50.034 Df Landmarks[54593:188253b] [com.apple.UIKit:BackgroundTask] Creating new assertion because there is no existing background assertion.
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253b] [com.apple.UIKit:BackgroundTask] Creating new background assertion
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253b] [com.apple.UIKit:BackgroundTask] Created new background assertion <BKSProcessAssertion: 0x600002102670>
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253b] [com.apple.runningboard:connection] Initializing connection
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253b] [com.apple.runningboard:process] Removing all cached process handles
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253e] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253e] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:188253e] [com.apple.xpc:connection] [0x102e06140] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason added: 10; deactivation reasons: 0 -> 1024; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:50.035 A  Landmarks[54593:188253c] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:50.035 Df Landmarks[54593:1882539] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.open
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253e] [com.apple.runningboard:connection] Handshake succeeded
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253e] [com.apple.runningboard:connection] Identity resolved as app<com.kylebrowning.Landmarks((null))>
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:1882539] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.workspace-service
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:1882539] [com.apple.FrontBoard:Common] FBSWorkspace registering source: com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253b] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002102670>
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253b] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x600001700540>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501298 (elapsed = 0).
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UIApplicationSceneKeyboardSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneOcclusionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.036 Df Landmarks[54593:1882539] [com.apple.FrontBoard:Common] FBSWorkspace connected to endpoint : <BSServiceConnectionEndpoint: 0x60000020eca0; target: com.apple.frontboard.systemappservices; service: com.apple.frontboard.workspace-service>
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:1882539] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003008240 com.apple.frontboard.systemappservices> attempting immediate handshake from activate
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:1882539] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003008240 com.apple.frontboard.systemappservices> sent handshake
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneInterfaceProtectionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:1882539] [com.apple.runningboard:general] Added observer for process assertions expiration warning: <_RBSExpirationWarningClient: 0x6000002244e0>
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferencesHostSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneSafeAreaSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferenceClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UIHomeAffordanceHostSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISystemShellSceneHostingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:50.037 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneRenderingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneRenderingEnvironmentClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneTransitioningHostSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneFocusSystemSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneMainMenuSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:1882539] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x102f05c90> for initial
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:1882539] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x102f05c90> for CADisplay KVO
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneWindowingControlClientSettings on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingContentSizePreferenceClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.038 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneHostingTraitCollectionPropagationSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingEventDeferringSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:1882539] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 1, category name = (null)
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingViewControllerPreferencePropagationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253b] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneZoomTransitionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:1882539] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 0, category name = (null)
+[log] 2026-10-13 10:40:50.039 Df Landmarks[54593:188253d] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneSettingsCore on FBSSceneSettings
+[log] 2026-10-13 10:40:50.040 Df Landmarks[54593:188253d] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneClientSettingsCore on FBSSceneClientSettings
+[log] 2026-10-13 10:40:50.040 Df Landmarks[54593:188253d] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneSettings setting counterpart class: UIApplicationSceneSettings
+[log] 2026-10-13 10:40:50.040 Df Landmarks[54593:188253d] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneClientSettings setting counterpart class: UIApplicationSceneClientSettings
+[log] 2026-10-13 10:40:50.041 Df Landmarks[54593:188253d] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneTransitionContextCore on FBSSceneTransitionContext
+[log] 2026-10-13 10:40:50.304 A  Landmarks[54593:188253d] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:1882539] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:1882539] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:1882539] [com.apple.dt.xctest:Default] Test daemon availability confirmed via notify_get_state.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:1882539] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:188253e] [com.apple.xpc:connection] [0x102d05800] activating connection: mach=true listener=false peer=false name=com.apple.dt.xctestd.target
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Attempting to load /Library/Developer/CoreSimulator/Volumes/iOS_23A343/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework.
+[log] 2026-10-13 10:40:50.310 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason added: 11; deactivation reasons: 1024 -> 3072; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:50.311 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason removed: 10; deactivation reasons: 3072 -> 2048; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:50.311 Df Landmarks[54593:1882539] [com.apple.UIKit:EventBus] Event Timing Profile for Touch: not found, path="/System/Library/EventTimingProfiles/Sim.Touch.plist"
+[log] 2026-10-13 10:40:50.316 Df Landmarks[54593:1882539] [com.apple.UIKit:EventBus] Event Timing Profile for Pencil: not found, path="/System/Library/EventTimingProfiles/Sim.Pencil.plist"
+[log] 2026-10-13 10:40:50.342 Df Landmarks[54593:1882539] [com.apple.UIKit:UpdateScheduler] Selected display: name=LCD (PurpleMain), id=1
+[log] 2026-10-13 10:40:50.344 Df Landmarks[54593:188253c] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:50.344 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x102f3ae70] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+[log] 2026-10-13 10:40:50.344 Df Landmarks[54593:188253c] [com.apple.xpc:connection] [0x102d043a0] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.xpc:connection] [0x102d043a0] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Setting up target listener.
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.xpc:connection] [0x102f449c0] activating connection: mach=false listener=true peer=false name=(anonymous)
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.xpc:connection] [0x102f449c0] Connection returned listener port: 0x5a0b
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:40:50.345 Df Landmarks[54593:188253c] [com.apple.xpc:connection] [0x102f52440] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x102f449c0.peer[54544].0x102f52440
+[log] 2026-10-13 10:40:50.346 Df Landmarks[54593:188253c] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x600000010450>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:40:50.355 Df Landmarks[54593:1882539] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+[log] 2026-10-13 10:40:50.355 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x102e09f10] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:40:50.356 Df Landmarks[54593:188253b] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+[log] 2026-10-13 10:40:50.358 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Will add backgroundTask with taskName: Persistent SceneSession Map Update, expirationHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:40:50.358 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Reusing background assertion <BKSProcessAssertion: 0x600002102670>
+[log] 2026-10-13 10:40:50.358 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002102670>
+[log] 2026-10-13 10:40:50.358 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x600001724c80>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501299 (elapsed = 0).
+[log] 2026-10-13 10:40:50.358 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason added: 5; deactivation reasons: 2048 -> 2080; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Should send trait collection or coordinate space update, interface style 1 -> 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.UIKit:HomeAffordanceObservation] Initializing: <_UIHomeAffordanceSceneNotifier: 0x60000293e530>; with scene: <UIWindowScene: 0x102e163c0>
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.BacklightServices:scenes] 0x600000c51200 setDelegate:<0x600000c512f0 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.359 Df Landmarks[54593:1882539] [com.apple.UIKit:EventDeferring] [0x60000293e290] Initialized with scene: <UIWindowScene: 0x102e163c0>; behavior: <_UIEventDeferringBehavior_iOS: 0x600000254c80>; availableForProcess: 1, systemShellManagesKeyboardFocus: 1
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:188253b] [com.apple.BackBoard:EventDelivery] BKSHIDEventObserver - connection activation
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002622be0; process scope; status: target> was:none
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Scene target of keyboard event deferring environment did change: 1; scene: UIWindowScene: 0x102e163c0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:EventDeferring] [0x60000293e290] Scene target of event deferring environments did update: scene: 0x102e163c0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x102e163c0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Stack[KeyWindow] 0x600000c4f690: Taking no further action for migration from LastOneWins -> SystemShellManaged as there are no scenes
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to SystemShellManaged
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Key window needs update: 0; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x102e163c0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x0; reason: UIWindowScene: 0x102e163c0: Window scene became target of keyboard environment
+[log] 2026-10-13 10:40:50.360 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.361 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.378 A  Landmarks[54593:1882539] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:Orientation] <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059) Scene updated orientation preferences: none -> ( Pu Ll Lr )
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Key window API is scene-level: YES
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] UIWindowScene: 0x102e163c0: Window became key in scene: UIWindow: 0x102d574f0; contextId: 0x1E72DC99: reason: UIWindowScene: 0x102e163c0: Window requested to become key in scene: 0x102d574f0
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Key window needs update: 1; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x102e163c0; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x102d574f0; reason: UIWindowScene: 0x102e163c0: Window requested to become key in scene: 0x102d574f0
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x102d574f0; contextId: 0x1E72DC99; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.398 Df Landmarks[54593:1882539] [com.apple.UIKit:EventDeferring] [0x60000293e290] Begin local event deferring requested for token: 0x600002602220; environments: 1; reason: UIWindowScene: 0x102e163c0: Begin event deferring in keyboardFocus for window: 0x102d574f0
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:188253d] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002622be0; token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059; status: ancestor> was:target
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Ignoring already applied deactivation reason: 5; deactivation reasons: 2080
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason added: 12; deactivation reasons: 2080 -> 6176; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason removed: 11; deactivation reasons: 6176 -> 4128; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:1882539] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneIntelligenceSupportSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:50.399 Df Landmarks[54593:188253b] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+[log] 2026-10-13 10:40:50.400 Df Landmarks[54593:188253b] [com.apple.xpc:session] [0x600002124960] Session created.
+[log] 2026-10-13 10:40:50.400 Df Landmarks[54593:188253b] [com.apple.xpc:session] [0x600002124960] Session created from connection [0x102e1a770]
+[log] 2026-10-13 10:40:50.400 Df Landmarks[54593:188253b] [com.apple.xpc:connection] [0x102e1a770] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+[log] 2026-10-13 10:40:50.400 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.400 Df Landmarks[54593:188253b] [com.apple.xpc:session] [0x600002124960] Session activated
+[log] 2026-10-13 10:40:50.412 Df Landmarks[54593:1882540] [com.apple.xpc:connection] [0x102d66f30] activating connection: mach=true listener=false peer=false name=com.apple.fontservicesd
+[log] 2026-10-13 10:40:50.445 Df Landmarks[54593:1882539] [PrototypeTools:domain] Not observing PTDefaults on customer install.
+[log] 2026-10-13 10:40:50.453 Df Landmarks[54593:1882539] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:40:50.453 Df Landmarks[54593:1882539] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [56A95898-14D7-4941-83EA-1199D5EF1D7F] (reporting strategy default)>
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [6BB32A9D-5F2F-41B3-B69A-5DD204251BFB] (reporting strategy default)>
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.network:activity] Set activity <nw_activity 50:1 [56A95898-14D7-4941-83EA-1199D5EF1D7F] (reporting strategy default)> as the global parent
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 1
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Ending task with identifier 1 and description: <_UIBackgroundTaskInfo: 0x600001700540>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501298 (elapsed = 1), _expireHandler: (null)
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002102670> (used by background task with identifier 1: <_UIBackgroundTaskInfo: 0x600001700540>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501298 (elapsed = 1))
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.UIKit:UpdateScheduler] Target list changed: <CADisplay:LCD PurpleMain>
+[log] 2026-10-13 10:40:50.477 A  Landmarks[54593:188253b] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:50.477 Df Landmarks[54593:1882539] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.478 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.479 A  Landmarks[54593:188253b] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:50.518 Df Landmarks[54593:1882539] [com.apple.UIKit:EventDeferring] [0x60000293e290] Scene target of event deferring environments did update: scene: 0x102e163c0; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:40:50.518 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x102e163c0; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.519 Df Landmarks[54593:1882539] [com.apple.BackBoard:Display] [FBSDisplaySource 1-1] silently connecting raw configuration: <FBSDisplayConfiguration: 0x600003d4f0c0; Main; mode: "402x874@3x 60Hz p3 SDR">
+[log] 2026-10-13 10:40:50.520 Df Landmarks[54593:1882539] [com.apple.FrontBoard:SceneExtension] Realizing settings extension SBUISecureRenderingSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:50.520 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.520 Df Landmarks[54593:1882539] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x102e163c0> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:50.521 Df Landmarks[54593:1882539] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:50.521 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason removed: 12; deactivation reasons: 4128 -> 32; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:50.521 Df Landmarks[54593:1882539] [com.apple.KeyboardArbiter:Client] Send setDeactivating: N (-DeactivationReason:SuspendedEventsOnly)
+[log] 2026-10-13 10:40:50.521 Df Landmarks[54593:1882539] [com.apple.UIKit:Application] Deactivation reason removed: 5; deactivation reasons: 32 -> 0; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:50.524 Df Landmarks[54593:1882539] [com.apple.KeyboardArbiter:Client] startConnection
+[log] 2026-10-13 10:40:50.524 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x103021510] activating connection: mach=true listener=false peer=false name=com.apple.UIKit.KeyboardManagement.hosted
+[log] 2026-10-13 10:40:50.525 Df Landmarks[54593:1882539] [com.apple.KeyboardArbiter:Client] handleKeyboardChange: set currentKeyboard:N (wasKeyboard:N)
+[log] 2026-10-13 10:40:50.526 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyboardSceneDelegate] forceReloadInputViews
+[log] 2026-10-13 10:40:50.526 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <(null): 0x0; > force:Y
+[log] 2026-10-13 10:40:50.526 Df Landmarks[54593:1882539] [com.apple.UIKit:KeyboardArbiterClientLog] isWritingToolsHandlingKeyboardTracking:Y (WT ready:Y, Arbiter ready:Y)
+[log] 2026-10-13 10:40:50.557 Df Landmarks[54593:1882539] [com.apple.Accessibility:AXCommon] Smart invert app status cached: (null)
+[log] 2026-10-13 10:40:50.580 Df Landmarks[54593:1882539] [com.apple.network:activity] <nw_activity 50:1 [56A95898-14D7-4941-83EA-1199D5EF1D7F] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 751ms
+[log] 2026-10-13 10:40:50.580 Df Landmarks[54593:1882539] [com.apple.network:activity] <nw_activity 50:2 [6BB32A9D-5F2F-41B3-B69A-5DD204251BFB] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 751ms
+[log] 2026-10-13 10:40:50.580 Df Landmarks[54593:1882539] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [56A95898-14D7-4941-83EA-1199D5EF1D7F] (global parent) (reporting strategy default) complete (reason success)>
+[log] 2026-10-13 10:40:50.580 Df Landmarks[54593:1882539] [com.apple.network:activity] Unset the global parent activity
+[log] 2026-10-13 10:40:50.586 A  Landmarks[54593:1882540] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:50.860 Df Landmarks[54593:188253d] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 2
+[log] 2026-10-13 10:40:50.860 Df Landmarks[54593:188253d] [com.apple.UIKit:BackgroundTask] Ending task with identifier 2 and description: <_UIBackgroundTaskInfo: 0x600001724c80>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501299 (elapsed = 0), _expireHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:40:50.860 Df Landmarks[54593:188253d] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002102670> (used by background task with identifier 2: <_UIBackgroundTaskInfo: 0x600001724c80>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501299 (elapsed = 0))
+[log] 2026-10-13 10:40:50.860 Df Landmarks[54593:188253d] [com.apple.UIKit:BackgroundTask] Will invalidate assertion: <BKSProcessAssertion: 0x600002102670> for task identifier: 2
+[log] 2026-10-13 10:40:51.195 A  Landmarks[54593:188253b] (RunningBoardServices) didChangeInheritances
+
+  [1/1] failed (failed.yaml)
+────────────────────────────────────────────────────────────
+[log] 2026-10-13 10:40:51.449 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x103089f40] activating connection: mach=true listener=false peer=false name=com.apple.IOSurface.Remote
+[log] 2026-10-13 10:40:51.455 Df Landmarks[54593:1882539] [com.apple.runningboard:connection] Creating side-channel connection to com.apple.runningboard
+[log] 2026-10-13 10:40:51.455 Df Landmarks[54593:1882539] [com.apple.xpc:connection] [0x102e3d8c0] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:40:51.455 Df Landmarks[54593:1882539] [com.apple.runningboard:process] Hit the server for a process handle 46fa3aa0000d541 that resolved to: [app<com.kylebrowning.Landmarks((null))>:54593]
+[log] 2026-10-13 10:40:51.975 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x100804700] activating connection: mach=true listener=false peer=false name=com.apple.cfprefsd.daemon
+[log] 2026-10-13 10:40:51.980 A  Landmarks[54722:18826b8] (CoreFoundation) Loading Preferences From User Session CFPrefsD
+[log] 2026-10-13 10:40:51.980 Df Landmarks[54722:18826b3] (libMobileGestalt.dylib) No persisted cache on this platform.
+[log] 2026-10-13 10:40:51.981 Df Landmarks[54722:18826b9] [com.apple.BoardServices:XPCErrors] [C:1] Alloc com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:40:51.981 Df Landmarks[54722:18826b9] [com.apple.xpc:connection] [0x100f04080] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:40:51.981 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Creating new assertion because there is no existing background assertion.
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Creating new background assertion
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Created new background assertion <BKSProcessAssertion: 0x600002105810>
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b7] [com.apple.runningboard:connection] Initializing connection
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b7] [com.apple.runningboard:process] Removing all cached process handles
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826ba] [com.apple.runningboard:connection] Sending handshake request attempt #1 to server
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826ba] [com.apple.runningboard:connection] Creating connection to com.apple.runningboard
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826ba] [com.apple.xpc:connection] [0x100e05f20] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason added: 10; deactivation reasons: 0 -> 1024; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:51.982 A  Landmarks[54722:18826b9] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826b3] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.open
+[log] 2026-10-13 10:40:51.982 Df Landmarks[54722:18826ba] [com.apple.runningboard:connection] Handshake succeeded
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b3] [com.apple.BoardServices:Injection] activating monitor for service com.apple.frontboard.workspace-service
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826ba] [com.apple.runningboard:connection] Identity resolved as app<com.kylebrowning.Landmarks((null))>
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:Common] FBSWorkspace registering source: com.apple.frontboard.systemappservices
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002105810>
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x600001701080>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501300 (elapsed = 0).
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UIApplicationSceneKeyboardSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneOcclusionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.983 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:Common] FBSWorkspace connected to endpoint : <BSServiceConnectionEndpoint: 0x60000020a6e0; target: com.apple.frontboard.systemappservices; service: com.apple.frontboard.workspace-service>
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003008240 com.apple.frontboard.systemappservices> attempting immediate handshake from activate
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:Common] <FBSWorkspaceScenesClient:0x600003008240 com.apple.frontboard.systemappservices> sent handshake
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneInterfaceProtectionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferencesHostSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b3] [com.apple.runningboard:general] Added observer for process assertions expiration warning: <_RBSExpirationWarningClient: 0x60000021cc00>
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneSafeAreaSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneLayoutPreferenceClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UIHomeAffordanceHostSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISystemShellSceneHostingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:51.984 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneRenderingEnvironmentSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneRenderingEnvironmentClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneTransitioningHostSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneFocusSystemSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneMainMenuSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneOrientationClientSettingsExtension on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneWindowingControlClientSettings on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingContentSizePreferenceClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b3] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x100e06030> for initial
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension _UISceneHostingTraitCollectionPropagationSettings on FBSSceneSettings
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b3] [com.apple.UIKit:UIScreen] Evaluated capturing state as 0 on <UIScreen: 0x100e06030> for CADisplay KVO
+[log] 2026-10-13 10:40:51.985 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingSheetPresentationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingEventDeferringSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <UIKit__UITypedKeyValueSceneSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneHostingViewControllerPreferencePropagationClientSettings> on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b7] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneZoomTransitionSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b3] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 1, category name = (null)
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826ba] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneSettingsCore on FBSSceneSettings
+[log] 2026-10-13 10:40:51.986 Df Landmarks[54722:18826b3] [com.apple.Accessibility:AXSupportCommon] Read CategoryName: per-app = 0, category name = (null)
+[log] 2026-10-13 10:40:51.987 Df Landmarks[54722:18826ba] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneClientSettingsCore on FBSSceneClientSettings
+[log] 2026-10-13 10:40:51.987 Df Landmarks[54722:18826ba] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneSettings setting counterpart class: UIApplicationSceneSettings
+[log] 2026-10-13 10:40:51.987 Df Landmarks[54722:18826ba] [com.apple.FrontBoard:SceneExtension] UIMutableApplicationSceneClientSettings setting counterpart class: UIApplicationSceneClientSettings
+[log] 2026-10-13 10:40:51.987 Df Landmarks[54722:18826ba] [com.apple.FrontBoard:SceneExtension] Realizing settings extension FBSSceneTransitionContextCore on FBSSceneTransitionContext
+[log] 2026-10-13 10:40:52.252 A  Landmarks[54722:18826ba] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Registering for test daemon availability notify post.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Test daemon availability confirmed via notify_get_state.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] notify_get_state check indicated test daemon not ready.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b9] [com.apple.xpc:connection] [0x103b21c50] activating connection: mach=true listener=false peer=false name=com.apple.dt.xctestd.target
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Received request for endpoint.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Attempting to load /Library/Developer/CoreSimulator/Volumes/iOS_23A343/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework.
+[log] 2026-10-13 10:40:52.258 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason added: 11; deactivation reasons: 1024 -> 3072; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:52.259 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason removed: 10; deactivation reasons: 3072 -> 2048; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:52.259 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventBus] Event Timing Profile for Touch: not found, path="/System/Library/EventTimingProfiles/Sim.Touch.plist"
+[log] 2026-10-13 10:40:52.264 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventBus] Event Timing Profile for Pencil: not found, path="/System/Library/EventTimingProfiles/Sim.Pencil.plist"
+[log] 2026-10-13 10:40:52.290 Df Landmarks[54722:18826b3] [com.apple.UIKit:UpdateScheduler] Selected display: name=LCD (PurpleMain), id=1
+[log] 2026-10-13 10:40:52.292 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x100f054f0] activating connection: mach=true listener=false peer=false name=com.apple.lsd.mapdb
+[log] 2026-10-13 10:40:52.293 Df Landmarks[54722:18826b8] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:52.293 Df Landmarks[54722:18826b8] [com.apple.xpc:connection] [0x103d3a210] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b8] [com.apple.xpc:connection] [0x103d3a210] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Sending anonymous endpoint.
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Setting up target listener.
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b8] [com.apple.xpc:connection] [0x103d3a210] activating connection: mach=false listener=true peer=false name=(anonymous)
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b8] [com.apple.xpc:connection] [0x103d3a210] Connection returned listener port: 0x5a13
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received client to target connection.
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b7] [com.apple.dt.automationmode:Default] Returning 1 for enabled state
+[log] 2026-10-13 10:40:52.294 Df Landmarks[54722:18826b7] [com.apple.xpc:connection] [0x103d32bd0] activating connection: mach=false listener=false peer=true name=com.apple.xpc.anonymous.0x103d3a210.peer[54544].0x103d32bd0
+[log] 2026-10-13 10:40:52.295 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Received request to exchange capabilities, remote interface capabilities are: <XCTCapabilities: 0x6000000146c0>: {
+[log]     "query runtime issue reporting" = 1;
+[log]     "query runtime issue reporting/automation type mismatch" = 1;
+[log] }
+[log] 2026-10-13 10:40:52.304 Df Landmarks[54722:18826b3] [com.apple.BoardServices:XPCErrors] [C:2] Alloc com.apple.backboard.hid-services.xpc
+[log] 2026-10-13 10:40:52.304 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x103b25bb0] activating connection: mach=false listener=false peer=false name=(anonymous)
+[log] 2026-10-13 10:40:52.304 Df Landmarks[54722:18826ba] [com.apple.BackBoard:EventDelivery] BKSHIDEventDeliveryManager - connection activation
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Will add backgroundTask with taskName: Persistent SceneSession Map Update, expirationHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Reusing background assertion <BKSProcessAssertion: 0x600002105810>
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Incrementing reference count for background assertion <BKSProcessAssertion: 0x600002105810>
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Created background task <_UIBackgroundTaskInfo: 0x600001735580>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501301 (elapsed = 0).
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason added: 5; deactivation reasons: 2048 -> 2080; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:52.306 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Should send trait collection or coordinate space update, interface style 1 -> 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.307 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.307 Df Landmarks[54722:18826b3] [com.apple.UIKit:HomeAffordanceObservation] Initializing: <_UIHomeAffordanceSceneNotifier: 0x600002926060>; with scene: <UIWindowScene: 0x103b35250>
+[log] 2026-10-13 10:40:52.307 Df Landmarks[54722:18826b3] [com.apple.BacklightServices:scenes] 0x600000c26fa0 setDelegate:<0x600000c26d90 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.307 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.307 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventDeferring] [0x6000029261b0] Initialized with scene: <UIWindowScene: 0x103b35250>; behavior: <_UIEventDeferringBehavior_iOS: 0x600000254760>; availableForProcess: 1, systemShellManagesKeyboardFocus: 1
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826ba] [com.apple.BackBoard:EventDelivery] BKSHIDEventObserver - connection activation
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002615ec0; process scope; status: target> was:none
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to LastOneWins
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Scene target of keyboard event deferring environment did change: 1; scene: UIWindowScene: 0x103b35250; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventDeferring] [0x6000029261b0] Scene target of event deferring environments did update: scene: 0x103b35250; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x103b35250; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Stack[KeyWindow] 0x600000c49d40: Taking no further action for migration from LastOneWins -> SystemShellManaged as there are no scenes
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Setting default evaluation strategy for UIUserInterfaceIdiomPhone to SystemShellManaged
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Key window needs update: 0; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x103b35250; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x0; reason: UIWindowScene: 0x103b35250: Window scene became target of keyboard environment
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.308 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.326 A  Landmarks[54722:18826b3] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:40:52.346 Df Landmarks[54722:18826b3] [com.apple.UIKit:Orientation] <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059) Scene updated orientation preferences: none -> ( Pu Ll Lr )
+[log] 2026-10-13 10:40:52.346 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Key window API is scene-level: YES
+[log] 2026-10-13 10:40:52.346 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] UIWindowScene: 0x103b35250: Window became key in scene: UIWindow: 0x103b29b30; contextId: 0x231AB65E: reason: UIWindowScene: 0x103b35250: Window requested to become key in scene: 0x103b29b30
+[log] 2026-10-13 10:40:52.346 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Key window needs update: 1; currentKeyWindowScene: 0x0; evaluatedKeyWindowScene: 0x103b35250; currentApplicationKeyWindow: 0x0; evaluatedApplicationKeyWindow: 0x103b29b30; reason: UIWindowScene: 0x103b35250: Window requested to become key in scene: 0x103b29b30
+[log] 2026-10-13 10:40:52.346 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Window did become application key: UIWindow: 0x103b29b30; contextId: 0x231AB65E; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.347 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventDeferring] [0x6000029261b0] Begin local event deferring requested for token: 0x600002611f80; environments: 1; reason: UIWindowScene: 0x103b35250: Begin event deferring in keyboardFocus for window: 0x103b29b30
+[log] 2026-10-13 10:40:52.347 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.347 Df Landmarks[54722:18826b7] [com.apple.BackBoard:EventDelivery] policyStatus:<BKSHIDEventDeliveryPolicyObserver: 0x600002615ec0; token: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059; status: ancestor> was:target
+[log] 2026-10-13 10:40:52.347 Df Landmarks[54722:18826b3] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.347 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Ignoring already applied deactivation reason: 5; deactivation reasons: 2080
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason added: 12; deactivation reasons: 2080 -> 6176; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason removed: 11; deactivation reasons: 6176 -> 4128; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:SceneExtension] Realizing settings extension <_UISceneIntelligenceSupportSettings> on FBSSceneSettings
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826ba] [com.apple.UIIntelligenceSupport:xpc] establishing connection to agent
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826ba] [com.apple.xpc:session] [0x60000213d0e0] Session created.
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826ba] [com.apple.xpc:session] [0x60000213d0e0] Session created from connection [0x100f07be0]
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826ba] [com.apple.xpc:connection] [0x100f07be0] activating connection: mach=true listener=false peer=false name=com.apple.uiintelligencesupport.agent
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.348 Df Landmarks[54722:18826ba] [com.apple.xpc:session] [0x60000213d0e0] Session activated
+[log] 2026-10-13 10:40:52.361 Df Landmarks[54722:18826bc] [com.apple.xpc:connection] [0x103d329d0] activating connection: mach=true listener=false peer=false name=com.apple.fontservicesd
+[log] 2026-10-13 10:40:52.392 Df Landmarks[54722:18826b3] [PrototypeTools:domain] Not observing PTDefaults on customer install.
+[log] 2026-10-13 10:40:52.400 Df Landmarks[54722:18826b3] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:40:52.400 Df Landmarks[54722:18826b3] [com.apple.UIKit:_UIVisualStyleRegistry] Note: no default visual style class registered as fallback for stylable class UIActivityIndicatorView
+[log] 2026-10-13 10:40:52.424 Df Landmarks[54722:18826b3] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:1 [DD7D0115-E642-41C9-90D2-95F7DF959006] (reporting strategy default)>
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.network:activity] Create activity from XPC object <nw_activity 50:2 [0D1F2C7A-4FA8-435F-9C54-9942A39F79E8] (reporting strategy default)>
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.network:activity] Set activity <nw_activity 50:1 [DD7D0115-E642-41C9-90D2-95F7DF959006] (reporting strategy default)> as the global parent
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 1
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Ending task with identifier 1 and description: <_UIBackgroundTaskInfo: 0x600001701080>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501300 (elapsed = 1), _expireHandler: (null)
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002105810> (used by background task with identifier 1: <_UIBackgroundTaskInfo: 0x600001701080>: taskID = 1, taskName = Launch Background Task for Coalescing, creationTime = 501300 (elapsed = 1))
+[log] 2026-10-13 10:40:52.425 A  Landmarks[54722:18826b7] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:UpdateScheduler] Target list changed: <CADisplay:LCD PurpleMain>
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.425 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.427 A  Landmarks[54722:18826bc] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:52.465 Df Landmarks[54722:18826b3] [com.apple.UIKit:EventDeferring] [0x6000029261b0] Scene target of event deferring environments did update: scene: 0x103b35250; current systemShellManagesKeyboardFocus: 1; systemShellManagesKeyboardFocusForScene: 1; eligibleForRecordRemoval: 1;
+[log] 2026-10-13 10:40:52.465 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyWindow] Scene became target of keyboard event deferring environment: UIWindowScene: 0x103b35250; scene identity: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.465 Df Landmarks[54722:18826b3] [com.apple.BackBoard:Display] [FBSDisplaySource 1-1] silently connecting raw configuration: <FBSDisplayConfiguration: 0x600003d4f750; Main; mode: "402x874@3x 60Hz p3 SDR">
+[log] 2026-10-13 10:40:52.466 Df Landmarks[54722:18826b3] [com.apple.FrontBoard:SceneExtension] Realizing settings extension SBUISecureRenderingSettingsExtension on FBSSceneSettings
+[log] 2026-10-13 10:40:52.467 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.467 Df Landmarks[54722:18826b3] [com.apple.UIKit:InterfaceStyle] Not push traits update to screen for new style 1, <UIWindowScene: 0x103b35250> (C58A81F6-54DF-4DBC-AD6C-D83C9D78B059)
+[log] 2026-10-13 10:40:52.467 Df Landmarks[54722:18826b3] [com.apple.UIKit:AppLifecycle] sceneOfRecord: sceneID: sceneID:com.kylebrowning.Landmarks-C58A81F6-54DF-4DBC-AD6C-D83C9D78B059  persistentID: C58A81F6-54DF-4DBC-AD6C-D83C9D78B059
+[log] 2026-10-13 10:40:52.467 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason removed: 12; deactivation reasons: 4128 -> 32; animating application lifecycle event: 1
+[log] 2026-10-13 10:40:52.467 Df Landmarks[54722:18826b3] [com.apple.KeyboardArbiter:Client] Send setDeactivating: N (-DeactivationReason:SuspendedEventsOnly)
+[log] 2026-10-13 10:40:52.468 Df Landmarks[54722:18826b3] [com.apple.UIKit:Application] Deactivation reason removed: 5; deactivation reasons: 32 -> 0; animating application lifecycle event: 0
+[log] 2026-10-13 10:40:52.470 Df Landmarks[54722:18826b3] [com.apple.KeyboardArbiter:Client] startConnection
+[log] 2026-10-13 10:40:52.470 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x103d61e10] activating connection: mach=true listener=false peer=false name=com.apple.UIKit.KeyboardManagement.hosted
+[log] 2026-10-13 10:40:52.471 Df Landmarks[54722:18826b3] [com.apple.KeyboardArbiter:Client] handleKeyboardChange: set currentKeyboard:N (wasKeyboard:N)
+[log] 2026-10-13 10:40:52.472 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyboardSceneDelegate] forceReloadInputViews
+[log] 2026-10-13 10:40:52.472 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyboardSceneDelegate] Reloading input views for key-window scene responder: <(null): 0x0; > force:Y
+[log] 2026-10-13 10:40:52.472 Df Landmarks[54722:18826b3] [com.apple.UIKit:KeyboardArbiterClientLog] isWritingToolsHandlingKeyboardTracking:Y (WT ready:Y, Arbiter ready:Y)
+[log] 2026-10-13 10:40:52.504 Df Landmarks[54722:18826b3] [com.apple.Accessibility:AXCommon] Smart invert app status cached: (null)
+[log] 2026-10-13 10:40:52.532 Df Landmarks[54722:18826b3] [com.apple.network:activity] <nw_activity 50:1 [DD7D0115-E642-41C9-90D2-95F7DF959006] (global parent) (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 734ms
+[log] 2026-10-13 10:40:52.532 Df Landmarks[54722:18826b3] [com.apple.network:activity] <nw_activity 50:2 [0D1F2C7A-4FA8-435F-9C54-9942A39F79E8] (reporting strategy default) complete (reason success)> complete with reason 2 (success), duration 734ms
+[log] 2026-10-13 10:40:52.532 Df Landmarks[54722:18826b3] [com.apple.network:activity] Unsetting the global parent activity <nw_activity 50:1 [DD7D0115-E642-41C9-90D2-95F7DF959006] (global parent) (reporting strategy default) complete (reason success)>
+[log] 2026-10-13 10:40:52.532 Df Landmarks[54722:18826b3] [com.apple.network:activity] Unset the global parent activity
+[log] 2026-10-13 10:40:52.654 A  Landmarks[54722:18826ba] (RunningBoardServices) didChangeInheritances
+[log] 2026-10-13 10:40:52.807 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Ending background task with UIBackgroundTaskIdentifier: 2
+[log] 2026-10-13 10:40:52.807 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Ending task with identifier 2 and description: <_UIBackgroundTaskInfo: 0x600001735580>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501301 (elapsed = 0), _expireHandler: <__NSGlobalBlock__: 0x1e632d818>
+[log] 2026-10-13 10:40:52.808 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Decrementing reference count for assertion <BKSProcessAssertion: 0x600002105810> (used by background task with identifier 2: <_UIBackgroundTaskInfo: 0x600001735580>: taskID = 2, taskName = Persistent SceneSession Map Update, creationTime = 501301 (elapsed = 0))
+[log] 2026-10-13 10:40:52.808 Df Landmarks[54722:18826b7] [com.apple.UIKit:BackgroundTask] Will invalidate assertion: <BKSProcessAssertion: 0x600002105810> for task identifier: 2
+[log] 2026-10-13 10:40:53.145 A  Landmarks[54722:18826c2] (RunningBoardServices) didChangeInheritances
+    ✓ launchApp (1.9s)
+[log] 2026-10-13 10:40:53.392 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x100575f00] activating connection: mach=true listener=false peer=false name=com.apple.IOSurface.Remote
+[log] 2026-10-13 10:40:53.399 Df Landmarks[54722:18826b3] [com.apple.runningboard:connection] Creating side-channel connection to com.apple.runningboard
+[log] 2026-10-13 10:40:53.399 Df Landmarks[54722:18826b3] [com.apple.xpc:connection] [0x100e1f620] activating connection: mach=true listener=false peer=false name=com.apple.runningboard
+[log] 2026-10-13 10:40:53.399 Df Landmarks[54722:18826b3] [com.apple.runningboard:process] Hit the server for a process handle d3c2e100000d5c2 that resolved to: [app<com.kylebrowning.Landmarks((null))>:54722]
+[log] 2026-10-13 10:40:53.535 Df Landmarks[54722:18826b3] (libMobileGestalt.dylib) Property isp[camera-front] found {length = 4, bytes = 0x01000000}
+[log] 2026-10-13 10:40:53.535 A  Landmarks[54722:18826b3] (CoreFoundation) Updating Key-Value Observers Of Preferences
+[log] 2026-10-13 10:40:53.538 A  Landmarks[54722:18826b3] (libsystem_containermanager.dylib) container_system_group_path_for_identifier
+[log] 2026-10-13 10:40:53.538 Df Landmarks[54722:18826b3] [com.apple.containermanager:xpc] Requesting container lookup; class = 13, identifier = (null), group_identifier = systemgroup.com.apple.configurationprofiles, create = 1, temp = 0, euid = 501, uid = 501
+[log] 2026-10-13 10:40:53.538 A  Landmarks[54722:18826b3] (libsystem_containermanager.dylib) container_query_t
+[log] 2026-10-13 10:40:53.538 Df Landmarks[54722:18826b3] [com.apple.containermanager:xpc] Query; euid = 501, uid = 501, class = 13, identifier = [(null)](0), flags = 900000003
+[log] 2026-10-13 10:40:53.538 Df Landmarks[54722:18826b3] [com.apple.containermanager:unspecified] _container_query_get_result_at_index: success
+[log] 2026-10-13 10:40:53.538 A  Landmarks[54722:18826b3] (libsystem_containermanager.dylib) container_copy_object
+[log] 2026-10-13 10:40:53.538 Df Landmarks[54722:18826b3] [com.apple.containermanager:unspecified] container_system_group_path_for_identifier: success
+[log] 2026-10-13 10:40:53.538 Df Landmarks[54722:18826b3] [com.apple.ManagedConfiguration:MC] Got system group container path from MCM for systemgroup.com.apple.configurationprofiles: /Users/kyle/Library/Developer/CoreSimulator/Devices/B718468C-771F-47BC-9CD8-A1143D540AC5/data/Containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles
+[log] 2026-10-13 10:40:53.641 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:53.641 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:53.641 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:53.641 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:53.642 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:53.642 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:53.642 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:53.642 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:53.642 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:53.704 E  Landmarks[54722:18826b3] [com.apple.Accessibility:AXRuntimeCommon] Unknown client: Landmarks
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:54.395 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:55.130 Df Landmarks[54722:18826ba] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:55.943 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:56.675 Df Landmarks[54722:18826c2] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:57.401 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:57.402 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:58.212 Df Landmarks[54722:18826c1] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:58.950 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:40:59.688 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:00.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:01.269 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:02.004 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:02.806 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:02.807 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:02.807 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:03.532 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:04.263 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Received attributes request for element: App element pid: 54722. Attributes: (
+[log]     "XC_kAXXCAttributeValue"
+[log] )
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: about to CFRunLoopPerform
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting with 30.00s responsiveness timeout
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: inside CFRunLoopPerform
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[MT]: MT responded in time (won the race to the busy flag)
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] XCTPerformOnMainRunLoop[not MT]: waiting 60.00s for work to complete
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Fetching AX attributes XC_kAXXCAttributeValue for App element pid: 54722
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b3] [com.apple.dt.xctest:Default] Got attributes, transferring to dictionary for return.
+[log] 2026-10-13 10:41:05.081 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Replying with attribute values: {
+[log] }
+    ✗ assertVisible: text="task8-deliberately-absent" (12.5s)
+      ╰─ Element not visible: text='task8-deliberately-absent' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "water.waves", "Golden Gate Bridge, San Francisco, CA")
+✗ failed 17.8s
+[log] 2026-10-13 10:41:06.566 Df Landmarks[54722:18826b7] [com.apple.xpc:connection] [0x103d32bd0] invalidated because the client process (pid 54544) either cancelled the connection or exited
+[log] 2026-10-13 10:41:06.566 Df Landmarks[54722:18826b7] [com.apple.dt.xctest:Default] Connection from client with pid 54544 was invalidated.
+[log] 2026-10-13 10:41:06.567 Df Landmarks[54722:18826b7] [com.apple.dt.automationmode:Default] Handling posted change notification (com.apple.dt.automationmode.state-changed)
+[log] 2026-10-13 10:41:06.568 Df Landmarks[54722:18826b7] [com.apple.dt.automationmode:Default] XAM shared observer connecting to com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:41:06.568 Df Landmarks[54722:18826b7] [com.apple.xpc:connection] [0x100f21d30] activating connection: mach=true listener=false peer=false name=com.apple.dt.automationmode.reader
+[log] 2026-10-13 10:41:06.568 Df Landmarks[54722:18826b7] [com.apple.xpc:connection] [0x100f21d30] invalidated because the current process cancelled the connection by calling xpc_connection_cancel()
+[log] 2026-10-13 10:41:06.568 Df Landmarks[54722:18826b7] [com.apple.dt.automationmode:Default] Comparing previous enabled state (1) to current enabled state (0)
+[log] 2026-10-13 10:41:06.569 Df Landmarks[54722:18826b8] [com.apple.dt.xctest:Default] Automation Mode has been disabled, existing connections will be invalidated.
+
+  [1/1] failed (/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed.yaml) - Device: smoke4-ios (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.9s)
+    ✗ assertVisible: text="task8-deliberately-absent" (12.5s)
+      ╰─ Element not visible: text='task8-deliberately-absent' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "water.waves", "Golden Gate Bridge, San Francisco, CA")
+✗ failed 17.8s
+
+  1 steps passing (17.8s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  failed                         ✗ FAIL       2      1      1      0      17.8s  smoke4-ios (ios 26.0 Simula...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0      17.8s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/allure-results
+
+  Built by Grantiva
+
+[debug] 2026-10-13T17:41:06Z com.grantiva.cli: exit 1: /private/tmp/grantiva-round4-smoke-j35_m7hg/runner-home/versions/1.1.28-grantiva.14+android-drivers-2/grantiva-runner --platform ios --device B718468C-771F-47BC-9CD8-A1143D540AC5 --no-ansi --no-app-install test --output /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report --flatten --wait-for-idle-timeout 0 --artifacts failure --fail-fast /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-FE5F35E8-DCAC-44CE-B1DB-6A5F454BBF9B/0/failed.yaml
+[debug] 2026-10-13T17:41:06Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:41:06Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:41:06Z com.grantiva.cli: $ xcrun simctl io 'B718468C-771F-47BC-9CD8-A1143D540AC5' screenshot '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/captures/failure-1791913266.png'
+[debug] 2026-10-13T17:41:07Z com.grantiva.cli: exit 0: xcrun simctl io 'B718468C-771F-47BC-9CD8-A1143D540AC5' screenshot '/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/captures/failure-1791913266.png'
+Failure screenshot: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report/captures/failure-1791913266.png
+[debug] 2026-10-13T17:41:07Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41" == "grantiva-log-F1B75DFB-3FBC-4C5D-995E-F3DCAAA90B41")'
+Error: Runner failed (exit 1): failed: assertVisible: text="task8-deliberately-absent": Element not visible: text='task8-deliberately-absent' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "water.waves", "Golden Gate Bridge, San Francisco, CA")
+Run grantiva hierarchy (or the grantiva_a11y_tree MCP tool) to inspect the tree.

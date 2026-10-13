@@ -1,0 +1,66 @@
+{
+  "id": "flow-000",
+  "name": "success",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt2/log-cleanup/success.yaml",
+  "device": {
+    "id": "B718468C-771F-47BC-9CD8-A1143D540AC5",
+    "name": "smoke4-ios",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T10:22:18.333295-07:00",
+  "endTime": "2026-10-13T10:22:22.480969-07:00",
+  "duration": 4147,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T10:22:19.906639-07:00",
+      "endTime": "2026-10-13T10:22:21.930639-07:00",
+      "duration": 2024,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T10:22:21.931693-07:00",
+      "endTime": "2026-10-13T10:22:22.479693-07:00",
+      "duration": 548,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "01000000-0000-0000-D99B-000000000000",
+        "text": "Landmarks",
+        "class": "XCUIElementTypeApplication",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 402,
+          "height": 874
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 1286,
+    "p50": 548,
+    "p95": 2024,
+    "max": 2024,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

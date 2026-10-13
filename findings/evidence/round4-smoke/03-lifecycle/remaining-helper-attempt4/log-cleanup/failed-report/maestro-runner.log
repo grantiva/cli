@@ -1,0 +1,128 @@
+10:40:45.597316 [INFO] === Test execution started ===
+10:40:45.597381 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed-report
+10:40:45.597387 [INFO] Platform: ios
+10:40:45.597392 [INFO] Driver: wda
+10:40:45.597626 [INFO] Validated 1 flow(s)
+10:40:45.709464 [INFO] Single device execution mode
+10:40:45.709482 [INFO] Starting flow execution (parallel: false, devices: [])
+10:40:45.709489 [INFO] Creating driver for single device execution
+10:40:45.709495 [INFO] Using specified iOS device: B718468C-771F-47BC-9CD8-A1143D540AC5
+10:40:45.817024 [INFO] Device B718468C-771F-47BC-9CD8-A1143D540AC5 is a simulator
+10:40:45.817115 [INFO] Building WDA for device B718468C-771F-47BC-9CD8-A1143D540AC5 (team ID: )
+10:40:46.032150 [INFO] WDA build reused from cache
+10:40:46.032172 [INFO] Starting WDA on device B718468C-771F-47BC-9CD8-A1143D540AC5 (port: 8913)
+10:40:46.281741 [INFO] Starting GrantivaAgent (attempt 1/4)
+10:40:48.284387 [INFO] GrantivaAgent started
+10:40:48.284471 [INFO] WDA started successfully on port 8913
+10:40:48.641019 [DEBUG] WDA GET /window/size
+10:40:48.728160 [DEBUG] WDA GET /window/size completed (87ms, status: 200)
+10:40:48.728236 [INFO] Driver created: ios on smoke4-ios
+10:40:48.729816 [INFO] === Starting flow: failed ===
+10:40:48.729823 [INFO] Flow file: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt4/log-cleanup/failed.yaml
+10:40:48.729827 [INFO] Total steps: 2
+10:40:48.729980 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:40:48.730586 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+10:40:48.730646 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+10:40:51.356562 [DEBUG] WDA POST /session completed (2625ms, status: 200)
+10:40:51.356733 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+10:40:51.358350 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings completed (1ms, status: 200)
+10:40:51.358552 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:40:51.359678 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings completed (1ms, status: 200)
+10:40:51.360510 [DEBUG] Executing step 0: launchApp
+10:40:51.791501 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+10:40:51.791580 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:40:51.792271 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/appium/settings completed (0ms, status: 200)
+10:40:51.792364 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:40:51.792943 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/wda/apps/terminate completed (0ms, status: 200)
+10:40:51.792972 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+10:40:53.307658 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/wda/apps/launch completed (1514ms, status: 200)
+10:40:53.307868 [DEBUG] Step 0 completed successfully (1947ms): launchApp
+10:40:53.308909 [DEBUG] Executing step 1: assertVisible: text="task8-deliberately-absent"
+10:40:53.450608 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+10:40:53.450634 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:40:53.588791 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (138ms, status: 404)
+10:40:53.588881 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:53.644820 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (55ms, status: 404)
+10:40:53.644931 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:54.285301 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (640ms, status: 200)
+10:40:54.344237 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:54.397595 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (53ms, status: 404)
+10:40:54.397821 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:55.019738 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (621ms, status: 200)
+10:40:55.078222 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:55.132182 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (53ms, status: 404)
+10:40:55.132381 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:55.738413 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (606ms, status: 200)
+10:40:55.795577 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:40:55.897603 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (102ms, status: 404)
+10:40:55.897655 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:55.944792 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (47ms, status: 404)
+10:40:55.944895 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:56.571301 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (626ms, status: 200)
+10:40:56.627495 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:56.676890 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (49ms, status: 404)
+10:40:56.677080 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:57.292060 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (614ms, status: 200)
+10:40:57.351162 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:57.403761 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (52ms, status: 404)
+10:40:57.404043 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:58.012490 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (608ms, status: 200)
+10:40:58.069568 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:40:58.168126 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (98ms, status: 404)
+10:40:58.168182 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:58.214226 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (46ms, status: 404)
+10:40:58.214659 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:58.839437 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (624ms, status: 200)
+10:40:58.899435 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:58.952035 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (52ms, status: 404)
+10:40:58.952236 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:40:59.582587 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (630ms, status: 200)
+10:40:59.638631 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:40:59.689998 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (51ms, status: 404)
+10:40:59.690175 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:00.332239 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (642ms, status: 200)
+10:41:00.388304 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:41:00.487839 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (99ms, status: 404)
+10:41:00.487887 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:00.534578 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (46ms, status: 404)
+10:41:00.534730 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:01.158229 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (623ms, status: 200)
+10:41:01.218462 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:01.271080 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (52ms, status: 404)
+10:41:01.271278 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:01.893822 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (622ms, status: 200)
+10:41:01.952808 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:02.005945 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (53ms, status: 404)
+10:41:02.006154 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:02.609122 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (602ms, status: 200)
+10:41:02.665666 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:41:02.762989 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (97ms, status: 404)
+10:41:02.763051 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:02.808638 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (45ms, status: 404)
+10:41:02.808915 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:03.424697 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (615ms, status: 200)
+10:41:03.481497 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:03.534141 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (52ms, status: 404)
+10:41:03.534315 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:04.153579 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (619ms, status: 200)
+10:41:04.211988 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:04.265307 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (53ms, status: 404)
+10:41:04.265461 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:04.884761 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (619ms, status: 200)
+10:41:04.940342 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text
+10:41:05.037673 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/alert/text completed (97ms, status: 404)
+10:41:05.037730 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:41:05.083372 [DEBUG] WDA POST /session/EC1F3534-269F-4D29-83C0-8A801E29F824/element completed (45ms, status: 404)
+10:41:05.083568 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:05.711698 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (628ms, status: 200)
+10:41:05.770777 [ERROR] Step 1 failed (12461ms): assertVisible: text="task8-deliberately-absent" - Error: Element not visible: text='task8-deliberately-absent' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "water.waves", "Golden Gate Bridge, San Francisco, CA")
+10:41:05.770878 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/screenshot
+10:41:05.859766 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/screenshot completed (88ms, status: 200)
+10:41:05.865417 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source
+10:41:06.496626 [DEBUG] WDA GET /session/EC1F3534-269F-4D29-83C0-8A801E29F824/source completed (631ms, status: 200)
+10:41:06.502063 [INFO] === Flow completed: failed (status: failed, duration: 17768ms, passed: 1, failed: 1, skipped: 0) ===
+10:41:06.579028 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+10:41:06.579189 [INFO] Generating reports...
+10:41:06.580248 [INFO] Shutting down devices started by maestro-runner...
+10:41:06.580262 [INFO] Shutting down all tracked emulators
+10:41:06.580269 [INFO] Shutting down all tracked simulators

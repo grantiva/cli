@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 734, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 716, in main
+    getattr(smoke, phase.replace("-", "_"))()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 575, in log_cleanup
+    raise AssertionError("interrupted control exited before its long-wait runner became active")
+AssertionError: interrupted control exited before its long-wait runner became active

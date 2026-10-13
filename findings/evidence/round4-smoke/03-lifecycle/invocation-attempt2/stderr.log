@@ -1,0 +1,23 @@
+Exception in thread Thread-2 (preserve_runner_report):
+Traceback (most recent call last):
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/threading.py", line 1082, in _bootstrap_inner
+    self._context.run(self.run)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/threading.py", line 1024, in run
+    self._target(*self._args, **self._kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 301, in preserve_runner_report
+    argv = self.assert_pid_bound(pid, device)
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 182, in assert_pid_bound
+    raise AssertionError(f"PID {pid} is not bound to owned device {device}: {argv}")
+AssertionError: PID 34586 is not bound to owned device emulator-5580: ['<defunct>']
+Traceback (most recent call last):
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 657, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 639, in main
+    getattr(smoke, phase.replace("-", "_"))()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/tools/round4-smoke/lifecycle_smoke.py", line 455, in absent_app
+    raise AssertionError("Android absent-app failure left an owned forward")
+AssertionError: Android absent-app failure left an owned forward

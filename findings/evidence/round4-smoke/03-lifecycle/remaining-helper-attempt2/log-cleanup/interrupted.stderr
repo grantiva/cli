@@ -1,0 +1,28 @@
+Resolved: scheme=(none) simulator=B718468C-771F-47BC-9CD8-A1143D540AC5 screens=0 flows=1
+Preparing runner...
+Runner ready
+Booting simulator: B718468C-771F-47BC-9CD8-A1143D540AC5
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl list devices --json
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: exit 0: xcrun simctl list devices --json
+Simulator booted: smoke4-ios (B718468C-771F-47BC-9CD8-A1143D540AC5)
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_WIDTH
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_HEIGHT
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: exit 0: xcrun simctl getenv 'B718468C-771F-47BC-9CD8-A1143D540AC5' SIMULATOR_MAINSCREEN_SCALE
+[debug] 2026-10-13T17:22:48Z com.grantiva.cli: $ xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: exit 0: xcrun simctl get_app_container 'B718468C-771F-47BC-9CD8-A1143D540AC5' 'com.kylebrowning.Landmarks'
+Skipping build and install (--no-build)
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: $ /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-410FAED6-4BC2-4B50-B290-E2CE42DE3C11" == "grantiva-log-410FAED6-4BC2-4B50-B290-E2CE42DE3C11")'
+Streaming simulator logs (predicate: process == "Landmarks")
+Running 1 flow(s) in one GrantivaAgent session: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt2/log-cleanup/interrupted.yaml
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4
+
+[grantiva] received SIGINT — releasing simulator and reaping child processes
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: exit 143: /usr/bin/xcrun simctl spawn B718468C-771F-47BC-9CD8-A1143D540AC5 log stream --style compact --predicate '(process == "Landmarks") AND ("grantiva-log-410FAED6-4BC2-4B50-B290-E2CE42DE3C11" == "grantiva-log-410FAED6-4BC2-4B50-B290-E2CE42DE3C11")'
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: $ xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear
+[debug] 2026-10-13T17:22:49Z com.grantiva.cli: exit 0: xcrun simctl status_bar B718468C-771F-47BC-9CD8-A1143D540AC5 clear

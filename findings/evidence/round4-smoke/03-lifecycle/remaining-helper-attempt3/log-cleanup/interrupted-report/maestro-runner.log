@@ -1,0 +1,566 @@
+10:36:04.680204 [INFO] === Test execution started ===
+10:36:04.680265 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted-report
+10:36:04.680270 [INFO] Platform: ios
+10:36:04.680273 [INFO] Driver: wda
+10:36:04.680537 [INFO] Validated 1 flow(s)
+10:36:04.795986 [INFO] Single device execution mode
+10:36:04.796004 [INFO] Starting flow execution (parallel: false, devices: [])
+10:36:04.796010 [INFO] Creating driver for single device execution
+10:36:04.796013 [INFO] Using specified iOS device: B718468C-771F-47BC-9CD8-A1143D540AC5
+10:36:04.908648 [INFO] Device B718468C-771F-47BC-9CD8-A1143D540AC5 is a simulator
+10:36:04.908698 [INFO] Building WDA for device B718468C-771F-47BC-9CD8-A1143D540AC5 (team ID: )
+10:36:05.129395 [INFO] WDA build reused from cache
+10:36:05.129414 [INFO] Starting WDA on device B718468C-771F-47BC-9CD8-A1143D540AC5 (port: 8913)
+10:36:05.388500 [INFO] Starting GrantivaAgent (attempt 1/4)
+10:36:07.391892 [INFO] GrantivaAgent started
+10:36:07.391957 [INFO] WDA started successfully on port 8913
+10:36:07.742148 [DEBUG] WDA GET /window/size
+10:36:07.818202 [DEBUG] WDA GET /window/size completed (76ms, status: 200)
+10:36:07.818269 [INFO] Driver created: ios on smoke4-ios
+10:36:07.819650 [INFO] === Starting flow: interrupted ===
+10:36:07.819654 [INFO] Flow file: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke/03-lifecycle/remaining-helper-attempt3/log-cleanup/interrupted.yaml
+10:36:07.819658 [INFO] Total steps: 2
+10:36:07.819786 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:36:07.820360 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+10:36:07.820399 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+10:36:10.438535 [DEBUG] WDA POST /session completed (2618ms, status: 200)
+10:36:10.438609 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+10:36:10.439570 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings completed (0ms, status: 200)
+10:36:10.439649 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+10:36:10.440150 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings completed (0ms, status: 200)
+10:36:10.440614 [DEBUG] Executing step 0: launchApp
+10:36:10.906271 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+10:36:10.906372 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+10:36:10.907139 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/appium/settings completed (0ms, status: 200)
+10:36:10.907228 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+10:36:10.907659 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/wda/apps/terminate completed (0ms, status: 200)
+10:36:10.907693 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+10:36:12.430338 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/wda/apps/launch completed (1522ms, status: 200)
+10:36:12.430398 [DEBUG] Step 0 completed successfully (1989ms): launchApp
+10:36:12.430802 [DEBUG] Executing step 1: extendedWaitUntil: visible text="task8-deliberately-absent"
+10:36:12.431024 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:12.580004 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (148ms, status: 404)
+10:36:12.580059 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:12.635622 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (55ms, status: 404)
+10:36:12.635707 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:13.309296 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (673ms, status: 200)
+10:36:13.313316 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:13.361383 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:13.361502 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:14.019535 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (658ms, status: 200)
+10:36:14.023274 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:14.072162 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:14.072234 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:14.739524 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:36:14.743016 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:14.836190 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (93ms, status: 404)
+10:36:14.836303 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:14.884119 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:14.884220 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:15.537774 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (653ms, status: 200)
+10:36:15.541464 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:15.588256 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (46ms, status: 404)
+10:36:15.588359 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:16.235693 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (647ms, status: 200)
+10:36:16.239038 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:16.286116 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:16.286204 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:16.938408 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (652ms, status: 200)
+10:36:16.942240 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:17.035937 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (93ms, status: 404)
+10:36:17.035986 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:17.083462 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:17.083705 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:17.742106 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (658ms, status: 200)
+10:36:17.745728 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:17.793260 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:17.793338 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:18.450282 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (656ms, status: 200)
+10:36:18.453951 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:18.501208 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:18.501466 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:19.167065 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (665ms, status: 200)
+10:36:19.170851 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:19.266052 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:19.266109 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:19.313642 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:19.313720 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:19.967895 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (654ms, status: 200)
+10:36:19.971295 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:20.018802 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:20.018997 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:20.684780 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (665ms, status: 200)
+10:36:20.688409 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:20.736552 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:20.736642 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:21.403963 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:36:21.407475 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:21.502796 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:21.502848 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:21.550949 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:21.551034 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:22.217491 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (666ms, status: 200)
+10:36:22.221085 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:22.269421 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:22.269511 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:22.926694 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (657ms, status: 200)
+10:36:22.930338 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:22.977764 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:22.977858 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:23.645245 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:36:23.649219 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:23.742884 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (93ms, status: 404)
+10:36:23.742938 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:23.790850 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:23.790938 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:24.453665 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (662ms, status: 200)
+10:36:24.457333 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:24.504771 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:24.504952 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:25.172944 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:36:25.176702 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:25.223971 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:25.224058 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:25.885621 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (661ms, status: 200)
+10:36:25.888979 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:25.983318 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (94ms, status: 404)
+10:36:25.983376 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:26.030931 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:26.031104 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:26.689853 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (658ms, status: 200)
+10:36:26.693613 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:26.742951 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:26.743029 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:27.404606 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (661ms, status: 200)
+10:36:27.408183 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:27.455832 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:27.455908 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:28.116449 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (660ms, status: 200)
+10:36:28.120172 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:28.215688 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:28.215742 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:28.263243 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:28.263318 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:28.926817 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (663ms, status: 200)
+10:36:28.930260 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:28.978557 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:28.978640 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:29.646145 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:36:29.649768 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:29.697343 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:29.697520 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:30.361495 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (663ms, status: 200)
+10:36:30.365193 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:30.460815 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:30.460882 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:30.508635 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:30.508711 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:31.172988 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (664ms, status: 200)
+10:36:31.176598 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:31.224197 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:31.224276 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:31.893708 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (669ms, status: 200)
+10:36:31.897296 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:31.946012 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:31.946092 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:32.608496 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (662ms, status: 200)
+10:36:32.612255 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:32.707696 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:32.707752 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:32.756878 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:32.756961 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:33.410600 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (653ms, status: 200)
+10:36:33.414517 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:33.462742 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:33.462848 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:34.140217 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (677ms, status: 200)
+10:36:34.143732 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:34.192026 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:34.192101 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:34.895786 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (703ms, status: 200)
+10:36:34.901168 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:35.002064 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (100ms, status: 404)
+10:36:35.002126 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:35.051520 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:35.051619 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:35.773508 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (721ms, status: 200)
+10:36:35.777291 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:35.826618 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:35.826697 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:36.528961 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (702ms, status: 200)
+10:36:36.532521 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:36.582938 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:36.583020 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:37.277451 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (694ms, status: 200)
+10:36:37.281079 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:37.376086 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:37.376144 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:37.427266 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (51ms, status: 404)
+10:36:37.427408 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:38.131523 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (704ms, status: 200)
+10:36:38.135252 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:38.183939 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:38.184038 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:38.874645 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (690ms, status: 200)
+10:36:38.878195 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:38.928384 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:38.928561 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:39.623880 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (695ms, status: 200)
+10:36:39.627533 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:39.721764 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (94ms, status: 404)
+10:36:39.721823 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:39.771925 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:39.772021 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:40.453998 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (681ms, status: 200)
+10:36:40.457530 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:40.506884 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:40.506973 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:41.194207 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (687ms, status: 200)
+10:36:41.198134 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:41.248833 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:41.248909 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:41.958203 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (709ms, status: 200)
+10:36:41.962319 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:42.058359 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:36:42.058416 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:42.106644 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:42.106738 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:42.834988 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (728ms, status: 200)
+10:36:42.838928 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:42.889652 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:42.889732 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:43.569217 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (679ms, status: 200)
+10:36:43.572844 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:43.623398 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:43.623480 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:44.283118 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (659ms, status: 200)
+10:36:44.286736 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:44.382865 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:36:44.382923 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:44.431889 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:44.432225 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:45.106723 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (674ms, status: 200)
+10:36:45.110785 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:45.159642 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:45.159726 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:45.831365 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (671ms, status: 200)
+10:36:45.835010 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:45.884066 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:45.884148 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:46.554116 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (669ms, status: 200)
+10:36:46.557790 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:46.653812 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:36:46.653860 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:46.702703 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:46.702811 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:47.382772 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (679ms, status: 200)
+10:36:47.386469 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:47.434473 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:47.434551 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:48.132624 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (698ms, status: 200)
+10:36:48.136151 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:48.184439 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:48.184515 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:48.856254 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (671ms, status: 200)
+10:36:48.859870 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:48.954393 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (94ms, status: 404)
+10:36:48.954447 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:49.002291 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:36:49.002368 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:49.677103 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (674ms, status: 200)
+10:36:49.680533 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:49.729542 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:49.729801 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:50.399964 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (670ms, status: 200)
+10:36:50.403467 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:50.452307 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:50.452385 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:51.121021 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (668ms, status: 200)
+10:36:51.124609 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:51.220201 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:51.220251 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:51.268329 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:51.268405 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:51.950481 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (682ms, status: 200)
+10:36:51.954132 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:52.002430 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:52.002503 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:52.671832 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (669ms, status: 200)
+10:36:52.675448 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:52.724389 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:52.724477 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:53.392563 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (668ms, status: 200)
+10:36:53.396547 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:53.492443 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:53.492504 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:53.540818 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:53.540903 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:54.210411 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (669ms, status: 200)
+10:36:54.214117 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:54.263354 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:54.263437 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:54.944539 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (681ms, status: 200)
+10:36:54.948443 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:54.997427 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:54.997516 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:55.693754 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (696ms, status: 200)
+10:36:55.697400 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:55.793284 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:55.793341 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:55.843086 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:55.843173 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:56.550533 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (707ms, status: 200)
+10:36:56.554244 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:56.603052 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:56.603136 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:57.303225 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (700ms, status: 200)
+10:36:57.306796 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:57.357080 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:36:57.357160 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:58.060872 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (703ms, status: 200)
+10:36:58.064604 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:36:58.160600 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:36:58.160768 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:58.209313 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:36:58.209397 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:58.900785 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (691ms, status: 200)
+10:36:58.904436 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:58.954032 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:58.954124 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:36:59.639903 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (685ms, status: 200)
+10:36:59.643753 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:36:59.692880 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:36:59.692962 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:00.391191 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (698ms, status: 200)
+10:37:00.394806 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:00.491019 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:37:00.491154 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:00.540520 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:00.540624 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:01.252352 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (711ms, status: 200)
+10:37:01.258386 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:01.310806 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (52ms, status: 404)
+10:37:01.310889 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:02.003950 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (693ms, status: 200)
+10:37:02.007786 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:02.057487 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:02.057564 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:02.745093 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (687ms, status: 200)
+10:37:02.748942 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:02.844337 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (95ms, status: 404)
+10:37:02.844395 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:02.893304 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:02.893384 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:03.560325 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (666ms, status: 200)
+10:37:03.563872 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:03.612184 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:03.612261 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:04.282741 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (670ms, status: 200)
+10:37:04.286301 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:04.334197 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:37:04.334281 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:05.000371 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (666ms, status: 200)
+10:37:05.003926 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:05.097882 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (93ms, status: 404)
+10:37:05.097942 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:05.146149 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:05.146232 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:05.840102 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (693ms, status: 200)
+10:37:05.843513 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:05.891540 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:05.891630 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:06.573127 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (681ms, status: 200)
+10:37:06.576784 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:06.625828 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:06.625904 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:07.306871 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (680ms, status: 200)
+10:37:07.310550 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:07.405031 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (94ms, status: 404)
+10:37:07.405084 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:07.452587 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (47ms, status: 404)
+10:37:07.452671 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:08.126066 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (673ms, status: 200)
+10:37:08.129657 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:08.178342 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:08.178440 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:08.849040 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (670ms, status: 200)
+10:37:08.852689 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:08.901636 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:08.901716 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:09.585935 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (684ms, status: 200)
+10:37:09.589853 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:09.686540 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:37:09.686597 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:09.735895 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:09.735983 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:10.451892 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (715ms, status: 200)
+10:37:10.455361 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:10.505127 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:10.505206 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:11.203931 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (698ms, status: 200)
+10:37:11.207933 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:11.259225 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (51ms, status: 404)
+10:37:11.259300 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:11.948321 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (689ms, status: 200)
+10:37:11.951730 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:12.048622 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text completed (96ms, status: 404)
+10:37:12.048674 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:12.097103 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (48ms, status: 404)
+10:37:12.097186 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:12.787948 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (690ms, status: 200)
+10:37:12.791731 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:12.841765 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (50ms, status: 404)
+10:37:12.841850 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:13.505907 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (664ms, status: 200)
+10:37:13.509611 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:13.558814 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element completed (49ms, status: 404)
+10:37:13.558979 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.177959 [INFO] Received signal interrupt, cleaning up...
+10:37:14.226820 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source completed (667ms, status: 200)
+10:37:14.233317 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text
+10:37:14.236528 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text failed (3ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/alert/text": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.236578 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.236720 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.236740 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.236837 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.236852 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.236940 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.236951 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237033 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237049 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.237180 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237199 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237310 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237322 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.237396 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237406 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237474 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237487 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.237544 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237550 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237606 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237615 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.237683 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237692 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237767 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237780 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.237855 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.237860 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.237949 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238022 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.238121 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238132 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.238199 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238234 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.238312 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238325 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.238400 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238424 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.238514 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238521 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.238598 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238610 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.238677 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238686 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.238748 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238763 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.238824 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.238831 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.238883 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239176 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.239270 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239276 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.239386 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239397 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.239478 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239489 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.239568 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239577 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.239652 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239657 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.239732 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239742 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.239813 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239818 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.239885 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239894 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.239961 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.239967 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240053 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240061 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240132 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240138 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240208 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240215 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240279 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240283 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240350 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240362 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240428 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240432 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240494 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240502 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240571 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240575 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240641 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240649 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240716 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240721 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240783 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240791 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.240865 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240869 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.240933 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.240950 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241017 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241023 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241080 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241088 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241152 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241157 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241238 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241246 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241303 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241309 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241370 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241378 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241478 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241483 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241543 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241551 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241635 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241640 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241704 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241713 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241777 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241784 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241861 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241870 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.241926 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.241931 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.241995 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242043 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242181 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242188 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.242249 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242258 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242329 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242334 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.242409 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242417 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242513 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242518 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.242611 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242620 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242722 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242726 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.242781 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242789 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242846 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242850 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.242911 [ERROR] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source failed (0ms): Get "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/source": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242918 [DEBUG] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element body={"using":"predicate string","value":"(label ==[c] 'task8-deliberately-absent' OR value ==[c] 'task8-...
+10:37:14.242972 [ERROR] WDA POST /session/F365959C-9C04-40BE-96D6-1851B7A4E956/element failed (0ms): Post "http://127.0.0.1:8913/session/F365959C-9C04-40BE-96D6-1851B7A4E956/element": dial tcp 127.0.0.1:8913: connect: connection refused
+10:37:14.242976 [DEBUG] WDA GET /session/F365959C-9C04-40BE-96D6-1851B7A4E956/source
+10:37:14.243005 [INFO] Shutting down all tracked emulators
+10:37:14.243014 [INFO] Shutting down all tracked simulators
