@@ -1,0 +1,22 @@
+    // MARK: Runner
+
+    /// Seconds the runner waits for the UIAutomator2 server to come up
+    /// (the runner's own default is 30). A slow or busy host can need more (L48).
+    public static let driverStartTimeoutVariable = "GRANTIVA_DRIVER_START_TIMEOUT"
+
+    /// `GRANTIVA_DRIVER_START_TIMEOUT` as a positive whole number of seconds,
+    /// or nil (unset, or not a positive number) to keep the runner's default.
+    public static func driverStartTimeout(environment: [String: String]) -> Int? {
+        guard let raw = environment[driverStartTimeoutVariable]?.trimmingCharacters(in: .whitespaces),
+              let seconds = Int(raw), seconds > 0 else { return nil }
+        return seconds
+    }
+
+    public func runnerGlobalArguments(deviceID: String, appFile: String?) -> [String] {
+        var args = ["--platform", "android", "--device", deviceID, "--no-ansi", "--no-app-install"]
+        if let appFile { args += ["--app-file", appFile] }
+        if let seconds = Self.driverStartTimeout(environment: environment) {
+            args += ["--driver-start-timeout", String(seconds)]
+        }
+        return args
+    }
