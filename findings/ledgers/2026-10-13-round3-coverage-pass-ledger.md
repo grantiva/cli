@@ -350,3 +350,11 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - Android five scrolling repeats pass with measured drag/top-up logs. L41 first attempt skipped before Gradle at load335; corrected fresh attempt ran below guard and passes invalid variant/module diagnostics. K15 first harness expected refusal but observed accepted runner-stop/emulator-kill behavior; full secondary text+JSON complement passes PID/session/lease cleanup and deletes its AVD, primary preserved.
 - Full stock Android ready-file run passes five screens and twelve flows in the documented order. Handed-off ownership refusal leaves exact live session/lease intact and stops normally.
 - Latest audited iOS446/478; Android378/467 before latest K15/D202 joins. Remaining verification and Task6 are incomplete; exact product source worktrees remain unchanged.
+
+
+### Visual equivalence, notification, and load-test continuation
+
+- IOS153 literal FAIL records truthful timing/timestamp differences across successful plain/quiet/verbose JSON captures; Task6 expectation correction is queued, no product brief. N12 initial cross-OS comparison was an invalid fixture (MCPU1, CLIconfiguredU2); preserved explicit-U1 complement passes all five thresholds and frozen-baseline hashes.
+- Stale session replacement, subscription/unsubscription notification sequence, and quoted-label MCP script pass. Quoted-script wrapper expected an absent summary phrase; raw seven successful steps and real detail tree are authoritative. All-new/mixed baseline CLI and MCP comparisons now both report expected failure.
+- Android first-tap dispatch overhead is below300ms with plain query first; three edit runs and the nonclickable-parent control pass. Five input runs under generated load pass; all12 row-created yes PIDs were killed/reaped and absence verified.
+- Broad Android remaining-family audit distinguishes reusable exact joins from missing lifecycle/recording/gesture inputs. Full campaign and Task6 remain incomplete.
