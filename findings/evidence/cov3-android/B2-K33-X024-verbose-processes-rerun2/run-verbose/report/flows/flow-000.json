@@ -1,0 +1,185 @@
+{
+  "id": "flow-000",
+  "name": "08-caching",
+  "sourceFile": ".maestro/08-caching.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T00:30:11.319363-07:00",
+  "endTime": "2026-10-13T00:30:15.462612-07:00",
+  "duration": 4143,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:11.324139-07:00",
+      "endTime": "2026-10-13T00:30:12.740139-07:00",
+      "duration": 1416,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Deep Links\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:12.740798-07:00",
+      "endTime": "2026-10-13T00:30:13.610798-07:00",
+      "duration": 870,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Deep Links"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Deep Links",
+        "bounds": {
+          "x": 734,
+          "y": 2127,
+          "width": 346,
+          "height": 210
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Caching Demo\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:13.612125-07:00",
+      "endTime": "2026-10-13T00:30:14.380125-07:00",
+      "duration": 768,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Caching Demo"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Caching Demo",
+        "bounds": {
+          "x": 42,
+          "y": 622,
+          "width": 996,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Cache Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:14.380559-07:00",
+      "endTime": "2026-10-13T00:30:15.019559-07:00",
+      "duration": 639,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Cache Policy"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0523-0000-00d500000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Fetch with Policy\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:15.020622-07:00",
+      "endTime": "2026-10-13T00:30:15.161622-07:00",
+      "duration": 141,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Fetch with Policy"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Fetch with Policy",
+        "bounds": {
+          "x": 42,
+          "y": 675,
+          "width": 405,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-005",
+      "index": 5,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:15.162239-07:00",
+      "endTime": "2026-10-13T00:30:15.299239-07:00",
+      "duration": 137,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-005-Caching Demo.png"
+      }
+    },
+    {
+      "id": "cmd-006",
+      "index": 6,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Clear Cache\"",
+      "status": "passed",
+      "startTime": "2026-10-13T00:30:15.299552-07:00",
+      "endTime": "2026-10-13T00:30:15.461552-07:00",
+      "duration": 162,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Clear Cache"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Clear Cache",
+        "bounds": {
+          "x": 42,
+          "y": 833,
+          "width": 324,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 7,
+    "mean": 590,
+    "p50": 639,
+    "p95": 1416,
+    "max": 1416,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
