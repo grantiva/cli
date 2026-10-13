@@ -6,12 +6,12 @@ import GrantivaCore
 
 @available(macOS 15, *)
 final class RunnerLifecycleCommandTests: XCTestCase {
-    func testLaunchReportOptionPrecedesThePositionalFlow() {
+    func testLaunchReportIsFlatAndOptionsPrecedeThePositionalFlow() {
         let arguments = RunnerStartCommand.runnerArguments(
             platform: FakeDevicePlatform(platform: .android), deviceID: "emulator-5554",
             flowPath: "/tmp/session-flow.yaml", reportDir: "/tmp/session-report"
         )
-        XCTAssertEqual(Array(arguments.suffix(4)), ["--keep-alive", "--output", "/tmp/session-report", "/tmp/session-flow.yaml"])
+        XCTAssertEqual(Array(arguments.suffix(5)), ["--keep-alive", "--output", "/tmp/session-report", "--flatten", "/tmp/session-flow.yaml"])
     }
 
     func testFailedLaunchDoesNotPublishReadyAndReleasesItsForward() async {

@@ -284,7 +284,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// `runner stop` sends.
     static func runnerArguments(platform: any DevicePlatform, deviceID: String, flowPath: String, reportDir: String? = nil) -> [String] {
         platform.runnerGlobalArguments(deviceID: deviceID, appFile: nil) + ["test"] + platform.runnerTestArguments()
-            + ["--keep-alive"] + (reportDir.map { ["--output", $0] } ?? []) + [flowPath]
+            + ["--keep-alive"] + (reportDir.map { ["--output", $0, "--flatten"] } ?? []) + [flowPath]
     }
 
     /// How a wait for the runner's UIAutomator2 session ended: attached, the
