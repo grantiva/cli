@@ -586,23 +586,10 @@ struct RunCommand: AsyncParsableCommand {
             throw error
         }
 
-        // Print results
-        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status.isPassing } }
-        if !options.json {
-            for line in Self.resultLines(captures: captures, captureDir: captureDir) {
-                Output.line(line)
-            }
-        } else {
-            // `reportDir` whenever the run kept one, pass or fail.
-            try resultOutput.emit(RunResult(
-                screens: captures.map(RunResult.ScreenResult.init), allPassed: allPassed,
-                reportDir: Self.existingReportDir(reportDir)
-            ))
-        }
-
-        if !allPassed {
-            throw ExitCode.failure
-        }
+        try Self.emitRunResult(
+            captures: captures, captureDir: captureDir, json: options.json,
+            resultOutput: resultOutput, reportDir: Self.existingReportDir(reportDir)
+        )
     }
 
     /// The runner flags every session of the suite honours.

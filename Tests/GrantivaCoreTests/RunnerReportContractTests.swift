@@ -78,9 +78,9 @@ final class RunnerReportContractTests: XCTestCase {
         XCTAssertEqual(capture.steps.map(\.action), [
             "launchApp", "tapOn: text=\"No Such Element fix4-3\"", "assertVisible: text=\"Landmarks\"",
         ])
-        XCTAssertEqual(capture.steps.map(\.status), [.passed, .warned, .passed])
+        XCTAssertEqual(capture.steps.map(\.status.rawValue), ["passed", "warned", "passed"])
         XCTAssertEqual(capture.steps[1].message, "Element not found: text='No Such Element fix4-3'")
-        XCTAssertTrue(capture.steps.allSatisfy(\.status.isPassing))
+        XCTAssertTrue(capture.steps.allSatisfy { $0.status != .failed })
     }
 
     func testScreenStepsCarryTheDurationsOfTheCommandsTheyGenerated() throws {

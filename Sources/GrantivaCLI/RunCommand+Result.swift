@@ -1,9 +1,29 @@
 import Foundation
+import ArgumentParser
 import GrantivaCore
 
 /// What `run` prints when it finishes: the plain-text result and the
 /// `--json` document.
 extension RunCommand {
+    /// Emits the runner result and turns a failed step into the command's
+    /// failure exit. Warned optional steps remain passing.
+    static func emitRunResult(
+        captures: [ScreenCapture], captureDir: String, json: Bool,
+        resultOutput: ResultOutput, reportDir: String? = nil
+    ) throws {
+        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status.isPassing } }
+        if json {
+            try resultOutput.emit(RunResult(
+                screens: captures.map(RunResult.ScreenResult.init), allPassed: allPassed, reportDir: reportDir
+            ))
+        } else {
+            for line in resultLines(captures: captures, captureDir: captureDir) {
+                Output.line(line)
+            }
+        }
+        if !allPassed { throw ExitCode.failure }
+    }
+
     /// The plain-text result: one block per configured screen and per flow,
     /// then screens and flows counted separately (a flow's screenshots are
     /// not screens).

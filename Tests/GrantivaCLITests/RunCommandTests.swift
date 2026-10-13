@@ -680,10 +680,12 @@ final class RunCommandTests: XCTestCase {
         XCTAssertTrue(text.contains("Element not found: text='No Such Element fix4-3'"), text)
         XCTAssertTrue(text.contains("Flows: 1 total, 1 passed, 0 failed"), text)
 
-        let result = RunCommand.RunResult(
-            screens: [RunCommand.RunResult.ScreenResult(capture)], allPassed: true
-        )
-        let data = try JSONEncoder().encode(result)
+        let emitted = CapturedLines()
+        XCTAssertNoThrow(try RunCommand.emitRunResult(
+            captures: [capture], captureDir: "/tmp/captures", json: true,
+            resultOutput: ResultOutput { emitted.append($0) }
+        ))
+        let data = try XCTUnwrap(emitted.values.first?.data(using: .utf8))
         let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
         XCTAssertEqual(json["allPassed"] as? Bool, true)
         let screen = try XCTUnwrap((json["screens"] as? [[String: Any]])?.first)
@@ -691,6 +693,29 @@ final class RunCommandTests: XCTestCase {
         let steps = try XCTUnwrap(screen["steps"] as? [[String: Any]])
         XCTAssertEqual(steps.map { $0["status"] as? String }, ["passed", "warned", "passed"])
         XCTAssertEqual(steps[1]["message"] as? String, "Element not found: text='No Such Element fix4-3'")
+
+        let failed = ScreenCapture(
+            screenName: capture.screenName, path: "", sizeBytes: 0,
+            steps: capture.steps.map { step in
+                step.status == .warned
+                    ? StepResult(action: step.action, status: .failed, duration: step.duration, message: step.message)
+                    : step
+            }, kind: .flow
+        )
+        let failedOutput = CapturedLines()
+        XCTAssertThrowsError(try RunCommand.emitRunResult(
+            captures: [failed], captureDir: "/tmp/captures", json: true,
+            resultOutput: ResultOutput { failedOutput.append($0) }
+        )) { error in
+            XCTAssertEqual((error as? ExitCode)?.rawValue, ExitCode.failure.rawValue)
+        }
+        let failedData = try XCTUnwrap(failedOutput.values.first?.data(using: .utf8))
+        let failedJSON = try XCTUnwrap(JSONSerialization.jsonObject(with: failedData) as? [String: Any])
+        XCTAssertEqual(failedJSON["allPassed"] as? Bool, false)
+        let failedScreen = try XCTUnwrap((failedJSON["screens"] as? [[String: Any]])?.first)
+        XCTAssertEqual(failedScreen["passed"] as? Bool, false)
+        let failedSteps = try XCTUnwrap(failedScreen["steps"] as? [[String: Any]])
+        XCTAssertEqual(failedSteps.map { $0["status"] as? String }, ["passed", "failed", "passed"])
     }
 
     /// L56: how `run` ends once a signal released an armed hold. The
