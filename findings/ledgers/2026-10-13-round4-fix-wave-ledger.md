@@ -46,8 +46,8 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L61 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L62 | 2 | pending | pending | pending | pending | pending | pending |
 | L64 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
-| L65 | 5 | pending | pending | pending | pending | pending | pending |
-| L66 | 5 | pending | pending | pending | pending | pending | pending |
+| L65 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
+| L66 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L67 | 6 | pending | pending | pending | pending | pending | pending |
 | L68 | 4 | pending | pending | pending | pending | pending | pending |
 | L69 | 4 | pending | pending | pending | pending | pending | pending |
@@ -61,7 +61,7 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L77 | 2 | pending | pending | pending | pending | pending | pending |
 | L78 | 4 | pending | pending | pending | pending | pending | pending |
 | L79 | 3 | pending | pending | pending | pending | pending | pending |
-| L80 | 5 | pending | pending | pending | pending | pending | pending |
+| L80 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L81 | 6 | pending | pending | pending | pending | pending | pending |
 
 Task 0: active — bases and first worktrees prepared; remaining branches created on dependency completion.
@@ -153,3 +153,5 @@ Demo PR4 merged1552ae983a27528eff4c1f8145aa075698b47f71 at2026-10-13T14:04:09Z a
 
 Task4 scoped source/spec/quality review APPROVED fixes2–4 at60ccdf13; reviewer checked all production Once call sites and lock ordering, no new deadlock. Live acceptance/CI still pending. New owned log-survival control simulator fix4-4-ios-control /56DDDFBE-53EA-4342-BDC5-363D50C8E87D recorded; cleanup mandatory for both Task4simulators.
 Ruling: Task9 matrix/criterion-index drafting may run now in gitignored SDD scratch only — its inputs are frozen briefs, previous matrix and approved corrections, independent of unfinished binary — no canonical matrix publication or coverage execution before Task8 smoke gate. /root/prepare_round4_matrix owns draft/index/report; all current source/live work remains priority.
+
+Task 5: complete — CLI PR209 squash merged4231a01aedba3cffaaa27986b58cd7b0251af742 at2026-10-13T14:09:01Z, final head a485f7b6 CI38409615340 SUCCESS. Independent source/fix1/demo acceptance approved, all live criteria and owned cleanup complete, full1973tests pass. DemoPR4 merge1552ae98 supplies durable literalheart fixture. Task4 must merge currentmain and run fullcombined tests/CI before merge; original device captures remain tied60ccdf13 and unaffected paths.
