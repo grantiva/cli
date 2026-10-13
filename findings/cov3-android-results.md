@@ -554,6 +554,46 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L58 [android] | pass | findings/evidence/cov3-android/B3-L58-first-tap-parent-rerun1/ | Exact `03-edit` passes 3/3 and the focused parent-fallback scratch flow passes. In all four runs the plain Deep Links query is first and runner dispatch overhead before it is only 0.34–0.38 ms; the unique non-clickable Name match checks clickability, reads page source for its clickable parent, and the tap/type/postcondition lands. |
 
+| B3-L47 [android] | pass | findings/evidence/cov3-android/B3-L47-focused-lookup-load-rerun1/ | Exact `03-edit` passes 5/5 while generated host load rises from 8.65 to 104.97. Focused active-element lookup takes 469–743 ms and action dispatch 1.64–2.13 seconds; all twelve row-owned load PIDs are proven absent afterward. |
+
+| AND-058 [android] | pass | findings/evidence/cov3-android/B2-K79-K104-D230-realpath-kill-rerun3/, findings/evidence/cov3-android/B2-K104-realpath-ready-mcp-rerun1/ | A live real-path owner first serves MCP successfully. After its exact runner PID is killed, CLI rejects immediately and MCP returns the no-session response; stale owner state is ignored and cleaned without attaching to the dead process. |
+
+| AND-080 [android] | pass | findings/evidence/cov3-android/starting-session-contracts-rerun4/, findings/evidence/cov3-android/B2-K86-a-handedoff-refusal-rerun2/ | Exact detached Android startup is captured through absent, starting, and ready states with the same PID, forwarded driver port, serial, and project session. The ready handed-off session then serves a hierarchy before explicit cleanup. |
+
+| AND-100 [android] | pass | findings/evidence/cov3-android/MCP056-057-emulator-list-boot-rerun1/, findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | Current MCP calls exercise list, boot, name-only ensure, and delete across created, hand-started, running, and missing AVD states. Structured successes/refusals match ownership, and all disposable AVDs are absent afterward. |
+
+| AND-101 [android] | pass | findings/evidence/cov3-android/D2-38-N3-04-mcp-build-run-rerun2/ | Empty-argument MCP build and run use the configured Android module, variant, and emulator. Build returns the concrete `Product:` APK path; run reaches the configured application and device with valid JSON responses. |
+
+| MCP-082 [android] | pass | findings/evidence/cov3-android/MCP082-pipelined-rerun1/ | Context and emulator-list requests sent in one write are queued and each receives the correct valid JSON-RPC ID/result. The named Android device traverses the exact emulator device-list and AVD-name lookup path; null-stdin semantic tests cover orderly pipeline completion. |
+
+| B-A02.2 [android] | pass | findings/evidence/cov3-android/B-A02.2-B-R02.1-N2-17-farside-ten-rerun1/ | Ten exact pointer-overlay repros pass and reveal Remove. Every trace runs from the pinned far-side point `(246,500)` to the left edge `(0,500)`; the stock favorite flow also passes, and exact runner docs/tests pin the element far-side rule. |
+
+| B-R02.1 [android] | pass | findings/evidence/cov3-android/B-A02.2-B-R02.1-N2-17-farside-ten-rerun1/ | Ten full After captures show the row opened with its red Remove action. The overlay records the expected 246-pixel leftward trace from inside the Lake Tahoe element to the screen edge in every passing run. |
+
+| B2-K09 [android] | pass | findings/evidence/cov3-android/B-A02.2-B-R02.1-N2-17-farside-ten-rerun1/ | The exact scratch repro passes 10/10 with Before/After captures, `(246,500)→(0,500)` pointer traces, and Remove revealed; stock flow 02 passes. Runner docs and exact coordinate tests pin the 90%-across start for the documented bounds. |
+
+| N2-17 [android] | pass | findings/evidence/cov3-android/B-A02.2-B-R02.1-N2-17-farside-ten-rerun1/ | All ten pointer-overlay runs start at the documented far side of Lake Tahoe and end at the left edge margin, revealing Remove each time. The source documentation and coordinate tests match the observed 246-pixel travel. |
+
+| B3-L62 [android] | pass | findings/evidence/cov3-android/B3-L62-remove-five-rerun4/ | Five exact runner Remove actions pass and end at the empty-favorites state. Runner/ADB hierarchies and screenshots prove the revealed row persists across the observational restart; each continuation screenshots before the tap and after its assertions. The original wrapper failure is limited to disclosed string proxies corrected by the additive decoder. |
+
+| AND-011 [android] | pass | findings/evidence/cov3-android/AND011-015-016-BC02.1-external-avd-rerun2/ | A uniquely named AVD booted directly with the Android emulator is refused by targeted teardown without force and remains live. The exact forced teardown then succeeds, detaches its guarded serial, and reaps only the row-owned process. |
+
+| AND-015 [android] | pass | findings/evidence/cov3-android/AND011-015-016-BC02.1-external-avd-rerun2/ | Exact CLI delete refuses the hand-created, shutdown AVD without force and leaves it present; the forced form succeeds and the unique AVD is absent afterward. |
+
+| AND-016 [android] | pass | findings/evidence/cov3-android/AND011-015-016-BC02.1-external-avd-rerun2/ | Exact `emulator delete --name cov3-android --force` refuses because the primary AVD is running as emulator-5554. Its device remains live and the surrounding external-AVD cleanup leaves primary inventory unchanged. |
+
+| B2-K28 [android] | pass | findings/evidence/cov3-android/B2-K28-D2-29-unknown-prune-rerun2/ | A Grantiva-created no-boot AVD is deleted out of band while its created ledger entry remains. Unknown-serial teardown refuses and still prunes that stale entry; forced text/JSON forms exit zero with accurate no-record, not-killed outcomes. |
+
+| D2-29 [android] | pass | findings/evidence/cov3-android/B2-K28-D2-29-unknown-prune-rerun2/, findings/evidence/cov3-android/B2-K15-live-teardown-accepted-rerun3/, findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/ | Live teardown reports runner/session cleanup; the exact unknown serial force variants return the no-record outcome in text and structured JSON, and a refused stale case prunes its missing-AVD record. Recreated owned deletion returns pretty JSON with exact deleted/name fields. |
+
+| D2-11 [android] | pass | findings/evidence/cov3-android/D2-11-late-change-rerun1/, findings/evidence/cov3-android/B3-K111-record-trim-rerun1/, findings/evidence/cov3-android/N3-06-ten-recordings-rerun1/ | Idle four-second recordings emit the complete held-frame diagnostic and user note. The exact late-change recording transitions from Featured to Deep Links at 3.35 seconds, records its last frame at 3510 ms, emits `note=not printed`, omits the warning, and ffprobes to 4.0 seconds. |
+
+| B3-L36.2 [android] | pass | findings/evidence/cov3-android/B3-L36.2-stop-status-rerun1/, findings/evidence/cov3-android/keepalive-stop-contracts-rerun1/ | Stopping during the exact active slow flow yields run exit 130 and an interrupted ready file. Stopping after the stock pass preserves passed/run 0, while the retained literal `02-exact-negative` hold preserves failed/run 1; all three targeted stops exit zero. |
+
+| B2-K93 [android] | pass | findings/evidence/cov3-android/AND-050/, findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/, findings/evidence/cov3-android/B2-K10-K80-screens-timeout-interrupt-rerun1/, findings/evidence/cov3-android/B3-L41-variant-module-rerun2/ | Not-visible and element-not-found errors receive exactly one hierarchy/MCP inspection hint in text and JSON. App-crash, timeout, build, and config errors omit it; exact remediation/report tests pin the error-type filter and Android wording. |
+
+| B2-K107-a [android] | pass | findings/evidence/cov3-android/B2-K107-a-exact/, findings/evidence/cov3-android/B2-K15-live-teardown-accepted-rerun3/, findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | The owned device lock is absent after the exact run while versioned install locks remain. Current teardown/delete lifecycle evidence and exact lease/device-home tests cover normal release, retry after unlink, and deleted-device pruning without leaking the device lock. |
+
 ## Counts
 
-386 of 467 slice rows recorded: 363 pass, 17 fail, 4 blocked, 2 n/a.
+406 of 467 slice rows recorded: 383 pass, 17 fail, 4 blocked, 2 n/a.
