@@ -65,7 +65,7 @@ final class ToolErrorContractTests: XCTestCase {
         assertToolError(try await UITools.tap(driver: driver, arguments: [:]), contains: "Error:")
         assertToolError(try await UITools.swipe(driver: driver, arguments: [:]), contains: "'direction' is required")
         assertToolError(try await UITools.type(driver: driver, arguments: [:]), contains: "'text' is required")
-        assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' array is required")
+        assertToolError(try await ScriptTools.script(driver: driver, arguments: [:]), contains: "'steps' is required")
     }
 
     /// A label that matches nothing is the model's mistake to correct, not a
@@ -277,7 +277,7 @@ final class ToolErrorContractTests: XCTestCase {
             (registry, "grantiva_sim_delete", "Error: Invalid argument: 'name' is required."),
             (registry, "grantiva_emulator_ensure", "Error: Invalid argument: 'name' is required."),
             (registry, "grantiva_emulator_delete", "Error: Invalid argument: 'name' is required."),
-            (session, "grantiva_script", "Error: Invalid argument: 'steps' array is required."),
+            (session, "grantiva_script", "Error: Invalid argument: 'steps' is required."),
             (session, "grantiva_swipe", "Error: Invalid argument: 'direction' is required."),
             (session, "grantiva_type", "Error: Invalid argument: 'text' is required."),
             (session, "grantiva_tap", "Error: Invalid argument: Provide either 'label' or both 'x' and 'y' coordinates."),
@@ -286,6 +286,32 @@ final class ToolErrorContractTests: XCTestCase {
             let result = try await target.call(name: name, arguments: [:], server: server)
             XCTAssertEqual(result.isError, true, name)
             XCTAssertEqual(text(result), message, name)
+        }
+    }
+
+    func testScriptArgumentContractsThroughRegistryOnBothPlatforms() async throws {
+        let server = MCPTestSupport.disconnectedServer()
+        for platform in [Platform.ios, .android] {
+            let recorder = WDARecorder()
+            let registry = MCPTestSupport.registry(
+                driver: MCPTestSupport.fakeDriver(recorder: recorder), platform: platform,
+                device: MCPFakeDevicePlatform(platform: platform)
+            )
+            let missing = try await registry.call(name: "grantiva_script", arguments: [:], server: server)
+            XCTAssertEqual(missing.isError, true)
+            XCTAssertEqual(text(missing), "Error: Invalid argument: 'steps' is required.")
+            let wrong = try await registry.call(name: "grantiva_script", arguments: ["steps": .string("tap")], server: server)
+            XCTAssertEqual(wrong.isError, true)
+            XCTAssertEqual(text(wrong), "Error: Invalid argument: 'steps' array is required.")
+            XCTAssertTrue(recorder.calls.isEmpty)
+            let empty = try await registry.call(name: "grantiva_script", arguments: ["steps": .array([])], server: server)
+            XCTAssertNil(empty.isError)
+            XCTAssertTrue(text(empty).contains("Final hierarchy:"))
+            let disconnected = failingRegistry(platform: platform, device: MCPFakeDevicePlatform(platform: platform), emulators: nil)
+            let noSession = try await disconnected.call(name: "grantiva_script", arguments: [:], server: server)
+            XCTAssertEqual(noSession.isError, true)
+            XCTAssertTrue(text(noSession).contains("No active runner session"), text(noSession))
+            XCTAssertFalse(text(noSession).contains("'steps'"))
         }
     }
 

@@ -75,6 +75,12 @@ enum ScriptTools {
     static func run(
         driver: DriverClient, arguments: [String: Value], session: RunnerSessionInfo? = nil
     ) async throws -> (result: CallTool.Result, stepsRun: Int) {
+        guard arguments["steps"] != nil else {
+            return (CallTool.Result(
+                content: [.text(text: "Error: Invalid argument: 'steps' is required.", annotations: nil, _meta: nil)],
+                isError: true
+            ), 0)
+        }
         guard let stepsValue = arguments["steps"]?.arrayValue else {
             return (CallTool.Result(
                 content: [.text(text: "Error: Invalid argument: 'steps' array is required.", annotations: nil, _meta: nil)],
