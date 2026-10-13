@@ -1,0 +1,21 @@
+OVERVIEW: Review visual regression runs: approve, reject, and accept or flag
+individual screens.
+
+`grantiva ci run` creates and completes a run. These commands close the loop
+from a pipeline: review the screens that changed, then approve (promoting
+accepted captures to baselines) or reject.
+
+USAGE: grantiva console vrt <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  runs                    List or inspect runs.
+  approve                 Approve a run: accepted screens become the branch
+                          baselines.
+  reject                  Reject a run. Baselines are untouched.
+  screen                  Review one screen of a run.
+
+  See 'grantiva help console vrt <subcommand>' for detailed help.

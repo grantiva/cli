@@ -55,3 +55,7 @@ The controller should add corrected rerun result lines for these exact existing 
 `CLI-003`, `D2-47`, `N3-16`, `CLI-045`, `CLI-145`, `D2-27`, `MCP-078 [ios]`, `MCP-078 [android]`, `IOS-058`, `B3-L55.1 [ios]`, `B3-L55.2 [android]`, `X-013 [ios]`, `X-013 [android]`, `IOS-016`, `B2-K103 [ios]`, `B2-K103 [android]`, `IOS-153`, `AND-137`, `AND-138`, `B2-K19 [ios]`, `B2-K19 [android]`, `AND-022`, `B2-K25 [ios]`, `B2-K25 [android]`, `N3-06 [android]`, `B2-L03`, and `B3-L51`.
 
 Product failures owned by L64–L79 remain unchanged and require product fixes rather than expectation reruns.
+
+## Executed help-corpus verification
+
+Task 6 regenerated all 172 preserved help commands against QA binary SHA256 `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`. Every command exited0 and retained OVERVIEW, USAGE, and OPTIONS. The canonical corpus already contained the earlier candidate refresh: this replay changed no canonical file and found zero byte mismatches. Exact argv, stdout, stderr and exits are preserved under `findings/evidence/cov3-controller/help-corpus-task6/`; `summary.json` records the checks. The corpus prerequisite for CLI-003, D2-47 and N3-16 is now satisfied; their original failure lines remain preserved.

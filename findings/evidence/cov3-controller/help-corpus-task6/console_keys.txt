@@ -1,0 +1,19 @@
+OVERVIEW: Manage API keys. A key can only create keys with scopes it holds
+itself.
+
+USAGE: grantiva console keys <subcommand>
+
+OPTIONS:
+  --version               Show the version.
+  -h, --help              Show help information.
+
+SUBCOMMANDS:
+  list                    List API keys (prefixes only).
+  get                     Show one API key (prefix only).
+  create                  Create an API key. The raw key is shown once.
+  rotate                  Replace a key with a new one holding the same scopes.
+                          The old key is revoked immediately unless
+                          --grace-days is given.
+  revoke                  Revoke a key immediately.
+
+  See 'grantiva help console keys <subcommand>' for detailed help.

@@ -1,0 +1,34 @@
+OVERVIEW: Create a feature flag.
+
+The value each environment serves while the flag is ON comes from --value
+(applied to every environment) and/or repeated --env-value pairs, which win
+over --value for their environment:
+
+  grantiva console flags create dark_mode --name "Dark Mode" --type bool \
+    --value false --env-value staging=true
+
+USAGE: grantiva console flags create [--json] [--verbose] [--quiet] <key> --name <name> --type <type> [--value <value>] [--env-value <env-value> ...] [--app <app>] [--off] [--description <description>]
+
+ARGUMENTS:
+  <key>                   Flag key (lowercase letters, numbers, underscores).
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --name <name>           Human-readable flag name.
+  --type <type>           Value type: bool, string, int, or json. (values:
+                          bool, string, int, json)
+  --value <value>         On-value applied to every environment.
+  --env-value <env-value> Per-environment on-value as <environment>=<value>
+                          (repeatable).
+  --app <app>             Scope the flag to this app ID (default: org-wide).
+  --off                   Create the flag inactive.
+  --description <description>
+                          Flag description.
+  --version               Show the version.
+  -h, --help              Show help information.
+

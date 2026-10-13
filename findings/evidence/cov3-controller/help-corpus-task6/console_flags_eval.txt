@@ -1,0 +1,41 @@
+OVERVIEW: Dry-run a flag against a simulated device and show the full rule
+trace.
+
+Evaluates the flag exactly as the SDK endpoint would for a device with the
+given attributes, without recording an evaluation. Each targeting rule is shown
+in priority order with per-condition expected vs actual.
+
+  grantiva console flags eval dark_mode --os-version 18.1 --country US \
+    --risk-score 12 --custom beta_group=internal
+
+USAGE: grantiva console flags eval [<options>] <key>
+
+ARGUMENTS:
+  <key>                   Flag key (or UUID).
+
+OPTIONS:
+  --json                  Output as JSON
+  --verbose               Print diagnostic detail (timestamps, labels,
+                          metadata) to stderr.
+  --quiet                 Silence progress diagnostics on stderr; warnings and
+                          errors still print. Program output on stdout is
+                          unaffected.
+  --device-model <device-model>
+                          Device model, e.g. iPhone16,1.
+  --os-version <os-version>
+                          OS version, e.g. 18.1.2.
+  --app-version <app-version>
+                          App version, e.g. 2.1.0.
+  --device-id <device-id> Stable device identifier (drives rollout bucketing).
+  --risk-score <risk-score>
+                          Risk score 0-100.
+  --locale <locale>       Locale, e.g. en_US.
+  --country <country>     Country code, e.g. US.
+  --user-id <user-id>     Application-level user identifier.
+  --attestation-status <attestation-status>
+                          attested, unattested, or expired.
+  --custom <custom>       Custom attribute as <key>=<value> (repeatable).
+  --env <env>             Environment to evaluate in (default: production).
+  --version               Show the version.
+  -h, --help              Show help information.
+
