@@ -1,0 +1,39 @@
+# Android remaining B2/B3 retained-evidence audit
+
+Scope: the named ungraded Android rows only. Runtime is current round-3 evidence under `cov3-android/findings/evidence/cov3-android`; source is CLI `8f2cff67` and runner `fd9d8e8`. No device action was performed. A source test is used only for the semantic/test clause, not as a substitute for an explicit runtime input.
+
+## Complete retained joins
+
+| Row | Disposition | Exact join |
+|---|---|---|
+| **B2-K93 [android]** | **Supported** | `AND-050/02.err`, `04.err`, and `04.out` give the exact not-visible failure and exactly one hierarchy/MCP hint in text and JSON. `CF-12-env-precedence-cli/run.err` and the other retained element-not-found runs give the other positive error class. `B3-L49-L50-crash-waits-rerun1` supplies `app_crash` without this hint; `B2-K10-K80-screens-timeout-interrupt-rerun1` supplies timeout without it; `B3-L41-variant-module-rerun2` supplies build/config errors without it. Candidate `RunnerSessionReportTests`/remediation tests at `8f2cff67` assert the error-type filter. This covers the positive classes, once-only rule, negative classes, Android wording, and test clause. |
+| **B2-K107-a [android]** | **Supported by runtime + exact semantic tests** | `B2-K107-a-exact/01.out` ends `owned-device-lock-absent-exit=0` after the owned run and still inventories versioned `install-*.lock` files. Current teardown/delete lifecycle captures (`B2-K15-live-teardown-accepted-rerun3` and `MCP059-062-D235-emulator-lifecycle-rerun1`) establish normal teardown/delete completion for row-owned devices. Exact-head `SimulatorLeaseTests.testReleaseRemovesTheLockFile`, `testAcquireRetriesWhenTheLockFileWasUnlinkedWhileWaiting`, and `WDADeviceHomeTests.testPruningADeletedDevicesHomeLeavesNoLockFile` cover the alternate termination/delete race clauses. The row does not demand that every termination alternative be repeated live. |
+
+## Strong joins that still lack one explicit clause
+
+| Row | Retained proof | Smallest missing evidence |
+|---|---|---|
+| **B2-K105 [android]** | `wait-runflow-contracts-rerun1/runflow-{plain,report,json}` shows `runFlow: 14-runflow-sub.yaml` and `▸ Run 14-runflow-sub.yaml`; its report flow JSON preserves the same YAML. `configless-header` proves correct relative resolution from the configless header. Exact resolver tests cover as-written rewriting and invocation-directory resolution. | No retained runtime was found that simultaneously demonstrates a `runFlow` nested inside `commands:`/`repeat`. Keep partial unless `CF-14b-runflow-inline` is decoded and shown to be that exact nesting (its existence alone is insufficient). |
+| **B2-K86-b [android]** | `B2-K55-detached-vrt-equivalence-rerun1` proves a live detached session, successful session MCP capture, and clean stop; `MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1` proves CLI/MCP VRT equivalence around a live session. | The literal row requires **CLI** `diff capture --no-build` to capture all five screens through that session and a subsequent `runner dump-hierarchy` success. The retained K55 summary only establishes MCP capture (`start=0 ready=1 mcp=0 stop=0`), so do not substitute it. |
+| **B2-K88 [android]** | `foreground-lifecycle-controls-rerun2` proves foreground lifetime, concurrent controls, SIGINT exit/status, and cleanup; its summary is `foreground=0 pass-sigint=0 ready=passed`. `B2-K79-K104-D230-realpath-kill-rerun3` proves detached survival/control. `N2-05-B3L13-dead-runner-stop-json-rerun2` proves dead-pid stop cleanup. Exact lifecycle tests cover fake-child waiting and cleanup. | The row expressly requires runner output streaming to a terminal during Ctrl-C. Retained foreground logs prove output, but no TTY/terminal capture was identified. Grade only if the campaign accepts the captured foreground stream as that clause; otherwise this is the sole complement. |
+| **B3-L38-a [android]** | `starting-session-contracts-rerun4` records foreground `starting` tool/resource errors, `runner dump-hierarchy` starting text, then ready resource/tool success. `B2-K79-K104-D230-realpath-kill-rerun3` proves a killed owner yields CLI/MCP no-session. Docs and source cover both states. | The same rerun records `first-detach-exit-before-stop=0` and `ready-observation.json` with `runnerAlive:false`; it does not prove the required detached 100-ms **spawn-to-ready** timeline. A detached timeline with session JSON `starting` (no port) then `ready` (port), sampled MCP/resource/CLI responses, remains required. Do not infer this from foreground observations. |
+| **B2-K54 [android]** | `D2-38-N3-04-mcp-build-run-rerun2` proves MCP Android build result/module/variant and unchanged adb set; PHASEB/AND111 supplies the CLI build control; exact `BuildToolsTests` proves build does not call `bootDevice`. | Matrix input starts with the configured AVD shut down and also checks that `grantiva_run` still boots. Existing evidence started with a live emulator. Need one shut-down-before/after MCP build plus run-boot complement. |
+| **B3-L44 [android]** | Current stock captures, N-12 pass evidence, and session-backed Home captures exist. | Still need the literal three launch-only Home captures compared with one session Home (sizes within 10%), measured added wait under 1 s when already drawn, and the README launch-wait sentence. Separate successful captures do not establish those comparisons. |
+
+## Runtime still required
+
+| Row | Exact missing runtime/contract |
+|---|---|
+| **B2-K06** | Three fresh boots and first capture on each, including the recovery/failed-recovery diagnostic and settings-restore behavior if triggered. Exact runner retry tests cover only the test clause. |
+| **B2-K07** | Literal 5 fresh/default + 2 full snapshot + 3 warm runs, ten successes and spread calculation; paired single-scroll travel ±5%; speed-mapping observation. B3-L34's five measured scroll runs do not satisfy this fixture/count. |
+| **B2-K27** | Four environment/TTY modes with emulator argv plus the promised help/docs wording and override behavior. |
+| **B2-K31** | Bogus system-image `--no-boot` run, normalized stderr, proof no AVD/`Creating AVD`; source tests alone are insufficient. |
+| **B2-K32** | Fresh AVD with app absent: build-install failure and detached-start output, including absence of monkey trace on both streams. |
+| **B2-K106 / B3-L35** | Row-owned killed keepalive and killed plain runs, JSON and text teardown, exact removed temp paths, empty `comm`, preserved report dir, live foreign claim untouched, stale lease removed. Existing teardown temp-directory arrays are not the killed-run compound input. |
+| **B2-K108** | Deterministic pixel-only, perceptual-only, and both-threshold failures in text and JSON plus CI shared wording. Existing new/mixed/passing VRT corpora do not form these three classes. |
+| **B3-L14.2** | Cancel an actually running Gradle MCP build after 2 s; no response; exact child gone by +5 s; next request succeeds. |
+| **B3-L38-b** | Three orphaned-UIA2 cycles with old/new session IDs, immediate post-detach dump, subprocess proof of no kill/force-stop, plus foreground/source clause. K79's single killed owner is not this three-cycle input. |
+| **B3-L51** | Exact four-form scratch flow with hierarchy travel/settle per form and runner/logcat routing (`input swipe` for screen/start-end/adb; held drag for element). General gesture counters do not establish routing/travel. |
+| **B3-L54.2** | Two foreground starts interrupted by targeted emulator teardown from a different cwd; exact shell-A message/exit, teardown exit, global session-dir and runner-process cleanup. Foreground runner stop evidence is a different command. |
+
+This audit yields two immediately gradeable rows (B2-K93, B2-K107-a), six narrow partials, and twelve rows needing their stated runtime complement. B2-K105 may become a third closure after decoding the retained inline-runFlow artifact rather than rerunning it.
