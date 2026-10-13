@@ -395,3 +395,9 @@ Ruling: B3-L55.1/.2 input requiring a ready file with a running flow is an expec
 - Android header-only launch env passes, literal docs keepalive/XML/JSON examples pass at measured load7.01, and compound Maestro flow runs21/21 with five screenshot files. The compound harness EXIT trap used zsh read-only status; only final manifest/timestamp omitted, additive manifest preserves provenance without rerun.
 - BC032 cross-project/platform MCP contexts correctly refuse session reuse; independent source/docs review confirms cross-directory CLI hierarchy is intentional global fallback, no new brief. MCP079 actual session tools return isError and explicit ignored-session explanations for both mismatch cases, owner cleans up normally. AND057 forward lifecycle and AND087 unchanged/changed comparison joins independently pass.
 - Exact product source worktrees remain clean. Android427/467 before the latest two review grades; CLI384 complete. Full Android slice and Task6 remain incomplete.
+
+
+### Task 4 final cleanup complete
+
+- Task4 completed at cov3/ios2b36f0a9 after final owned-device cleanup, not merely at the earlier read-only inventory. Exact U1/U2 normal targeted teardowns return0, both UUIDs are absent afterward, capacity sessions is empty, and no process references either UUID. Both owner simulators remain booted and untouched. CLI083/B-C21.1 remain blocked by that required no-owner-touch guard; no no-simulator call is attempted against them.
+- Task3 retained complete384 effective; Task4 coverage478/478 and final cleanup complete. Task3/4 checklist completion now reflects their retained results, including documented environment blocks. Android and Task6 remain active/pending respectively.

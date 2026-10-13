@@ -143,10 +143,10 @@ Not needed in round 3 unless a row names a new flow: the coverage flows (round 1
 
 Agent, worktree `.worktrees/cov3-cli`, `GRANTIVA_SESSION_ID=cov3-cli`, no devices.
 
-- [ ] **Step 1:** Run every matrix row with slice `CLI` in ID order; one evidence dir per row; results in `findings/cov3-cli-results.md` (`ID | result | evidence | note`). CLI-083 is handed to iOS (re-run rules).
-- [ ] **Step 2:** The device-free MCP rows (no session, no config, tools/list, schema, error texts, cancellation) via the stdio script.
-- [ ] **Step 3:** Help-corpus consistency: every README/docs command example re-run against `findings/help/` (regenerated in fix-wave Task 9; any mismatch is a `fail`).
-- [ ] **Step 4:** Commit "CLI slice results for the round 3 coverage pass".
+- [x] **Step 1:** Run every matrix row with slice `CLI` in ID order; one evidence dir per row; results in `findings/cov3-cli-results.md` (`ID | result | evidence | note`). CLI-083 is handed to iOS (re-run rules).
+- [x] **Step 2:** The device-free MCP rows (no session, no config, tools/list, schema, error texts, cancellation) via the stdio script.
+- [x] **Step 3:** Help-corpus consistency: every README/docs command example re-run against `findings/help/` (regenerated in fix-wave Task 9; any mismatch is a `fail`).
+- [x] **Step 4:** Commit "CLI slice results for the round 3 coverage pass".
 
 ---
 
@@ -154,11 +154,11 @@ Agent, worktree `.worktrees/cov3-cli`, `GRANTIVA_SESSION_ID=cov3-cli`, no device
 
 Agent, worktree `.worktrees/cov3-ios`, `GRANTIVA_SESSION_ID=cov3-ios`, simulators `cov3-ios-26` (26.0) and `cov3-ios-27` (27.0).
 
-- [ ] **Step 1:** Run the default-device rows first, before creating any simulator, under the default-device guard (N3-13, B3-L08.1 with B2-K37.2, B3-L08.2, N3-12; MCP-031's no-simulator call is graded by B3-L08.1/N3-13): `xcrun simctl list devices booted` before and after each.
-- [ ] **Step 2:** Create both simulators; build and install the scratch iOS app on both; `run --no-build` of the stock set on both (12/12 + screens, cache-hit line `sim-ios<rt>-iphone-wda16.12.8-r1` (or `-r2` per Task 0), no first-time build).
-- [ ] **Step 3:** Every matrix row with slice `iOS` and the iOS half of every `iOS+Android` row (incl. the CLI rows the matrix hands to iOS, the MCP live-session rows, the B/B2/B3 rows for iOS briefs, the N/N2/N3 and X rows), on 26.0; repeat the flow-command rows and the stock set on 27.0 (`<ID> @27.0`); evidence per row.
-- [ ] **Step 4:** Concurrency row (two simulators, two shells), capacity rows (extra sims `cov3-ios-3/-4`, deleted inside the row), IOS-018 under its scratch-home rule, teardown rows (device homes gone).
-- [ ] **Step 5:** Teardown both simulators, `xcrun simctl list devices | grep -c cov3-ios` = 0; then CLI-083 and B-C21.1 under the re-run rule; commit "iOS slice results for the round 3 coverage pass".
+- [x] **Step 1:** Run the default-device rows first, before creating any simulator, under the default-device guard (N3-13, B3-L08.1 with B2-K37.2, B3-L08.2, N3-12; MCP-031's no-simulator call is graded by B3-L08.1/N3-13): `xcrun simctl list devices booted` before and after each.
+- [x] **Step 2:** Create both simulators; build and install the scratch iOS app on both; `run --no-build` of the stock set on both (12/12 + screens, cache-hit line `sim-ios<rt>-iphone-wda16.12.8-r1` (or `-r2` per Task 0), no first-time build).
+- [x] **Step 3:** Every matrix row with slice `iOS` and the iOS half of every `iOS+Android` row (incl. the CLI rows the matrix hands to iOS, the MCP live-session rows, the B/B2/B3 rows for iOS briefs, the N/N2/N3 and X rows), on 26.0; repeat the flow-command rows and the stock set on 27.0 (`<ID> @27.0`); evidence per row.
+- [x] **Step 4:** Concurrency row (two simulators, two shells), capacity rows (extra sims `cov3-ios-3/-4`, deleted inside the row), IOS-018 under its scratch-home rule, teardown rows (device homes gone).
+- [x] **Step 5:** Teardown both simulators, `xcrun simctl list devices | grep -c cov3-ios` = 0; then CLI-083 and B-C21.1 under the re-run rule; commit "iOS slice results for the round 3 coverage pass".
 
 ---
 
