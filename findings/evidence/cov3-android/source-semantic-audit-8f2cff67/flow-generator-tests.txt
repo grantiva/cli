@@ -1,0 +1,94 @@
+    func testAndroidScreensFlowDeliversEnvironmentAsLaunchArguments() throws {
+        let yaml = FlowGenerator.generate(
+            screens: [GrantivaConfig.Screen(name: "Home", path: .launch)],
+            bundleId: "com.example.app",
+            environment: ["LANDMARKS_NOTE": "a=b c", "LANDMARKS_SEED": "empty"],
+            platform: .android
+        )
+        let body = try XCTUnwrap(yaml.components(separatedBy: "\n---\n").last)
+        let steps = try XCTUnwrap(Yams.load(yaml: body) as? [Any])
+        let launch = try XCTUnwrap((steps.first as? [String: Any])?["launchApp"] as? [String: Any])
+        XCTAssertEqual(launch["arguments"] as? [String: String], ["LANDMARKS_NOTE": "a=b c", "LANDMARKS_SEED": "empty"])
+        XCTAssertNil(launch["environment"])
+    }
+
+    private let settle = "- waitForAnimationToEnd:\n    timeout: 5000"
+
+    // C09: `wait: N` sleeps N seconds; waitForAnimationToEnd is only an upper bound.
+    func testWaitStepSleepsUnconditionally() throws {
+        let screens = [GrantivaConfig.Screen(name: "Waited", path: .steps([.init(wait: 3)]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+            """
+        XCTAssertEqual(FlowGenerator.generate(screens: screens, bundleId: "com.example"), expected)
+    }
+
+    // A04: a settle wait between each interaction and the next screenshot.
+    func testTapIsFollowedBySettleBeforeScreenshot() {
+        let screens = [GrantivaConfig.Screen(name: "Deep Links", path: .steps([.init(tap: "Deep Links")]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+        XCTAssertTrue(
+            yaml.hasSuffix("- tapOn: \"Deep Links\"\n\(settle)\n- takeScreenshot: \"Deep Links\"\n"),
+            yaml
+        )
+    }
+
+    /// L42-a: a native `{id:}` step is emitted with `id:`.
+    func testAnIdStepIsEmittedAsAnIdSelector() {
+        let screens = [GrantivaConfig.Screen(name: "Clock", path: .steps([
+            .init(tap: "clock", tapById: true), .init(assertVisible: "clock", assertVisibleById: true),
+        ]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+        XCTAssertTrue(yaml.contains("- tapOn:\n    id: \"clock\""), yaml)
+        XCTAssertTrue(yaml.contains("- assertVisible:\n    id: \"clock\""), yaml)
+    }
+
+    /// L44: on Android a launch-only screen waits for the app to draw (an
+    /// element with text inside the app's content view) before the settle
+    /// and the screenshot; a blank, not-yet-drawn window is static and would
+    /// pass the settle alone. iOS is unchanged.
+    func testALaunchScreenWaitsForTheAppToDrawOnAndroid() {
+        let screens = [GrantivaConfig.Screen(name: "Home", path: .launch)]
+        let android = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .android)
+        XCTAssertTrue(android.contains("""
+        - launchApp
+        \(FlowGenerator.appDrawnWait.joined(separator: "\n"))
+        \(settle)
+        - takeScreenshot: "Home"
+        """), android)
+        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("    optional: true"), "a screen without text must not fail")
+        XCTAssertTrue(FlowGenerator.appDrawnWait.contains("        id: \"android:id/content\""))
+
+        let ios = FlowGenerator.generate(screens: screens, bundleId: "com.example", platform: .ios)
+        XCTAssertFalse(ios.contains("extendedWaitUntil"), ios)
+        XCTAssertTrue(ios.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), ios)
+    }
+
+    func testSwipeAndTypeAreFollowedBySettle() {
+        let screens = [GrantivaConfig.Screen(name: "S", path: .steps([
+            .init(swipe: "Up"), .init(type: "abc"), .init(assertVisible: "Done"),
+        ]))]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+        XCTAssertTrue(yaml.contains("- swipe:\n    direction: UP\n\(settle)\n- inputText: \"abc\"\n\(settle)\n- assertVisible"), yaml)
+        XCTAssertTrue(yaml.hasSuffix("- assertVisible: \"Done\"\n\(settle)\n- takeScreenshot: \"S\"\n"), yaml)
+    }
+
+    func testEveryScreenshotIsPrecededByOneSettle() {
+        let screens = [
+            GrantivaConfig.Screen(name: "Home", path: .launch),
+            GrantivaConfig.Screen(name: "Fav", path: .steps([.init(tap: "Favorites")])),
+        ]
+        let yaml = FlowGenerator.generate(screens: screens, bundleId: "com.example")
+
+        XCTAssertTrue(yaml.contains("- launchApp\n\(settle)\n- takeScreenshot: \"Home\""), yaml)
+        XCTAssertEqual(yaml.components(separatedBy: "waitForAnimationToEnd").count - 1, 2, yaml)
+    }
+
+    // A13: the mapping form emits a selector with `exact: true`.
+    func testExactLabelsEmitExactSelectors() throws {
+        let screens = [GrantivaConfig.Screen(name: "Tab", path: .steps([
+            .init(tap: "Landmarks", assertVisible: "Lakes", assertNotVisible: "Back", tapExact: true,
+                  assertVisibleExact: true, assertNotVisibleExact: true),
+            .init(tap: "Lakes"),

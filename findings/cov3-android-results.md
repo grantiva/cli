@@ -175,8 +175,24 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | AND-118 | pass | findings/evidence/cov3-android/AND-118-exact-rerun1/ | With neither emulator config nor a device flag, narration used explicit `device=(none)`, then selected `cov3-android (emulator-5554)`; no empty device serial appeared and the flow passed. |
 
-| AND-119 | pass | findings/evidence/cov3-android/AND-119-exact-rerun1/ | With continue-on-failure, the configured screen session failed at `No Such Element` but the following browse flow still ran and passed; the command retained exit 1. The slow screen was killed at its named `Slow` step after 34.2 seconds wall time under the 30-second cap, with a terminal failed report. |
+| AND-119 | pass | findings/evidence/cov3-android/AND-119-exact-rerun1/ | With continue-on-failure, the configured screen session failed at `No Such Element` but the following browse flow still ran and passed; the command retained exit 1. The slow-screen timeout fired at its named `Slow` step under the configured 30-second cap; total wall time including setup and cleanup was 34.2 seconds, with a terminal failed report. |
 
+| AND-081 | pass | findings/evidence/cov3-android/AND-081-084-exact-rerun1/ | One confirmed Landmarks session produced nonempty tree, JSON, and XML hierarchies; all three contained the same Landmarks application content and exited 0. |
+| AND-082 | pass | findings/evidence/cov3-android/AND-081-084-exact-rerun1/ | Stop returned a structured stopped result for the exact Android PID/port/serial, the PID was dead, the project session file was removed, and the owned 6790 forward present during the session was absent afterward. |
+| AND-083 | pass | findings/evidence/cov3-android/AND-081-084-exact-rerun1/ | `runner start --application-id x.y --emulator cov3-android` returned and persisted applicationId `x.y` on serial emulator-5554, proving the explicit flags won over project config; stop preserved the same identity. |
+| AND-084 | pass | findings/evidence/cov3-android/AND-081-084-exact-rerun1/ | After PID 54010 was proven dead, its exact session record was restored; a fresh start replaced it with PID 54330 on the requested emulator-5554, and final stop removed the session cleanly. |
+
+| B-A01.2 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate docs select the FlowEnvironment route: Android launch values become string intent extras through staged `launchApp.arguments`, merge existing arguments, and preserve the documented precedence. |
+| B-A01.4 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate tests cover Android injection into bare, scalar, and mapping launch forms, including values with spaces/equals, while the screens-flow test asserts the same `arguments` representation. |
+| B-A04.2 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact production emits one bounded 5000ms `waitForAnimationToEnd` settle after interactions and before screenshots; shipped README documents the settle behavior. |
+| B-A04.3 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate FlowGenerator tests assert a settle between tap and screenshot and exactly one settle before every generated screenshot. |
+| B-A05.3 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate RecordCommand tests exercise a static Android MP4 held to two seconds with a valid 1000ms frame, and reject a requested timestamp beyond the requested duration before recording. |
+| B-A08.2 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact shipped Android docs give the validated default/info/debug mapping as `*:I`, `*:I`, and `*:D`; the shared CLI enum exposes only those documented values. |
+| B-A08.4 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate AndroidPlatform tests assert start-now, no buffer clear, UID filtering, and all priority mappings; RunCommand tests reject `warning`. |
+| B-A13.3 | pass | findings/evidence/cov3-android/source-semantic-audit-8f2cff67/ | Exact candidate FlowGenerator test decodes the mapping-form selector through GrantivaConfig and asserts emitted YAML retains `exact: true`. |
+
+| B-A13.2 | pass | findings/evidence/cov3-android/AND-106/ | The round-3 stock Android screen session passed all 22 steps and captured both the Lakes category screen and the Golden Gate Bridge Detail screen among its five configured captures. |
+| B-R01.2 | pass | findings/evidence/cov3-android/AND-106/ | Stock `03-edit` typed the suffix, clicked Done at y=233 on the 1080x2400 emulator (well above the keyboard), closed the sheet, and asserted `Golden Gate Bridge Renamed`. |
 ## Counts
 
-158 of 467 slice rows recorded: 148 pass, 4 fail, 4 blocked, 2 n/a.
+172 of 467 slice rows recorded: 162 pass, 4 fail, 4 blocked, 2 n/a.
