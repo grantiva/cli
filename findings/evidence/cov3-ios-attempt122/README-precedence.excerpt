@@ -1,0 +1,16 @@
+
+Alerts on iOS: a `launchApp` pre-grants the app's permissions on the simulator, and GrantivaAgent auto-accepts only system alerts that appear during the flow (notifications, tracking, local network, Bluetooth and other prompts the simulator cannot pre-grant), so they don't block it. Your app's own alerts ("Discard changes?") are left alone: they stay up until a flow step answers them, including in `runFlow` subflows.
+
+Place your flows in a `.maestro/` directory, or write `grantiva.yml` in Maestro format:
+
+```yaml
+appId: com.example.myapp
+---
+- launchApp
+- tapOn: "Sign In"
+- inputText: "user@example.com"
+- takeScreenshot: "Login"
+- tapOn: "Submit"
+- assertVisible: "Welcome"
+- takeScreenshot: "Welcome"
+```
