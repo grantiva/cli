@@ -43,9 +43,9 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 |---|---|---|---|---|---|---|---|
 | L51 | 2 | pending | pending | pending | pending | pending | pending |
 | L53 | 3 + 4 | pending | pending | pending | pending | pending | pending |
-| L61 | 1 | pending | pending | pending | pending | pending | pending |
+| L61 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L62 | 2 | pending | pending | pending | pending | pending | pending |
-| L64 | 1 | pending | pending | pending | pending | pending | pending |
+| L64 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L65 | 5 | pending | pending | pending | pending | pending | pending |
 | L66 | 5 | pending | pending | pending | pending | pending | pending |
 | L67 | 6 | pending | pending | pending | pending | pending | pending |
@@ -130,3 +130,10 @@ Task4 scoped fix1 re-review approved all findings, no new blocking issue; resume
 Task1 independent source/spec/acceptance review APPROVED. Minor file-list reconciliation resolved in report: sourceCtx reused unchanged, regression files chosen by existing ownership, no omitted behavior or cosmetic source edits. CI/merge and Task7 compatibility remain gates.
 Task4 live Android: fix4-4-android / emulator5580 / PID18081; scoped home /private/tmp/grantiva-fix4-4.b2UyuL/runner-home; source9c774852 debug SHAaeaa9587eae499b0a3709189c7a2b2120ce90ebf6ae90357fbd2b0783122d06e. iOS still queued.
 Task5 final CLI suite1970pass and final L80 both platforms pass; demo literal-heart durability recheck after restart failed, so draft demo PR4 stays unapproved. Investigating actual foreground/visibility state; preserve initial pass plus later failure without regrading.
+
+Task1: complete — runner PR24 squash merged e5cba28c8ea9fe4ae685b15ffa528bc376b5d3b7 at 2026-10-13T13:53:33Z. Independent source/spec/device review approved; final Test/Lint/Build CI38406426508 passed (Release skipped). L61/L64 task acceptance closed; downstream bundle still requires Task7 schema integration.
+Task2: active — fresh worktree maestro-runner/.worktrees/fix4-gestures-lifecycle at e5cba28c; /root/fix4_gestures_lifecycle owns device-free TDD now, Android waits Task4 cleanup.
+Task4 live discovered missing --flatten in detached-start argv; production regression RED then63 lifecycle tests GREEN, committed ed2e10e61014f8bbc3905986e63c7255de843461. Actual Android AND-127/N3-03 passed after correction, plus launch-failure, stale-session replacement and empty-target controls. Original failures preserved. New actual mixed absolute/relative L75 cycle remains open.
+Ruling: Extend Task4 cycle formatting beyond map merge only, narrowly on circular dependency detected lines using prior canonical hop and existing mapped display targets — actual runner emits mixed operands omitted from original unit fixture — require actual mixed-hop RED/GREEN, streaming chunk-boundary and unchanged absolute/non-cycle controls; scoped review before merge.
+Task5 draft CLI PR209 at62088d41 passed CI38407525054 and1970 fresh-home tests; source reviewer found Important cancellation-expiry bug for responses queued behind >2s backpressure. Original implementer resumed fix round1, scoped re-review and final-head CI required; no complete claim.
+Task5 demo corrected modifier placement committed19c1aada9c856479f0c29fbd51c029866ae2b3a9; implementer reports four selected/unselected actual-navigation restart cycles and all four stock flows passed, then final selector/script controls. Independent demo review pending. iOS owned device4AB20A5D-520A-4EA3-97ED-D09D90DCE79D deleted with owned processes absent; Android already cleaned. iOS window released to Task4.
