@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+"""Provision only the three controller-owned Task 9 primary devices after a recorded zero gate."""
+from pathlib import Path
+import argparse, hashlib, json, os, socket, subprocess, time
+
+IOS = (
+    ("ios26", "cov4-ios-26", "com.apple.CoreSimulator.SimDeviceType.iPhone-17", "com.apple.CoreSimulator.SimRuntime.iOS-26-0"),
+    ("ios27", "cov4-ios-27", "com.apple.CoreSimulator.SimDeviceType.iPhone-17", "com.apple.CoreSimulator.SimRuntime.iOS-27-0"),
+)
+AVD, SERIAL, PORT = "cov4-android", "emulator-5584", "5584"
+PROTECTED_IOS = {"B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C", "FE441EE5-BBFC-4981-B68A-59C0DBCE26D6"}
+JAVA21 = "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+
+def sha(path): return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+def save(path, value): path.write_text(json.dumps(value, indent=2) + "\n")
+def require(value, message):
+    if not value: raise RuntimeError(message)
+def manifest(root):
+    return [{"path": str(p.relative_to(root)), "sha256": sha(p)} for p in sorted(root.rglob("*")) if p.is_file()]
+def protected_sims(doc):
+    return {d["udid"]: {k: v for k, v in d.items() if k not in ("dataPathSize", "logPathSize")}
+            for devices in doc["devices"].values() for d in devices if d.get("udid") in PROTECTED_IOS}
+def normalized_forwards(raw): return sorted(" ".join(line.split()) for line in raw.decode().splitlines() if line.strip())
+def ports_unused():
+    sockets=[]
+    try:
+        for port in (5584, 5585):
+            sock=socket.socket(); sock.bind(("127.0.0.1", port)); sockets.append(sock)
+        return True
+    except OSError:
+        return False
+    finally:
+        for sock in sockets: sock.close()
+
+ap=argparse.ArgumentParser()
+ap.add_argument("--candidate", required=True, type=Path)
+ap.add_argument("--gate-evidence", required=True, type=Path)
+ap.add_argument("--output", required=True, type=Path)
+a=ap.parse_args(); candidate_path=a.candidate.resolve(); gate_path=a.gate_evidence.resolve(); output=a.output.resolve()
+require(candidate_path.is_file(), "candidate manifest missing"); require(gate_path.is_file(), "Task 8 zero gate missing")
+candidate=json.loads(candidate_path.read_text()); gate=json.loads(gate_path.read_text()); candidate_sha=sha(candidate_path)
+require(candidate.get("schema")=="grantiva.task9.candidate.v1", "Task 9 candidate schema mismatch")
+require(gate.get("schema")=="grantiva.task8.zero-gate.v1" and gate.get("passed") is True, "Task 8 zero gate is not approved")
+require(gate.get("candidateManifestSHA256")==candidate_sha, "zero gate candidate mismatch")
+for key in ("review", "cleanup"):
+    ref=gate.get(key,{}); path=Path(ref.get("path","")).resolve()
+    require(path.is_file() and ref.get("sha256")==sha(path), f"zero gate {key} hash mismatch")
+cleanup_path=Path(gate["cleanup"]["path"]).resolve()
+require(json.loads(cleanup_path.read_text()).get("passed") is True, "zero gate cleanup is not passing JSON")
+
+cli=candidate["cli"]; runner=candidate["runner"]; demo=candidate["demo"]
+home=Path(runner["runnerHome"]).resolve(); ios_app=Path(demo["iosApp"]["path"]).resolve(); apk=Path(demo["androidAPK"]["path"]).resolve()
+require(home.is_dir(), "frozen runner home missing")
+require(sha(cli["binary"]["path"])==cli["binary"]["sha256"], "frozen CLI hash mismatch")
+require(manifest(Path(cli["bundle"]["path"]).resolve())==cli["bundle"]["files"], "frozen bundle manifest mismatch")
+require(manifest(ios_app)==demo["iosApp"]["files"], "frozen iOS app manifest mismatch")
+require(sha(apk)==demo["androidAPK"]["sha256"], "frozen Android APK hash mismatch")
+output.mkdir(parents=True, exist_ok=False)
+
+sdk=Path.home()/"Library/Android/sdk"; adb=sdk/"platform-tools/adb"; emulator=sdk/"emulator/emulator"; avdmanager=sdk/"cmdline-tools/latest/bin/avdmanager"
+env=os.environ.copy(); env.pop("GRANTIVA_API_KEY",None); env.update(JAVA_HOME=JAVA21,ANDROID_HOME=str(sdk),ANDROID_SDK_ROOT=str(sdk),GRANTIVA_RUNNER_HOME=str(home),MAESTRO_RUNNER_HOME=str(home),GRANTIVA_SESSION_ID="cov4-controller")
+ownership={"schema":"grantiva.task9.primary-ownership.v1","sessionId":"cov4-controller","candidateManifest":str(candidate_path),"candidateManifestSHA256":candidate_sha,"gateEvidence":str(gate_path),"runnerHome":str(home),"devices":{}}
+save(output/"ownership.json",ownership)
+def run(label, argv, input_bytes=None, timeout=240):
+    argv=list(map(str,argv)); start=time.time(); meta={"argv":argv,"cwd":str(output),"startedEpoch":start,"sessionId":"cov4-controller","runnerHome":str(home),"javaHome":JAVA21,"apiKey":"unset"}; save(output/(label+"-start.json"),meta)
+    try: p=subprocess.run(argv,cwd=output,env=env,input=input_bytes,capture_output=True,timeout=timeout)
+    except subprocess.TimeoutExpired as exc:
+        stdout=exc.stdout or b""; stderr=exc.stderr or b""; stdout=stdout.encode() if isinstance(stdout,str) else stdout; stderr=stderr.encode() if isinstance(stderr,str) else stderr
+        (output/(label+".stdout")).write_bytes(stdout); (output/(label+".stderr")).write_bytes(stderr); meta.update(exit=None,endedEpoch=time.time(),timedOut=True,configuredTimeoutSeconds=timeout,outcome="timeout"); save(output/(label+"-result.json"),meta); raise
+    (output/(label+".stdout")).write_bytes(p.stdout); (output/(label+".stderr")).write_bytes(p.stderr); meta.update(exit=p.returncode,endedEpoch=time.time()); save(output/(label+"-result.json"),meta); return p,meta
+def successful(label, argv, input_bytes=None, timeout=240):
+    p,meta=run(label,argv,input_bytes,timeout); require(p.returncode==0,f"{label} failed: {p.stderr.decode(errors='replace')}"); return p,meta
+
+# All name/serial/port and protected baselines precede the first mutation.
+sims_p,_=successful("simulators-before",["xcrun","simctl","list","devices","--json"]); sims=json.loads(sims_p.stdout)
+avds_p,_=successful("avds-before",[emulator,"-list-avds"]); adb_p,_=successful("adb-before",[adb,"devices","-l"])
+forwards_before_p,_=successful("forwards-before",[adb,"forward","--list"])
+all_sims=[d for devices in sims["devices"].values() for d in devices]
+require(not any(d.get("name") in {x[1] for x in IOS} for d in all_sims), "Task 9 iOS name already exists")
+require(AVD not in avds_p.stdout.decode().splitlines(), "Task 9 AVD name already exists")
+require(SERIAL not in adb_p.stdout.decode(), "Task 9 Android serial already connected")
+require(ports_unused(), "Task 9 emulator ports 5584/5585 are in use")
+require(set(protected_sims(sims))==PROTECTED_IOS, "protected iOS baseline incomplete")
+protected_config=Path.home()/".android/avd/Pixel_8_API_35.avd/config.ini"; require(protected_config.is_file(),"protected Pixel config missing")
+save(output/"baseline.json",{"protectedSimulators":protected_sims(sims),"protectedPixelConfig":{"path":str(protected_config),"sha256":sha(protected_config)},"task9NamesAbsent":True,"task9SerialAbsent":True,"ports5584And5585Unused":True})
+
+for key,name,device_type,runtime in IOS:
+    argv=["xcrun","simctl","create",name,device_type,runtime]; entry={"platform":"ios","name":name,"runtime":runtime,"deviceType":device_type,"owned":False,"createdEpoch":None,"provision":{"command":argv,"state":"starting"},"ownedPIDs":[]}; ownership["devices"][key]=entry; save(output/"ownership.json",ownership)
+    p,meta=run(key+"-create",argv); entry["provision"].update(state="completed",exit=p.returncode,startedEpoch=meta["startedEpoch"],endedEpoch=meta["endedEpoch"])
+    if p.returncode==0:
+        entry.update(id=p.stdout.decode().strip(),owned=True,createdEpoch=meta["startedEpoch"])
+    save(output/"ownership.json",ownership); require(p.returncode==0 and entry.get("id"),f"{key} create failed")
+    udid=entry["id"]; successful(key+"-boot",["xcrun","simctl","boot",udid]); successful(key+"-ready",["xcrun","simctl","bootstatus",udid,"-b"],timeout=300); successful(key+"-install",["xcrun","simctl","install",udid,ios_app])
+    container_p,_=successful(key+"-container",["xcrun","simctl","get_app_container",udid,"com.kylebrowning.Landmarks","app"]); container=Path(container_p.stdout.decode().strip())
+    installed=manifest(container); require(installed==demo["iosApp"]["files"],f"{key} installed app manifest mismatch"); save(output/(key+"-installed-manifest.json"),{"sourcePath":str(ios_app),"sourceManifestSHA256":demo["iosApp"]["manifestSHA256"],"installedPath":str(container),"files":installed})
+
+argv=[str(avdmanager),"create","avd","--name",AVD,"--package","system-images;android-35;google_apis;arm64-v8a","--device","pixel_8"]
+android={"platform":"android","id":SERIAL,"name":AVD,"avd":AVD,"runtime":"API 35 google_apis arm64-v8a","port":5584,"owned":False,"createdEpoch":None,"provision":{"command":argv,"state":"starting","javaHome":JAVA21},"ownedPIDs":[]}; ownership["devices"]["android"]=android; save(output/"ownership.json",ownership)
+p,meta=run("android-create",argv,b"no\n"); android["provision"].update(state="completed",exit=p.returncode,startedEpoch=meta["startedEpoch"],endedEpoch=meta["endedEpoch"])
+if p.returncode==0: android.update(owned=True,createdEpoch=meta["startedEpoch"])
+save(output/"ownership.json",ownership); require(p.returncode==0,"Android AVD create failed")
+argv=[str(emulator),"-avd",AVD,"-port",PORT,"-no-window","-no-audio","-no-snapshot"]
+launch={"argv":argv,"startedEpoch":time.time(),"sessionId":"cov4-controller"}; save(output/"android-launch-start.json",launch)
+so=(output/"android-emulator.stdout").open("wb"); se=(output/"android-emulator.stderr").open("wb"); proc=subprocess.Popen(argv,env=env,cwd=output,stdout=so,stderr=se,start_new_session=True); so.close(); se.close()
+android["ownedPIDs"]=[proc.pid]; android["launch"]={**launch,"pid":proc.pid}; save(output/"ownership.json",ownership); save(output/"android-launch-result.json",android["launch"])
+successful("android-wait",[adb,"-s",SERIAL,"wait-for-device"],timeout=240)
+boot_started=time.monotonic(); boot_deadline=boot_started+120.0
+for attempt in range(120):
+    require(proc.poll() is None,"owned Android emulator exited")
+    remaining=boot_deadline-time.monotonic()
+    if remaining<=0:
+        save(output/"android-boot-deadline.json",{"outcome":"timeout","startedMonotonic":boot_started,"endedMonotonic":time.monotonic(),"deadlineSeconds":120.0,"attempts":attempt}); raise TimeoutError("owned Android emulator did not boot within monotonic deadline")
+    try: p,_=run(f"android-boot-{attempt:03d}",[adb,"-s",SERIAL,"shell","getprop","sys.boot_completed"],timeout=min(3.0,remaining))
+    except subprocess.TimeoutExpired: continue
+    if p.returncode==0 and p.stdout.decode().strip()=="1": break
+    time.sleep(min(1.0,max(0.0,boot_deadline-time.monotonic())))
+else:
+    save(output/"android-boot-deadline.json",{"outcome":"timeout","startedMonotonic":boot_started,"endedMonotonic":time.monotonic(),"deadlineSeconds":120.0,"attempts":120}); raise TimeoutError("owned Android emulator did not boot within monotonic deadline")
+save(output/"android-boot-deadline.json",{"outcome":"ready","startedMonotonic":boot_started,"endedMonotonic":time.monotonic(),"deadlineSeconds":120.0,"attempts":attempt+1})
+identity_p,_=successful("android-identity",[adb,"-s",SERIAL,"emu","avd","name"]); require(identity_p.stdout.decode().splitlines()[0]==AVD,"Android AVD identity mismatch")
+successful("android-install",[adb,"-s",SERIAL,"install","-r",apk],timeout=300)
+package_p,_=successful("android-package",[adb,"-s",SERIAL,"shell","pm","path","com.kylebrowning.landmarks"]); require(package_p.stdout.decode().strip().startswith("package:"),"Android package missing after install")
+save(output/"android-installed-artifact.json",{"sourcePath":str(apk),"sourceSHA256":sha(apk),"expectedSHA256":demo["androidAPK"]["sha256"],"package":"com.kylebrowning.landmarks","devicePaths":package_p.stdout.decode().splitlines()})
+sims_after_p,_=successful("simulators-after",["xcrun","simctl","list","devices","--json"]); sims_after=json.loads(sims_after_p.stdout)
+avds_after_p,_=successful("avds-after",[emulator,"-list-avds"]); adb_after_p,_=successful("adb-after",[adb,"devices","-l"]); forwards_after_p,_=successful("forwards-after",[adb,"forward","--list"])
+sim_ids=lambda doc:{d["udid"] for devices in doc["devices"].values() for d in devices}
+adb_ids=lambda raw:{line.split()[0] for line in raw.decode().splitlines()[1:] if line.strip()}
+before_sim_ids=sim_ids(sims); after_sim_ids=sim_ids(sims_after); expected_ios_ids={ownership["devices"][key]["id"] for key,_,_,_ in IOS}
+before_avds=set(avds_p.stdout.decode().splitlines()); after_avds=set(avds_after_p.stdout.decode().splitlines()); before_adb=adb_ids(adb_p.stdout); after_adb=adb_ids(adb_after_p.stdout)
+comparisons={"protectedSimulatorsUnchanged":protected_sims(sims_after)==protected_sims(sims),"protectedPixelConfigUnchanged":protected_config.is_file() and sha(protected_config)==json.loads((output/"baseline.json").read_text())["protectedPixelConfig"]["sha256"],"simulatorAdditions":sorted(after_sim_ids-before_sim_ids),"simulatorRemovals":sorted(before_sim_ids-after_sim_ids),"expectedSimulatorAdditions":sorted(expected_ios_ids),"avdAdditions":sorted(after_avds-before_avds),"avdRemovals":sorted(before_avds-after_avds),"adbAdditions":sorted(after_adb-before_adb),"adbRemovals":sorted(before_adb-after_adb),"forwardsBefore":str(output/"forwards-before.stdout"),"forwardsAfter":str(output/"forwards-after.stdout"),"normalizedForwardsBefore":normalized_forwards(forwards_before_p.stdout),"normalizedForwardsAfter":normalized_forwards(forwards_after_p.stdout)}
+comparisons["forwardsUnchanged"]=comparisons["normalizedForwardsBefore"]==comparisons["normalizedForwardsAfter"]
+comparisons["onlyExpectedAdditions"]=set(comparisons["simulatorAdditions"])==expected_ios_ids and not comparisons["simulatorRemovals"] and set(comparisons["avdAdditions"])=={AVD} and not comparisons["avdRemovals"] and set(comparisons["adbAdditions"])=={SERIAL} and not comparisons["adbRemovals"]
+save(output/"post-provision-comparison.json",comparisons)
+require(comparisons["protectedSimulatorsUnchanged"],"protected simulator metadata changed"); require(comparisons["protectedPixelConfigUnchanged"],"protected Pixel config changed"); require(comparisons["onlyExpectedAdditions"],"post-provision device additions/removals differ from exact ownership"); require(comparisons["forwardsUnchanged"],"adb forward table changed during provisioning")
+save(output/"acceptance.json",{"schema":"grantiva.task9.primary-provision.v1","passed":True,"candidateManifestSHA256":candidate_sha,"gateEvidenceSHA256":sha(gate_path),"ownership":ownership,"protectedBaseline":str(output/"baseline.json"),"postProvisionComparison":str(output/"post-provision-comparison.json")})
+print(json.dumps(ownership,indent=2))

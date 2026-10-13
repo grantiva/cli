@@ -1,0 +1,349 @@
+--- a/task-9-matrix-draft.md
++++ b/task-9-matrix-draft.md
+@@ -8,8 +8,8 @@
+ demo SHA, WDA-cache manifest, and release-runner-home manifest all remain `UNKNOWN` until Task 8 records the exact
+ candidate. This draft does not claim a new binary or reuse round-3 validation.
+ 
+-**Draft logical counts:** 1,309 rows: CLI 428, iOS 359, Android 347, iOS+Android 175. Expanding shared rows yields
+-1,484 effective slice results: CLI 428, iOS 534, Android 522. The delta is 139 logical rows / 155 effective results.
++**Draft logical counts:** 1,314 rows: CLI 431, iOS 361, Android 347, iOS+Android 175. Expanding shared rows yields
++1,489 effective slice results: CLI 431, iOS 536, Android 522. The delta is 144 logical rows / 160 effective results.
+ 
+ **Descriptive Task 9 device mapping only (no device has been created or touched):** iOS `cov4-ios-26` (iOS 26.0),
+ `cov4-ios-27` (iOS 27.0), with row-scoped extras `cov4-ios-3`/`cov4-ios-4`; Android `cov4-android`, with row-scoped
+@@ -1712,6 +1712,11 @@
+ | B4-L84.2 | brief L84: acceptance criterion 2 | Task 9 CLI slice only; prove orphan cleanup requires driver-ownership evidence and cannot remove all or arbitrary same-device TCP forwards, while explicit full emulator teardown and the named public/lifecycle siblings retain their existing contracts. | “Do not use remove-all or delete arbitrary same-device TCPforwards. Cleanup must have driver ownership evidence; explicit full emulator teardown may retain its existing device-removal contract. Preserve public flags/JSON/exits, app readiness, startup interruption, and L82 attachment completion.” (source: brief L84 Acceptance bullet 2; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md`) | cli | CLI | none (production-path CLI source tests) |  |
+ | B4-L84.3 | brief L84: acceptance criterion 3 | Task 9 Android slice on an owned `cov4-android*` AVD; create and inventory an unrelated allocated TCP forward to `tcp:16791`, then separately exercise ready startup, exact-PID SIGINT, normal foreground stop, absent-app failure, and healthy stock. Retain immediate/delayed inventories, exact control creation, and proof that owned CLI/runner forwards, sessions, and PIDs disappear after every ending. The corrected governing normal-stop trace proves the pre-fix defect: normal stop deleted the unrelated `tcp:16791` forward. The future Task 9 result must instead prove that this unrelated forward survives normal stop and every other named case. The initial startup loss is unresolved and cannot prove startup cleanup. | “On owned Android, an unrelated allocated TCPforward to tcp16791 survives ready startup, SIGINT, normal foregroundstop, absent-app failure and healthy stock. Exact owned CLI/runnerforwards and sessions/PIDs disappear after each ending; retain immediate/delayed inventories and baseline/control creation.” (source: brief L84 Acceptance bullet 3; corrected governing `findings/evidence/fix4-84/normal-stop-trace` proves pre-fix unrelated-forward deletion; unresolved initial attempt retained separately; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md`) | android | Android | unrelated tcp16791 forward across startup/SIGINT/normal-stop/absent-app/stock controls |  |
+ | B4-L84.4 | brief L84: acceptance criterion 4 | Task 9 CLI slice only; retain focused/full fresh-home Swift tests, independent source/live review, CI, merge, rebuilt-candidate identity, and complete Task 8 smoke provenance. Preserve the original failed control immutably and keep Task 9 gated. | “Focused/full freshhome Swift tests, independent source/live review, CI, merged/rebuiltcandidate and completeTask8smoke are mandatory. Original failedcontrol remains immutable; Task9 stays gated.” (source: brief L84 Acceptance bullet 4; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md`) | cli | CLI | none (candidate provenance and Task 9 gate) |  |
++| B4-L85.1 | brief L85: acceptance criterion 1 | Task 9 iOS slice on owned `cov4-ios-26`: reproduce Landmarks → Mountains → Mount "Denali", return to the category, capture the application-root/BackButton/selected-tab collision, semantic-tap Landmarks, and require Golden Gate Bridge plus an independent post-tap screenshot/hierarchy. | “In the exact real collision above, semantic label Landmarks selects the navigation BackButton and reaches the root list containing Golden Gate Bridge. Capture the collision hierarchy before the tap, successful reply and resulting hierarchy, plus an independent screenshot/hierarchy afterward.” (source: brief L85 Acceptance bullet 1; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md`) | ios | iOS | owned iOS 26.0 collision and independent post-tap capture |  |
++| B4-L85.2 | brief L85: acceptance criterion 2 | Task 9 CLI slice only; run frozen-source selector regressions proving back-button preference stays inside the label stage while label → identifier → placeholder priority, match annotation, application exclusion, quoted labels, unknown errors, retry, coordinate taps, and ordinary no-back labels retain their contracts. | “Preserve label → identifier → placeholder priority, label match annotation for a preferred back button, application-root exclusion, quoted-label escaping, unknown-selector errors, one-retry launch behavior, and coordinate taps. An exact matching navigation back button wins within the label stage; ordinary labels keep existing behavior when no such back button exists.” (source: brief L85 Acceptance bullet 2; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md`) | cli | CLI | none (frozen-source selector tests) |  |
++| B4-L85.3 | brief L85: acceptance criterion 3 | Task 9 CLI slice only; run transport-level fixtures with distinct competing IDs and the tab first, prove the back ID is clicked, and retain no-back, identifier, placeholder, quoted-label, application-exclusion, error, and retry controls. | “Transport tests must distinguish competing element IDs, including a broad-label fixture with the tab first, and prove the back ID is clicked. Cover no-back fallback, true identifier and placeholder fallbacks, quoted labels, application exclusion, and existing error/retry behavior.” (source: brief L85 Acceptance bullet 3; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md`) | cli | CLI | none (frozen-source transport tests) |  |
++| B4-L85.4 | brief L85: acceptance criterion 4 | Task 9 iOS slice on owned iOS 26.0; prove the unchanged public UIKit tab demo, literal heart identifier states, label/order/symbol/geometry, independent persistent stacks, and switch-away/back retention. Retain frozen demo-source inspection and require semantic back acceptance without coordinates. | “Preserve the accepted demo: public UIKit tabs, literal heart identifier in selected/unselected states, label/order/symbol/geometry, separate persistent navigation stacks, and switch-away/switch-back retention. Do not rename demo labels, add selector aliases, rewrite hierarchy, use private APIs, or substitute coordinate taps for the semantic back acceptance.” (source: brief L85 Acceptance bullet 4; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md`) | ios | iOS | owned iOS 26.0 tab/stack controls plus frozen demo-source inspection |  |
++| B4-L85.5 | brief L85: acceptance criterion 5 | Task 9 CLI slice only; require separate focused/full Swift suites in fresh empty homes with API key unset, independent source/live review, CI, merged repair, replacement candidate freeze, unchanged runner/demo/archive identities absent new evidence, and complete Task 8/full-campaign gate. Candidate 2 cannot be regraded. | “Run focused and full Swift suites in separate fresh empty runner homes with GRANTIVA_API_KEY unset; independently review source and live proof, pass required CI, merge the reviewed CLI change, and build/freeze a replacement candidate. Runner/demo/archive sources remain unchanged unless new evidence requires changes. Repeat the complete Task 8 smoke and full campaign gate; do not regrade candidate 2.” (source: brief L85 Acceptance bullet 5; `docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md`) | cli | CLI | none (replacement-candidate provenance and gate) |  |
+ | B4-PC.1 | public contract: serialized MCP transport | Task 9 iOS and Android halves on owned `cov4-*` devices; retain separate raw evidence and cleanup for each platform as named by the quoted criterion. | For mixed resource/tool responses larger than 65,536 bytes, complete encoded JSON-RPC messages are serialized as one valid newline-delimited JSON object per response; each request ID arrives exactly once in unconstrained completion order, and small responses plus notifications remain intact. (source: `docs/superpowers/plans/2026-10-13-round4-fix-wave.md §Task 5 Step 7 and §Task 9 Step 1`) | both | iOS+Android | none (live MCP transport session) |  |
+ | B4-PC.2 | public contract: warned optional status | Task 9 Android slice on an owned `cov4-android*` AVD; retain the exact raw output, report/process/session, and cleanup evidence named by the quoted criterion. | The exact optional missing-tap flow exits 0 and every text, JSON, JUnit, `report.json`, flow-detail, and ready-file surface reports a passed flow with one warned optional command and useful `element_not_found` detail; the next required step executes, while the otherwise-identical required control fails and skips later work. (source: `docs/superpowers/plans/2026-10-13-round4-fix-wave.md §Task 3 Step 7 and §Task 9 Step 1`) | android | Android | scratch optional/required missing-selector flows |  |
+ | B4-PC.3 | public contract: app-ready Android detach | Task 9 Android slice on an owned `cov4-android*` AVD; retain the exact raw output, report/process/session, and cleanup evidence named by the quoted criterion. | After detached Android start returns, an immediate hierarchy contains the app without a caller-added sleep; metadata and required tool listings name the same PID/device, stop succeeds, and session files plus owned forwards are removed. (source: `docs/superpowers/plans/2026-10-13-round4-fix-wave.md §Task 4 Step 9 and §Task 9 Step 1`) | android | Android | none (detached session plus immediate hierarchy) |  |
+@@ -1737,13 +1742,13 @@
+ | section | CLI | iOS | Android | iOS+Android | total |
+ |---|---:|---:|---:|---:|---:|
+ | inherited round 1–3 rows | 384 | 319 | 308 | 159 | 1170 |
+-| round 4: binding brief/public-contract rows (B4) | 44 | 40 | 39 | 16 | 139 |
+-| **draft all** | **428** | **359** | **347** | **175** | **1309** |
++| round 4: binding brief/public-contract rows (B4) | 47 | 42 | 39 | 16 | 144 |
++| **draft all** | **431** | **361** | **347** | **175** | **1314** |
+ 
+-Expanded effective results are CLI 428, iOS 534 (`359 + 175`) and Android 522 (`347 + 175`), total 1,484.
+-The B4 delta expands to 155 results: CLI 44, iOS 56 (`40 + 16`) and Android 55 (`39 + 16`).
++Expanded effective results are CLI 431, iOS 536 (`361 + 175`) and Android 522 (`347 + 175`), total 1,489.
++The B4 delta expands to 160 results: CLI 47, iOS 58 (`42 + 16`) and Android 55 (`39 + 16`).
+ 
+ Structural preparation checks only: 1,170 inherited IDs and row bodies are retained; all inherited and B4 result cells
+-are empty; all 1,309 IDs are unique; all 100 explicit L64–L84 acceptance bullets and 20 retained-brief source criteria
++are empty; all 1,314 IDs are unique; all 105 explicit L64–L85 acceptance bullets and 20 retained-brief source criteria
+ map to B4 rows; the three planned public controls and sixteen review-added lifecycle/deadline/evidence-join controls are present.
+ These checks are not coverage execution and do not claim any candidate behavior passed.
+--- a/task-9-criteria-index.json
++++ b/task-9-criteria-index.json
+@@ -43,8 +43,8 @@
+   "counts": {
+     "logical": {
+       "base": 1170,
+-      "delta": 139,
+-      "total": 1309
++      "delta": 144,
++      "total": 1314
+     },
+     "byPlatform": {
+       "base": {
+@@ -54,14 +54,14 @@
+         "shared": 159
+       },
+       "delta": {
+-        "cli": 44,
+-        "ios": 40,
++        "cli": 47,
++        "ios": 42,
+         "android": 39,
+         "shared": 16
+       },
+       "total": {
+-        "cli": 428,
+-        "ios": 359,
++        "cli": 431,
++        "ios": 361,
+         "android": 347,
+         "shared": 175
+       }
+@@ -74,28 +74,28 @@
+         "total": 1329
+       },
+       "delta": {
+-        "cli": 44,
+-        "ios": 56,
++        "cli": 47,
++        "ios": 58,
+         "android": 55,
+-        "total": 155
++        "total": 160
+       },
+       "total": {
+-        "cli": 428,
+-        "ios": 534,
++        "cli": 431,
++        "ios": 536,
+         "android": 522,
+-        "total": 1484
++        "total": 1489
+       }
+     }
+   },
+   "sourceCriterionCoverage": {
+-    "expected": 120,
+-    "indexed": 120,
++    "expected": 125,
++    "indexed": 125,
+     "omitted": 0
+   },
+   "b4RowCoverage": {
+-    "briefCriteria": 120,
++    "briefCriteria": 125,
+     "publicContractControls": 19,
+-    "total": 139,
++    "total": 144,
+     "duplicateIds": 0
+   },
+   "approvedExpectationCorrections": {
+@@ -1564,8 +1564,68 @@
+       "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md",
+       "rowIds": [
+         "B4-L84.4"
++      ],
++      "platform": "cli"
++    },
++    {
++      "criterionId": "L85.acceptance.1",
++      "brief": "L85",
++      "section": "Acceptance",
++      "ordinal": 1,
++      "exactText": "In the exact real collision above, semantic label Landmarks selects the navigation BackButton and reaches the root list containing Golden Gate Bridge. Capture the collision hierarchy before the tap, successful reply and resulting hierarchy, plus an independent screenshot/hierarchy afterward.",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
++      "rowIds": [
++        "B4-L85.1"
++      ],
++      "platform": "ios"
++    },
++    {
++      "criterionId": "L85.acceptance.2",
++      "brief": "L85",
++      "section": "Acceptance",
++      "ordinal": 2,
++      "exactText": "Preserve label → identifier → placeholder priority, label match annotation for a preferred back button, application-root exclusion, quoted-label escaping, unknown-selector errors, one-retry launch behavior, and coordinate taps. An exact matching navigation back button wins within the label stage; ordinary labels keep existing behavior when no such back button exists.",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
++      "rowIds": [
++        "B4-L85.2"
+       ],
+       "platform": "cli"
++    },
++    {
++      "criterionId": "L85.acceptance.3",
++      "brief": "L85",
++      "section": "Acceptance",
++      "ordinal": 3,
++      "exactText": "Transport tests must distinguish competing element IDs, including a broad-label fixture with the tab first, and prove the back ID is clicked. Cover no-back fallback, true identifier and placeholder fallbacks, quoted labels, application exclusion, and existing error/retry behavior.",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
++      "rowIds": [
++        "B4-L85.3"
++      ],
++      "platform": "cli"
++    },
++    {
++      "criterionId": "L85.acceptance.4",
++      "brief": "L85",
++      "section": "Acceptance",
++      "ordinal": 4,
++      "exactText": "Preserve the accepted demo: public UIKit tabs, literal heart identifier in selected/unselected states, label/order/symbol/geometry, separate persistent navigation stacks, and switch-away/switch-back retention. Do not rename demo labels, add selector aliases, rewrite hierarchy, use private APIs, or substitute coordinate taps for the semantic back acceptance.",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
++      "rowIds": [
++        "B4-L85.4"
++      ],
++      "platform": "ios"
++    },
++    {
++      "criterionId": "L85.acceptance.5",
++      "brief": "L85",
++      "section": "Acceptance",
++      "ordinal": 5,
++      "exactText": "Run focused and full Swift suites in separate fresh empty runner homes with GRANTIVA_API_KEY unset; independently review source and live proof, pass required CI, merge the reviewed CLI change, and build/freeze a replacement candidate. Runner/demo/archive sources remain unchanged unless new evidence requires changes. Repeat the complete Task 8 smoke and full campaign gate; do not regrade candidate 2.",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md",
++      "rowIds": [
++        "B4-L85.5"
++      ],
++      "platform": "cli"
+     }
+   ],
+   "publicContractControls": [
+@@ -2360,7 +2420,32 @@
+       "brief": "L84",
+       "platform": "cli",
+       "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L84-cli-orphan-cleanup-removes-unrelated-device-forwards.md"
++    },
++    "B4-L85.1": {
++      "brief": "L85",
++      "platform": "ios",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
++    },
++    "B4-L85.2": {
++      "brief": "L85",
++      "platform": "cli",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
++    },
++    "B4-L85.3": {
++      "brief": "L85",
++      "platform": "cli",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
+     },
++    "B4-L85.4": {
++      "brief": "L85",
++      "platform": "ios",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
++    },
++    "B4-L85.5": {
++      "brief": "L85",
++      "platform": "cli",
++      "source": "docs/superpowers/plans/2026-10-13-coverage-issues-round4/L85-ios-back-label-selects-current-tab.md"
++    },
+     "B4-PC.1": {
+       "brief": "L80",
+       "platform": "both",
+--- a/task9-execution-plan-draft.md
++++ b/task9-execution-plan-draft.md
+@@ -2,7 +2,7 @@
+ 
+ Status: **PREPARATION ONLY — DO NOT EXECUTE UNTIL THE CONTROLLER RECORDS A GREEN TASK 8 ZERO GATE AND FREEZES THE CANDIDATE.**
+ 
+-This plan executes the approved `task-9-matrix-draft.md` without changing it. The matrix contains **1,309 logical rows** and **1,484 expanded results**: CLI 428, iOS 534, and Android 522. All result cells stay blank and every candidate field in `task-9-criteria-index.json` stays `UNKNOWN` until the controller performs the freeze below. No prior pass, smoke result, implementation review, or retained artifact is a Task 9 result.
++This plan executes the approved `task-9-matrix-draft.md` without changing it. The matrix contains **1,314 logical rows** and **1,489 expanded results**: CLI 431, iOS 536, and Android 522. All result cells stay blank and every candidate field in `task-9-criteria-index.json` stays `UNKNOWN` until the controller performs the freeze below. No prior pass, smoke result, implementation review, or retained artifact is a Task 9 result.
+ 
+ ## Controller gate and freeze
+ 
+@@ -25,7 +25,7 @@
+ - Verdicts are `pass`, `fail`, `blocked <exact reason>`, and `n/a <exact reason>`. Doubtful behavior, inconsistent output, a suspected matrix error, or an apparent improvement that contradicts the frozen expectation is `fail (matrix/brief error — triage)` with raw evidence. Only final triage may approve a correction.
+ - Preserve the first verdict. A rerun gets a new adjacent result line and a new `-rerun-N` evidence directory; it never replaces, edits, or deletes the original verdict or raw capture. Old Round 3 and Task 8 evidence may guide harness construction but cannot populate a result, satisfy a repetition, or serve as current-candidate provenance.
+ - Each logical `both` row produces two independently graded halves: `<ID> [ios]` and `<ID> [android]`. Each half owns separate commands, raw output, device identity, timestamps, cleanup, and verdict. A passing half cannot mask, replace, or unblock the other. Join-only rows such as `B4-EJ.*` remain pending until every named fresh half exists.
+-- Execute the exact 39 supplemental iOS 27.0 keys in `task9-execution-key-manifest.md`. They are reported separately from the 1,484 denominator. Each qualifies its parent matrix row: the parent cannot pass until both required runtimes pass. Packaged 26.2/26.4 cache checks belong to Task 8 and replace neither runtime.
++- Execute the exact 39 supplemental iOS 27.0 keys in `task9-execution-key-manifest.md`. They are reported separately from the 1,489 denominator. Each qualifies its parent matrix row: the parent cannot pass until both required runtimes pass. Packaged 26.2/26.4 cache checks belong to Task 8 and replace neither runtime.
+ - Results files use `ID | result | evidence | note`, one effective line per assigned result. Unmapped observations are failing lines: `EXTRA-nn`, `IOS4-OBS-nn`, or `AND4-OBS-nn`.
+ 
+ Every row evidence directory must contain:
+@@ -44,8 +44,8 @@
+ 
+ | slice | logical ownership | expanded result obligation | device allocation | result/evidence roots |
+ |---|---:|---:|---|---|
+-| CLI | every matrix row whose slice is `CLI`; six use an iOS execution actor | 428 | none; actor handoffs return evidence/verdict to the same CLI key | `findings/cov4-cli-results.md`, `findings/evidence/cov4-cli/` |
+-| iOS | every `iOS` row plus the iOS half of every `iOS+Android` row | 534, plus 39 supplemental runtime keys | reserved primary devices; row-delegated lifecycle extras | `findings/cov4-ios-results.md`, `findings/evidence/cov4-ios/` |
++| CLI | every matrix row whose slice is `CLI`; six use an iOS execution actor | 431 | none; actor handoffs return evidence/verdict to the same CLI key | `findings/cov4-cli-results.md`, `findings/evidence/cov4-cli/` |
++| iOS | every `iOS` row plus the iOS half of every `iOS+Android` row | 536, plus 39 supplemental runtime keys | reserved primary devices; row-delegated lifecycle extras | `findings/cov4-ios-results.md`, `findings/evidence/cov4-ios/` |
+ | Android | every `Android` row plus the Android half of every `iOS+Android` row | 522 | reserved `cov4-android`; extras only by controller reservation | `findings/cov4-android-results.md`, `findings/evidence/cov4-android/` |
+ 
+ The actor/result map is frozen in `task9-execution-key-manifest.md`. The six CLI handoffs remain CLI effective keys: the iOS actor returns evidence and a proposed verdict, and the controller records the only effective verdict in the CLI file. A routing note is never a result. No transferred key appears in two effective counts or result files.
+@@ -73,7 +73,7 @@
+ 
+ ## Controller merge, review, and closeout
+ 
+-1. Verify exactly 1,484 effective keys (428 CLI, 534 iOS-platform, 522 Android-platform), plus the separately reported 39 iOS 27.0 qualifications. Verify the six CLI handoffs occur once under their CLI keys, every shared half, parent/runtime joins, original-verdict preservation, and evidence completeness before merging results.
++1. Verify exactly 1,489 effective keys (431 CLI, 536 iOS-platform, 522 Android-platform), plus the separately reported 39 iOS 27.0 qualifications. Verify the six CLI handoffs occur once under their CLI keys, every shared half, parent/runtime joins, original-verdict preservation, and evidence completeness before merging results.
+ 2. Recheck the candidate hash and protected-device inventory after each slice. The controller performs targeted shutdown/deletion of all `cov4-*` devices and proves literal IDs/names, owned sessions, leases, locks, forwards, and verified PIDs are absent. Slice agents perform no owner cleanup.
+ 3. Independently review every B4 row, every non-pass, every rerun, raw candidate provenance, shared-row join, and cleanup record. Source-only criteria require fresh tests on the frozen source/candidate where the row says so; old implementation review is contextual provenance only.
+ 4. Triage every fail into a new brief or reopen the owning brief. Keep blocked rows with their exact reasons. Apply expectation corrections only through the campaign correction process after independent review; never rewrite the original verdict.
+--- a/task9-execution-key-manifest.md
++++ b/task9-execution-key-manifest.md
+@@ -4,26 +4,30 @@
+ 
+ ## Effective-result keys
+ 
+-The campaign denominator is exactly the approved **1,484 matrix-expanded effective keys**:
++The campaign denominator is exactly the approved **1,489 matrix-expanded effective keys**:
+ 
+ | effective-key owner | count | result destination |
+ |---|---:|---|
+-| CLI | 428 | `findings/cov4-cli-results.md` |
+-| iOS platform | 534 | `findings/cov4-ios-results.md` |
++| CLI | 431 | `findings/cov4-cli-results.md` |
++| iOS platform | 536 | `findings/cov4-ios-results.md` |
+ | Android platform | 522 | `findings/cov4-android-results.md` |
+-| total | 1,484 | three files above |
++| total | 1,489 | three files above |
+ 
+ The sole effective key is determined by the matrix slice/platform expansion. Execution actor does not change key ownership, result destination, or denominator.
+ 
+-Six CLI effective keys require an iOS device actor: `CLI-048`, `CLI-049`, `CLI-061`, `CLI-064`, `CLI-066`, and `CLI-083`. The controller assigns their execution to the iOS agent. That agent returns fresh evidence and a proposed verdict to the controller; the controller writes the one effective result under the unchanged CLI key in `findings/cov4-cli-results.md`. The iOS file may contain a non-result routing ledger entry, but no verdict line for these keys. They remain six of the 428 CLI keys and add zero keys to the iOS 534.
++Six CLI effective keys require an iOS device actor: `CLI-048`, `CLI-049`, `CLI-061`, `CLI-064`, `CLI-066`, and `CLI-083`. The controller assigns their execution to the iOS agent. That agent returns fresh evidence and a proposed verdict to the controller; the controller writes the one effective result under the unchanged CLI key in `findings/cov4-cli-results.md`. The iOS file may contain a non-result routing ledger entry, but no verdict line for these keys. They remain six of the 431 CLI keys and add zero keys to the iOS 536.
+ 
++## L85 execution keys
++
++`B4-L85.1` and `B4-L85.4` are iOS-platform effective keys executed by the iOS slice on the owned iOS 26.0 primary allocation. `B4-L85.2`, `B4-L85.3`, and `B4-L85.5` are CLI effective keys executed directly by the CLI slice. None is a CLI handoff, shared half, lifecycle delegation, or supplemental iOS 27.0 key. The existing six CLI handoffs and exact 39 supplemental qualifications remain unchanged.
++
+ ## Supplemental iOS 27.0 execution keys
+ 
+-The exact Round 3 plan/report subset is 39 supplemental executions, separately enforced and excluded from the 1,484 denominator:
++The exact Round 3 plan/report subset is 39 supplemental executions, separately enforced and excluded from the 1,489 denominator:
+ 
+ `IOS-201 @27.0`, `IOS-202 @27.0`, `IOS-203 @27.0`, `IOS-204 @27.0`, `IOS-205 @27.0`, `IOS-206 @27.0`, `IOS-207 @27.0`, `IOS-208 @27.0`, `IOS-209 @27.0`, `IOS-210 @27.0`, `IOS-211 @27.0`, `IOS-212 @27.0`, `IOS-213 @27.0`, `IOS-214 @27.0`, `IOS-215 @27.0`, `IOS-216 @27.0`, `IOS-217 @27.0`, `IOS-218 @27.0`, `IOS-219 @27.0`, `IOS-220 @27.0`, `IOS-221 @27.0`, `IOS-222 @27.0`, `IOS-223 @27.0`, `IOS-224 @27.0`, `IOS-225 @27.0`, `IOS-226 @27.0`, `IOS-227 @27.0`, `IOS-228 @27.0`, `IOS-229 @27.0`, `IOS-230 @27.0`, `IOS-231 @27.0`, `IOS-232 @27.0`, `IOS-233 @27.0`, `IOS-234 @27.0`, `IOS-235 @27.0`, `IOS-236 @27.0`, `IOS-237 @27.0`, `IOS-238 @27.0`, `IOS-239 @27.0`.
+ 
+-These lines live in `findings/cov4-ios-results.md` and have fresh evidence. Each is a runtime qualification of its parent matrix row, not another effective matrix result. A parent row cannot be `pass` until its iOS 26.0 evidence and required `@27.0` qualification both satisfy the expectation. A failed or blocked runtime qualification makes the parent non-pass. Final accounting reports **1,484 effective matrix results plus 39 supplemental runtime qualifications**, never 1,523 matrix results.
++These lines live in `findings/cov4-ios-results.md` and have fresh evidence. Each is a runtime qualification of its parent matrix row, not another effective matrix result. A parent row cannot be `pass` until its iOS 26.0 evidence and required `@27.0` qualification both satisfy the expectation. A failed or blocked runtime qualification makes the parent non-pass. Final accounting reports **1,489 effective matrix results plus 39 supplemental runtime qualifications**, never 1,528 matrix results.
+ 
+ ## Lifecycle execution actors
+ 
+--- a/task9-controller-bindings.md
++++ b/task9-controller-bindings.md
+@@ -4,6 +4,8 @@
+ 
+ Every source or documentation inspection must read the exact frozen candidate checkout: candidate `cli.repoPath`, `runner.repoPath`, or `demo.repoPath`, and record the repository/head/path. Slice worktrees descend from the campaign branch and are evidence-writing locations; their product source is not the candidate source. In particular, CLI README requirements must never be graded from a demo README.
+ 
+-The CLI slice owns its result file while it runs and supplies the 422 direct keys. It leaves the six explicitly handed-off keys for controller integration. The iOS slice returns separately named handoff evidence and proposed verdicts; it does not count them in its 534 keys or write the CLI result file. The controller merges those six effective results only after the CLI writer finishes.
++The CLI slice owns its result file while it runs and supplies the 425 direct keys. It leaves the six explicitly handed-off keys for controller integration. The iOS slice returns separately named handoff evidence and proposed verdicts; it does not count them in its 536 keys or write the CLI result file. The controller merges those six effective results only after the CLI writer finishes.
+ 
+ Required source/test-proof rows must follow the literal matrix criterion. Inspect source from frozen paths and bind any cited unit evidence to that exact candidate source; do not silently grade from an old branch, narrative review, or unbound prior result. Any genuine conflict between a row requiring a new test execution and a slice prohibition must be returned to the controller for an explicit scoped execution ruling, without fabricating a pass.
++
++L85 ownership follows the matrix without a new handoff: CLI directly owns `B4-L85.2`, `.3`, and `.5`; iOS owns `B4-L85.1` and `.4`. The iOS rows use the allocated iOS 26.0 primary device and add no supplemental runtime key or lifecycle delegation.
+--- a/task9-slice-brief-cli.md
++++ b/task9-slice-brief-cli.md
+@@ -1,6 +1,6 @@
+ # Task 9 CLI slice brief
+ 
+-Start only after the controller supplies a green Task 8 zero-gate record, frozen candidate manifest, worktree/branch, and evidence root. Account for exactly 428 CLI effective keys from the unchanged matrix. You directly execute 422. The iOS actor executes `CLI-048`, `CLI-049`, `CLI-061`, `CLI-064`, `CLI-066`, and `CLI-083`, then returns evidence and proposed verdicts to the same CLI keys. Those six are not iOS results and are not counted twice.
++Start only after the controller supplies a green Task 8 zero-gate record, frozen candidate manifest, worktree/branch, and evidence root. Account for exactly 431 CLI effective keys from the unchanged matrix. You directly execute 425. The iOS actor executes `CLI-048`, `CLI-049`, `CLI-061`, `CLI-064`, `CLI-066`, and `CLI-083`, then returns evidence and proposed verdicts to the same CLI keys. Those six are not iOS results and are not counted twice.
+ 
+ Use the frozen `/Users/kyle/.grantiva-qa/bin/grantiva`, bundle, runner home, demo SHA, and `GRANTIVA_SESSION_ID=cov4-cli`; unset `GRANTIVA_API_KEY`. Do not build, repack, upgrade, edit product/source/tests/docs/demo, change expectations, or fix failures. Candidate identity must be rechecked in each evidence group.
+ 
+@@ -9,3 +9,5 @@
+ Use `pass`, `fail`, `blocked <reason>`, or `n/a <reason>`. A disputed expectation is `fail (matrix/brief error — triage)`. Add unmapped observations as failing `EXTRA-nn` lines. Source-test and provenance B4 rows require fresh output against the frozen source/candidate exactly as written.
+ 
+ Honor the carried blocked rules: `CLI-083` uses the controller-reserved no-booted-simulator window; run `CLI-153` only under its default-device guard and boot nothing; keep `AND-002`, `AND-012`, `AND-088`, `B-I06.2`, and `N-08` blocked unless the controller documents the required environment change. Do not count a routing note as a verdict. Do not use owner operations, global cleanup, signals, GitHub/PR actions, commits/pushes, tags, or releases. Report any fail, unexpected boot/device access, candidate mismatch, or evidence gap to the controller immediately and continue only where independent.
++
++Execute `B4-L85.2`, `B4-L85.3`, and `B4-L85.5` directly as CLI keys. Keep their fresh frozen-source selector/transport tests and replacement-candidate provenance separate from the iOS live keys; candidate 2 evidence cannot populate them.
+--- a/task9-slice-brief-ios.md
++++ b/task9-slice-brief-ios.md
+@@ -1,6 +1,6 @@
+ # Task 9 iOS slice brief
+ 
+-Start only after the controller supplies a green Task 8 zero-gate record, frozen candidate manifest, worktree/branch, literal UDIDs for `cov4-ios-26` (iOS 26.0) and `cov4-ios-27` (iOS 27.0), and an explicit reservation. Execute exactly 534 iOS-platform effective keys plus the 39 supplemental `@27.0` keys listed in `task9-execution-key-manifest.md`. Also act for six CLI keys, returning their evidence/proposed verdict to the CLI file; they add no iOS effective result. Never claim or grade the Android half.
++Start only after the controller supplies a green Task 8 zero-gate record, frozen candidate manifest, worktree/branch, literal UDIDs for `cov4-ios-26` (iOS 26.0) and `cov4-ios-27` (iOS 27.0), and an explicit reservation. Execute exactly 536 iOS-platform effective keys plus the 39 supplemental `@27.0` keys listed in `task9-execution-key-manifest.md`. Also act for six CLI keys, returning their evidence/proposed verdict to the CLI file; they add no iOS effective result. Never claim or grade the Android half.
+ 
+ The controller owns allocation and final cleanup. For lifecycle keys enumerated in the key manifest, a recorded row reservation delegates every exact targeted transition for that row; execute them without per-operation approval and return the target at the recorded end state. Outside such delegation, do not create, boot, shut down, clean, or delete. Never touch iPhone 17 Pro `B27D7D31-1E5E-47E1-8B9C-6C92D6B2AC4C`, iPhone 18 Pro `FE441EE5-BBFC-4981-B68A-59C0DBCE26D6`, or an unallocated simulator; global shutdown/cleanup and kill by pattern remain forbidden.
+ 
+@@ -9,3 +9,5 @@
+ Evidence includes exact argv/environment/cwd/timestamps/exit, raw streams/reports/logs, frozen hashes, allocated UDID/runtime, before/after device and owned-process/session/lease inventory, scratch-input hashes, targeted cleanup outcome, and clause-by-clause verdict. Signal only a row-started, ownership-proven PID. Preserve every first verdict; reruns use new lines/directories. Old harnesses may be copied and rebound, but no old manifest, output, acceptance file, UUID, PID, or verdict is evidence.
+ 
+ For `CLI-083`/`B-C21.1`, obtain a controller-reserved window with no simulator booted; an owner simulator means `blocked owner simulator booted`. For `IOS-018`, use the row-only scratch home and controller-reserved extra devices, with read-only QA/default ledger checksums unchanged. Default-device rows use the guard and stop immediately if an unowned simulator boots: record `fail`, leave it untouched, notify the controller. Do not edit product/source/tests/docs/demo, fix failures, perform owner cleanup, or make commits/PR operations. Use the common verdict vocabulary and record unmapped findings as failing `IOS4-OBS-nn` lines.
++
++Execute `B4-L85.1` and `B4-L85.4` on the allocated iOS 26.0 primary simulator with fresh collision, semantic-back, screenshot/hierarchy, tab, and persistent-stack evidence. They are ordinary iOS effective keys, not supplemental `@27.0` qualifications, lifecycle delegations, or CLI handoffs.
+--- a/task9-slice-brief-android.md
++++ b/task9-slice-brief-android.md
+@@ -9,3 +9,5 @@
+ Evidence includes exact argv/environment/cwd/timestamps/exit, raw streams/reports/logcat/client/runner output, frozen hashes, allocated serial/AVD/runtime, process/session/forward ownership before any signal or cleanup, scratch-input hashes, targeted cleanup outcome, and clause-by-clause verdict. Preserve every first verdict; reruns use new lines/directories. Copy and rebind reviewed harness logic to new paths; stale outputs, manifests, serials, PIDs, sessions, and verdicts cannot satisfy a row.
+ 
+ For `B4-L77.1`, `.2`, `.5`, and inherited `B3-L49`, foreground neutral Settings before the unchanged literal clearState → bare stopApp → assertNotVisible flow; retain exact target-package absence and returned Settings-focused hierarchy. This setup does not alter the flow or expected verdict. Keep `AND-002`, `AND-012`, `AND-088`, and `N-08` blocked unless the controller documents the required environment change. Use `pass`, `fail`, `blocked <reason>`, or `n/a <reason>`; disputed expectations fail for triage, and unmapped findings are failing `AND4-OBS-nn` lines. Do not edit product/source/tests/docs/demo, fix failures, perform owner cleanup, or make commits/PR operations.
++
++L85 adds no Android effective key. The Android obligation remains exactly 522 results, and no L85 iOS/CLI observation may be recorded as an Android verdict.
