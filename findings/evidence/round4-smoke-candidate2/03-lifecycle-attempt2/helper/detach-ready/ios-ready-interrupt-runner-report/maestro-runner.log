@@ -1,0 +1,53 @@
+13:34:36.537881 [INFO] === Test execution started ===
+13:34:36.537951 [INFO] Output directory: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-7E476704-F52C-42D1-9A21-1835F835E1B0/report
+13:34:36.537955 [INFO] Platform: ios
+13:34:36.537959 [INFO] Driver: wda
+13:34:36.538222 [INFO] Validated 1 flow(s)
+13:34:36.653135 [INFO] Single device execution mode
+13:34:36.653150 [INFO] Starting flow execution (parallel: false, devices: [])
+13:34:36.653155 [INFO] Creating driver for single device execution
+13:34:36.653158 [INFO] Using specified iOS device: 553C67C6-7C11-4976-85A0-148C9C8AC278
+13:34:36.761618 [INFO] Device 553C67C6-7C11-4976-85A0-148C9C8AC278 is a simulator
+13:34:36.761665 [INFO] Building WDA for device 553C67C6-7C11-4976-85A0-148C9C8AC278 (team ID: )
+13:34:36.980749 [INFO] WDA build reused from cache
+13:34:36.980762 [INFO] Starting WDA on device 553C67C6-7C11-4976-85A0-148C9C8AC278 (port: 8508)
+13:34:37.237630 [INFO] Starting GrantivaAgent (attempt 1/4)
+13:34:39.240932 [INFO] GrantivaAgent started
+13:34:39.240975 [INFO] WDA started successfully on port 8508
+13:34:39.597833 [DEBUG] WDA GET /window/size
+13:34:39.677672 [DEBUG] WDA GET /window/size completed (79ms, status: 200)
+13:34:39.677759 [INFO] Driver created: ios on smoke4-ios
+13:34:39.679310 [INFO] === Starting flow: session-flow ===
+13:34:39.679316 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session-7E476704-F52C-42D1-9A21-1835F835E1B0/session-flow.yaml
+13:34:39.679319 [INFO] Total steps: 2
+13:34:39.679441 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+13:34:39.680037 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+13:34:39.680091 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+13:34:42.241957 [DEBUG] WDA POST /session completed (2561ms, status: 200)
+13:34:42.242028 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+13:34:42.242802 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings completed (0ms, status: 200)
+13:34:42.242869 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+13:34:42.243438 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings completed (0ms, status: 200)
+13:34:42.243842 [DEBUG] Executing step 0: launchApp
+13:34:42.688069 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+13:34:42.688135 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+13:34:42.688851 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/appium/settings completed (0ms, status: 200)
+13:34:42.688949 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+13:34:42.689395 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/terminate completed (0ms, status: 200)
+13:34:42.689412 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+13:34:44.216187 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/launch completed (1526ms, status: 200)
+13:34:44.216250 [DEBUG] Step 0 completed successfully (1972ms): launchApp
+13:34:44.216688 [DEBUG] Executing step 1: waitForAnimationToEnd
+13:34:44.216902 [DEBUG] WDA GET /session/A859CF90-4584-4BBB-AD16-D84792125FAE/screenshot
+13:34:44.290627 [DEBUG] WDA GET /session/A859CF90-4584-4BBB-AD16-D84792125FAE/screenshot completed (73ms, status: 200)
+13:34:44.291034 [DEBUG] WDA GET /session/A859CF90-4584-4BBB-AD16-D84792125FAE/screenshot
+13:34:44.353050 [DEBUG] WDA GET /session/A859CF90-4584-4BBB-AD16-D84792125FAE/screenshot completed (62ms, status: 200)
+13:34:44.430249 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/state body={"bundleId":"com.kylebrowning.Landmarks"}
+13:34:44.430917 [DEBUG] WDA POST /session/A859CF90-4584-4BBB-AD16-D84792125FAE/wda/apps/state completed (0ms, status: 200)
+13:34:44.430954 [DEBUG] Step 1 completed successfully (214ms): waitForAnimationToEnd
+13:34:44.431928 [INFO] === Flow completed: session-flow (status: passed, duration: 4751ms, passed: 2, failed: 0, skipped: 0) ===
+13:34:44.432821 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+13:34:44.432880 [INFO] Generating reports...
+13:34:44.433245 [INFO] keep-alive: holding session 34376-1791923684433168000 (port 8508)
+13:34:45.222658 [INFO] Received signal interrupt, releasing keep-alive session...
+13:34:45.222698 [INFO] keep-alive: released session 34376-1791923684433168000

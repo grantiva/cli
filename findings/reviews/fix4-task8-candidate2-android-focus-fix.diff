@@ -1,0 +1,129 @@
+--- a/android_runner_smoke.py
++++ b/android_runner_smoke.py
+@@ -110,7 +110,7 @@
+ run('settings-neutral',[a.adb,'-s',a.serial,'shell','am','start','-a','android.settings.SETTINGS'],0)
+ doc=runner_case('stop-bare-clearstate',inputs/'stop-bare-clearstate.yaml'); assert doc['status']=='passed' and doc['flows'][0]['commands']['failed']==0
+ run('stop-package-pid',[a.adb,'-s',a.serial,'shell','pidof','com.kylebrowning.landmarks'],1)
+-run('stop-focused-window',[a.adb,'-s',a.serial,'shell','dumpsys','window','windows'],0); focused=(root/'stop-focused-window/stdout.raw').read_text(errors='replace'); assert re.search(r'mCurrentFocus.*com\.android\.settings',focused)
++run('stop-focused-window',[a.adb,'-s',a.serial,'shell','dumpsys','window'],0); focused=(root/'stop-focused-window/stdout.raw').read_text(errors='replace'); assert re.search(r'mCurrentFocus.*com\.android\.settings',focused)
+ run('stop-settings-hierarchy',[a.adb,'-s',a.serial,'exec-out','uiautomator','dump','/dev/tty'],0); hierarchy=(root/'stop-settings-hierarchy/stdout.raw').read_text(errors='replace'); assert 'com.android.settings' in hierarchy and 'com.kylebrowning.landmarks' not in hierarchy
+ detail=json.loads((root/'stop-bare-clearstate/raw-report'/doc['flows'][0]['dataFile']).read_text()); stop=next(x for x in detail['commands'] if x['type']=='stopApp'); assert stop['status']=='passed' and not stop.get('error')
+ checks.append({'L77':{'literalClearState':True,'bareStop':True,'assertNotVisible':True,'targetPIDAbsent':True,'neutralSettingsFocused':True,'neutralSettingsHierarchy':True,'intentionalStopNonCrash':True}})
+--- a/candidate2_phase.py
++++ b/candidate2_phase.py
+@@ -1,17 +1,21 @@
+ """Invoke one reviewed smoke helper with the frozen candidate's exact paths."""
+ from pathlib import Path
+ import argparse,hashlib,json,os,shutil,subprocess,time
+-p=argparse.ArgumentParser();p.add_argument('phase',choices=['android','lifecycle','joint','mcp-ios','mcp-android','force']);a=p.parse_args()
++p=argparse.ArgumentParser();p.add_argument('phase',choices=['android','lifecycle','joint','mcp-ios','mcp-android','force']);p.add_argument('--output');a=p.parse_args()
+ r=Path('/Users/kyle/Developer/grantiva-cli/.worktrees/regression');e=r/'findings/evidence/round4-smoke-candidate2';h=r/'findings/tools/round4-smoke-candidate2';c=json.loads((e/'candidate.json').read_text());state=json.loads((e/'initial-state.json').read_text());own=json.loads((e/'provision/ownership.json').read_text());s=Path(state['scratch']);b=c['cli']['binary']['path'];bundle=c['cli']['bundle']['path'];runner=c['runner']['packaged']['path'];home=c['runner']['runnerHome'];source=c['cli']['repoPath'];ios=own['devices']['ios']['id'];android=own['devices']['android']['id'];avd=own['devices']['android']['avd'];adb='/Users/kyle/Library/Android/sdk/platform-tools/adb'
+ env=os.environ.copy();env.pop('GRANTIVA_API_KEY',None);env.update(GRANTIVA_RUNNER_HOME=home,MAESTRO_RUNNER_HOME=home,GRANTIVA_SESSION_ID='fix4-8',ANDROID_HOME='/Users/kyle/Library/Android/sdk',ANDROID_SDK_ROOT='/Users/kyle/Library/Android/sdk',JAVA_HOME='/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home');env['PATH']=str(Path(adb).parent)+':'+env['PATH']
+ identity=['--candidate-manifest',e/'candidate.json','--ownership-manifest',e/'provision/ownership.json','--source-root',source,'--binary',b,'--bundle',bundle,'--runner',runner,'--runner-home',home]
+-names={'android':'02-runner-android','lifecycle':'03-lifecycle','joint':'03b-joint-forward','mcp-ios':'04-mcp-ios','mcp-android':'05-mcp-android','force':'07-final-force-teardown'};o=e/names[a.phase];o.mkdir(exist_ok=False)
++names={'android':'02-runner-android','lifecycle':'03-lifecycle','joint':'03b-joint-forward','mcp-ios':'04-mcp-ios','mcp-android':'05-mcp-android','force':'07-final-force-teardown'};o=Path(a.output).resolve() if a.output else e/names[a.phase];o.mkdir(parents=True,exist_ok=False)
+ def run(label,argv,cwd=r,timeout=1800):
+  d=o/label;d.mkdir(exist_ok=False);argv=list(map(str,argv));m={'argv':argv,'cwd':str(cwd),'runnerHome':home,'maestroRunnerHome':home,'session':'fix4-8','apiEnvironmentUnset':True,'startEpoch':time.time(),'candidateManifestSHA256':hashlib.sha256((e/'candidate.json').read_bytes()).hexdigest()};(d/'start.json').write_text(json.dumps(m,indent=2)+'\n')
+  with (d/'stdout.log').open('wb') as so,(d/'stderr.log').open('wb') as se:q=subprocess.run(argv,cwd=cwd,env=env,stdout=so,stderr=se,timeout=timeout)
+  m.update(exit=q.returncode,endEpoch=time.time());(d/'result.json').write_text(json.dumps(m,indent=2)+'\n');assert q.returncode==0,(label,q.returncode);return (d/'stdout.log').read_text()
+ if a.phase=='android':
+- helper=h/'android_runner_smoke.py';argv=['python3',helper,*identity,'--project',s/'android-smoke-project','--serial',android,'--avd',avd,'--apk',c['demo']['androidAPK']['path'],'--adb',adb,'--uia2-sampler',r/'findings/evidence/fix4-2/uia2-source-snapshot-v2.py','--movement-analyzer',r/'findings/evidence/fix4-2/analyze-l51-movement.py','--runner-inputs',e/'inputs/runner-inputs','--optional-inputs',e/'inputs/optional-inputs','--crash-flow',e/'inputs/crash.yaml','--healthy-flow',e/'inputs/healthy-stock.yaml','--cycle-project',s/'cycle-project','--cycle-flow','subdirectory/a.yaml','--evidence',o/'helper']
++ helper=h/'android_runner_smoke.py';source_inputs=e/'inputs';fixture_root=o/'inputs';fixture_root.mkdir();fixture_manifest=json.loads((source_inputs/'fixture-manifest.json').read_text());copied=[]
++ for row in fixture_manifest:
++  source_fixture=Path(row['path']).resolve();assert source_fixture.is_relative_to(source_inputs.resolve()) and source_fixture.suffix.lower()!='.png';assert hashlib.sha256(source_fixture.read_bytes()).hexdigest()==row['sha256'];relative=source_fixture.relative_to(source_inputs.resolve());destination=fixture_root/relative;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source_fixture,destination);assert hashlib.sha256(destination.read_bytes()).hexdigest()==row['sha256'];copied.append({'source':str(source_fixture),'destination':str(destination),'sha256':row['sha256']})
++ (o/'fixture-copy.json').write_text(json.dumps(copied,indent=2)+'\n');assert len(copied)==len(fixture_manifest) and not list(fixture_root.rglob('*.png'))
++ argv=['python3',helper,*identity,'--project',s/'android-smoke-project','--serial',android,'--avd',avd,'--apk',c['demo']['androidAPK']['path'],'--adb',adb,'--uia2-sampler',r/'findings/evidence/fix4-2/uia2-source-snapshot-v2.py','--movement-analyzer',r/'findings/evidence/fix4-2/analyze-l51-movement.py','--runner-inputs',fixture_root/'runner-inputs','--optional-inputs',fixture_root/'optional-inputs','--crash-flow',fixture_root/'crash.yaml','--healthy-flow',fixture_root/'healthy-stock.yaml','--cycle-project',s/'cycle-project','--cycle-flow','subdirectory/a.yaml','--evidence',o/'helper']
+ elif a.phase in ['lifecycle','force']:
+  helper=h/'lifecycle_smoke.py';args=identity.copy();args[args.index('--source-root')]='--source';argv=['python3',helper,*args,'--project',s/'lifecycle-project','--session-id','fix4-8','--ios-udid',ios,'--android-serial',android,'--android-avd',avd,'--ios-app',c['demo']['iosApp']['path'],'--output',o/'helper']
+  if a.phase=='force':argv+=['--phase','force-teardown','--allow-force-reclaim-owned-ios']
+--- a/lifecycle_smoke.py
++++ b/lifecycle_smoke.py
+@@ -4,6 +4,7 @@
+ from __future__ import annotations
+ 
+ import argparse
++import errno
+ import hashlib
+ import json
+ import os
+@@ -58,6 +59,22 @@
+         capture_output=True, text=True, check=True, timeout=10,
+     )
+     return json.loads(result.stdout)
++
++
++def copy_report_snapshot(source: Path, target: Path) -> None:
++    def ignore_transient(_directory: str, names: list[str]) -> set[str]:
++        return {name for name in names if name.endswith(".tmp")}
++    try:
++        shutil.copytree(source, target, dirs_exist_ok=True, ignore=ignore_transient)
++    except FileNotFoundError as exc:
++        if exc.errno == errno.ENOENT and exc.filename and Path(exc.filename).suffix == ".tmp":
++            return
++        raise
++    except shutil.Error as exc:
++        errors = exc.args[0]
++        if all(len(entry) == 3 and Path(entry[0]).suffix == ".tmp" and ("[Errno 2]" in entry[2] or "No such file" in entry[2]) for entry in errors):
++            return
++        raise
+ 
+ 
+ class Smoke:
+@@ -362,7 +379,12 @@
+         target = self.output / phase / f"{label}-runner-report"
+         while proc.poll() is None:
+             try:
+-                doc = json.loads(self.session.read_text())
++                session_text = self.session.read_text()
++            except FileNotFoundError:
++                time.sleep(0.01)
++                continue
++            try:
++                doc = json.loads(session_text)
+                 pid = int(doc["pid"])
+                 argv = self.bound_argv_if_running(pid, device)
+                 if argv is None:
+@@ -373,12 +395,12 @@
+                 if "--output" in argv:
+                     report = Path(argv[argv.index("--output") + 1])
+                     if report.exists():
+-                        shutil.copytree(report, target, dirs_exist_ok=True)
++                        copy_report_snapshot(report, target)
+                     flow = Path(argv[-1])
+                     if flow.exists():
+                         shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
+                 self.record_ownership()
+-            except (FileNotFoundError, ProcessLookupError, json.JSONDecodeError, KeyError):
++            except (ProcessLookupError, json.JSONDecodeError, KeyError):
+                 pass
+             time.sleep(0.01)
+ 
+@@ -537,7 +559,7 @@
+             flow.write_text(body)
+             report = root / f"{label}-report"
+             ready = root / f"{label}-ready.json"
+-            argv = [str(self.binary), "run", "--no-build", "--simulator", self.ns.ios_udid, "--flow", str(flow), "--report-dir", str(report), "--logs", "--logs-predicate", 'process == "Landmarks"', "--verbose"]
++            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid, "--flow", str(flow), "--report-dir", str(report), "--logs", "--logs-predicate", 'process == "Landmarks"', "--verbose"]
+             if label == "success":
+                 argv += ["--keep-alive", "--ready-file", str(ready)]
+             proc = self.spawn(phase, label, argv)
+@@ -627,7 +649,7 @@
+         cases = (("screens", None, "grantiva.yml -> a.yaml -> b.yaml -> a.yaml"), ("root", "a.yaml", "a.yaml -> b.yaml -> a.yaml -> b.yaml"), ("absolute", str(root / "a.yaml"), f"{root / 'a.yaml'} -> b.yaml -> a.yaml -> b.yaml"))
+         for label, flow_name, expected in cases:
+             (root / "grantiva.yml").write_text(base + ("screens:\n  - name: S\n    path:\n      - run_flow: a.yaml\n" if flow_name is None else ""))
+-            argv = [str(self.binary), "run", "--no-build", "--simulator", self.ns.ios_udid] + (["--flow", flow_name] if flow_name else [])
++            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid] + (["--flow", flow_name] if flow_name else [])
+             started = time.monotonic()
+             result = self.command(phase, label, argv, expected=1, timeout=20, cwd=root)
+             elapsed = time.monotonic() - started
+--- a/mcp_smoke.py
++++ b/mcp_smoke.py
+@@ -44,7 +44,7 @@
+     checks.append({'L65ActiveExact':True,'wrongTypeRetained':True,'emptyRetained':True})
+     if a.platform=='ios':
+         missing=c.tool('grantiva_tap',{'label':'No Such Selector fix4-8'}); assert missing['result'].get('isError') and 'Element not found' in c.text(missing)
+-        sequence=[('grantiva_tap',{'label':'Favorites'},'Tapped on "Favorites"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_script',{'steps':[{'tap':'heart'}]},None),('grantiva_tap',{'label':'Deep Links'},'Tapped on "Deep Links"'),('grantiva_tap',{'label':'Edit Landmark'},'Tapped on "Edit Landmark"'),('grantiva_tap',{'label':'Name'},'Tapped on "Name" (matched by placeholder). Updated hierarchy:'),('grantiva_tap',{'label':'Cancel'},'Tapped on "Cancel"'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'Mountains'},'Tapped on "Mountains"'),('grantiva_tap',{'label':'Mount "Denali"'},'Tapped on "Mount \\"Denali\\""')]
++        sequence=[('grantiva_tap',{'label':'Favorites'},'Tapped on "Favorites"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'heart'},'Tapped on "heart" (matched by identifier). Updated hierarchy:'),('grantiva_script',{'steps':[{'tap':'heart'}]},None),('grantiva_tap',{'label':'Deep Links'},'Tapped on "Deep Links"'),('grantiva_tap',{'label':'Edit Landmark'},'Tapped on "Edit Landmark"'),('grantiva_tap',{'label':'Name'},'Tapped on "Name" (matched by placeholder). Updated hierarchy:'),('grantiva_tap',{'label':'Cancel'},'Tapped on "Cancel"'),('grantiva_tap',{'label':'Landmarks'},'Tapped on "Landmarks"'),('grantiva_tap',{'label':'Mountains'},'Tapped on "Mountains"'),('grantiva_tap',{'label':'Mount "Denali"'},'Tapped on "Mount "Denali""')]
+         selector=[]
+         for name,arguments,prefix in sequence:
+             reply=c.tool(name,arguments); assert good(reply),reply

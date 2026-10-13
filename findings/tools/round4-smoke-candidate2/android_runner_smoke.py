@@ -110,7 +110,7 @@ checks.append({'favoriteRuns':5})
 run('settings-neutral',[a.adb,'-s',a.serial,'shell','am','start','-a','android.settings.SETTINGS'],0)
 doc=runner_case('stop-bare-clearstate',inputs/'stop-bare-clearstate.yaml'); assert doc['status']=='passed' and doc['flows'][0]['commands']['failed']==0
 run('stop-package-pid',[a.adb,'-s',a.serial,'shell','pidof','com.kylebrowning.landmarks'],1)
-run('stop-focused-window',[a.adb,'-s',a.serial,'shell','dumpsys','window','windows'],0); focused=(root/'stop-focused-window/stdout.raw').read_text(errors='replace'); assert re.search(r'mCurrentFocus.*com\.android\.settings',focused)
+run('stop-focused-window',[a.adb,'-s',a.serial,'shell','dumpsys','window'],0); focused=(root/'stop-focused-window/stdout.raw').read_text(errors='replace'); assert re.search(r'mCurrentFocus.*com\.android\.settings',focused)
 run('stop-settings-hierarchy',[a.adb,'-s',a.serial,'exec-out','uiautomator','dump','/dev/tty'],0); hierarchy=(root/'stop-settings-hierarchy/stdout.raw').read_text(errors='replace'); assert 'com.android.settings' in hierarchy and 'com.kylebrowning.landmarks' not in hierarchy
 detail=json.loads((root/'stop-bare-clearstate/raw-report'/doc['flows'][0]['dataFile']).read_text()); stop=next(x for x in detail['commands'] if x['type']=='stopApp'); assert stop['status']=='passed' and not stop.get('error')
 checks.append({'L77':{'literalClearState':True,'bareStop':True,'assertNotVisible':True,'targetPIDAbsent':True,'neutralSettingsFocused':True,'neutralSettingsHierarchy':True,'intentionalStopNonCrash':True}})

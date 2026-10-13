@@ -1,0 +1,63 @@
+13:34:54.890717 [INFO] === Test execution started ===
+13:34:54.890788 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate2/03-lifecycle-attempt2/helper/log-cleanup/success-report
+13:34:54.890797 [INFO] Platform: ios
+13:34:54.890803 [INFO] Driver: wda
+13:34:54.891115 [INFO] Validated 1 flow(s)
+13:34:55.006600 [INFO] Single device execution mode
+13:34:55.006616 [INFO] Starting flow execution (parallel: false, devices: [])
+13:34:55.006621 [INFO] Creating driver for single device execution
+13:34:55.006625 [INFO] Using specified iOS device: 553C67C6-7C11-4976-85A0-148C9C8AC278
+13:34:55.118369 [INFO] Device 553C67C6-7C11-4976-85A0-148C9C8AC278 is a simulator
+13:34:55.118418 [INFO] Building WDA for device 553C67C6-7C11-4976-85A0-148C9C8AC278 (team ID: )
+13:34:55.338029 [INFO] WDA build reused from cache
+13:34:55.338046 [INFO] Starting WDA on device 553C67C6-7C11-4976-85A0-148C9C8AC278 (port: 8508)
+13:34:55.597551 [INFO] Starting GrantivaAgent (attempt 1/4)
+13:34:57.601281 [INFO] GrantivaAgent started
+13:34:57.601333 [INFO] WDA started successfully on port 8508
+13:34:57.949959 [DEBUG] WDA GET /window/size
+13:34:58.043044 [DEBUG] WDA GET /window/size completed (93ms, status: 200)
+13:34:58.043134 [INFO] Driver created: ios on smoke4-ios
+13:34:58.045185 [INFO] === Starting flow: success ===
+13:34:58.045192 [INFO] Flow file: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate2/03-lifecycle-attempt2/helper/log-cleanup/success.yaml
+13:34:58.045198 [INFO] Total steps: 2
+13:34:58.045346 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+13:34:58.045970 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+13:34:58.046034 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+13:34:59.594030 [DEBUG] WDA POST /session completed (1548ms, status: 200)
+13:34:59.594223 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+13:34:59.596233 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings completed (2ms, status: 200)
+13:34:59.596531 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+13:34:59.597758 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings completed (1ms, status: 200)
+13:34:59.598720 [DEBUG] Executing step 0: launchApp
+13:35:00.058396 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+13:35:00.058451 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+13:35:00.059212 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/appium/settings completed (0ms, status: 200)
+13:35:00.059514 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+13:35:00.060003 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/wda/apps/terminate completed (0ms, status: 200)
+13:35:00.060029 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+13:35:01.629890 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/wda/apps/launch completed (1569ms, status: 200)
+13:35:01.630026 [DEBUG] Step 0 completed successfully (2031ms): launchApp
+13:35:01.630759 [DEBUG] Executing step 1: assertVisible: text="Landmarks"
+13:35:01.780043 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+13:35:01.780067 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/alert/text
+13:35:01.917710 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/alert/text completed (137ms, status: 404)
+13:35:01.917818 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element body={"using":"predicate string","value":"(label ==[c] 'Landmarks' OR value ==[c] 'Landmarks')"}
+13:35:02.003403 [DEBUG] WDA POST /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element completed (85ms, status: 200)
+13:35:02.003481 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/text
+13:35:02.003507 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/name
+13:35:02.003536 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/displayed
+13:35:02.003565 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/rect
+13:35:02.029560 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/text completed (26ms, status: 200)
+13:35:02.085158 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/rect completed (81ms, status: 200)
+13:35:02.141417 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/displayed completed (137ms, status: 200)
+13:35:02.195035 [DEBUG] WDA GET /session/F8BA6E84-5286-4509-B9B2-44FFC43BA6EE/element/01000000-0000-0000-098E-000000000000/name completed (191ms, status: 200)
+13:35:02.196317 [DEBUG] Step 1 completed successfully (565ms): assertVisible: text="Landmarks"
+13:35:02.203672 [INFO] === Flow completed: success (status: passed, duration: 4152ms, passed: 2, failed: 0, skipped: 0) ===
+13:35:02.209334 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+13:35:02.209696 [INFO] Generating reports...
+13:35:02.211101 [INFO] keep-alive: holding session 36124-1791923702210824000 (port 8508)
+13:35:02.229180 [INFO] Received signal interrupt, releasing keep-alive session...
+13:35:02.229270 [INFO] keep-alive: released session 36124-1791923702210824000
+13:35:02.319615 [INFO] Shutting down devices started by maestro-runner...
+13:35:02.319640 [INFO] Shutting down all tracked emulators
+13:35:02.319647 [INFO] Shutting down all tracked simulators

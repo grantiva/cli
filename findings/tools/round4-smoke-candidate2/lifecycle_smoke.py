@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -58,6 +59,22 @@ def yaml_documents(path: Path) -> object:
         capture_output=True, text=True, check=True, timeout=10,
     )
     return json.loads(result.stdout)
+
+
+def copy_report_snapshot(source: Path, target: Path) -> None:
+    def ignore_transient(_directory: str, names: list[str]) -> set[str]:
+        return {name for name in names if name.endswith(".tmp")}
+    try:
+        shutil.copytree(source, target, dirs_exist_ok=True, ignore=ignore_transient)
+    except FileNotFoundError as exc:
+        if exc.errno == errno.ENOENT and exc.filename and Path(exc.filename).suffix == ".tmp":
+            return
+        raise
+    except shutil.Error as exc:
+        errors = exc.args[0]
+        if all(len(entry) == 3 and Path(entry[0]).suffix == ".tmp" and ("[Errno 2]" in entry[2] or "No such file" in entry[2]) for entry in errors):
+            return
+        raise
 
 
 class Smoke:
@@ -362,7 +379,12 @@ class Smoke:
         target = self.output / phase / f"{label}-runner-report"
         while proc.poll() is None:
             try:
-                doc = json.loads(self.session.read_text())
+                session_text = self.session.read_text()
+            except FileNotFoundError:
+                time.sleep(0.01)
+                continue
+            try:
+                doc = json.loads(session_text)
                 pid = int(doc["pid"])
                 argv = self.bound_argv_if_running(pid, device)
                 if argv is None:
@@ -373,12 +395,12 @@ class Smoke:
                 if "--output" in argv:
                     report = Path(argv[argv.index("--output") + 1])
                     if report.exists():
-                        shutil.copytree(report, target, dirs_exist_ok=True)
+                        copy_report_snapshot(report, target)
                     flow = Path(argv[-1])
                     if flow.exists():
                         shutil.copy2(flow, self.output / phase / f"{label}-generated-flow.yaml")
                 self.record_ownership()
-            except (FileNotFoundError, ProcessLookupError, json.JSONDecodeError, KeyError):
+            except (ProcessLookupError, json.JSONDecodeError, KeyError):
                 pass
             time.sleep(0.01)
 
@@ -537,7 +559,7 @@ class Smoke:
             flow.write_text(body)
             report = root / f"{label}-report"
             ready = root / f"{label}-ready.json"
-            argv = [str(self.binary), "run", "--no-build", "--simulator", self.ns.ios_udid, "--flow", str(flow), "--report-dir", str(report), "--logs", "--logs-predicate", 'process == "Landmarks"', "--verbose"]
+            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid, "--flow", str(flow), "--report-dir", str(report), "--logs", "--logs-predicate", 'process == "Landmarks"', "--verbose"]
             if label == "success":
                 argv += ["--keep-alive", "--ready-file", str(ready)]
             proc = self.spawn(phase, label, argv)
@@ -627,7 +649,7 @@ class Smoke:
         cases = (("screens", None, "grantiva.yml -> a.yaml -> b.yaml -> a.yaml"), ("root", "a.yaml", "a.yaml -> b.yaml -> a.yaml -> b.yaml"), ("absolute", str(root / "a.yaml"), f"{root / 'a.yaml'} -> b.yaml -> a.yaml -> b.yaml"))
         for label, flow_name, expected in cases:
             (root / "grantiva.yml").write_text(base + ("screens:\n  - name: S\n    path:\n      - run_flow: a.yaml\n" if flow_name is None else ""))
-            argv = [str(self.binary), "run", "--no-build", "--simulator", self.ns.ios_udid] + (["--flow", flow_name] if flow_name else [])
+            argv = [str(self.binary), "run", "--platform", "ios", "--no-build", "--simulator", self.ns.ios_udid] + (["--flow", flow_name] if flow_name else [])
             started = time.monotonic()
             result = self.command(phase, label, argv, expected=1, timeout=20, cwd=root)
             elapsed = time.monotonic() - started

@@ -1,0 +1,61 @@
+{
+  "id": "flow-000",
+  "name": "failed",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate2/03-lifecycle-attempt2/helper/log-cleanup/failed.yaml",
+  "device": {
+    "id": "553C67C6-7C11-4976-85A0-148C9C8AC278",
+    "name": "smoke4-ios",
+    "platform": "ios",
+    "osVersion": "26.0",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T13:35:07.227169-07:00",
+  "endTime": "2026-10-13T13:35:24.984892-07:00",
+  "duration": 17757,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T13:35:09.841638-07:00",
+      "endTime": "2026-10-13T13:35:11.833638-07:00",
+      "duration": 1992,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"task8-deliberately-absent\"",
+      "status": "failed",
+      "startTime": "2026-10-13T13:35:11.834658-07:00",
+      "endTime": "2026-10-13T13:35:24.267658-07:00",
+      "duration": 12433,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "task8-deliberately-absent"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='task8-deliberately-absent' (cause: context deadline exceeded: no elements match selector; closest on-screen texts: \"Golden Gate Bridge\", \"water.waves\", \"Golden Gate Bridge, San Francisco, CA\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 7212,
+    "p50": 1992,
+    "p95": 12433,
+    "max": 12433,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}
