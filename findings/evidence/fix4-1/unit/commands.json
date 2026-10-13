@@ -1,0 +1,22 @@
+{
+  "commands": {
+    "fix4-1-baseline.log": "go test ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/report/...",
+    "fix4-1-red.log": "go test ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/report/...",
+    "fix4-1-focused-red.log": "go test ./pkg/driver/uiautomator2 ./pkg/executor -run 'TestLaunchFinalFatalDecision|TestFailureArtifactsConcurrentCancellation' -count=1",
+    "fix4-1-report-red.log": "go test ./pkg/report -run TestFailureArtifactPathsAndNotesRoundTrip -count=1",
+    "fix4-1-plumbing-red.log": "go test ./pkg/device ./pkg/uiautomator2 -run 'TestShellContextCancelsAndReapsOwnedChild|TestScreenshotContextCancelsUnderlyingRequest' -count=1 (baseline production files)",
+    "fix4-1-nested-red.log": "go test ./pkg/executor -run TestNestedFailureUsesCancellableArtifacts -count=1",
+    "fix4-1-recovery-red.log": "go test ./pkg/driver/uiautomator2 -run TestFailureCapturesDoNotEnterUncancellableRecovery -count=1",
+    "fix4-1-http-deadline-red.log": "go test ./pkg/driver/uiautomator2 -run TestFailureCaptureDeadlineAbortsUnderlyingHTTP -count=1",
+    "fix4-1-transport-green.log": "go test -race ./pkg/driver/uiautomator2 ./pkg/uiautomator2 -run 'TestFailureCaptureDeadlineAbortsUnderlyingHTTP|TestFailureCapturesDoNotEnterUncancellableRecovery|TestFailureScreenshotAndHierarchyUseIndependentRequests|TestScreenshotRetriesRefusedConnection' -count=1",
+    "fix4-1-transport-final-green.log": "go test ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/report/... ./pkg/device/... ./pkg/uiautomator2/...",
+    "fix4-1-transport-final-vet.log": "go vet ./pkg/driver/uiautomator2/... ./pkg/executor/... ./pkg/report/... ./pkg/device/... ./pkg/uiautomator2/..."
+  },
+  "finalEnvironment": {
+    "GRANTIVA_RUNNER_HOME": "/tmp/fix4-1-empty-home",
+    "MAESTRO_RUNNER_HOME": "/tmp/fix4-1-empty-home",
+    "GRANTIVA_SESSION_ID": "fix4-1",
+    "GRANTIVA_API_KEY": "unset"
+  },
+  "note": "Before final-source run, prefix set GRANTIVA_RUNNER_HOME and session and unset API key; final-source/transport tests explicitly set both home names. No unit-home files were created."
+}

@@ -119,3 +119,10 @@ Task1 additional cancellation regression proves failure-capture context must enf
 
 Demo fixture draft PR: https://github.com/grantiva/landmarks-demo/pull/4, commit4e3ecfd589be47e51441d0a92c98b4612ded1f70. Package task-5-demo-review.diff prepared; full Task5 independent review includes this source diff and live before/after/stock-flow evidence. No demo merge before that gate.
 Task4 fix1 worker report: semantic red reproduced both PID identity/marker reuse and stalled inventory overrun; initial green now passes precise identity revalidation and budgeted nonblocking inventory with exact-child reap, diagnostic capture. Additional deadline controls and final scoped tests remain in progress.
+
+Task1 source commit cc0c15a629071c0356b9a6fb66d70af8c4ff9579 complete/clean; independent reviewer /root/review_fix4_runner_capture active; runner branch pushed for draft PR/CI. Final package/vet/build and focused race tests pass. Device cleanup complete.
+Task4 fix1 commit9c7748523e703338887124a52a0a3af6d40a884b pushed to draft PR208; scoped re-review /root/review_fix4_cli_lifecycle active, final-head CI pending. Prior head78e9b752 CI passed.
+Task5 final Android mixed-large-response acceptance worker reports pass:10pairs (69270–69317bytes),20unique IDs,10small responses/10notifications; exact script controls pass. Cleanup complete (emulator5580/PID12409 absent, fix4-5-android deleted, Pixel_8_API_35 preserved). Next Android slot reserved for Task4 after its source re-review gate. Task5 retains own iOS for final-code replay.
+
+Runner draft PR24: https://github.com/grantiva/runner/pull/24 at cc0c15a6, independent review/CI in progress.
+Task4 scoped fix1 re-review approved all findings, no new blocking issue; resumed original implementer for full live acceptance. Android slot now fix4-4-android (verify serial5580 free); iOS waits Task5 cleanup, then fix4-4-ios-26 plus only-needed owned control simulator. Both runner-home env names use fresh scoped APFS clone; API key unset. Final-head CI and all live criteria still pending.

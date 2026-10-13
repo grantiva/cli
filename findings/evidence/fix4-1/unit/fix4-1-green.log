@@ -1,0 +1,115 @@
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,1200) → (540,240)
+[swipe] Using screen coords: (540,480) → (540,2160)
+[swipe] Using screen coords: (972,1200) → (108,1200)
+[swipe] Using screen coords: (108,1200) → (972,1200)
+[swipe] Using screen coords: (540,1200) → (540,240)
+--- FAIL: TestCrashWatchReplacesLaterStepFailure (0.05s)
+    --- FAIL: TestCrashWatchReplacesLaterStepFailure/crash_logged (0.02s)
+        commands_test.go:4565: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: BOOM"
+--- FAIL: TestCrashWatchThroughExecute (0.02s)
+    commands_test.go:4677: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: BOOM"
+--- FAIL: TestCountWaitHeldSourceFailsWithAppCrashWithin2s (0.03s)
+    count_crash_test.go:31: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestCountWaitMatchOnLauncherAfterCrashFailsWithAppCrash (0.03s)
+    count_crash_test.go:55: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestCountWaitMismatchOnDeadAppFailsWithAppCrash (0.03s)
+    count_crash_test.go:70: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestWaitUntilVisibleHeldRequestFailsWithAppCrashWithin2s (0.05s)
+    --- FAIL: TestWaitUntilVisibleHeldRequestFailsWithAppCrashWithin2s/index (0.02s)
+        count_crash_test.go:118: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestWaitUntilVisibleHeldRequestFailsWithAppCrashWithin2s/uiselector (0.02s)
+        count_crash_test.go:118: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestBlockedFirstFindFailsWithAppCrashWithin2s (0.03s)
+    crash_during_find_test.go:69: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestLooserStrategyMatchAfterCrashFailsWithAppCrash (0.02s)
+    crash_during_find_test.go:105: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestCrashFoundByWaitIsNotCheckedAgain (0.02s)
+    crash_during_find_test.go:150: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestPromptFirstMatchOnDeadAppFailsWithAppCrash (0.02s)
+    crash_during_find_test.go:191: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestPageSourceMatchOnDeadAppFailsWithAppCrash (0.03s)
+    crash_during_find_test.go:211: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestMissedCrashRunReplayNoStepPasses (0.02s)
+    crash_replay_test.go:59: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,960) → (540,192)
+--- FAIL: TestLaunchArmsWatchWithThePollsPIDs (0.06s)
+    launch_crash_after_draw_test.go:429: the launch read the device after its last first-frame poll: "logcat -d -b crash -t '10-10 12:00:00.000'"
+--- FAIL: TestCaptureAfterCrashCancelledLookupIsBounded (0.03s)
+    launch_first_frame_test.go:195: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestNotVisibleOnDeadAppFailsWithAppCrash (0.05s)
+    --- FAIL: TestNotVisibleOnDeadAppFailsWithAppCrash/assertNotVisible (0.03s)
+        notvisible_crash_test.go:38: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestNotVisibleOnDeadAppFailsWithAppCrash/waitUntilNotVisible (0.02s)
+        notvisible_crash_test.go:38: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestNotVisibleHeldProbeOnDyingAppFailsWithAppCrashWithin2s (0.10s)
+    --- FAIL: TestNotVisibleHeldProbeOnDyingAppFailsWithAppCrashWithin2s/uiselector/assertNotVisible (0.02s)
+        notvisible_crash_test.go:71: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestNotVisibleHeldProbeOnDyingAppFailsWithAppCrashWithin2s/uiselector/waitUntilNotVisible (0.02s)
+        notvisible_crash_test.go:71: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestNotVisibleHeldProbeOnDyingAppFailsWithAppCrashWithin2s/index/assertNotVisible (0.03s)
+        notvisible_crash_test.go:71: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestNotVisibleHeldProbeOnDyingAppFailsWithAppCrashWithin2s/index/waitUntilNotVisible (0.02s)
+        notvisible_crash_test.go:71: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestNotVisibleAfterStopAppPasses (0.05s)
+    --- FAIL: TestNotVisibleAfterStopAppPasses/assertNotVisible (0.02s)
+        notvisible_crash_test.go:97: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestNotVisibleAfterStopAppPasses/waitUntilNotVisible (0.03s)
+        notvisible_crash_test.go:97: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestStopOfOtherAppKeepsCrashWatch (0.03s)
+    notvisible_crash_test.go:145: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s (0.15s)
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/relative/assertVisible (0.03s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/relative/tapOn (0.02s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/index/assertVisible (0.02s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/index/tapOn (0.03s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/size/assertVisible (0.02s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceWaitBlockedSourceFailsWithAppCrashWithin2s/size/tapOn (0.02s)
+        pagesource_crash_test.go:56: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash (0.15s)
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/relative/assertVisible (0.03s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/relative/tapOn (0.02s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/index/assertVisible (0.02s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/index/tapOn (0.03s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/size/assertVisible (0.02s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+    --- FAIL: TestPageSourceMatchAfterDeathFailsWithAppCrash/size/tapOn (0.02s)
+        pagesource_crash_test.go:90: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestTapFallbackBlockedSourceFailsWithAppCrashWithin2s (0.02s)
+    pagesource_crash_test.go:141: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestWaitUntilVisibleOnDeadAppFailsWithAppCrash (0.03s)
+    pagesource_crash_test.go:164: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestWaitForAnimationToEndOnDeadAppFailsWithAppCrash (0.02s)
+    settle_crash_test.go:20: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestWaitForAnimationToEndAfterStopAppPasses (0.03s)
+    settle_crash_test.go:44: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestElementWaitEndsEarlyWhenAppCrashed (0.03s)
+    wait_crash_test.go:134: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestElementWaitEndsEarlyWhenEachLookupIsSlow (0.02s)
+    wait_crash_test.go:200: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestCrashWatchResultIsTypedAppCrash (0.03s)
+    wait_crash_test.go:253: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestElementWaitIgnoresCrashOfAnotherPID (0.02s)
+    wait_crash_test.go:279: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestElementWaitFailsWhenLaunchedProcessCrashedAndAppRestarted (0.02s)
+    wait_crash_test.go:340: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+--- FAIL: TestCrashFromWaitKeepsTypedErrorWhenDeviceUnreadable (0.02s)
+    wait_crash_test.go:399: launch should pass: "launchApp: 'com.example.app' crashed on launch: java.lang.RuntimeException: CRASH_AFTER_LAUNCH"
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/driver/uiautomator2	196.360s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/executor	119.195s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/report	0.508s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/device	6.950s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/uiautomator2	14.227s
+FAIL

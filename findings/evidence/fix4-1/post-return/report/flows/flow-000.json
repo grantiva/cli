@@ -1,0 +1,56 @@
+{
+  "id": "flow-000",
+  "name": "post-return",
+  "sourceFile": "/private/tmp/grantiva-fix4-1.6ddirwah/flows/post-return.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T06:23:58.561697-07:00",
+  "endTime": "2026-10-13T06:24:00.80853-07:00",
+  "duration": 2246,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T06:23:58.567075-07:00",
+      "endTime": "2026-10-13T06:24:00.012075-07:00",
+      "duration": 1445,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "yaml": "extendedWaitUntil: visible text=\"This never appears\"",
+      "status": "failed",
+      "startTime": "2026-10-13T06:24:00.013309-07:00",
+      "endTime": "2026-10-13T06:24:00.307309-07:00",
+      "duration": 294,
+      "error": {
+        "type": "app_crash",
+        "message": "app crashed after launch: android.app.RemoteServiceException$CrashedByAdbException: shell-induced crash (cause: app crashed after launch)"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-001-log-tail.txt"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 869,
+    "p50": 294,
+    "p95": 1445,
+    "max": 1445,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

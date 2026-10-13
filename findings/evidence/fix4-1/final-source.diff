@@ -1,0 +1,1124 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 18032a4..1e433fe 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -40,6 +40,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
+ - **Failures name the selector on Android** — `Element not visible: text='X'`, `Element not found for swipe: text='X'` (iOS too; where an element swipe starts is now documented in docs/selectors.md), with the closest on-screen texts as the cause; a timed-out notVisible check says `Element still visible: text='X' after 10s` on both platforms.
+ 
+ ### Fixed
++- **Android launch crash decisions recheck matching fatal logs immediately before success.** A fatal arriving after the first-frame snapshot now fails `launchApp`; crashes after return remain covered by the next step's watch.
++- **Android failure screenshots, hierarchy and app log tails run concurrently with cancellable deadlines.** Screenshot capture uses the server socket, successful artifacts survive another collector timing out, and report artifacts include per-collector notes. Cancellation waits for the request or owned shell child to finish.
+ - **Android `launchApp` passed on an app that crashed right after its first frame** — once `Displayed` was logged, a crash recorded for the launched pid no longer counted, so `99-crash` passed `launchApp` 1-3 s after the crash and failed at the next step. A FATAL EXCEPTION or `am_crash` of a launched pid now fails the launch with `app_crash` whether or not the first frame was logged first, and a launch none of whose processes runs after the first frame was read fails as well. On the default software-rendered AVD `launchApp` failed within 2 s of the FATAL EXCEPTION (0.4-0.55 s in 10 runs, all caught by the launch). A crash that comes after the launch passed fails the next step through the post-launch watch, which checks every 250 ms; that path is covered by a unit test, as no device run produced it.
+ - **Android `doubleTapOn` still counted as two taps on a software-rendered AVD** — the W3C pointer sequence is injected event by event, each stamped when injected and waiting for the app, so its 200 ms took 0.7-1.3 s and the app counted two single taps in 4 of 5 runs; the server's own `double_click` (1.1-1.35 s) never counted as one. The on-device double tap above is one double tap in 5 of 5 runs.
+ - **`waitForAnimationToEnd` passed on an app that had crashed after launch** (iOS and Android). The home screen or launcher left on screen is static, so the settle passed in half a second and a screens flow captured it as the screen. While the app the last `launchApp` started is watched, the settle now fails with `app_crash` (`app crashed: <bundle> is not running` on iOS, the FATAL EXCEPTION on Android); after an intentional `stopApp`, `killApp` or `clearState` it passes as before.
+diff --git a/pkg/device/android.go b/pkg/device/android.go
+index f2138f9..1b406e8 100644
+--- a/pkg/device/android.go
++++ b/pkg/device/android.go
+@@ -3,6 +3,7 @@ package device
+ 
+ import (
+ 	"bytes"
++	"context"
+ 	"fmt"
+ 	"os"
+ 	"path/filepath"
+@@ -223,6 +224,40 @@ func (d *AndroidDevice) Shell(cmd string) (string, error) {
+ 	return d.adb("shell", cmd)
+ }
+ 
++// ShellContext owns one adb child and waits for its exit, including after
++// cancellation. The serial is always carried into the child command.
++func (d *AndroidDevice) ShellContext(ctx context.Context, command string) (string, error) {
++	if err := ctx.Err(); err != nil {
++		return "", err
++	}
++	args := []string{}
++	if d.serial != "" {
++		args = append(args, "-s", d.serial)
++	}
++	args = append(args, "shell", command)
++	child := execCommand(d.adbPath, args...)
++	var stdout, stderr bytes.Buffer
++	child.Stdout, child.Stderr = &stdout, &stderr
++	// Bound pipe cleanup too, if the command starts a descendant with inherited IO.
++	child.WaitDelay = 100 * time.Millisecond
++	if err := child.Start(); err != nil {
++		return "", err
++	}
++	done := make(chan error, 1)
++	go func() { done <- child.Wait() }()
++	select {
++	case err := <-done:
++		if err != nil {
++			return stdout.String(), fmt.Errorf("adb shell: %w: %s", err, stderr.String())
++		}
++		return stdout.String(), nil
++	case <-ctx.Done():
++		_ = child.Process.Kill()
++		<-done
++		return stdout.String(), ctx.Err()
++	}
++}
++
+ // Screenshot captures the physical display through ADB.
+ func (d *AndroidDevice) Screenshot() ([]byte, error) {
+ 	return d.adbOutput("exec-out", "screencap", "-p")
+diff --git a/pkg/device/shell_timeout_test.go b/pkg/device/shell_timeout_test.go
+index f0a230b..79ce787 100644
+--- a/pkg/device/shell_timeout_test.go
++++ b/pkg/device/shell_timeout_test.go
+@@ -1,8 +1,13 @@
+ package device
+ 
+ import (
++	"context"
++	"errors"
++	"os"
+ 	"os/exec"
++	"reflect"
+ 	"strings"
++	"syscall"
+ 	"testing"
+ 	"time"
+ )
+@@ -28,3 +33,38 @@ func TestShellTimeout(t *testing.T) {
+ 		t.Errorf("timeout took %v, want about 200ms", time.Since(start))
+ 	}
+ }
++
++func TestShellContextCancelsAndReapsOwnedChild(t *testing.T) {
++	t.Cleanup(func() { execCommand = exec.Command })
++	d := &AndroidDevice{serial: "owned-device", adbPath: "adb"}
++	shell, ok := interface{}(d).(interface {
++		ShellContext(context.Context, string) (string, error)
++	})
++	if !ok {
++		t.Fatal("device lacks cancellable shell")
++	}
++	var child *exec.Cmd
++	execCommand = func(name string, args ...string) *exec.Cmd {
++		if name != "adb" || !reflect.DeepEqual(args, []string{"-s", "owned-device", "shell", "logcat -d"}) {
++			t.Fatalf("unscoped command: %s %v", name, args)
++		}
++		child = exec.Command("sleep", "10")
++		return child
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
++	defer cancel()
++	start := time.Now()
++	_, err := shell.ShellContext(ctx, "logcat -d")
++	if !errors.Is(err, context.DeadlineExceeded) {
++		t.Fatalf("cancel error: %v", err)
++	}
++	if time.Since(start) > time.Second {
++		t.Fatal("cancellation did not abort child")
++	}
++	if child == nil || child.ProcessState == nil {
++		t.Fatal("owned child was not reaped before return")
++	}
++	if err := child.Process.Signal(os.Signal(syscall.Signal(0))); !errors.Is(err, os.ErrProcessDone) {
++		t.Fatalf("child still present: %v", err)
++	}
++}
+diff --git a/pkg/driver/uiautomator2/commands.go b/pkg/driver/uiautomator2/commands.go
+index 86d2099..76e645c 100644
+--- a/pkg/driver/uiautomator2/commands.go
++++ b/pkg/driver/uiautomator2/commands.go
+@@ -1845,6 +1845,17 @@ func (d *Driver) watchLaunch(appID, since string, r *core.CommandResult) *core.C
+ 		// loaded AVD, L58). A crash right after the launch is still found
+ 		// by the poll that runs while the lookup is in flight.
+ 		d.crashCheckedAt = time.Now()
++		// All launch observations and this decision are owned by the executing
++		// goroutine. Read the fatal buffer last, after the PID/frame snapshot
++		// and watch setup: a lingering PID must not mask a fatal that arrived
++		// while that snapshot was being read. Do not perform another device
++		// operation between this matching-fatal check and the success return.
++		if cause := d.launchCrashCause(appID, since, d.watchPIDs); cause != "" {
++			d.crashFound = true
++			d.watchApp, d.watchSince, d.watchPIDs = "", "", nil
++			return errorResult(core.ErrAppCrashed.WithMessage("app crashed on launch"),
++				fmt.Sprintf("launchApp: '%s' crashed on launch: %s", appID, cause))
++		}
+ 	}
+ 	return r
+ }
+@@ -2000,6 +2011,7 @@ func (d *Driver) confirmLaunch(appID, since string, start time.Time, coldStart b
+ 	// first poll on: a process that crashes before the settle and is
+ 	// restarted under a new pid still has its am_crash matched.
+ 	var pids []string
++	defer func() { d.launchPIDs = slices.Clone(pids) }()
+ 	merge := func(now []string) {
+ 		for _, p := range now {
+ 			if !slices.Contains(pids, p) {
+@@ -2034,9 +2046,6 @@ func (d *Driver) confirmLaunch(appID, since string, start time.Time, coldStart b
+ 				if p.pidsRead && len(launched) > 0 && !anyIn(p.pids, launched) {
+ 					break
+ 				}
+-				if p.pidsRead {
+-					d.launchPIDs = p.pids
+-				}
+ 				return ok
+ 			}
+ 			if elapsed >= timing.firstFrame {
+@@ -2173,7 +2182,10 @@ func parseCrashCause(logcat, appID string, pids []string) string {
+ 				found = logcatPrefix.ReplaceAllString(l, "")
+ 			}
+ 		}
+-		if mine && found != "" {
++		if mine {
++			if found == "" {
++				found = "FATAL EXCEPTION"
++			} // exception detail can follow the matching fatal/PID lines
+ 			cause = strings.TrimSpace(found)
+ 		}
+ 	}
+diff --git a/pkg/driver/uiautomator2/commands_test.go b/pkg/driver/uiautomator2/commands_test.go
+index 2cfc8ec..046d1ab 100644
+--- a/pkg/driver/uiautomator2/commands_test.go
++++ b/pkg/driver/uiautomator2/commands_test.go
+@@ -4654,6 +4654,9 @@ func (f *flipPid) Shell(cmd string) (string, error) {
+ 		}
+ 		return "42", nil
+ 	case strings.Contains(cmd, "logcat"):
++		if !f.dead {
++			return "", nil
++		} // the configured crash happens after launch
+ 		return f.logcat, nil
+ 	case strings.HasPrefix(cmd, "date"):
+ 		return "10-10 12:00:00.000", nil
+diff --git a/pkg/driver/uiautomator2/driver.go b/pkg/driver/uiautomator2/driver.go
+index 35825a0..e1d0888 100644
+--- a/pkg/driver/uiautomator2/driver.go
++++ b/pkg/driver/uiautomator2/driver.go
+@@ -507,6 +507,73 @@ func (d *Driver) Hierarchy() ([]byte, error) {
+ 	return []byte(source), nil
+ }
+ 
++// FailureScreenshot uses the server socket, avoiding the slow adb screencap
++// and pull path. Per-request contexts are independent of concurrent hierarchy
++// capture and of the completed step's requestContexter state.
++func (d *Driver) FailureScreenshot(ctx context.Context) ([]byte, error) {
++	if c, ok := d.client.(interface {
++		ScreenshotCtx(context.Context) ([]byte, error)
++	}); ok {
++		return c.ScreenshotCtx(uiautomator2.FailureCaptureContext(ctx))
++	}
++	return nil, fmt.Errorf("screenshot client does not support cancellation")
++}
++
++func (d *Driver) FailureHierarchy(ctx context.Context) ([]byte, error) {
++	if _, ok := d.client.(contextSourcer); !ok {
++		return nil, fmt.Errorf("hierarchy client does not support cancellation")
++	}
++	source, err := d.sourceCtx(uiautomator2.FailureCaptureContext(ctx))
++	return []byte(source), err
++}
++
++// FailureLogTail limits logcat to the launched app's PIDs, including a crashed
++// PID that no longer appears in pidof. Never return another application's logs.
++func (d *Driver) FailureLogTail(ctx context.Context) ([]byte, error) {
++	shell, ok := d.device.(interface {
++		ShellContext(context.Context, string) (string, error)
++	})
++	if !ok {
++		return nil, fmt.Errorf("log tail device does not support cancellation")
++	}
++	pids := append([]string(nil), d.watchPIDs...)
++	if len(pids) == 0 {
++		pids = append(pids, d.launchPIDs...)
++	}
++	if len(pids) == 0 && d.currentAppID != "" {
++		out, err := shell.ShellContext(ctx, "pidof "+shellQuote(d.currentAppID)+" || true")
++		if err != nil {
++			return nil, err
++		}
++		pids, _ = parsePIDs(out)
++	}
++	if len(pids) == 0 {
++		return nil, fmt.Errorf("no launched app PID available for log tail")
++	}
++	var output strings.Builder
++	for _, pid := range pids {
++		if err := ctx.Err(); err != nil {
++			return nil, err
++		}
++		command := "logcat -d -b main,system,crash --pid=" + shellQuote(pid) + " -t 200"
++		if d.currentAppSince != "" {
++			command = "logcat -d -b main,system,crash --pid=" + shellQuote(pid) + " -t " + shellQuote(d.currentAppSince)
++		}
++		out, err := shell.ShellContext(ctx, command)
++		if err != nil {
++			return nil, err
++		}
++		output.WriteString(out)
++		output.WriteByte('\n')
++	}
++	// Bound the saved tail even if the launch has produced many log lines.
++	lines := strings.Split(strings.TrimSuffix(output.String(), "\n"), "\n")
++	if len(lines) > 200 {
++		lines = lines[len(lines)-200:]
++	}
++	return []byte(strings.Join(lines, "\n")), nil
++}
++
+ // GetState returns the current device/app state.
+ func (d *Driver) GetState() *core.StateSnapshot {
+ 	state := &core.StateSnapshot{}
+diff --git a/pkg/driver/uiautomator2/launch_crash_after_draw_test.go b/pkg/driver/uiautomator2/launch_crash_after_draw_test.go
+index f39bf36..a9d982f 100644
+--- a/pkg/driver/uiautomator2/launch_crash_after_draw_test.go
++++ b/pkg/driver/uiautomator2/launch_crash_after_draw_test.go
+@@ -1,9 +1,12 @@
+ package uiautomator2
+ 
+ import (
++	"context"
+ 	"errors"
++	"net/http"
+ 	"strings"
+ 	"sync"
++	"sync/atomic"
+ 	"testing"
+ 	"time"
+ 
+@@ -425,8 +428,11 @@ func TestLaunchArmsWatchWithThePollsPIDs(t *testing.T) {
+ 	}
+ 	calls := sh.recorded()
+ 	last := calls[len(calls)-1]
+-	if !strings.Contains(last, "ActivityTaskManager") {
+-		t.Errorf("the launch read the device after its last first-frame poll: %q", last)
++	if !strings.Contains(last, "logcat -d -b crash") || strings.Contains(last, "pidof") {
++		t.Errorf("final decision must check fatal logs without rereading PIDs: %q", last)
++	}
++	if len(calls) < 2 || !strings.Contains(calls[len(calls)-2], "ActivityTaskManager") {
++		t.Fatalf("expected final fatal check immediately after first-frame poll: %v", calls)
+ 	}
+ 	if len(d.watchPIDs) != 1 || d.watchPIDs[0] != "42" {
+ 		t.Errorf("watch pids = %v, want [42]", d.watchPIDs)
+@@ -453,3 +459,227 @@ func checksSince(sh *batchShell, before int) int {
+ 	}
+ 	return n
+ }
++
++// The fatal arrives after the Displayed log snapshot, while the final PID
++// read still sees the crashed process. A PID is not a final crash verdict.
++type fatalAfterStatusShell struct {
++	inner *drawnThenCrashDevice
++	armed bool
++	crash bool
++	mu    sync.Mutex
++}
++
++func (s *fatalAfterStatusShell) Shell(cmd string) (string, error) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++	out, err := s.inner.Shell(cmd)
++	if strings.Contains(out, "Displayed ") {
++		s.armed = true
++	}
++	if s.armed && s.crash && strings.Contains(cmd, "pidof") {
++		s.inner.mu.Lock()
++		s.inner.crashAt = time.Nanosecond
++		s.inner.mu.Unlock()
++	}
++	return out, err
++}
++
++func TestLaunchFinalFatalDecision(t *testing.T) {
++	for _, mode := range []string{"before-return", "healthy", "after-return"} {
++		t.Run(mode, func(t *testing.T) {
++			dev := &drawnThenCrashDevice{drawAt: time.Millisecond}
++			sh := &fatalAfterStatusShell{inner: dev, crash: mode == "before-return"}
++			client := &MockUIA2Client{launchAppFunc: func(string, map[string]interface{}) error { dev.launch(); return nil }}
++			d := fastLaunchDriver(client, sh)
++			r := d.Execute(&flow.LaunchAppStep{AppID: "com.example.app"})
++			if mode == "before-return" {
++				if r.Success || !isAppCrash(r) {
++					t.Fatalf("matching fatal before success: success=%v error=%v message=%s", r.Success, r.Error, r.Message)
++				}
++				return
++			}
++			if !r.Success {
++				t.Fatalf("launch before fatal failed: %v", r.Error)
++			}
++			if mode == "after-return" {
++				dev.mu.Lock()
++				dev.crashAt = time.Nanosecond
++				dev.mu.Unlock()
++				if err := d.crashNow(); !isAppCrashed(err) {
++					t.Fatalf("post-return crash was not watched: %v", err)
++				}
++				if !r.Success {
++					t.Fatal("post-return crash retroactively changed launch result")
++				}
++			}
++		})
++	}
++}
++
++type failureArtifactShell struct {
++	MockShellExecutor
++	calls       []string
++	contextCall func(context.Context, string) (string, error)
++}
++
++func (s *failureArtifactShell) ShellContext(ctx context.Context, cmd string) (string, error) {
++	s.calls = append(s.calls, cmd)
++	return s.contextCall(ctx, cmd)
++}
++
++func TestFailureLogTailRetainsCrashedPIDsAndCancels(t *testing.T) {
++	sh := &failureArtifactShell{}
++	d := New(&MockUIA2Client{}, screen1080(), sh)
++	d.launchPIDs = []string{"42", "43"}
++	d.currentAppID, d.currentAppSince = "com.example.app", "10-10 12:00:00.000"
++	sh.contextCall = func(ctx context.Context, cmd string) (string, error) { return "app log", nil }
++	data, err := d.FailureLogTail(context.Background())
++	if err != nil || !strings.Contains(string(data), "app log") {
++		t.Fatalf("log tail: %q %v", data, err)
++	}
++	if len(sh.calls) != 2 {
++		t.Fatalf("calls: %v", sh.calls)
++	}
++	for i, pid := range d.launchPIDs {
++		if !strings.Contains(sh.calls[i], "--pid='"+pid+"'") || !strings.Contains(sh.calls[i], "-t '"+d.currentAppSince+"'") {
++			t.Fatalf("unscoped log tail: %s", sh.calls[i])
++		}
++	}
++	sh.contextCall = func(ctx context.Context, cmd string) (string, error) { <-ctx.Done(); return "", ctx.Err() }
++	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
++	defer cancel()
++	if _, err := d.FailureLogTail(ctx); !errors.Is(err, context.DeadlineExceeded) {
++		t.Fatalf("cancellation: %v", err)
++	}
++	if len(sh.calls) != 3 {
++		t.Fatal("cancelled capture started another child")
++	}
++}
++
++func TestFailureScreenshotAndHierarchyUseIndependentRequests(t *testing.T) {
++	started, finished := make(chan struct{}), make(chan struct{})
++	server := setupMockServer(t, map[string]func(http.ResponseWriter, *http.Request){
++		"GET /screenshot": func(w http.ResponseWriter, r *http.Request) { close(started); <-r.Context().Done(); close(finished) },
++		"GET /source":     func(w http.ResponseWriter, r *http.Request) { _, _ = w.Write([]byte(`{"value":"<hierarchy/>"}`)) },
++	})
++	defer server.Close()
++	d := New(newMockHTTPClient(server.URL).Client, screen1080(), &MockShellExecutor{})
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	done := make(chan error, 1)
++	go func() { _, err := d.FailureScreenshot(ctx); done <- err }()
++	select {
++	case <-started:
++	case <-time.After(time.Second):
++		t.Fatal("screenshot did not start")
++	}
++	hierarchyCtx, hierarchyCancel := context.WithTimeout(context.Background(), time.Second)
++	defer hierarchyCancel()
++	data, err := d.FailureHierarchy(hierarchyCtx)
++	if err != nil || string(data) != "<hierarchy/>" {
++		t.Fatalf("independent hierarchy: %q %v", data, err)
++	}
++	cancel()
++	select {
++	case err := <-done:
++		if err == nil {
++			t.Fatal("cancelled screenshot succeeded")
++		}
++	case <-time.After(time.Second):
++		t.Fatal("screenshot did not return")
++	}
++	select {
++	case <-finished:
++	case <-time.After(time.Second):
++		t.Fatal("screenshot HTTP still running")
++	}
++}
++
++func TestFinalFatalDecisionDoesNotWaitForExceptionDetail(t *testing.T) {
++	dev := &deviceWithCrashBuffer{buffer: strings.Join(strings.Split(crashAfterLaunch, "\n")[:2], "\n")}
++	d := New(&MockUIA2Client{}, screen1080(), dev)
++	d.launchPIDs = []string{"42"}
++	r := d.watchLaunch("com.example.app", "10-10 12:00:00.000", successResult("launched", nil))
++	if r.Success || !isAppCrash(r) {
++		t.Fatalf("matching fatal without exception detail was ignored: %+v", r)
++	}
++}
++
++func TestFailureCapturesDoNotEnterUncancellableRecovery(t *testing.T) {
++	server := setupMockServer(t, nil)
++	client := newMockHTTPClient(server.URL).Client
++	server.Close() // a refused connection would normally restore the ADB forward
++	var recoveries atomic.Int32
++	client.SetRecovery("owned-device", func() error { recoveries.Add(1); return nil })
++	d := New(client, screen1080(), &MockShellExecutor{})
++	for _, capture := range []func(context.Context) ([]byte, error){d.FailureScreenshot, d.FailureHierarchy} {
++		ctx, cancel := context.WithTimeout(context.Background(), 300*time.Millisecond)
++		began := time.Now()
++		_, err := capture(ctx)
++		cancel()
++		if err == nil {
++			t.Fatal("refused capture succeeded")
++		}
++		if elapsed := time.Since(began); elapsed > 550*time.Millisecond {
++			t.Fatalf("capture lost its deadline: %s", elapsed)
++		}
++	}
++	if calls := recoveries.Load(); calls != 0 {
++		t.Fatalf("best-effort capture entered context-free recovery %d times", calls)
++	}
++}
++
++func TestFailureCaptureDeadlineAbortsUnderlyingHTTP(t *testing.T) {
++	for _, name := range []string{"screenshot", "hierarchy"} {
++		t.Run(name, func(t *testing.T) {
++			release := make(chan struct{})
++			ack := make(chan bool, 1)
++			server := setupMockServer(t, map[string]func(http.ResponseWriter, *http.Request){
++				"GET /screenshot": func(w http.ResponseWriter, r *http.Request) {
++					select {
++					case <-r.Context().Done():
++						ack <- true
++					case <-release:
++						ack <- false
++					}
++				},
++				"GET /source": func(w http.ResponseWriter, r *http.Request) {
++					select {
++					case <-r.Context().Done():
++						ack <- true
++					case <-release:
++						ack <- false
++					}
++				},
++			})
++			defer server.Close()
++			// The safety release keeps the pre-fix RED run finite and joins the
++			// held handler even when the transport incorrectly ignores deadlines.
++			safety := time.AfterFunc(300*time.Millisecond, func() { close(release) })
++			defer safety.Stop()
++			d := New(newMockHTTPClient(server.URL).Client, screen1080(), &MockShellExecutor{})
++			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Millisecond)
++			defer cancel()
++			began := time.Now()
++			capture := d.FailureScreenshot
++			if name == "hierarchy" {
++				capture = d.FailureHierarchy
++			}
++			_, err := capture(ctx)
++			if !errors.Is(err, context.DeadlineExceeded) {
++				t.Errorf("capture ignored its deadline: %v", err)
++			}
++			if elapsed := time.Since(began); elapsed > 200*time.Millisecond {
++				t.Errorf("deadline took %s to abort HTTP", elapsed)
++			}
++			select {
++			case cancelled := <-ack:
++				if !cancelled {
++					t.Error("HTTP only stopped at safety release")
++				}
++			case <-time.After(time.Second):
++				t.Fatal("HTTP did not acknowledge cancellation")
++			}
++		})
++	}
++}
+diff --git a/pkg/driver/uiautomator2/wait_crash_test.go b/pkg/driver/uiautomator2/wait_crash_test.go
+index 767a23c..502fb0a 100644
+--- a/pkg/driver/uiautomator2/wait_crash_test.go
++++ b/pkg/driver/uiautomator2/wait_crash_test.go
+@@ -27,6 +27,7 @@ var logcatSince = regexp.MustCompile(`-t '(\d\d-\d\d \d\d:\d\d:\d\d\.\d+)'`)
+ // entries, honouring logcat's -t: a timestamp keeps entries at or after it,
+ // a count keeps the last lines.
+ type deviceWithCrashBuffer struct {
++	clock     string // future crash fixtures are published only after the simulated exit
+ 	dead      bool
+ 	restarted bool // after the crash Android started a new process for the app
+ 	buffer    string
+@@ -63,12 +64,16 @@ func (s *deviceWithCrashBuffer) Shell(cmd string) (string, error) {
+ 		for _, line := range strings.Split(buf, "\n") {
+ 			f := strings.Fields(line)
+ 			if len(f) >= 2 && f[0]+" "+f[1] >= m[1] {
++				if s.clock != "" && !s.dead && !s.restarted && s.events == "" && f[0]+" "+f[1] > s.clock {
++					continue
++				}
+ 				kept = append(kept, line)
+ 			}
+ 		}
+ 		return strings.Join(kept, "\n"), nil
+ 	case strings.HasPrefix(cmd, "date"):
+-		return "10-10 12:00:00.000", nil
++		s.clock = "10-10 12:00:00.000"
++		return s.clock, nil
+ 	}
+ 	return "", nil
+ }
+@@ -482,3 +487,30 @@ func TestElementWaitIgnoresFatalWithoutAMCrash(t *testing.T) {
+ 		t.Errorf("wait ended after %v", elapsed)
+ 	}
+ }
++
++// Post-launch tests preload the eventual crash text for convenience. Reading
++// the device clock begins the simulated launch; future text is published only
++// when the test explicitly kills/restarts the process or records am_crash.
++func TestPostLaunchCrashFixturePublicationBoundary(t *testing.T) {
++	for _, publish := range []string{"exit", "restart", "event"} {
++		t.Run(publish, func(t *testing.T) {
++			dev := &deviceWithCrashBuffer{buffer: crashAfterLaunch}
++			_, _ = dev.Shell("date")
++			command := "logcat -d -b crash -t '10-10 12:00:00.000'"
++			if out, _ := dev.Shell(command); out != "" {
++				t.Fatalf("future fatal visible during launch: %s", out)
++			}
++			switch publish {
++			case "exit":
++				dev.dead = true
++			case "restart":
++				dev.restarted = true
++			case "event":
++				dev.events = "am_crash: [42,0,com.example.app]"
++			}
++			if out, _ := dev.Shell(command); !strings.Contains(out, "CRASH_AFTER_LAUNCH") {
++				t.Fatalf("fatal absent after %s: %s", publish, out)
++			}
++		})
++	}
++}
+diff --git a/pkg/executor/duration_consistency_test.go b/pkg/executor/duration_consistency_test.go
+index b6d9946..d0bf6b1 100644
+--- a/pkg/executor/duration_consistency_test.go
++++ b/pkg/executor/duration_consistency_test.go
+@@ -5,6 +5,9 @@ import (
+ 	"encoding/json"
+ 	"os"
+ 	"path/filepath"
++	"runtime"
++	"strings"
++	"sync/atomic"
+ 	"testing"
+ 	"time"
+ 
+@@ -165,3 +168,162 @@ func readFlowDetail(t *testing.T, dir string) report.FlowDetail {
+ 	}
+ 	return detail
+ }
++
++// Each collector waits for its peers, proving that captures actually overlap.
++// The blocked collector acknowledges cancellation before captureArtifacts ends.
++type blockingFailureArtifacts struct {
++	*mockDriver
++	blocked  string
++	started  chan string
++	finished chan string
++	ready    chan struct{}
++	active   atomic.Int32
++	arrived  atomic.Int32
++}
++
++func (d *blockingFailureArtifacts) capture(ctx context.Context, name string) ([]byte, error) {
++	d.active.Add(1)
++	defer d.active.Add(-1)
++	d.started <- name
++	if d.arrived.Add(1) == 3 {
++		close(d.ready)
++	}
++	select {
++	case <-d.ready:
++	case <-ctx.Done():
++		return nil, ctx.Err()
++	}
++	if name == d.blocked {
++		<-ctx.Done()
++		d.finished <- name
++		return nil, ctx.Err()
++	}
++	return []byte(name), nil
++}
++func (d *blockingFailureArtifacts) FailureScreenshot(ctx context.Context) ([]byte, error) {
++	return d.capture(ctx, "screenshot")
++}
++func (d *blockingFailureArtifacts) FailureHierarchy(ctx context.Context) ([]byte, error) {
++	return d.capture(ctx, "hierarchy")
++}
++func (d *blockingFailureArtifacts) FailureLogTail(ctx context.Context) ([]byte, error) {
++	return d.capture(ctx, "logTail")
++}
++
++func TestFailureArtifactsConcurrentCancellation(t *testing.T) {
++	for _, blocked := range []string{"screenshot", "hierarchy", "logTail"} {
++		t.Run(blocked, func(t *testing.T) {
++			before := runtime.NumGoroutine()
++			began := time.Now()
++			for i := 0; i < 25; i++ {
++				d := &blockingFailureArtifacts{mockDriver: &mockDriver{}, blocked: blocked,
++					started: make(chan string, 3), finished: make(chan string, 1), ready: make(chan struct{})}
++				dir := t.TempDir()
++				fw := report.NewFlowWriter(&report.FlowDetail{ID: "capture"}, dir, nil)
++				fr := &FlowRunner{ctx: context.Background(), driver: d, flowWriter: fw}
++				start := time.Now()
++				artifacts := fr.captureArtifacts(0, "after", true)
++				if elapsed := time.Since(start); elapsed > 2250*time.Millisecond {
++					t.Fatalf("capture took %s", elapsed)
++				}
++				if len(d.started) != 3 {
++					t.Fatalf("started %d collectors, want 3", len(d.started))
++				}
++				select {
++				case name := <-d.finished:
++					if name != blocked {
++						t.Fatal(name)
++					}
++				default:
++					t.Fatal("blocked collector did not acknowledge cancellation")
++				}
++				if d.active.Load() != 0 {
++					t.Fatal("collector still running after capture")
++				}
++				data, err := json.Marshal(artifacts)
++				if err != nil {
++					t.Fatal(err)
++				}
++				var fields map[string]json.RawMessage
++				if err := json.Unmarshal(data, &fields); err != nil {
++					t.Fatal(err)
++				}
++				var notes map[string]string
++				if err := json.Unmarshal(fields["notes"], &notes); err != nil {
++					t.Fatalf("missing timeout notes: %s", data)
++				}
++				if !strings.Contains(notes[blocked], "deadline") {
++					t.Fatalf("missing %s timeout: %v", blocked, notes)
++				}
++				for _, name := range []string{"screenshot", "hierarchy", "logTail"} {
++					if name == blocked {
++						continue
++					}
++					key := map[string]string{"screenshot": "screenshotAfter", "hierarchy": "viewHierarchy", "logTail": "logTail"}[name]
++					var path string
++					if err := json.Unmarshal(fields[key], &path); err != nil {
++						t.Fatalf("lost %s: %s", name, data)
++					}
++					got, err := os.ReadFile(filepath.Join(dir, path))
++					if err != nil || string(got) != name {
++						t.Fatalf("%s bytes: %q, %v", name, got, err)
++					}
++				}
++			}
++			if elapsed := time.Since(began); elapsed > 25*2250*time.Millisecond {
++				t.Fatalf("25 captures took %v", elapsed)
++			}
++			runtime.GC()
++			if after := runtime.NumGoroutine(); after > before+8 {
++				t.Fatalf("goroutines grew %d -> %d", before, after)
++			}
++		})
++	}
++}
++
++func TestNestedFailureUsesCancellableArtifacts(t *testing.T) {
++	d := &blockingFailureArtifacts{mockDriver: &mockDriver{executeFunc: func(flow.Step) *core.CommandResult {
++		return &core.CommandResult{Success: false, Error: errString("nested failure")}
++	}},
++		blocked: "screenshot", started: make(chan string, 3), finished: make(chan string, 1), ready: make(chan struct{})}
++	dir := t.TempDir()
++	runner := New(d, RunnerConfig{OutputDir: dir, Artifacts: ArtifactNever, Device: report.Device{ID: "test", Platform: "android"}})
++	_, err := runner.Run(context.Background(), []flow.Flow{{SourcePath: "nested.yaml", Config: flow.Config{Name: "Nested capture"}, Steps: []flow.Step{
++		&flow.RepeatStep{BaseStep: flow.BaseStep{StepType: flow.StepRepeat}, Times: "1", Steps: []flow.Step{&flow.TapOnStep{BaseStep: flow.BaseStep{StepType: flow.StepTapOn}}}},
++	}}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	if len(d.started) != 3 || d.active.Load() != 0 {
++		t.Fatalf("nested capture: started=%d active=%d", len(d.started), d.active.Load())
++	}
++	detail := readFlowDetail(t, dir)
++	if len(detail.Commands[0].SubCommands) != 1 {
++		t.Fatalf("nested commands: %+v", detail.Commands[0])
++	}
++	artifacts := detail.Commands[0].SubCommands[0].Artifacts
++	if !strings.Contains(artifacts.ViewHierarchy, "nested-000-hierarchy") || !strings.Contains(artifacts.LogTail, "nested-000-log-tail") || !strings.Contains(artifacts.Notes["screenshot"], "deadline") {
++		t.Fatalf("nested artifacts: %+v", artifacts)
++	}
++}
++
++func TestTopLevelFailurePersistsArtifactNotes(t *testing.T) {
++	d := &blockingFailureArtifacts{mockDriver: &mockDriver{executeFunc: func(flow.Step) *core.CommandResult {
++		return &core.CommandResult{Success: false, Error: errString("failed step")}
++	}}, blocked: "hierarchy", started: make(chan string, 3), finished: make(chan string, 1), ready: make(chan struct{})}
++	dir := t.TempDir()
++	runner := New(d, RunnerConfig{OutputDir: dir, Artifacts: ArtifactOnFailure, Device: report.Device{ID: "test", Platform: "android"}})
++	_, err := runner.Run(context.Background(), []flow.Flow{{SourcePath: "failed.yaml", Config: flow.Config{Name: "Failed capture"}, Steps: []flow.Step{
++		&flow.TapOnStep{BaseStep: flow.BaseStep{StepType: flow.StepTapOn}},
++	}}})
++	if err != nil {
++		t.Fatal(err)
++	}
++	artifacts := readFlowDetail(t, dir).Commands[0].Artifacts
++	if artifacts.ScreenshotAfter == "" || artifacts.LogTail == "" || !strings.Contains(artifacts.Notes["hierarchy"], "deadline") {
++		t.Fatalf("top-level artifacts lost: %+v", artifacts)
++	}
++	if d.active.Load() != 0 {
++		t.Fatal("capture still running after failed flow returned")
++	}
++}
+diff --git a/pkg/executor/flow_runner.go b/pkg/executor/flow_runner.go
+index 5ae94f3..7756d0e 100644
+--- a/pkg/executor/flow_runner.go
++++ b/pkg/executor/flow_runner.go
+@@ -701,6 +701,8 @@ func (fr *FlowRunner) executeStep(idx int, step flow.Step) (report.Status, strin
+ 			artifacts.ScreenshotAfter = afterArtifacts.ScreenshotAfter
+ 		}
+ 		artifacts.ViewHierarchy = afterArtifacts.ViewHierarchy
++		artifacts.LogTail = afterArtifacts.LogTail
++		artifacts.Notes = afterArtifacts.Notes
+ 	}
+ 
+ 	// Convert element info
+@@ -1798,18 +1800,21 @@ func (fr *FlowRunner) executeNestedStep(step flow.Step) *core.CommandResult {
+ 	if !result.Success {
+ 		seq := fr.nestedArtifactSeq
+ 		fr.nestedArtifactSeq++
+-		if data, err := fr.driver.Screenshot(); err == nil && len(data) > 0 {
+-			if path, saveErr := fr.flowWriter.SaveNestedScreenshot(seq, data); saveErr == nil {
+-				cmd.Artifacts.ScreenshotAfter = path
++		if capturer, ok := core.Unwrap(fr.driver).(failureArtifactCapturer); ok {
++			cmd.Artifacts = fr.captureFailureArtifacts(seq, "after", capturer, true)
++		} else {
++			if data, err := fr.driver.Screenshot(); err == nil && len(data) > 0 {
++				if path, saveErr := fr.flowWriter.SaveNestedScreenshot(seq, data); saveErr == nil {
++					cmd.Artifacts.ScreenshotAfter = path
++				}
+ 			}
+-		}
+-		if data, err := fr.driver.Hierarchy(); err == nil && len(data) > 0 {
+-			if path, saveErr := fr.flowWriter.SaveNestedHierarchy(seq, data); saveErr == nil {
+-				cmd.Artifacts.ViewHierarchy = path
++			if data, err := fr.driver.Hierarchy(); err == nil && len(data) > 0 {
++				if path, saveErr := fr.flowWriter.SaveNestedHierarchy(seq, data); saveErr == nil {
++					cmd.Artifacts.ViewHierarchy = path
++				}
+ 			}
+ 		}
+ 	}
+-
+ 	fr.subCommands = append(fr.subCommands, cmd)
+ 
+ 	return result
+@@ -1911,6 +1916,13 @@ func (fr *FlowRunner) executeSubFlowWithRetry(subFlow flow.Flow, attempts int) *
+ // passing step under `--artifacts always`, where it would cost extra device
+ // round-trips for a dump nobody reads.
+ func (fr *FlowRunner) captureArtifacts(cmdIdx int, timing string, captureHierarchy bool) report.CommandArtifacts {
++	if captureHierarchy {
++		if capturer, ok := core.Unwrap(fr.driver).(failureArtifactCapturer); ok {
++			return fr.captureFailureArtifacts(cmdIdx, timing, capturer, false)
++		}
++	}
++	// Legacy drivers have no cancellation contract; run synchronously rather
++	// than abandoning a goroutine at a timeout.
+ 	var artifacts report.CommandArtifacts
+ 
+ 	// Capture screenshot
+@@ -1937,6 +1949,87 @@ func (fr *FlowRunner) captureArtifacts(cmdIdx int, timing string, captureHierarc
+ 	return artifacts
+ }
+ 
++// failureArtifactCapturer is internal to the executor; each operation must
++// stop its underlying request/child and return when its context is cancelled.
++// Drivers without this contract retain synchronous capture.
++type failureArtifactCapturer interface {
++	FailureScreenshot(context.Context) ([]byte, error)
++	FailureHierarchy(context.Context) ([]byte, error)
++	FailureLogTail(context.Context) ([]byte, error)
++}
++
++func (fr *FlowRunner) captureFailureArtifacts(cmdIdx int, timing string, capturer failureArtifactCapturer, nested bool) report.CommandArtifacts {
++	parent := fr.ctx
++	if parent == nil {
++		parent = context.Background()
++	}
++	ctx, cancel := context.WithTimeout(parent, 2*time.Second)
++	defer cancel()
++	type result struct {
++		name string
++		data []byte
++		err  error
++	}
++	done := make(chan result, 3)
++	for name, call := range map[string]func(context.Context) ([]byte, error){
++		"screenshot": capturer.FailureScreenshot, "hierarchy": capturer.FailureHierarchy, "logTail": capturer.FailureLogTail,
++	} {
++		go func() {
++			child, stop := context.WithTimeout(ctx, 1500*time.Millisecond)
++			defer stop()
++			started := time.Now()
++			logger.Debug("failure artifact %s started at %s", name, started.Format(time.RFC3339Nano))
++			data, err := call(child)
++			if child.Err() != nil {
++				err = child.Err()
++			}
++			logger.Debug("failure artifact %s finished at %s (%v): %v", name, time.Now().Format(time.RFC3339Nano), time.Since(started), err)
++			done <- result{name, data, err}
++		}()
++	}
++	artifacts := report.CommandArtifacts{}
++	// Drain every result, including cancellation acknowledgements. Never return
++	// leaving a collector running. The internal contract makes these waits bounded.
++	for range 3 {
++		r := <-done
++		if r.err == nil && len(r.data) > 0 {
++			var path string
++			switch r.name {
++			case "screenshot":
++				if nested {
++					path, r.err = fr.flowWriter.SaveNestedScreenshot(cmdIdx, r.data)
++				} else {
++					path, r.err = fr.flowWriter.SaveScreenshot(cmdIdx, timing, r.data)
++				}
++				if timing == "before" {
++					artifacts.ScreenshotBefore = path
++				} else {
++					artifacts.ScreenshotAfter = path
++				}
++			case "hierarchy":
++				if nested {
++					artifacts.ViewHierarchy, r.err = fr.flowWriter.SaveNestedHierarchy(cmdIdx, r.data)
++				} else {
++					artifacts.ViewHierarchy, r.err = fr.flowWriter.SaveViewHierarchy(cmdIdx, r.data)
++				}
++			case "logTail":
++				if nested {
++					artifacts.LogTail, r.err = fr.flowWriter.SaveNestedLogTail(cmdIdx, r.data)
++				} else {
++					artifacts.LogTail, r.err = fr.flowWriter.SaveLogTail(cmdIdx, r.data)
++				}
++			}
++		}
++		if r.err != nil {
++			if artifacts.Notes == nil {
++				artifacts.Notes = make(map[string]string)
++			}
++			artifacts.Notes[r.name] = r.err.Error()
++		}
++	}
++	return artifacts
++}
++
+ // consoleLogReporter is a duck-typed interface drivers can optionally
+ // implement to surface browser console / page error entries into the flow
+ // report. The CDP browser driver implements it (see
+diff --git a/pkg/report/flow.go b/pkg/report/flow.go
+index 68e9c62..d666f46 100644
+--- a/pkg/report/flow.go
++++ b/pkg/report/flow.go
+@@ -388,3 +388,20 @@ func (w *FlowWriter) SkipRemainingCommands(fromIndex int) {
+ 	}
+ 	w.flush()
+ }
++
++// SaveLogTail saves the app-scoped log captured for a failed command.
++func (w *FlowWriter) SaveLogTail(cmdIndex int, data []byte) (string, error) {
++	return w.saveLogTail(fmt.Sprintf("cmd-%03d-log-tail.txt", cmdIndex), data)
++}
++
++// SaveNestedLogTail attaches an app log tail to a failed nested command.
++func (w *FlowWriter) SaveNestedLogTail(seq int, data []byte) (string, error) {
++	return w.saveLogTail(fmt.Sprintf("nested-%03d-log-tail.txt", seq), data)
++}
++
++func (w *FlowWriter) saveLogTail(filename string, data []byte) (string, error) {
++	if err := os.WriteFile(filepath.Join(w.assetsDir, filename), data, 0o644); err != nil {
++		return "", err
++	}
++	return filepath.Join("assets", w.flow.ID, filename), nil
++}
+diff --git a/pkg/report/flow_test.go b/pkg/report/flow_test.go
+index f1e0258..bd47c13 100644
+--- a/pkg/report/flow_test.go
++++ b/pkg/report/flow_test.go
+@@ -1,8 +1,10 @@
+ package report
+ 
+ import (
++	"encoding/json"
+ 	"os"
+ 	"path/filepath"
++	"reflect"
+ 	"testing"
+ 	"time"
+ )
+@@ -548,3 +550,34 @@ func TestFlowWriter_commandSummary(t *testing.T) {
+ 		t.Errorf("Current = %v, want 1", summary.Current)
+ 	}
+ }
++
++func TestFailureArtifactPathsAndNotesRoundTrip(t *testing.T) {
++	input := []byte(`{"screenshotAfter":"assets/flow-000/cmd-000-after.png","viewHierarchy":"assets/flow-000/cmd-000-hierarchy.xml","logTail":"assets/flow-000/cmd-000-log-tail.txt","notes":{"screenshot":"context deadline exceeded"}}`)
++	var artifacts CommandArtifacts
++	if err := json.Unmarshal(input, &artifacts); err != nil {
++		t.Fatal(err)
++	}
++	fw, iw, dir := createTestFlowWriter(t)
++	defer iw.Close()
++	fw.CommandStart(0)
++	fw.CommandEnd(0, StatusFailed, nil, nil, artifacts)
++	data, err := os.ReadFile(filepath.Join(dir, "flows", "flow-000.json"))
++	if err != nil {
++		t.Fatal(err)
++	}
++	var detail struct {
++		Commands []struct {
++			Artifacts map[string]interface{} `json:"artifacts"`
++		} `json:"commands"`
++	}
++	if err := json.Unmarshal(data, &detail); err != nil {
++		t.Fatal(err)
++	}
++	var want map[string]interface{}
++	if err := json.Unmarshal(input, &want); err != nil {
++		t.Fatal(err)
++	}
++	if !reflect.DeepEqual(detail.Commands[0].Artifacts, want) {
++		t.Fatalf("artifact fields lost: got %v want %v", detail.Commands[0].Artifacts, want)
++	}
++}
+diff --git a/pkg/report/types.go b/pkg/report/types.go
+index 8611222..102c30c 100644
+--- a/pkg/report/types.go
++++ b/pkg/report/types.go
+@@ -283,9 +283,11 @@ type VideoTimestamp struct {
+ 
+ // CommandArtifacts contains command-level artifact paths.
+ type CommandArtifacts struct {
+-	ScreenshotBefore string `json:"screenshotBefore,omitempty"`
+-	ScreenshotAfter  string `json:"screenshotAfter,omitempty"`
+-	ViewHierarchy    string `json:"viewHierarchy,omitempty"`
++	ScreenshotBefore string            `json:"screenshotBefore,omitempty"`
++	ScreenshotAfter  string            `json:"screenshotAfter,omitempty"`
++	ViewHierarchy    string            `json:"viewHierarchy,omitempty"`
++	LogTail          string            `json:"logTail,omitempty"`
++	Notes            map[string]string `json:"notes,omitempty"`
+ }
+ 
+ // ============================================================================
+diff --git a/pkg/uiautomator2/context_requests_test.go b/pkg/uiautomator2/context_requests_test.go
+index 66f911e..354313d 100644
+--- a/pkg/uiautomator2/context_requests_test.go
++++ b/pkg/uiautomator2/context_requests_test.go
+@@ -62,3 +62,44 @@ func TestClearRequestContextRemovesStepContext(t *testing.T) {
+ 		t.Fatal("step context still set after ClearRequestContext")
+ 	}
+ }
++
++func TestScreenshotContextCancelsUnderlyingRequest(t *testing.T) {
++	started := make(chan struct{})
++	finished := make(chan struct{})
++	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
++		close(started)
++		<-r.Context().Done()
++		close(finished)
++	}))
++	defer srv.Close()
++	client := deadlineClient(srv)
++	capture, ok := interface{}(client).(interface {
++		ScreenshotCtx(context.Context) ([]byte, error)
++	})
++	if !ok {
++		t.Fatal("client lacks cancellable screenshot")
++	}
++	ctx, cancel := context.WithCancel(context.Background())
++	defer cancel()
++	done := make(chan error, 1)
++	go func() { _, err := capture.ScreenshotCtx(ctx); done <- err }()
++	select {
++	case <-started:
++	case <-time.After(time.Second):
++		t.Fatal("request did not start")
++	}
++	cancel()
++	select {
++	case err := <-done:
++		if err == nil {
++			t.Fatal("cancelled request succeeded")
++		}
++	case <-time.After(time.Second):
++		t.Fatal("request did not return")
++	}
++	select {
++	case <-finished:
++	case <-time.After(time.Second):
++		t.Fatal("underlying HTTP request still running")
++	}
++}
+diff --git a/pkg/uiautomator2/device.go b/pkg/uiautomator2/device.go
+index c54bd66..013e9d6 100644
+--- a/pkg/uiautomator2/device.go
++++ b/pkg/uiautomator2/device.go
+@@ -149,7 +149,12 @@ func (c *Client) GetBatteryInfo() (*BatteryInfo, error) {
+ 
+ // Screenshot captures the screen and returns PNG bytes.
+ func (c *Client) Screenshot() ([]byte, error) {
+-	data, err := c.request("GET", c.sessionPath("/screenshot"), nil)
++	return c.ScreenshotCtx(c.stepContext())
++}
++
++// ScreenshotCtx aborts the screenshot HTTP request when ctx is cancelled.
++func (c *Client) ScreenshotCtx(ctx context.Context) ([]byte, error) {
++	data, err := c.requestContext(ctx, "GET", c.sessionPath("/screenshot"), nil)
+ 	if err != nil {
+ 		return nil, err
+ 	}
+diff --git a/pkg/uiautomator2/transport.go b/pkg/uiautomator2/transport.go
+index 0c911f8..d293914 100644
+--- a/pkg/uiautomator2/transport.go
++++ b/pkg/uiautomator2/transport.go
+@@ -75,6 +75,17 @@ func (e *RequestTimeoutError) Error() string {
+ // Unwrap lets errors.Is(err, context.DeadlineExceeded) match.
+ func (e *RequestTimeoutError) Unwrap() error { return context.DeadlineExceeded }
+ 
++// FailureCaptureContext marks a best-effort post-mortem request. Unlike an
++// ordinary step's soft deadline, its deadline must abort the HTTP request.
++// It also skips recovery hooks, which have no cancellation contract.
++func FailureCaptureContext(ctx context.Context) context.Context {
++	return context.WithValue(ctx, failureCaptureKey{}, true)
++}
++
++type failureCaptureKey struct{}
++
++func isFailureCapture(ctx context.Context) bool { return ctx.Value(failureCaptureKey{}) == true }
++
+ // requestDeadline derives the context one request is sent under from parent:
+ // it is cancelled when parent is cancelled, and times out at parent's
+ // deadline or after the client's request timeout, whichever is later. A step
+@@ -89,6 +100,13 @@ func (c *Client) requestDeadline(parent context.Context) (context.Context, time.
+ 			timeout = left
+ 		}
+ 	}
++	if isFailureCapture(parent) {
++		ctx, cancel := context.WithTimeout(parent, timeout)
++		if deadline, ok := ctx.Deadline(); ok {
++			timeout = max(time.Until(deadline), 0)
++		}
++		return ctx, timeout, cancel
++	}
+ 	ctx, cancel := context.WithTimeout(context.WithoutCancel(parent), timeout)
+ 	stop := context.AfterFunc(parent, func() {
+ 		if errors.Is(parent.Err(), context.Canceled) {
+@@ -217,7 +235,7 @@ func (c *Client) doWithRetry(parent context.Context, method, path string, body [
+ 		if body != nil {
+ 			reader = strings.NewReader(string(body))
+ 		}
+-		if err := parent.Err(); errors.Is(err, context.Canceled) {
++		if err := parent.Err(); err != nil && (isFailureCapture(parent) || errors.Is(err, context.Canceled)) {
+ 			return 0, nil, fmt.Errorf("send request: %w", err)
+ 		}
+ 		ctx, timeout, cancel := c.requestDeadline(parent)
+@@ -241,7 +259,7 @@ func (c *Client) doWithRetry(parent context.Context, method, path string, body [
+ 		// Retry only mid-session: before a session exists the caller has
+ 		// its own startup wait, and ending a session on a dead server
+ 		// should not stall teardown.
+-		retrying := budget > 0 && c.sessionID != "" && method != http.MethodDelete
++		retrying := budget > 0 && c.sessionID != "" && method != http.MethodDelete && !isFailureCapture(parent)
+ 		if !lost || !retrying {
+ 			return 0, nil, fmt.Errorf("%s: %w", stage, err)
+ 		}

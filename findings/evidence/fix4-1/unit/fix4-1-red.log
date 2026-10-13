@@ -1,0 +1,44 @@
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,1200) → (540,240)
+[swipe] Using screen coords: (540,480) → (540,2160)
+[swipe] Using screen coords: (972,1200) → (108,1200)
+[swipe] Using screen coords: (108,1200) → (972,1200)
+[swipe] Using screen coords: (540,1200) → (540,240)
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,960) → (540,192)
+[swipe] Using screen coords: (540,960) → (540,192)
+--- FAIL: TestLaunchFinalFatalDecision (0.07s)
+    --- FAIL: TestLaunchFinalFatalDecision/before-return (0.02s)
+        launch_crash_after_draw_test.go:491: matching fatal before success: success=true error=<nil> message=Launched app: com.example.app
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/driver/uiautomator2	205.837s
+[1/6] fa (flow.yaml) - [36m⚡ Started[0m on 
+[2/6] fb (flow.yaml) - [36m⚡ Started[0m on 
+[1/6] fa (flow.yaml) - [32m✓ Passed[0m on  (0ms)
+[3/6] fc (flow.yaml) - [36m⚡ Started[0m on 
+[2/6] fb (flow.yaml) - [32m✓ Passed[0m on  (2ms)
+[4/6] fd (flow.yaml) - [36m⚡ Started[0m on 
+[3/6] fc (flow.yaml) - [32m✓ Passed[0m on  (1ms)
+[5/6] fe (flow.yaml) - [36m⚡ Started[0m on 
+[4/6] fd (flow.yaml) - [32m✓ Passed[0m on  (2ms)
+[6/6] ff (flow.yaml) - [36m⚡ Started[0m on 
+[5/6] fe (flow.yaml) - [32m✓ Passed[0m on  (1ms)
+[6/6] ff (flow.yaml) - [32m✓ Passed[0m on  (1ms)
+--- FAIL: TestFailureArtifactsConcurrentCancellation (0.00s)
+    --- FAIL: TestFailureArtifactsConcurrentCancellation/screenshot (0.00s)
+        duration_consistency_test.go:230: started 0 collectors, want 3
+    --- FAIL: TestFailureArtifactsConcurrentCancellation/hierarchy (0.00s)
+        duration_consistency_test.go:230: started 0 collectors, want 3
+    --- FAIL: TestFailureArtifactsConcurrentCancellation/logTail (0.00s)
+        duration_consistency_test.go:230: started 0 collectors, want 3
+[1/3] Flow 1 (flow.yaml) - [36m⚡ Started[0m on 
+[1/3] Flow 1 (flow.yaml) - [31m✗ Failed[0m on  (0ms)
+  Error: boom
+[1/2] Flow A (flow_a.yaml) - [36m⚡ Started[0m on  (session: session-B)
+[2/2] Flow B (flow_b.yaml) - [36m⚡ Started[0m on  (session: session-A)
+[1/2] Flow A (flow_a.yaml) - [32m✓ Passed[0m on  (session: session-B) (1ms)
+[2/2] Flow B (flow_b.yaml) - [32m✓ Passed[0m on  (session: session-A) (1ms)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/executor	6.468s
+ok  	github.com/devicelab-dev/maestro-runner/pkg/report	(cached)
+FAIL

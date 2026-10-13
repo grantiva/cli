@@ -1,0 +1,116 @@
+{
+  "id": "flow-000",
+  "name": "99-crash",
+  "sourceFile": "/private/tmp/grantiva-fix4-1.6ddirwah/flows/99-crash.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T06:20:05.152895-07:00",
+  "endTime": "2026-10-13T06:20:25.298813-07:00",
+  "duration": 20145,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T06:20:05.156094-07:00",
+      "endTime": "2026-10-13T06:20:06.605094-07:00",
+      "duration": 1449,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T06:20:06.606773-07:00",
+      "endTime": "2026-10-13T06:20:07.440773-07:00",
+      "duration": 834,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0016-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T06:20:07.441911-07:00",
+      "endTime": "2026-10-13T06:20:08.005911-07:00",
+      "duration": 564,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0016-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"This never appears\"",
+      "status": "failed",
+      "startTime": "2026-10-13T06:20:08.006981-07:00",
+      "endTime": "2026-10-13T06:20:25.152981-07:00",
+      "duration": 17146,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "This never appears"
+        }
+      },
+      "error": {
+        "type": "assertion",
+        "message": "Element not visible: text='This never appears' (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Sierra Nevada, CA\", \"Battery charging, 100 percent.\", \"Featured\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-003-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-003-log-tail.txt"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 4998,
+    "p50": 834,
+    "p95": 17146,
+    "max": 17146,
+    "slowestType": "assertVisible"
+  },
+  "artifacts": {}
+}

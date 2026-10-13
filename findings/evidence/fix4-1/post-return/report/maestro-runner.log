@@ -1,0 +1,42 @@
+06:23:57.404936 [INFO] === Test execution started ===
+06:23:57.405008 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report
+06:23:57.405013 [INFO] Platform: android
+06:23:57.405017 [INFO] Driver: uiautomator2
+06:23:57.406850 [INFO] Validated 1 flow(s)
+06:23:57.406889 [INFO] Single device execution mode
+06:23:57.406892 [INFO] Starting flow execution (parallel: false, devices: [])
+06:23:57.406896 [INFO] Creating driver for single device execution
+06:23:57.406901 [INFO] Connecting to Android device: emulator-5580
+06:23:57.487041 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5580, Emulator: true
+06:23:57.508924 [INFO] Starting UIAutomator2 server on device emulator-5580
+06:23:57.922647 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5580.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5580.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5580.sock' not found
+06:23:57.943015 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+06:23:58.506921 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+06:23:58.514663 [INFO] Session created successfully: 2c188f4c-2a93-4661-a933-f0de8a24eda1
+06:23:58.557957 [INFO] Driver created: android on google sdk_gphone64_arm64
+06:23:58.561697 [INFO] === Starting flow: post-return ===
+06:23:58.561702 [INFO] Flow file: /private/tmp/grantiva-fix4-1.6ddirwah/flows/post-return.yaml
+06:23:58.561705 [INFO] Total steps: 2
+06:23:58.567069 [DEBUG] Executing step 0: launchApp
+06:23:58.687571 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+06:23:58.687615 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 22ms
+06:23:59.990144 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.251s after launch, pids [7926], drawn=true crashed=false (read 34ms)
+06:24:00.012873 [DEBUG] Step 0 completed successfully (1445ms): launchApp
+06:24:00.013304 [DEBUG] Executing step 1: extendedWaitUntil: visible text="This never appears"
+06:24:00.307675 [DEBUG] crash check of com.kylebrowning.landmarks: crashed=true (took 41ms)
+06:24:00.307722 [DEBUG] crash check during a lookup in flight for 294ms: crashed=true (took 42ms)
+06:24:00.307795 [ERROR] Step 1 failed (294ms): extendedWaitUntil: visible text="This never appears" - Error: app crashed after launch: android.app.RemoteServiceException$CrashedByAdbException: shell-induced crash (cause: app crashed after launch)
+06:24:00.307842 [DEBUG] failure artifact logTail started at 2026-10-13T06:24:00.307841-07:00
+06:24:00.307868 [DEBUG] failure artifact screenshot started at 2026-10-13T06:24:00.307864-07:00
+06:24:00.307887 [DEBUG] failure artifact hierarchy started at 2026-10-13T06:24:00.30788-07:00
+06:24:00.338308 [DEBUG] failure artifact logTail finished at 2026-10-13T06:24:00.338299-07:00 (30.461667ms): <nil>
+06:24:00.596909 [DEBUG] failure artifact hierarchy finished at 2026-10-13T06:24:00.596905-07:00 (289.025875ms): <nil>
+06:24:00.807732 [DEBUG] failure artifact screenshot finished at 2026-10-13T06:24:00.80773-07:00 (499.866ms): <nil>
+06:24:00.810914 [INFO] === Flow completed: post-return (status: failed, duration: 2246ms, passed: 1, failed: 1, skipped: 0) ===
+06:24:01.209225 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5580.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5580.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5580.sock' not found
+06:24:01.224120 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+06:24:01.224158 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+06:24:01.224447 [INFO] Generating reports...
+06:24:01.225846 [INFO] Shutting down devices started by maestro-runner...
+06:24:01.225861 [INFO] Shutting down all tracked emulators
+06:24:01.225868 [INFO] Shutting down all tracked simulators

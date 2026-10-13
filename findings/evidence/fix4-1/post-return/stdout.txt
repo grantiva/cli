@@ -1,0 +1,59 @@
+
+  grantiva-runner 1.1.0 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5580...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5580.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] post-return (post-return.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ extendedWaitUntil: visible text="This never appears" (294ms)
+      ╰─ app crashed after launch: android.app.RemoteServiceException$CrashedByAdbException: shell-induced crash (cause: app crashed after launch)
+✗ post-return 2.2s
+
+  [1/1] post-return (/private/tmp/grantiva-fix4-1.6ddirwah/flows/post-return.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ extendedWaitUntil: visible text="This never appears" (294ms)
+      ╰─ app crashed after launch: android.app.RemoteServiceException$CrashedByAdbException: shell-induced crash (cause: app crashed after launch)
+✗ post-return 2.2s
+
+  1 steps passing (2.2s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  post-return                    ✗ FAIL       2      1      1      0       2.2s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0       2.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/fix4-1/post-return/report/allure-results
+
+  Built by Grantiva
+

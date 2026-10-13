@@ -1,0 +1,116 @@
+Building for debugging...
+[Computing dependencies]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[9 / 13] GrantivaAPI
+[12 / 16] GrantivaCore
+[15 / 18] GrantivaAPI
+[16 / 18] GrantivaAPITests-product
+[19 / 20] GrantivaAPITests-product
+[21 / 21] GrantivaAPITests-product
+[22 / 26] GrantivaMCP
+[24 / 28] GrantivaCLI
+[25 / 29] GrantivaCLI
+[33 / 37] GrantivaCLI
+[36 / 39] GrantivaCLITests-product
+[38 / 39] GrantivaCLITests-product
+[39 / 43] GrantivaCLITests-product
+[43 / 43] GrantivaCLITests-product
+[44 / 48] GrantivaCoreTests-product
+[46 / 50] GrantivaCoreTests-product
+[52 / 54] GrantivaCoreTests-product
+[54 / 54] GrantivaCoreTests-product
+[55 / 57] GrantivaMCPTests-product
+[58 / 59] GrantivaMCPTests-product
+[60 / 60] GrantivaMCPTests-product
+[62 / 66] grantiva-product
+[65 / 66] grantiva-product
+Build complete! (9.00 sec)
+Test Suite 'Selected tests' started at 2026-10-13 06:29:09.309.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 06:29:09.310.
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 06:29:09.310.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:29:09.310.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:29:09.366.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 06:29:09.367.
+Test Suite 'LogStreamerTests' started at 2026-10-13 06:29:09.367.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testARestartedStreamIsStillCoveredByTheTerminationCleanup]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testARestartedStreamIsStillCoveredByTheTerminationCleanup]' passed (0.025 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderBuffersFragmentedLineAndNewline]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderBuffersFragmentedLineAndNewline]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderEmitsWholeAndMultipleLines]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderEmitsWholeAndMultipleLines]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderFlushesResidualLineOnlyOnce]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderFlushesResidualLineOnlyOnce]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderPreservesUTF8ScalarSplitAcrossChunks]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderPreservesUTF8ScalarSplitAcrossChunks]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderStripsCarriageReturnFromCRLF]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testDecoderStripsCarriageReturnFromCRLF]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testFailedChildInventoryIsReportedAsIncompleteCleanup]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testFailedChildInventoryIsReportedAsIncompleteCleanup]' passed (0.013 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testIndependentDecodersDoNotCombinePipeFragments]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testIndependentDecodersDoNotCombinePipeFragments]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testInitialSignalRevalidatesTheExactMarker]' started.
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/LogStreamerTests.swift:43: error: -[GrantivaCoreTests.LogStreamerTests testInitialSignalRevalidatesTheExactMarker] : XCTAssertEqual failed: ("[500]") is not equal to ("[]") - ownership must be revalidated before the first signal
+Test Case '-[GrantivaCoreTests.LogStreamerTests testInitialSignalRevalidatesTheExactMarker]' failed (0.189 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testOwnedLogMatchingRequiresExecutableAndThisRunMarker]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testOwnedLogMatchingRequiresExecutableAndThisRunMarker]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testPIDReusedAfterInventoryNeverReceivesTheInitialSignal]' started.
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/LogStreamerTests.swift:25: error: -[GrantivaCoreTests.LogStreamerTests testPIDReusedAfterInventoryNeverReceivesTheInitialSignal] : XCTAssertEqual failed: ("[500]") is not equal to ("[]") - the replacement PID was never owned by this run
+Test Case '-[GrantivaCoreTests.LogStreamerTests testPIDReusedAfterInventoryNeverReceivesTheInitialSignal]' failed (0.015 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStalledInventoryIsBoundedAndItsExactChildIsReaped]' started.
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/LogStreamerTests.swift:49: error: -[GrantivaCoreTests.LogStreamerTests testStalledInventoryIsBoundedAndItsExactChildIsReaped] : XCTAssertThrowsError failed: did not throw an error
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-lifecycle-output/Tests/GrantivaCoreTests/LogStreamerTests.swift:53: error: -[GrantivaCoreTests.LogStreamerTests testStalledInventoryIsBoundedAndItsExactChildIsReaped] : XCTAssertLessThan failed: ("0.5777629613876343") is not less than ("0.3")
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStalledInventoryIsBoundedAndItsExactChildIsReaped]' failed (0.578 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStartAndStopAreLoggedWithTheCommandLine]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStartAndStopAreLoggedWithTheCommandLine]' passed (0.014 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStartWithExplicitExecutableStreamsItsOutputWithThePrefix]' started.
+[log] hello from a fake log
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStartWithExplicitExecutableStreamsItsOutputWithThePrefix]' passed (0.211 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStopWaitsForTheOwnedLogChildAfterTheWrapperHasExited]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testStopWaitsForTheOwnedLogChildAfterTheWrapperHasExited]' passed (0.218 seconds).
+Test Case '-[GrantivaCoreTests.LogStreamerTests testTerminationCleanupsKillARunningLogStream]' started.
+Test Case '-[GrantivaCoreTests.LogStreamerTests testTerminationCleanupsKillARunningLogStream]' passed (0.017 seconds).
+Test Suite 'LogStreamerTests' failed at 2026-10-13 06:29:10.650.
+	 Executed 16 tests, with 4 failures (0 unexpected) in 1.281 (1.283) seconds
+Test Suite 'GrantivaCoreTests.xctest' failed at 2026-10-13 06:29:10.650.
+	 Executed 16 tests, with 4 failures (0 unexpected) in 1.281 (1.283) seconds
+Test Suite 'Selected tests' failed at 2026-10-13 06:29:10.650.
+	 Executed 16 tests, with 4 failures (0 unexpected) in 1.281 (1.283) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:29:10.737.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 06:29:10.738.
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 06:29:10.738.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:29:10.738.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:29:10.813.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 06:29:10.814.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 06:29:10.814.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:29:10.814.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Note: Some test targets reported failures:
+  - GrantivaCoreTests (XCTest)

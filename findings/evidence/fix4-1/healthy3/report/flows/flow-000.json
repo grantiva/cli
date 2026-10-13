@@ -1,0 +1,91 @@
+{
+  "id": "flow-000",
+  "name": "healthy",
+  "sourceFile": "/private/tmp/grantiva-fix4-1.6ddirwah/flows/healthy.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T06:19:45.56911-07:00",
+  "endTime": "2026-10-13T06:19:48.281781-07:00",
+  "duration": 2712,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T06:19:45.574031-07:00",
+      "endTime": "2026-10-13T06:19:47.100031-07:00",
+      "duration": 1526,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "passed",
+      "startTime": "2026-10-13T06:19:47.100817-07:00",
+      "endTime": "2026-10-13T06:19:47.703817-07:00",
+      "duration": 603,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-000a-0000-002f00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Featured\"",
+      "status": "passed",
+      "startTime": "2026-10-13T06:19:47.704878-07:00",
+      "endTime": "2026-10-13T06:19:48.280878-07:00",
+      "duration": 576,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Featured"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-000a-0000-003900000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 901,
+    "p50": 603,
+    "p95": 1526,
+    "max": 1526,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
