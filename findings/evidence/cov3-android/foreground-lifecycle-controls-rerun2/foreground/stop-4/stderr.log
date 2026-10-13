@@ -1,0 +1,69 @@
+Starting runner...
+  Application ID: com.kylebrowning.landmarks
+  Device: cov3-android (emulator-5554)
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: reports/2026-10-13_00-17-06
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] session-flow (session-flow.yaml)
+────────────────────────────────────────────────────────────
+
+Received interrupt, cleaning up...
+    ✓ launchApp (1.4s)
+    ✗ waitForAnimationToEnd (56ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session//screenshot": EOF (cause: send request: Get "http://localhost/session//screenshot": EOF)
+✗ session-flow 1.6s
+
+  [1/1] session-flow (/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-session/session-flow.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.4s)
+    ✗ waitForAnimationToEnd (56ms)
+      ╰─ Failed to take screenshot: send request: Get "http://localhost/session//screenshot": EOF (cause: send request: Get "http://localhost/session//screenshot": EOF)
+✗ session-flow 1.6s
+
+  1 steps passing (1.6s)
+  1 steps failing
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  session-flow                   ✗ FAIL       2      1      1      0       1.6s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       2      1      1      0       1.6s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: reports/2026-10-13_00-17-06
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   reports/2026-10-13_00-17-06/report.json
+    JUnit:  reports/2026-10-13_00-17-06/junit-report.xml
+    Allure: reports/2026-10-13_00-17-06/allure-results
+
+  Built by Grantiva
+
+
+  UIAutomator2 keep-alive: session=50666-1791875829294389000
+  /tmp/grantiva-sessions/50666-1791875829294389000.grantiva
+    Press Ctrl-C to release.
+Runner stopped (pid 50666); the session has ended.
