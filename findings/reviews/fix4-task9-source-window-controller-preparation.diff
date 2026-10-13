@@ -1,0 +1,437 @@
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
+new file mode 100755
+index 00000000..e7b1ca8e
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window.py
+@@ -0,0 +1,323 @@
++#!/usr/bin/env python3
++"""Gated Task 9 source-window evidence collector (preparation artifact).
++
++This file is intentionally inert unless invoked with complete, hash-bound gate
++records.  It never operates devices and treats AND-111 as an external join.
++"""
++from __future__ import annotations
++
++import argparse
++import hashlib
++import json
++import os
++import signal
++import subprocess
++import time
++from pathlib import Path
++
++CLI_SHA = "6ba12ed37658228a3ce87cb64e1f5d88dda38e07"
++RUNNER_SHA = "ba9008f4b2cd2c7320a9c46e04faed612b0958a2"
++DEMO_SHA = "84af7581b75134b0e417b254e4317d565f7b73c6"
++BOUND_TASK8_CANDIDATE_SHA = "e9cfc7dce72ba8125b7c55df8d3dec355925003de24a4131c6510b9e67c51ebf"
++INVENTORY_SHA = "15437fda241ded594234cb4c59c0378eb50a595222945a6bc13d8d006894fc5b"
++PACKAGE_MARKER = "<literal packages frozen from go-inventory, one argv each>"
++
++
++def require(value: object, message: str) -> None:
++    if not value:
++        raise RuntimeError(message)
++
++
++def sha256(path: Path) -> str:
++    return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def load(path: Path) -> dict:
++    require(path.is_file(), f"missing JSON: {path}")
++    value = json.loads(path.read_text())
++    require(isinstance(value, dict), f"JSON object required: {path}")
++    return value
++
++
++def write_new(path: Path, data: bytes) -> None:
++    path.parent.mkdir(parents=True, exist_ok=True)
++    with path.open("xb") as stream:
++        stream.write(data)
++
++
++def save_new(path: Path, value: object) -> None:
++    write_new(path, (json.dumps(value, indent=2, sort_keys=True) + "\n").encode())
++
++
++def checked_ref(record: dict, key: str, schema: str | None = None) -> tuple[Path, dict]:
++    ref = record.get(key, {})
++    path = Path(ref.get("path", "")).resolve()
++    require(path.is_file() and ref.get("sha256") == sha256(path), f"{key} hash mismatch")
++    doc = load(path)
++    if schema:
++        require(doc.get("schema") == schema, f"{key} schema mismatch")
++    return path, doc
++
++
++def git(repo: Path, *args: str) -> bytes:
++    return subprocess.run(["git", "-C", str(repo), *args], check=True, capture_output=True).stdout
++
++
++def repo_proof(repo: Path, expected_head: str) -> dict:
++    real = repo.resolve(strict=True)
++    head = git(real, "rev-parse", "HEAD").decode().strip()
++    status = git(real, "status", "--porcelain=v1", "--untracked-files=all")
++    require(head == expected_head, f"HEAD mismatch for {real}")
++    require(status == b"", f"dirty source checkout: {real}")
++    names = git(real, "ls-files", "-z").split(b"\0")
++    digest = hashlib.sha256()
++    count = 0
++    for raw in names:
++        if not raw:
++            continue
++        rel = os.fsdecode(raw)
++        path = real / rel
++        require(path.is_file() and path.resolve().is_relative_to(real), f"invalid tracked file: {rel}")
++        digest.update(raw + b"\0" + hashlib.sha256(path.read_bytes()).digest())
++        count += 1
++    return {"realpath": str(real), "head": head, "status": "", "trackedFileCount": count,
++            "trackedTreeSHA256": digest.hexdigest()}
++
++
++def candidate_sources(candidate: dict) -> dict[str, tuple[Path, str]]:
++    require(candidate.get("schema") == "grantiva.task9.candidate.v1", "Task 9 candidate schema mismatch")
++    require(candidate.get("task8CandidateManifestSHA256") == BOUND_TASK8_CANDIDATE_SHA,
++            "candidate is not bound to the reviewed Task 8 candidate")
++    cli, runner, demo = candidate.get("cli", {}), candidate.get("runner", {}), candidate.get("demo", {})
++    cli_head = cli.get("sourceSHA", cli.get("mergedSHA"))
++    require(cli_head == CLI_SHA and runner.get("sourceSHA") == RUNNER_SHA and demo.get("sourceSHA") == DEMO_SHA,
++            "frozen source identity mismatch")
++    return {"cliRepo": (Path(cli["repoPath"]), CLI_SHA), "runnerRepo": (Path(runner["repoPath"]), RUNNER_SHA),
++            "demoRepo": (Path(demo["repoPath"]), DEMO_SHA)}
++
++
++def validate_gate(candidate_path: Path, candidate: dict, gate_path: Path, provision_path: Path,
++                  shutdown_path: Path) -> dict:
++    candidate_hash = sha256(candidate_path)
++    gate = load(gate_path)
++    require(gate.get("schema") == "grantiva.task8.zero-gate.v1" and gate.get("passed") is True,
++            "Task 8 zero gate is not passing")
++    require(gate.get("candidateManifestSHA256") == candidate_hash, "zero gate candidate mismatch")
++    checked_ref(gate, "review")
++    _, cleanup = checked_ref(gate, "cleanup")
++    require(cleanup.get("passed") is True, "zero-gate cleanup is not passing")
++    provision = load(provision_path)
++    require(provision.get("schema") == "grantiva.task9.primary-provision.v1" and provision.get("passed") is True,
++            "primary provision is not accepted")
++    require(provision.get("candidateManifestSHA256") == candidate_hash, "provision candidate mismatch")
++    shutdown = load(shutdown_path)
++    require(shutdown.get("schema") == "grantiva.task9.android-shutdown-transition.v1" and shutdown.get("passed") is True,
++            "Android shutdown transition is not accepted")
++    require(shutdown.get("candidateManifestSHA256") == candidate_hash and shutdown.get("state") == "created-shutdown",
++            "shutdown transition binding/state mismatch")
++    require(shutdown.get("primaryProvisionSHA256") == sha256(provision_path),
++            "shutdown transition provision mismatch")
++    ownership = Path(shutdown.get("ownership", {}).get("path", "")).resolve()
++    require(ownership.is_file() and shutdown["ownership"].get("sha256") == sha256(ownership),
++            "shutdown ownership hash mismatch")
++    return {"candidateManifestSHA256": candidate_hash, "gateSHA256": sha256(gate_path),
++            "provisionSHA256": sha256(provision_path), "shutdownSHA256": sha256(shutdown_path)}
++
++
++def run_bounded(argv: list[str], cwd: Path, env: dict[str, str], timeout: float, destination: Path) -> dict:
++    require(timeout > 0, "positive command timeout required")
++    for name in ("stdout.bin", "stderr.bin", "result.json"):
++        require(not (destination / name).exists(), f"command evidence already exists: {destination / name}")
++    started = time.time()
++    proc = subprocess.Popen(argv, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++                            start_new_session=True)
++    timed_out = False
++    try:
++        stdout, stderr = proc.communicate(timeout=timeout)
++    except subprocess.TimeoutExpired:
++        timed_out = True
++        os.killpg(proc.pid, signal.SIGKILL)
++        stdout, stderr = proc.communicate()
++    ended = time.time()
++    write_new(destination / "stdout.bin", stdout)
++    write_new(destination / "stderr.bin", stderr)
++    result = {"startedEpoch": started, "endedEpoch": ended, "timeoutSeconds": timeout,
++              "timedOut": timed_out, "exit": None if timed_out else proc.returncode,
++              "stdout": {"path": "stdout.bin", "sha256": sha256(destination / "stdout.bin"), "bytes": len(stdout)},
++              "stderr": {"path": "stderr.bin", "sha256": sha256(destination / "stderr.bin"), "bytes": len(stderr)}}
++    save_new(destination / "result.json", result)
++    return result
++
++
++def package_artifact(path: Path, inventory_result: Path, runner_repo: Path) -> list[str]:
++    doc = load(path)
++    require(doc.get("schema") == "grantiva.task9.go-packages.v1" and doc.get("approved") is True,
++            "reviewed Go package artifact required")
++    require(doc.get("inventoryResultSHA256") == sha256(inventory_result), "Go inventory result binding mismatch")
++    _, review = checked_ref(doc, "review")
++    require(review.get("approved") is True, "Go package review is not approved")
++    _, proposal = checked_ref(doc, "inventoryProposal", "grantiva.task9.go-packages.proposal.v1")
++    require(proposal.get("approved") is False, "inventory proposal must remain unapproved source evidence")
++    module_line = (runner_repo / "go.mod").read_text().splitlines()[0].split()
++    require(len(module_line) == 2 and module_line[0] == "module", "go.mod module line missing")
++    module = module_line[1]
++    packages = doc.get("packages")
++    require(isinstance(packages, list) and packages and all(isinstance(p, str) and p for p in packages),
++            "nonempty literal Go package list required")
++    require(len(packages) == len(set(packages)), "duplicate Go package")
++    require(all(p == module or p.startswith(module + "/") for p in packages), "package outside frozen module")
++    require(all("..." not in p and p != PACKAGE_MARKER for p in packages), "recursive/placeholder package prohibited")
++    require(packages == proposal.get("packages"), "approved packages differ from parsed inventory proposal")
++    return packages
++
++
++def freeze_inventory_proposal(stdout_path: Path, runner_repo: Path, destination: Path) -> list[str]:
++    raw = stdout_path.read_bytes()
++    require(raw and raw.endswith(b"\n"), "Go inventory must be nonempty complete lines")
++    packages = [line.decode() for line in raw.splitlines()]
++    require(packages and all(p and p.strip() == p for p in packages), "invalid Go package line")
++    require(len(packages) == len(set(packages)), "duplicate Go package")
++    module_line = (runner_repo / "go.mod").read_text().splitlines()[0].split()
++    require(len(module_line) == 2 and module_line[0] == "module", "go.mod module line missing")
++    module = module_line[1]
++    require(all(p == module or p.startswith(module + "/") for p in packages), "package outside frozen module")
++    require(all("..." not in p for p in packages), "recursive package returned")
++    save_new(destination, {"schema": "grantiva.task9.go-packages.proposal.v1", "approved": False,
++                           "inventoryStdoutSHA256": sha256(stdout_path), "module": module,
++                           "packages": packages,
++                           "nextStep": "independent review must create grantiva.task9.go-packages.v1"})
++    return packages
++
++
++def command_argv(command_id: str, spec: dict, output: Path, packages: list[str] | None) -> tuple[list[list[str]], str]:
++    argv = list(spec["argv"])
++    if command_id in ("go-full", "go-vet"):
++        require(argv[-1] == PACKAGE_MARKER and packages, "reviewed literal package expansion missing")
++        argv = argv[:-1] + packages
++    elif command_id == "go-l53-scratch-build":
++        binary = output / "l53-runner-home" / "bin" / "grantiva-runner"
++        argv[3] = str(binary)
++        followup = list(spec["followup"])
++        followup[0] = str(binary)
++        return [argv, followup], spec["cwd"]
++    require((command_id == "go-inventory" or "./..." not in argv) and PACKAGE_MARKER not in argv,
++            "recursive or unresolved argv prohibited")
++    return [argv], spec["cwd"]
++
++
++def evidence_files(root: Path) -> list[dict]:
++    return [{"path": str(path.relative_to(root)), "sha256": sha256(path), "bytes": path.stat().st_size}
++            for path in sorted(root.rglob("*")) if path.is_file() and path.name != "source-window-manifest.json"]
++
++
++def inventory_rows(inventory: dict, completed: dict, external_join: Path | None) -> dict:
++    result = {}
++    for row, mapping in inventory["rows"].items():
++        commands = mapping.get("commands", [])
++        result[row] = {"commandEvidence": [completed[x] for x in commands if x in completed],
++                       "missingCommands": [x for x in commands if x not in completed],
++                       "inspection": mapping.get("inspection", []),
++                       "pendingClauses": mapping.get("separateEvidence", []),
++                       "provenanceJoinPending": bool(mapping.get("provenanceJoin")),
++                       "satisfiedHere": False}
++    if external_join:
++        result["AND-111"]["externalJoin"] = {"path": str(external_join.resolve()), "sha256": sha256(external_join)}
++    return result
++
++
++def main() -> None:
++    ap = argparse.ArgumentParser()
++    for name in ("candidate", "gate", "provision", "shutdown", "inventory", "output"):
++        ap.add_argument("--" + name, required=True, type=Path)
++    ap.add_argument("--phase", choices=("go-inventory", "execute"), required=True)
++    ap.add_argument("--packages", type=Path)
++    ap.add_argument("--inventory-result", type=Path)
++    ap.add_argument("--command", action="append", default=[])
++    ap.add_argument("--external-and111", type=Path)
++    ap.add_argument("--timeout", type=float, default=1800.0)
++    args = ap.parse_args()
++    require(not args.output.exists(), "output must be absent; evidence is never overwritten")
++    candidate_path, gate_path = args.candidate.resolve(), args.gate.resolve()
++    candidate, inventory = load(candidate_path), load(args.inventory.resolve())
++    bindings = validate_gate(candidate_path, candidate, gate_path, args.provision.resolve(), args.shutdown.resolve())
++    require(inventory.get("schema") == "grantiva.task9.source-window-command-inventory.v1", "inventory schema mismatch")
++    require(sha256(args.inventory.resolve()) == INVENTORY_SHA, "reviewed command inventory hash mismatch")
++    require(inventory.get("candidate", {}).get("manifestSHA256") == BOUND_TASK8_CANDIDATE_SHA, "inventory lineage mismatch")
++    sources = candidate_sources(candidate)
++    before = {name: repo_proof(*value) for name, value in sources.items()}
++    args.output.mkdir(parents=True, exist_ok=False)
++    completed: dict[str, str] = {}
++    selected = ["go-inventory"] if args.phase == "go-inventory" else args.command
++    require(selected and len(selected) == len(set(selected)), "explicit unique command selection required")
++    require("go-inventory" not in selected or args.phase == "go-inventory", "go-inventory must be a separate phase")
++    packages = None
++    if args.phase == "execute" and any(x in ("go-full", "go-vet") for x in selected):
++        require(args.packages and args.inventory_result, "full Go execution requires reviewed package artifact and inventory result")
++        packages = package_artifact(args.packages.resolve(), args.inventory_result.resolve(), sources["runnerRepo"][0].resolve())
++    env_base = os.environ.copy()
++    env_base.pop("GRANTIVA_API_KEY", None)
++    for command_id in selected:
++        require(command_id in inventory["commands"] and command_id != "and-111-compile", f"unsupported source command: {command_id}")
++        spec = inventory["commands"][command_id]
++        argvs, cwd_key = command_argv(command_id, spec, args.output, packages)
++        repo, expected = sources[cwd_key]
++        command_dir = args.output / "commands" / command_id
++        command_dir.mkdir(parents=True, exist_ok=False)
++        env = env_base.copy()
++        environment = {"GRANTIVA_API_KEY": "unset"}
++        if command_id.startswith("swift-"):
++            for variable, leaf in (("GRANTIVA_RUNNER_HOME", "grantiva-home"), ("MAESTRO_RUNNER_HOME", "maestro-home")):
++                home = command_dir / leaf
++                require(not home.exists(), f"fresh home already exists: {home}")
++                env[variable] = str(home)
++                environment[variable] = str(home)
++        if command_id.startswith("go-"):
++            cache = command_dir / "gocache"
++            require(not cache.exists(), f"fresh cache already exists: {cache}")
++            env["GOCACHE"] = str(cache)
++            environment["GOCACHE"] = str(cache)
++        start_proof = repo_proof(repo, expected)
++        save_new(command_dir / "start.json", {**bindings, "commandId": command_id, "cwd": start_proof["realpath"],
++                 "argv": argvs, "environment": environment, "source": start_proof})
++        results = []
++        expected_exits = [0, 64] if command_id == "go-l53-scratch-build" else [0] * len(argvs)
++        for index, argv in enumerate(argvs):
++            unit = command_dir if len(argvs) == 1 else command_dir / f"step-{index + 1}"
++            unit.mkdir(parents=True, exist_ok=len(argvs) == 1)
++            results.append(run_bounded(argv, repo.resolve(), env, args.timeout, unit))
++            if results[-1]["timedOut"] or results[-1]["exit"] != expected_exits[index]:
++                break
++        end_proof = repo_proof(repo, expected)
++        require(end_proof == start_proof, f"source drift after {command_id}")
++        contents = {key: sorted(str(p.relative_to(Path(value))) for p in Path(value).rglob("*") if p.is_file())
++                    for key, value in environment.items() if key != "GRANTIVA_API_KEY"}
++        save_new(command_dir / "postflight.json", {"source": end_proof, "freshPathContents": contents,
++                 "expectedExits": expected_exits,
++                 "passed": len(results) == len(argvs) and all(not r["timedOut"] and r["exit"] == expected_exits[i]
++                                                              for i, r in enumerate(results))})
++        if command_id == "go-inventory" and results[-1]["exit"] == 0 and not results[-1]["timedOut"]:
++            freeze_inventory_proposal(command_dir / "stdout.bin", repo.resolve(),
++                                      command_dir / "packages-proposal.json")
++        completed[command_id] = str(command_dir.relative_to(args.output))
++        if results[-1]["timedOut"] or results[-1]["exit"] != expected_exits[len(results) - 1]:
++            break
++    final = {name: repo_proof(*value) for name, value in sources.items()}
++    require(final == before, "source checkout changed during window")
++    if args.external_and111:
++        external = load(args.external_and111.resolve())
++        require(external.get("schema") == "grantiva.task9.and111.v1" and external.get("passed") is True,
++                "AND-111 external evidence is not passing")
++        require(external.get("candidateManifestSHA256") == bindings["candidateManifestSHA256"] and
++                external.get("shutdownTransitionSHA256") == bindings["shutdownSHA256"],
++                "AND-111 external evidence binding mismatch")
++    manifest = {"schema": "grantiva.task9.source-window-manifest.v1", "status": "EVIDENCE_ONLY_UNREVIEWED",
++                "phase": args.phase, **bindings, "inventorySHA256": sha256(args.inventory.resolve()),
++                "sourceBefore": before, "sourceAfter": final, "commands": completed,
++                "rows": inventory_rows(inventory, completed, args.external_and111),
++                "evidenceFiles": evidence_files(args.output),
++                "note": "No row verdict is assigned until independent review and required joins."}
++    save_new(args.output / "source-window-manifest.json", manifest)
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
+new file mode 100755
+index 00000000..cdeade90
+--- /dev/null
++++ b/.superpowers/sdd/2026-10-13-round4-fix-wave/task9_source_window_fixtures.py
+@@ -0,0 +1,102 @@
++#!/usr/bin/env python3
++"""Isolated fake-filesystem/subprocess checks for task9_source_window.py."""
++import importlib.util
++import json
++import tempfile
++import unittest
++from pathlib import Path
++
++HERE = Path(__file__).resolve().parent
++SPEC = importlib.util.spec_from_file_location("source_window", HERE / "task9_source_window.py")
++sw = importlib.util.module_from_spec(SPEC)
++SPEC.loader.exec_module(sw)
++
++
++class SourceWindowFixtures(unittest.TestCase):
++    def test_bounded_runner_keeps_complete_streams_and_refuses_overwrite(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); out = root / "evidence"; out.mkdir()
++            result = sw.run_bounded(
++                ["python3", "-c", "import sys; print('out'); print('err', file=sys.stderr)"],
++                root, {}, 2, out)
++            self.assertEqual(result["exit"], 0)
++            self.assertEqual((out / "stdout.bin").read_bytes(), b"out\n")
++            self.assertEqual((out / "stderr.bin").read_bytes(), b"err\n")
++            marker = root / "must-not-run"
++            with self.assertRaises(RuntimeError):
++                sw.run_bounded(["python3", "-c", f"open({str(marker)!r},'w').close()"], root, {}, 2, out)
++            self.assertFalse(marker.exists())
++
++    def test_timeout_is_bounded_and_retains_partial_stream(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); out = root / "timeout"; out.mkdir()
++            result = sw.run_bounded(
++                ["python3", "-c", "import time,sys; print('before', flush=True); time.sleep(2)"],
++                root, {}, .05, out)
++            self.assertTrue(result["timedOut"])
++            self.assertIsNone(result["exit"])
++            self.assertEqual((out / "stdout.bin").read_bytes(), b"before\n")
++
++    def test_inventory_proposal_rejects_duplicate_and_outside_module(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "go.mod").write_text("module example.test/mod\n")
++            good = root / "good"; good.write_bytes(b"example.test/mod/a\nexample.test/mod/b\n")
++            packages = sw.freeze_inventory_proposal(good, root, root / "proposal.json")
++            self.assertEqual(packages, ["example.test/mod/a", "example.test/mod/b"])
++            for name, value in (("duplicate", b"example.test/mod/a\nexample.test/mod/a\n"),
++                                ("outside", b"elsewhere.test/pkg\n")):
++                path = root / name; path.write_bytes(value)
++                with self.assertRaises(RuntimeError):
++                    sw.freeze_inventory_proposal(path, root, root / f"{name}.json")
++
++    def test_reviewed_packages_require_hash_review_and_literal_module_paths(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "go.mod").write_text("module example.test/mod\n")
++            result = root / "inventory-result.json"; result.write_text("{}\n")
++            review = root / "review.json"; review.write_text('{"approved":true}\n')
++            proposal = root / "proposal.json"
++            proposal.write_text(json.dumps({"schema": "grantiva.task9.go-packages.proposal.v1",
++                "approved": False, "packages": ["example.test/mod/a", "example.test/mod/b"]}) + "\n")
++            artifact = root / "packages.json"
++            artifact.write_text(json.dumps({
++                "schema": "grantiva.task9.go-packages.v1", "approved": True,
++                "inventoryResultSHA256": sw.sha256(result),
++                "review": {"path": str(review), "sha256": sw.sha256(review)},
++                "inventoryProposal": {"path": str(proposal), "sha256": sw.sha256(proposal)},
++                "packages": ["example.test/mod/a", "example.test/mod/b"]}) + "\n")
++            self.assertEqual(sw.package_artifact(artifact, result, root),
++                             ["example.test/mod/a", "example.test/mod/b"])
++            doc = json.loads(artifact.read_text()); doc["packages"] = ["./..."]
++            artifact.write_text(json.dumps(doc))
++            with self.assertRaises(RuntimeError):
++                sw.package_artifact(artifact, result, root)
++
++    def test_full_argv_expands_only_reviewed_literals_and_and111_stays_external(self):
++        argvs, cwd = sw.command_argv("go-full", {"cwd": "runnerRepo",
++            "argv": ["go", "test", "-count=1", sw.PACKAGE_MARKER]}, Path("/tmp/out"),
++            ["example.test/mod/a", "example.test/mod/b"])
++        self.assertEqual(cwd, "runnerRepo")
++        self.assertEqual(argvs[0][-2:], ["example.test/mod/a", "example.test/mod/b"])
++        with self.assertRaises(RuntimeError):
++            sw.command_argv("go-full", {"cwd": "runnerRepo",
++                "argv": ["go", "test", "-count=1", sw.PACKAGE_MARKER]}, Path("/tmp/out"), None)
++        inventory_argv, _ = sw.command_argv("go-inventory",
++            {"cwd": "runnerRepo", "argv": ["go", "list", "./..."]}, Path("/tmp/out"), None)
++        self.assertEqual(inventory_argv, [["go", "list", "./..."]])
++        rows = sw.inventory_rows({"rows": {"AND-111": {"commands": ["and-111-compile"],
++            "separateEvidence": ["shutdown proof"]}}}, {}, None)
++        self.assertFalse(rows["AND-111"]["satisfiedHere"])
++        self.assertEqual(rows["AND-111"]["missingCommands"], ["and-111-compile"])
++
++    def test_evidence_manifest_hashes_metadata_and_streams(self):
++        with tempfile.TemporaryDirectory() as raw:
++            root = Path(raw); (root / "command").mkdir()
++            (root / "command" / "start.json").write_text("{}\n")
++            (root / "command" / "stdout.bin").write_bytes(b"stream")
++            files = sw.evidence_files(root)
++            self.assertEqual([x["path"] for x in files], ["command/start.json", "command/stdout.bin"])
++            self.assertTrue(all(len(x["sha256"]) == 64 for x in files))
++
++
++if __name__ == "__main__":
++    unittest.main()
