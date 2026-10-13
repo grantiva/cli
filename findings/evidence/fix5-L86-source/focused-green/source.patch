@@ -1,0 +1,330 @@
+diff --git a/Sources/GrantivaCore/Simulator/SimulatorCapacity.swift b/Sources/GrantivaCore/Simulator/SimulatorCapacity.swift
+index c406bdfd..4a2de7d3 100644
+--- a/Sources/GrantivaCore/Simulator/SimulatorCapacity.swift
++++ b/Sources/GrantivaCore/Simulator/SimulatorCapacity.swift
+@@ -133,9 +133,9 @@ public struct SimulatorCapacity: Sendable {
+         let start = Date()
+ 
+         while true {
+-            let currentDevices = try await devices()
++            let snapshot = try await snapshot(devices: devices)
+             let outcome = try withRegistryLock { records in
+-                Self.prune(&records, devices: currentDevices)
++                Self.prune(&records, snapshot: snapshot, directory: directory)
+ 
+                 if let index = records.firstIndex(where: { $0.udid == device.udid }) {
+                     // A durable holder (`ensure`) reusing a run's record keeps it.
+@@ -250,7 +250,7 @@ public struct SimulatorCapacity: Sendable {
+     }
+ 
+     /// Removes every record for `udid`, returning how many were dropped. Unlike
+-    /// `sessions(devices:)` this never prunes other records, so it is safe to
++    /// `sessions(snapshot:)` this never prunes other records, so it is safe to
+     /// call when the device list is unavailable.
+     @discardableResult
+     public func remove(udid: String) throws -> Int {
+@@ -300,17 +300,41 @@ public struct SimulatorCapacity: Sendable {
+         return "session \(record.sessionId) owns this simulator until `grantiva simulator teardown --session-id \(record.sessionId)`"
+     }
+ 
+-    public func sessions(devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
+-        // A registry never written holds nothing; reading it creates nothing.
++    /// A device list paired with the registry as it stood before enumeration.
++    /// Keep this pair together: a bare list may predate a twin's activation.
++    public struct Snapshot: Sendable {
++        public let devices: [SimulatorDevice]
++        fileprivate let records: [ManagedSimulatorSession]
++        fileprivate let directory: String
++    }
++
++    public func snapshot(
++        devices: @Sendable () async throws -> [SimulatorDevice]
++    ) async throws -> Snapshot {
++        // Reading an absent registry must not create a runner home.
++        let records = FileManager.default.fileExists(atPath: registryPath)
++            ? try withRegistryLock { $0 } : []
++        return Snapshot(devices: try await devices(), records: records, directory: directory)
++    }
++
++    public func sessions(snapshot: Snapshot) throws -> [ManagedSimulatorSession] {
+         guard FileManager.default.fileExists(atPath: registryPath) else { return [] }
+         return try withRegistryLock { records in
+-            Self.prune(&records, devices: devices)
++            Self.prune(&records, snapshot: snapshot, directory: directory)
+             return records.sorted { $0.acquiredAt < $1.acquiredAt }
+         }
+     }
+ 
+-    public func sessions(sessionId: String, devices: [SimulatorDevice]) throws -> [ManagedSimulatorSession] {
+-        try sessions(devices: devices).filter { $0.sessionId == sessionId }
++    private static func prune(
++        _ records: inout [ManagedSimulatorSession], snapshot: Snapshot, directory: String
++    ) {
++        // A changed/new record cannot be invalidated by this earlier device
++        // observation. A subsequent observation can prune it if truly stale.
++        // An observation from another registry cannot establish staleness.
++        guard directory == snapshot.directory else { return }
++        var stale = snapshot.records
++        prune(&stale, devices: snapshot.devices)
++        records.removeAll { snapshot.records.contains($0) && !stale.contains($0) }
+     }
+ 
+     private enum ReservationOutcome {
+diff --git a/Sources/GrantivaCore/Simulator/SimulatorManager.swift b/Sources/GrantivaCore/Simulator/SimulatorManager.swift
+index 0cc8eae9..4969609a 100644
+--- a/Sources/GrantivaCore/Simulator/SimulatorManager.swift
++++ b/Sources/GrantivaCore/Simulator/SimulatorManager.swift
+@@ -111,8 +111,8 @@ public struct SimulatorManager: Sendable, Decodable {
+     public func boot(nameOrUDID: String, ephemeral: Bool = false) async throws -> SimulatorDevice {
+         let device = try await exactDevice(nameOrUDID: nameOrUDID)
+         if device.isBooted {
+-            let devices = try await listDevices()
+-            guard try capacity.sessions(devices: devices).contains(where: { $0.udid == device.udid }) else {
++            let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
++            guard try capacity.sessions(snapshot: snapshot).contains(where: { $0.udid == device.udid }) else {
+                 return device
+             }
+         }
+@@ -348,14 +348,14 @@ public struct SimulatorManager: Sendable, Decodable {
+     }
+ 
+     public func managedSessions() async throws -> [ManagedSimulatorSession] {
+-        try capacity.sessions(devices: try await listDevices())
++        try capacity.sessions(snapshot: await capacity.snapshot(devices: { try await listDevices() }))
+     }
+ 
+     /// Ends a session. Simulators Grantiva created are deleted outright;
+     /// pre-existing devices the session merely booted are only shut down.
+     public func teardown(sessionId: String) async throws -> [SimulatorTeardownOutcome] {
+-        let devices = try await listDevices()
+-        return try await end(try capacity.sessions(sessionId: sessionId, devices: devices), devices: devices)
++        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
++        return try await end(try capacity.sessions(snapshot: snapshot).filter { $0.sessionId == sessionId }, devices: snapshot.devices)
+     }
+ 
+     /// Ends whatever session owns `udid`. Used by
+@@ -365,8 +365,9 @@ public struct SimulatorManager: Sendable, Decodable {
+     /// has runner homes; they are removed while no run holds the device, and
+     /// reported in an outcome with no session.
+     public func teardown(udid: String) async throws -> [SimulatorTeardownOutcome] {
+-        let devices = try await listDevices()
+-        let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
++        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
++        let devices = snapshot.devices
++        let records = try capacity.sessions(snapshot: snapshot).filter { $0.udid == udid }
+         guard records.isEmpty else { return try await end(records, devices: devices) }
+         // Holding the lease keeps a run from starting in the device's home
+         // while it is removed. A device a run holds is not idle: say who
+@@ -420,8 +421,9 @@ public struct SimulatorManager: Sendable, Decodable {
+     /// longer part of an active managed session. Ledger entries for devices
+     /// that no longer exist are pruned. Never touches user-created devices.
+     public func cleanup() async throws -> [CreatedSimulatorRecord] {
+-        let devices = try await listDevices()
+-        let active = Set(try capacity.sessions(devices: devices).map(\.udid))
++        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
++        let devices = snapshot.devices
++        let active = Set(try capacity.sessions(snapshot: snapshot).map(\.udid))
+         var removed: [CreatedSimulatorRecord] = []
+         for record in try provenance.all() {
+             guard let device = devices.first(where: { $0.udid == record.udid }) else {
+diff --git a/Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift b/Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift
+index a905fb65..51a2fa4c 100644
+--- a/Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift
++++ b/Tests/GrantivaCoreTests/DefaultSimulatorOwnershipCoreTests.swift
+@@ -70,12 +70,13 @@ final class DefaultSimulatorOwnershipCoreTests: XCTestCase {
+                        "the runner home is spelled the realpath way (L27)")
+     }
+ 
+-    func testReadingAnAbsentLedgerCreatesNothing() throws {
++    func testReadingAnAbsentLedgerCreatesNothing() async throws {
+         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-absent-\(UUID().uuidString)").path
+         let provenance = SimulatorProvenance(directory: directory)
+         XCTAssertEqual(try provenance.all(), [])
+         XCTAssertFalse(try provenance.contains(udid: "X"))
+-        XCTAssertEqual(try SimulatorCapacity(directory: directory).sessions(devices: []), [])
++        let snapshot = try await SimulatorCapacity(directory: directory).snapshot(devices: { [] })
++        XCTAssertEqual(try SimulatorCapacity(directory: directory).sessions(snapshot: snapshot), [])
+         XCTAssertFalse(FileManager.default.fileExists(atPath: directory))
+     }
+ 
+diff --git a/Tests/GrantivaCoreTests/SimulatorCapacityTests.swift b/Tests/GrantivaCoreTests/SimulatorCapacityTests.swift
+index 3fda1fbc..6075ff6b 100644
+--- a/Tests/GrantivaCoreTests/SimulatorCapacityTests.swift
++++ b/Tests/GrantivaCoreTests/SimulatorCapacityTests.swift
+@@ -14,6 +14,50 @@ final class SimulatorCapacityTests: XCTestCase {
+         if let directory { try? FileManager.default.removeItem(atPath: directory) }
+     }
+ 
++    func testStaleSnapshotPreservesTwinActivation() async throws {
++        let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
++        let shutdown = device(1, state: "Shutdown")
++        _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
++        let original = try XCTUnwrap(capacity.records(udid: shutdown.udid).first)
++        let acquired = try await capacity.reserve(device: shutdown, devices: {
++            let snapshot = [shutdown]
++            try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
++            return snapshot
++        })
++        XCTAssertEqual(acquired.bootedByGrantiva, true)
++        XCTAssertEqual(acquired.acquiredAt, original.acquiredAt)
++        XCTAssertEqual(acquired.state, .active)
++    }
++
++    func testSessionListingPreservesActivationAfterShutdownOrMissingSnapshot() async throws {
++        for missing in [false, true] {
++            let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
++            let shutdown = device(1, state: "Shutdown")
++            _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
++            let snapshot = try await capacity.snapshot(devices: {
++                let captured = missing ? [] : [shutdown]
++                try capacity.activate(udid: shutdown.udid, bootedByGrantiva: true)
++                return captured
++            })
++            let records = try capacity.sessions(snapshot: snapshot)
++            XCTAssertEqual(records.first?.bootedByGrantiva, true)
++            XCTAssertEqual(records.first?.state, .active)
++            // A fresh observation must still prune genuinely stale records.
++            let fresh = try await capacity.snapshot(devices: { missing ? [] : [shutdown] })
++            XCTAssertEqual(try capacity.sessions(snapshot: fresh), [])
++        }
++    }
++
++    func testSessionListingPreservesReservationAddedDuringEnumeration() async throws {
++        let capacity = SimulatorCapacity(directory: directory, waitTimeout: 0)
++        let shutdown = device(1, state: "Shutdown")
++        let snapshot = try await capacity.snapshot(devices: {
++            _ = try await capacity.reserve(device: shutdown, devices: { [shutdown] })
++            return []
++        })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [shutdown.udid])
++    }
++
+     func testFifthManagedSimulatorIsRejectedAtCapacity() async throws {
+         let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 0, pollInterval: 0.01)
+         let devices = (1...5).map { device($0, state: "Booted") }
+@@ -44,7 +88,8 @@ final class SimulatorCapacityTests: XCTestCase {
+ 
+         _ = try await capacity.reserve(device: second, devices: { releasedDevices })
+         try capacity.activate(udid: second.udid)
+-        XCTAssertEqual(try capacity.sessions(devices: releasedDevices).map(\.udid), [second.udid])
++        let snapshot = try await capacity.snapshot(devices: { releasedDevices })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), [second.udid])
+     }
+ 
+     func testShutdownManagedSimulatorIsPruned() async throws {
+@@ -54,7 +99,8 @@ final class SimulatorCapacityTests: XCTestCase {
+         try capacity.activate(udid: booted.udid)
+ 
+         let shutdown = device(1, state: "Shutdown")
+-        XCTAssertEqual(try capacity.sessions(devices: [shutdown]), [])
++        let snapshot = try await capacity.snapshot(devices: { [shutdown] })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
+     }
+ 
+     func testBootedPendingReservationWithDeadOwnerIsPruned() {
+@@ -141,7 +187,8 @@ final class SimulatorCapacityTests: XCTestCase {
+         let second = try await capacity.reserve(device: simulator, devices: { [simulator] })
+ 
+         XCTAssertEqual(first.udid, second.udid)
+-        XCTAssertEqual(try capacity.sessions(devices: [simulator]).count, 1)
++        let snapshot = try await capacity.snapshot(devices: { [simulator] })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).count, 1)
+     }
+ 
+     func testWaiterAcquiresSlotAfterRelease() async throws {
+diff --git a/Tests/GrantivaCoreTests/SimulatorManagerTests.swift b/Tests/GrantivaCoreTests/SimulatorManagerTests.swift
+index c66b13fb..078d6b0e 100644
+--- a/Tests/GrantivaCoreTests/SimulatorManagerTests.swift
++++ b/Tests/GrantivaCoreTests/SimulatorManagerTests.swift
+@@ -212,7 +212,8 @@ final class SimulatorManagerTests: XCTestCase {
+         _ = try await manager.boot(nameOrUDID: "MANUAL-1")
+ 
+         let devices = try await manager.listDevices()
+-        XCTAssertEqual(try capacity.sessions(devices: devices), [])
++        let snapshot = try await capacity.snapshot(devices: { devices })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
+         let byUDID = try await manager.teardown(udid: "MANUAL-1")
+         let bySession = try await manager.teardown(sessionId: "simulator:MANUAL-1")
+         XCTAssertEqual(byUDID, [])
+@@ -230,7 +231,8 @@ final class SimulatorManagerTests: XCTestCase {
+ 
+         _ = try await manager.boot(nameOrUDID: "MINE-1")
+         let devices = try await manager.listDevices()
+-        XCTAssertEqual(try capacity.sessions(devices: devices).map(\.udid), ["MINE-1"])
++        let snapshot = try await capacity.snapshot(devices: { devices })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot).map(\.udid), ["MINE-1"])
+ 
+         let outcomes = try await manager.teardown(udid: "MINE-1")
+         XCTAssertEqual(outcomes.map(\.udid), ["MINE-1"])
+@@ -263,7 +265,8 @@ final class SimulatorManagerTests: XCTestCase {
+         XCTAssertFalse(simctl.commands.contains { $0.contains("simctl shutdown") || $0.contains("simctl delete") }, "\(simctl.commands)")
+         XCTAssertEqual(simctl.device("LEGACY-1")?.state, "Booted")
+         let devices = try await manager.listDevices()
+-        XCTAssertEqual(try capacity.sessions(devices: devices), [])
++        let snapshot = try await capacity.snapshot(devices: { devices })
++        XCTAssertEqual(try capacity.sessions(snapshot: snapshot), [])
+     }
+ 
+     func testEnsureTakesADurableSlotAndARunTakesAnEphemeralOne() async throws {
+@@ -474,7 +477,16 @@ extension SimulatorManagerTests {
+         let directory = tempRoot()
+         let capacity = SimulatorCapacity(directory: directory, maximum: 4, waitTimeout: 10, pollInterval: 0.02)
+         let manager = SimulatorManager(
+-            execute: simctl.execute, capacity: capacity, provenance: SimulatorProvenance(directory: directory),
++            execute: { command in
++                let result = try await simctl.execute(command)
++                if command == "xcrun simctl list devices --json",
++                   simctl.commands.filter({ $0 == command }).count == 2 {
++                    // Capture Shutdown, then activate the twin before returning that snapshot.
++                    _ = try await simctl.execute("xcrun simctl boot RACE-1")
++                    try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
++                }
++                return result
++            }, capacity: capacity, provenance: SimulatorProvenance(directory: directory),
+             runnerHome: "\(directory)/runner"
+         )
+         // The twin (another live Grantiva process: pid 1 always exists)
+@@ -486,14 +498,9 @@ extension SimulatorManagerTests {
+         try FileManager.default.createDirectory(atPath: directory, withIntermediateDirectories: true)
+         try JSONEncoder().encode([twin]).write(to: URL(fileURLWithPath: "\(directory)/sessions.json"))
+ 
+-        let finisher = Task {
+-            try await Task.sleep(for: .milliseconds(200))
+-            _ = try await simctl.execute("xcrun simctl boot RACE-1")
+-            try capacity.activate(udid: "RACE-1", bootedByGrantiva: true)
+-        }
+-
++        let provenance = SimulatorProvenance(directory: directory)
++        try provenance.register(udid: "RACE-1", name: "Race")
+         let device = try await manager.boot(nameOrUDID: "RACE-1")
+-        try await finisher.value
+ 
+         XCTAssertEqual(device.state, "Booted")
+         let boots = simctl.commands.filter { $0.hasPrefix("xcrun simctl boot ") }
+@@ -501,6 +508,12 @@ extension SimulatorManagerTests {
+         let record = try XCTUnwrap(try capacity.records(udid: "RACE-1").first)
+         XCTAssertEqual(record.state, .active)
+         XCTAssertEqual(record.bootedByGrantiva, true)
++        XCTAssertEqual(record.ownerPID, twin.ownerPID)
++        XCTAssertEqual(record.acquiredAt, twin.acquiredAt)
++        let outcomes = try await manager.teardown(udid: "RACE-1")
++        XCTAssertEqual(outcomes.first?.deleted, true)
++        XCTAssertNil(simctl.device("RACE-1"))
++        XCTAssertTrue(simctl.commands.contains { $0.hasPrefix("xcrun simctl shutdown ") })
+     }
+ 
+     func testATwinWaitIsNotReportedAsACapacityWait() {
+diff --git a/Tests/GrantivaCoreTests/SimulatorReaperTests.swift b/Tests/GrantivaCoreTests/SimulatorReaperTests.swift
+index 48adbcd5..9b593fc0 100644
+--- a/Tests/GrantivaCoreTests/SimulatorReaperTests.swift
++++ b/Tests/GrantivaCoreTests/SimulatorReaperTests.swift
+@@ -219,7 +219,8 @@ final class SimulatorReaperTests: XCTestCase {
+         XCTAssertEqual(result.capacityRecordsCleared, 0)
+         XCTAssertEqual(result.capacityRecordsKept.map(\.sessionId), ["qa-ios"])
+         XCTAssertTrue(result.capacityRecordsKept[0].reason.contains("teardown --session-id qa-ios"), result.capacityRecordsKept[0].reason)
+-        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid))
++        let snapshot = try await SimulatorCapacity(directory: directory).snapshot(devices: { booted(udid) })
++        let remaining = try SimulatorCapacity(directory: directory).sessions(snapshot: snapshot)
+         XCTAssertEqual(remaining.map(\.udid), [udid])
+ 
+         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
