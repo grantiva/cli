@@ -1,0 +1,98 @@
+Building for debugging...
+[Computing dependencies]
+[10 / 52] GrantivaMCPTests-product
+[23 / 77] GrantivaCoreTests-product
+[25 / 89] GrantivaCoreTests-product
+[30 / 91] grantiva-product
+[34 / 91] grantiva-product
+[36 / 91] grantiva-product
+[38 / 91] GrantivaCoreTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 21 | 
+ 22 |     func testAnEmptyRewriterPassesTextThrough() {
+ 23 |         var empty = OutputRewriter(replacements: [:])
+    |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 24 |         XCTAssertTrue(empty.isEmpty)
+ 25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[41 / 91] GrantivaCLI
+[44 / 89] GrantivaCoreTests-product
+[49 / 89] GrantivaCLI
+[50 / 89] GrantivaCLI
+/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/Sources/GrantivaCLI/RecordCommand.swift:313:39: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+311 |             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
+312 |             var actualTime = CMTime.zero
+313 |             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+    |                                       `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+314 |             let fileName = String(format: "%06dms.png", requested)
+315 |             let path = frameDirectory.appendingPathComponent(fileName)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[53 / 89] GrantivaCLI
+[53 / 89] GrantivaCoreTests-product
+[58 / 89] GrantivaCLI
+[58 / 89] GrantivaAPITests-product
+[60 / 89] GrantivaCLI
+[62 / 89] GrantivaCLI
+[64 / 89] GrantivaAPITests-product
+[68 / 89] GrantivaCoreTests-product
+[70 / 89] GrantivaCLI
+[77 / 90] grantiva-product
+[79 / 90] GrantivaCLITests-product
+[92 / 103] GrantivaCLITests-product
+[97 / 103] GrantivaCLITests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:89:31: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 87 |         for (requested, expected) in [(0, 0), (1_500, 500)] {
+ 88 |             var actual = CMTime.zero
+ 89 |             _ = try generator.copyCGImage(at: CMTime(value: CMTimeValue(requested), timescale: 1_000), actualTime: &actual)
+    |                               `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 90 |             XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), expected, "requested \(requested)")
+ 91 |         }
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/chore-bundle-runner-round4/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:114:27: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+112 |         generator.requestedTimeToleranceAfter = .zero
+113 |         var actual = CMTime.zero
+114 |         _ = try generator.copyCGImage(at: CMTime(value: 750, timescale: 1_000), actualTime: &actual)
+    |                           `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+115 |         XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), 500)
+116 |     }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[99 / 103] GrantivaCLITests-product
+[101 / 103] GrantivaCLITests-product
+Build complete! (6.11 sec)
+Test Suite 'Selected tests' started at 2026-10-13 08:16:30.252.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 08:16:30.253.
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 08:16:30.253.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 08:16:30.253.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 08:16:30.312.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 08:16:30.312.
+Test Suite 'RunnerReportContractTests' started at 2026-10-13 08:16:30.312.
+Test Case '-[GrantivaCoreTests.RunnerReportContractTests testFailureArtifactSchemaKeepsCommandsAndFailureDetails]' started.
+Test Case '-[GrantivaCoreTests.RunnerReportContractTests testFailureArtifactSchemaKeepsCommandsAndFailureDetails]' passed (0.007 seconds).
+Test Suite 'RunnerReportContractTests' passed at 2026-10-13 08:16:30.319.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.007 (0.007) seconds
+Test Suite 'RunnerTraceExportTests' started at 2026-10-13 08:16:30.319.
+Test Case '-[GrantivaCoreTests.RunnerTraceExportTests testReferencedTopLevelAndNestedLogTailsExportExactBytes]' started.
+Test Case '-[GrantivaCoreTests.RunnerTraceExportTests testReferencedTopLevelAndNestedLogTailsExportExactBytes]' passed (0.003 seconds).
+Test Suite 'RunnerTraceExportTests' passed at 2026-10-13 08:16:30.323.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.003 (0.003) seconds
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 08:16:30.323.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 08:16:30.323.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Test Suite 'Selected tests' started at 2026-10-13 08:16:30.400.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 08:16:30.401.
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 08:16:30.401.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 08:16:30.401.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 08:16:30.478.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 08:16:30.479.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 08:16:30.479.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 08:16:30.479.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
