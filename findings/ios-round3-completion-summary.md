@@ -27,3 +27,7 @@ python3 /Users/kyle/Developer/grantiva-cli/.worktrees/regression/.superpowers/sd
 ```
 
 The final audit reports `recorded_base_ids: 478`, `pass: 447`, `fail: 21`, `blocked: 10`, and empty missing/duplicate/evidence-error collections.
+
+## Final campaign cleanup
+
+The plan-required Step 5 cleanup completed successfully in `findings/evidence/cov3-ios-final-campaign-cleanup/`. Exact preflight identity checks limited normal, non-force teardown to campaign devices `cov3-ios-26` (`563907E1-703D-4322-AE5F-FC3B06D03143`) and `cov3-ios-27` (`1B1102EC-224B-4EF7-937E-370A0DC317DA`). Both teardown commands exited 0; the after inventories contain neither UUID, no `cov3-ios` session record, and no process naming either UUID. Remaining booted devices are owner devices, so the existing guarded `CLI-083` and `B-C21.1` blocked verdicts remain unchanged as `blocked owner simulator booted`.
