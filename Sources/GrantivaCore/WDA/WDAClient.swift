@@ -59,8 +59,8 @@ public struct AppNotRunningError: LocalizedError, Equatable, Sendable {
 }
 
 /// Which attribute a label tap matched on iOS: the accessibility label, then
-/// WDA's `name` (the accessibility identifier, or an SF Symbol's name), then
-/// a text field's placeholder.
+/// WDA's true `identifier` attribute (including an SF Symbol's name), then a
+/// text field's placeholder.
 public enum LabelMatch: String, Sendable, Equatable {
     case label
     case identifier
@@ -241,7 +241,8 @@ extension DriverClient {
     /// ...)` has no label and shows "Name" as its placeholder, which is what
     /// a flow's `tapOn: "Name"` matches. The application element is excluded:
     /// it carries the app's display name as its label and would shadow a
-    /// same-named back button.
+    /// same-named back button. Within the label stage, a real navigation back
+    /// button wins over other elements carrying the same label.
     static let labelAttributes: [(attribute: String, match: LabelMatch)] = [
         ("label", .label), ("identifier", .identifier), ("placeholderValue", .placeholder),
     ]
@@ -252,12 +253,21 @@ extension DriverClient {
         var sessionId = try await resolveSessionId(base: base, port: port, transport: transport)
         var retried = false
         var found: (id: String, match: LabelMatch)?
+        let escapedLabel = predicateLiteral(label)
+        let queries: [(predicate: String, match: LabelMatch)] = [
+            (
+                "label == \(escapedLabel) AND identifier == \"BackButton\" AND type == \"XCUIElementTypeButton\"",
+                .label
+            ),
+        ] + labelAttributes.map { attribute, match in
+            ("\(attribute) == \(escapedLabel) AND type != \"XCUIElementTypeApplication\"", match)
+        }
         var index = 0
-        while index < labelAttributes.count, found == nil {
-            let (attribute, match) = labelAttributes[index]
+        while index < queries.count, found == nil {
+            let query = queries[index]
             let findBody: [String: Any] = [
                 "using": "predicate string",
-                "value": "\(attribute) == \(predicateLiteral(label)) AND type != \"XCUIElementTypeApplication\"",
+                "value": query.predicate,
             ]
             let (responseData, status) = try await send(
                 transport, "POST", "\(base)/session/\(sessionId)/elements", findBody
@@ -283,7 +293,7 @@ extension DriverClient {
             }
             let findJson = try JSONSerialization.jsonObject(with: responseData) as? [String: Any] ?? [:]
             if let elements = findJson["value"] as? [[String: Any]], let first = elements.first, let id = elementID(from: first) {
-                found = (id, match)
+                found = (id, query.match)
             }
             index += 1
         }
