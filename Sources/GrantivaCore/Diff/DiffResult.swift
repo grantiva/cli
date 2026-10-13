@@ -4,7 +4,11 @@ import Foundation
 
 public enum StepStatus: String, Sendable, Codable {
     case passed
+    /// An optional runner command failed, but the flow continued and passed.
+    case warned
     case failed
+
+    public var isPassing: Bool { self != .failed }
 }
 
 public struct StepResult: Sendable, Codable {

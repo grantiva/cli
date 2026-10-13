@@ -64,6 +64,25 @@ final class RunnerReportContractTests: XCTestCase {
         XCTAssertEqual(steps.last?.message, "Element not visible")
     }
 
+    /// L79: runner v4 reports a failed optional command as warned while the
+    /// flow and the following required command remain passed.
+    func testWarnedOptionalCommandIsRetainedWithItsError() throws {
+        try writeFlowReport(name: "optional-miss", status: "passed", commands: """
+        [{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":1365},
+         {"index":1,"type":"tapOn","yaml":"tapOn: text=\\\"No Such Element fix4-3\\\"","status":"warned","duration":7164,
+          "error":{"type":"element_not_found","message":"Element not found: text='No Such Element fix4-3'"}},
+         {"index":2,"type":"assertVisible","yaml":"assertVisible: text=\\\"Landmarks\\\"","status":"passed","duration":65}]
+        """)
+
+        let capture = try XCTUnwrap(collect(requestedFlow: "optional-miss.yaml").first)
+        XCTAssertEqual(capture.steps.map(\.action), [
+            "launchApp", "tapOn: text=\"No Such Element fix4-3\"", "assertVisible: text=\"Landmarks\"",
+        ])
+        XCTAssertEqual(capture.steps.map(\.status.rawValue), ["passed", "warned", "passed"])
+        XCTAssertEqual(capture.steps[1].message, "Element not found: text='No Such Element fix4-3'")
+        XCTAssertTrue(capture.steps.allSatisfy { $0.status != .failed })
+    }
+
     func testScreenStepsCarryTheDurationsOfTheCommandsTheyGenerated() throws {
         let screens = [
             GrantivaConfig.Screen(name: "Home", path: .launch),
@@ -263,10 +282,10 @@ final class RunnerReportContractTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func collect() throws -> [ScreenCapture] {
+    private func collect(requestedFlow: String = "01-browse.yaml") throws -> [ScreenCapture] {
         try RunnerArtifactCollector.collect(
             reportDir: reportDir.path, outputDir: outputDir.path,
-            requestedFlowPaths: ["01-browse.yaml"], stagedPathMap: ["/staged/01-browse.yaml": "01-browse.yaml"]
+            requestedFlowPaths: [requestedFlow], stagedPathMap: ["/staged/01-browse.yaml": requestedFlow]
         )
     }
 
