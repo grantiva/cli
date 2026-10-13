@@ -728,6 +728,69 @@ final class RunnerLifecycleCommandTests: XCTestCase {
         }
     }
 
+    func testForegroundCleanupBeforeTransferRejectsAndFinishesLateAttachmentBeforeReturning() throws {
+        let owner = ForegroundDriverAttachment()
+        let releaseRequested = DispatchSemaphore(value: 0)
+        let detachStarted = DispatchSemaphore(value: 0)
+        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+        let retainReturned = DispatchSemaphore(value: 0)
+        let releaseReturned = DispatchSemaphore(value: 0)
+        let accepted = LockedValue<Bool?>(nil)
+        let attachment = DriverAttachment(
+            client: .failing, port: 61211, sessionID: "late",
+            detach: {
+                detachStarted.signal()
+                for await _ in detachGate { break }
+            }
+        )
+
+        DispatchQueue.global().async {
+            owner.release(timeout: 2, onRequested: { releaseRequested.signal() })
+            releaseReturned.signal()
+        }
+        XCTAssertEqual(releaseRequested.wait(timeout: .now() + 1), .success)
+        DispatchQueue.global().async {
+            accepted.set(owner.retain(attachment, timeout: 2))
+            retainReturned.signal()
+        }
+        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(retainReturned.wait(timeout: .now() + 0.05), .timedOut)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+                       "the signal cleanup must wait for the rejected attachment's detach")
+
+        allowDetach.yield(())
+        allowDetach.finish()
+        XCTAssertEqual(retainReturned.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(accepted.value, false)
+    }
+
+    func testForegroundCleanupWaitsForOwnedAttachmentDetach() throws {
+        let owner = ForegroundDriverAttachment()
+        let detachStarted = DispatchSemaphore(value: 0)
+        let (detachGate, allowDetach) = AsyncStream<Void>.makeStream()
+        let releaseReturned = DispatchSemaphore(value: 0)
+        let attachment = DriverAttachment(
+            client: .failing, port: 61211, sessionID: "owned",
+            detach: {
+                detachStarted.signal()
+                for await _ in detachGate { break }
+            }
+        )
+        XCTAssertTrue(owner.retain(attachment))
+
+        DispatchQueue.global().async {
+            owner.release(timeout: 2)
+            releaseReturned.signal()
+        }
+        XCTAssertEqual(detachStarted.wait(timeout: .now() + 1), .success)
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 0.05), .timedOut,
+                       "the signal cleanup must not return while owned detach is running")
+        allowDetach.yield(())
+        allowDetach.finish()
+        XCTAssertEqual(releaseReturned.wait(timeout: .now() + 1), .success)
+    }
+
     func testForegroundStartHelpSaysItStaysAttached() {
         let help = RunnerStartCommand.helpMessage(columns: 1000)
         XCTAssertTrue(help.contains("Ctrl-C"), help)

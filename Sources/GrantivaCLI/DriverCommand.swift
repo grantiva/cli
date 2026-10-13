@@ -445,9 +445,8 @@ struct RunnerStartCommand: AsyncParsableCommand {
     /// session owner instead of reducing it to an unowned port.
     static func retainForegroundAttachment(
         _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
-    ) -> UInt16 {
-        owner.retain(attachment)
-        return UInt16(clamping: attachment.port)
+    ) -> UInt16? {
+        owner.retain(attachment) ? UInt16(clamping: attachment.port) : nil
     }
 
     /// Hands the runner's group to the interrupt relay, naming the device
@@ -710,14 +709,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
         do {
             try Self.recordStarting(launch, runnerPid: runnerPid)
         } catch {
+            foregroundAttachment.finishAcquiring()
             cleanup.run()
             throw error
         }
+        if launch.platform != .android { foregroundAttachment.finishAcquiring() }
         let port: UInt16
         if launch.platform == .android {
             // The port comes from the forward, not the output.
             output.endStartup()
             let wait = await Self.waitForUIAutomator2Port(launch, child: child)
+            let found = wait.attachment.flatMap {
+                Self.retainForegroundAttachment($0, in: foregroundAttachment)
+            }
+            if wait.attachment == nil { foregroundAttachment.finishAcquiring() }
             if SignalRelay.shared.isTerminating || wait.launchFailed {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
@@ -739,12 +744,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
                 )
             }
-            guard let attachment = wait.attachment else {
+            guard let found else {
                 child.terminateGroup(gracePeriod: 1)
                 cleanup.run()
                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
             }
-            port = Self.retainForegroundAttachment(attachment, in: foregroundAttachment)
+            port = found
         } else {
             let startup = await Self.waitForForegroundWDAPort(
                 chunks: output.chunks,
