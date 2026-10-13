@@ -2,11 +2,11 @@
 
 ## Findings
 
-### Important — B-A10.2 is missing its required CHANGELOG note
+### B-A10.2 is complete under the matrix's documentation substitution
 
-The runtime clauses pass: AND-021 JSON has `applicationId`, absolute `appPath`, `status: installed`, and owned device name/serial; BA03 run narration uses Android module/variant/device terminology; Android build failures contain no `Scheme:` line. But the binding criterion also says to note the JSON change in CHANGELOG. The exact CLI candidate at `8f2cff67` has no CHANGELOG, and the exact runner `fd9d8e8` CHANGELOG has no entry for this CLI install-document change. The current pass does not cite such an entry. Grade B-A10.2 fail for the documentation omission unless Task 6 has an accepted correction withdrawing that clause.
+The runtime clauses pass: AND-021 JSON has `applicationId`, absolute `appPath`, `status: installed`, and owned device name/serial; BA03 run narration uses Android module/variant/device terminology; Android build failures contain no `Scheme:` line. The matrix-wide ruling at lines 924–925 says criteria asking for CHANGELOG entries are checked against README/docs/release notes because CLI CHANGELOG.md was removed in #179. README:252–255 documents the platform-specific JSON shapes. B-A10.2 is therefore a supported pass.
 
-This is a product documentation defect, suitable for the next free brief (L69 if still free): document the Android `build install --json` shape and the `applicationId` plus `device.name`/`device.serial` change in the release changelog. Runtime behavior needs no fix.
+No documentation defect or new brief is warranted.
 
 ### B-A09.2 should pass; the current failure contradicts its own raw evidence
 
@@ -38,4 +38,4 @@ There is no supported CLI defect from this capture and no new brief should be fi
 - **AND-144:** pass supported. Both config files exist, the shared iOS config has unusable sentinels, and explicit Android selects the Android config and installs on owned emulator-5554.
 - **B-A03.1/B-A03.2:** passes supported. Paid run and install warn with both configured and APK IDs plus both remedies, use/install `com.kylebrowning.landmarks.paid`, and the run report's flow/device artifacts correspond to the paid execution. Preserved `pm path` proves the paid package for each command.
 
-Result: ten runtime grades are supported except B-A10.2's documentation clause; B-A09.2 is a false failure; AND-022 is an unexercisable expectation with the signed fixture.
+Result: all ten runtime grades are supported; B-A09.2 is a false failure; AND-022 is an unexercisable expectation with the signed fixture; B-A10.2 passes under the binding documentation substitution.
