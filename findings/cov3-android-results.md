@@ -231,13 +231,72 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 | B-A03.2 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-install/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-run/ | Both build install and run with `--variant paidDebug` resolved the built artifact's `.paid` application ID, warned about the configured base ID, and installed/tested the correct package. |
 | B-A09.1 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-024-text/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-024-json/ | Text and JSON unknown-variant failures both retained `Cannot locate tasks that match ':app:assembleNoSuchVariant'`; JSON exposed it in `errors` and both exited 1. |
 | B-A09.2 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-024-text/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-025-nosuch/ | Unknown variant output included the exact available variants `freeDebug`, `freeRelease`, `paidDebug`, and `paidRelease`; unknown module output listed `Modules: app`, after the bounded Gradle discovery described by exact source. |
-| B-A10.2 | fail | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-021/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-run/ | Runtime clauses pass: install JSON included applicationId and owned device name/serial, paid run resolution used the built APK ID, and Android build failures had no `Scheme:`. Independent exact-head review found the mandatory Android JSON-key CHANGELOG note absent, so the compound row fails documentation. |
+| B-A10.2 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/AND-021/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-run/ | Install JSON included applicationId and owned device name/serial; paid run resolution used the built APK ID; Android build failures had no `Scheme:`; README 252–255 supplies the platform JSON documentation allowed by the binding matrix substitution rule. |
 
 
 | AND-066 | pass | findings/evidence/cov3-android/android-settings-lifecycle-exact-rerun1/AND-065-067/ | During the owned slow-flow process, the per-serial settings-state JSON preserved the prior values while live animation scales were all 0 and demo mode was enabled; exact before/during screenshots and device readouts are retained. |
-| AND-067 | pass | findings/evidence/cov3-android/android-settings-lifecycle-exact-rerun1/AND-065-067/ | After normal flow exit 0, demo mode returned 1→0, window/transition scales returned 0→1.0, animator scale returned 0→null, and the per-serial state file was absent. |
-| AND-145 | pass | findings/evidence/cov3-android/android-settings-lifecycle-exact-rerun1/AND-145/ | Explicit `--allow-device-settings` was accepted; the observed run applied demo mode and all animation scales, saved prior values, passed the slow flow, restored every prior value, and removed its state file. |
+
+
+| AND-026 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-run/ | A paidDebug build whose APK ID differed from configured application_id warned with both IDs, installed and tested the APK's own `.paid` ID, passed the flow, and recorded that ID in report metadata. |
+
+
+| B2-K25 [android] | fail | findings/evidence/cov3-android/B2-K25-full-exact-rerun1/, findings/evidence/cov3-android/B2-K25-ci-correction-rerun2/ | Paired build install, run, and diff capture each installed the frozen APK from an absent-package state; no-build alone correctly said install skipped; paired JSON status was installed. Config-driven `ci run` rejected Android before resolution with the local-baselines-only error and touched no package, but did not name the two flags or apply the chosen paired behavior as the compound criterion requires. |
+
+
+| AND-027 | pass | findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-027/ | Explicit `.debug` target overrode the APK ID with a warning naming both and how to drop the override; the APK installed under its own base ID, then the runner tested the explicit absent target and failed launch clearly, exactly distinguishing install identity from test identity. |
+| AND-065 | pass | findings/evidence/cov3-android/android-settings-lifecycle-exact-rerun1/AND-065-067/, findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-065-diff/ | Both default run and diff capture were observed live with demo mode enabled and all animation scales 0. The retained portrait screenshot shows 09:41, full battery and no notifications; both commands restored prior settings and removed state. |
+
+
+| AND-052 | pass | findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/start-primary/, findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/start-secondary/, findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/AND-052/ | Two exact serial sessions were live; secondary was started last, readiness proved its app hierarchy, and hierarchy without a target returned the live app tree successfully. |
+| AND-056 | pass | findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/AND-056/ | With both sessions live, explicit `--udid emulator-5554` returned the primary owned device's ready app hierarchy. |
+| AND-062 | pass | findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/ | Simultaneous recorded shell PIDs ran browse on primary emulator-5554 and category on secondary emulator-5556; both flows exited 0 and passed without interference. |
+| AND-064 | pass | findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/AND-064/ | A collision-guarded orphan forward `emulator-5556 tcp:28123→6790` existed before the primary run and remained byte-identical afterward; primary browse passed and cleanup did not touch the other serial's forward. |
+
+| X-006 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Current iOS and Android install-no-launch JSON both report installed and share status/appPath; only documented platform product and device identity fields differ. |
+| X-008 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Current text and JSON unchanged comparisons use the same screen/status/path/metric/threshold vocabulary; Android adds the documented platform path component. |
+| X-009 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Current all-screen and named approval results share approved_screens and baseline semantics; Android uses the documented baselines/android path. |
+| X-012 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Current detached-runner tree, JSON, and XML each describe the same live platform UI within both halves, with aligned conventions. |
+| X-016 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Current owned-device teardown JSON on both platforms identifies the target and reports platform-specific process/session cleanup comparably. |
+| X-023 | pass | findings/evidence/cov3-android/X-cross-platform-audit/ | Both current platform timeout captures emit the identical terminal 30-second kill sentence after reaching the active long-wait flow, without the historical stray colon. |
+
+
+| AND-067 | pass | findings/evidence/cov3-android/android-settings-browse-exact-rerun2/AND-067-browse/ | During the exact browse flow all capture settings were observed applied; after normal exit 0 every prior value was restored and the per-serial state file was absent. |
+| AND-145 | pass | findings/evidence/cov3-android/android-settings-browse-exact-rerun2/AND-145/ | Exact `run --allow-device-settings --flow .maestro/01-browse.yaml` was accepted, applied demo/animation settings during the run, passed, restored every prior value, and removed its state file. |
+
+
+| B2-K26 | pass | findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-install/, findings/evidence/cov3-android/build-install-contracts-exact-rerun1/BA03-run/ | PaidDebug build install warned `installing` the APK's `.paid` ID, with no testing wording or application-id advice; run separately retained the `testing` wording and explicit override advice. |
+
+
+
+
+
+
+| B2-K18 [android] | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/, findings/evidence/cov3-android/B2-K25-ci-correction-rerun2/ | Ephemeral run and diff emitted only the documented `Report not kept` line and exposed no deleted temp path; explicit report-dir retained and listed report.json/JUnit/Allure paths that exist. Android CI's required early refusal likewise exposed no temp report path. |
+| B2-K22 [android] | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/ | Inline commands, nested relative runFlow, and file+when all passed; empty runFlow named every accepted form and produced no screenshot. Exact source proves `Runner ready` only means binary availability and resolution occurs before runner subprocess execution; exact-head tests cover the semantic clauses. |
+
+
+| B2-K23-a | pass | findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K23-header/, findings/evidence/cov3-android/B2-K23a-completion-rerun2/ | In a no-config cwd, a literal flow appId alone ran and passed; a `${APP_ID}` header with no other source retained the required-ID error; the same template used the frozen APK ID; and explicit application-id overrode a conflicting literal header. Exact-head target-resolution tests cover precedence semantics. |
+
+
+| N-14 [android] | pass | findings/evidence/cov3-android/AND-106/, findings/evidence/cov3-android/CF-crash1/, findings/evidence/cov3-android/source-runtime-joins/ | The retained report-dir stock invocation shows 03-edit appended, passed, and carried no input warning; CF-crash1/report/flow-000.json records the failed crash wait with `error.type: app_crash`. |
+| B2-K04 [android] | pass | findings/evidence/cov3-android/AND-106/, findings/evidence/cov3-android/source-runtime-joins/ | In the same invocation, every Android per-flow header names `google sdk_gphone64_arm64 (android 35 Emulator)` and report.json records platform android with `isSimulator:true`; exact runner tests pin Emulator vs iOS Simulator wording. |
+
+
+| B2-K29 | pass | findings/evidence/cov3-android/secondary-shutdown-contracts-exact-rerun3/ | While running, no-boot text returned emulator-5556 and `Reused ... Booted`, and JSON carried Booted+serial; after teardown, text/JSON reported Shutdown with no serial and adb proved it stayed stopped; fresh no-boot creation also reported Created/Shutdown. |
+| B2-K30 | pass | findings/evidence/cov3-android/secondary-shutdown-contracts-exact-rerun3/delete-json/ | Owned stopped secondary delete emitted sorted, indented JSON with `deleted : true` and exact name, then removed the AVD. |
+| B2-K44 [android] | pass | findings/evidence/cov3-android/secondary-shutdown-contracts-exact-rerun3/ | Against explicitly targeted shutdown cov3-android-2, missing flow with/without no-build, directory, and configured-missing variants all failed in 0.032s with exact invalid path, no boot/build/install, no attachment, and no failure screenshot. |
+| X-014 | pass | findings/evidence/cov3-android/X-cross-platform-audit/, findings/evidence/cov3-android/secondary-shutdown-contracts-exact-rerun3/ | Current Android fresh boot plain and JSON each returned serial/state/created semantics and complementary reused forms; joined current iOS new/reused ensure evidence has the same identity/state/created contract with documented platform fields. |
+
+
+| D2-08 [android] | pass | findings/evidence/cov3-android/B2-K25-full-exact-rerun1/, findings/evidence/cov3-android/B2-K25-ci-correction-rerun2/ | From an absent-package state, build install, run, and diff capture with no-build+APK each installed the frozen file and skipped only build; no-build alone said install skipped. Android CI returned its allowed local-baselines-only error without an API key, exactly recorded as the row permits. |
+
+
+
+| N-17 [android] | pass | findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/ | For browse and exact-negative, each live step line and repeated summary step line matched exactly; report flow commands carry the same milliseconds rounded to the displayed tenth (for example failed assert 17258ms ↔ 17.3s), and flow report/table totals likewise agree. |
+| B2-K05 [android] | pass | findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/, findings/evidence/cov3-android/source-runtime-joins/B2-K05/ | Every passing and failing command and both flow totals agree across live lines, summary blocks and flow/report JSON at shared precision; the failed assert duration also agrees despite full artifact capture. Exact fd9d8e8 runner duration-consistency source test (inspected, not newly executed) covers the fake 300ms artifact-capture semantic. |
+| B2-K82-a [android] | pass | findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/pass-full/, findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/pass-trailing/ | Full and trailing browse reports list exactly the two named takeScreenshot captures outside trace; per-step before/after images remain only under assets/trace semantics, and exact collector tests pin named-artifact selection. |
+| D2-04 [android] | pass | findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/ | Exact-negative trailing retained only last-good after plus failing before/after and consistent references; browse full retained every step trace; only the two named takeScreenshot points were listed/copied as captures. |
 
 ## Counts
 
-211 of 467 slice rows recorded: 196 pass, 9 fail, 4 blocked, 2 n/a.
+240 of 467 slice rows recorded: 225 pass, 9 fail, 4 blocked, 2 n/a.
