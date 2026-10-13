@@ -1,0 +1,143 @@
+Resolved: module=app variant=freeDebug device=emulator-5554 screens=2 flows=1
+Preparing runner...
+Runner ready
+Using emulator: cov3-android (emulator-5554)
+Skipping build and install (--no-build)
+Capturing 2 screen(s), then running 1 flow(s)...
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/screens
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] screens (grantiva-android.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ extendedWaitUntil: visible text=".+" (139ms)
+    ✓ waitForAnimationToEnd (360ms)
+    ✓ takeScreenshot (128ms)
+    ✗ tapOn: text="No Such Element" (17.2s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet", "Battery 100 percent.", "Half Dome")
+✗ screens 19.4s
+
+  [1/1] screens (grantiva-android.yml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ Wait for the app to draw (139ms)
+    ✓ waitForAnimationToEnd (360ms)
+    ✓ takeScreenshot (128ms)
+    ✗ tapOn: text="No Such Element" (17.2s)
+      ╰─ Element not found: text='No Such Element' (cause: context deadline exceeded: element not found; closest on-screen texts: "Wifi signal full.,No internet", "Battery 100 percent.", "Half Dome")
+    - waitForAnimationToEnd (skipped)
+    - takeScreenshot (skipped)
+✗ screens 19.4s
+
+  4 steps passing (19.4s)
+  1 steps failing
+  2 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       7      4      1      2      19.4s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       7      4      1      2      19.4s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/screens
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/screens/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/screens/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/screens/allure-results
+
+  Built by Grantiva
+
+Running the flows in one UIAutomator2 session: .maestro/01-browse.yaml
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+  ✓ Report directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report
+
+Execution
+────────────────────────────────────────
+  ⏳ Connecting to device emulator-5554...
+  ✓ Connected to google sdk_gphone64_arm64 (SDK 35)
+  ⏳ Starting UIAutomator2 server...
+  → Socket: /tmp/uia2-emulator-5554.sock
+  ✓ UIAutomator2 server started
+  ⏳ Creating session...
+  ✓ Session created
+
+  [1/1] 01-browse (01-browse.yaml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="Landmarks" (120ms)
+    ✓ assertVisible: text="Featured" (573ms)
+    ✓ takeScreenshot (138ms)
+    ✓ tapOn: text="Golden Gate Bridge" (202ms)
+    ✓ assertVisible: text="San Francisco, CA" (619ms)
+    ✓ assertVisible: text="Plan Visit" (28ms)
+    ✓ takeScreenshot (130ms)
+✓ 01-browse 3.3s
+
+  [1/1] 01-browse (.maestro/01-browse.yaml) - Device: google sdk_gphone64_arm64 (android 35 Emulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (1.5s)
+    ✓ assertVisible: text="Landmarks" (120ms)
+    ✓ assertVisible: text="Featured" (573ms)
+    ✓ takeScreenshot (138ms)
+    ✓ tapOn: text="Golden Gate Bridge" (202ms)
+    ✓ assertVisible: text="San Francisco, CA" (619ms)
+    ✓ assertVisible: text="Plan Visit" (28ms)
+    ✓ takeScreenshot (130ms)
+✓ 01-browse 3.3s
+
+  8 steps passing (3.3s)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  01-browse                      ✓ PASS       8      8      0      0       3.3s  google sdk_gphone64_arm64 (...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             1/1       8      8      0      0       3.3s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Reports: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report
+    ├── report.json
+    ├── junit-report.xml
+    └── allure-results/
+
+  Paths:
+    JSON:   /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/report.json
+    JUnit:  /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/junit-report.xml
+    Allure: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/output-contracts-exact-rerun2/B2-K20-ready/report/allure-results
+
+  Built by Grantiva
+
