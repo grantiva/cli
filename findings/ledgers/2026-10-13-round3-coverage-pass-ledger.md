@@ -430,3 +430,5 @@ Ruling: review mid-flow Android measurement using exact-session direct UIA2 sour
 Ruling: preserve original verdicts and append corrected-criterion reviews only when exact raw/source evidence satisfies the published matrix correction. Product failures remain failures; credential-only clauses remain blocked. Cost if wrong: reopen the affected row rather than silently declaring clean.
 
 The round report states22openfindings; finalintegrationreview andcommit/pushpending. The22-brief Round4plan is prepared and undergoing scoped re-review; userauthorizationcoverscontinuousexecution.
+
+Final Task 6 checkpoint: independent integration review approved all accounting, mappings, raw provenance and cleanup in findings/round3-final-integration-review.md. Report remains ROUND 3: 22 findings — round 4 fix wave required. Coverage campaign pushed through ec3a8134 (SSH exit 0). Round 4 plan independently reviewed READY and now executing Tasks 1/4/5 in isolated worktrees; continuation tracked in findings/ledgers/2026-10-13-round4-fix-wave-ledger.md. Task 6 report/publish work complete; nested fix-wave execution remains active.

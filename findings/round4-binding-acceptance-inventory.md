@@ -18,6 +18,8 @@ the round-3 coverage pass turns a `B3-L` row red on it.
 
 ## L53 — Task 3 + 4
 
+**Reviewed-plan ruling:** The retained brief predates the supported flag inventory. Validate the runner’s existing `--device` and CLI’s existing target flags; do not add unsupported `--udid`/`--serial` aliases. Keep malformed simulator-UDID and unknown-flag controls. Tasks 3 and 4 contain the executable contract.
+
 Source: `docs/superpowers/plans/2026-10-12-coverage-issues-round2/L53-runner-empty-device-value-accepted.md`
 
 ### Expected

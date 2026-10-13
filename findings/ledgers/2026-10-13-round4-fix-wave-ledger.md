@@ -88,3 +88,9 @@ Ruling: Task 1 routes nested failure capture through the same bounded collector,
 Task 1 owns the next Android window: fix4-1-android / session fix4-1, mktemp scratch APFS clone of owner runner home, load1 <15 for measurements. Task 5 owns next iOS window: fix4-5-ios-26 / session fix4-5, independently cloned runner home; Android waits for Task 1 cleanup. Task 4 has no device reservation yet. Frozen QA candidate remains untouched. All agents report actual IDs/PIDs and raw cleanup; owner devices are excluded.
 
 Task 7 runtime prerequisite resolved: Xcode installed iOS 26.2 (23C54) and 26.4 (23E244), exit 0 each. All required 26.0/26.2/26.4/27.0 now available. Post-install owner booted identity/state inventory unchanged; raw logs and summary in findings/evidence/fix4-controller/runtime-downloads/. WDA cache regeneration still awaits merged fix heads.
+
+Round 3 checkpoint and Round 4 setup pushed successfully through ec3a8134 on coverage-campaign (SSH exit 0). HTTPS attempts transferred slowly; interrupted only their verified owned process groups and retried the same repository/branch over existing authenticated SSH. No remote settings changed and no force push. Raw successful push output: findings/evidence/fix4-controller/campaign-push/.
+Task 1 tests green (driver/executor/report/device/client, vet, focused race); Android live acceptance starting on fix4-1-android, reserved emulator-5580; scratch /private/tmp/grantiva-fix4-1.6ddirwah. Actual creation/cleanup evidence remains required.
+Task 4 focused tests green, full suite running; source-only review will precede scheduled live checks. Task 5 focused 270 MCP +26 WDA tests green; full suite precedes iOS live checks.
+
+Task 5 full suite: 1965 tests, zero failures, fresh home remained empty. Live iOS identity: fix4-5-ios-26 / 4AB20A5D-520A-4EA3-97ED-D09D90DCE79D, iOS26.0; scratch /private/tmp/grantiva-fix4-5.7th4H3/runner-home, session fix4-5. Device owned by Task 5 until cleanup report.
