@@ -594,6 +594,26 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K107-a [android] | pass | findings/evidence/cov3-android/B2-K107-a-exact/, findings/evidence/cov3-android/B2-K15-live-teardown-accepted-rerun3/, findings/evidence/cov3-android/MCP059-062-D235-emulator-lifecycle-rerun1/ | The owned device lock is absent after the exact run while versioned install locks remain. Current teardown/delete lifecycle evidence and exact lease/device-home tests cover normal release, retry after unlink, and deleted-device pruning without leaking the device lock. |
 
+| B3-L52 [android] | pass | findings/evidence/cov3-android/B3-L52-keepalive-starting-rerun4/ | During an exact keep-alive start, standalone hierarchy, runner dump-hierarchy, and same-server MCP tree all return the documented retryable starting response rather than no-session. After stock flow 01 passes and its hold arms, all three return trees; stop exits zero and the run retains earned exit zero. |
+
+| D2-28 [android] | pass | findings/evidence/cov3-android/D2-28-invalid-system-image-rerun1/ | The literal Android-99 bogus system-image request exits 1 immediately after sdkmanager, naming the exact package, not-found reason, and installed Android-35 image. It creates no AVD or ledger record and leaves adb inventory unchanged. |
+
+| B2-K31 [android] | pass | findings/evidence/cov3-android/D2-28-invalid-system-image-rerun1/, findings/evidence/cov3-android/secondary-avd-lifecycle-exact-rerun1/ | The invalid image run emits one normalized sdkmanager error with the exact package and installed images, without doubled `Error`, trailing `null`, or `Creating AVD`, and creates nothing. Current successful ensure controls and exact EmulatorManager normalization/missing-directory tests cover the success and fake-install branches. |
+
+| B2-K105 [android] | pass | findings/evidence/cov3-android/B2-K105-nested-runflow-rerun1/, findings/evidence/cov3-android/wait-runflow-contracts-rerun1/ | Scalar and mapping top-level runFlow steps retain the as-written sub-flow name in live narration, report artifacts, and nested header across other-directory resolution. The exact repeat/commands complement passes its child tap/assert, prints `Run 14-runflow-sub.yaml`, and leaks no rewritten absolute path; resolver/fake-runner tests pin both mappings. |
+
+| B-A01.1 [android] | pass | findings/evidence/cov3-android/AND-035-exact/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/, findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/ | The exact note extra `a=b c` reaches the app and qa-note passes; current stock seed-empty and seed-many flows pass. The crash flow reports `app_crash` with the app's launch RuntimeException at launchApp. |
+
+| B-A02.1 [android] | pass | findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/, findings/evidence/cov3-android/CF-07-swipe-from-missing/, findings/evidence/cov3-android/CF-05-swipe-forms/ | Successful flow 02 logs the Lake Tahoe element lookup and rect before revealing Remove. The exact missing-row variant exits 1 with `Element not found for swipe`, while current swipe-form evidence and source semantics cover the successful start-inside-bounds behavior. |
+
+| B-R01.1 [android] | pass | findings/evidence/cov3-android/S2-01-inputtext-three-runs-rerun1/, findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/pass-full/ | Three current edit runs pass and assert `Golden Gate Bridge Renamed`; the retained full-snapshot Edited capture visibly preserves that renamed value in the Name field. |
+
+| B-R02.2 [android] | pass | findings/evidence/cov3-android/duration-snapshot-contracts-exact-rerun1/pass-full/ | The complete current full-snapshot run passes flow 02 and retains `02-favorite-cmd-008-Remove.png`, showing the required post-swipe revealed action. |
+
+| B-R02.3 [android] | pass | findings/evidence/cov3-android/CF-07-swipe-from-missing/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | The missing-row swipe exits 1 with the exact element-not-found error and repeated element lookup. The successful flow-02 client log retains the Lake Tahoe `/element` and `/rect` sequence. |
+
+| B-I16.1 [android] | pass | findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-065-diff/, findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K17-capture-json/ | Current captures contain literal `Deep Links.png` and `diffs/Deep Links_diff.png`; successful capture JSON retains the corresponding path fields with the same names. |
+
 ## Counts
 
-406 of 467 slice rows recorded: 383 pass, 17 fail, 4 blocked, 2 n/a.
+416 of 467 slice rows recorded: 393 pass, 17 fail, 4 blocked, 2 n/a.
