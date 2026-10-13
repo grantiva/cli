@@ -1,0 +1,50 @@
+    func testStepsAreTheRunnersCommandsWithTheirMeasuredDurations() throws {
+        try writeFlowReport(name: "01-browse", status: "passed", commands: Self.browseCommands)
+
+        let steps = try XCTUnwrap(collect().first?.steps)
+
+        XCTAssertEqual(steps.map(\.action), ["launchApp", "tapOn: text=\"Favorites\"", "waitForAnimationToEnd", "takeScreenshot"])
+        XCTAssertEqual(steps.map(\.duration), [1.883, 1.6, 0.601, 0.145])
+        XCTAssertEqual(steps.map(\.status), [.passed, .passed, .passed, .passed])
+    }
+
+    func testTheFailurePathCarriesTheSameRealDurations() throws {
+        try writeFlowReport(name: "02-exact-negative", status: "failed", commands: """
+        [{"index":0,"type":"launchApp","yaml":"launchApp","status":"passed","duration":2000},
+         {"index":1,"type":"assertVisible","yaml":"assertVisible: text=\\"X\\"","status":"failed","duration":12600,
+          "error":{"type":"assertion","message":"Element not visible"}},
+         {"index":2,"type":"takeScreenshot","yaml":"takeScreenshot","status":"skipped"}]
+        """)
+        let steps = try XCTUnwrap(RunnerFailureReport.captures(reportDir: reportDir.path).first?.steps)
+        XCTAssertEqual(steps.map(\.duration), [2.0, 12.6])
+        XCTAssertEqual(steps.map(\.status), [.passed, .failed])
+        XCTAssertEqual(steps.last?.message, "Element not visible")
+    }
+
+    func testScreenStepsCarryTheDurationsOfTheCommandsTheyGenerated() throws {
+        let screens = [
+            GrantivaConfig.Screen(name: "Home", path: .launch),
+            GrantivaConfig.Screen(name: "Favorites", path: .steps([.init(tap: "Favorites")])),
+        ]
+        let owners = FlowGenerator.generateWithMap(screens: screens, bundleId: "com.example").owners
+        // launchApp, settle, shot Home, tapOn, settle, settle-before-shot is skipped, shot Favorites
+        XCTAssertEqual(owners.count, 6)
+        let commands = (0..<owners.count).map { index in
+            #"{"index":\#(index),"type":"t\#(index)","yaml":"t\#(index)","status":"passed","duration":\#((index + 1) * 100)}"#
+        }.joined(separator: ",")
+        try writeFlowReport(name: "screens", status: "passed", commands: "[\(commands)]")
+        try write("png", to: "assets/flow-000/cmd-002-Home.png")
+        try write("png", to: "assets/flow-000/cmd-005-Favorites.png")
+
+        let captures = RunnerSession.screenCaptures(
+            screens: screens, reportDir: reportDir.path, outputDir: outputDir.path, owners: owners,
+            failure: nil, failedScreen: nil
+        )
+
+        XCTAssertEqual(captures.map(\.screenName), ["Home", "Favorites"])
+        // Home: the launch-only screen reports all three of its commands.
+        XCTAssertEqual(captures[0].steps.map(\.duration), [0.6])
+        // Favorites: the tap and the settle it generated (400 + 500 ms).
+        XCTAssertEqual(captures[1].steps.map(\.action), ["Tap on \"Favorites\""])
+        XCTAssertEqual(captures[1].steps.map(\.duration), [0.9])
+        XCTAssertFalse(captures[1].path.isEmpty)

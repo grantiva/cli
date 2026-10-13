@@ -1,0 +1,60 @@
+    // MARK: - K83: a sub-flow's takeScreenshot is a screen
+
+    func testASubFlowScreenshotIsACapturePointInBothRunFlowForms() throws {
+        try "appId: com.kylebrowning.Landmarks\n---\n- tapOn: \"Landmarks\"\n- takeScreenshot: \"FromSub\"\n"
+            .write(to: scratch.appendingPathComponent("sub.yaml"), atomically: true, encoding: .utf8)
+        for runFlow in ["- runFlow: sub.yaml", "- runFlow:\n    file: sub.yaml"] {
+            let config = try MaestroFlowParser.parse(
+                "appId: com.kylebrowning.Landmarks\n---\n- launchApp\n\(runFlow)\n- takeScreenshot: \"Main\"\n",
+                sourceName: "grantiva.yml", baseDirectory: scratch
+            )
+            XCTAssertEqual(config.screens.map(\.name), ["FromSub", "Main"], runFlow)
+            guard case .steps(let steps) = config.screens[0].path else { return XCTFail("FromSub has steps") }
+            XCTAssertEqual(steps.first?.tap, "Landmarks")
+        }
+    }
+
+    func testASubFlowWithoutAScreenshotStaysOneRunFlowStep() throws {
+        try "appId: x\n---\n- tapOn: \"Landmarks\"\n"
+            .write(to: scratch.appendingPathComponent("plain.yaml"), atomically: true, encoding: .utf8)
+        let config = try MaestroFlowParser.parse(
+            "appId: x\n---\n- launchApp\n- runFlow: plain.yaml\n- takeScreenshot: \"Main\"\n",
+            sourceName: "grantiva.yml", baseDirectory: scratch
+        )
+        XCTAssertEqual(config.screens.map(\.name), ["Main"])
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("Main has steps") }
+        XCTAssertEqual(steps.map(\.runFlow), ["plain.yaml"])
+    }
+
+    func testAMissingOrCyclicSubFlowIsLeftForTheRunnerToReport() throws {
+        try "appId: x\n---\n- runFlow: a.yaml\n- takeScreenshot: \"InA\"\n"
+            .write(to: scratch.appendingPathComponent("a.yaml"), atomically: true, encoding: .utf8)
+        let config = try MaestroFlowParser.parse(
+            "appId: x\n---\n- runFlow: missing.yaml\n- runFlow: a.yaml\n- takeScreenshot: \"Main\"\n",
+            sourceName: "grantiva.yml", baseDirectory: scratch
+        )
+        // a.yaml is expanded once; its own runFlow back to a.yaml stays a step.
+        XCTAssertEqual(config.screens.map(\.name), ["InA", "Main"])
+        guard case .steps(let steps) = config.screens[0].path else { return XCTFail("InA has steps") }
+        XCTAssertEqual(steps.compactMap(\.runFlow), ["missing.yaml", "a.yaml"])
+    }
+
+    func testAScreenNameTakenInBothParentAndSubFlowIsAnError() throws {
+        try "appId: x\n---\n- takeScreenshot: \"Main\"\n"
+            .write(to: scratch.appendingPathComponent("sub.yaml"), atomically: true, encoding: .utf8)
+        XCTAssertThrowsError(try MaestroFlowParser.parse(
+            "appId: x\n---\n- runFlow: sub.yaml\n- tapOn: \"Go\"\n- takeScreenshot: \"Main\"\n",
+            sourceName: "grantiva.yml", baseDirectory: scratch
+        )) { error in
+            XCTAssertTrue(error.localizedDescription.contains("\"Main\""), "\(error)")
+        }
+    }
+
+    func testAConfigFileExpandsSubFlowsRelativeToItsDirectory() throws {
+        try "appId: com.example\n---\n- launchApp\n- runFlow: sub.yaml\n- takeScreenshot: \"Main\"\n"
+            .write(to: scratch.appendingPathComponent("grantiva.yml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- takeScreenshot: \"FromSub\"\n"
+            .write(to: scratch.appendingPathComponent("sub.yaml"), atomically: true, encoding: .utf8)
+        let config = try XCTUnwrap(GrantivaConfig.loadIfPresent(platform: .ios, from: scratch))
+        XCTAssertEqual(config.screens.map(\.name), ["FromSub", "Main"])
+    }
