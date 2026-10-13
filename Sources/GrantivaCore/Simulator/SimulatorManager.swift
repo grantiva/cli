@@ -111,8 +111,8 @@ public struct SimulatorManager: Sendable, Decodable {
     public func boot(nameOrUDID: String, ephemeral: Bool = false) async throws -> SimulatorDevice {
         let device = try await exactDevice(nameOrUDID: nameOrUDID)
         if device.isBooted {
-            let devices = try await listDevices()
-            guard try capacity.sessions(devices: devices).contains(where: { $0.udid == device.udid }) else {
+            let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
+            guard try capacity.sessions(snapshot: snapshot).contains(where: { $0.udid == device.udid }) else {
                 return device
             }
         }
@@ -348,14 +348,14 @@ public struct SimulatorManager: Sendable, Decodable {
     }
 
     public func managedSessions() async throws -> [ManagedSimulatorSession] {
-        try capacity.sessions(devices: try await listDevices())
+        try capacity.sessions(snapshot: await capacity.snapshot(devices: { try await listDevices() }))
     }
 
     /// Ends a session. Simulators Grantiva created are deleted outright;
     /// pre-existing devices the session merely booted are only shut down.
     public func teardown(sessionId: String) async throws -> [SimulatorTeardownOutcome] {
-        let devices = try await listDevices()
-        return try await end(try capacity.sessions(sessionId: sessionId, devices: devices), devices: devices)
+        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
+        return try await end(try capacity.sessions(snapshot: snapshot).filter { $0.sessionId == sessionId }, devices: snapshot.devices)
     }
 
     /// Ends whatever session owns `udid`. Used by
@@ -365,8 +365,9 @@ public struct SimulatorManager: Sendable, Decodable {
     /// has runner homes; they are removed while no run holds the device, and
     /// reported in an outcome with no session.
     public func teardown(udid: String) async throws -> [SimulatorTeardownOutcome] {
-        let devices = try await listDevices()
-        let records = try capacity.sessions(devices: devices).filter { $0.udid == udid }
+        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
+        let devices = snapshot.devices
+        let records = try capacity.sessions(snapshot: snapshot).filter { $0.udid == udid }
         guard records.isEmpty else { return try await end(records, devices: devices) }
         // Holding the lease keeps a run from starting in the device's home
         // while it is removed. A device a run holds is not idle: say who
@@ -420,8 +421,9 @@ public struct SimulatorManager: Sendable, Decodable {
     /// longer part of an active managed session. Ledger entries for devices
     /// that no longer exist are pruned. Never touches user-created devices.
     public func cleanup() async throws -> [CreatedSimulatorRecord] {
-        let devices = try await listDevices()
-        let active = Set(try capacity.sessions(devices: devices).map(\.udid))
+        let snapshot = try await capacity.snapshot(devices: { try await listDevices() })
+        let devices = snapshot.devices
+        let active = Set(try capacity.sessions(snapshot: snapshot).map(\.udid))
         var removed: [CreatedSimulatorRecord] = []
         for record in try provenance.all() {
             guard let device = devices.first(where: { $0.udid == record.udid }) else {

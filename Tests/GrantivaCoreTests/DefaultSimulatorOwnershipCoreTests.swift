@@ -70,12 +70,13 @@ final class DefaultSimulatorOwnershipCoreTests: XCTestCase {
                        "the runner home is spelled the realpath way (L27)")
     }
 
-    func testReadingAnAbsentLedgerCreatesNothing() throws {
+    func testReadingAnAbsentLedgerCreatesNothing() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("grantiva-absent-\(UUID().uuidString)").path
         let provenance = SimulatorProvenance(directory: directory)
         XCTAssertEqual(try provenance.all(), [])
         XCTAssertFalse(try provenance.contains(udid: "X"))
-        XCTAssertEqual(try SimulatorCapacity(directory: directory).sessions(devices: []), [])
+        let snapshot = try await SimulatorCapacity(directory: directory).snapshot(devices: { [] })
+        XCTAssertEqual(try SimulatorCapacity(directory: directory).sessions(snapshot: snapshot), [])
         XCTAssertFalse(FileManager.default.fileExists(atPath: directory))
     }
 

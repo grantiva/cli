@@ -219,7 +219,9 @@ final class SimulatorReaperTests: XCTestCase {
         XCTAssertEqual(result.capacityRecordsCleared, 0)
         XCTAssertEqual(result.capacityRecordsKept.map(\.sessionId), ["qa-ios"])
         XCTAssertTrue(result.capacityRecordsKept[0].reason.contains("teardown --session-id qa-ios"), result.capacityRecordsKept[0].reason)
-        let remaining = try SimulatorCapacity(directory: directory).sessions(devices: booted(udid))
+        let devices = booted(udid)
+        let snapshot = try await SimulatorCapacity(directory: directory).snapshot(devices: { devices })
+        let remaining = try SimulatorCapacity(directory: directory).sessions(snapshot: snapshot)
         XCTAssertEqual(remaining.map(\.udid), [udid])
 
         let object = try XCTUnwrap(JSONSerialization.jsonObject(with: JSONEncoder().encode(result)) as? [String: Any])
