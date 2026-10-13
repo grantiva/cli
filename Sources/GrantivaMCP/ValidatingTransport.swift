@@ -113,6 +113,8 @@ actor ValidatingTransport: Transport {
     private let inner: any Transport
     private var cancellations = CancellationTracker()
     private var sending = false
+    private var activeWrite: Task<Void, Swift.Error>?
+    private var sendFailure: (any Swift.Error)?
     private var sendWaiters: [CheckedContinuation<Void, Never>] = []
     /// When a cancel is handed to the SDK again, after the request's task has
     /// had time to register (milliseconds after the first delivery).
@@ -126,18 +128,25 @@ actor ValidatingTransport: Transport {
 
     func connect() async throws { try await inner.connect() }
 
-    func disconnect() async { await inner.disconnect() }
+    func disconnect() async {
+        sendFailure = MCPError.connectionClosed
+        // Explicit shutdown owns cancellation of the in-flight write. Close
+        // the underlying I/O and wait for that owned task to finish.
+        let write = activeWrite
+        write?.cancel()
+        await inner.disconnect()
+        _ = try? await write?.value
+    }
 
     func send(_ data: Data) async throws {
-        guard let kept = cancellations.outgoing(data) else { return }
-        try await sendWholeMessage(JSONRPCScreen.outgoing(kept))
+        try await sendWholeMessage(data, screenResponse: true)
     }
 
     /// Actor isolation alone does not serialize an async send: StdioTransport
     /// yields when a partial write fills stdout. Keep ownership until the
     /// entire encoded message (including its newline) has been written.
     /// Validation replies use this same gate as SDK responses/notifications.
-    private func sendWholeMessage(_ data: Data) async throws {
+    private func sendWholeMessage(_ data: Data, screenResponse: Bool = false) async throws {
         if sending {
             await withCheckedContinuation { sendWaiters.append($0) }
         } else {
@@ -151,7 +160,30 @@ actor ValidatingTransport: Transport {
             }
         }
         try Task.checkCancellation()
-        try await inner.send(data)
+        if let sendFailure { throw sendFailure }
+        let outgoing: Data
+        if screenResponse {
+            // A response can be cancelled while it waits behind another
+            // frame. Keep it pending until it is actually ready to write.
+            guard let kept = cancellations.outgoing(data) else { return }
+            outgoing = JSONRPCScreen.outgoing(kept)
+        } else {
+            outgoing = data
+        }
+        // Once bytes start, caller cancellation must not truncate the frame.
+        // Retain the task so explicit disconnect can still cancel/await it.
+        let write = Task { try await inner.send(outgoing) }
+        activeWrite = write
+        defer { activeWrite = nil }
+        do {
+            try await write.value
+        } catch {
+            // The transport may have written a prefix before failing. Its
+            // framing is now unknown: fail every waiter instead of appending.
+            sendFailure = error
+            await inner.disconnect()
+            throw error
+        }
     }
 
     /// Notes `data`, then forwards it; a cancel for an unanswered request is

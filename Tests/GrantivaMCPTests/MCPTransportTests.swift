@@ -177,6 +177,125 @@ final class MCPTransportTests: XCTestCase {
         XCTAssertEqual(largestWrite, 4096)
     }
 
+    func testCancellingAnActiveWriteFinishesItsFrameBeforeTheNextMessage() async throws {
+        let started = expectation(description: "first partial write")
+        let completed = expectation(description: "both senders returned")
+        completed.expectedFulfillmentCount = 2
+        let sink = SuspendedWriteTransport(started: { started.fulfill() })
+        let transport = ValidatingTransport(wrapping: sink)
+        let first = Data(#"{"jsonrpc":"2.0","id":1,"result":"first"}"#.utf8)
+        let second = Data(#"{"jsonrpc":"2.0","id":2,"result":"second"}"#.utf8)
+        let active = Task { defer { completed.fulfill() }; try? await transport.send(first) }
+        await fulfillment(of: [started], timeout: 2)
+        let pending = Task { defer { completed.fulfill() }; try? await transport.send(second) }
+        active.cancel()
+        await sink.resumeWrite()
+        await fulfillment(of: [completed], timeout: 2)
+        pending.cancel()
+        let bytes = await sink.bytes
+        XCTAssertEqual(bytes, first + Data([10]) + second + Data([10]))
+    }
+
+    func testCancellingAPendingWriteDoesNotStartItsFrameOrStrandTheNextSender() async throws {
+        let started = expectation(description: "first partial write")
+        let queued = expectation(description: "pending sender started")
+        let completed = expectation(description: "all senders returned")
+        completed.expectedFulfillmentCount = 3
+        let sink = SuspendedWriteTransport(started: { started.fulfill() })
+        let transport = ValidatingTransport(wrapping: sink)
+        let first = Data(#"{"jsonrpc":"2.0","id":1,"result":{}}"#.utf8)
+        let skipped = Data(#"{"jsonrpc":"2.0","id":2,"result":{}}"#.utf8)
+        let third = Data(#"{"jsonrpc":"2.0","id":3,"result":{}}"#.utf8)
+        let active = Task { defer { completed.fulfill() }; try? await transport.send(first) }
+        await fulfillment(of: [started], timeout: 2)
+        let pending = Task {
+            defer { completed.fulfill() }
+            queued.fulfill()
+            do { try await transport.send(skipped); XCTFail("cancelled frame was sent") }
+            catch is CancellationError {} catch { XCTFail("unexpected error: \(error)") }
+        }
+        await fulfillment(of: [queued], timeout: 2)
+        pending.cancel()
+        let last = Task { defer { completed.fulfill() }; try? await transport.send(third) }
+        await sink.resumeWrite()
+        await fulfillment(of: [completed], timeout: 2)
+        active.cancel(); last.cancel()
+        let bytes = await sink.bytes
+        XCTAssertEqual(bytes, first + Data([10]) + third + Data([10]))
+    }
+
+    func testAProtocolCancellationDropsAResponseWaitingBehindAnotherFrame() async throws {
+        let started = expectation(description: "first partial write")
+        let requestSeen = expectation(description: "request forwarded")
+        let cancelSeen = expectation(description: "cancel forwarded")
+        let completed = expectation(description: "senders returned")
+        completed.expectedFulfillmentCount = 2
+        let sink = SuspendedWriteTransport(started: { started.fulfill() })
+        let transport = ValidatingTransport(wrapping: sink, cancelRetries: [])
+        let stream = await transport.receive()
+        let reader = Task {
+            for try await data in stream {
+                let text = String(decoding: data, as: UTF8.self)
+                if text.contains("notifications/cancelled") { cancelSeen.fulfill() }
+                else { requestSeen.fulfill() }
+            }
+        }
+        defer { reader.cancel() }
+        let first = Data(#"{"jsonrpc":"2.0","id":1,"result":{}}"#.utf8)
+        let second = Data(#"{"jsonrpc":"2.0","id":2,"result":{}}"#.utf8)
+        await sink.deliver(Data(#"{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"x"}}"#.utf8))
+        await fulfillment(of: [requestSeen], timeout: 2)
+        let active = Task { defer { completed.fulfill() }; try? await transport.send(first) }
+        await fulfillment(of: [started], timeout: 2)
+        let pending = Task { defer { completed.fulfill() }; try? await transport.send(second) }
+        // Let the second send reach the gate before delivering its protocol
+        // cancellation; the underlying first write remains explicitly blocked.
+        try await Task.sleep(for: .milliseconds(20))
+        await sink.deliver(Data(#"{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":2}}"#.utf8))
+        await fulfillment(of: [cancelSeen], timeout: 2)
+        await sink.resumeWrite()
+        await fulfillment(of: [completed], timeout: 2)
+        active.cancel(); pending.cancel()
+        let bytes = await sink.bytes
+        XCTAssertEqual(bytes, first + Data([10]))
+        await transport.disconnect()
+    }
+
+    func testFailedPartialWriteClosesTransportAndReleasesQueuedSenders() async throws {
+        try await assertPartialWriteStopsQueue(disconnect: false)
+    }
+
+    func testDisconnectStopsTheOwnedWriteAndReleasesQueuedSenders() async throws {
+        try await assertPartialWriteStopsQueue(disconnect: true)
+    }
+
+    private func assertPartialWriteStopsQueue(disconnect: Bool) async throws {
+        let started = expectation(description: "first partial write")
+        let completed = expectation(description: "both failed senders returned")
+        completed.expectedFulfillmentCount = 2
+        let sink = SuspendedWriteTransport(failWrite: !disconnect, started: { started.fulfill() })
+        let transport = ValidatingTransport(wrapping: sink)
+        let message = Data(#"{"jsonrpc":"2.0","id":1,"result":{}}"#.utf8)
+        let active = Task {
+            defer { completed.fulfill() }
+            do { try await transport.send(message); XCTFail("expected write failure") } catch {}
+        }
+        await fulfillment(of: [started], timeout: 2)
+        let pending = Task {
+            defer { completed.fulfill() }
+            do { try await transport.send(message); XCTFail("queued send must fail after framing is lost") } catch {}
+        }
+        if disconnect { await transport.disconnect() } else { await sink.resumeWrite() }
+        await fulfillment(of: [completed], timeout: 2)
+        active.cancel(); pending.cancel()
+        let bytes = await sink.bytes
+        let attempts = await sink.attempts
+        let closed = await sink.closed
+        XCTAssertEqual(bytes, Data(message.prefix(8)), "never append another frame after a failed partial write")
+        XCTAssertEqual(attempts, 1)
+        XCTAssertTrue(closed)
+    }
+
     func testBatchMembersAreScreenedOneByOne() throws {
         guard case .reply(let empty) = JSONRPCScreen.screen(Data("[]".utf8)) else { return XCTFail("expected a reply") }
         let emptyError = try XCTUnwrap(json(empty))
@@ -372,5 +491,43 @@ private actor PartialWriteTransport: Transport {
             remaining.removeFirst(chunk.count)
             try await Task.sleep(for: .milliseconds(1))
         }
+    }
+}
+
+/// Suspend after a partial write, without depending on pipe sizes or timing.
+private actor SuspendedWriteTransport: Transport {
+    nonisolated let logger = Logger(label: "test.suspended-write")
+    private let started: @Sendable () -> Void
+    private let failWrite: Bool
+    private var continuation: CheckedContinuation<Void, Never>?
+    private let incoming: AsyncThrowingStream<Data, Swift.Error>
+    private let incomingContinuation: AsyncThrowingStream<Data, Swift.Error>.Continuation
+    private(set) var bytes = Data()
+    private(set) var attempts = 0
+    private(set) var closed = false
+
+    init(failWrite: Bool = false, started: @escaping @Sendable () -> Void) {
+        self.failWrite = failWrite
+        self.started = started
+        (incoming, incomingContinuation) = AsyncThrowingStream.makeStream()
+    }
+    func connect() {}
+    func receive() -> AsyncThrowingStream<Data, Swift.Error> { incoming }
+    func deliver(_ data: Data) { incomingContinuation.yield(data) }
+    func disconnect() { closed = true; resumeWrite(); incomingContinuation.finish() }
+    func resumeWrite() { continuation?.resume(); continuation = nil }
+    func send(_ data: Data) async throws {
+        guard !closed else { throw MCPError.connectionClosed }
+        attempts += 1
+        if attempts == 1 {
+            bytes.append(data.prefix(8))
+            await withCheckedContinuation { continuation = $0; started() }
+            try Task.checkCancellation()
+            guard !closed, !failWrite else { throw MCPError.connectionClosed }
+            bytes.append(data.dropFirst(8))
+        } else {
+            bytes.append(data)
+        }
+        bytes.append(10)
     }
 }
