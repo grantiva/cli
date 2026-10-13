@@ -12,15 +12,20 @@ public struct OutputRewriter: Sendable {
     /// Ordered longest-source-first so a path that is a prefix of another
     /// cannot shadow it.
     private let replacements: [(source: String, target: String)]
+    private let targets: [String: String]
+    private let matcher: NSRegularExpression?
     private var pending = ""
     private let displayPaths: Set<String>
     private static let cycleMarker = "circular dependency detected: "
 
     public init(replacements: [String: String]) {
         self.displayPaths = Set(replacements.values)
-        self.replacements = replacements
+        self.targets = replacements.filter { !$0.key.isEmpty }
+        self.replacements = replacements.filter { !$0.key.isEmpty }
             .map { (source: $0.key, target: $0.value) }
             .sorted { $0.source.count > $1.source.count }
+        let pattern = self.replacements.map { NSRegularExpression.escapedPattern(for: $0.source) }.joined(separator: "|")
+        self.matcher = pattern.isEmpty ? nil : try? NSRegularExpression(pattern: pattern)
     }
 
     public var isEmpty: Bool { replacements.isEmpty }
@@ -28,8 +33,13 @@ public struct OutputRewriter: Sendable {
     /// Applies every substitution to a complete string.
     public func rewrite(_ text: String) -> String {
         var result = text
-        for replacement in replacements {
-            result = result.replacingOccurrences(of: replacement.source, with: replacement.target)
+        // Match the original text once: an inserted absolute display path may
+        // contain another source alias (/tmp inside /private/tmp).
+        for match in matches(in: text).reversed() {
+            guard let sourceRange = Range(match.range, in: text),
+                  let resultRange = Range(match.range, in: result),
+                  let target = targets[String(text[sourceRange])] else { continue }
+            result.replaceSubrange(resultRange, with: target)
         }
         return result.components(separatedBy: "\n").map { line in
             guard let marker = line.range(of: Self.cycleMarker) else { return line }
@@ -78,11 +88,18 @@ public struct OutputRewriter: Sendable {
             pending = String(pending[marker.lowerBound...])
             return emit
         }
-        let rewritten = rewrite(pending)
-        let holdback = longestPartialMatchSuffix(of: rewritten)
-        let emitEnd = rewritten.index(rewritten.endIndex, offsetBy: -holdback)
-        let emit = String(rewritten[rewritten.startIndex..<emitEnd])
-        pending = String(rewritten[emitEnd...])
+        let holdback = longestPartialMatchSuffix(of: pending)
+        var emitEnd = pending.index(pending.endIndex, offsetBy: -holdback)
+        // A later partial source must not split an earlier complete match.
+        // A longer source starting at the same position still stays buffered.
+        for match in matches(in: pending) {
+            if let range = Range(match.range, in: pending), range.lowerBound < emitEnd, range.upperBound > emitEnd {
+                emitEnd = range.upperBound
+            }
+        }
+        let emit = rewrite(String(pending[..<emitEnd]))
+        // Retain only original input, never a suffix of an inserted target.
+        pending = String(pending[emitEnd...])
         return emit
     }
 
@@ -91,6 +108,10 @@ public struct OutputRewriter: Sendable {
         let remainder = rewrite(pending)
         pending = ""
         return remainder
+    }
+
+    private func matches(in text: String) -> [NSTextCheckingResult] {
+        matcher?.matches(in: text, range: NSRange(text.startIndex..., in: text)) ?? []
     }
 
     /// Length of the longest suffix of `text` that is a proper prefix of one of

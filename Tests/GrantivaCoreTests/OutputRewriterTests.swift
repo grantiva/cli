@@ -83,4 +83,41 @@ final class OutputRewriterTests: XCTestCase {
         XCTAssertEqual(rewriter.rewrite(absolute), absolute)
     }
 
+    func testAbsoluteDisplayPathIsNotRewrittenThroughItsTmpAlias() {
+        let absolute = "/private/tmp/project/a.yaml"
+        let input = "circular dependency detected: /var/folders/test/grantiva-staged/0/a.yaml -> b.yaml -> a.yaml -> b.yaml\n"
+        let expected = "circular dependency detected: \(absolute) -> b.yaml -> a.yaml -> b.yaml\n"
+        let map = ["/var/folders/test/grantiva-staged/0/a.yaml": absolute, absolute: absolute, "/tmp/project/a.yaml": absolute]
+        XCTAssertEqual(OutputRewriter(replacements: map).rewrite(input), expected)
+        XCTAssertEqual(OutputRewriter(replacements: map).rewrite(absolute), absolute)
+        for boundary in input.indices {
+            var rewriter = OutputRewriter(replacements: map)
+            let head = rewriter.consume(String(input[..<boundary]))
+            let tail = rewriter.consume(String(input[boundary...])) + rewriter.flush()
+            XCTAssertEqual(head + tail, expected)
+        }
+    }
+
+    func testStreamingRetainsOriginalFragmentsInsteadOfInsertedTargetSuffixes() {
+        var rewriter = OutputRewriter(replacements: ["AB": "tail", "tailX": "wrong"])
+        let first = rewriter.consume("AB")
+        XCTAssertEqual(first, "tail")
+        XCTAssertEqual(first + rewriter.consume("X") + rewriter.flush(), "tailX")
+        var overlap = OutputRewriter(replacements: ["ab": "X", "bc": "Y"])
+        XCTAssertEqual(overlap.consume("ab") + overlap.consume("c") + overlap.flush(), "Xc")
+        var longer = OutputRewriter(replacements: ["ab": "X", "abcd": "Z"])
+        XCTAssertEqual(longer.consume("ab"), "")
+        XCTAssertEqual(longer.consume("cd") + longer.flush(), "Z")
+    }
+
+    func testUnicodeSourcesAndTargetsSurviveEveryStreamBoundary() {
+        let input = "before /tmp/é😀.yaml after"
+        let expected = "before 原稿/😀.yaml after"
+        for boundary in input.indices {
+            var rewriter = OutputRewriter(replacements: ["/tmp/é😀.yaml": "原稿/😀.yaml"])
+            let head = rewriter.consume(String(input[..<boundary]))
+            XCTAssertEqual(head + rewriter.consume(String(input[boundary...])) + rewriter.flush(), expected)
+        }
+    }
+
 }
