@@ -89,10 +89,110 @@ public final class LogStreamer: @unchecked Sendable {
     private let lock = NSLock()
     private let output = SerializedLogOutput()
     private var stopped = false
+    private var cleanupSucceeded = true
     private var terminationCleanup: UInt64?
     private var terminationLogged: EndedOnce?
 
     public init() {}
+
+    struct ProcessIdentity: Equatable {
+        let seconds: UInt64
+        let microseconds: UInt64
+    }
+
+    static func processIdentity(_ pid: Int32) -> ProcessIdentity? {
+        var info = proc_bsdinfo()
+        let size = Int32(MemoryLayout<proc_bsdinfo>.size)
+        guard pid > 0, proc_pidinfo(pid, PROC_PIDTBSDINFO, 0, &info, size) == size else { return nil }
+        return ProcessIdentity(seconds: info.pbi_start_tvsec, microseconds: info.pbi_start_tvusec)
+    }
+
+    static func processIdentities() -> [Int32: ProcessIdentity] {
+        let count = proc_listallpids(nil, 0)
+        guard count > 0 else { return [:] }
+        var pids = [Int32](repeating: 0, count: Int(count) + 64)
+        let read = pids.withUnsafeMutableBytes { proc_listallpids($0.baseAddress, Int32($0.count)) }
+        guard read > 0 else { return [:] }
+        return Dictionary(pids.prefix(min(Int(read), pids.count)).compactMap { pid in
+            processIdentity(pid).map { (pid, $0) }
+        }, uniquingKeysWith: { first, _ in first })
+    }
+
+    struct OwnedLogChildren {
+        let deviceID: String
+        let marker: String
+        var snapshot: (Date) throws -> String = { try LogStreamer.processSnapshot(deadline: $0) }
+        var identities: () -> [Int32: ProcessIdentity] = LogStreamer.processIdentities
+        var identity: (Int32) -> ProcessIdentity? = LogStreamer.processIdentity
+        var signal: (Int32, Int32) -> Void = { _ = kill($0, $1) }
+
+        /// The UUID predicate is minted for this device and this run only.
+        /// Arguments mentioning it on another executable never confer ownership.
+        func matchingPIDs(in snapshot: String) -> [Int32] {
+            snapshot.split(separator: "\n").compactMap { line in
+                let fields = line.split(maxSplits: 1, whereSeparator: { $0 == " " || $0 == "\t" })
+                guard fields.count == 2, let pid = Int32(fields[0]), pid > 1, pid != getpid() else { return nil }
+                let words = fields[1].split(maxSplits: 2, whereSeparator: { $0 == " " || $0 == "\t" })
+                guard words.count == 3, URL(fileURLWithPath: String(words[0])).lastPathComponent == "log",
+                      words[1] == "stream",
+                      words[2].components(separatedBy: CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_")).inverted)
+                        .contains(marker) else { return nil }
+                return pid
+            }
+        }
+
+        struct Discovery {
+            let identities: [Int32: ProcessIdentity]
+            let sawMatchingCommand: Bool
+        }
+
+        /// Bracket command discovery with kernel identities. Reading only a
+        /// start time after ps would incorrectly adopt a PID reused while ps ran.
+        func discover(until deadline: Date) throws -> Discovery {
+            guard Date() < deadline else { throw InventoryError.timedOut }
+            let before = identities()
+            let commands = try snapshot(deadline)
+            guard Date() < deadline else { throw InventoryError.timedOut }
+            let pids = matchingPIDs(in: commands)
+            let stable = pids.compactMap { pid -> (Int32, ProcessIdentity)? in
+                guard let original = before[pid], identity(pid) == original else { return nil }
+                return (pid, original)
+            }
+            return Discovery(identities: Dictionary(stable, uniquingKeysWith: { first, _ in first }), sawMatchingCommand: !pids.isEmpty)
+        }
+
+        /// Revalidate the captured identity and exact marker before every
+        /// signal. A replacement never inherits an earlier PID's ownership.
+        func stop(gracePeriod: TimeInterval = 2) -> Bool {
+            let terminateDeadline = Date().addingTimeInterval(gracePeriod)
+            let deadline = terminateDeadline.addingTimeInterval(1)
+            var discovered: [Int32: ProcessIdentity] = [:]
+            var signalled: [Int32: ProcessIdentity] = [:]
+            while Date() < deadline {
+                guard let current = try? discover(until: deadline) else { return false }
+                if !current.sawMatchingCommand { return true }
+                for (pid, original) in current.identities {
+                    if discovered[pid] == nil { discovered[pid] = original }
+                    guard discovered[pid] == original,
+                          let confirmed = try? discover(until: deadline),
+                          confirmed.identities[pid] == original,
+                          Date() < deadline, identity(pid) == original else { continue }
+                    if Date() >= terminateDeadline, signalled[pid] == original {
+                        signal(pid, SIGKILL)
+                    } else if signalled[pid] == nil {
+                        signalled[pid] = original
+                        signal(pid, SIGTERM)
+                    }
+                }
+                let remaining = deadline.timeIntervalSinceNow
+                if remaining > 0 { usleep(useconds_t(min(0.01, remaining) * 1_000_000)) }
+            }
+            // No unbudgeted final inventory: without an in-budget empty
+            // confirmation, cleanup is explicitly incomplete.
+            return false
+        }
+    }
+    var ownedLogChildren: OwnedLogChildren?
 
     /// The running log process's pid, for tests.
     var processIdentifier: Int32? {
@@ -122,6 +222,19 @@ public final class LogStreamer: @unchecked Sendable {
         // never be stopped and would outlive the exit.
         guard !SignalRelay.shared.isTerminating else { return }
 
+        var arguments = arguments
+        if URL(fileURLWithPath: executable).lastPathComponent == "xcrun",
+           arguments.count >= 5, arguments[0] == "simctl", arguments[1] == "spawn",
+           arguments[3] == "log", arguments[4] == "stream" {
+            let marker = "grantiva-log-\(UUID().uuidString)"
+            ownedLogChildren = OwnedLogChildren(deviceID: arguments[2], marker: marker)
+            let identity = "\"\(marker)\" == \"\(marker)\""
+            if let index = arguments.firstIndex(of: "--predicate"), arguments.indices.contains(index + 1) {
+                arguments[index + 1] = "(\(arguments[index + 1])) AND (\(identity))"
+            } else {
+                arguments += ["--predicate", identity]
+            }
+        }
         let p = Process()
         p.executableURL = URL(fileURLWithPath: executable)
         p.arguments = arguments
@@ -154,8 +267,9 @@ public final class LogStreamer: @unchecked Sendable {
         // `--verbose` names the stream when it ends, however it ends; the
         // flag keeps stop() and the handler from logging it twice.
         let ended = EndedOnce()
+        let waitsForRemoteChild = ownedLogChildren != nil
         p.terminationHandler = { process in
-            ended.once { SubprocessLog.ended(process) }
+            if !waitsForRemoteChild { ended.once { SubprocessLog.ended(process) } }
         }
         terminationLogged = ended
 
@@ -173,6 +287,7 @@ public final class LogStreamer: @unchecked Sendable {
         stdoutDecoder = outDecoder
         stderrDecoder = errDecoder
         stopped = false
+        cleanupSucceeded = true
         // Ctrl-C reaches SignalRelay, which runs its cleanups and calls exit,
         // so a caller's `defer { stop() }` never runs and the log process
         // (`adb logcat`, `log stream`) would be reparented to launchd.
@@ -180,11 +295,12 @@ public final class LogStreamer: @unchecked Sendable {
     }
 
     /// Stops the log stream subprocess. Safe to call multiple times.
-    public func stop() {
+    @discardableResult
+    public func stop() -> Bool {
         lock.lock()
         defer { lock.unlock() }
 
-        guard !stopped else { return }
+        guard !stopped else { return cleanupSucceeded }
         stopped = true
         if let terminationCleanup {
             SignalRelay.shared.removeCleanup(terminationCleanup)
@@ -196,13 +312,27 @@ public final class LogStreamer: @unchecked Sendable {
         output.write(stdoutDecoder?.finish() ?? [])
         output.write(stderrDecoder?.finish() ?? [])
 
+        var complete = true
         if let p = process {
             if p.isRunning { p.terminate() }
-            // Wait briefly so the exit is logged here, in order, rather than
-            // from the termination handler after the caller has moved on.
             let deadline = Date().addingTimeInterval(2)
             while p.isRunning, Date() < deadline { usleep(10_000) }
-            if !p.isRunning { terminationLogged?.once { SubprocessLog.ended(p) } }
+            if p.isRunning {
+                kill(p.processIdentifier, SIGKILL)
+                let killDeadline = Date().addingTimeInterval(1)
+                while p.isRunning, Date() < killDeadline { usleep(10_000) }
+            }
+            complete = !p.isRunning
+            if !complete {
+                FileHandle.standardError.write(Data("Warning: log wrapper pid \(p.processIdentifier) did not stop before the cleanup deadline.\n".utf8))
+            }
+        }
+        if let children = ownedLogChildren, !children.stop() {
+            complete = false
+            FileHandle.standardError.write(Data("Warning: could not confirm log-stream cleanup for \(children.deviceID) (\(children.marker)).\n".utf8))
+        }
+        if let p = process, !p.isRunning {
+            terminationLogged?.once { SubprocessLog.ended(p) }
         }
         terminationLogged = nil
         process = nil
@@ -210,7 +340,64 @@ public final class LogStreamer: @unchecked Sendable {
         stderrPipe = nil
         stdoutDecoder = nil
         stderrDecoder = nil
+        ownedLogChildren = nil
+        cleanupSucceeded = complete
+        return complete
     }
+
+    enum InventoryError: Error {
+        case timedOut
+        case readFailed
+        case commandFailed
+    }
+
+    /// The inventory gets only the cleanup budget that remains. Its pipe is
+    /// nonblocking, and part of that budget is reserved for killing/reaping
+    /// this exact child if it stalls. Foundation owns child reaping throughout.
+    static func processSnapshot(
+        deadline: Date, executable: String = "/bin/ps", arguments: [String] = ["-ww", "-axo", "pid=,command="],
+        didSpawn: (Int32) -> Void = { _ in }
+    ) throws -> String {
+        let remaining = deadline.timeIntervalSinceNow
+        guard remaining > 0 else { throw InventoryError.timedOut }
+        let executionDeadline = deadline.addingTimeInterval(-min(0.1, remaining / 2))
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executable)
+        process.arguments = arguments
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = FileHandle.nullDevice
+        let descriptor = pipe.fileHandleForReading.fileDescriptor
+        let flags = fcntl(descriptor, F_GETFL)
+        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0 else { throw InventoryError.readFailed }
+        try process.run()
+        didSpawn(process.processIdentifier)
+        try? pipe.fileHandleForWriting.close()
+        defer {
+            if process.isRunning {
+                kill(process.processIdentifier, SIGKILL)
+                while process.isRunning, Date() < deadline { usleep(1_000) }
+            }
+            try? pipe.fileHandleForReading.close()
+        }
+        var data = Data()
+        var buffer = [UInt8](repeating: 0, count: 16_384)
+        while Date() < executionDeadline {
+            let count = buffer.withUnsafeMutableBytes { Darwin.read(descriptor, $0.baseAddress, $0.count) }
+            if count > 0 {
+                data.append(contentsOf: buffer.prefix(count))
+                continue
+            }
+            if count < 0, errno != EAGAIN, errno != EINTR { throw InventoryError.readFailed }
+            if count == 0, !process.isRunning {
+                guard process.terminationStatus == 0 else { throw InventoryError.commandFailed }
+                return String(decoding: data, as: UTF8.self)
+            }
+            usleep(1_000)
+        }
+        throw InventoryError.timedOut
+    }
+
 }
 
 /// Set once by whichever of `stop()` and the termination handler sees the

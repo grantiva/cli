@@ -65,6 +65,7 @@ struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
     /// Runs at parse time, before any config is read: `--device` with
     /// `--emulator` is a usage error (exit 64 with the Usage lines).
     func validate() throws {
+        try validateTargetValues(device: device, simulator: simulator, emulator: emulator)
         try requireExclusive(("--device", device != nil), ("--emulator", emulator != nil))
     }
 
@@ -212,5 +213,14 @@ struct TargetFlags<Boot: BootFlagVisibility>: ParsableArguments {
 func requireExclusive(_ first: (flag: String, given: Bool), _ second: (flag: String, given: Bool)) throws {
     if let problem = ExclusiveFlags.problem(first, second) {
         throw ValidationError(problem)
+    }
+}
+
+/// Reject explicitly supplied empty targets before device resolution or forwarding.
+func validateTargetValues(device: String?, simulator: String?, emulator: String?) throws {
+    for (flag, value) in [("--device", device), ("--simulator", simulator), ("--emulator", emulator)] {
+        if let value, value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            throw ValidationError("'\(flag)' must not be empty.")
+        }
     }
 }

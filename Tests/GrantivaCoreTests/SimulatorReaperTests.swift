@@ -23,6 +23,18 @@ final class SimulatorReaperTests: XCTestCase {
         """
     }
 
+    func testArgumentLookalikesAreNotSimulatorOwners() {
+        let udid = "921A0945-7157-4533-BA1F-21E8132D3E40"
+        let snapshot = """
+        100 100 /usr/bin/python3 helper.py /path/to/grantiva \(udid)
+        101 101 /usr/bin/python3 helper.py /path/to/grantiva-runner --device \(udid)
+        102 102 /path/to/grantiva run --simulator \(udid) --keep-alive
+        """
+        let owners = SimulatorReaper.processes(owning: udid, psOutput: snapshot)
+        XCTAssertEqual(owners.map(\.pid), [102])
+        XCTAssertEqual(owners.map(\.kind), [.grantiva])
+    }
+
     func testFindsRunnerWebDriverAgentAndDiagnose() {
         let found = SimulatorReaper.processes(owning: udid, psOutput: sample)
         let byPID = Dictionary(uniqueKeysWithValues: found.map { ($0.pid, $0.kind) })

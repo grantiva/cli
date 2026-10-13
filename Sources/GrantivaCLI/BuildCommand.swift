@@ -105,6 +105,16 @@ struct InstallCommand: AsyncParsableCommand {
     /// Empty means "make one from the resolved platform"; tests inject a fake.
     var devicePlatform = InjectedDevicePlatform()
 
+    /// ArgumentParser-decodable seam for the optional iOS container lookup.
+    struct ContainerLookup: Decodable {
+        var call: (Platform, String, String) async throws -> String? = {
+            try await InstallCommand.dataContainerPath(platform: $0, bundleId: $1, deviceID: $2)
+        }
+        init() {}
+        init(from decoder: Decoder) { self.init() }
+    }
+    var containerLookup = ContainerLookup()
+
     func run() async throws {
         let (platform, config) = try platformOptions.loadConfig()
         try target.checkFlags(for: platform, derivedDataPath: buildOptions.derivedDataPath)
@@ -188,12 +198,15 @@ struct InstallCommand: AsyncParsableCommand {
             throw GrantivaError.unavailable(Self.notInstalledMessage(appID: bid, deviceName: booted.name, serial: booted.udid))
         }
 
-        let dataContainerPath = try await Self.dataContainerPath(platform: platform, bundleId: bid, deviceID: booted.udid)
-
         let status = try await completeInstall(installed: installed) {
             options.note("[grantiva] Launching \(bid)...")
             try await device.launch(appID: bid, deviceID: booted.udid)
         }
+
+        // A skipped absent app has no container. Preserve metadata when the
+        // app is installed, including --app-file with --no-launch.
+        let absentSkippedApp = if status == .skipped { await device.isInstalled(appID: bid, deviceID: booted.udid) == false } else { false }
+        let dataContainerPath = absentSkippedApp ? nil : try await containerLookup.call(platform, bid, booted.udid)
 
         if options.json, platform == .android {
             Output.line(try JSONOutput.string(AndroidInstallResult(

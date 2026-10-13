@@ -1,7 +1,9 @@
 import Foundation
 import GrantivaCore
 
-/// Runs a cleanup at most once, from whichever path gets there first.
+/// Runs a cleanup once and waits for it to finish on every calling path.
+/// Bodies must not call back into this same Once; lifecycle cleanups only
+/// remove their owned files and release their lease.
 final class Once: @unchecked Sendable {
     private let lock = NSLock()
     private var body: (@Sendable () -> Void)?
@@ -9,10 +11,12 @@ final class Once: @unchecked Sendable {
     init(_ body: @escaping @Sendable () -> Void) { self.body = body }
 
     func run() {
-        let pending: (@Sendable () -> Void)? = lock.withLock {
-            defer { body = nil }
-            return body
-        }
+        lock.lock()
+        defer { lock.unlock() }
+        let pending = body
+        body = nil
+        // The signal handler may exit as soon as this returns. Keep it waiting
+        // when the foreground task is already removing the session and lease.
         pending?()
     }
 

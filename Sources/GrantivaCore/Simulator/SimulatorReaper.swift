@@ -43,6 +43,8 @@ public struct ForceTeardownResult: Codable, Equatable, Sendable {
     /// Temp directories of the killed run (staged flows, ephemeral report
     /// dir) that its lease claim named and that were removed.
     public var temporaryDirectoriesRemoved: [String]
+    /// Whether the preliminary orderly stop ended a live runner session.
+    public var runnerSessionStopped: Bool = false
     /// Whether this teardown actually took something back. A `--force` run that
     /// found nothing is a success — the device was already free — but it is not
     /// the same event as one that killed a stranded runner, and a script that
@@ -122,7 +124,9 @@ public enum SimulatorReaper {
         // Never match the teardown invocation that is doing the reaping.
         if haystack.contains("simulator teardown") { return nil }
 
-        if haystack.contains("grantiva-runner") {
+        let executable = haystack.split(whereSeparator: { $0 == " " || $0 == "\t" }).first.map(String.init) ?? ""
+        let name = URL(fileURLWithPath: executable).lastPathComponent
+        if name == "grantiva-runner" {
             guard haystack.contains("--device \(needle)") || haystack.contains("--device=\(needle)") else { return nil }
             return .runner
         } else if haystack.contains("test-without-building") {
@@ -130,7 +134,7 @@ public enum SimulatorReaper {
             return .webDriverAgent
         } else if haystack.contains("diagnose") && haystack.contains("simctl") {
             return .diagnose
-        } else if haystack.contains("grantiva ") || haystack.hasSuffix("grantiva") {
+        } else if name == "grantiva" {
             // A live `grantiva run` still holding the lease. This is the
             // usual culprit when `kill -INT` was ignored by a backgrounded
             // run, and it is the process the lease names.

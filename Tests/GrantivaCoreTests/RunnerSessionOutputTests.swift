@@ -516,6 +516,42 @@ final class RunnerSessionOutputTests: XCTestCase {
         }
     }
 
+    func testSubdirectoryCycleUsesCanonicalProjectRelativeHops() async throws {
+        let project = URL(fileURLWithPath: "/tmp/grantiva-cycle-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: project) }
+        try FileManager.default.createDirectory(at: project, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: project.appendingPathComponent("flows"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: project.appendingPathComponent("shared"), withIntermediateDirectories: true)
+        try "appId: com.example\n---\n- runFlow: ../shared/b.yaml\n"
+            .write(to: project.appendingPathComponent("flows/a.yaml"), atomically: true, encoding: .utf8)
+        try "appId: com.example\n---\n- runFlow: ../flows/a.yaml\n"
+            .write(to: project.appendingPathComponent("shared/b.yaml"), atomically: true, encoding: .utf8)
+        for root in [project.path, project.resolvingSymlinksInPath().path] {
+            let collected = Collected()
+            RunnerNarration.sink = { collected.append($0) }
+            // The bundled runner names the staged root, its absolute first reference,
+            // then the untouched relative operands of unstaged subflows.
+            let runner = try fakeRunner(body: """
+            echo "  - ../shared/b.yaml: circular dependency detected: $flow -> \(root)/shared/b.yaml -> ../flows/a.yaml -> ../shared/b.yaml" >&2
+            exit 1
+            """)
+            let cwd = FileManager.default.currentDirectoryPath
+            XCTAssertTrue(FileManager.default.changeCurrentDirectoryPath(root))
+            defer { FileManager.default.changeCurrentDirectoryPath(cwd) }
+            do {
+                _ = try await RunnerSession.runFlowFiles(
+                    at: ["flows/a.yaml"], bundleId: "com.example", udid: "OUT-\(UUID().uuidString)", platform: OutputStubPlatform(),
+                    runner: runner, outputDir: scratch.appendingPathComponent("captures").path, timeoutSeconds: 30
+                )
+                XCTFail("expected a failure")
+            } catch {
+                let text = collected.text + error.localizedDescription
+                XCTAssertTrue(text.contains("circular dependency detected: flows/a.yaml -> shared/b.yaml -> flows/a.yaml -> shared/b.yaml"), text)
+                XCTAssertFalse(text.contains(project.path), text)
+            }
+        }
+    }
+
     // MARK: - Helpers
 
     /// A runner stand-in: `$out` is the `--output` dir and `$flow` the last
