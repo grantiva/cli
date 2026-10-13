@@ -1,0 +1,17 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- tapOn: "Lake Tahoe"
+- tapOn: "Favorite"
+- assertVisible: "Unfavorite"
+- tapOn: "Landmarks"
+- tapOn: "Favorites"
+- assertVisible: "Lake Tahoe"
+- takeScreenshot: "Before"
+- swipe:
+    direction: LEFT
+    from: "Lake Tahoe"
+- waitForAnimationToEnd
+- takeScreenshot: "After"
+- assertNotVisible: "Lake Tahoe"
+- assertVisible: "Remove from favorites"

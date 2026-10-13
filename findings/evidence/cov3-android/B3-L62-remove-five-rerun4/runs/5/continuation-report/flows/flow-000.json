@@ -1,0 +1,123 @@
+{
+  "id": "flow-000",
+  "name": "l62-continuation",
+  "sourceFile": ".maestro/l62-continuation.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T03:23:59.093045-07:00",
+  "endTime": "2026-10-13T03:24:00.353404-07:00",
+  "duration": 1260,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T03:23:59.0983-07:00",
+      "endTime": "2026-10-13T03:23:59.2233-07:00",
+      "duration": 125,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-000-Before Continuation Tap.png"
+      }
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"Remove from favorites\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:23:59.224368-07:00",
+      "endTime": "2026-10-13T03:23:59.543368-07:00",
+      "duration": 319,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Remove from favorites"
+        }
+      },
+      "element": {
+        "found": true,
+        "text": "Remove from favorites",
+        "bounds": {
+          "x": 602,
+          "y": 465,
+          "width": 436,
+          "height": 126
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertNotVisible",
+      "yaml": "assertNotVisible: text=\"Lake Tahoe\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:23:59.544178-07:00",
+      "endTime": "2026-10-13T03:24:00.203178-07:00",
+      "duration": 659,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Lake Tahoe"
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks you favorite will appear here.\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:24:00.204041-07:00",
+      "endTime": "2026-10-13T03:24:00.224041-07:00",
+      "duration": 20,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks you favorite will appear here."
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-0155-0000-013b00000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-004",
+      "index": 4,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T03:24:00.224973-07:00",
+      "endTime": "2026-10-13T03:24:00.352973-07:00",
+      "duration": 128,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-004-Favorites Empty.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 5,
+    "mean": 250,
+    "p50": 128,
+    "p95": 659,
+    "max": 659,
+    "slowestType": "assertNotVisible"
+  },
+  "artifacts": {}
+}
