@@ -1,0 +1,95 @@
+{
+  "artifacts" : {
+
+  },
+  "commands" : [
+    {
+      "artifacts" : {
+
+      },
+      "duration" : 1520,
+      "endTime" : "2026-10-12T23:30:59.682779-07:00",
+      "id" : "cmd-000",
+      "index" : 0,
+      "startTime" : "2026-10-12T23:30:58.162779-07:00",
+      "status" : "passed",
+      "type" : "launchApp",
+      "yaml" : "launchApp"
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-001-after.png"
+      },
+      "duration" : 873,
+      "element" : {
+        "bounds" : {
+          "height" : 0,
+          "width" : 0,
+          "x" : 0,
+          "y" : 0
+        },
+        "found" : true,
+        "id" : "00000000-0000-0256-0000-003f00000004"
+      },
+      "endTime" : "2026-10-12T23:31:00.698184-07:00",
+      "id" : "cmd-001",
+      "index" : 1,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Golden Gate.*"
+        }
+      },
+      "startTime" : "2026-10-12T23:30:59.825184-07:00",
+      "status" : "passed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Golden Gate.*\""
+    },
+    {
+      "artifacts" : {
+        "screenshotAfter" : "assets/flow-000/cmd-002-after.png",
+        "screenshotBefore" : "assets/flow-000/cmd-002-before.png",
+        "viewHierarchy" : "assets/flow-000/cmd-002-hierarchy.xml"
+      },
+      "duration" : 17271,
+      "endTime" : "2026-10-12T23:31:18.108663-07:00",
+      "error" : {
+        "message" : "Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no such element: An element could not be located on the page using the given search parameters; closest on-screen texts: \"Golden Gate Bridge\", \"Categories\", \"Battery 100 percent.\")",
+        "type" : "assertion"
+      },
+      "id" : "cmd-002",
+      "index" : 2,
+      "params" : {
+        "selector" : {
+          "type" : "text",
+          "value" : "Golden Gate.*"
+        }
+      },
+      "startTime" : "2026-10-12T23:31:00.837663-07:00",
+      "status" : "failed",
+      "type" : "assertVisible",
+      "yaml" : "assertVisible: text=\"Golden Gate.*\", exact=true"
+    }
+  ],
+  "device" : {
+    "id" : "emulator-5554",
+    "isSimulator" : true,
+    "name" : "google sdk_gphone64_arm64",
+    "osVersion" : "35",
+    "platform" : "android"
+  },
+  "duration" : 20106,
+  "endTime" : "2026-10-12T23:31:18.263285-07:00",
+  "id" : "flow-000",
+  "name" : "02-exact-negative",
+  "sourceFile" : ".maestro/coverage/02-exact-negative.yaml",
+  "startTime" : "2026-10-12T23:30:58.157015-07:00",
+  "stepLatency" : {
+    "count" : 3,
+    "max" : 17271,
+    "mean" : 6554,
+    "p50" : 1520,
+    "p95" : 17271,
+    "slowestType" : "assertVisible"
+  }
+}
