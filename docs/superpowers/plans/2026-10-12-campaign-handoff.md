@@ -1,6 +1,14 @@
 # Coverage campaign — handoff (resume from here)
 
-Updated: 2026-10-13 (round-3 fix wave in progress). This file is the tool-agnostic resume point for the full-coverage campaign. Everything an agent needs is on branch `coverage-campaign` of grantiva/cli, worktree `/Users/kyle/Developer/grantiva-cli/.worktrees/regression`. The per-plan SDD ledgers are git-ignored scratch; copies are committed under `findings/ledgers/` at each phase boundary (the live ones are in `.superpowers/sdd/<plan>/progress.md`).
+Updated: 2026-10-13 (round-3 coverage complete; round-4 fix wave starting). This file is the tool-agnostic resume point for the full-coverage campaign. Everything an agent needs is on branch `coverage-campaign` of grantiva/cli, worktree `/Users/kyle/Developer/grantiva-cli/.worktrees/regression`. The per-plan SDD ledgers are git-ignored scratch; copies are committed under `findings/ledgers/` at each phase boundary (the live ones are in `.superpowers/sdd/<plan>/progress.md`).
+
+## Current checkpoint — supersedes historical progress below
+
+Round 3 coverage and cleanup are complete: **1281 pass / 22 fail / 20 blocked / 6 n/a**, across 1329 platform rows (1170 logical rows). Independent integration review approves consolidation. **22 findings remain open:** L51, L53, L61, L62 and L64–L81. L52 remains fixed. See `2026-10-13-round3-coverage-report.md` and `findings/round3-final-integration-review.md`.
+
+Execute reviewed `2026-10-13-round4-fix-wave.md` continuously. Task 1 runner crash/capture and Task 4 CLI lifecycle/output have isolated clean worktrees. Runner base is fd9d8e8d1cb109eda6116f4221da10257b9838e3; CLI base is 8f2cff676b3c12e951478920fa20e600cdca4e29. Track implementation, tests, PR/CI/merge and owned-device cleanup in `findings/ledgers/2026-10-13-round4-fix-wave-ledger.md`. No new product fixes are complete yet.
+
+All campaign-created Round 3 devices are deleted; owner iPhone 17 Pro, iPhone 18 Pro and Pixel_8_API_35 are protected. Fresh fix4 devices only. QA binary and frozen source worktrees remain available for comparison. Campaign release/tagging is not authorized by a clean test result.
 
 ## Goal and exit criterion
 Spec: `docs/superpowers/specs/2026-10-10-full-coverage-campaign-design.md`. Loop: fix wave → repack → smoke → full coverage pass → triage, until one full pass yields zero `fail` rows. Release is the owner's decision; the campaign never declares a release.
