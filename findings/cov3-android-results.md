@@ -374,6 +374,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | N3-06 | fail | findings/evidence/cov3-android/N3-06-ten-recordings-rerun1/ | All ten exact 3-second Android record commands exited 0 and every retained MP4 is exactly 3.000000s by ffprobe. The literal criterion nevertheless requires `recordedMilliseconds >= 3000`; nine JSON documents report 0 and one reports 1316, with each stderr explaining that the idle last frame was held to 3.0s. Current docs/source define this field as the pre-hold track end, so this is an accepted Task 6 expectation conflict rather than a recording defect. The original wrapper failure was a disclosed harness assertion error; read-only posthoc measurements grade the preserved artifacts. |
 
+| B2-K55 [android] | pass | findings/evidence/cov3-android/MCP064-066-B2K55-D241-vrt-equivalence-type-rerun1/, findings/evidence/cov3-android/B2-K55-detached-vrt-equivalence-rerun1/ | Exact CLI, no-session MCP, keep-alive MCP, and prescribed detached-session MCP captures each produced the same five ordered screens with identical stable top-level/device/per-screen key sets, relative Android paths, emulator identity/dimensions, and equal `emulator`/`simulator` objects. Each leg preserved all five PNGs; only legitimate measurements vary. Exact-head shared session-shape tests were inspected, not newly executed. |
+
 ## Counts
 
-297 of 467 slice rows recorded: 278 pass, 13 fail, 4 blocked, 2 n/a.
+298 of 467 slice rows recorded: 279 pass, 13 fail, 4 blocked, 2 n/a.
