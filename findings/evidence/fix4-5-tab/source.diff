@@ -1,0 +1,70 @@
+diff --git a/ios/Landmarks/ContentView.swift b/ios/Landmarks/ContentView.swift
+index 0d8a8ef..feec82f 100644
+--- a/ios/Landmarks/ContentView.swift
++++ b/ios/Landmarks/ContentView.swift
+@@ -25,8 +25,8 @@ struct ContentView: View {
+                     .screenDestination(path: $navigator.favoritesPath)
+             }
+             .tabItem { Label("Favorites", systemImage: "heart") }
+-            .accessibilityIdentifier("heart")
+             .tag(Navigator.Tab.favorites)
++            .background(FavoritesTabIdentifierInstaller())
+ 
+             NavigationStack(path: $navigator.deepLinksPath) {
+                 DeepLinksView()
+diff --git a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+new file mode 100644
+index 0000000..e8c486c
+--- /dev/null
++++ b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+@@ -0,0 +1,50 @@
++//
++//  FavoritesTabIdentifierInstaller.swift
++//  Landmarks
++//
++
++import SwiftUI
++import UIKit
++
++/// Gives the persistent Favorites tab item the identifier used by UI flows.
++struct FavoritesTabIdentifierInstaller: UIViewControllerRepresentable {
++    func makeUIViewController(context: Context) -> FavoritesTabIdentifierViewController {
++        FavoritesTabIdentifierViewController()
++    }
++
++    func updateUIViewController(_ viewController: FavoritesTabIdentifierViewController, context: Context) {
++        viewController.installIdentifier()
++    }
++}
++
++final class FavoritesTabIdentifierViewController: UIViewController {
++    override func didMove(toParent parent: UIViewController?) {
++        super.didMove(toParent: parent)
++        installIdentifierAfterAttachment()
++    }
++
++    override func viewDidAppear(_ animated: Bool) {
++        super.viewDidAppear(animated)
++        installIdentifier()
++    }
++
++    func installIdentifier() {
++        guard let items = tabBarController?.tabBar.items else { return }
++
++        let favoritesIndex = 1
++        assert(items.count == 3, "The tab identifier hook expects the fixture's three tabs")
++        guard items.indices.contains(favoritesIndex) else { return }
++
++        let favoritesItem = items[favoritesIndex]
++        assert(favoritesItem.title == "Favorites", "The Favorites tab moved unexpectedly")
++        guard favoritesItem.title == "Favorites" else { return }
++
++        favoritesItem.accessibilityIdentifier = "heart"
++    }
++
++    private func installIdentifierAfterAttachment() {
++        DispatchQueue.main.async { [weak self] in
++            self?.installIdentifier()
++        }
++    }
++}

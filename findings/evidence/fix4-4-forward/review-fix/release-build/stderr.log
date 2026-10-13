@@ -1,0 +1,40 @@
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-foreground-forward-cleanup/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-foreground-forward-cleanup/Sources/GrantivaCore/Simulator/SimulatorManager.swift:312:13: warning: result of 'try?' is unused [#NoUsage]
+310 |             }
+311 |             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+312 |             try? capacity.remove(udid: udid, ownedBy: me)
+    |             `- warning: result of 'try?' is unused [#NoUsage]
+313 |             try? provenance.remove(udid: udid)
+314 |             removeDeviceHomes(udid)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-foreground-forward-cleanup/Sources/GrantivaCLI/RecordCommand.swift:313:39: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+311 |             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
+312 |             var actualTime = CMTime.zero
+313 |             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+    |                                       `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+314 |             let fileName = String(format: "%06dms.png", requested)
+315 |             let path = frameDirectory.appendingPathComponent(fileName)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>

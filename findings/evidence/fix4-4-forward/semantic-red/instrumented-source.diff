@@ -1,0 +1,163 @@
+diff --git a/Sources/GrantivaCLI/DriverCommand.swift b/Sources/GrantivaCLI/DriverCommand.swift
+index 6d4f3a63..0f65a225 100644
+--- a/Sources/GrantivaCLI/DriverCommand.swift
++++ b/Sources/GrantivaCLI/DriverCommand.swift
+@@ -418,7 +418,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
+ 
+     /// The local end of the forward to the runner's UIAutomator2 session. The
+     /// forward is left in place: it is the port the session records.
+-    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (port: UInt16?, exitStatus: Int32?, launchFailed: Bool) {
++    private static func waitForUIAutomator2Port(_ launch: Launch, child: ChildProcess) async -> (attachment: DriverAttachment?, exitStatus: Int32?, launchFailed: Bool) {
+         let device = launch.platformDevice
+         let serial = launch.device.udid
+         let wait = await Self.waitForUIAutomator2(
+@@ -428,7 +428,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
+             launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
+             runnerExit: { child.poll() }
+         )
+-        return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
++        return (wait.attachment, wait.exitStatus, wait.launchFailed)
+     }
+ 
+     /// The UIAutomator2 session already on the device before the runner is
+@@ -441,6 +441,14 @@ struct RunnerStartCommand: AsyncParsableCommand {
+         return attachment.sessionID
+     }
+ 
++    /// Transfers a successful Android readiness attachment to the foreground
++    /// session owner instead of reducing it to an unowned port.
++    static func retainForegroundAttachment(
++        _ attachment: DriverAttachment, in owner: ForegroundDriverAttachment
++    ) -> UInt16 {
++        return UInt16(clamping: attachment.port)
++    }
++
+     /// Hands the runner's group to the interrupt relay, naming the device
+     /// the notice says is released (L37).
+     static func trackRunner(group: pid_t, platform: Platform) {
+@@ -594,11 +602,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
+                     lastError: Self.lastErrorLine(in: text), logPath: logPath
+                 )
+             }
+-            guard let found = wait.port else {
++            guard let attachment = wait.attachment else {
+                 abandon()
+                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start. Log: \(logPath)", 1)
+             }
+-            port = found
++            port = UInt16(clamping: attachment.port)
+         } else {
+             // Poll the log file for WDA's port or a failed build.
+             let startup = try await waitForWDAPort(logFile: logPath, timeout: 60)
+@@ -676,7 +684,9 @@ struct RunnerStartCommand: AsyncParsableCommand {
+         @Sendable func requestedStop() -> StopRequest? {
+             Self.liveStopRequest(runnerPid: runnerPid, runnerStartTime: runnerStartTime)
+         }
++        let foregroundAttachment = ForegroundDriverAttachment()
+         let cleanup = Once {
++            foregroundAttachment.release()
+             Self.removeSessionFile(of: runnerPid)
+             KeepAliveSessionStore().removeSessionFiles(runnerPid: runnerPid)
+             RunnerStopMarker().remove(runnerPid: runnerPid)
+@@ -728,12 +738,12 @@ struct RunnerStartCommand: AsyncParsableCommand {
+                     lastError: Self.lastErrorLine(in: output.recentText), logPath: nil
+                 )
+             }
+-            guard let found = wait.port else {
++            guard let attachment = wait.attachment else {
+                 child.terminateGroup(gracePeriod: 1)
+                 cleanup.run()
+                 throw GrantivaError.commandFailed("Timed out waiting for the UIAutomator2 session to start", 1)
+             }
+-            port = found
++            port = Self.retainForegroundAttachment(attachment, in: foregroundAttachment)
+         } else {
+             let startup = await Self.waitForForegroundWDAPort(
+                 chunks: output.chunks,
+diff --git a/Sources/GrantivaCLI/RunnerOutputForwarder.swift b/Sources/GrantivaCLI/RunnerOutputForwarder.swift
+index d24c0222..9f5f2240 100644
+--- a/Sources/GrantivaCLI/RunnerOutputForwarder.swift
++++ b/Sources/GrantivaCLI/RunnerOutputForwarder.swift
+@@ -29,6 +29,33 @@ final class Once: @unchecked Sendable {
+     }
+ }
+ 
++/// Owns the driver attachment discovered during foreground startup until the
++/// foreground session ends. SignalRelay cleanups are synchronous, so release
++/// waits briefly for the attachment's asynchronous platform cleanup.
++final class ForegroundDriverAttachment: @unchecked Sendable {
++    private let lock = NSLock()
++    private var attachment: DriverAttachment?
++
++    func retain(_ attachment: DriverAttachment) {
++        lock.withLock { self.attachment = attachment }
++    }
++
++    func release(timeout: TimeInterval = 15) {
++        let owned = lock.withLock {
++            let owned = attachment
++            attachment = nil
++            return owned
++        }
++        guard let owned else { return }
++        let done = DispatchSemaphore(value: 0)
++        Task.detached {
++            await owned.detach()
++            done.signal()
++        }
++        _ = done.wait(timeout: .now() + timeout)
++    }
++}
++
+ /// The foreground runner's output. Both streams go to the terminal through
+ /// `RunnerSession.narrate` (so `--json` and `--quiet` silence them), whole
+ /// lines at a time; stdout is also fed to the startup parser until
+diff --git a/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift b/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
+index 968f05e5..828cb3f5 100644
+--- a/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
++++ b/Tests/GrantivaCLITests/RunnerLifecycleCommandTests.swift
+@@ -690,6 +690,44 @@ final class RunnerLifecycleCommandTests: XCTestCase {
+         XCTAssertEqual(removed.value, [7])
+     }
+ 
++    func testForegroundHoldRetainsAndReleasesItsDriverAttachmentExactlyOnce() async throws {
++        for interrupted in [false, true] {
++            let releases = LockedValue(0)
++            let unrelatedReleases = LockedValue(0)
++            let attachment = DriverAttachment(
++                client: .failing, port: 61211, sessionID: "owned",
++                detach: { releases.set(releases.value + 1) }
++            )
++            _ = DriverAttachment(
++                client: .failing, port: 61212, sessionID: "unrelated",
++                detach: { unrelatedReleases.set(unrelatedReleases.value + 1) }
++            )
++            let owned = ForegroundDriverAttachment()
++            XCTAssertEqual(RunnerStartCommand.retainForegroundAttachment(attachment, in: owned), 61211)
++
++            let (exits, exit) = AsyncStream<Int32>.makeStream()
++            let handler = LockedValue<(@Sendable () -> Void)?>(nil)
++            let held = Task {
++                await RunnerStartCommand.holdForeground(
++                    waitForExit: { for await status in exits { return status }; return 0 },
++                    onInterrupt: { body in handler.set(body); return 7 },
++                    removeInterruptHandler: { _ in },
++                    cleanup: { owned.release() }
++                )
++            }
++
++            while handler.value == nil { await Task.yield() }
++            XCTAssertEqual(releases.value, 0, "the live session must retain its forward")
++            if interrupted { handler.value?() }
++            exit.yield(interrupted ? Int32(SIGINT) : 0)
++            _ = await held.value
++            XCTAssertEqual(releases.value, 1)
++            owned.release()
++            XCTAssertEqual(releases.value, 1, "foreground cleanup must release the attachment exactly once")
++            XCTAssertEqual(unrelatedReleases.value, 0, "foreground cleanup must not release an attachment it does not own")
++        }
++    }
++
+     func testForegroundStartHelpSaysItStaysAttached() {
+         let help = RunnerStartCommand.helpMessage(columns: 1000)
+         XCTAssertTrue(help.contains("Ctrl-C"), help)

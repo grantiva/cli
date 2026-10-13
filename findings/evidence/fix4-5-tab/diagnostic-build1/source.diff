@@ -1,0 +1,119 @@
+diff --git a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+index e8c486c..e9592b9 100644
+--- a/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
++++ b/ios/Landmarks/FavoritesTabIdentifierInstaller.swift
+@@ -13,38 +13,99 @@ struct FavoritesTabIdentifierInstaller: UIViewControllerRepresentable {
+     }
+ 
+     func updateUIViewController(_ viewController: FavoritesTabIdentifierViewController, context: Context) {
+-        viewController.installIdentifier()
++        viewController.probeAndInstall(trigger: "updateUIViewController")
+     }
+ }
+ 
+ final class FavoritesTabIdentifierViewController: UIViewController {
+     override func didMove(toParent parent: UIViewController?) {
+         super.didMove(toParent: parent)
+-        installIdentifierAfterAttachment()
++        log("didMove(toParent:) parent=\(typeName(parent))")
++        DispatchQueue.main.async { [weak self] in
++            self?.probeAndInstall(trigger: "didMove-next-main-loop")
++        }
+     }
+ 
+     override func viewDidAppear(_ animated: Bool) {
+         super.viewDidAppear(animated)
+-        installIdentifier()
++        probeAndInstall(trigger: "viewDidAppear")
+     }
+ 
+-    func installIdentifier() {
+-        guard let items = tabBarController?.tabBar.items else { return }
++    func probeAndInstall(trigger: String) {
++        let directTabBarController = tabBarController
++        let rootViewController = viewIfLoaded?.window?.rootViewController
++        let discoveredTabBarControllers = rootViewController.map(findTabBarControllers) ?? []
++
++        log("trigger=\(trigger)")
++        log("parent-chain=\(parentChain())")
++        log("direct-tab-bar=\(typeName(directTabBarController))")
++        log("window-root=\(typeName(rootViewController)) discovered-tab-bars=\(discoveredTabBarControllers.count)")
++
++        var candidates = discoveredTabBarControllers
++        if let directTabBarController,
++           !candidates.contains(where: { $0 === directTabBarController }) {
++            candidates.append(directTabBarController)
++        }
++
++        for (controllerIndex, controller) in candidates.enumerated() {
++            let items = controller.tabBar.items ?? []
++            logItems(items, controllerIndex: controllerIndex, phase: "before")
+ 
+-        let favoritesIndex = 1
+-        assert(items.count == 3, "The tab identifier hook expects the fixture's three tabs")
+-        guard items.indices.contains(favoritesIndex) else { return }
++            guard items.count == 3,
++                  items.indices.contains(1),
++                  items[1].title == "Favorites" else {
++                log("controller=\(controllerIndex) fixture-shape-mismatch")
++                continue
++            }
+ 
+-        let favoritesItem = items[favoritesIndex]
+-        assert(favoritesItem.title == "Favorites", "The Favorites tab moved unexpectedly")
+-        guard favoritesItem.title == "Favorites" else { return }
++            let favoritesItem = items[1]
++            favoritesItem.accessibilityIdentifier = "heart"
++            logItem(favoritesItem, controllerIndex: controllerIndex, itemIndex: 1, phase: "immediate-after-set")
+ 
+-        favoritesItem.accessibilityIdentifier = "heart"
++            DispatchQueue.main.async { [weak self, weak favoritesItem] in
++                guard let self, let favoritesItem else { return }
++                self.logItem(favoritesItem, controllerIndex: controllerIndex, itemIndex: 1, phase: "next-main-loop-readback")
++            }
++        }
+     }
+ 
+-    private func installIdentifierAfterAttachment() {
+-        DispatchQueue.main.async { [weak self] in
+-            self?.installIdentifier()
++    private func findTabBarControllers(from root: UIViewController) -> [UITabBarController] {
++        var result: [UITabBarController] = []
++        if let tabBarController = root as? UITabBarController {
++            result.append(tabBarController)
++        }
++        for child in root.children {
++            result.append(contentsOf: findTabBarControllers(from: child))
+         }
++        return result
++    }
++
++    private func parentChain() -> String {
++        var names: [String] = []
++        var current: UIViewController? = self
++        while let controller = current {
++            names.append(typeName(controller))
++            current = controller.parent
++        }
++        return names.joined(separator: " -> ")
++    }
++
++    private func logItems(_ items: [UITabBarItem], controllerIndex: Int, phase: String) {
++        log("controller=\(controllerIndex) phase=\(phase) item-count=\(items.count)")
++        for (itemIndex, item) in items.enumerated() {
++            logItem(item, controllerIndex: controllerIndex, itemIndex: itemIndex, phase: phase)
++        }
++    }
++
++    private func logItem(_ item: UITabBarItem, controllerIndex: Int, itemIndex: Int, phase: String) {
++        log("controller=\(controllerIndex) item=\(itemIndex) phase=\(phase) object=\(ObjectIdentifier(item)) title=\(item.title ?? "nil") identifier=\(item.accessibilityIdentifier ?? "nil")")
++    }
++
++    private func typeName(_ controller: UIViewController?) -> String {
++        controller.map { String(describing: type(of: $0)) } ?? "nil"
++    }
++
++    private func log(_ message: String) {
++        NSLog("[GrantivaTabProbe] %@", message)
+     }
+ }

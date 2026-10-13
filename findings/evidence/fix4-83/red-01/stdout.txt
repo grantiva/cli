@@ -1,0 +1,11 @@
+=== RUN   TestDriverCleanupRemovesOnlyOwnedForwards
+=== RUN   TestDriverCleanupRemovesOnlyOwnedForwards/UIAutomator2
+    forward_cleanup_test.go:88: cleanup removed unrelated forward tcp:6790; calls: [["-s" "owned-device" "shell" "am force-stop io.appium.uiautomator2.server"] ["-s" "owned-device" "shell" "am force-stop io.appium.uiautomator2.server.test"] ["-s" "owned-device" "forward" "--remove" "localfilesystem:/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestDriverCleanupRemovesOnlyOwnedForwardsUIAutomator2260501197/001/owned.sock"] ["-s" "owned-device" "forward" "--remove" "localfilesystem:/tmp/uia2-owned-device.sock"] ["-s" "owned-device" "forward" "--remove" "tcp:16790"] ["-s" "owned-device" "forward" "--remove" "tcp:6790"]]
+=== RUN   TestDriverCleanupRemovesOnlyOwnedForwards/DeviceLab_driver
+    forward_cleanup_test.go:88: cleanup removed unrelated forward tcp:6791; calls: [["-s" "owned-device" "shell" "am force-stop dev.devicelab.driver.android"] ["-s" "owned-device" "shell" "am force-stop dev.devicelab.driver.android.test"] ["-s" "owned-device" "forward" "--remove" "localfilesystem:/var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/TestDriverCleanupRemovesOnlyOwnedForwardsDeviceLab_driver4209288268/001/owned.sock"] ["-s" "owned-device" "forward" "--remove" "localfilesystem:/tmp/devicelab-driver-owned-device.sock"] ["-s" "owned-device" "forward" "--remove" "tcp:16791"] ["-s" "owned-device" "forward" "--remove" "tcp:6791"]]
+--- FAIL: TestDriverCleanupRemovesOnlyOwnedForwards (0.65s)
+    --- FAIL: TestDriverCleanupRemovesOnlyOwnedForwards/UIAutomator2 (0.33s)
+    --- FAIL: TestDriverCleanupRemovesOnlyOwnedForwards/DeviceLab_driver (0.32s)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/device	1.090s
+FAIL
