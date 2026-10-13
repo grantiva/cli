@@ -1,0 +1,236 @@
+Fetching https://github.com/apple/swift-collections.git from cache
+Fetching https://github.com/apple/swift-log from cache
+Fetching https://github.com/modelcontextprotocol/swift-sdk from cache
+Fetching https://github.com/jpsim/Yams from cache
+Fetching https://github.com/apple/swift-system.git from cache
+Fetching https://github.com/apple/swift-atomics.git from cache
+Fetching https://github.com/apple/swift-argument-parser from cache
+Fetching https://github.com/apple/swift-nio.git from cache
+Fetching https://github.com/mattt/eventsource.git from cache
+Fetched https://github.com/mattt/eventsource.git from cache (0.56s)
+Fetched https://github.com/modelcontextprotocol/swift-sdk from cache (0.69s)
+Fetched https://github.com/apple/swift-nio.git from cache (0.73s)
+Fetched https://github.com/apple/swift-atomics.git from cache (0.74s)
+Fetched https://github.com/apple/swift-argument-parser from cache (0.86s)
+Fetched https://github.com/jpsim/Yams from cache (0.87s)
+Fetched https://github.com/apple/swift-system.git from cache (0.88s)
+Fetched https://github.com/apple/swift-collections.git from cache (0.90s)
+Fetched https://github.com/apple/swift-log from cache (0.90s)
+Computing version for https://github.com/modelcontextprotocol/swift-sdk
+Computed https://github.com/modelcontextprotocol/swift-sdk at 0.12.1 (1.29s)
+Computing version for https://github.com/jpsim/Yams
+Computed https://github.com/jpsim/Yams at 5.4.0 (0.64s)
+Computing version for https://github.com/apple/swift-log
+Computed https://github.com/apple/swift-log at 1.15.0 (0.38s)
+Computing version for https://github.com/apple/swift-argument-parser
+Computed https://github.com/apple/swift-argument-parser at 1.8.2 (0.37s)
+Computing version for https://github.com/apple/swift-nio.git
+Computed https://github.com/apple/swift-nio.git at 2.102.0 (0.44s)
+Computing version for https://github.com/mattt/eventsource.git
+Computed https://github.com/mattt/eventsource.git at 1.5.1 (0.37s)
+Computing version for https://github.com/apple/swift-system.git
+Computed https://github.com/apple/swift-system.git at 1.8.1 (0.38s)
+Computing version for https://github.com/apple/swift-collections.git
+Computed https://github.com/apple/swift-collections.git at 1.6.0 (0.42s)
+Computing version for https://github.com/apple/swift-atomics.git
+Computed https://github.com/apple/swift-atomics.git at 1.3.1 (0.28s)
+Creating working copy for https://github.com/apple/swift-system.git
+Working copy of https://github.com/apple/swift-system.git resolved at 1.8.1
+Creating working copy for https://github.com/jpsim/Yams
+Working copy of https://github.com/jpsim/Yams resolved at 5.4.0
+Creating working copy for https://github.com/apple/swift-atomics.git
+Working copy of https://github.com/apple/swift-atomics.git resolved at 1.3.1
+Creating working copy for https://github.com/mattt/eventsource.git
+Working copy of https://github.com/mattt/eventsource.git resolved at 1.5.1
+Creating working copy for https://github.com/apple/swift-log
+Working copy of https://github.com/apple/swift-log resolved at 1.15.0
+Creating working copy for https://github.com/apple/swift-argument-parser
+Working copy of https://github.com/apple/swift-argument-parser resolved at 1.8.2
+Creating working copy for https://github.com/apple/swift-collections.git
+Working copy of https://github.com/apple/swift-collections.git resolved at 1.6.0
+Creating working copy for https://github.com/modelcontextprotocol/swift-sdk
+Working copy of https://github.com/modelcontextprotocol/swift-sdk resolved at 0.12.1
+Creating working copy for https://github.com/apple/swift-nio.git
+Working copy of https://github.com/apple/swift-nio.git resolved at 2.102.0
+Building for debugging...
+[Computing dependencies]
+[Pre-planning 1 / 596]
+[Planning deferred tasks]
+[136 / 319] grantiva_GrantivaCore
+[143 / 319]
+[155 / 324] ArgumentParserToolInfo
+[164 / 347]
+[186 / 373] ArgumentParserToolInfo
+[202 / 388] CSystem
+[205 / 388]
+[218 / 474]
+[226 / 474]
+[243 / 474] Logging
+[252 / 474]
+[256 / 474] Logging
+[267 / 474] SystemPackage
+[276 / 474]
+[285 / 474] SystemPackage
+[293 / 474] Logging
+[297 / 474]
+[301 / 474]
+[304 / 474]
+[319 / 474] ArgumentParser
+[338 / 474] Yams
+[339 / 474] Yams
+[341 / 474] Yams
+[347 / 474] Yams
+[355 / 474] SystemPackage
+[359 / 476] EventSource
+[360 / 476] Yams
+[362 / 476] MCP
+[369 / 513]
+[381 / 513]
+[385 / 513] MCP
+[388 / 513] GrantivaCore
+[390 / 513] GrantivaCore
+[392 / 513] MCP
+[395 / 513] MCP
+[400 / 513] MCP-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[402 / 513] MCP-product
+[405 / 513] GrantivaCore
+[411 / 513] GrantivaMCP
+[419 / 515] GrantivaAPI
+[419 / 515] MCP
+[419 / 515] GrantivaCore
+[425 / 541] GrantivaAPI
+[426 / 541] GrantivaMCP
+[433 / 541] GrantivaMCP
+[438 / 541] GrantivaMCPTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Sources/GrantivaCore/Simulator/SimulatorManager.swift:312:13: warning: result of 'try?' is unused [#NoUsage]
+310 |             }
+311 |             _ = try? await execute("xcrun simctl delete \(shellQuoted(udid))")
+312 |             try? capacity.remove(udid: udid, ownedBy: me)
+    |             `- warning: result of 'try?' is unused [#NoUsage]
+313 |             try? provenance.remove(udid: udid)
+314 |             removeDeviceHomes(udid)
+
+[#NoUsage]: <https://docs.swift.org/compiler/documentation/diagnostics/no-usage>
+[443 / 541] GrantivaAPI
+[450 / 541] GrantivaAPI
+[457 / 541]
+[463 / 542] GrantivaAPI
+[465 / 542]
+[474 / 544] GrantivaMCPTests-product
+[475 / 544] GrantivaCLI
+[486 / 576] GrantivaAPI
+[493 / 577]
+[504 / 605]
+[507 / 618]
+[510 / 629]
+[511 / 629]
+[524 / 629]
+[525 / 629] GrantivaCLI
+[527 / 629] GrantivaCLI
+[528 / 629] GrantivaCLI
+[534 / 629] GrantivaMCPTests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Sources/GrantivaCLI/RecordCommand.swift:313:39: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+311 |             let requestedTime = CMTime(value: CMTimeValue(requested), timescale: 1_000)
+312 |             var actualTime = CMTime.zero
+313 |             let image = try generator.copyCGImage(at: requestedTime, actualTime: &actualTime)
+    |                                       `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+314 |             let fileName = String(format: "%06dms.png", requested)
+315 |             let path = frameDirectory.appendingPathComponent(fileName)
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[549 / 629] GrantivaMCPTests-product
+[550 / 629] GrantivaMCPTests-product
+[560 / 629] GrantivaCoreTests-product
+[568 / 629] GrantivaCLI
+[571 / 629] GrantivaCoreTests-product
+[573 / 629] GrantivaCoreTests-product
+[576 / 629] GrantivaCoreTests-product
+[577 / 629] GrantivaCLI
+[578 / 629] grantiva-product
+[581 / 629] GrantivaMCPTests-product
+[584 / 629] GrantivaMCPTests-product
+[589 / 629] GrantivaAPITests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Tests/GrantivaCoreTests/OutputRewriterTests.swift:23:13: warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 21 | 
+ 22 |     func testAnEmptyRewriterPassesTextThrough() {
+ 23 |         var empty = OutputRewriter(replacements: [:])
+    |             `- warning: variable 'empty' was never mutated; consider changing to 'let' constant [#VariableNeverMutated]
+ 24 |         XCTAssertTrue(empty.isEmpty)
+ 25 |         XCTAssertEqual(empty.rewrite("unchanged"), "unchanged")
+
+[#VariableNeverMutated]: <https://docs.swift.org/compiler/documentation/diagnostics/variable-never-mutated>
+[595 / 630] GrantivaCLI
+[598 / 631] GrantivaCLITests-product
+[599 / 631] GrantivaAPITests-product
+[602 / 631] GrantivaMCPTests-product
+[606 / 633] GrantivaMCPTests-product
+[613 / 633] GrantivaAPITests-product
+[625 / 646] GrantivaCLITests-product
+[627 / 646]
+[630 / 646]
+[638 / 646] GrantivaCoreTests-product
+[640 / 646] GrantivaCLITests-product
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:89:31: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 87 |         for (requested, expected) in [(0, 0), (1_500, 500)] {
+ 88 |             var actual = CMTime.zero
+ 89 |             _ = try generator.copyCGImage(at: CMTime(value: CMTimeValue(requested), timescale: 1_000), actualTime: &actual)
+    |                               `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+ 90 |             XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), expected, "requested \(requested)")
+ 91 |         }
+
+/Users/kyle/Developer/grantiva-cli/.worktrees/release-round4-candidate3/Tests/GrantivaCLITests/MP4LastFrameHoldFixtureTests.swift:114:27: warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+112 |         generator.requestedTimeToleranceAfter = .zero
+113 |         var actual = CMTime.zero
+114 |         _ = try generator.copyCGImage(at: CMTime(value: 750, timescale: 1_000), actualTime: &actual)
+    |                           `- warning: 'copyCGImage(at:actualTime:)' was deprecated in macOS 15.0: Use generateCGImageAsynchronouslyForTime:completionHandler: instead [#DeprecatedDeclaration]
+115 |         XCTAssertEqual(Int((CMTimeGetSeconds(actual) * 1_000).rounded()), 500)
+116 |     }
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[642 / 646] GrantivaCLITests-product
+[646 / 646] GrantivaCLITests-product
+Build complete! (16.65 sec)
