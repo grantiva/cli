@@ -1,0 +1,26 @@
+05:35:30.557657 [INFO] === Test execution started ===
+05:35:30.557717 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/B3-L51-four-forms-rerun12/engine-adb/report
+05:35:30.557721 [INFO] Platform: android
+05:35:30.557725 [INFO] Driver: uiautomator2
+05:35:30.557982 [INFO] Validated 1 flow(s)
+05:35:30.558002 [INFO] Single device execution mode
+05:35:30.558008 [INFO] Starting flow execution (parallel: false, devices: [])
+05:35:30.558012 [INFO] Creating driver for single device execution
+05:35:30.558016 [INFO] Connecting to Android device: emulator-5554
+05:35:30.635225 [INFO] Device info: google sdk_gphone64_arm64, SDK 35, Serial emulator-5554, Emulator: true
+05:35:30.673494 [INFO] Starting UIAutomator2 server on device emulator-5554
+05:35:31.079140 [WARN] failed to remove default socket forward for /tmp/uia2-emulator-5554.sock: adb forward --remove localfilesystem:/tmp/uia2-emulator-5554.sock: exit status 1: adb: error: listener 'localfilesystem:/tmp/uia2-emulator-5554.sock' not found
+05:35:31.093533 [WARN] failed to remove adb forward for tcp:6790: adb forward --remove tcp:6790: exit status 1: adb: error: listener 'tcp:6790' not found
+05:35:32.174071 [INFO] Creating UIAutomator2 session with capabilities: Platform=Android, Device=sdk_gphone64_arm64
+05:35:32.183034 [INFO] Session created successfully: a1335df6-00d6-4426-9c4e-1b1aee3c70ac
+05:35:32.235346 [INFO] Driver created: android on google sdk_gphone64_arm64
+05:35:32.237396 [INFO] === Starting flow: l51-engine-adb ===
+05:35:32.237404 [INFO] Flow file: /var/folders/jv/76l6crmx6nl3hf150gzry_ym0000gn/T/grantiva-B6F67541-5626-4649-941C-ECD1CBD4917D/0/l51-engine-adb.yaml
+05:35:32.237407 [INFO] Total steps: 4
+05:35:32.242950 [DEBUG] Executing step 0: launchApp (clearState)
+05:35:32.306808 [INFO] [uiautomator2] clearState com.kylebrowning.landmarks: cleared app data (pm clear, 0.0s)
+05:35:32.388896 [DEBUG] permissions: com.kylebrowning.landmarks does not declare 27 of them: android.permission.ACCESS_FINE_LOCATION, android.permission.ACCESS_COARSE_LOCATION, android.permission.ACCESS_BACKGROUND_LOCATION, android.permission.CAMERA, android.permission.READ_CONTACTS, android.permission.WRITE_CONTACTS, android.permission.GET_ACCOUNTS, android.permission.READ_PHONE_STATE, android.permission.CALL_PHONE, android.permission.READ_CALL_LOG, android.permission.WRITE_CALL_LOG, android.permission.RECORD_AUDIO, android.permission.READ_EXTERNAL_STORAGE, android.permission.WRITE_EXTERNAL_STORAGE, android.permission.READ_MEDIA_IMAGES, android.permission.READ_MEDIA_VIDEO, android.permission.READ_MEDIA_AUDIO, android.permission.READ_CALENDAR, android.permission.WRITE_CALENDAR, android.permission.SEND_SMS, android.permission.RECEIVE_SMS, android.permission.READ_SMS, android.permission.POST_NOTIFICATIONS, android.permission.BLUETOOTH_CONNECT, android.permission.BLUETOOTH_SCAN, android.permission.BODY_SENSORS, android.permission.ACTIVITY_RECOGNITION
+05:35:32.388923 [DEBUG] permissions: 27 applied for com.kylebrowning.landmarks in 22ms
+05:35:33.640080 [DEBUG] [uiautomator2] launchApp com.kylebrowning.landmarks: 1.198s after launch, pids [23670], drawn=true crashed=false (read 36ms)
+05:35:33.640179 [DEBUG] Step 0 completed successfully (1397ms): launchApp (clearState)
+05:35:33.640769 [DEBUG] Executing step 1: wait: 15000ms
