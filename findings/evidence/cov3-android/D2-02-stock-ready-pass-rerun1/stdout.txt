@@ -1,0 +1,151 @@
+
+  Home
+    ✓ Launch app
+
+  Favorites
+    ✓ Tap on "Favorites"
+
+  Deep Links
+    ✓ Tap on "Deep Links"
+
+  Lakes
+    ✓ Tap on "Landmarks"
+    ✓ Tap on "Lakes"
+
+  Detail
+    ✓ Tap on "Landmarks"
+    ✓ Tap on "Golden Gate Bridge"
+    ✓ Assert visible "Plan Visit"
+
+  01-browse
+    ✓ launchApp
+    ✓ assertVisible: text="Landmarks"
+    ✓ assertVisible: text="Featured"
+    ✓ takeScreenshot
+    ✓ tapOn: text="Golden Gate Bridge"
+    ✓ assertVisible: text="San Francisco, CA"
+    ✓ assertVisible: text="Plan Visit"
+    ✓ takeScreenshot
+    ▸ Screenshot: 01-browse-cmd-003-Home
+    ▸ Screenshot: 01-browse-cmd-007-Landmark Detail
+
+  02-favorite
+    ✓ launchApp
+    ✓ tapOn: text="Lake Tahoe"
+    ✓ tapOn: text="Favorite"
+    ✓ assertVisible: text="Unfavorite"
+    ✓ tapOn: text="Landmarks"
+    ✓ tapOn: text="Favorites"
+    ✓ assertVisible: text="Lake Tahoe"
+    ✓ takeScreenshot
+    ✓ swipe: LEFT from text="Lake Tahoe"
+    ✓ tapOn: text="Remove from favorites"
+    ✓ assertNotVisible: text="Lake Tahoe"
+    ✓ assertVisible: text="Landmarks you favorite will appear here."
+    ✓ takeScreenshot
+    ▸ Screenshot: 02-favorite-cmd-007-Favorites With Item
+    ▸ Screenshot: 02-favorite-cmd-012-Favorites Empty
+
+  03-edit
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Edit Landmark"
+    ✓ assertVisible: text="Edit Landmark"
+    ✓ tapOn: text="Name"
+    ✓ inputText: " Renamed"
+    ✓ tapOn: text="Done"
+    ✓ assertVisible: text="Golden Gate Bridge Renamed"
+    ✓ takeScreenshot
+    ▸ Screenshot: 03-edit-cmd-008-Edited
+
+  04-discard
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Edit Landmark"
+    ✓ tapOn: text="Location"
+    ✓ inputText: "X"
+    ✓ tapOn: text="Cancel"
+    ✓ assertVisible: text="You have unsaved changes that will be lost."
+    ✓ takeScreenshot
+    ✓ tapOn: text="Keep Editing"
+    ✓ assertVisible: text="Edit Landmark"
+    ✓ tapOn: text="Cancel"
+    ✓ tapOn: text="Discard"
+    ✓ assertVisible: text="Deep Links"
+    ▸ Screenshot: 04-discard-cmd-007-Discard Alert
+
+  05-category
+    ✓ launchApp
+    ✓ tapOn: text="Lakes"
+    ✓ assertVisible: text="Lake Tahoe"
+    ✓ assertVisible: text="Mono Lake"
+    ✓ assertNotVisible: text="Golden Gate Bridge"
+    ✓ takeScreenshot
+    ▸ Screenshot: 05-category-cmd-005-Lakes
+
+  06-visit
+    ✓ launchApp
+    ✓ tapOn: text="Half Dome"
+    ✓ tapOn: text="Plan Visit"
+    ✓ assertVisible: text="Visit Scheduled!"
+    ✓ assertVisible: text="You're all set to visit Half Dome."
+    ✓ takeScreenshot
+    ✓ tapOn: text="Done"
+    ✓ assertVisible: text="Half Dome"
+    ▸ Screenshot: 06-visit-cmd-005-Visit Confirmed
+
+  07-deeplink
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="landmarks://category/lakes"
+    ✓ assertVisible: text="Mono Lake"
+    ✓ takeScreenshot
+    ▸ Screenshot: 07-deeplink-cmd-004-Deep Link Lakes
+
+  08-caching
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Caching Demo"
+    ✓ assertVisible: text="Cache Policy"
+    ✓ tapOn: text="Fetch with Policy"
+    ✓ takeScreenshot
+    ✓ tapOn: text="Clear Cache"
+    ▸ Screenshot: 08-caching-cmd-005-Caching Demo
+
+  09-seed-empty
+    ✓ launchApp
+    ✓ assertVisible: text="No landmarks yet"
+    ✓ takeScreenshot
+    ▸ Screenshot: 09-seed-empty-cmd-002-Empty
+
+  10-seed-many
+    ✓ launchApp
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ scroll: DOWN
+    ✓ assertVisible: text="Landmark 28"
+    ✓ takeScreenshot
+    ▸ Screenshot: 10-seed-many-cmd-006-Scrolled
+
+  11-slow
+    ✓ launchApp
+    ✓ tapOn: text="Deep Links"
+    ✓ tapOn: text="Slow Screen"
+    ✓ assertVisible: text="Loading…"
+    ✓ extendedWaitUntil: visible text="Loaded after delay"
+    ✓ takeScreenshot
+    ▸ Screenshot: 11-slow-cmd-005-Slow Loaded
+
+  12-quote-label
+    ✓ launchApp
+    ✓ tapOn: text="Mountains"
+    ✓ tapOn: text="Mount "Denali""
+    ✓ assertVisible: text="Alaska"
+    ✓ takeScreenshot
+    ▸ Screenshot: 12-quote-label-cmd-004-Quoted Label
+
+  Screens: 5 total, 5 captured, 0 failed
+  Flows: 12 total, 12 passed, 0 failed
+  Screenshots: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-android/findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/report/captures/
+

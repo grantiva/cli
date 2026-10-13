@@ -1,0 +1,77 @@
+{
+  "id": "flow-008",
+  "name": "09-seed-empty",
+  "sourceFile": ".maestro/09-seed-empty.yaml",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T03:04:23.894614-07:00",
+  "endTime": "2026-10-13T03:04:25.5253-07:00",
+  "duration": 1630,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T03:04:23.898599-07:00",
+      "endTime": "2026-10-13T03:04:25.332599-07:00",
+      "duration": 1434,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"No landmarks yet\"",
+      "status": "passed",
+      "startTime": "2026-10-13T03:04:25.333683-07:00",
+      "endTime": "2026-10-13T03:04:25.397683-07:00",
+      "duration": 64,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No landmarks yet"
+        }
+      },
+      "element": {
+        "found": true,
+        "id": "00000000-0000-002a-0000-003700000004",
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-13T03:04:25.398179-07:00",
+      "endTime": "2026-10-13T03:04:25.524179-07:00",
+      "duration": 126,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-008/cmd-002-Empty.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 3,
+    "mean": 541,
+    "p50": 126,
+    "p95": 1434,
+    "max": 1434,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}

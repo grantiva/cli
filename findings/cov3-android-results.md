@@ -538,6 +538,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B3-L41 [android] | pass | findings/evidence/cov3-android/B3-L41-variant-module-rerun2/ | Invalid variant text and JSON both list the four buildable app variants, while an invalid module lists `app`; all reject nonzero. A separately bounded Gradle tasks query retains the assemble-task inventory, and exact candidate source/tests/docs pin the discovery and remediation contract. |
 
+| B2-K15 [android] | pass | findings/evidence/cov3-android/B2-K15-live-teardown-refusal-rerun1/, findings/evidence/cov3-android/B2-K15-live-teardown-accepted-rerun3/ | Exact live targeted teardown in text and JSON stops the selected detached runner, releases its exact lease and session, kills the owned emulator, and reports the structured recorded/killed/session-stop fields. The unrelated primary device remains untouched; exact candidate tests and the shared per-serial teardown-all loop cover unrelated-session preservation and the globally prohibited `--all` runtime branch. |
+
 ## Counts
 
-378 of 467 slice rows recorded: 355 pass, 17 fail, 4 blocked, 2 n/a.
+379 of 467 slice rows recorded: 356 pass, 17 fail, 4 blocked, 2 n/a.
