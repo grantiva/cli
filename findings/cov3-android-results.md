@@ -353,6 +353,12 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B2-K56 [android] | pass | findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/ | In a live keep-alive session, MCP context reported `application_id: com.kylebrowning.landmarks`, the owned serial and PID, and `driver_port: (forwarded on attach)`, with no empty value. Exact-head ContextToolTests retained alongside the run cover keep-alive app-ID round-trip and legacy missing values rendering `(unknown)` (inspected, not newly executed). |
 
+
+| MCP-076 [android] | pass | findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/mcp/ | In a confirmed live Landmarks-list keep-alive session, the hierarchy resource returned the Android tree as `application/json` text and the screenshot resource returned a nonempty base64 PNG with `image/png` MIME type. |
+| X-011 | pass | findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt61/ | On the same live Landmarks-list state, both platforms returned documented XML hierarchy roots and JSON trees with the same structural keys and numeric frames. Frame units follow the documented platform difference: points on iOS and dp on Android. |
+
+| MCP-074 | pass | findings/evidence/cov3-android/MCP074-D241-vrt-approve-errors-rerun1/ | In an isolated project containing two genuine current Android captures, `{screens: ["Home"]}` approved only Home, then `{}` approved Home and Deep Links. Both returned Android baseline directory `.grantiva/baselines/android`, and the two baseline PNGs were inventoried. |
+
 ## Counts
 
-286 of 467 slice rows recorded: 268 pass, 12 fail, 4 blocked, 2 n/a.
+289 of 467 slice rows recorded: 271 pass, 12 fail, 4 blocked, 2 n/a.
