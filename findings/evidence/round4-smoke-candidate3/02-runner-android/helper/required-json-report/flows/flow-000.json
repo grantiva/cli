@@ -1,0 +1,76 @@
+{
+  "id": "flow-000",
+  "name": "required-miss",
+  "sourceFile": "/Users/kyle/Developer/grantiva-cli/.worktrees/regression/findings/evidence/round4-smoke-candidate3/02-runner-android/inputs/optional-inputs/required-miss.yaml",
+  "device": {
+    "id": "emulator-5580",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-13T14:21:49.924191-07:00",
+  "endTime": "2026-10-13T14:22:08.592094-07:00",
+  "duration": 18667,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-13T14:21:49.929161-07:00",
+      "endTime": "2026-10-13T14:21:51.363161-07:00",
+      "duration": 1434,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "tapOn",
+      "yaml": "tapOn: text=\"No Such Element fix4-3\"",
+      "status": "failed",
+      "startTime": "2026-10-13T14:21:51.363698-07:00",
+      "endTime": "2026-10-13T14:22:08.456698-07:00",
+      "duration": 17093,
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "No Such Element fix4-3"
+        }
+      },
+      "error": {
+        "type": "element_not_found",
+        "message": "Element not found: text='No Such Element fix4-3' (cause: context deadline exceeded: element not found; closest on-screen texts: \"Wifi signal full.,No internet\", \"Phone signal full.\", \"Battery 100 percent.\")"
+      },
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-001-after.png",
+        "viewHierarchy": "assets/flow-000/cmd-001-hierarchy.xml",
+        "logTail": "assets/flow-000/cmd-001-log-tail.txt"
+      }
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "assertVisible",
+      "yaml": "assertVisible: text=\"Landmarks\"",
+      "status": "skipped",
+      "params": {
+        "selector": {
+          "type": "text",
+          "value": "Landmarks"
+        }
+      },
+      "artifacts": {}
+    }
+  ],
+  "stepLatency": {
+    "count": 2,
+    "mean": 9263,
+    "p50": 1434,
+    "p95": 17093,
+    "max": 17093,
+    "slowestType": "tapOn"
+  },
+  "artifacts": {}
+}
