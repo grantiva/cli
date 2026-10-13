@@ -1,0 +1,42 @@
+platform: android
+module: app
+variant: freeDebug
+application_id: com.kylebrowning.landmarks
+emulator: cov3-android-k06-r3
+
+screens:
+  - name: Home
+    path: launch
+  - name: Favorites
+    path:
+      - tap: "Favorites"
+  - name: Deep Links
+    path:
+      - tap: "Deep Links"
+  - name: Lakes
+    path:
+      - tap: "Landmarks"
+      - tap: "Lakes"
+  - name: Detail
+    path:
+      - tap: "Landmarks"
+      - tap: "Golden Gate Bridge"
+      - assert_visible: "Plan Visit"
+
+flows:
+  - .maestro/01-browse.yaml
+  - .maestro/02-favorite.yaml
+  - .maestro/03-edit.yaml
+  - .maestro/04-discard.yaml
+  - .maestro/05-category.yaml
+  - .maestro/06-visit.yaml
+  - .maestro/07-deeplink.yaml
+  - .maestro/08-caching.yaml
+  - .maestro/09-seed-empty.yaml
+  - .maestro/10-seed-many.yaml
+  - .maestro/11-slow.yaml
+  - .maestro/12-quote-label.yaml
+
+diff:
+  threshold: 0.02
+  perceptual_threshold: 5.0
