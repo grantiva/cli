@@ -336,6 +336,15 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | MCP-071 [android] | pass | findings/evidence/cov3-android/AND-103-exact-rerun1/mcp/vrt-capture.json, findings/evidence/cov3-android/AND-103-exact-rerun1/mcp/vrt-compare.json | After the live-session MCP capture created five Android screen artifacts, MCP compare returned every screen with capture and baseline paths under `.grantiva/captures/android` and `.grantiva/baselines/android`, pixel percentage/threshold, perceptual distance/threshold, status, and message; all five passed. |
 
+| MCP-045 | pass | findings/evidence/cov3-android/AND-105-exact-rerun1/mcp/context.json, findings/evidence/cov3-android/AND-105-exact-rerun1/project/grantiva-android.yml | With no runner session and both platform configs present, explicit Android MCP context selected `grantiva-android.yml`, reported configured emulator `cov3-android` at `emulator-5554`, Android module, variant, application ID and SDK, and explicitly reported `No active session.` |
+
+| D2-24 | pass | findings/evidence/cov3-android/B2-K109-BC08-config-forms-rerun1/ | The live Android Maestro-format config used `{id:}` resource/test-tag selectors for tap, assertVisible, assertNotVisible, scrollUntilVisible and extendedWaitUntil; every configured step passed and the configured screen was captured. |
+
+
+| X-013 | fail | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt62/ | Current text start/stop output has the same structure and JSON shares lifecycle keys, but the full JSON key sets differ beyond device naming: iOS uses `bundleId`, while Android uses `applicationId` (with Android `serial` treated as device naming). This fails the matrix's literal full-key-set criterion and is queued for Task 6 reconciliation. |
+| X-017 | pass | findings/evidence/cov3-android/X013-X015-X017-android-rerun1/doctor/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt62/ | Native explicit-platform doctor runs on both platforms produce the same text sections and JSON array object shape (`name`, `status`, `message`, optional `fix`), with platform-specific required and advisory check names and values. |
+| X-024 | pass | findings/evidence/cov3-android/B2-K33-X024-verbose-processes-rerun2/run-plain/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt62/ | Exact flow 08 with `--logs` on both platforms prefixes app log lines with `[log]` on stderr and interleaves them during runner execution in the same form; platform log payloads differ as expected. |
+
 ## Counts
 
-277 of 467 slice rows recorded: 260 pass, 11 fail, 4 blocked, 2 n/a.
+282 of 467 slice rows recorded: 264 pass, 12 fail, 4 blocked, 2 n/a.
