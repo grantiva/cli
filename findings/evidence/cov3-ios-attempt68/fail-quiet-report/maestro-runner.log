@@ -1,0 +1,134 @@
+00:45:57.957132 [INFO] === Test execution started ===
+00:45:57.957193 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt68/fail-quiet-report
+00:45:57.957198 [INFO] Platform: ios
+00:45:57.957202 [INFO] Driver: wda
+00:45:57.957470 [INFO] Validated 1 flow(s)
+00:45:58.073404 [INFO] Single device execution mode
+00:45:58.073428 [INFO] Starting flow execution (parallel: false, devices: [])
+00:45:58.073436 [INFO] Creating driver for single device execution
+00:45:58.073443 [INFO] Using specified iOS device: 563907E1-703D-4322-AE5F-FC3B06D03143
+00:45:58.182399 [INFO] Device 563907E1-703D-4322-AE5F-FC3B06D03143 is a simulator
+00:45:58.182462 [INFO] Building WDA for device 563907E1-703D-4322-AE5F-FC3B06D03143 (team ID: )
+00:45:58.399942 [INFO] WDA build reused from cache
+00:45:58.399957 [INFO] Starting WDA on device 563907E1-703D-4322-AE5F-FC3B06D03143 (port: 8511)
+00:45:58.655760 [INFO] Starting GrantivaAgent (attempt 1/4)
+00:46:00.658333 [INFO] GrantivaAgent started
+00:46:00.658396 [INFO] WDA started successfully on port 8511
+00:46:01.075763 [DEBUG] WDA GET /window/size
+00:46:01.126419 [DEBUG] WDA GET /window/size completed (50ms, status: 200)
+00:46:01.126483 [INFO] Driver created: ios on cov3-ios-26
+00:46:01.128135 [INFO] === Starting flow: 02-exact-negative ===
+00:46:01.128156 [INFO] Flow file: .maestro/coverage/02-exact-negative.yaml
+00:46:01.128161 [INFO] Total steps: 3
+00:46:01.128424 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+00:46:01.128985 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+00:46:01.129054 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+00:46:03.770382 [DEBUG] WDA POST /session completed (2641ms, status: 200)
+00:46:03.770862 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+00:46:03.772577 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings completed (1ms, status: 200)
+00:46:03.775345 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+00:46:03.778713 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings completed (3ms, status: 200)
+00:46:03.779807 [DEBUG] Executing step 0: launchApp
+00:46:04.207328 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+00:46:04.207425 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+00:46:04.208163 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/appium/settings completed (0ms, status: 200)
+00:46:04.208230 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+00:46:04.208706 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/wda/apps/terminate completed (0ms, status: 200)
+00:46:04.208733 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+00:46:05.736074 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/wda/apps/launch completed (1527ms, status: 200)
+00:46:05.736182 [DEBUG] Step 0 completed successfully (1956ms): launchApp
+00:46:05.736844 [DEBUG] Executing step 1: assertVisible: text="Golden Gate.*"
+00:46:05.873505 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+00:46:05.873536 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:06.015369 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (141ms, status: 404)
+00:46:06.015448 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label ==[c] 'Golden Gate.*' OR value ==[c] 'Golden Gate.*')"}
+00:46:06.073871 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (58ms, status: 404)
+00:46:06.073996 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:06.765087 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (691ms, status: 200)
+00:46:06.772404 [DEBUG] Step 1 completed successfully (1035ms): assertVisible: text="Golden Gate.*"
+00:46:06.772778 [DEBUG] Executing step 2: assertVisible: text="Golden Gate.*", exact=true
+00:46:06.772974 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:06.821163 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (48ms, status: 404)
+00:46:06.821744 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:07.460814 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (639ms, status: 200)
+00:46:07.513573 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:07.567409 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (53ms, status: 404)
+00:46:07.567648 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:08.201588 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (633ms, status: 200)
+00:46:08.255118 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:08.354288 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (99ms, status: 404)
+00:46:08.354338 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:08.403269 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (48ms, status: 404)
+00:46:08.403882 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:09.023022 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (619ms, status: 200)
+00:46:09.076367 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:09.128736 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (52ms, status: 404)
+00:46:09.128997 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:09.764644 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (635ms, status: 200)
+00:46:09.817862 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:09.869492 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (51ms, status: 404)
+00:46:09.869576 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:10.506791 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (637ms, status: 200)
+00:46:10.562625 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:10.662851 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (100ms, status: 404)
+00:46:10.662898 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:10.710448 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (47ms, status: 404)
+00:46:10.710598 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:11.350259 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (639ms, status: 200)
+00:46:11.404080 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:11.455328 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (51ms, status: 404)
+00:46:11.455469 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:12.118118 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (662ms, status: 200)
+00:46:12.170940 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:12.223900 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (52ms, status: 404)
+00:46:12.223978 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:12.978652 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (754ms, status: 200)
+00:46:13.033855 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:13.151488 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (117ms, status: 404)
+00:46:13.151609 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:13.198743 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (47ms, status: 404)
+00:46:13.198885 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:13.828475 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (629ms, status: 200)
+00:46:13.881617 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:13.933264 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (51ms, status: 404)
+00:46:13.933462 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:14.582038 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (648ms, status: 200)
+00:46:14.633506 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:14.686009 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (52ms, status: 404)
+00:46:14.686085 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:15.333660 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (647ms, status: 200)
+00:46:15.386622 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:15.487270 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (100ms, status: 404)
+00:46:15.487314 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:15.534517 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (47ms, status: 404)
+00:46:15.534679 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:16.171422 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (636ms, status: 200)
+00:46:16.225274 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:16.278781 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (53ms, status: 404)
+00:46:16.278965 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:17.039720 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (760ms, status: 200)
+00:46:17.092665 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:17.142601 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (50ms, status: 404)
+00:46:17.144259 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:17.814439 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (670ms, status: 200)
+00:46:17.867154 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text
+00:46:17.966293 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/alert/text completed (99ms, status: 404)
+00:46:17.966340 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:18.014730 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (48ms, status: 404)
+00:46:18.014886 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:18.665598 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (650ms, status: 200)
+00:46:18.720086 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element body={"using":"predicate string","value":"(label == 'Golden Gate.*' OR value == 'Golden Gate.*')"}
+00:46:18.769720 [DEBUG] WDA POST /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/element completed (49ms, status: 404)
+00:46:18.770458 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:19.434464 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (664ms, status: 200)
+00:46:19.489357 [ERROR] Step 2 failed (12716ms): assertVisible: text="Golden Gate.*", exact=true - Error: Element not visible: text='Golden Gate.*', exact=true (cause: context deadline exceeded: no elements match selector; closest on-screen texts: "Golden Gate Bridge", "Golden Gate Bridge, San Francisco, CA", "Categories")
+00:46:19.489385 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/screenshot
+00:46:19.568504 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/screenshot completed (79ms, status: 200)
+00:46:19.570210 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source
+00:46:20.234146 [DEBUG] WDA GET /session/C9CB3639-90C8-4CCC-89E9-C5F5F26F7044/source completed (663ms, status: 200)
+00:46:20.236385 [INFO] === Flow completed: 02-exact-negative (status: failed, duration: 19106ms, passed: 2, failed: 1, skipped: 0) ===
+00:46:20.314042 [INFO] Flow execution completed: 0 passed, 1 failed, 0 skipped
+00:46:20.314227 [INFO] Generating reports...
+00:46:20.315228 [INFO] Shutting down devices started by maestro-runner...
+00:46:20.315249 [INFO] Shutting down all tracked emulators
+00:46:20.315255 [INFO] Shutting down all tracked simulators
