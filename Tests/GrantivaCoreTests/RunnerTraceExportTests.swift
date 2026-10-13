@@ -157,6 +157,41 @@ final class RunnerTraceExportTests: XCTestCase {
         ])
     }
 
+    func testReferencedTopLevelAndNestedLogTailsExportExactBytes() throws {
+        let topBytes = Data([0x74, 0x6f, 0x70, 0x00, 0xff, 0x0a])
+        let nestedBytes = Data([0x6e, 0x65, 0x73, 0x74, 0x65, 0x64, 0x0a])
+        try writeArtifact(topBytes, directory: "assets/flow", name: "cmd-002-log-tail.txt")
+        try writeArtifact(nestedBytes, directory: "assets/flow", name: "nested-007-log-tail.txt")
+        try writeArtifact("unreferenced", directory: "assets/flow", name: "cmd-999-log-tail.txt")
+        try writeReport([
+            flow(index: 0, id: "flow", source: "/staged/flow.yaml", assets: "assets/flow", dataFile: "flows/flow.json"),
+        ])
+        try writeFlow("""
+        {"commands":[{"index":2,"status":"failed","artifacts":{"logTail":"assets/flow/cmd-002-log-tail.txt","notes":{"hierarchy":"timed out"}},
+          "subCommands":[{"index":7,"status":"failed","artifacts":{"logTail":"assets/flow/nested-007-log-tail.txt"}}]}]}
+        """, named: "flow.json")
+
+        export(paths: ["flow.yaml"], map: ["/staged/flow.yaml": "flow.yaml"])
+        try FileManager.default.removeItem(at: reportDir)
+
+        XCTAssertEqual(try traceFiles(), ["flow-cmd-002-log-tail.txt", "flow-nested-007-log-tail.txt"])
+        XCTAssertEqual(try traceData("flow-cmd-002-log-tail.txt"), topBytes)
+        XCTAssertEqual(try traceData("flow-nested-007-log-tail.txt"), nestedBytes)
+    }
+
+    func testReferencedLogTailTraversalExportsNothing() throws {
+        try Data("foreign".utf8).write(to: scratch.appendingPathComponent("outside.txt"))
+        try writeReport([
+            flow(index: 0, id: "flow", source: "/staged/flow.yaml", assets: "assets/flow", dataFile: "flows/flow.json"),
+        ])
+        try writeArtifact("decoy", directory: "assets/flow", name: "outside.txt")
+        try writeFlow(#"{"commands":[{"index":0,"status":"failed","artifacts":{"logTail":"../outside.txt"}}]}"#, named: "flow.json")
+
+        export(paths: ["flow.yaml"], map: ["/staged/flow.yaml": "flow.yaml"])
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: outputDir.appendingPathComponent("trace").path))
+    }
+
     private func export(
         snapshot: String = "full",
         paths: [String],
@@ -184,10 +219,24 @@ final class RunnerTraceExportTests: XCTestCase {
         )
     }
 
+    private func traceData(_ name: String) throws -> Data {
+        try Data(contentsOf: outputDir.appendingPathComponent("trace").appendingPathComponent(name))
+    }
+
     private func writeArtifact(_ contents: String, directory: String, name: String) throws {
+        try writeArtifact(Data(contents.utf8), directory: directory, name: name)
+    }
+
+    private func writeArtifact(_ contents: Data, directory: String, name: String) throws {
         let directoryURL = reportDir.appendingPathComponent(directory)
         try FileManager.default.createDirectory(at: directoryURL, withIntermediateDirectories: true)
-        try Data(contents.utf8).write(to: directoryURL.appendingPathComponent(name))
+        try contents.write(to: directoryURL.appendingPathComponent(name))
+    }
+
+    private func writeFlow(_ json: String, named name: String) throws {
+        let flows = reportDir.appendingPathComponent("flows")
+        try FileManager.default.createDirectory(at: flows, withIntermediateDirectories: true)
+        try Data(json.utf8).write(to: flows.appendingPathComponent(name))
     }
 
     private func writeReport(_ flows: [String]) throws {
@@ -195,9 +244,10 @@ final class RunnerTraceExportTests: XCTestCase {
         try Data(json.utf8).write(to: reportDir.appendingPathComponent("report.json"))
     }
 
-    private func flow(index: Int, id: String, source: String, assets: String) -> String {
-        """
-        {"index":\(index),"id":"\(id)","name":"flow","sourceFile":"\(source)","assetsDir":"\(assets)"}
+    private func flow(index: Int, id: String, source: String, assets: String, dataFile: String? = nil) -> String {
+        let data = dataFile.map { ",\"dataFile\":\"\($0)\"" } ?? ""
+        return """
+        {"index":\(index),"id":"\(id)","name":"flow","sourceFile":"\(source)","assetsDir":"\(assets)"\(data)}
         """
     }
 }
