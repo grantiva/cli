@@ -1,0 +1,83 @@
+{
+  "id": "flow-000",
+  "name": "screens",
+  "sourceFile": "screens",
+  "device": {
+    "id": "emulator-5554",
+    "name": "google sdk_gphone64_arm64",
+    "platform": "android",
+    "osVersion": "35",
+    "isSimulator": true
+  },
+  "startTime": "2026-10-12T22:38:23.007318-07:00",
+  "endTime": "2026-10-12T22:38:25.144208-07:00",
+  "duration": 2136,
+  "commands": [
+    {
+      "id": "cmd-000",
+      "index": 0,
+      "type": "launchApp",
+      "yaml": "launchApp",
+      "status": "passed",
+      "startTime": "2026-10-12T22:38:23.014134-07:00",
+      "endTime": "2026-10-12T22:38:24.479134-07:00",
+      "duration": 1465,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-001",
+      "index": 1,
+      "type": "extendedWaitUntil",
+      "label": "Wait for the app to draw",
+      "yaml": "extendedWaitUntil: visible text=\".+\"",
+      "status": "passed",
+      "startTime": "2026-10-12T22:38:24.479706-07:00",
+      "endTime": "2026-10-12T22:38:24.651706-07:00",
+      "duration": 172,
+      "element": {
+        "found": true,
+        "text": "Golden Gate Bridge",
+        "bounds": {
+          "x": 0,
+          "y": 425,
+          "width": 1080,
+          "height": 189
+        }
+      },
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-002",
+      "index": 2,
+      "type": "waitForAnimationToEnd",
+      "yaml": "waitForAnimationToEnd",
+      "status": "passed",
+      "startTime": "2026-10-12T22:38:24.652691-07:00",
+      "endTime": "2026-10-12T22:38:25.013691-07:00",
+      "duration": 361,
+      "artifacts": {}
+    },
+    {
+      "id": "cmd-003",
+      "index": 3,
+      "type": "takeScreenshot",
+      "yaml": "takeScreenshot",
+      "status": "passed",
+      "startTime": "2026-10-12T22:38:25.014224-07:00",
+      "endTime": "2026-10-12T22:38:25.143224-07:00",
+      "duration": 129,
+      "artifacts": {
+        "screenshotAfter": "assets/flow-000/cmd-003-Home.png"
+      }
+    }
+  ],
+  "stepLatency": {
+    "count": 4,
+    "mean": 531,
+    "p50": 172,
+    "p95": 1465,
+    "max": 1465,
+    "slowestType": "launchApp"
+  },
+  "artifacts": {}
+}
