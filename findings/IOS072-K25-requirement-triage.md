@@ -8,7 +8,7 @@ The matrix says only “two flows named `same.yaml` in different dirs” and exp
 
 The supported multi-flow input is the config array: `GrantivaConfig.flows` is `[String]` (`Sources/GrantivaCore/Config/GrantivaConfig.swift:13,281`), and project resolution preserves `config?.flows` (`Sources/GrantivaCLI/TargetOptions.swift:149`; `RunCommand.swift:380-396` changes it only when singular `--flow` is supplied). README's report contract says flow paths in reports are the paths passed/configured, providing the relevant source-path semantics.
 
-Required discriminator: configure `flows: [a/same.yaml, b/same.yaml]`, invoke `grantiva run` without `--flow`, and inspect stdout plus report `sourceFile` and distinct steps. If both run, IOS-072 passes and attempt 34 documents only unsupported repeated singular override behavior. If one collapses, the raw then supports a basename-collision defect downstream. The iOS worker has been asked to collect this exact config-driven observation. No defect brief should be drafted before it.
+The discriminator is now complete in `cov3-ios-attempt36`. Its `grantiva.yml` configures `a/same.yaml` and `b/same.yaml`, the command supplies no `--flow`, exit is 0, and output/report contain two distinct passing flows (`same-1` and `same-2`) with the expected eight-step browse and six-step category bodies. Report `sourceFile` values preserve both paths. IOS-072 therefore **passes** under the supported matrix input. Attempt 34 documents only unsupported repeated use of a singular override, and no defect brief is warranted.
 
 ## B2-K25 [android]: the row conflicts with the established Android CI boundary
 
