@@ -1,0 +1,57 @@
+
+  grantiva-runner 1.1.28-grantiva.13 - by Grantiva
+  Fast, lightweight UI test runner
+
+
+Setup
+────────────────────────────────────────
+  ✓ Found 1 test flow(s)
+
+Execution
+────────────────────────────────────────
+  ⏳ Checking GrantivaAgent installation...
+  ✓ GrantivaAgent installed
+  ✓ Using cached GrantivaAgent build (sim-ios26.0-iphone-wda16.12.8-r1)
+  ⏳ Starting GrantivaAgent...
+  ✓ GrantivaAgent started
+  ✓ GrantivaAgent port: 8511
+
+  [1/1] screens (grantiva.yml)
+────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+      ▸ Run crash-launch-only.yaml
+        ✓ launchApp (2.0s)
+    ✓ runFlow: crash-launch-only.yaml (2.0s)
+    ✗ waitForAnimationToEnd (498ms)
+      ╰─ app crashed: com.kylebrowning.Landmarks is not running
+✗ screens 7.2s
+
+  [1/1] screens (grantiva.yml) - Device: cov3-ios-26 (ios 26.0 Simulator)
+  ────────────────────────────────────────────────────────────
+    ✓ launchApp (2.0s)
+    ✓ runFlow: crash-launch-only.yaml (2.0s)
+      ✓ launchApp (2.0s)
+    ✗ waitForAnimationToEnd (498ms)
+      ╰─ app crashed: com.kylebrowning.Landmarks is not running
+    - takeScreenshot (skipped)
+✗ screens 7.2s
+
+  2 steps passing (7.2s)
+  1 steps failing
+  1 steps skipped
+
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+  Flow                           Status   Steps   Pass   Fail   Skip   Duration  Device
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  screens                        ✗ FAIL       4      2      1      1       7.2s  cov3-ios-26 (ios 26.0 Simul...
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TOTAL                             0/1       4      2      1      1       7.2s
+════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+  ✓ Tests completed. Generating reports...
+
+  Report not kept; pass --report-dir <dir> to keep report.json, JUnit and Allure.
+
+  Built by Grantiva
+
+Error: Runner failed (exit 1): Screen "Crash before Home" failed at waitForAnimationToEnd: app crashed: com.kylebrowning.Landmarks is not running

@@ -1,0 +1,171 @@
+[
+  {
+    "name": "slow-stop-1",
+    "release": "stop",
+    "exit": 130,
+    "observation": {
+      "source": "runner-stream",
+      "matched": "[1/1] and launchApp"
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:51:52Z",
+      "flows": [
+        {
+          "name": "18-long-wait",
+          "status": "interrupted"
+        }
+      ],
+      "status": "interrupted"
+    }
+  },
+  {
+    "name": "slow-stop-2",
+    "release": "stop",
+    "exit": 130,
+    "observation": {
+      "source": "runner-stream",
+      "matched": "[1/1] and launchApp"
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:52:02Z",
+      "flows": [
+        {
+          "name": "18-long-wait",
+          "status": "interrupted"
+        }
+      ],
+      "status": "interrupted"
+    }
+  },
+  {
+    "name": "slow-stop-3",
+    "release": "stop",
+    "exit": 130,
+    "observation": {
+      "source": "runner-stream",
+      "matched": "[1/1] and launchApp"
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:52:12Z",
+      "flows": [
+        {
+          "name": "18-long-wait",
+          "status": "interrupted"
+        }
+      ],
+      "status": "interrupted"
+    }
+  },
+  {
+    "name": "pass-stop",
+    "release": "stop",
+    "exit": 0,
+    "observation": {
+      "source": "ready",
+      "data": {
+        "finishedAt": "2026-10-13T06:52:25Z",
+        "flows": [
+          {
+            "name": "01-browse",
+            "status": "passed"
+          }
+        ],
+        "status": "passed"
+      }
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:52:25Z",
+      "flows": [
+        {
+          "name": "01-browse",
+          "status": "passed"
+        }
+      ],
+      "status": "passed"
+    }
+  },
+  {
+    "name": "fail-stop",
+    "release": "stop",
+    "exit": 1,
+    "observation": {
+      "source": "ready",
+      "data": {
+        "finishedAt": "2026-10-13T06:52:50Z",
+        "flows": [
+          {
+            "name": "02-exact-negative",
+            "status": "failed"
+          }
+        ],
+        "status": "failed"
+      }
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:52:50Z",
+      "flows": [
+        {
+          "name": "02-exact-negative",
+          "status": "failed"
+        }
+      ],
+      "status": "failed"
+    }
+  },
+  {
+    "name": "pass-sigint",
+    "release": "sigint",
+    "exit": 0,
+    "observation": {
+      "source": "ready",
+      "data": {
+        "finishedAt": "2026-10-13T06:53:03Z",
+        "flows": [
+          {
+            "name": "01-browse",
+            "status": "passed"
+          }
+        ],
+        "status": "passed"
+      }
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:53:03Z",
+      "flows": [
+        {
+          "name": "01-browse",
+          "status": "passed"
+        }
+      ],
+      "status": "passed"
+    }
+  },
+  {
+    "name": "fail-sigint",
+    "release": "sigint",
+    "exit": 1,
+    "observation": {
+      "source": "ready",
+      "data": {
+        "finishedAt": "2026-10-13T06:53:27Z",
+        "flows": [
+          {
+            "name": "02-exact-negative",
+            "status": "failed"
+          }
+        ],
+        "status": "failed"
+      }
+    },
+    "final": {
+      "finishedAt": "2026-10-13T06:53:27Z",
+      "flows": [
+        {
+          "name": "02-exact-negative",
+          "status": "failed"
+        }
+      ],
+      "status": "failed"
+    }
+  }
+]
