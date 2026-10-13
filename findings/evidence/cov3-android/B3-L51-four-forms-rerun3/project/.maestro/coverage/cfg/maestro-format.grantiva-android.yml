@@ -1,0 +1,17 @@
+appId: com.kylebrowning.landmarks
+---
+- launchApp
+- swipe:
+    direction: UP
+- waitForAnimationToEnd
+- takeScreenshot: "Home Swiped"
+- tapOn: "Deep Links"
+- tapOn: "Caching Demo"
+- extendedWaitUntil:
+    visible: "Cache Policy"
+    timeout: 5000
+- tapOn:
+    id: "clock"
+- assertVisible:
+    id: "clock"
+- takeScreenshot: "Caching Maestro"
