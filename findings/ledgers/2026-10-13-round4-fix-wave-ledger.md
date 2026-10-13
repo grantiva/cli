@@ -65,3 +65,18 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L81 | 6 | pending | pending | pending | pending | pending | pending |
 
 Task 0: active — bases and first worktrees prepared; remaining branches created on dependency completion.
+
+## Dispatch checkpoint
+
+Task 1: active — /root/fix4_runner_capture, base fd9d8e8d1cb109eda6116f4221da10257b9838e3, runner fix4/crash-capture.
+Task 4: active — /root/fix4_cli_lifecycle, base 8f2cff676b3c12e951478920fa20e600cdca4e29, CLI fix4/lifecycle-output.
+Task 5: active — /root/fix4_mcp_wda, same CLI base, CLI fix4/mcp-wda.
+All three are implementing device-free red/green tests; actual device slots will be coordinated before live acceptance. No brief is closed.
+Round 3 integration approved in findings/round3-final-integration-review.md; checkpoint commit 8800953f. Campaign push in progress.
+
+Ruling: Task 1 may narrowly modify pkg/device/android.go, pkg/uiautomator2/device.go, and pkg/report/types.go plus their tests — underlying cancellation and artifact-specific persistence require these existing owners; no public Driver widening — focused regression checks must cover added plumbing.
+
+Ruling: Task 5 may minimally integrate the serialized transport in ValidatingTransport.swift — validation errors and SDK responses must share the same atomic writer — test both paths; no dependency pin change is required absent proven need.
+Task 7 preflight: iOS 26.0 and 27.0 installed; 26.2/26.4 missing. Started additive Xcode runtime download for 26.2. Old copied 26.0 cache directories cannot satisfy the reviewed Round 4 regeneration requirement. No packaging starts with this blocker unresolved.
+
+Ruling: L78 may identify simulator-side log children with a unique per-run UUID predicate tautology plus exact executable/device association — xcrun ancestry is not reliable after reparenting — validate predicate on an owned device and prove unrelated stream survives; termination timeout must remain truthful.
