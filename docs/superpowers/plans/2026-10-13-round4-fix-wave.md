@@ -144,7 +144,7 @@ Continue in a fresh runner worktree from merged Tasks 1–2, branch `fix4/option
 - Modify: `pkg/executor/flow_runner.go`, `pkg/executor/runner_test.go`
 - Modify: `pkg/core/status.go`, `pkg/core/command_result_status_test.go`
 - Modify: `pkg/report/{builder.go,flow.go,junit.go}` and tests beside them
-- Modify: `pkg/cli/cli.go`, `pkg/cli/cli_test.go` for the runner's existing global `--device` flag only
+- Modify: `pkg/cli/cli.go`, `pkg/cli/cli_test.go` for the runner's existing global `--device` flag and its existing `--udid` alias
 - Modify: `CHANGELOG.md`
 
 **Interfaces:**
@@ -165,7 +165,7 @@ if err == nil || !strings.Contains(err.Error(), "flag provided but not defined")
 For L79, assert the real decoded `report.FlowDetail` remains passed, its optional `report.Command` is warned, and `GenerateJUnit` emits `failures="0"`; change only `Optional:false` in the control and require failed status/nonzero.
 
 - [ ] **Step 1: Write failing L79 production-report tests.** Extend the existing optional-result path in `pkg/executor/flow_runner.go` and `pkg/report/junit_test.go`: run a top-level optional missing tap followed by a required passing step through the real report writer. Assert the failed optional command is `core.StatusWarned`, `flow.Status == core.StatusPassed`, generated JUnit has zero failures, and the process result is successful. Repeat with `optional:false` and assert failed flow/JUnit/process status and skipped later work.
-- [ ] **Step 2: Write failing L53 runner tests.** Add table cases to `pkg/cli/cli_test.go` that call the real app with `[]string{"grantiva-runner", "--platform", "ios", "--device", value, "test", "flow.yaml"}` for `value == ""` and `"   "`. Assert the usage error occurs before device discovery. Keep `[]string{"grantiva-runner", "--serial", "x", "test", "flow.yaml"}` as an unknown-flag control; do not add `--udid` or `--serial` aliases.
+- [ ] **Step 2: Write failing L53 runner tests.** Add table cases to `pkg/cli/cli_test.go` that call the real app with `[]string{"grantiva-runner", "--platform", "ios", "--device", value, "test", "flow.yaml"}` for `value == ""` and `"   "`. Assert the usage error occurs before device discovery. Keep `[]string{"grantiva-runner", "--serial", "x", "test", "flow.yaml"}` as an unknown-flag control. Preserve the existing `--udid` alias and cover its empty/whitespace values through the same canonical device validation; do not add `--serial`.
 - [ ] **Step 3: Verify red.** Run `go test ./pkg/executor/... ./pkg/core/... ./pkg/report/... ./pkg/cli/...`.
 - [ ] **Step 4: Implement.** Persist warned status before closing an optional command and validate the trimmed existing `--device` value in `pkg/cli/cli.go`.
 - [ ] **Step 5: Verify green.** Run `go test ./pkg/executor/... ./pkg/core/... ./pkg/report/... ./pkg/cli/...` and `go vet ./pkg/executor/... ./pkg/core/... ./pkg/report/... ./pkg/cli/...`.
@@ -350,7 +350,7 @@ Run by the controller after Task 7 merges.
 | Brief | Owning task | Required proof |
 |---|---:|---|
 | L51 | 2 | direction/start-end/element held actions; explicit ADB escape; app-only movement evidence |
-| L53 | 3 + 4 | runner existing `--device` rejects empty; CLI prevents empty forwarding and validates explicit simulator UDID-shaped inputs; unknown flags remain unknown and no `--serial` is added |
+| L53 | 3 + 4 | runner existing `--device` and its existing `--udid` alias reject empty; CLI prevents empty forwarding and validates explicit simulator UDID-shaped inputs; unknown flags remain unknown and no `--serial` is added |
 | L61 | 1 | concurrent bounded screenshot/hierarchy/log capture within accepted device bound |
 | L62 | 2 | favorite removal 5/5 on slow/fast AVD and isolated runner/demo ownership |
 | L64 | 1 | fatal-before-return always makes launch app_crash; five real repetitions |
