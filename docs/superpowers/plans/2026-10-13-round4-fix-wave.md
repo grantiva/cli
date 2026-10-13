@@ -140,6 +140,8 @@ Add the same assertion table for direction and selector forms; the `engine: adb`
 
 Continue in a fresh runner worktree from merged Tasks 1–2, branch `fix4/optional-device`.
 
+**Live-discovered CLI counterpart:** L79 also requires a CLI PR from merged CLI main in `fix4-optional-status` / `fix4/optional-status`: recognize and render the runner’s `warned` command status on text/JSON/JUnit surfaces while keeping the flow passed and preserving useful error detail. Prove the real report decode/render failure red, then focused/full Swift tests, independent review and CI. Joint live acceptance must pass before Task 3 closes; Task 7 merges this CLI change into its artifact-compatibility branch before bundling.
+
 **Files:**
 - Modify: `pkg/executor/flow_runner.go`, `pkg/executor/runner_test.go`
 - Modify: `pkg/core/status.go`, `pkg/core/command_result_status_test.go`
@@ -368,7 +370,7 @@ Run by the controller after Task 7 merges.
 | L76 | 4 | unrelated executable with Grantiva argument survives force teardown |
 | L77 | 2 | bare stopApp terminates app or returns a truthful error |
 | L78 | 4 | no owned log child immediately after success/failure/interruption return |
-| L79 | 3 | optional miss warned/pass/exit0 across every report surface; required control fails |
+| L79 | 3 (runner + CLI) | optional miss warned/pass/exit0 across every report surface; required control fails |
 | L80 | 5 | ten concurrent >64 KiB pairs produce valid one-response-per-line JSON |
 | L81 | 6 | full doctor entry exposes unowned-default note in both booted-device orders; absent/owned default controls omit it |
 
