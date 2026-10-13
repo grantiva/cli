@@ -1,0 +1,736 @@
+Building for debugging...
+[Computing dependencies]
+[Using on-disk description]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-mcp-wda/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[9 / 13] GrantivaAPI
+[11 / 15] GrantivaCore
+[13 / 17] GrantivaCore
+[17 / 19] GrantivaAPITests-product
+[20 / 21] GrantivaAPITests-product
+[22 / 22] GrantivaAPITests-product
+[23 / 27] GrantivaMCP
+[24 / 28] GrantivaMCP
+[29 / 33] GrantivaCLI
+[33 / 37] GrantivaMCP
+[34 / 38] GrantivaMCP
+[38 / 40] GrantivaCLITests-product
+[41 / 42] GrantivaCLITests-product
+[43 / 43] GrantivaCLITests-product
+[44 / 47] GrantivaCoreTests-product
+[47 / 50] GrantivaCoreTests-product
+[49 / 50] GrantivaCoreTests-product
+[53 / 53] GrantivaCoreTests-product
+[54 / 57] GrantivaMCPTests-product
+[60 / 63] GrantivaMCPTests-product
+[62 / 63] GrantivaMCPTests-product
+[66 / 66] GrantivaMCPTests-product
+[68 / 72] grantiva-product
+[71 / 72] grantiva-product
+[73 / 73] GrantivaCore-product
+Build complete! (8.91 sec)
+Test Suite 'Selected tests' started at 2026-10-13 06:09:01.191.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 06:09:01.191.
+Test Suite 'ArgumentValidationTests' started at 2026-10-13 06:09:01.191.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testASchemeOfTheWrongTypeFallsBackToConfigAndIsThenRejected]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testASchemeOfTheWrongTypeFallsBackToConfigAndIsThenRejected]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testBuildWithoutASchemeOrConfigIsRejectedBeforeBooting]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testBuildWithoutASchemeOrConfigIsRejectedBeforeBooting]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testRunWithASchemeButNoBundleIdAnywhereLaunchesNothing]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testRunWithASchemeButNoBundleIdAnywhereLaunchesNothing]' passed (0.287 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testRunWithoutASchemeOrConfigIsRejectedBeforeBooting]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testRunWithoutASchemeOrConfigIsRejectedBeforeBooting]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testSimDeleteRequiresAName]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testSimDeleteRequiresAName]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testSimEnsureRequiresOnlyAName]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testSimEnsureRequiresOnlyAName]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testTestWithoutASchemeOrConfigIsRejectedBeforeBooting]' started.
+Test Case '-[GrantivaMCPTests.ArgumentValidationTests testTestWithoutASchemeOrConfigIsRejectedBeforeBooting]' passed (0.000 seconds).
+Test Suite 'ArgumentValidationTests' passed at 2026-10-13 06:09:01.481.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.289 (0.290) seconds
+Test Suite 'BuildToolsTests' started at 2026-10-13 06:09:01.481.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnAndroidCompilesWithoutBootingTheConfiguredEmulator]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnAndroidCompilesWithoutBootingTheConfiguredEmulator]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnIOSStillBootsItsSimulator]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnIOSStillBootsItsSimulator]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnIOSWithoutASchemeIsAToolError]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testBuildOnIOSWithoutASchemeIsAToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testFailedAndroidBuildShowsModuleAndVariantAndNoScheme]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testFailedAndroidBuildShowsModuleAndVariantAndNoScheme]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testFailedRunnerResultSurfacesTheReasonInTheSummary]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testFailedRunnerResultSurfacesTheReasonInTheSummary]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testResolvedProjectTakesArgumentsOverConfig]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testResolvedProjectTakesArgumentsOverConfig]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testResolvedProjectWithoutASimulatorUsesTheSharedDefault]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testResolvedProjectWithoutASimulatorUsesTheSharedDefault]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunNamesTheProductItInstalled]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunNamesTheProductItInstalled]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnAndroidInstallsAndLaunchesWithTheBuiltApplicationID]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnAndroidInstallsAndLaunchesWithTheBuiltApplicationID]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnAndroidWarnsWhenTheConfiguredApplicationIDDisagreesWithTheBuild]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnAndroidWarnsWhenTheConfiguredApplicationIDDisagreesWithTheBuild]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnIOSWithoutABundleIDIsAToolError]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunOnIOSWithoutABundleIDIsAToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunPrefersTheConfiguredBundleID]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunPrefersTheConfiguredBundleID]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunWithNoBundleIDAnywhereSaysWhereItLooked]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunWithNoBundleIDAnywhereSaysWhereItLooked]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunWithoutAConfigLaunchesTheBundleIDOfTheBuiltApp]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testRunWithoutAConfigLaunchesTheBundleIDOfTheBuiltApp]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestOnAndroidReturnsAnErrorResult]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestOnAndroidReturnsAnErrorResult]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryBoundsTheOutputTail]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryBoundsTheOutputTail]' passed (0.004 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryCapsEachErrorLineAndTheErrorsBlock]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryCapsEachErrorLineAndTheErrorsBlock]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnFailureIncludesXcodebuildErrorLines]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnFailureIncludesXcodebuildErrorLines]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnFailureNamesFailingTests]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnFailureNamesFailingTests]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnSuccessStaysShort]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTestSummaryOnSuccessStaysShort]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTruncationNeverSplitsAMultiByteCharacter]' started.
+Test Case '-[GrantivaMCPTests.BuildToolsTests testTruncationNeverSplitsAMultiByteCharacter]' passed (0.000 seconds).
+Test Suite 'BuildToolsTests' passed at 2026-10-13 06:09:01.492.
+	 Executed 21 tests, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Test Suite 'ContextToolTests' started at 2026-10-13 06:09:01.492.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAKeepAliveSessionRendersItsAppIDAndNoEmptyValues]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAKeepAliveSessionRendersItsAppIDAndNoEmptyValues]' passed (0.117 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidContextNamesTheSessionSerialWithTwoEmulatorsRunning]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidContextNamesTheSessionSerialWithTwoEmulatorsRunning]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidDeviceListingFailureIsNotReportedAsNoEmulator]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidDeviceListingFailureIsNotReportedAsNoEmulator]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidWithoutASessionShowsTheConfiguredAVDsSerial]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidWithoutASessionShowsTheConfiguredAVDsSerial]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidWithoutSessionOrConfiguredAVDListsTheRunningSerials]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testAndroidWithoutSessionOrConfiguredAVDListsTheRunningSerials]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testASessionFromAnOlderGrantivaSaysTheAppIDIsUnknown]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testASessionFromAnOlderGrantivaSaysTheAppIDIsUnknown]' passed (0.045 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testSimulatorSectionNamesTheSessionDeviceNotTheFirstBooted]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testSimulatorSectionNamesTheSessionDeviceNotTheFirstBooted]' passed (0.045 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheConfigNamesItsSource]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheConfigNamesItsSource]' passed (0.092 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheRegistryPassesItsProjectDirectoryToContext]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheRegistryPassesItsProjectDirectoryToContext]' passed (0.045 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheRegistryTellsAFileFromTheMaestroFallback]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testTheRegistryTellsAFileFromTheMaestroFallback]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithNeitherSessionNorConfiguredSimulatorThereIsNoDevice]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithNeitherSessionNorConfiguredSimulatorThereIsNoDevice]' passed (0.049 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutASessionAConfiguredSimulatorThatIsNotBootedIsSaidSo]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutASessionAConfiguredSimulatorThatIsNotBootedIsSaidSo]' passed (0.045 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutASessionTheConfiguredBootedSimulatorIsShown]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutASessionTheConfiguredBootedSimulatorIsShown]' passed (0.045 seconds).
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutConfigTheConfigSectionNamesTheProjectDirectory]' started.
+Test Case '-[GrantivaMCPTests.ContextToolTests testWithoutConfigTheConfigSectionNamesTheProjectDirectory]' passed (0.088 seconds).
+Test Suite 'ContextToolTests' passed at 2026-10-13 06:09:02.065.
+	 Executed 14 tests, with 0 failures (0 unexpected) in 0.572 (0.573) seconds
+Test Suite 'DefaultSimulatorOwnershipTests' started at 2026-10-13 06:09:02.065.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testANamedSimulatorIsUsedAsBeforeEvenWithTheDefaultName]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testANamedSimulatorIsUsedAsBeforeEvenWithTheDefaultName]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testBuildWithTheDefaultNameBootsASimulatorGrantivaCreatedAndNamesIt]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testBuildWithTheDefaultNameBootsASimulatorGrantivaCreatedAndNamesIt]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testBuildWithTheDefaultNameRefusesASimulatorTheUserCreated]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testBuildWithTheDefaultNameRefusesASimulatorTheUserCreated]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testResolvedProjectMarksTheDefault]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testResolvedProjectMarksTheDefault]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testRunAndTestAndSimBootWithTheDefaultNameRefuseItToo]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testRunAndTestAndSimBootWithTheDefaultNameRefuseItToo]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testRunNamesTheSimulatorWithItsUDID]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testRunNamesTheSimulatorWithItsUDID]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt]' started.
+Test Case '-[GrantivaMCPTests.DefaultSimulatorOwnershipTests testTheSoleBootedDefaultIsRefusedUnlessGrantivaCreatedIt]' passed (0.001 seconds).
+Test Suite 'DefaultSimulatorOwnershipTests' passed at 2026-10-13 06:09:02.071.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.005 (0.006) seconds
+Test Suite 'EmulatorToolsTests' started at 2026-10-13 06:09:02.071.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootByNameOrSerialOfARunningEmulatorSaysReused]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootByNameOrSerialOfARunningEmulatorSaysReused]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootFallsBackToTheConfiguredEmulator]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootFallsBackToTheConfiguredEmulator]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootOfAShutDownAVDSaysBooted]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testBootOfAShutDownAVDSaysBooted]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testDeleteRequiresANameAndPassesForce]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testDeleteRequiresANameAndPassesForce]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testEmulatorToolsDispatchThroughTheRegistry]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testEmulatorToolsDispatchThroughTheRegistry]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testEnsureRequiresANameAndReturnsJSON]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testEnsureRequiresANameAndReturnsJSON]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testListPairsAVDsWithRunningSerials]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testListPairsAVDsWithRunningSerials]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testWithoutAnSDKEveryEmulatorToolReturnsAnErrorResult]' started.
+Test Case '-[GrantivaMCPTests.EmulatorToolsTests testWithoutAnSDKEveryEmulatorToolReturnsAnErrorResult]' passed (0.000 seconds).
+Test Suite 'EmulatorToolsTests' passed at 2026-10-13 06:09:02.073.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'HierarchyNotificationTests' started at 2026-10-13 06:09:02.073.
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testAScriptThatRanAStepBeforeFailingStillNotifies]' started.
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testAScriptThatRanAStepBeforeFailingStillNotifies]' passed (0.516 seconds).
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testAScriptWhoseFinalHierarchyFailsStillNotifies]' started.
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testAScriptWhoseFinalHierarchyFailsStillNotifies]' passed (0.530 seconds).
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testNothingIsSentWithoutASubscription]' started.
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testNothingIsSentWithoutASubscription]' passed (0.533 seconds).
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testOnlyCallsThatMayHaveChangedTheUINotifyASubscriber]' started.
+Test Case '-[GrantivaMCPTests.HierarchyNotificationTests testOnlyCallsThatMayHaveChangedTheUINotifyASubscriber]' passed (1.065 seconds).
+Test Suite 'HierarchyNotificationTests' passed at 2026-10-13 06:09:04.718.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 2.645 (2.645) seconds
+Test Suite 'MCPCancellationTests' started at 2026-10-13 06:09:04.718.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelForAnUnknownIDIsIgnored]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelForAnUnknownIDIsIgnored]' passed (2.567 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelRightBehindTheRequestYieldsNoResponse]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelRightBehindTheRequestYieldsNoResponse]' passed (1.608 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelWhileTheToolRunsYieldsNoResponse]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testACancelWhileTheToolRunsYieldsNoResponse]' passed (1.841 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTrackerDropsOnlyACancelledPendingRequestsAnswer]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTrackerDropsOnlyACancelledPendingRequestsAnswer]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch]' started.
+Test Case '-[GrantivaMCPTests.MCPCancellationTests testTheTransportDropsTheAnswerOfAFastToolCancelledInTheSameBatch]' passed (1.629 seconds).
+Test Suite 'MCPCancellationTests' passed at 2026-10-13 06:09:12.364.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 7.646 (7.646) seconds
+Test Suite 'MCPServerTests' started at 2026-10-13 06:09:12.364.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAFailedAttachIsRetriedOnTheNextCall]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAFailedAttachIsRetriedOnTheNextCall]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testAKeepAliveSessionCarriesTheRecordedAppID]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAKeepAliveSessionCarriesTheRecordedAppID]' passed (0.006 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testAKeepAliveSessionRecordedWithTheTmpSpellingStillAttaches]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAKeepAliveSessionRecordedWithTheTmpSpellingStillAttaches]' passed (0.005 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testASessionFileWrittenAtLaunchSaysItIsStartingOnBothPlatforms]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testASessionFileWrittenAtLaunchSaysItIsStartingOnBothPlatforms]' passed (0.005 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSessionWithOnlyItsSidecarSaysItIsStarting]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSessionWithOnlyItsSidecarSaysItIsStarting]' passed (0.003 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSidecarOfAnotherProjectOrPlatformIsNoSession]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSidecarOfAnotherProjectOrPlatformIsNoSession]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSidecarWhoseRunnerIsDeadIsNoSession]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testAStartingSidecarWhoseRunnerIsDeadIsNoSession]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testConcurrentFirstCallsAttachOnce]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testConcurrentFirstCallsAttachOnce]' passed (0.052 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testConnectionAttachesOnFirstUseAndPicksUpASessionStartedLater]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testConnectionAttachesOnFirstUseAndPicksUpASessionStartedLater]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testDetachReleasesAnAttachStillInFlight]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testDetachReleasesAnAttachStillInFlight]' passed (0.104 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testDriverPortIsNilForAKeepAliveSessionWithPortZero]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testDriverPortIsNilForAKeepAliveSessionWithPortZero]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testExplicitPlatformWinsOverADualConfigDirectory]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testExplicitPlatformWinsOverADualConfigDirectory]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testFallsBackToALiveKeepAliveSessionStartedFromTheSameProject]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testFallsBackToALiveKeepAliveSessionStartedFromTheSameProject]' passed (0.005 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionForAnotherPlatform]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionForAnotherPlatform]' passed (0.005 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionFromAnotherProjectDirectory]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionFromAnotherProjectDirectory]' passed (0.004 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionWithoutARecordedProjectDirectory]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testIgnoresAKeepAliveSessionWithoutARecordedProjectDirectory]' passed (0.003 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testLoadActiveSessionAcceptsAnADBSerial]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testLoadActiveSessionAcceptsAnADBSerial]' passed (0.003 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testMissingSessionFailsLoudly]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testMissingSessionFailsLoudly]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testPicksTheMatchingSessionAmongSeveral]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testPicksTheMatchingSessionAmongSeveral]' passed (0.007 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryAcceptsAnAndroidOnlyProject]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryAcceptsAnAndroidOnlyProject]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryDoesNotRequireAConfigFile]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryDoesNotRequireAConfigFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryMustExist]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testProjectDirectoryMustExist]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testResolveProjectDirectoryKeepsThePrivatePrefix]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testResolveProjectDirectoryKeepsThePrivatePrefix]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testServerStartsInADirectoryWithoutAConfigFile]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testServerStartsInADirectoryWithoutAConfigFile]' passed (0.017 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testServerStartsWithoutASessionAndDeviceToolsReturnAToolError]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testServerStartsWithoutASessionAndDeviceToolsReturnAToolError]' passed (0.017 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionFileForTheOtherPlatformIsSkipped]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionFileForTheOtherPlatformIsSkipped]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionIsLoadedRelativeToExplicitProjectDirectory]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionIsLoadedRelativeToExplicitProjectDirectory]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionRejectsMalformedUDIDBeforeToolsConsumeIt]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testSessionRejectsMalformedUDIDBeforeToolsConsumeIt]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.MCPServerTests testTheNoSessionTextIsTheSharedOneWithoutAnInvalidArgumentLabel]' started.
+Test Case '-[GrantivaMCPTests.MCPServerTests testTheNoSessionTextIsTheSharedOneWithoutAnInvalidArgumentLabel]' passed (0.000 seconds).
+Test Suite 'MCPServerTests' passed at 2026-10-13 06:09:12.613.
+	 Executed 29 tests, with 0 failures (0 unexpected) in 0.247 (0.248) seconds
+Test Suite 'MCPTransportTests' started at 2026-10-13 06:09:12.613.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAMalformedResponseIsDroppedNotAnswered]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testAMalformedResponseIsDroppedNotAnswered]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testANoSessionResourceReadReachesTheClientWithoutTheSDKPrefix]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testANoSessionResourceReadReachesTheClientWithoutTheSDKPrefix]' passed (0.060 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testBatchMembersAreScreenedOneByOne]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testBatchMembersAreScreenedOneByOne]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentLargeResourceAndToolResponsesAreWholeLines]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentLargeResourceAndToolResponsesAreWholeLines]' passed (0.729 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentSmallResponsesNotificationsAndValidationErrorsAreWholeLines]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testConcurrentSmallResponsesNotificationsAndValidationErrorsAreWholeLines]' passed (0.814 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testRepliesDoNotEscapeSlashes]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testRepliesDoNotEscapeSlashes]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testScreeningOfEachKindOfLine]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testScreeningOfEachKindOfLine]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.MCPTransportTests testTheServerAnswersOnlyWhatItShould]' started.
+Test Case '-[GrantivaMCPTests.MCPTransportTests testTheServerAnswersOnlyWhatItShould]' passed (0.377 seconds).
+Test Suite 'MCPTransportTests' passed at 2026-10-13 06:09:14.596.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 1.982 (1.983) seconds
+Test Suite 'ScriptToolsTests' started at 2026-10-13 06:09:14.596.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAFailedFinalHierarchyStillCountsEveryStep]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAFailedFinalHierarchyStillCountsEveryStep]' passed (1.040 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAnEmptyStepListStillReturnsTheHierarchy]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAnEmptyStepListStillReturnsTheHierarchy]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testANonStringTapIsRejectedByName]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testANonStringTapIsRejectedByName]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAStepWithSeveralActionsIsRejected]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testAStepWithSeveralActionsIsRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testATapStepOnAMissingElementStopsTheScriptLikeAType]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testATapStepOnAMissingElementStopsTheScriptLikeAType]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testATransportFailureInAStepStopsTheScriptAndListsWhatRan]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testATransportFailureInAStepStopsTheScriptAndListsWhatRan]' passed (0.530 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testInvalidStepsAreRejectedAsAToolErrorBeforeAnyStepRuns]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testInvalidStepsAreRejectedAsAToolErrorBeforeAnyStepRuns]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testMissingStepsArrayIsReportedAsAToolErrorWithoutTouchingWDA]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testMissingStepsArrayIsReportedAsAToolErrorWithoutTouchingWDA]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testNegativeWaitIsRejected]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testNegativeWaitIsRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testOneInvalidStepStopsTheValidOnesFromRunning]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testOneInvalidStepStopsTheValidOnesFromRunning]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testStepsAreExecutedInOrderAcrossEveryActionKind]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testStepsAreExecutedInOrderAcrossEveryActionKind]' passed (1.846 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testStepsOfTheWrongTypeAreRejected]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testStepsOfTheWrongTypeAreRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTapXYAcceptsIntegerCoordinates]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTapXYAcceptsIntegerCoordinates]' passed (0.527 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTapXYMissingAnAxisIsRejectedRatherThanTappingWithGarbage]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTapXYMissingAnAxisIsRejectedRatherThanTappingWithGarbage]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTypeStepWithoutFocusStopsTheScript]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testTypeStepWithoutFocusStopsTheScript]' passed (0.514 seconds).
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testUnknownActionKeysAreRejected]' started.
+Test Case '-[GrantivaMCPTests.ScriptToolsTests testUnknownActionKeysAreRejected]' passed (0.000 seconds).
+Test Suite 'ScriptToolsTests' passed at 2026-10-13 06:09:19.055.
+	 Executed 16 tests, with 0 failures (0 unexpected) in 4.459 (4.460) seconds
+Test Suite 'SelectorMatchTests' started at 2026-10-13 06:09:19.055.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testAndroidIdMatchesTheWholeResourceIdOrItsLastComponent]' started.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testAndroidIdMatchesTheWholeResourceIdOrItsLastComponent]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testExactIsTheWholeValueAsWritten]' started.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testExactIsTheWholeValueAsWritten]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testIOSIdIsTheWholeIdentifierIgnoringCase]' started.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testIOSIdIsTheWholeIdentifierIgnoringCase]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testTextAlsoMatchesLiterallyAcrossLineBreaksAndAccentForms]' started.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testTextAlsoMatchesLiterallyAcrossLineBreaksAndAccentForms]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testTextIsAWholeValueRegexIgnoringCase]' started.
+Test Case '-[GrantivaMCPTests.SelectorMatchTests testTextIsAWholeValueRegexIgnoringCase]' passed (0.000 seconds).
+Test Suite 'SelectorMatchTests' passed at 2026-10-13 06:09:19.057.
+	 Executed 5 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'SessionCaptureTests' started at 2026-10-13 06:09:19.057.
+Test Case '-[GrantivaMCPTests.SessionCaptureTests testTheLaunchStepIsMeasuredOrNullNeverZero]' started.
+Test Case '-[GrantivaMCPTests.SessionCaptureTests testTheLaunchStepIsMeasuredOrNullNeverZero]' passed (0.053 seconds).
+Test Suite 'SessionCaptureTests' passed at 2026-10-13 06:09:19.109.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.053 (0.053) seconds
+Test Suite 'SessionLifecycleTests' started at 2026-10-13 06:09:19.109.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAConfigFileCreatedAfterStartIsRead]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAConfigFileCreatedAfterStartIsRead]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidBuildNamesTheMissingAndroidConfigFile]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidBuildNamesTheMissingAndroidConfigFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidTextMatchesTextOrContentDescAndIdKeepsTheSuffixRule]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidTextMatchesTextOrContentDescAndIdKeepsTheSuffixRule]' passed (13.182 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidTextReadsTheHintAndNonExactTextReadsTheErrorText]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAndroidTextReadsTheHintAndNonExactTextReadsTheErrorText]' passed (7.577 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAnUnreadablePageSourceFailsAnIdStepWithTheRealReason]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAnUnreadablePageSourceFailsAnIdStepWithTheRealReason]' passed (0.266 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAssertionsUseTheSameSelectorRules]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testAssertionsUseTheSameSelectorRules]' passed (6.523 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testASwipeWithADurationIsRefusedBeforeTouchingTheDevice]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testASwipeWithADurationIsRefusedBeforeTouchingTheDevice]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testBuildRunAndTestNameTheMissingConfigFile]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testBuildRunAndTestNameTheMissingConfigFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testBuildWithASchemeArgumentStillBuildsWithoutAConfigFile]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testBuildWithASchemeArgumentStillBuildsWithoutAConfigFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testExactTapNeedsTheWholeValueInItsOwnCase]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testExactTapNeedsTheWholeValueInItsOwnCase]' passed (6.279 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdFallsBackToNameWhenTheAgentDoesNotReportIdentifiers]' started.
+2026-10-13T06:09:53-0700 warning com.grantiva.cli: [GrantivaMCP] WebDriverAgent does not report accessibility identifiers; id: selectors match WDA's name, which is the label when an element has no identifier.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdFallsBackToNameWhenTheAgentDoesNotReportIdentifiers]' passed (0.772 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdMatchesTheIdentifierIgnoringCaseWithoutASuffixRule]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdMatchesTheIdentifierIgnoringCaseWithoutASuffixRule]' passed (6.286 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdNeverMatchesTheLabelFallbackWhenTheAgentReportsIdentifiers]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSIdNeverMatchesTheLabelFallbackWhenTheAgentReportsIdentifiers]' passed (5.482 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSTextMatchesLabelAndValueOnlyNeverTheName]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSTextMatchesLabelAndValueOnlyNeverTheName]' passed (6.278 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSTextReadsThePlaceholderValue]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testIOSTextReadsThePlaceholderValue]' passed (1.573 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testPlainTextIsAWholeValueMatchOnBothPlatforms]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testPlainTextIsAWholeValueMatchOnBothPlatforms]' passed (10.941 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testScreenshotThroughTheDriverReturnsAnErrorResultWhileWDAHasNoSessionYet]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testScreenshotThroughTheDriverReturnsAnErrorResultWhileWDAHasNoSessionYet]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testSessionToolsReturnAnErrorResultWhileWDAHasNoSessionYet]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testSessionToolsReturnAnErrorResultWhileWDAHasNoSessionYet]' passed (0.002 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testSessionToolsReturnAnErrorResultWhileWDAIsNotListeningYet]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testSessionToolsReturnAnErrorResultWhileWDAIsNotListeningYet]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testTapByIdMatchesTheWholeIdentifierNotALabel]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testTapByIdMatchesTheWholeIdentifierNotALabel]' passed (6.289 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testTextTapMatchesTheWholeValueIgnoringCaseLikeTheRunner]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testTextTapMatchesTheWholeValueIgnoringCaseLikeTheRunner]' passed (7.038 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureRunsThroughTheLiveSessionInsteadOfStartingAnotherRunner]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureRunsThroughTheLiveSessionInsteadOfStartingAnotherRunner]' passed (1.042 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionFailsATypeStepWithNoFocusedField]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionFailsATypeStepWithNoFocusedField]' passed (0.533 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionHasTheCLIDocumentShapeOnBothPlatforms]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionHasTheCLIDocumentShapeOnBothPlatforms]' passed (1.037 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionRefusesStepsTheDriverCannotRunBeforeTouchingTheDevice]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionRefusesStepsTheDriverCannotRunBeforeTouchingTheDevice]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionReportsTheFailingStepAndRestoresTheStatusBar]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureThroughTheSessionReportsTheFailingStepAndRestoresTheStatusBar]' passed (5.714 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithALiveSessionAndNoScreensSaysSo]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithALiveSessionAndNoScreensSaysSo]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithALiveSessionNamesTheMissingConfigFile]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithALiveSessionNamesTheMissingConfigFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithoutASessionOrConfigNamesTheMissingFile]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testVRTCaptureWithoutASessionOrConfigNamesTheMissingFile]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testWithoutASessionFileTheToolsStillSayThereIsNoSession]' started.
+Test Case '-[GrantivaMCPTests.SessionLifecycleTests testWithoutASessionFileTheToolsStillSayThereIsNoSession]' passed (0.000 seconds).
+Test Suite 'SessionLifecycleTests' passed at 2026-10-13 06:10:45.933.
+	 Executed 30 tests, with 0 failures (0 unexpected) in 86.821 (86.823) seconds
+Test Suite 'SimToolsTests' started at 2026-10-13 06:10:45.933.
+Test Case '-[GrantivaMCPTests.SimToolsTests testAllListsEveryIOSSimulatorWithStateRuntimeAndAvailability]' started.
+Test Case '-[GrantivaMCPTests.SimToolsTests testAllListsEveryIOSSimulatorWithStateRuntimeAndAvailability]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SimToolsTests testBootedAndShutdownFilters]' started.
+Test Case '-[GrantivaMCPTests.SimToolsTests testBootedAndShutdownFilters]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SimToolsTests testContextUsesTheSameRuntimeSpelling]' started.
+Test Case '-[GrantivaMCPTests.SimToolsTests testContextUsesTheSameRuntimeSpelling]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.SimToolsTests testRuntimeIdentifiersReadAsVersions]' started.
+Test Case '-[GrantivaMCPTests.SimToolsTests testRuntimeIdentifiersReadAsVersions]' passed (0.000 seconds).
+Test Suite 'SimToolsTests' passed at 2026-10-13 06:10:45.933.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'ToolAnnotationsTests' started at 2026-10-13 06:10:45.933.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testAllToolsAreRegistered]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testAllToolsAreRegistered]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testDeleteToolsAreMarkedDestructive]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testDeleteToolsAreMarkedDestructive]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testEveryToolDeclaresReadOnlyAndOpenWorldHints]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testEveryToolDeclaresReadOnlyAndOpenWorldHints]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testGrantivaTestIsNotMarkedReadOnly]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testGrantivaTestIsNotMarkedReadOnly]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testMutatingToolsAreNotMarkedReadOnly]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testMutatingToolsAreNotMarkedReadOnly]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testOnlyRemoteBaselineToolsAreOpenWorld]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testOnlyRemoteBaselineToolsAreOpenWorld]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testOnlyTheDeleteToolsAreDestructive]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testOnlyTheDeleteToolsAreDestructive]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testReadOnlyToolsAreMarkedReadOnly]' started.
+Test Case '-[GrantivaMCPTests.ToolAnnotationsTests testReadOnlyToolsAreMarkedReadOnly]' passed (0.000 seconds).
+Test Suite 'ToolAnnotationsTests' passed at 2026-10-13 06:10:45.934.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'ToolDispatchTests' started at 2026-10-13 06:10:45.934.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testA11yCheckRoutesToTheAuditHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testA11yCheckRoutesToTheAuditHandler]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testA11yTreeRoutesToTheHierarchyFetch]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testA11yTreeRoutesToTheHierarchyFetch]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAFailingUIMutationStillReturnsRatherThanHangingOnNotification]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAFailingUIMutationStillReturnsRatherThanHangingOnNotification]' passed (0.520 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAnEmptyToolNameIsRejected]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAnEmptyToolNameIsRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAnUnknownToolNameReturnsAnErrorResultRatherThanThrowing]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testAnUnknownToolNameReturnsAnErrorResultRatherThanThrowing]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testEveryAdvertisedResourceURIIsReadable]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testEveryAdvertisedResourceURIIsReadable]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testHierarchyResourceReturnsSortedPrettyJSON]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testHierarchyResourceReturnsSortedPrettyJSON]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScreenshotResourceReturnsBinaryPNG]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScreenshotResourceReturnsBinaryPNG]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScreenshotRoutesToTheScreenshotHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScreenshotRoutesToTheScreenshotHandler]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScriptRoutesToTheScriptHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testScriptRoutesToTheScriptHandler]' passed (0.510 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testSimDeleteValidationErrorIsReturnedAsAToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testSimDeleteValidationErrorIsReturnedAsAToolError]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testSwipeRoutesToTheSwipeHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testSwipeRoutesToTheSwipeHandler]' passed (0.534 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testTapRoutesToTheTapHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testTapRoutesToTheTapHandler]' passed (0.507 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testToolNameDispatchIsCaseSensitive]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testToolNameDispatchIsCaseSensitive]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testTypeRoutesToTheTypeHandler]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testTypeRoutesToTheTypeHandler]' passed (0.304 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testUnknownResourceURIThrowsAnInvalidRequest]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testUnknownResourceURIThrowsAnInvalidRequest]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testValidationErrorsAreReturnedThroughDispatchWithIsErrorSet]' started.
+Test Case '-[GrantivaMCPTests.ToolDispatchTests testValidationErrorsAreReturnedThroughDispatchWithIsErrorSet]' passed (0.000 seconds).
+Test Suite 'ToolDispatchTests' passed at 2026-10-13 06:10:48.314.
+	 Executed 17 tests, with 0 failures (0 unexpected) in 2.379 (2.380) seconds
+Test Suite 'ToolErrorContractTests' started at 2026-10-13 06:10:48.314.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAnAppThatIsNotRunningIsAnIsErrorWithTheToolsRemedy]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAnAppThatIsNotRunningIsAnIsErrorWithTheToolsRemedy]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testANoSessionTextCarriesNoArgumentLabel]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testANoSessionTextCarriesNoArgumentLabel]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAnUnknownToolCarriesTheErrorPrefix]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAnUnknownToolCarriesTheErrorPrefix]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAResourceReadOnAnAppThatIsNotRunningIsNoUsableSession]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAResourceReadOnAnAppThatIsNotRunningIsNoUsableSession]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAResourceReadThatFailsForAnotherReasonIsAnInternalErrorWithItsText]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testAResourceReadThatFailsForAnotherReasonIsAnInternalErrorWithItsText]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testCancellationStillPropagatesAsCancellation]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testCancellationStillPropagatesAsCancellation]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEmulatorEnsureAndDeleteMissingNameReturnToolErrors]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEmulatorEnsureAndDeleteMissingNameReturnToolErrors]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEveryNonSessionToolFailureIsAnIsErrorResult]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEveryNonSessionToolFailureIsAnIsErrorResult]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEveryToolsEmptyArgumentFailureHasOneErrorPrefix]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testEveryToolsEmptyArgumentFailureHasOneErrorPrefix]' passed (0.233 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testFailedBuildAndTestResultsStartWithTheErrorPrefix]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testFailedBuildAndTestResultsStartWithTheErrorPrefix]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testMissingRequiredArgumentsReadAsArgumentFailures]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testMissingRequiredArgumentsReadAsArgumentFailures]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testResourceReadWhileTheSessionIsStartingSaysRetry]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testResourceReadWhileTheSessionIsStartingSaysRetry]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testResourceReadWithoutASessionIsNotAnInternalError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testResourceReadWithoutASessionIsNotAnInternalError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testScriptArgumentContractsThroughRegistryOnBothPlatforms]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testScriptArgumentContractsThroughRegistryOnBothPlatforms]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimDeleteMissingNameReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimDeleteMissingNameReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimDeleteWrongArgumentTypeReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimDeleteWrongArgumentTypeReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureMissingArgumentsReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureMissingArgumentsReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureMissingNameReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureMissingNameReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureWrongArgumentTypeReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testSimEnsureWrongArgumentTypeReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testTapByAMissingLabelReturnsToolError]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testTapByAMissingLabelReturnsToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testTheEmulatorDeleteRefusalNamesTheToolsForceArgument]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testTheEmulatorDeleteRefusalNamesTheToolsForceArgument]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testUIToolsReturnToolErrorsForInvalidArguments]' started.
+Test Case '-[GrantivaMCPTests.ToolErrorContractTests testUIToolsReturnToolErrorsForInvalidArguments]' passed (0.000 seconds).
+Test Suite 'ToolErrorContractTests' passed at 2026-10-13 06:10:48.552.
+	 Executed 22 tests, with 0 failures (0 unexpected) in 0.237 (0.238) seconds
+Test Suite 'ToolRegistrationTests' started at 2026-10-13 06:10:48.552.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testEveryToolHasANonEmptyDescription]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testEveryToolHasANonEmptyDescription]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testMutatingToolsAreNotAnnotatedReadOnly]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testMutatingToolsAreNotAnnotatedReadOnly]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testOnlyRemoteBaselineToolsClaimOpenWorldAccess]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testOnlyRemoteBaselineToolsClaimOpenWorldAccess]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testOnlyTheDeleteToolsAreMarkedDestructive]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testOnlyTheDeleteToolsAreMarkedDestructive]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testPublishedToolListMatchesRegisteredTools]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testPublishedToolListMatchesRegisteredTools]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testReadOnlyToolsAreAnnotatedReadOnly]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testReadOnlyToolsAreAnnotatedReadOnly]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesExactlyTheAdvertisedToolSet]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesExactlyTheAdvertisedToolSet]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesHierarchyAndScreenshotResources]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesHierarchyAndScreenshotResources]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesTwentyTwoTools]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testRegistryExposesTwentyTwoTools]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testToolListSurvivesJSONRoundTrip]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testToolListSurvivesJSONRoundTrip]' passed (0.004 seconds).
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testToolNamesAreUniqueAndNamespaced]' started.
+Test Case '-[GrantivaMCPTests.ToolRegistrationTests testToolNamesAreUniqueAndNamespaced]' passed (0.000 seconds).
+Test Suite 'ToolRegistrationTests' passed at 2026-10-13 06:10:48.558.
+	 Executed 11 tests, with 0 failures (0 unexpected) in 0.005 (0.005) seconds
+Test Suite 'ToolSchemaTests' started at 2026-10-13 06:10:48.558.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEnumConstraintsListOnlyStringsAndMatchTheHandlers]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEnumConstraintsListOnlyStringsAndMatchTheHandlers]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEveryDeclaredPropertyHasATypeAndAValidJSONSchemaType]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEveryDeclaredPropertyHasATypeAndAValidJSONSchemaType]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEverySchemaIsAJSONSchemaObjectWithAPropertiesMap]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testEverySchemaIsAJSONSchemaObjectWithAPropertiesMap]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testParameterlessToolsDeclareAnEmptyPropertiesMap]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testParameterlessToolsDeclareAnEmptyPropertiesMap]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testRequiredEntriesAlwaysReferenceDeclaredProperties]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testRequiredEntriesAlwaysReferenceDeclaredProperties]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testRequiredParametersMatchTheDocumentedContract]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testRequiredParametersMatchTheDocumentedContract]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testSchemasSerializeToValidJSON]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testSchemasSerializeToValidJSON]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testSimulatorSchemasStateTheSharedDefault]' started.
+Test Case '-[GrantivaMCPTests.ToolSchemaTests testSimulatorSchemasStateTheSharedDefault]' passed (0.000 seconds).
+Test Suite 'ToolSchemaTests' passed at 2026-10-13 06:10:48.560.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.002 (0.002) seconds
+Test Suite 'UIToolsTests' started at 2026-10-13 06:10:48.560.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckAcceptsANameInPlaceOfALabel]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckAcceptsANameInPlaceOfALabel]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckDoesNotFlagAClickableContainerWhoseChildCarriesTheText]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckDoesNotFlagAClickableContainerWhoseChildCarriesTheText]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckFlagsAClickableAndroidNodeWithoutALabel]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckFlagsAClickableAndroidNodeWithoutALabel]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckFlagsMissingLabelsAndSmallTapTargets]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckFlagsMissingLabelsAndSmallTapTargets]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckHonoursTheConfiguredRuleSubset]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckHonoursTheConfiguredRuleSubset]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckIgnoresDisabledElements]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckIgnoresDisabledElements]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckReadsNumericFrames]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckReadsNumericFrames]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckRecursesIntoNestedChildren]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckRecursesIntoNestedChildren]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckResetsTheFocusGroupAtANestedClickable]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckResetsTheFocusGroupAtANestedClickable]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckSkipsTheComposeButtonStubInsideALabelledClickableParent]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckSkipsTheComposeButtonStubInsideALabelledClickableParent]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillChecksAFocusableWidgetInsideALabelledGroup]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillChecksAFocusableWidgetInsideALabelledGroup]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAClickableImageButtonWithNoLabelAnywhere]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAClickableImageButtonWithNoLabelAnywhere]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAnEmptyButtonStubWhenTheClickableParentHasNoText]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAnEmptyButtonStubWhenTheClickableParentHasNoText]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAnUnlabelledAndroidWidgetWhoseChildCarriesText]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckStillFlagsAnUnlabelledAndroidWidgetWhoseChildCarriesText]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckUses48dpOnAndroidAnd44ptOnIOS]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckUses48dpOnAndroidAnd44ptOnIOS]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckWithNoRulesEnabledReportsNothing]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yCheckWithNoRulesEnabledReportsNothing]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yTreeReturnsPrettyPrintedSortedJSON]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testA11yTreeReturnsPrettyPrintedSortedJSON]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotReturnsBase64PNGImageContentByDefault]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotReturnsBase64PNGImageContentByDefault]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotTreatsAnUnknownFormatAsBase64]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotTreatsAnUnknownFormatAsBase64]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotWithADeviceGoesThroughThePlatform]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testScreenshotWithADeviceGoesThroughThePlatform]' passed (0.001 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeForwardsTheDirection]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeForwardsTheDirection]' passed (0.519 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeWithANonStringDirectionIsRejected]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeWithANonStringDirectionIsRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeWithoutDirectionIsRejectedBeforeReachingWDA]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testSwipeWithoutDirectionIsRejectedBeforeReachingWDA]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapAcceptsIntegerCoordinates]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapAcceptsIntegerCoordinates]' passed (0.510 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByALabelMatchSaysNothingExtra]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByALabelMatchSaysNothingExtra]' passed (0.523 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByCoordinatesForwardsBothAxes]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByCoordinatesForwardsBothAxes]' passed (0.524 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByLabelForwardsTheLabelAndReturnsTheUpdatedHierarchy]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapByLabelForwardsTheLabelAndReturnsTheUpdatedHierarchy]' passed (0.509 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapPrefersLabelOverCoordinatesWhenBothAreProvided]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapPrefersLabelOverCoordinatesWhenBothAreProvided]' passed (0.532 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapRejectsAWrongTypedLabel]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapRejectsAWrongTypedLabel]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapSaysWhenTheLabelMatchedAnIdentifier]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapSaysWhenTheLabelMatchedAnIdentifier]' passed (0.533 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapSaysWhenTheLabelMatchedAPlaceholder]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapSaysWhenTheLabelMatchedAPlaceholder]' passed (0.528 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapWithNoArgumentsReturnsAnErrorResultInsteadOfThrowing]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapWithNoArgumentsReturnsAnErrorResultInsteadOfThrowing]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapWithOnlyOneCoordinateIsRejected]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTapWithOnlyOneCoordinateIsRejected]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeAcceptsAnEmptyString]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeAcceptsAnEmptyString]' passed (0.302 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeForwardsTheTextVerbatim]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeForwardsTheTextVerbatim]' passed (0.320 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeWithoutAFocusedElementIsAToolError]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeWithoutAFocusedElementIsAToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeWithoutTextIsRejectedBeforeReachingWDA]' started.
+Test Case '-[GrantivaMCPTests.UIToolsTests testTypeWithoutTextIsRejectedBeforeReachingWDA]' passed (0.000 seconds).
+Test Suite 'UIToolsTests' passed at 2026-10-13 06:10:53.366.
+	 Executed 37 tests, with 0 failures (0 unexpected) in 4.805 (4.807) seconds
+Test Suite 'VRTToolsTests' started at 2026-10-13 06:10:53.366.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCaptureDoesNotAdvertiseUnsupportedScreenFiltering]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCaptureDoesNotAdvertiseUnsupportedScreenFiltering]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCommandsAreArgumentArraysThatCarryThePlatform]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCommandsAreArgumentArraysThatCarryThePlatform]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCommandsStartWithTheRunningExecutablesAbsolutePath]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testCommandsStartWithTheRunningExecutablesAbsolutePath]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testFailuresShareOnePrefix]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testFailuresShareOnePrefix]' passed (0.254 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testHandlersIgnoreAGrantivaOnPath]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testHandlersIgnoreAGrantivaOnPath]' passed (0.128 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testOperationalCompareFailureIsAToolError]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testOperationalCompareFailureIsAToolError]' passed (0.000 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testScreenNamesAreNeverInterpretedByAShell]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testScreenNamesAreNeverInterpretedByAShell]' passed (0.124 seconds).
+Test Case '-[GrantivaMCPTests.VRTToolsTests testStructuredDiffVerdictIsNotAToolError]' started.
+Test Case '-[GrantivaMCPTests.VRTToolsTests testStructuredDiffVerdictIsNotAToolError]' passed (0.000 seconds).
+Test Suite 'VRTToolsTests' passed at 2026-10-13 06:10:53.875.
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.508 (0.508) seconds
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 06:10:53.875.
+	 Executed 270 tests, with 0 failures (0 unexpected) in 112.668 (112.683) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:10:53.875.
+	 Executed 270 tests, with 0 failures (0 unexpected) in 112.668 (112.684) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:10:53.979.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 06:10:53.980.
+Test Suite 'WDAClientTests' started at 2026-10-13 06:10:53.980.
+Test Case '-[GrantivaCoreTests.WDAClientTests testAnUnrecognised400KeepsWDAsReason]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testAnUnrecognised400KeepsWDAsReason]' passed (0.003 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testElementIDDoesNotUseAnArbitraryStringValue]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testElementIDDoesNotUseAnArbitraryStringValue]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testElementIDSupportsLegacyAndW3CKeys]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testElementIDSupportsLegacyAndW3CKeys]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserBuildsNestedJSONSerializableTree]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserBuildsNestedJSONSerializableTree]' passed (0.001 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserKeepsFractionalFramesAndEmitsJSONNumbers]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserKeepsFractionalFramesAndEmitsJSONNumbers]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserKeepsThePlaceholderValue]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserKeepsThePlaceholderValue]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserOmitsEmptyAttributesAndIncompleteFrames]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserOmitsEmptyAttributesAndIncompleteFrames]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserRejectsEmptyXML]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserRejectsEmptyXML]' passed (0.001 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserThrowsForMalformedXML]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testHierarchyParserThrowsForMalformedXML]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testPredicateSelectionUsesActualAttributesAndExcludesApplicationNodes]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testPredicateSelectionUsesActualAttributesAndExcludesApplicationNodes]' passed (0.001 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testSwipeAndHierarchySayTheAppIsNotRunning]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testSwipeAndHierarchySayTheAppIsNotRunning]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelEscapesQuotesAndBackslashesInThePredicate]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelEscapesQuotesAndBackslashesInThePredicate]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelFallsBackToTheIdentifierWhenNoLabelMatches]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelFallsBackToTheIdentifierWhenNoLabelMatches]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelFindsByAccessibilityLabelPredicate]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelFindsByAccessibilityLabelPredicate]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndIdentifier]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReachesATextFieldByItsPlaceholderAfterLabelAndIdentifier]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsALabelMatch]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsALabelMatch]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsAnIdentifierFallbackMatch]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsAnIdentifierFallbackMatch]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsAServerErrorInsteadOfElementNotFound]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelReportsAServerErrorInsteadOfElementNotFound]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelRetriesTheLookupOnceAfterA400AndThenReportsNotFound]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelRetriesTheLookupOnceAfterA400AndThenReportsNotFound]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelSaysTheAppIsNotRunningWhenThe400Persists]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelSaysTheAppIsNotRunningWhenThe400Persists]' passed (0.001 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelThrowsElementNotFoundWhenNoAttributeMatches]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelThrowsElementNotFoundWhenNoAttributeMatches]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelTriesTheIdentifierAfterA404OnTheLabelQuery]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTapByLabelTriesTheIdentifierAfterA404OnTheLabelQuery]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextFailureNamesTheHTTPStatus]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextFailureNamesTheHTTPStatus]' passed (0.001 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextFallsBackToKeysOnlyAfterA404]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextFallsBackToKeysOnlyAfterA404]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextPostsCharactersToWDAKeys]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextPostsCharactersToWDAKeys]' passed (0.000 seconds).
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextWithoutAFocusedElementSendsNoKeys]' started.
+Test Case '-[GrantivaCoreTests.WDAClientTests testTypeTextWithoutAFocusedElementSendsNoKeys]' passed (0.000 seconds).
+Test Suite 'WDAClientTests' passed at 2026-10-13 06:10:53.990.
+	 Executed 26 tests, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 06:10:53.990.
+	 Executed 26 tests, with 0 failures (0 unexpected) in 0.010 (0.011) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:10:53.990.
+	 Executed 26 tests, with 0 failures (0 unexpected) in 0.010 (0.012) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:10:54.097.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 06:10:54.097.
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 06:10:54.097.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:10:54.097.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 06:10:54.192.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 06:10:54.193.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 06:10:54.193.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 06:10:54.193.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
