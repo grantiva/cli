@@ -59,8 +59,8 @@ public struct AppNotRunningError: LocalizedError, Equatable, Sendable {
 }
 
 /// Which attribute a label tap matched on iOS: the accessibility label, then
-/// WDA's `name` (the accessibility identifier, or an SF Symbol's name), then
-/// a text field's placeholder.
+/// WDA's true `identifier` attribute (including an SF Symbol's name), then a
+/// text field's placeholder.
 public enum LabelMatch: String, Sendable, Equatable {
     case label
     case identifier
