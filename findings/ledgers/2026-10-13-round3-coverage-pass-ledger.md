@@ -85,3 +85,9 @@ CLI reviewed evidence checkpoint: `6ad5a85b` on cov3/cli. Latest effective total
 - Independent heart fallback triage supports a product selector mismatch, not a stale fixture: runner identifier predicate finds heart; MCP label/name/placeholder lookup misses it. Draft L66 preserves full original row criteria; independent review pending.
 - Android exact environment group completed: quoted a=b c reaches app extras, seed-empty CLI/header variants pass, unsupported logs predicate and Android CI reject clearly. Worker adjudication pending. Corrected mixed-baseline runtime and MCP verdicts agree; B2-K89 remains fail because required README mixed-case exit-code documentation is absent.
 - Tasks3–5 remain in progress. No release-clean verdict or completed full pass is implied by these checkpoints.
+
+### Reviewed handoffs and source-audit correction
+
+- CLI handoff integration independently reviewed by iOS worker (findings/task-3-handoff-rereview.md) and committed bb328c5c. Current latest CLI totals368pass/7fail/5blocked/4n-a; 414raw result lines preserve historical blocked verdicts.
+- L66 independent Android review approved; documentation/source-comment clarification incorporated. CLI triage identifies CLI025 as a real doctor section defect (new draft L67), while six other CLI fails are stale expectation/corpus conflicts for Task6 corrections.
+- Correction: Android B2-K89 README omission claim was invalid. The audit read the demo README from scratch runtime cwd while claiming CLI candidate provenance. Actual candidate README726–729 already documents mixed exit1 and passedfalse, including CI distinction. Preserve faulty audit and add explicit absolute candidate-path/head audit; runtime/MCP/source-test evidence plus correct docs can support pass. No documentation defect should be filed. Worker tasked to audit other source evidence for cwd mistakes. This supersedes the preceding provisional K89 failure statement.
