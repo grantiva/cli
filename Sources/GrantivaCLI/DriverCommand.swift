@@ -226,7 +226,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
 
         let runnerArgs = Self.runnerArguments(
             platform: platformDevice, deviceID: booted.udid, flowPath: flowPath,
-            reportDir: platform == .android ? reportDir : nil
+            reportDir: reportDir
         )
         let environment = platformDevice.runnerEnvironment(runnerHome: runnerDir, deviceID: booted.udid)
         var launch = Launch(
@@ -331,6 +331,40 @@ struct RunnerStartCommand: AsyncParsableCommand {
         return UIAutomator2Wait(exitStatus: runnerExit())
     }
 
+    /// WDA's port is only transport discovery; startup also owns a launch flow.
+    static func waitForIOSLaunchFlow(
+        port: UInt16, reportDir: String?, timeout: TimeInterval = 60,
+        runnerExit: @Sendable () -> Int32? = { nil },
+        sleep: @Sendable () async -> Void = { try? await Task.sleep(for: .seconds(1)) }
+    ) async -> UIAutomator2Wait {
+        await waitForUIAutomator2(
+            attach: { DriverAttachment(client: .wda(port: port), port: Int(port), detach: {}) },
+            timeout: timeout,
+            launchStatus: { completedLaunchStatus(reportDir: reportDir) },
+            runnerExit: runnerExit,
+            sleep: sleep
+        )
+    }
+
+    private static func completedLaunchStatus(reportDir: String?) -> String? {
+        guard let directory = reportDir,
+              let report = RunnerReportIndex.load(reportDir: directory),
+              report.isComplete(expectedFlows: 1) else { return nil }
+        return report.readyState.status
+    }
+
+    static func iosLaunchError(_ wait: UIAutomator2Wait, logPath: String? = nil) -> GrantivaError {
+        let reason: String
+        if wait.launchFailed {
+            reason = "The iOS app launch flow failed."
+        } else if let status = wait.exitStatus {
+            reason = "The runner exited with status \(status) before the iOS app launch flow completed."
+        } else {
+            reason = "Timed out waiting for the iOS app launch flow to complete."
+        }
+        return .commandFailed(reason + (logPath.map { " Log: \($0)" } ?? ""), 1)
+    }
+
     /// The runner's own reason, from its output: its last `Error:` line.
     static func lastErrorLine(in text: String) -> String? {
         text.components(separatedBy: .newlines)
@@ -391,12 +425,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
             attach: { try await device.attachDriver(deviceID: serial, port: nil) },
             timeout: uiAutomator2WaitTimeout(),
             staleSessionID: launch.staleSessionID,
-            launchStatus: {
-                guard let directory = launch.reportDir,
-                      let report = RunnerReportIndex.load(reportDir: directory),
-                      report.isComplete(expectedFlows: 1) else { return nil }
-                return report.readyState.status
-            },
+            launchStatus: { completedLaunchStatus(reportDir: launch.reportDir) },
             runnerExit: { child.poll() }
         )
         return (wait.attachment.map { UInt16(clamping: $0.port) }, wait.exitStatus, wait.launchFailed)
@@ -545,6 +574,7 @@ struct RunnerStartCommand: AsyncParsableCommand {
         try Self.recordStarting(launch, runnerPid: runnerPid)
         func abandon() {
             child.terminateGroup(gracePeriod: 1)
+            _ = child.wait()
             Self.removeKeepAliveOwner(launch, runnerPid: runnerPid)
             Self.removeSessionFile(of: runnerPid)
         }
@@ -575,6 +605,11 @@ struct RunnerStartCommand: AsyncParsableCommand {
             guard case .port(let found)? = startup else {
                 abandon()
                 throw Self.wdaStartupError(startup, logPath: logPath)
+            }
+            let launchWait = await Self.waitForIOSLaunchFlow(port: found, reportDir: launch.reportDir, runnerExit: { child.poll() })
+            guard launchWait.attachment != nil else {
+                abandon()
+                throw Self.iosLaunchError(launchWait, logPath: logPath)
             }
             port = found
         }
@@ -719,6 +754,20 @@ struct RunnerStartCommand: AsyncParsableCommand {
                     return
                 }
                 throw Self.foregroundStartupError(startup)
+            }
+            let launchWait = await Self.waitForIOSLaunchFlow(port: found, reportDir: launch.reportDir, runnerExit: { child.poll() })
+            guard launchWait.attachment != nil else {
+                let requested = requestedStop()
+                child.terminateGroup(gracePeriod: 1)
+                let status = child.wait()
+                cleanup.run()
+                if SignalRelay.shared.isTerminating { throw ExitCode(130) }
+                if let requested {
+                    let ending = try Self.foregroundEnding(status: status, pid: runnerPid, stop: requested)
+                    options.note(ending)
+                    return
+                }
+                throw Self.iosLaunchError(launchWait)
             }
             port = found
         }

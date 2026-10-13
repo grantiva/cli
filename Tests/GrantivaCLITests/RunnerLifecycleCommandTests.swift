@@ -6,6 +6,62 @@ import GrantivaCore
 
 @available(macOS 15, *)
 final class RunnerLifecycleCommandTests: XCTestCase {
+    func testIOSPortDoesNotPublishReadyAfterFailedLaunchReport() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        try Data(#"{"status":"failed","flows":[{"name":"launch","status":"failed"}]}"#.utf8)
+            .write(to: directory.appendingPathComponent("report.json"))
+        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: directory.path, timeout: 0, sleep: {})
+        XCTAssertNil(result.attachment, "A discovered WDA port cannot make a failed launch ready")
+        XCTAssertTrue(result.launchFailed)
+    }
+
+    func testIOSPortWithoutCompletedLaunchReportStaysBounded() async {
+        let result = await RunnerStartCommand.waitForIOSLaunchFlow(port: 8834, reportDir: nil, timeout: 0, sleep: {})
+        XCTAssertNil(result.attachment)
+        XCTAssertFalse(result.launchFailed)
+    }
+
+    func testIOSLaunchWaitUsesOnlyItsOwnCompletedReport() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let report = directory.appendingPathComponent("report.json")
+        try Data(#"{"status":"running","flows":[{"name":"launch","status":"running"}]}"#.utf8).write(to: report)
+        let polls = LockedValue(0)
+        let result = await RunnerStartCommand.waitForIOSLaunchFlow(
+            port: 8834, reportDir: directory.path, timeout: 1,
+            sleep: {
+                polls.set(polls.value + 1)
+                try? Data(#"{"status":"passed","flows":[{"name":"launch","status":"passed"}]}"#.utf8).write(to: report, options: .atomic)
+            }
+        )
+        XCTAssertEqual(polls.value, 1, "Running must remain starting until the report completes")
+        XCTAssertEqual(result.attachment?.port, 8834)
+        XCTAssertNil(result.exitStatus)
+        XCTAssertFalse(result.launchFailed)
+    }
+
+    func testIOSLaunchWaitStopsOnRunnerDeathOrInterrupt() async {
+        for status: Int32 in [137, 130] {
+            let result = await RunnerStartCommand.waitForIOSLaunchFlow(
+                port: 8834, reportDir: nil, timeout: 60, runnerExit: { status },
+                sleep: { XCTFail("Dead runner must not consume the timeout") }
+            )
+            XCTAssertNil(result.attachment)
+            XCTAssertEqual(result.exitStatus, status)
+        }
+    }
+
+    func testIOSLaunchReportArgumentsAreFlatBeforeTheFlow() {
+        let arguments = RunnerStartCommand.runnerArguments(
+            platform: IOSPlatform(), deviceID: "owned-uuid", flowPath: "/tmp/start/session-flow.yaml",
+            reportDir: "/tmp/start/report"
+        )
+        XCTAssertEqual(Array(arguments.suffix(5)), ["--keep-alive", "--output", "/tmp/start/report", "--flatten", "/tmp/start/session-flow.yaml"])
+    }
+
     func testLaunchReportIsFlatAndOptionsPrecedeThePositionalFlow() {
         let arguments = RunnerStartCommand.runnerArguments(
             platform: FakeDevicePlatform(platform: .android), deviceID: "emulator-5554",
