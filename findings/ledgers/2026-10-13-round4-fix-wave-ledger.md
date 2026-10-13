@@ -42,7 +42,7 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | Brief | Task | Failing test | Implementation | Device evidence | PR | CI | Merge |
 |---|---|---|---|---|---|---|---|
 | L51 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
-| L53 | 3 + 4 | pending | pending | pending | pending | pending | pending |
+| L53 | 3 + 4 | semantic RED and exact argv controls | runner567fd5f3; CLI05d8cd39 | independently reviewed flags and lifecycle + cleanup | runner#26; cli#208 | both CI passed | ff68658f; 03cee568 |
 | L61 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
 | L62 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L64 | 1 | semantic RED retained fix4-1 | cc0c15a6 | fix4-1 stock4–8 + controls + cleanup | runner#24 | Test/Lint/Build passed | e5cba28c |
@@ -60,7 +60,7 @@ L51: final four-form B3-L51-four-forms-rerun12 and B2-L03-per-step-hierarchy-rer
 | L76 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
 | L77 | 2 | initialRED qualified; fixroundRED retained | 59184b9 | bothrenderers reviewed + finalcleanup | runner#25 | CI38419342152 passed | 64dd5188 |
 | L78 | 4 | semantic RED retained fix4-4 | 05d8cd39 | final reviewed live controls + scoped cleanup | cli#208 | CI38415493813 passed | 03cee568 |
-| L79 | 3 | pending | pending | pending | pending | pending | pending |
+| L79 | 3 (runner + CLI) | semantic RED; initial summaries qualified | runner567fd5f3; CLIc1373f6c | joint text3/JSON3 + required controls + cleanup reviewed | runner#26; cli#211 | both CI passed | ff68658f; 7c1abb1c |
 | L80 | 5 | semantic RED fix4-5/unit | a485f7b6 (+ demo19c1aad L66) | fix4-5 final iOS/Android + cleanup; reviewed | cli#209; demo#4 | build-and-test passed | 4231a01a; demo1552ae98 |
 | L81 | 6 | semanticRED + CI8assertions | ce23e52b | exactdoctor + portablefixtures; no device mutation | cli#210 | CI38422710253 passed | 63c9b451 |
 
@@ -255,3 +255,7 @@ Task 3 CLI fix1 independent source/spec behavior and code quality APPROVED c1373
 Task 3 joint-final replay reported complete with reviewed CLIc1373f6c / runner567fd5f3: optional text3 + JSON3 warn visibly and pass with literal element_not_found, required continuation, report/ready/JUnit0/exit0; required text+JSON retain failed+skipped/report/ready/JUnit1/exit1. Raw at fix4-3/live/joint-final, original failures untouched. Independent live reviewer resumed for all surfaces and cleanup; owner now cleaning exact emulator88465 and load2958 with owned home/devices only. Actual CLI RED/focused/full stream captures are being written to separate raw-* directories; full stream run still active, no merge yet.
 
 Task 3 runner PR26 squash merged ff68658f73e4b6d9d94897d99ad1a0a270a105b7 at2026-10-13T16:12:14Z after source/spec/quality, CI38423696144, joint corrected CLI live acceptance and exact cleanup independently passed. Final live review archived; 377 Task3 raw files have an exhaustive SHA256 manifest. CLI c1373 fresh actual semantic RED/focusedGREEN/full2012 GREEN streams now retained with exact metadata; prior summary-only evidence remains qualified. CLI evidence review and CI38427439316 pending, so Task3 overall not yet closed and Task7 version/build/cache gates remain pending.
+
+Task 3: complete (runner64dd..567fd and CLI63c9..c1373; independent source/spec/quality/live/cleanup and genuine replacement execution evidence approved). Runner PR26 merged ff68658f73e4b6d9d94897d99ad1a0a270a105b7 at16:12:14Z; CLI PR211 CI38427439316 success16:12:49Z, squashmerged7c1abb1c83c92d79b5a09996a71bff17d5021107 at2026-10-13T16:13:17Z. Full2012freshhomeCLItests, explicitrunnerpackage/vet and CI all pass. No task-owned device/process remains. Initial CLI evidence summaries are not raw and overwritten initial summary unrecovered; genuine separate reruns satisfy proof, historical qualification retained.
+
+Task7 version frozen once: 1.1.28-grantiva.14; install stamp1.1.28-grantiva.14+android-drivers-2. Runner mergedff68658f, CLI merged7c1abb1c. RunnerManager currently.13; remote tag inventory has no Grantiva-suffixed tags, so established embedded revision advances .13→.14. Inputs recorded under fix4-7/inputs/frozen-version.json and runner-remote-tags.txt; no tag or release created. Task7 branch merge7c1 into8a6 encountered one test-file conflict RunnerReportContractTests.swift; delegate original Task7 author to preserve both schema and optional-status tests, run combined focused verification, and complete merge before packaging.
