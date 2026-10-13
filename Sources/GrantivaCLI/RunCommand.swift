@@ -587,7 +587,7 @@ struct RunCommand: AsyncParsableCommand {
         }
 
         // Print results
-        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status == .passed } }
+        let allPassed = captures.allSatisfy { $0.steps.allSatisfy { $0.status.isPassing } }
         if !options.json {
             for line in Self.resultLines(captures: captures, captureDir: captureDir) {
                 Output.line(line)
@@ -685,7 +685,7 @@ struct RunCommand: AsyncParsableCommand {
             }
             // Missing captures are returned as failed steps rather than thrown.
             // Do not let the later session publish success for a failed suite.
-            if hasFlows, captures.contains(where: { $0.steps.contains(where: { $0.status != .passed }) }) {
+            if hasFlows, captures.contains(where: { $0.steps.contains(where: { !$0.status.isPassing }) }) {
                 if options.failFast {
                     throw ExitCode.failure
                 }

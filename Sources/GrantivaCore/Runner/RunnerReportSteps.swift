@@ -74,6 +74,10 @@ enum RunnerReportSteps {
             switch command.status {
             case "passed":
                 return StepResult(action: action, status: .passed, duration: duration)
+            case "warned":
+                return StepResult(
+                    action: action, status: .warned, duration: duration, message: command.error?.message.map(rewriter.rewrite)
+                )
             case "failed", "error":
                 return StepResult(
                     action: action, status: .failed, duration: duration, message: command.error?.message.map(rewriter.rewrite)

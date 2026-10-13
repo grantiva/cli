@@ -18,7 +18,12 @@ extension RunCommand {
                 continue
             }
             for step in capture.steps {
-                let icon = step.status == .passed ? "\u{2713}" : "\u{2717}"
+                let icon: String
+                switch step.status {
+                case .passed: icon = "\u{2713}"
+                case .warned: icon = "\u{26A0}"
+                case .failed: icon = "\u{2717}"
+                }
                 lines.append("    \(icon) \(step.action)")
                 if let msg = step.message {
                     lines.append("      \(msg)")
@@ -44,7 +49,7 @@ extension RunCommand {
     }
 
     static func summaryLines(captures: [ScreenCapture], skippedFlows: Set<String> = []) -> [String] {
-        func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status == .passed } }
+        func passed(_ capture: ScreenCapture) -> Bool { capture.steps.allSatisfy { $0.status.isPassing } }
         let screens = captures.filter { $0.kind == .screen }
         let flows = captures.filter { $0.kind == .flow }
         var lines: [String] = []
@@ -146,7 +151,7 @@ extension RunCommand {
             init(_ capture: ScreenCapture) {
                 name = capture.screenName
                 kind = capture.kind.rawValue
-                passed = capture.steps.allSatisfy { $0.status == .passed }
+                passed = capture.steps.allSatisfy { $0.status.isPassing }
                 steps = capture.steps.map { step in
                     StepResult(action: step.action, status: step.status.rawValue, duration: step.duration, message: step.message)
                 }

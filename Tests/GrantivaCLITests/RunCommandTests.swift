@@ -665,6 +665,34 @@ final class RunCommandTests: XCTestCase {
         XCTAssertEqual(usage.values, [])
     }
 
+    func testWarnedFlowRendersWarningAndRemainsPassedInTextAndJSON() throws {
+        let capture = ScreenCapture(screenName: "optional-miss", path: "", sizeBytes: 0, steps: [
+            StepResult(action: "launchApp", status: .passed, duration: 1.365),
+            StepResult(
+                action: "tapOn: text=\"No Such Element fix4-3\"", status: .warned, duration: 7.164,
+                message: "Element not found: text='No Such Element fix4-3'"
+            ),
+            StepResult(action: "assertVisible: text=\"Landmarks\"", status: .passed, duration: 0.065),
+        ], kind: .flow)
+
+        let text = RunCommand.resultLines(captures: [capture], captureDir: "/tmp/captures").joined(separator: "\n")
+        XCTAssertTrue(text.contains("⚠ tapOn: text=\"No Such Element fix4-3\""), text)
+        XCTAssertTrue(text.contains("Element not found: text='No Such Element fix4-3'"), text)
+        XCTAssertTrue(text.contains("Flows: 1 total, 1 passed, 0 failed"), text)
+
+        let result = RunCommand.RunResult(
+            screens: [RunCommand.RunResult.ScreenResult(capture)], allPassed: true
+        )
+        let data = try JSONEncoder().encode(result)
+        let json = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        XCTAssertEqual(json["allPassed"] as? Bool, true)
+        let screen = try XCTUnwrap((json["screens"] as? [[String: Any]])?.first)
+        XCTAssertEqual(screen["passed"] as? Bool, true)
+        let steps = try XCTUnwrap(screen["steps"] as? [[String: Any]])
+        XCTAssertEqual(steps.map { $0["status"] as? String }, ["passed", "warned", "passed"])
+        XCTAssertEqual(steps[1]["message"] as? String, "Element not found: text='No Such Element fix4-3'")
+    }
+
     /// L56: how `run` ends once a signal released an armed hold. The
     /// release itself (no exit, the runner's own 0 or 1, `interrupted` for a
     /// 130 or a signal death) is proved through the relay in
