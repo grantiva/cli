@@ -1,0 +1,109 @@
+00:06:05.938847 [INFO] === Test execution started ===
+00:06:05.938912 [INFO] Output directory: /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt54/pair-1/u2-report
+00:06:05.938917 [INFO] Platform: ios
+00:06:05.938920 [INFO] Driver: wda
+00:06:05.939242 [INFO] Validated 1 flow(s)
+00:06:06.053857 [INFO] Single device execution mode
+00:06:06.053879 [INFO] Starting flow execution (parallel: false, devices: [])
+00:06:06.053886 [INFO] Creating driver for single device execution
+00:06:06.053891 [INFO] Using specified iOS device: 1B1102EC-224B-4EF7-937E-370A0DC317DA
+00:06:06.170770 [INFO] Device 1B1102EC-224B-4EF7-937E-370A0DC317DA is a simulator
+00:06:06.170820 [INFO] Building WDA for device 1B1102EC-224B-4EF7-937E-370A0DC317DA (team ID: )
+00:06:06.399113 [INFO] WDA build reused from cache
+00:06:06.399125 [INFO] Starting WDA on device 1B1102EC-224B-4EF7-937E-370A0DC317DA (port: 8174)
+00:06:06.672279 [INFO] Starting GrantivaAgent (attempt 1/4)
+00:06:20.674266 [INFO] GrantivaAgent started
+00:06:20.674367 [INFO] WDA started successfully on port 8174
+00:06:21.060842 [DEBUG] WDA GET /window/size
+00:06:21.204018 [DEBUG] WDA GET /window/size completed (143ms, status: 200)
+00:06:21.204108 [INFO] Driver created: ios on cov3-ios-27
+00:06:21.205661 [INFO] === Starting flow: 05-category ===
+00:06:21.205668 [INFO] Flow file: .maestro/05-category.yaml
+00:06:21.205672 [INFO] Total steps: 6
+00:06:21.205797 [DEBUG] WDA POST /appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+00:06:21.206500 [DEBUG] WDA POST /appium/settings completed (0ms, status: 404)
+00:06:21.206583 [DEBUG] WDA POST /session body={"capabilities":{"alwaysMatch":{"bundleId":"com.kylebrowning.Landmarks","shouldWaitForQuiescence":fa...
+00:06:25.380085 [DEBUG] WDA POST /session completed (4173ms, status: 200)
+00:06:25.380298 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings body={"settings":{"snapshotMaxDepth":100}}
+00:06:25.402500 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings completed (22ms, status: 200)
+00:06:25.402764 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings body={"settings":{"animationCoolOffTimeout":0,"shouldWaitForQuiescence":false,"waitForIdleTimeout":0}}
+00:06:25.406458 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings completed (3ms, status: 200)
+00:06:25.407915 [DEBUG] Executing step 0: launchApp
+00:06:25.858777 [DEBUG] [wda] launchApp com.kylebrowning.Landmarks: argv=[] env=map[]
+00:06:25.858858 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings body={"settings":{"animationCoolOffTimeout":0,"defaultAlertAction":"","shouldWaitForQuiescence":false,"wa...
+00:06:25.859585 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/appium/settings completed (0ms, status: 200)
+00:06:25.859688 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/apps/terminate body={"bundleId":"com.kylebrowning.Landmarks"}
+00:06:25.860260 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/apps/terminate completed (0ms, status: 200)
+00:06:25.860289 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/apps/launch body={"bundleId":"com.kylebrowning.Landmarks"}
+00:06:28.652875 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/apps/launch completed (2792ms, status: 200)
+00:06:28.652986 [DEBUG] Step 0 completed successfully (3245ms): launchApp
+00:06:28.653773 [DEBUG] Executing step 1: tapOn: text="Lakes"
+00:06:28.791614 [DEBUG] Flutter: com.kylebrowning.Landmarks has no Flutter.framework; not searching the Flutter VM
+00:06:28.791659 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/alert/text
+00:06:29.134546 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/alert/text completed (342ms, status: 404)
+00:06:29.134618 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot
+00:06:29.250943 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot completed (116ms, status: 200)
+00:06:29.253987 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot
+00:06:29.324648 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot completed (70ms, status: 200)
+00:06:29.328531 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"predicate string","value":"((type == 'XCUIElementTypeTextField' OR type == 'XCUIElementTyp...
+00:06:29.328599 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"class chain","value":"**/XCUIElementTypeSecureTextField[`(label ==[c] 'Lakes' OR value ==[...
+00:06:29.328655 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"class chain","value":"**/XCUIElementTypeButton[`(label ==[c] 'Lakes')`]"}
+00:06:29.328685 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"class chain","value":"**/XCUIElementTypeTextField[`(label ==[c] 'Lakes' OR value ==[c] 'La...
+00:06:29.462008 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (133ms, status: 200)
+00:06:29.557285 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (228ms, status: 404)
+00:06:29.656344 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (327ms, status: 200)
+00:06:29.703952 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (375ms, status: 404)
+00:06:29.704372 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/name
+00:06:29.704403 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/rect
+00:06:29.704443 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/text
+00:06:29.704514 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/displayed
+00:06:29.753020 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/rect completed (48ms, status: 200)
+00:06:29.800678 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/name completed (96ms, status: 200)
+00:06:29.845176 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/text completed (140ms, status: 200)
+00:06:29.916901 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/8C000000-0000-0000-50A3-000000000000/displayed completed (212ms, status: 200)
+00:06:29.917035 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/tap body={"x":201,"y":508.5}
+00:06:30.508366 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/wda/tap completed (591ms, status: 200)
+00:06:30.508429 [DEBUG] Step 1 completed successfully (1854ms): tapOn: text="Lakes"
+00:06:30.508932 [DEBUG] Executing step 2: assertVisible: text="Lake Tahoe"
+00:06:30.509316 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"predicate string","value":"(label ==[c] 'Lake Tahoe' OR value ==[c] 'Lake Tahoe')"}
+00:06:30.624257 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (114ms, status: 200)
+00:06:30.624313 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/name
+00:06:30.624334 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/rect
+00:06:30.624362 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/text
+00:06:30.624386 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/displayed
+00:06:30.691964 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/name completed (67ms, status: 200)
+00:06:30.753027 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/rect completed (128ms, status: 200)
+00:06:30.810276 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/text completed (185ms, status: 200)
+00:06:30.884869 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/AA000000-0000-0000-50A3-000000000000/displayed completed (260ms, status: 200)
+00:06:30.884926 [INFO] [wda] elemID=AA000000-0000-0000-50A3-000000000000 — XCUITest displayed=false but bounds (-33,745 90x22) within viewport 402x874 — proceeding
+00:06:30.884953 [DEBUG] Step 2 completed successfully (376ms): assertVisible: text="Lake Tahoe"
+00:06:30.885354 [DEBUG] Executing step 3: assertVisible: text="Mono Lake"
+00:06:30.885657 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/alert/text
+00:06:30.989465 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/alert/text completed (103ms, status: 404)
+00:06:30.989528 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"predicate string","value":"(label ==[c] 'Mono Lake' OR value ==[c] 'Mono Lake')"}
+00:06:31.046491 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (56ms, status: 200)
+00:06:31.046608 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/name
+00:06:31.046645 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/text
+00:06:31.046702 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/displayed
+00:06:31.046726 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/rect
+00:06:31.073741 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/name completed (27ms, status: 200)
+00:06:31.098899 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/text completed (52ms, status: 200)
+00:06:31.129091 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/displayed completed (82ms, status: 200)
+00:06:31.155938 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/element/E2000000-0000-0000-50A3-000000000000/rect completed (109ms, status: 200)
+00:06:31.155988 [DEBUG] Step 3 completed successfully (270ms): assertVisible: text="Mono Lake"
+00:06:31.156351 [DEBUG] Executing step 4: assertNotVisible: text="Golden Gate Bridge"
+00:06:31.156553 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element body={"using":"predicate string","value":"(label ==[c] 'Golden Gate Bridge' OR value ==[c] 'Golden Gate B...
+00:06:31.185441 [DEBUG] WDA POST /session/1BFE6924-9698-47BE-8AD4-08212173633C/element completed (28ms, status: 404)
+00:06:31.185606 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/source
+00:06:31.468549 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/source completed (282ms, status: 200)
+00:06:31.470922 [DEBUG] Step 4 completed successfully (314ms): assertNotVisible: text="Golden Gate Bridge"
+00:06:31.471574 [DEBUG] Executing step 5: takeScreenshot
+00:06:31.471951 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot
+00:06:31.534410 [DEBUG] WDA GET /session/1BFE6924-9698-47BE-8AD4-08212173633C/screenshot completed (62ms, status: 200)
+00:06:31.537326 [DEBUG] Step 5 completed successfully (65ms): takeScreenshot
+00:06:31.541133 [INFO] === Flow completed: 05-category (status: passed, duration: 10332ms, passed: 6, failed: 0, skipped: 0) ===
+00:06:31.632610 [INFO] Flow execution completed: 1 passed, 0 failed, 0 skipped
+00:06:31.632781 [INFO] Generating reports...
+00:06:31.633566 [INFO] Shutting down devices started by maestro-runner...
+00:06:31.633577 [INFO] Shutting down all tracked emulators
+00:06:31.633582 [INFO] Shutting down all tracked simulators
