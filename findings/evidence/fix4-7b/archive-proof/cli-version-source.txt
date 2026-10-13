@@ -1,0 +1,11 @@
+39:    public static let runnerVersion = "1.1.28-grantiva.15"
+44:    public static let installStamp = runnerVersion + "+android-drivers-2"
+144:            + "it is from another grantiva release than this binary (which expects grantiva-runner \(runnerVersion)). "
+154:                .trimmingCharacters(in: .whitespacesAndNewlines) == installStamp
+162:        bundleMismatchWarning(bundle: resourceBundle, installed: runnerVersion, installDir: currentInstallDir)
+177:        guard first, let warning = bundleMismatchWarning(bundle: nil, installed: runnerVersion, installDir: currentInstallDir) else { return }
+263:        installDir(baseDir: baseDir, stamp: installStamp)
+308:            version: installStamp,
+309:            lockPath: "\(baseDir)/locks/install-\(installStamp).lock",
+312:                    at: $0, expected: runnerVersion,
+319:                    keeping: installStamp,

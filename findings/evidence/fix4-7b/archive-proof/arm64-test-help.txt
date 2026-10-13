@@ -1,0 +1,65 @@
+NAME:
+   grantiva-runner test - Run flows on a device
+
+USAGE:
+   grantiva-runner test [command options] <flow-file-or-folder>...
+
+DESCRIPTION:
+   Run one or more flow files on a connected device.
+
+   Reports are generated in the output directory:
+     - Default: ./reports/<timestamp>/
+     - With --output: <output>/<timestamp>/
+     - With --output and --flatten: <output>/ (no timestamp subfolder)
+
+   Examples:
+    Basic usage
+     grantiva-runner test flow.yaml
+     grantiva-runner test flows/
+     grantiva-runner test login.yaml checkout.yaml
+
+     # With environment variables
+     grantiva-runner test -e USER=test -e PASS=secret flows/
+
+     # With tag filtering
+     grantiva-runner test --include-tags smoke flows/
+
+     # With Appium and capabilities file
+     grantiva-runner --driver appium --caps caps.json test flow.yaml
+
+     # With cloud provider (BrowserStack/SauceLabs/LambdaTest/TestingBot)
+     grantiva-runner --driver appium --appium-url "https://hub.provider.com/wd/hub" --caps cloud.json test flow.yaml
+
+     # Custom output directory
+     maestro-runner test --output ./my-reports --flatten flows/
+
+OPTIONS:
+   --config value                                                   Path to workspace config.yaml
+   --env value, -e value                                            Environment variable for the flows: KEY=VALUE, or KEY alone to pass KEY from the shell environment. Repeat for more; a value may contain commas and '='
+   --env-file value                                                 Path to .env file (KEY=VALUE per line, # comments, single/double quoting) [$MAESTRO_ENV_FILE]
+   --include-tags value [ --include-tags value ]                    Only include flows with these tags
+   --exclude-tags value [ --exclude-tags value ]                    Exclude flows with these tags
+   --output value                                                   Output directory for reports (default: ./reports)
+   --flatten                                                        Don't create timestamp subfolder (requires --output) (default: false)
+   --retry-failed                                                   Run only the flows that failed in the previous run (looks for the last report under the same --output directory) (default: false)
+   --parallel value                                                 Run tests in parallel on N devices (auto-selects available devices) (default: 0)
+   --continuous, -c                                                 Enable continuous mode for single flow (default: false)
+   --headed                                                         Show browser window (web only, default is headless) (default: false)
+   --browser value                                                  Browser to use: chrome, chromium, or path to binary (web only) [$MAESTRO_BROWSER]
+   --user-data-dir value                                            Chrome user-data-dir for a persistent profile across runs (web only). Cookies / localStorage / extensions are reused. [$MAESTRO_USER_DATA_DIR]
+   --window-size value                                              Browser viewport as WxH, e.g. 390x844 (web only, default 1280x800). Lets one suite run against phone, tablet and desktop breakpoints. [$MAESTRO_WINDOW_SIZE]
+   --wait-for-idle-timeout value                                    Wait for device idle in ms (0 = disabled, default 200) (default: 200) [$MAESTRO_WAIT_FOR_IDLE_TIMEOUT]
+   --step-delay value                                               Pause between steps in ms (default 0 — no delay). For pacing demos or apps whose animations outrun assertions. Flows can override with stepDelay in their config. (default: 0) [$MAESTRO_STEP_DELAY]
+   --condition-timeout timeout:                                     Fixed timeout in ms for when:/while: condition checks. Unset: as Maestro, 7s less the time since the last step (at least 1s). Override per condition with timeout:. (default: 0) [$MAESTRO_CONDITION_TIMEOUT]
+   --disable-animations platform: android: disableAnimations: true  Switch the device's system animations off for the run and restore them afterwards (Android). Same as Maestro's workspace platform: android: disableAnimations: true (default: false) [$MAESTRO_DISABLE_ANIMATIONS]
+   --insecure insecure: true                                        Skip TLS certificate verification for runScript http.* calls (self-signed endpoints). Override per request with insecure: true. (default: false) [$MAESTRO_INSECURE]
+   --typing-frequency value                                         Typing speed in keys/sec (default 30). Lower values help apps that drop fast key events. Applies to WDA and the DeviceLab iOS driver (all typing) and to keyPress-mode inputText on uiautomator2; the default DeviceLab Android driver types through its agent and is unaffected. (default: 30) [$MAESTRO_TYPING_FREQUENCY]
+   --no-flutter-fallback                                            Disable automatic Flutter VM Service fallback (default: false)
+   --keep-alive                                                     Keep the runner session (GrantivaAgent on iOS, UIAutomator2 on Android) alive after flows complete (Ctrl-C to exit) (default: false) [$MAESTRO_KEEP_ALIVE]
+   --android-tcp-forward                                            Force TCP-to-TCP adb forward for Android drivers (auto-enabled when $DEVICEFARM_DEVICE_UDID is set; needed on AWS Device Farm and similar sandboxes that block localfilesystem:/localabstract: forwards) (default: false)
+   --artifacts value                                                When to capture screenshots/hierarchy: on-failure (default, also accepted as failure), always, never (default: "on-failure")
+   --fail-fast                                                      Stop all remaining flows on the first failure (default: false) [$MAESTRO_FAIL_FAST]
+   --update-screenshots                                             Overwrite existing assertScreenshot baselines with the current screen (missing baselines are always seeded on first run) (default: false) [$MAESTRO_UPDATE_SCREENSHOTS]
+   --record                                                         Record the screen during every flow and save recording.mp4 into the flow's report assets (Android devices/emulators and iOS simulators). Shorthand for --video always (default: false)
+   --video value                                                    When to keep screen recordings: never (default), always, on-failure. A recording can only be made while the flow runs, so on-failure records every flow and keeps only the ones that failed [$MAESTRO_VIDEO]
+   --help, -h                                                       show help
