@@ -614,6 +614,32 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | B-I16.1 [android] | pass | findings/evidence/cov3-android/AND-027-065diff-exact-rerun1/AND-065-diff/, findings/evidence/cov3-android/flow-contracts-bulk-exact-rerun3/K17-capture-json/ | Current captures contain literal `Deep Links.png` and `diffs/Deep Links_diff.png`; successful capture JSON retains the corresponding path fields with the same names. |
 
+| B2-K86-b [android] | pass | findings/evidence/cov3-android/B2-K86-b-live-cli-capture-rerun2/, findings/evidence/cov3-android/B2-K86-b-live-cli-capture-rerun1/ | A detached Android owner becomes hierarchy-ready; with no emulator in config and no device/platform flag, exact CLI `diff capture --no-build` implicitly selects that live session and captures all five configured screens. A subsequent selector-free runner dump succeeds and stop exits zero; the explicit-device run is retained as a control. |
+
+| N2-13 [android] | pass | findings/evidence/cov3-android/B3-L49-L50-crash-waits-rerun1/, findings/evidence/cov3-android/N2-13-crash-wait-complements-rerun1/ | All three exact stock crash repeats plus extended-visible, assert-not-visible, scroll-until-visible, and wait-for-animation forms exit with `app_crash` and the launch RuntimeException. The post-launch waits are skipped and the new complements terminate in 4.7–4.8 seconds rather than consuming their twenty-second wait bounds. |
+
+| B2-K108 [android] | pass | findings/evidence/cov3-android/B2-K108-threshold-wording-devicefree-rerun1/, findings/evidence/cov3-android/B2-K108-perceptual-only-complement1/ | Pinned retained Android PNGs exercise pixel-only, perceptual-only, and both-threshold failures in text and JSON. The corrected perceptual-only complement sets a 100% pixel threshold while 44.3 exceeds 22.2 perceptually, and both outputs omit the pixel-threshold phrase; exact shared formatter tests cover the contract. |
+
+| B-A07.1 [android] | pass | findings/evidence/cov3-android/B-A07.1-B2-K88-logs-tty-sigint-rerun1/ | Exact `run --logs` under a real PTY reaches active flow execution while its process inventory contains the matching `adb -s emulator-5554 logcat`; SIGINT exits 130 and the after inventory contains no matching logcat process. The wrapper's narration/string proxies are outside the literal criterion. |
+
+| B2-K88 [android] | pass | findings/evidence/cov3-android/B2-K88-runner-start-pty-rerun1/, findings/evidence/cov3-android/foreground-lifecycle-controls-rerun2/, findings/evidence/cov3-android/N2-05-B3L13-dead-runner-stop-json-rerun2/ | Exact foreground start under a real PTY holds 30.009 seconds, streams runner output, and answers a concurrent hierarchy in 0.636 seconds. SIGINT exits 130 and removes the runner, project/global session records, owner sidecar, and lease; retained detached/dead-owner controls plus exact lifecycle tests cover unchanged detach and dead-pid wording. The wrapper's post-stop phrase proxy is stricter than the actual valid `No active session found.` response. |
+
+| B-A01.3 [android] | pass | findings/evidence/cov3-android/B-A01.3-flow-header-env-rerun1/ | An exact header-only `env:` value, without a CLI or step override, reaches the Android app: the flow visibly asserts `round3-header-only` and cleared app logcat records the matching launch intent extra. The report passes, and current Android documentation explicitly defines header environment delivery and precedence. |
+
+| B-C03.2 [android] | pass | findings/evidence/cov3-android/B-C03.2-project-platform-exclusivity-rerun1/, findings/evidence/cov3-android/B2-K56-X011-MCP076-context-resources-rerun4/ | A live Android keep-alive owner is used by MCP only for the same project and platform: the valid control exposes the session, while other-project Android and same-project forced-iOS contexts both report no active session. Cross-directory standalone hierarchy uses its separately documented global fallback; the wrapper's later project-session-file assumption is a harness fault. |
+
+| D2-05 [android] | pass | findings/evidence/cov3-android/D2-05-compound-maestro-rerun3/, findings/evidence/cov3-android/wait-runflow-contracts-rerun1/ | The full compound Maestro config exits zero with 21/21 checks: all three runFlow forms, timeout-bearing scroll and wait forms, and five named nonempty PNGs are retained. Earlier incomplete-fixture attempts remain excluded; exact resolver and timeout evidence supplies the semantic join. |
+
+| AND-122 [android] | pass | findings/evidence/cov3-android/AND-122-docs-keepalive-examples-rerun1/ | The three documented examples run literally in a frozen one-flow Android project: `grantiva run --keep-alive` holds the UIAutomator2 session, and both `grantiva hierarchy` forms return the same Landmarks tree as XML and decoded JSON. Cleanup succeeds after all documented output checks. |
+
+| MCP-079 [android] | pass | findings/evidence/cov3-android/MCP-079-project-platform-tool-isolation-rerun1/ | With a live Android keep-alive owner, `grantiva_a11y_tree` from another Android project and from the owner project forced to iOS both return structured `isError` no-session responses explaining that the other-project/platform session was ignored. Both clients exit zero and the untouched owner then stops with earned exit zero. |
+
+| B2-L01 [android] | pass | findings/evidence/cov3-android/S2-01-inputtext-three-runs-rerun1/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | Three exact edit runs pass in 1.9–2.1 seconds on the archived software-rendered AVD (`hw.gpu.enabled=no`, mode auto); the full stock control passes edit and seed-many. Exact runner deadline/input-timeout tests pin the bounded request behavior. |
+
+| AND-057 [android] | pass | findings/evidence/cov3-android/dual-device-runtime-exact-rerun1/ | Exact hierarchy succeeds while a detached runner owns the session, and before/after forward inventories remain byte-identical, proving the command reuses rather than leaks or removes the runner-owned forward. Exact attach/detach source tests cover temporary tcp:0→6790 creation and removal when no owner supplies it. |
+
+| AND-087 [android] | pass | findings/evidence/cov3-android/AND-087-unchanged/, findings/evidence/cov3-android/B2-K108-threshold-wording-devicefree-rerun1/ | The unchanged five-screen corpus passes in text and JSON with both thresholds present. The current pinned Android changed-pixel BOTH case fails both configured threshold dimensions in text and JSON; the invalid original perceptual-only classification is excluded. |
+
 ## Counts
 
-416 of 467 slice rows recorded: 393 pass, 17 fail, 4 blocked, 2 n/a.
+429 of 467 slice rows recorded: 406 pass, 17 fail, 4 blocked, 2 n/a.
