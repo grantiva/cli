@@ -652,6 +652,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | N-06 [android] | pass | findings/evidence/cov3-android/B2-K06-N06-three-fresh-captures-rerun2/ | Three fresh emulator processes each complete the exact first capture successfully with five screens and eight passed steps. All cycles have distinct qemu PIDs, no raw-socket error, no snapshot-restore warning, and complete targeted teardown before the next boot. |
 
+| B2-L03 | pass | findings/evidence/cov3-android/B2-L03-per-step-hierarchy-rerun10/, findings/evidence/cov3-android/B2-K07-N03-B2-L03-scroll-renderers-rerun1/, findings/android-b2l03-rerun10-final-review.md | Exact-session hierarchies show four consistent bare-scroll advances on both software (-1179 to -1195 px) and GPU (-1179 to -1191 px), each spread far below one 189-pixel row; final direct/CLI semantics match 23/23 app nodes. Joined six full-snapshot repetitions all pass and land at Landmark 28 with unredacted held pointer bodies, while exact source tests cover top-up, short-scroll reporting, geometry, spacing, speed, and end bounds. The outer wrapper-only zsh interpolation error occurred after successful targeted cleanup and is qualified additively. |
+
 | B2-L06 [android] | pass | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/ | Index-zero, relative-below, and width variants each fail 3/3 with `app_crash`; launch-to-FATAL is about 0.52 seconds and launch failure is 1.17–1.28 seconds. No selector step passes, and exact runner tests cover each selector path skipped after the permitted cold-launch crash. |
 
 | B3-L06 [android] | pass | findings/evidence/cov3-android/B2-L05-L06-exact-rerun3/, findings/evidence/cov3-android/D2-02-stock-ready-pass-rerun1/ | Index-one regex and tap-fallback variants add 3/3 permitted cold-launch `app_crash` failures to the B2 selector variants, with FATAL about 0.52 seconds after launch. Exact runner tests cover the skipped selector paths and the retained stock control passes. |
@@ -702,6 +704,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 | N-12 | pass | findings/evidence/cov3-android/B3-L44-N12-capture-equivalence-rerun2/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt109b/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios-attempt109c/ | One interactive live-session MCP capture supplies the five Android baselines; three same-device CLI captures and compares each pass all five screens with zero or 0.0000436 pixel difference. All capture steps pass, session device selection overrides config, and the current iOS counterpart uses its own live simulator as required. |
 
+| B3-L51 | pass | findings/evidence/cov3-android/B3-L51-four-forms-rerun12/, findings/android-b3l51-rerun12-final-review.md | All four exact forms pass from valid pre-gesture baselines and move the seeded list: direction and coordinates each -1561 px, element held drag -1276 px, and adb-engine scroll -2311 px by disclosed indexed-row intercept because its visible ranges do not overlap. Settle times are 648–1577 ms and every final direct/CLI hierarchy matches 23/23 app nodes. The element form alone retains its W3C held-drag body; exact source/tests prove shell `input swipe` routing for direction, coordinates, and adb engine. |
+
 | B3-L44 [android] | pass | findings/evidence/cov3-android/B3-L44-N12-capture-equivalence-rerun2/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios/IOS-117/, /Users/kyle/Developer/grantiva-cli/.worktrees/cov3-ios/findings/evidence/cov3-ios/IOS-118/ | Home is captured as the app's first screen 3/3 and compares successfully each time. Its CLI sizes differ from the MCP session capture by at most 0.0264%, well inside 10%; exact runner first-frame tests cover the added wait and its already-drawn fast path, README documents the launch wait, and current iOS controls remain unchanged. |
 
 | B3-L07 [android] | pass | findings/evidence/cov3-android/B3-L07-high-load-ten-rerun2/ | Ten exact stock favorite flows with full snapshots pass under generated one-minute load of 8.31–44.78. Every run performs one unredacted W3C drag from `(246,500)` to `(0,500)` over 300 ms, holds and lifts without shell `input swipe`, then proves the distinct removal and empty-state postconditions; exact gesture tests pin the route and all owned load processes are absent afterward. |
@@ -718,4 +722,8 @@ QA CLI hash `3f3293aaf1522fefe8d46457370b32a20fa8c657461bf32af086e75a754a73f8`; 
 
 ## Counts
 
-465 of 467 slice rows recorded: 440 pass, 17 fail, 6 blocked, 2 n/a.
+467 of 467 slice rows recorded: 442 pass, 17 fail, 6 blocked, 2 n/a.
+
+## Final cleanup
+
+Task 5 cleanup is complete. `findings/evidence/cov3-android/FINAL-primary-delete-rerun4/decoded.json` reports all seven checks true: adb is empty; no campaign device, AVD, started/created record, or global session file remains; `cov3-android` is deleted; and unrelated `Pixel_8_API_35` remains installed. The cleanup used targeted teardown/delete only.
