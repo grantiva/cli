@@ -155,3 +155,23 @@ iOS20controllerfixedprelaunchharnesslocal-variableexpansion andglobal-sessiondir
 
 
 Ruling: B2-K19 combined --json --quiet --verbose output is an expectation conflict, not a proven new product defect. Exact candidate LogVerbosity15–20 and RunnerNarration26–30 deliberately let verbose win; acceptance also says verbose shows runner output but does not resolve the combined flags explicitly. Preserve literal fail/raw until Task6 correction, file no L69 from this observation, and complete separate quiet/JSON/diff/ci clauses. Cost if wrong: revisit flag-precedence product behavior and align source/tests/docs rather than silently claiming a regression. Independent triage: cov3-cli/findings/B2-K19-android-triage-and-json-review.md.
+
+
+Platform-half clarification: the plan explicitly requires separate [ios]/[android] result lines for platform=both rows. A valid local half is recorded and counted in its slice without waiting for the other platform; only criteria explicitly demanding a cross-platform comparison require that joined evidence before the comparison claim. Three iOS ready-state halves briefly removed after an ambiguous review were restored with suffixes; no runtime verdict changed. X004 remains awaiting matching interrupted report-dir mode, while X002 now has a direct full JSON comparison.
+
+Checkpoint: iOS8761206b through valid27b; Android64f54f21 phaseb/083 completed raw. Phaseb4 nonzero compare commands report baseline differences, not targeting failures; all11 command criteria provisionally pass pending independent review. Output correction85685 running. iOS28 capture10/10 and first9discard runs succeeded as of observation; no final28grade yet.
+
+
+### Lifecycle and output-mode expectation reviews
+
+- Secondary Android AVD completed11 independentlyreviewed passes; created cov3-android-2, ran onlyemulator5556, deletedit, and finalAVDinventory exactlyretainedcov3-android/Pixel_8_API_35. Mainemulator5554untouched. Checkpointa1c66ac3.
+- iOS28 repeatedcaptures10/discards10/systemalert allpass. B-I04.2 priorreview mistakenlylookedonlyCLIforCHANGELOG; runnerfd9d8e8 CHANGELOG701 suppliesrequirednote, retractedfinding. iOS29keepalive/hierarchypasses, IOS057pendingcleanupinventory. iOS30logs/cleanup33262running.
+- IOS058 literalinterrupted-after-hold expectation conflictsbindingL36/L56 earnedstatusruling. PreservefailuntilTask6; no productbrief. AND137/138 literalbyte-equalityfails are truthful dynamicdurations/timestamps only; independentsemantic comparisons identical. PreservefailsuntilTask6, no newbrief.
+- Androidoutputrerun2 completedK13/K20passes thenharnessBash3set-uemptyarrayabort; unfinishedmodesexcluded. Freshrerun3 explicitcommands complete0, quiet/verbose stderrbehaviorcorrect, dynamicJSONdifference preserved. macOSBash3emptyarraysneed safeexpansionorexplicitcommands.
+
+
+### Build/install and log-mode review corrections
+
+- iOS30logsdefault/predicate/levels supported; IOS057/064cleanup partial because sawLogStreamfalse and no exact WDA/simctl-diagnose descendant proof.31newshutdownsimensure/reuse/concurrent casespass; CLIteardown reclaimedfalse leavesnewshutdownsims, so parentguardedcleanup verifiedexact3newUUID/namepairs andsimctldeletedthem, absenceconfirmed.
+- Androidbuildbatch B-A09.2 initiallymisgraded: rawactuallyenumeratesavailablevariantsandModulesapp, correctedpass. AND022 releasefixtureusesdebugsigning, so unsignedcase expectationconflict—not productbug. B-A10.2 allegedCHANGELOGgap retracted: bindingmatrix924–925 substitutesREADME/docs/releasenotesafterCLI changelogremoval#179; README252–255fulfillsnote. NoL69filed.
+- Androidsettingsrun apply/restoration casescompleted0; graded066/067/145pass,065stilldiffcapturelegmissing. K25pairedAPKbatchcomplete0actualclausespendingadjudication. iOS32live-sessiondefaultresolution/5bootedambiguityrefusalpassed withoutownerdevicecommands. iOS33env/appfilebatchcomplete0pendingadjudication.
