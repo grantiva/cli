@@ -1,0 +1,13 @@
+=== RUN   TestElementReadsKeepExpiredSoftStepDeadlineFloor
+    element_test.go:38: Text() = "", context deadline exceeded; expired soft deadline must retain the request floor
+--- FAIL: TestElementReadsKeepExpiredSoftStepDeadlineFloor (0.00s)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/uiautomator2	0.186s
+=== RUN   TestStepScopeDetailReadsUseClientRequestContext
+    deterministic_gestures_test.go:841: step cancellation did not stop the detail read promptly
+    deterministic_gestures_test.go:847: text detail request did not receive the client's real step cancellation
+    deterministic_gestures_test.go:850: rect requests after step cancellation = 1, want zero
+--- FAIL: TestStepScopeDetailReadsUseClientRequestContext (0.31s)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/driver/uiautomator2	0.547s
+FAIL

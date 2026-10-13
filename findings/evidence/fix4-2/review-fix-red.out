@@ -1,0 +1,16 @@
+=== RUN   TestStopAppCancelsStalledPostconditionShells
+=== RUN   TestStopAppCancelsStalledPostconditionShells/pidof
+    commands_test.go:3707: stalled "pidof " shell ignored 50ms stop bound: 302.194625ms
+=== RUN   TestStopAppCancelsStalledPostconditionShells/dumpsys
+    commands_test.go:3707: stalled "dumpsys activity activities" shell ignored 50ms stop bound: 302.070541ms
+--- FAIL: TestStopAppCancelsStalledPostconditionShells (0.61s)
+    --- FAIL: TestStopAppCancelsStalledPostconditionShells/pidof (0.30s)
+    --- FAIL: TestStopAppCancelsStalledPostconditionShells/dumpsys (0.30s)
+=== RUN   TestPostSwipeTapSlowSecondBoundsReadDoesNotTapLate
+    deterministic_gestures_test.go:668: slow bounds returned after 10.008145209s, want the 80ms stabilization bound
+--- FAIL: TestPostSwipeTapSlowSecondBoundsReadDoesNotTapLate (10.01s)
+=== RUN   TestPostSwipeTapParentCancellationStopsBoundsAndDoesNotTap
+--- PASS: TestPostSwipeTapParentCancellationStopsBoundsAndDoesNotTap (0.01s)
+FAIL
+FAIL	github.com/devicelab-dev/maestro-runner/pkg/driver/uiautomator2	10.939s
+FAIL
