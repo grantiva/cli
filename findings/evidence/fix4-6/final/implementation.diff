@@ -1,0 +1,197 @@
+diff --git a/README.md b/README.md
+index 2dc5d4a3..6e993faa 100644
+--- a/README.md
++++ b/README.md
+@@ -493,6 +493,11 @@ a `warning` (an advisory check such as no booted simulator) never does.
+ 
+ Every `--json` document, and the `--ready-file` file, uses camelCase keys.
+ 
++Date-valued JSON fields use ISO 8601 UTC strings (for example,
++`1970-01-01T00:00:00Z`). Scripts should parse this representation rather than
++numeric Unix or Apple-reference timestamps. The complete public date-field
++inventory is documented in [MCP and JSON compatibility](docs/mcp.md#json-date-compatibility).
++
+ Some documents used snake_case keys before. For one deprecation period they
+ write each of those values twice, under the camelCase key and under the old
+ snake_case key beside it; read the camelCase key, as the snake_case one will be
+@@ -728,7 +733,16 @@ and also when a screen has no baseline: with no baselines at all it prints `? No
+ grantiva diff approve`, and when only some are missing `? Visual diff incomplete: …`; `--json` has `"passed": false`
+ in both cases. (`ci run` keeps reporting a new screen as `new_screen` without failing the run.)
+ 
+-Local baselines are stored in `.grantiva/baselines/`. Connect to [Grantiva](https://grantiva.io) to store baselines remotely and enable CI across machines.
++Local baselines are stored in `.grantiva/baselines/`. Capture, baseline, and
++diff filenames now keep ordinary characters such as spaces literal and encode
++only path-unsafe characters. Grantiva still performs legacy baseline lookup
++for the older percent-encoded filename (for example, `Deep%20Links.png` for
++`Deep Links`) and performs migration on approval to `Deep Links.png`; working
++legacy baselines do not need to be renamed by hand. Encoding literal `%` as
++`%25` also removes the ambiguous `%` filenames that the legacy scheme could
++produce.
++
++Connect to [Grantiva](https://grantiva.io) to store baselines remotely and enable CI across machines.
+ 
+ ## License
+ 
+diff --git a/Sources/GrantivaCLI/DoctorCommand.swift b/Sources/GrantivaCLI/DoctorCommand.swift
+index 8de27cdd..729cdb6d 100644
+--- a/Sources/GrantivaCLI/DoctorCommand.swift
++++ b/Sources/GrantivaCLI/DoctorCommand.swift
+@@ -54,7 +54,7 @@ struct DoctorCommand: AsyncParsableCommand {
+                 name: "Platform", status: .warning,
+                 message: "Found both an Xcode project and Gradle settings",
+                 fix: "Pass --platform ios|android or set \(PlatformResolver.environmentKey).",
+-                section: .project
++                section: .advisory
+             )
+             return (detected, false, advice)
+         }
+diff --git a/Sources/GrantivaCore/Doctor/DoctorRunner.swift b/Sources/GrantivaCore/Doctor/DoctorRunner.swift
+index 00137931..9ab94e2c 100644
+--- a/Sources/GrantivaCore/Doctor/DoctorRunner.swift
++++ b/Sources/GrantivaCore/Doctor/DoctorRunner.swift
+@@ -108,9 +108,16 @@ public struct DoctorRunner: Sendable {
+         guard let device = devices.first(where: \.isBooted) else {
+             return Self.noBootedSimulatorCheck(devices: devices, createdByGrantiva: simulators.createdUDIDs())
+         }
++        var message = "\(device.name) — \(device.runtimeName)"
++        let createdByGrantiva = simulators.createdUDIDs()
++        if let userDefault = devices.first(where: {
++            $0.name == DefaultSimulator.name && !createdByGrantiva.contains($0.udid)
++        }) {
++            message += " (\"\(userDefault.name)\" (\(userDefault.udid)) was not created by Grantiva, so it is not used as the default)"
++        }
+         return DoctorCheck(
+             name: "Booted Simulator", status: .ok,
+-            message: "\(device.name) — \(device.runtimeName)", fix: nil, section: .advisory
++            message: message, fix: nil, section: .advisory
+         )
+     }
+ 
+diff --git a/Tests/GrantivaCLITests/DocsContractTests.swift b/Tests/GrantivaCLITests/DocsContractTests.swift
+index 89e48e3c..60517f35 100644
+--- a/Tests/GrantivaCLITests/DocsContractTests.swift
++++ b/Tests/GrantivaCLITests/DocsContractTests.swift
+@@ -179,4 +179,24 @@ final class DocsContractTests: XCTestCase {
+         XCTAssertFalse(readme.contains("`teardown --force`\nis only for a session whose runner was killed"))
+         XCTAssertTrue(readme.contains("runnerSessionStopped"))
+     }
++
++    func testPublicCompatibilityNotesCoverBaselineNamesDatesSelectorsAndLifecycleJSON() throws {
++        let readme = try text("README.md")
++        let mcpDocs = try text("docs/mcp.md")
++
++        XCTAssertTrue(readme.contains("legacy baseline"), "README must name legacy baseline compatibility")
++        XCTAssertTrue(readme.contains("percent-encoded"), "README must name the old filename form")
++        XCTAssertTrue(readme.contains("ambiguous `%`"), "README must explain why percent encoding changed")
++        XCTAssertTrue(readme.contains("migration on approval"), "README must say approval performs migration")
++
++        XCTAssertTrue(mcpDocs.contains("ISO 8601"))
++        for key in ["timestamp", "detectedAt", "startedAt", "acquiredAt", "createdAt", "finishedAt"] {
++            XCTAssertTrue(mcpDocs.contains("`\(key)`"), key)
++        }
++        XCTAssertTrue(mcpDocs.contains("1970-01-01T00:00:00Z"))
++        XCTAssertTrue(mcpDocs.contains("label → identifier → placeholder"))
++        for key in ["runnerSessionStopped", "leftoverProcesses", "reapedProcesses"] {
++            XCTAssertTrue(mcpDocs.contains(#""\#(key)""#), key)
++        }
++    }
+ }
+diff --git a/Tests/GrantivaCLITests/DoctorSelectionTests.swift b/Tests/GrantivaCLITests/DoctorSelectionTests.swift
+index 98b9d374..50de7963 100644
+--- a/Tests/GrantivaCLITests/DoctorSelectionTests.swift
++++ b/Tests/GrantivaCLITests/DoctorSelectionTests.swift
+@@ -54,9 +54,20 @@ final class DoctorSelectionTests: XCTestCase {
+         XCTAssertFalse(selection.required, "an ambiguous root is diagnosed, not failed")
+         let advice = try XCTUnwrap(selection.advice)
+         XCTAssertEqual(advice.status, .warning)
++        XCTAssertEqual(advice.section, .advisory)
+         XCTAssertEqual(advice.message, "Found both an Xcode project and Gradle settings")
+         XCTAssertEqual(advice.fix, "Pass --platform ios|android or set GRANTIVA_PLATFORM.")
+         XCTAssertFalse(DoctorRunner.hasFailures([advice]))
++        let text = DoctorFormatter(color: false).format([advice])
++        XCTAssertTrue(text.contains("  Advisory\n"), text)
++        XCTAssertFalse(text.contains("  Project\n"), text)
++        let json = try JSONOutput.compactString([advice])
++        XCTAssertTrue(json.contains(#""section":"Advisory""#), json)
++        XCTAssertTrue(json.contains("Pass --platform ios|android or set GRANTIVA_PLATFORM."), json)
++
++        XCTAssertThrowsError(try PlatformResolver(directory: dir, environment: [:]).resolve(flag: nil)) { error in
++            XCTAssertTrue(error.localizedDescription.contains("Found both an Xcode project and Gradle settings"), "\(error)")
++        }
+         XCTAssertNil(try DoctorCommand.platformSelection(flag: .ios, directory: dir, environment: [:]).advice)
+         XCTAssertEqual(try DoctorCommand.platformSelection(flag: nil, directory: dir, environment: ["GRANTIVA_PLATFORM": "android"]).platforms, [.android])
+     }
+diff --git a/Tests/GrantivaCoreTests/DoctorTests.swift b/Tests/GrantivaCoreTests/DoctorTests.swift
+index 95848640..46da1351 100644
+--- a/Tests/GrantivaCoreTests/DoctorTests.swift
++++ b/Tests/GrantivaCoreTests/DoctorTests.swift
+@@ -283,6 +283,42 @@ final class DoctorTests: XCTestCase {
+         XCTAssertEqual(check.message, "Mine — iOS 26.0")
+     }
+ 
++    func testBootedSimulatorCheckReportsUnownedDefaultRegardlessOfListOrder() async throws {
++        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
++        let userDefault = #"{"name":"iPhone 18 Pro","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
++        let note = #""iPhone 18 Pro" (USER-DEFAULT) was not created by Grantiva, so it is not used as the default"#
++
++        for devices in ["\(booted),\(userDefault)", "\(userDefault),\(booted)"] {
++            let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + devices + "]}}"
++            let check = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in list }))
++            XCTAssertEqual(check.status, .ok)
++            XCTAssertEqual(check.section, .advisory)
++            XCTAssertTrue(check.message.contains("iPhone 17 Pro — iOS 26.0"), check.message)
++            XCTAssertTrue(check.message.contains(note), check.message)
++            XCTAssertTrue(DoctorFormatter(color: false).format([check]).contains(note))
++            let encoded = try JSONOutput.encoder.encode([check])
++            let decoded = try JSONDecoder().decode([DoctorCheck].self, from: encoded)
++            XCTAssertTrue(try XCTUnwrap(decoded.first).message.contains(note))
++        }
++    }
++
++    func testBootedSimulatorOwnershipNoteHasAbsentAndOwnedNegativeControls() async throws {
++        let booted = #"{"name":"iPhone 17 Pro","udid":"BOOTED","state":"Booted","isAvailable":true}"#
++        let noDefault = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "]}}"
++        let ordinary = await DoctorRunner().checkBootedSimulator(simulators: SimulatorManager(execute: { _ in noDefault }))
++        XCTAssertEqual(ordinary.message, "iPhone 17 Pro — iOS 26.0")
++
++        let provenance = SimulatorProvenance(directory: scratch.appendingPathComponent("provenance").path)
++        try provenance.register(udid: "USER-DEFAULT", name: "iPhone 18 Pro")
++        let ownedDefault = #"{"name":"iPhone 18 Pro","udid":"USER-DEFAULT","state":"Shutdown","isAvailable":true}"#
++        let list = #"{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":["# + booted + "," + ownedDefault + "]}}"
++        let owned = await DoctorRunner().checkBootedSimulator(
++            simulators: SimulatorManager(execute: { _ in list }, provenance: provenance)
++        )
++        XCTAssertEqual(owned.status, .ok)
++        XCTAssertFalse(owned.message.contains("was not created by Grantiva"), owned.message)
++    }
++
+     // A mono-repo's android/ subproject is inside the work tree; advising
+     // `git init` there would create a nested repository.
+     func testGitCheckPassesInASubdirectoryOfAWorkTree() throws {
+diff --git a/docs/mcp.md b/docs/mcp.md
+index 393a1cca..4805d0de 100644
+--- a/docs/mcp.md
++++ b/docs/mcp.md
+@@ -176,6 +176,22 @@ sent to a client that did not subscribe.
+ 
+ Concurrent requests may finish in any order. Each stdout line contains one complete JSON-RPC message, including responses larger than the pipe buffer; response and notification bytes never interleave.
+ 
++## JSON date compatibility
++
++Date-valued JSON fields use ISO 8601 UTC strings, such as
++`1970-01-01T00:00:00Z`. This is the representation scripts should consume;
++numeric Unix and Apple-reference timestamps are not output alternatives. The
++fields are `timestamp` on screen captures, `detectedAt` on detected projects,
++`startedAt` on runner sessions, simulator or emulator leases and provenance,
++`acquiredAt` on simulator capacity records, `createdAt` on created-simulator
++and keep-alive ownership records, and `finishedAt` in ready files.
++
++The iOS tap fallback order is **label → identifier → placeholder**. Runner
++lifecycle and teardown JSON use the current camelCase keys, including
++`"runnerSessionStopped"`, `"leftoverProcesses"`, and `"reapedProcesses"`;
++each stopped-session object retains the app, device, runner PID, port, and
++cleanup result described in the README.
++
+ ## Malformed input
+ 
+ The server follows JSON-RPC 2.0 for input it cannot handle: a line that is not JSON is answered with

@@ -1,0 +1,71 @@
+Building for debugging...
+[Computing dependencies]
+[2 / 6] GrantivaCore
+/Users/kyle/Developer/grantiva-cli/.worktrees/fix4-public-docs/Sources/GrantivaCore/Output/CLILogHandler.swift:34:15: warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 32 | /// Everything here goes to **stderr**. Program output belongs on stdout, via
+ 33 | /// `Output` — see the note there.
+ 34 | public struct CLILogHandler: LogHandler {
+    |               `- warning: deprecated default implementation is used to satisfy instance method 'log(event:)' required by protocol 'LogHandler': You should implement this method instead of using the default implementation [#DeprecatedDeclaration]
+ 35 |     /// Where a formatted line is written. Injectable so tests can read it.
+ 36 |     public typealias Sink = @Sendable (String) -> Void
+
+Logging.LogHandler.log:3:15: note: 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | @available(*, deprecated, message: "You should implement this method instead of using the default implementation")
+3 |   public func log(event: Logging.LogEvent)}
+  |               `- note: 'log(event:)' declared here
+4 | 
+
+Logging.LogHandler.log:2:6: note: requirement 'log(event:)' declared here
+1 | protocol LogHandler {
+2 | func log(event: Logging.LogEvent)}
+  |      `- note: requirement 'log(event:)' declared here
+3 | 
+
+[#DeprecatedDeclaration]: <https://docs.swift.org/compiler/documentation/diagnostics/deprecated-declaration>
+[3 / 7] GrantivaCore
+[7 / 11] GrantivaCore
+[10 / 11] GrantivaAPITests-product
+[13 / 17] GrantivaCLI
+[14 / 18] GrantivaCLI
+[18 / 22] GrantivaCLI
+[21 / 22] GrantivaCLITests-product
+[24 / 25] GrantivaCoreTests-product
+[27 / 28] GrantivaMCPTests-product
+[31 / 32] grantiva-product
+Build complete! (4.46 sec)
+Test Suite 'Selected tests' started at 2026-10-13 07:57:02.818.
+Test Suite 'GrantivaMCPTests.xctest' started at 2026-10-13 07:57:02.819.
+Test Suite 'GrantivaMCPTests.xctest' passed at 2026-10-13 07:57:02.819.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 07:57:02.819.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 07:57:02.891.
+Test Suite 'GrantivaCoreTests.xctest' started at 2026-10-13 07:57:02.892.
+Test Suite 'GrantivaCoreTests.xctest' passed at 2026-10-13 07:57:02.892.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 07:57:02.892.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+Test Suite 'Selected tests' started at 2026-10-13 07:57:02.949.
+Test Suite 'GrantivaCLITests.xctest' started at 2026-10-13 07:57:02.950.
+Test Suite 'DoctorSelectionTests' started at 2026-10-13 07:57:02.950.
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testAnInvalidEnvironmentPlatformIsAnErrorLikeRun]' started.
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testAnInvalidEnvironmentPlatformIsAnErrorLikeRun]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testBothProjectsDetectedPutsNoAdvisoryCheckUnderRequired]' started.
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testBothProjectsDetectedPutsNoAdvisoryCheckUnderRequired]' passed (0.339 seconds).
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testBothProjectsDetectedWithoutAFlagIsAdviceNotAFailure]' started.
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testBothProjectsDetectedWithoutAFlagIsAdviceNotAFailure]' passed (0.001 seconds).
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testSelectionFollowsFlagEnvConfigDirectoryThenBoth]' started.
+Test Case '-[GrantivaCLITests.DoctorSelectionTests testSelectionFollowsFlagEnvConfigDirectoryThenBoth]' passed (0.001 seconds).
+Test Suite 'DoctorSelectionTests' passed at 2026-10-13 07:57:03.293.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.343 (0.343) seconds
+Test Suite 'GrantivaCLITests.xctest' passed at 2026-10-13 07:57:03.293.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.343 (0.343) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 07:57:03.293.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.343 (0.344) seconds
+Test Suite 'Selected tests' started at 2026-10-13 07:57:03.367.
+Test Suite 'GrantivaAPITests.xctest' started at 2026-10-13 07:57:03.367.
+Test Suite 'GrantivaAPITests.xctest' passed at 2026-10-13 07:57:03.368.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'Selected tests' passed at 2026-10-13 07:57:03.368.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
